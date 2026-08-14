@@ -1118,7 +1118,7 @@ public sealed class PythonMissingDocstringRule : PatternRuleBase
 {
     public override string Key => "QG-PY-SML-0013";
     public override string Name => "Functions should have docstrings";
-    public override Severity Severity => Severity.Minor;
+    public override Severity Severity => Severity.Info;
     public override IssueKind Kind => IssueKind.CodeSmell;
     public override string RemediationEffort => "Document the purpose of the function with a docstring.";
     public override string[] Languages => ["py"];

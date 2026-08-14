@@ -1,0 +1,299 @@
+# Java correctness batch: object contracts, concurrency, numbers and collections.
+
+- key: QG-JV-BUG-0007
+  name: Finalizers should not be called explicitly
+  languages: [java]
+  category: BUG
+  severity: critical
+  effort: 20min
+  tags: [suspicious, lifecycle]
+  message: Calling the finalizer directly runs cleanup while the object is still in use.
+  summary: The finalize method is invoked from application code.
+  why: |
+    The runtime calls the finalizer once, when the object is collected. Calling it by hand releases the
+    resources early and the runtime will call it again later, so cleanup runs twice on an object other
+    code may still be holding.
+  fix: |
+    Release resources through close and try-with-resources, and delete the explicit call. Finalizers
+    themselves should be replaced by a cleaner or by explicit disposal.
+  detect:
+    - invocation: [finalize]
+      resultUnused: true
+
+- key: QG-JV-BUG-0008
+  name: Jump statements should not leave a finally block
+  languages: [java, cs]
+  category: BUG
+  severity: blocker
+  effort: 20min
+  tags: [exception, suspicious]
+  message: Returning or breaking here discards the exception that was propagating.
+  summary: A finally block contains a return, break, continue or throw.
+  why: |
+    A jump inside finally replaces whatever was in flight, including an exception on its way to the
+    caller. The failure disappears silently and the method reports success, which is the hardest kind of
+    error to trace back.
+  fix: |
+    Keep finally for cleanup only. Move the value or the decision into the try block, or rethrow after
+    the cleanup is done.
+  detect:
+    - line: "finally\\s*\\{[^}]*\\b(return|break|continue|throw)\\b"
+
+- key: QG-JV-BUG-0009
+  name: Equality overrides should accept the base type
+  languages: [java]
+  category: BUG
+  severity: critical
+  effort: 15min
+  tags: [equality]
+  message: This method overloads equals instead of overriding it.
+  summary: An equals method is declared with a parameter type other than Object.
+  why: |
+    Collections and the runtime call equals through the Object signature, so a narrower parameter creates
+    a second, unrelated method. The class then behaves as if equality was never overridden — lookups miss
+    and duplicates appear.
+  fix: |
+    Declare the parameter as Object, check the type inside, and add the Override annotation so the
+    compiler verifies the signature.
+  bad: |
+    public boolean equals(MyType other) { ... }
+  good: |
+    @Override
+    public boolean equals(Object other) { ... }
+  detect:
+    - line: "public\\s+boolean\\s+equals\\s*\\(\\s*(?!Object|java\\.lang\\.Object)[A-Z]\\w*\\s+\\w+\\s*\\)"
+
+- key: QG-JV-BUG-0010
+  name: String builders should not be created from a character
+  languages: [java]
+  category: BUG
+  severity: major
+  effort: 10min
+  tags: [suspicious, string]
+  message: A character argument is read as an initial capacity, not as content.
+  summary: A string builder is constructed with a character literal.
+  why: |
+    The character is widened to an int and selects the constructor that sets the capacity, so the builder
+    starts empty instead of containing that character. The output silently loses the first symbol.
+  fix: |
+    Append the character after constructing the builder, or pass a string literal instead.
+  bad: |
+    var builder = new StringBuilder('x');
+  good: |
+    var builder = new StringBuilder().append('x');
+  detect:
+    - line: "new\\s+String(Builder|Buffer)\\s*\\(\\s*'"
+
+- key: QG-JV-BUG-0011
+  name: Iterators should not consume elements while testing
+  languages: [java]
+  category: BUG
+  severity: blocker
+  effort: 20min
+  tags: [suspicious, iteration]
+  message: Calling next inside hasNext advances the iterator.
+  summary: The hasNext implementation calls next.
+  why: |
+    Every check consumes an element, so iteration skips half the sequence and eventually throws when the
+    underlying data runs out. Callers see missing items rather than an error.
+  fix: |
+    Answer hasNext by looking ahead without consuming — keep a buffered element or query the underlying
+    source — and leave the advance to next.
+  detect:
+    - line: "boolean\\s+hasNext\\s*\\([^)]*\\)\\s*\\{[^}]*\\.next\\s*\\("
+
+- key: QG-JV-BUG-0012
+  name: Decimal values should not be built from binary floating point
+  languages: [java]
+  category: BUG
+  severity: critical
+  effort: 10min
+  tags: [arithmetic]
+  message: The double is already imprecise before it reaches the decimal type.
+  summary: A decimal is constructed from a double or float literal.
+  why: |
+    A binary floating point value cannot represent most decimal fractions exactly, so the decimal that is
+    built carries the rounding error with full precision — the classic 0.1 becoming
+    0.1000000000000000055511151231257827. Money calculations then drift.
+  fix: |
+    Construct the decimal from a string, or use the valueOf helper which goes through the canonical text
+    representation.
+  bad: |
+    var amount = new BigDecimal(0.1);
+  good: |
+    var amount = new BigDecimal("0.1");
+  detect:
+    - line: "new\\s+BigDecimal\\s*\\(\\s*[0-9]+\\.[0-9]"
+
+- key: QG-JV-BUG-0013
+  name: Arrays should not be printed or hashed directly
+  languages: [java]
+  category: BUG
+  severity: major
+  effort: 10min
+  tags: [suspicious]
+  message: These methods return identity information, not the contents of the array.
+  summary: toString or hashCode is called on an array.
+  why: |
+    Arrays inherit both methods from Object, so the result identifies the instance rather than the
+    elements. Logs show a type name and an address, and hash-based lookups never match a different array
+    with the same content.
+  fix: |
+    Use the array helpers — Arrays.toString and Arrays.hashCode, or their deep variants for nested arrays.
+  detect:
+    - line: "\\w+\\s*\\[\\s*\\]\\s*\\w+[^;]*\\.(toString|hashCode)\\s*\\(\\s*\\)"
+    - line: "\\bArrays\\.asList\\s*\\([^)]*\\)\\.toString"
+
+- key: QG-JV-BUG-0014
+  name: Random generators should be reused
+  languages: [java]
+  category: BUG
+  severity: major
+  effort: 15min
+  tags: [random, performance]
+  message: Creating a generator per call produces correlated values.
+  summary: A random generator is instantiated inside a loop or a frequently called method.
+  why: |
+    Instances created in quick succession are seeded from the clock and can produce identical sequences,
+    so the values are neither unique nor uniformly distributed. Allocating one per call also costs more
+    than reusing a single instance.
+  fix: |
+    Keep one generator per thread — a static instance, or the thread-local one the platform provides —
+    and reuse it. For unpredictable values, use the cryptographic generator.
+  detect:
+    - creation: [Random]
+      requires: ["for ", "while "]
+
+- key: QG-JV-BUG-0015
+  name: Interruptions should not be swallowed
+  languages: [java, kt]
+  category: BUG
+  severity: critical
+  effort: 15min
+  tags: [concurrency, exception]
+  message: Catching this exception without restoring the flag hides a cancellation request.
+  summary: An interruption is caught and neither rethrown nor re-flagged.
+  why: |
+    The interruption is how the platform asks a thread to stop. Swallowing it clears the flag, so the
+    thread keeps running while the code that requested the shutdown waits for it forever.
+  fix: |
+    Rethrow the exception, or restore the flag with Thread.currentThread().interrupt() before returning,
+    so the caller can react to the request.
+  detect:
+    - line: "catch\\s*\\(\\s*InterruptedException\\s+\\w+\\s*\\)\\s*\\{\\s*\\}"
+    - line: "catch\\s*\\(\\s*InterruptedException[^{]*\\{(?:(?!interrupt\\(\\)|throw)[^}])*\\}"
+
+- key: QG-JV-BUG-0016
+  name: Boxing and unboxing should not be redundant
+  languages: [java]
+  category: BUG
+  severity: major
+  effort: 10min
+  tags: [performance, suspicious]
+  message: This conversion allocates a wrapper only to read the primitive back.
+  summary: A value is boxed and immediately unboxed, or converted through a wrapper for no reason.
+  why: |
+    Each boxing allocates an object and each unboxing dereferences it, so a loop pays for both on every
+    iteration. When the value can be null the unboxing also throws, turning a conversion into a crash.
+  fix: |
+    Work with the primitive type, and convert only at the boundary that actually needs the wrapper.
+  detect:
+    - line: "new\\s+(Integer|Long|Double|Float|Short|Byte|Boolean|Character)\\s*\\("
+    - line: "(Integer|Long|Double|Float)\\.valueOf\\s*\\([^)]*\\)\\s*\\.(intValue|longValue|doubleValue|floatValue)\\s*\\("
+
+- key: QG-JV-BUG-0017
+  name: Double-checked locking should not be used
+  languages: [java]
+  category: BUG
+  severity: critical
+  effort: 25min
+  tags: [concurrency]
+  message: Without a memory barrier another thread can see a partially built object.
+  summary: A lazily initialised field is checked outside and inside a synchronized block.
+  why: |
+    Object construction and the field write can be reordered, so a second thread reading the field
+    without the lock may see a non-null reference whose fields are not populated yet. The failure depends
+    on the processor and appears under load.
+  fix: |
+    Declare the field volatile, or move the initialisation to a holder class whose loading the runtime
+    already makes thread-safe. For simple cases, initialise eagerly.
+  detect:
+    - line: "if\\s*\\(\\s*\\w+\\s*==\\s*null\\s*\\)\\s*\\{\\s*synchronized"
+
+- key: QG-JV-BUG-0018
+  name: Waiting should happen inside a synchronized block
+  languages: [java]
+  category: BUG
+  severity: blocker
+  effort: 20min
+  tags: [concurrency]
+  message: These methods require the monitor of the object they are called on.
+  summary: wait, notify or notifyAll is called outside a synchronized block.
+  why: |
+    Without the monitor the call throws IllegalMonitorStateException at run time, and where it does
+    succeed the wait can miss the notification that was sent between the check and the call.
+  fix: |
+    Hold the monitor of the same object while calling, and always wait inside a loop that rechecks the
+    condition. Higher-level primitives such as a latch or a semaphore avoid the problem entirely.
+  detect:
+    - invocation: [wait, notify, notifyAll]
+      absent: [synchronized]
+
+- key: QG-JV-BUG-0019
+  name: Comparison results should not be tested for exact values
+  languages: [java]
+  category: BUG
+  severity: major
+  effort: 10min
+  tags: [suspicious]
+  message: A comparison may return any negative or positive number, not only minus one and one.
+  summary: The result of compareTo is compared with a specific value.
+  why: |
+    The contract only promises the sign of the result. Implementations routinely return the difference
+    between two values, so a check against one or minus one silently stops matching for most inputs.
+  fix: |
+    Compare the result against zero with the operator you mean, or use the comparison helpers of the
+    standard library.
+  bad: |
+    if (a.compareTo(b) == 1) { ... }
+  good: |
+    if (a.compareTo(b) > 0) { ... }
+  detect:
+    - line: "compareTo\\s*\\([^)]*\\)\\s*(==|!=)\\s*-?[1-9]"
+
+- key: QG-JV-BUG-0020
+  name: Threads should sleep only when they hold no lock
+  languages: [java]
+  category: BUG
+  severity: critical
+  effort: 20min
+  tags: [concurrency]
+  message: Sleeping while holding a lock blocks every other thread that needs it.
+  summary: Thread.sleep is called inside a synchronized block.
+  why: |
+    The lock is not released while sleeping, so all waiting threads stay blocked for the whole duration.
+    Under contention that turns a small delay into a stall of the entire component.
+  fix: |
+    Wait on the monitor instead, which releases the lock, or move the delay outside the critical section.
+  detect:
+    - line: "synchronized[^{]*\\{[^}]*Thread\\.sleep"
+
+- key: QG-JV-BUG-0021
+  name: Serializable classes should be able to serialize their state
+  languages: [java]
+  category: BUG
+  severity: major
+  effort: 25min
+  tags: [serialization]
+  message: This field cannot be serialized, so writing the object fails at run time.
+  summary: A serializable class holds a field whose type is not serializable and not transient.
+  why: |
+    Serialization walks the object graph and throws when it reaches a type that does not support it. The
+    error appears only when the object is actually written, typically in a cache or a session, far from
+    the code that added the field.
+  fix: |
+    Mark the field transient and rebuild it after deserialization, make the field type serializable, or
+    drop the serializable marker from the class.
+  detect:
+    - line: "private\\s+(?!transient)(Connection|Thread|InputStream|OutputStream|Socket|Logger)\\s+\\w+\\s*;"
+      requires: [implements Serializable]

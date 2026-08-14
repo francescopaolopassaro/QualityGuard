@@ -1,0 +1,234 @@
+# JavaScript and TypeScript correctness batch.
+
+- key: QG-JS-BUG-0007
+  name: Jump statements should not leave a finally block
+  languages: [js, ts]
+  category: BUG
+  severity: blocker
+  effort: 20min
+  tags: [exception, suspicious]
+  message: Returning here discards the exception that was propagating.
+  summary: A finally block contains a return, break, continue or throw.
+  why: |
+    The jump replaces whatever was in flight, so an exception on its way to the caller disappears and the
+    function reports success. Cleanup code is the last place anyone looks for a swallowed failure.
+  fix: |
+    Keep finally for cleanup, and move the value or the decision into the try block.
+  detect:
+    - line: "finally\\s*\\{[^}]*\\b(return|break|continue|throw)\\b"
+
+- key: QG-JS-BUG-0008
+  name: Assignments in conditions should be intentional
+  languages: [js, ts]
+  category: BUG
+  severity: critical
+  effort: 10min
+  tags: [suspicious]
+  message: This condition assigns instead of comparing.
+  summary: A single equals sign appears inside the condition of a branch.
+  why: |
+    The condition evaluates the assigned value, so the branch is taken whenever that value is truthy —
+    which for most objects means always. The typo is one character away from a comparison and reads the
+    same.
+  fix: |
+    Use a comparison operator, or move the assignment above the statement when the value really has to be
+    stored first.
+  detect:
+    - line: "if\\s*\\([^)=!<>]*[^=!<>+\\-*/%&|^]=[^=][^)]*\\)"
+
+- key: QG-JS-BUG-0009
+  name: Object keys should not be duplicated
+  languages: [js, ts]
+  category: BUG
+  severity: critical
+  effort: 10min
+  tags: [suspicious]
+  message: A repeated key silently overwrites the earlier value.
+  summary: An object literal declares the same property twice.
+  why: |
+    Only the last occurrence survives, so the configuration or payload built here is not the one the code
+    appears to describe. Nothing warns at run time, and the difference often shows up as a missing option.
+  fix: |
+    Remove the duplicate, or rename it if two distinct values were intended.
+  detect:
+    - line: "\\{[^}]*\\b(\\w+)\\s*:[^}]*\\b\\1\\s*:"
+
+- key: QG-JS-BUG-0010
+  name: Comparisons should not be chained
+  languages: [js, ts]
+  category: BUG
+  severity: major
+  effort: 10min
+  tags: [suspicious]
+  message: This compares a boolean with the next operand.
+  summary: Two comparison operators are chained in one expression.
+  why: |
+    The first comparison produces a boolean, which is then compared with the third operand after being
+    converted to a number. The expression reads like a range check and behaves like nonsense.
+  fix: |
+    Split the check into two comparisons joined by a logical operator.
+  bad: |
+    if (0 <= value < 10) { ... }
+  good: |
+    if (0 <= value && value < 10) { ... }
+  detect:
+    - line: "[<>]=?\\s*[\\w.]+\\s*[<>]=?"
+
+- key: QG-JS-BUG-0011
+  name: Array constructors should not be called with one number
+  languages: [js]
+  category: BUG
+  severity: major
+  effort: 10min
+  tags: [suspicious]
+  message: A single numeric argument sets the length instead of adding an element.
+  summary: The array constructor is called with exactly one numeric argument.
+  why: |
+    The result is a sparse array of that length with no elements, so iteration methods skip everything
+    and the value the author meant to store is missing. With any other argument count the behaviour is
+    completely different, which makes the mistake hard to spot.
+  fix: |
+    Use a literal for known content, Array.of for a single element, or Array.from with a length and a
+    mapping function when a filled array is needed.
+  detect:
+    - line: "new\\s+Array\\s*\\(\\s*\\d+\\s*\\)"
+
+- key: QG-JS-BUG-0012
+  name: Comparisons with the not-a-number value never hold
+  languages: [js, ts]
+  category: BUG
+  severity: critical
+  effort: 5min
+  tags: [arithmetic]
+  message: Nothing equals NaN, including NaN itself.
+  summary: A value is compared with NaN.
+  why: |
+    The guard against invalid numbers is dead code, so the invalid value flows into the arithmetic that
+    follows and turns every later result into NaN as well.
+  fix: |
+    Use Number.isNaN for the check, and Number.isFinite when infinities also have to be rejected.
+  detect:
+    - line: "(===|==|!=|!==)\\s*NaN\\b"
+
+- key: QG-JS-BUG-0013
+  name: Await should not be used inside a loop over independent work
+  languages: [js, ts]
+  category: BUG
+  severity: major
+  effort: 20min
+  tags: [async, performance]
+  message: Awaiting inside the loop serialises calls that could run together.
+  summary: An await appears directly inside a for or while loop body.
+  why: |
+    Each iteration waits for the previous one, so a hundred independent requests take a hundred round
+    trips instead of one. When the operations really depend on each other this is correct, which is why
+    it deserves a deliberate decision rather than a default.
+  fix: |
+    Collect the promises and await them together with Promise.all, or keep the sequential form and note
+    why the order matters.
+  bad: |
+    for (const id of ids) { results.push(await load(id)); }
+  good: |
+    const results = await Promise.all(ids.map(load));
+  detect:
+    - line: "^\\s*(const|let|var)?\\s*[\\w.\\[\\]]*\\s*=?\\s*await\\s"
+      requires: ["for (", "while ("]
+
+- key: QG-JS-SML-0012
+  name: Optional chaining should replace long guard chains
+  languages: [js, ts]
+  category: SML
+  severity: minor
+  effort: 10min
+  tags: [readability]
+  message: This guard chain is what optional chaining expresses in one operator.
+  summary: The same object is tested for existence before each property access.
+  why: |
+    The repeated name makes the expression long enough that a reader has to check every link, and adding
+    a level means editing the condition in two places.
+  fix: |
+    Use optional chaining for the access and the nullish coalescing operator for the default.
+  bad: |
+    const city = user && user.address && user.address.city;
+  good: |
+    const city = user?.address?.city;
+  detect:
+    - line: "(\\w+)\\s*&&\\s*\\1\\.\\w+\\s*&&\\s*\\1\\."
+
+- key: QG-JS-SML-0013
+  name: Exported values should be named
+  languages: [js, ts]
+  category: SML
+  severity: minor
+  effort: 10min
+  tags: [modules]
+  message: A default export forces every importer to invent a name.
+  summary: A module exports an anonymous default value.
+  why: |
+    Consumers can call it anything, so the same function appears under several names across the codebase
+    and searching for its usages stops working. Refactoring tools cannot rename it either.
+  fix: |
+    Use named exports, or give the default export a name so tooling and stack traces can show it.
+  detect:
+    - line: "export\\s+default\\s*(function|class)?\\s*\\("
+    - line: "export\\s+default\\s*\\{"
+
+- key: QG-JS-SML-0014
+  name: Promise executors should not be asynchronous
+  languages: [js, ts]
+  category: SML
+  severity: critical
+  effort: 15min
+  tags: [async]
+  message: An async executor swallows the errors it throws.
+  summary: A promise is constructed with an async function as its executor.
+  why: |
+    The promise returned by the executor is discarded, so a rejection inside it never reaches the
+    surrounding promise and becomes an unhandled rejection. The outer promise may also never settle.
+  fix: |
+    Keep the executor synchronous and call resolve and reject from the asynchronous callbacks, or drop
+    the constructor and write an async function instead.
+  detect:
+    - line: "new\\s+Promise\\s*\\(\\s*async"
+
+- key: QG-JS-SML-0015
+  name: Timers should not receive strings
+  languages: [js]
+  category: SML
+  severity: critical
+  effort: 10min
+  cwe: [95]
+  tags: [suspicious, injection]
+  message: A string argument here is evaluated as code.
+  summary: A timer is scheduled with a string instead of a function.
+  why: |
+    The engine compiles the string, so anything interpolated into it runs with the privileges of the
+    page — the same risk as a direct eval, with the extra problem that it executes later and out of
+    context.
+  fix: |
+    Pass a function, and capture the values it needs through the closure or through the extra arguments
+    of the timer.
+  detect:
+    - invocation: [setTimeout, setInterval]
+      argIndex: 0
+      literalValue: true
+
+- key: QG-TS-BUG-0001
+  name: Enum members should not collide
+  languages: [ts]
+  category: BUG
+  severity: major
+  effort: 10min
+  tags: [types]
+  message: Two members of this enumeration share a value.
+  summary: An enum declares the same value twice.
+  why: |
+    Reverse lookups return whichever member was declared last, and a switch over the enum silently maps
+    two names to one branch. The duplicate usually comes from copying a line and forgetting to change the
+    number.
+  fix: |
+    Give each member a distinct value, or use a union of string literals where the values are meant to be
+    shared.
+  detect:
+    - line: "=\\s*(\\d+)\\s*,[^}]*=\\s*\\1\\s*[,}]"
+      requires: [enum]

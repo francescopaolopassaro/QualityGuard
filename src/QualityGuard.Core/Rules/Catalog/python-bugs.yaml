@@ -1,0 +1,290 @@
+# Python correctness batch: protocol methods, exceptions, generators and comparisons.
+
+- key: QG-PY-BUG-0013
+  name: Jump statements should not leave a finally block
+  languages: [py]
+  category: BUG
+  severity: blocker
+  effort: 20min
+  tags: [exception, suspicious]
+  message: Returning or breaking here discards the exception that was propagating.
+  summary: A finally block contains a return, break or continue.
+  why: |
+    The jump replaces whatever was in flight, including an exception on its way to the caller, so the
+    failure disappears and the function reports success. Cleanup code is the last place anyone looks for
+    a swallowed error.
+  fix: |
+    Keep finally for cleanup only. Move the value or the decision into the try block, or re-raise after
+    the cleanup is done.
+  detect:
+    - line: "finally\\s*:\\s*$"
+      requires: ["return", "break", "continue"]
+
+- key: QG-PY-BUG-0014
+  name: Exception handlers should be able to catch something
+  languages: [py]
+  category: BUG
+  severity: critical
+  effort: 15min
+  tags: [exception]
+  message: This clause lists a type that cannot be raised, so it never runs.
+  summary: An except clause names a class that does not derive from BaseException.
+  why: |
+    Only exception types can be caught; anything else makes the clause dead and, on older versions,
+    raises a second error while handling the first. The recovery the code appears to perform never
+    happens.
+  fix: |
+    Name the exception classes the block actually raises, and derive custom errors from Exception.
+  detect:
+    - line: "^\\s*except\\s+(str|int|dict|list|tuple|set|float|bool)\\s*[:,]"
+
+- key: QG-PY-BUG-0015
+  name: Initialisers should not return a value
+  languages: [py]
+  category: BUG
+  severity: critical
+  effort: 10min
+  tags: [suspicious, protocol]
+  message: Returning a value from the initialiser raises at run time.
+  summary: The __init__ method returns something other than None.
+  why: |
+    The interpreter calls the initialiser after the instance exists and rejects any value it returns,
+    raising a TypeError on construction. The mistake usually comes from turning a factory function into
+    a constructor.
+  fix: |
+    Assign to the instance instead of returning, and expose a class method as a factory when a different
+    object has to be produced.
+  detect:
+    - line: "def\\s+__init__\\s*\\([^)]*\\)[^:]*:\\s*$"
+      requires: ["return "]
+      absent: ["return\n", "return None"]
+
+- key: QG-PY-BUG-0016
+  name: Iterator protocol methods should return an iterator
+  languages: [py]
+  category: BUG
+  severity: critical
+  effort: 15min
+  tags: [protocol]
+  message: This must return an object with a __next__ method.
+  summary: The __iter__ method returns something that is not an iterator.
+  why: |
+    A for loop calls __iter__ and then __next__ on the result. Returning a plain value or a list element
+    makes the loop fail with a type error the first time the object is iterated, which is often far from
+    where it was built.
+  fix: |
+    Return self when the class implements __next__, return iter(collection) when it wraps one, or make
+    the method a generator with yield.
+  detect:
+    - line: "def\\s+__iter__\\s*\\(\\s*self\\s*\\)\\s*:\\s*$"
+      absent: ["return self", "return iter", "yield"]
+
+- key: QG-PY-BUG-0017
+  name: Context managers should accept the three exit arguments
+  languages: [py]
+  category: BUG
+  severity: critical
+  effort: 10min
+  tags: [protocol]
+  message: The exit method is called with the exception type, value and traceback.
+  summary: The __exit__ method does not declare the three parameters the protocol passes.
+  why: |
+    The interpreter always calls it with three arguments, so a shorter signature raises a type error
+    while an exception is already being handled — replacing the original failure with a confusing one.
+  fix: |
+    Declare the three parameters, and return a truthy value only when the exception is deliberately
+    suppressed.
+  bad: |
+    def __exit__(self):
+  good: |
+    def __exit__(self, exc_type, exc_value, traceback):
+  detect:
+    - line: "def\\s+__exit__\\s*\\(\\s*self\\s*\\)"
+
+- key: QG-PY-BUG-0018
+  name: Generators should not return a value with return
+  languages: [py]
+  category: BUG
+  severity: major
+  effort: 10min
+  tags: [generators]
+  message: In a generator this ends the iteration instead of producing a value.
+  summary: A function that yields also returns a value.
+  why: |
+    The returned object is attached to the StopIteration that ends the generator, so a caller iterating
+    normally never sees it. Code written expecting a normal return value silently gets nothing.
+  fix: |
+    Yield the value, or split the function into a generator and a regular function that computes the
+    final result.
+  detect:
+    - line: "^\\s*return\\s+\\S"
+      requires: ["yield "]
+
+- key: QG-PY-BUG-0019
+  name: Identity comparisons need compatible types
+  languages: [py]
+  category: BUG
+  severity: major
+  effort: 10min
+  tags: [suspicious]
+  message: Objects of different types are never the same instance.
+  summary: An identity comparison is applied to values that cannot be the same object.
+  why: |
+    Identity asks whether two names point at one object; between a literal and a computed value the
+    answer is always false regardless of the data. The check reads like an equality test and behaves
+    like a constant.
+  fix: |
+    Use equality for values, and keep identity for None and for singletons you control.
+  detect:
+    - line: "\\bis\\s+(not\\s+)?(\\[|\\{|\\()"
+
+- key: QG-PY-BUG-0020
+  name: Results of functions that return nothing should not be used
+  languages: [py]
+  category: BUG
+  severity: major
+  effort: 10min
+  tags: [suspicious]
+  message: These methods change the object in place and return None.
+  summary: The result of an in-place method is assigned or chained.
+  why: |
+    Sorting, appending and reversing mutate the receiver and return None, so the assignment replaces the
+    collection with None. The next use fails with an error that points at the wrong line.
+  fix: |
+    Call the method for its effect and keep using the original object, or use the function that returns a
+    new collection — sorted, reversed, or a comprehension.
+  bad: |
+    items = items.sort()
+  good: |
+    items.sort()
+  detect:
+    - line: "=\\s*[\\w.]+\\.(sort|append|extend|insert|remove|clear|reverse|update|add|discard)\\s*\\("
+
+- key: QG-PY-BUG-0022
+  name: Loop control statements belong inside loops
+  languages: [py]
+  category: BUG
+  severity: blocker
+  effort: 10min
+  tags: [suspicious]
+  message: This statement is a syntax error outside a loop.
+  summary: A break or continue appears outside any loop.
+  why: |
+    The module fails to compile, so nothing in it runs — including code that has nothing to do with the
+    mistake. It usually survives a refactoring that removed the surrounding loop.
+  fix: |
+    Remove the statement, or restore the loop it belonged to. Use return to leave a function early.
+  detect:
+    - line: "^\\s*(break|continue)\\s*$"
+      absent: ["for ", "while "]
+
+- key: QG-PY-SEC-0044
+  name: Shell interpreters should not run assembled commands
+  languages: [py]
+  category: SEC
+  severity: blocker
+  effort: 25min
+  cwe: [78]
+  owasp: [A3]
+  tags: [command-injection]
+  message: The command goes through a shell, so metacharacters in it are interpreted.
+  summary: A subprocess is started with the shell option enabled.
+  why: |
+    With a shell in the middle, semicolons, pipes and backticks inside any part of the command line start
+    new commands. A file name or a request value is then enough to execute something else entirely.
+  fix: |
+    Pass the program and its arguments as a list and leave the shell option off, so the values reach the
+    process untouched.
+  bad: |
+    subprocess.run(f"convert {path} out.png", shell=True)
+  good: |
+    subprocess.run(["convert", path, "out.png"])
+  detect:
+    - line: "shell\\s*=\\s*True"
+
+- key: QG-PY-SEC-0045
+  name: Cookies should carry the security flags
+  languages: [py]
+  category: SEC
+  severity: critical
+  effort: 10min
+  cwe: [614, 1004]
+  owasp: [A5]
+  tags: [cookie]
+  message: This cookie is set without the secure and http-only flags.
+  summary: A cookie is written without restricting it to HTTPS and to the server.
+  why: |
+    Without the flags the cookie travels over plain HTTP and can be read by any script on the page, which
+    is exactly how session identifiers leave the browser after a small injection.
+  fix: |
+    Pass secure and httponly when setting the cookie, add samesite, and configure the same defaults in
+    the framework session settings.
+  detect:
+    - invocation: [set_cookie]
+      withoutArgs: [httponly, secure]
+
+- key: QG-PY-SEC-0046
+  name: Key generation should use strong parameters
+  languages: [py]
+  category: SEC
+  severity: critical
+  effort: 20min
+  cwe: [326]
+  owasp: [A2]
+  tags: [crypto]
+  message: This key size is below what the algorithm needs to stay secure.
+  summary: An asymmetric key is generated with a size that is no longer considered safe.
+  why: |
+    Key sizes that were fine a decade ago are now within reach of well-funded attackers, and data
+    encrypted today is often kept for years. The code keeps working, which is why nobody notices the
+    protection has expired.
+  fix: |
+    Generate RSA and DSA keys of at least 2048 bits — 3072 for long-lived data — or move to an elliptic
+    curve of at least 256 bits.
+  detect:
+    - line: "key_size\\s*=\\s*(512|1024)\\b"
+    - line: "generate_private_key\\s*\\([^)]*\\b(512|1024)\\b"
+
+- key: QG-PY-SEC-0047
+  name: Certificate verification should stay on
+  languages: [py]
+  category: SEC
+  severity: blocker
+  effort: 15min
+  cwe: [295]
+  owasp: [A2]
+  tags: [tls]
+  message: This context accepts any certificate.
+  summary: An SSL context is created with verification disabled.
+  why: |
+    The connection stays encrypted while losing all authentication, so an intercepting proxy reads and
+    rewrites the traffic without the client noticing. It is usually added to silence an error in a test
+    environment and then ships.
+  fix: |
+    Keep the default verification and point the client at the certificate bundle of your private
+    authority. To accept one known server, compare its fingerprint explicitly.
+  detect:
+    - line: "verify_mode\\s*=\\s*ssl\\.CERT_NONE"
+    - line: "check_hostname\\s*=\\s*False"
+    - invocation: [_create_unverified_context]
+
+- key: QG-PY-SEC-0048
+  name: Cross-site request forgery protection should stay enabled
+  languages: [py]
+  category: SEC
+  severity: critical
+  effort: 20min
+  cwe: [352]
+  owasp: [A1]
+  tags: [csrf, django, flask]
+  message: This view or setting disables antiforgery protection.
+  summary: CSRF protection is switched off for a view or globally.
+  why: |
+    The token is what ties a state-changing request to the user session. Without it any site can make a
+    logged-in browser submit the request, and the server cannot tell the difference.
+  fix: |
+    Remove the exemption and include the token in the form or the header. For APIs consumed by scripts,
+    authenticate with a bearer token instead of cookies so the token is not needed.
+  detect:
+    - identifier: [csrf_exempt]
+    - line: "WTF_CSRF_ENABLED\\s*=\\s*False"
