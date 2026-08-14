@@ -1,0 +1,188 @@
+# PHP rules (PP): web entry points, sessions and type juggling.
+
+- key: QG-PP-SEC-0029
+  name: Sessions should be regenerated at login
+  languages: [php]
+  category: SEC
+  severity: critical
+  effort: 20min
+  cwe: [384]
+  owasp: [A2]
+  tags: [session]
+  message: The session identifier does not change when the privilege level does.
+  summary: Authentication succeeds without regenerating the session identifier.
+  why: |
+    An attacker who can set the visitor's session id before login — through a link or an injected cookie
+    — keeps a valid session after the victim authenticates. The application cannot tell the two apart.
+  fix: |
+    Regenerate the identifier immediately after a successful login and after any privilege change, and
+    discard the old session data.
+  detect:
+    - line: "\\$_SESSION\\s*\\[\\s*[\"'](user|auth|logged)"
+      absent: [session_regenerate_id]
+
+- key: QG-PP-SEC-0030
+  name: Includes should not be built from request data
+  languages: [php]
+  category: SEC
+  severity: blocker
+  effort: 25min
+  cwe: [98]
+  owasp: [A3]
+  tags: [file-inclusion]
+  message: The included path comes from the request, which allows executing arbitrary files.
+  summary: An include or require receives a value derived from user input.
+  why: |
+    The interpreter executes whatever file the path resolves to, so an attacker who controls part of it
+    runs code that is already on the server — an upload, a log file, a session file — with the privileges
+    of the application.
+  fix: |
+    Map a small set of accepted identifiers to fixed file names and include only those. Never concatenate
+    a request value into the path.
+  detect:
+    - line: "(include|require)(_once)?\\s*[\\( ]\\s*[^;]*\\$_(GET|POST|REQUEST|COOKIE)"
+
+- key: QG-PP-SML-0010
+  name: Comparisons should be strict
+  languages: [php]
+  category: SML
+  severity: major
+  effort: 10min
+  tags: [suspicious]
+  message: Loose comparison converts the operands before comparing them.
+  summary: The loose equality operator is used.
+  why: |
+    The conversion rules make surprising pairs equal — a numeric string and a number, an empty string
+    and zero — which turns a comparison intended as an identity check into an accidental match. Hash
+    comparisons written this way have been exploited in practice.
+  fix: |
+    Use the strict operators, and convert the operands explicitly when a cross-type comparison is really
+    intended. Compare secrets with the constant-time helper.
+  detect:
+    - line: "[^=!<>]\\s(==|!=)\\s[^=]"
+
+
+- key: QG-PP-SEC-0031
+  name: Uploaded files should be validated before they are stored
+  languages: [php]
+  category: SEC
+  severity: blocker
+  effort: 30min
+  cwe: [434]
+  owasp: [A1]
+  tags: [upload]
+  message: This upload is stored without checking its type, size or destination name.
+  summary: An uploaded file is moved into place using the name supplied by the client.
+  why: |
+    The client chooses the name and the extension, so a file ending in a scripting extension inside a
+    served directory is executed by the web server on the next request. That is remote code execution
+    through a form.
+  fix: |
+    Generate the stored name yourself, validate the content type by inspecting the file rather than
+    trusting the header, cap the size, and keep the upload directory outside the document root.
+  detect:
+    - invocation: [move_uploaded_file]
+
+- key: QG-PP-SEC-0032
+  name: Output should be escaped for the context it lands in
+  languages: [php]
+  category: SEC
+  severity: critical
+  effort: 20min
+  cwe: [79]
+  owasp: [A3]
+  tags: [xss]
+  message: This value is echoed without escaping.
+  summary: A request value is printed directly into the response.
+  why: |
+    Anything printed unescaped becomes part of the markup, so a value containing a tag runs as script in
+    the visitor's browser with their session attached.
+  fix: |
+    Escape on output with the HTML escaper and the right flags and charset, or use a template engine that
+    escapes by default. Escape for the exact context — attribute, URL, script — not just for HTML.
+  detect:
+    - line: "echo\\s+[^;]*\\$_(GET|POST|REQUEST|COOKIE)"
+    - line: "print\\s+[^;]*\\$_(GET|POST|REQUEST|COOKIE)"
+
+- key: QG-PP-SEC-0033
+  name: Passwords should be hashed with the password API
+  languages: [php]
+  category: SEC
+  severity: blocker
+  effort: 25min
+  cwe: [916]
+  owasp: [A2]
+  tags: [password, crypto]
+  message: This hashes a password with a general-purpose digest.
+  summary: A password is hashed with md5, sha1 or a raw hash call.
+  why: |
+    General-purpose digests are built for speed, which is what an attacker with a leaked table needs:
+    commodity hardware tries billions of candidates per second, so common passwords fall in minutes.
+  fix: |
+    Use the password hashing API, which selects a strong algorithm, generates the salt and stores the
+    parameters, and verify with its companion function.
+  bad: |
+    $hash = md5($password);
+  good: |
+    $hash = password_hash($password, PASSWORD_DEFAULT);
+  detect:
+    - invocation: [md5, sha1, crypt]
+      requires: [password, passwd, pwd]
+
+- key: QG-PP-BUG-0002
+  name: Array access should check that the key exists
+  languages: [php]
+  category: BUG
+  severity: major
+  effort: 10min
+  tags: [suspicious]
+  message: Reading a missing key raises a warning and yields null.
+  summary: A superglobal entry is read without checking that it is present.
+  why: |
+    Missing keys produce a warning and a null value that then flows into the rest of the handler, so the
+    request continues with empty data instead of failing cleanly. Warnings printed into the response also
+    leak paths.
+  fix: |
+    Check with isset or the null-coalescing operator and supply a default, or validate the whole request
+    through a filter before using any field.
+  detect:
+    - line: "\\$_(GET|POST|REQUEST|COOKIE)\\s*\\[[^\\]]+\\]"
+      absent: [isset, "??", filter_input, empty]
+
+- key: QG-PP-SML-0011
+  name: Errors should not be silenced with the suppression operator
+  languages: [php]
+  category: SML
+  severity: major
+  effort: 15min
+  tags: [error-handling]
+  message: The suppression operator hides the failure instead of handling it.
+  summary: An expression is prefixed with the error suppression operator.
+  why: |
+    The warning disappears but the failure does not: the call still returns false or null and the code
+    continues with it. Debugging then starts from a symptom several layers away from the cause.
+  fix: |
+    Check the return value and handle the failure, or convert warnings into exceptions with an error
+    handler so they cannot be ignored.
+  detect:
+    - line: "=\\s*@[a-zA-Z_]"
+    - line: "^\\s*@[a-zA-Z_]\\w*\\s*\\("
+
+- key: QG-PP-SML-0012
+  name: Types should be declared on parameters and return values
+  languages: [php]
+  category: SML
+  severity: minor
+  effort: 15min
+  tags: [types]
+  message: This function declares no types, so mistakes surface only at run time.
+  summary: A function is declared without parameter or return types.
+  why: |
+    Without declarations the engine accepts anything and converts silently, so a wrong argument travels
+    deep into the call chain before producing a confusing error. Static analysis and editors also lose
+    most of their usefulness.
+  fix: |
+    Declare parameter and return types, and enable strict types at the top of the file so conversions are
+    rejected rather than guessed.
+  detect:
+    - line: "function\\s+\\w+\\s*\\(\\s*\\$\\w+(\\s*,\\s*\\$\\w+)*\\s*\\)\\s*\\{"

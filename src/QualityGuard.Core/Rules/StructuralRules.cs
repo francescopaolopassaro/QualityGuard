@@ -49,6 +49,9 @@ public abstract class StructuralRuleBase : RuleBase
 {
     public override string[] Languages => [];
 
+    /// <summary>Rules that depend on exact statement boundaries opt into this guard.</summary>
+    protected static bool HasPreciseTree(IRuleContext context) => context.Tree.HasDedicatedParser;
+
     protected static IEnumerable<SyntaxNode> Blocks(IRuleContext context)
         => context.Root.OfKind(NodeKind.Block);
 
@@ -419,6 +422,9 @@ public sealed class UnusedLocalVariableRule : StructuralRuleBase
 
     public override void Execute(IRuleContext context)
     {
+        if (!HasPreciseTree(context))
+            return;
+
         foreach (var symbol in context.Semantics.AllSymbols())
         {
             if (symbol.Scope.Kind is not (ScopeKind.Function or ScopeKind.Block) || symbol.IsParameter)
@@ -466,6 +472,9 @@ public sealed class MultipleStatementsPerLineRule : StructuralRuleBase
 
     public override void Execute(IRuleContext context)
     {
+        if (!HasPreciseTree(context))
+            return;
+
         if (context.Tree.Profile.Style is not StructureStyle.Braces)
             return;
 
@@ -595,6 +604,9 @@ public sealed class UnusedParameterRule : StructuralRuleBase
 
     public override void Execute(IRuleContext context)
     {
+        if (!HasPreciseTree(context))
+            return;
+
         foreach (var symbol in context.Semantics.AllSymbols())
         {
             if (!symbol.IsParameter || symbol.Name.Length <= 1 || symbol.Name[0] == '_')
@@ -618,6 +630,9 @@ public sealed class MergeableIfRule : StructuralRuleBase
 
     public override void Execute(IRuleContext context)
     {
+        if (!HasPreciseTree(context))
+            return;
+
         foreach (var outer in context.Root.OfKind(NodeKind.If))
         {
             var body = outer.FirstChild(NodeKind.Block);
@@ -644,6 +659,9 @@ public sealed class RedundantNestedBlockRule : StructuralRuleBase
 
     public override void Execute(IRuleContext context)
     {
+        if (!HasPreciseTree(context))
+            return;
+
         foreach (var block in Blocks(context))
         {
             if (block.Parent?.Kind != NodeKind.Block || block.Children.Count == 0 || block.Text != "free")
@@ -664,6 +682,9 @@ public sealed class IfChainWithoutElseRule : StructuralRuleBase
 
     public override void Execute(IRuleContext context)
     {
+        if (!HasPreciseTree(context))
+            return;
+
         foreach (var head in context.Root.OfKind(NodeKind.If))
         {
             if (DuplicateConditionRule.IsElseIf(head))
@@ -733,6 +754,9 @@ public sealed class MissingBracesRule : StructuralRuleBase
 
     public override void Execute(IRuleContext context)
     {
+        if (!HasPreciseTree(context))
+            return;
+
         if (context.Tree.Profile.Style != StructureStyle.Braces)
             return;
 

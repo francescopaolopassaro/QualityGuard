@@ -96,7 +96,7 @@ public sealed class EmptyBlockRule : TextualRuleBase
     public override string RemediationEffort => "10min";
     public override string[] Languages =>
     [
-        "cs", "java", "js", "ts", "py", "go", "rb", "kt", "php", "c", "cpp", "rs"
+        "cs", "java", "js", "ts", "py", "rb", "kt", "php", "c", "cpp", "rs"
     ];
 
     public override void Execute(IRuleContext context)
@@ -125,7 +125,7 @@ public sealed class TabCharacterRule : TextualRuleBase
     public override string RemediationEffort => "5min";
     public override string[] Languages =>
     [
-        "cs", "java", "js", "ts", "py", "go", "rb", "kt", "php", "c", "cpp", "sh", "rs"
+        "cs", "java", "js", "ts", "py", "rb", "kt", "php", "c", "cpp", "sh", "rs"
     ];
 
     public override void Execute(IRuleContext context)

@@ -9,19 +9,29 @@ public sealed class SyntaxTree
     public required SyntaxProfile Profile { get; init; }
 
     /// <summary>
+    /// True when the tree comes from a grammar-driven parser. Rules that depend on precise structure
+    /// (nesting, statement boundaries, parameter usage) only run on those trees.
+    /// </summary>
+    public bool HasDedicatedParser { get; init; }
+
+    /// <summary>
     /// Builds the tree with the dedicated parser of the language when there is one, and with the generic
     /// structural parser otherwise. Dedicated parsers give a real grammar-driven AST.
     /// </summary>
     public static SyntaxTree Build(IReadOnlyList<Token> tokens, LanguageInfo language)
     {
         var profile = SyntaxProfile.For(language.LanguageKey);
+        var dedicated = language.LanguageKey is LanguageKeys.CSharp or LanguageKeys.Java;
         var root = language.LanguageKey switch
         {
             LanguageKeys.CSharp => CSharp.CSharpParser.Parse(tokens, language),
             LanguageKeys.Java => CSharp.CSharpParser.Parse(tokens, language, CSharp.CFamilyDialect.Java),
             _ => StructureParser.Parse(tokens, profile)
         };
-        return new SyntaxTree { Root = root, Tokens = tokens, Profile = profile };
+        return new SyntaxTree
+        {
+            Root = root, Tokens = tokens, Profile = profile, HasDedicatedParser = dedicated
+        };
     }
 
     public IEnumerable<SyntaxNode> Nodes() => Root.DescendantsAndSelf();

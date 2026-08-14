@@ -1,0 +1,171 @@
+# Go rules (GO): concurrency, error handling and server hardening.
+
+- key: QG-GO-SEC-0014
+  name: File permissions should not be world-writable
+  languages: [go]
+  category: SEC
+  severity: critical
+  effort: 15min
+  cwe: [732]
+  tags: [permissions]
+  message: These permissions let any account on the host modify the file.
+  summary: A file or directory is created with permissions open to everyone.
+  why: |
+    Another process — including one running as an unprivileged service that was compromised — can
+    replace the content. For scripts, configuration or key material that is a direct path to executing
+    someone else's code with this program's privileges.
+  fix: |
+    Use restrictive permissions such as 0600 for files and 0700 for directories, and rely on group
+    membership when sharing is genuinely required.
+  detect:
+    - line: "0o?(6|7)(6|7)(6|7)\\b"
+    - invocation: [Chmod, MkdirAll, WriteFile]
+      argLiterals: ["0777", "0666"]
+
+- key: QG-GO-SEC-0015
+  name: Servers should set timeouts
+  languages: [go]
+  category: SEC
+  severity: major
+  effort: 15min
+  cwe: [400]
+  owasp: [A6]
+  tags: [dos, http]
+  message: A server without timeouts can be held open by slow clients.
+  summary: An HTTP server is started without read and write timeouts.
+  why: |
+    Default timeouts are unlimited, so a client that opens a connection and sends one byte per minute
+    keeps a goroutine and a file descriptor for as long as it wants. A few thousand such connections take
+    the service down without any traffic.
+  fix: |
+    Construct the server explicitly with read, write and idle timeouts sized for the slowest legitimate
+    client, and put a reverse proxy in front for extra protection.
+  detect:
+    - invocation: [ListenAndServe, ListenAndServeTLS]
+      receiver: [http]
+      absent: [ReadTimeout]
+
+- key: QG-GO-BUG-0003
+  name: Loop variables should not be captured by goroutines
+  languages: [go]
+  category: BUG
+  severity: critical
+  effort: 15min
+  tags: [concurrency]
+  message: Every goroutine started here may observe the same loop variable.
+  summary: A goroutine started inside a loop closes over the loop variable.
+  why: |
+    On older language versions the variable is reused across iterations, so the goroutines race to read
+    it and most of them see the final value. The result depends on scheduling, which makes it look
+    intermittent rather than wrong.
+  fix: |
+    Pass the value as an argument to the goroutine, or shadow it with a local copy inside the loop body.
+  bad: |
+    for _, item := range items {
+        go process(item)
+    }
+  good: |
+    for _, item := range items {
+        item := item
+        go process(item)
+    }
+  detect:
+    - line: "go\\s+func\\s*\\(\\s*\\)\\s*\\{"
+      requires: ["for "]
+
+- key: QG-GO-SML-0007
+  name: Contexts should be passed, not stored
+  languages: [go]
+  category: SML
+  severity: major
+  effort: 20min
+  tags: [design]
+  message: A context kept in a struct outlives the call it belongs to.
+  summary: A context is stored as a struct field instead of being passed as the first parameter.
+  why: |
+    The context carries the deadline and cancellation of one call; keeping it in a struct means later
+    calls inherit a deadline that has nothing to do with them, or one that has already expired.
+  fix: |
+    Pass the context as the first parameter of each method and let the caller decide its lifetime.
+  detect:
+    - line: "^\\s*\\w+\\s+context\\.Context\\s*$"
+      requires: ["struct {"]
+
+
+- key: QG-GO-BUG-0004
+  name: Deferred calls should not be made inside loops
+  languages: [go]
+  category: BUG
+  severity: major
+  effort: 15min
+  tags: [resource-leak]
+  message: Deferred calls run when the function returns, not at the end of the iteration.
+  summary: A defer statement appears inside a loop body.
+  why: |
+    Every iteration adds another deferred call, so files and connections stay open until the whole
+    function finishes. A loop over a few thousand items exhausts the descriptor limit long before that.
+  fix: |
+    Move the body into its own function so the deferred call runs per iteration, or close the resource
+    explicitly at the end of the iteration.
+  detect:
+    - line: "^\\s*defer\\s+"
+      requires: ["for "]
+
+- key: QG-GO-BUG-0005
+  name: Errors should be compared with the errors helpers
+  languages: [go]
+  category: BUG
+  severity: major
+  effort: 10min
+  tags: [error-handling]
+  message: Comparing errors directly fails as soon as one of them is wrapped.
+  summary: An error value is compared with the equality operator instead of the errors helper.
+  why: |
+    Wrapping an error produces a new value, so the direct comparison stops matching while the underlying
+    cause is unchanged. The branch that handled the case silently stops running.
+  fix: |
+    Use errors.Is for sentinel values and errors.As for typed errors, so wrapped chains are traversed.
+  bad: |
+    if err == sql.ErrNoRows { return nil }
+  good: |
+    if errors.Is(err, sql.ErrNoRows) { return nil }
+  detect:
+    - line: "\\berr\\s*(==|!=)\\s*[A-Za-z_][\\w.]*Err"
+
+- key: QG-GO-SML-0008
+  name: Types holding a mutex should be used by pointer
+  languages: [go]
+  category: SML
+  severity: critical
+  effort: 20min
+  tags: [concurrency]
+  message: Passing a value that contains a mutex copies the lock.
+  summary: A struct holding a mutex is used with a value receiver.
+  why: |
+    The copy has its own lock, so two goroutines can enter the critical section at the same time while
+    the code reads as if it were protected. The race then appears only under load.
+  fix: |
+    Use pointer receivers for types that contain a mutex, and pass them as pointers everywhere.
+  detect:
+    - line: "func\\s*\\(\\s*\\w+\\s+[A-Z]\\w*\\s*\\)"
+      requires: [sync.Mutex, sync.RWMutex]
+
+- key: QG-GO-SML-0009
+  name: Error strings should read as a fragment
+  languages: [go]
+  category: SML
+  severity: minor
+  effort: 5min
+  tags: [convention, error-handling]
+  message: Error messages are wrapped by callers, so they should not start with a capital or end with punctuation.
+  summary: An error message starts with a capital letter.
+  why: |
+    Errors are composed: the caller prefixes its own context and the final message becomes one sentence.
+    Capitals and full stops in the middle of that sentence make the output look broken.
+  fix: |
+    Start the message in lower case, leave off the final punctuation, and add context by wrapping rather
+    than by writing a new sentence.
+  detect:
+    - line: "errors\\.New\\s*\\(\\s*\"[A-Z]"
+    - line: "fmt\\.Errorf\\s*\\(\\s*\"[A-Z]"
+

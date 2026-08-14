@@ -1,0 +1,164 @@
+# Ruby rules (RB): Rails request handling and dynamic dispatch.
+
+- key: QG-RB-SEC-0013
+  name: Mass assignment should be restricted
+  languages: [rb]
+  category: SEC
+  severity: critical
+  effort: 20min
+  cwe: [915]
+  owasp: [A5]
+  tags: [rails, mass-assignment]
+  message: Passing the whole parameter hash lets a request set any attribute.
+  summary: A model is created or updated directly from unfiltered request parameters.
+  why: |
+    Every column becomes writable from the outside, including the ones the form never shows — role,
+    account balance, owner. A single extra field in the request is enough to escalate privileges.
+  fix: |
+    Permit exactly the attributes the action accepts with strong parameters, and keep sensitive columns
+    out of that list.
+  detect:
+    - line: "(new|create|update|update_attributes)\\s*\\(\\s*params\\s*\\[?"
+      absent: [permit]
+
+- key: QG-RB-SEC-0014
+  name: Rendered templates should not come from parameters
+  languages: [rb]
+  category: SEC
+  severity: critical
+  effort: 25min
+  cwe: [22]
+  owasp: [A1]
+  tags: [rails]
+  message: The rendered path comes from the request, which can expose arbitrary files.
+  summary: A render or redirect target is taken from request parameters.
+  why: |
+    The framework resolves the value as a template or a URL, so an attacker chooses which file is
+    rendered — including files outside the view directory — or where the user is sent afterwards.
+  fix: |
+    Map accepted values to fixed templates or routes, and use the path helpers instead of building the
+    target from input.
+  detect:
+    - line: "render\\s+params\\[|redirect_to\\s+params\\["
+
+- key: QG-RB-SML-0007
+  name: Rescue clauses should name the exception
+  languages: [rb]
+  category: SML
+  severity: major
+  effort: 10min
+  tags: [exception]
+  message: A bare rescue catches everything, including signals and exits.
+  summary: A rescue clause is written without an exception class.
+  why: |
+    The default is StandardError, but a bare rescue in a begin block also hides programming errors such
+    as a misspelled method, and the process keeps running in a state nobody designed for.
+  fix: |
+    Rescue the specific errors the operation raises, log the rest with context, and let unexpected
+    exceptions reach the top-level handler.
+  detect:
+    - line: "^\\s*rescue\\s*$"
+
+- key: QG-RB-SEC-0015
+  name: Dynamic dispatch should not use request data
+  languages: [rb]
+  category: SEC
+  severity: blocker
+  effort: 25min
+  cwe: [470]
+  owasp: [A3]
+  tags: [rails, reflection]
+  message: The method to call is chosen by the request, which allows calling anything on the object.
+  summary: A method is invoked by name from a value that comes from parameters.
+  why: |
+    Dynamic dispatch reaches every method the object has, including the ones that delete records or
+    return internals. The caller effectively picks which code runs.
+  fix: |
+    Map the accepted values to a small set of methods and reject anything else, or replace the dispatch
+    with an explicit case statement.
+  detect:
+    - invocation: [send, public_send, __send__]
+      argTainted: true
+    - line: "\\.(send|public_send)\\s*\\(\\s*params\\["
+
+- key: QG-RB-SEC-0016
+  name: Commands should not be built from interpolated strings
+  languages: [rb]
+  category: SEC
+  severity: blocker
+  effort: 25min
+  cwe: [78]
+  owasp: [A3]
+  tags: [command-injection]
+  message: This command line is interpolated, so metacharacters in the value change what runs.
+  summary: A shell command is executed from a string built at run time.
+  why: |
+    The string goes to a shell, where a semicolon or a backtick starts a second command. Any value that
+    reaches it — a file name, a parameter, an environment variable — becomes a way to run arbitrary
+    programs.
+  fix: |
+    Use the array form of the process API so the arguments are passed to the program directly, without a
+    shell.
+  bad: |
+    system("convert #{file} out.png")
+  good: |
+    system("convert", file, "out.png")
+  detect:
+    - line: "(system|exec|spawn)\\s*\\(\\s*\"[^\"]*#\\{"
+    - line: "`[^`]*#\\{"
+
+- key: QG-RB-BUG-0001
+  name: Blocks should not shadow outer variables
+  languages: [rb]
+  category: BUG
+  severity: major
+  effort: 10min
+  tags: [suspicious]
+  message: This block parameter hides a variable of the enclosing scope.
+  summary: A block parameter reuses the name of a variable declared outside it.
+  why: |
+    Inside the block the outer value is unreachable, so an assignment that looks like it updates the
+    outer variable only changes the parameter. The state the code appears to accumulate is lost when the
+    block ends.
+  fix: |
+    Rename the block parameter, or use the semicolon form to declare block-local variables explicitly.
+  detect:
+    - line: "\\|\\s*(item|value|result|total|count|name)\\s*\\|"
+      requires: ["= "]
+
+- key: QG-RB-SML-0008
+  name: Methods should not rely on implicitly returned nil
+  languages: [rb]
+  category: SML
+  severity: minor
+  effort: 10min
+  tags: [readability]
+  message: A guard clause without an explicit value returns nil, which callers rarely expect.
+  summary: A method ends with a conditional whose false branch returns nothing.
+  why: |
+    The method returns the value of its last expression, so a conditional without an else yields nil for
+    the untaken branch. Callers that chain on the result then fail far from here.
+  fix: |
+    Return an explicit value in every branch — an empty collection, a default object — or raise when the
+    case is not supposed to happen.
+  detect:
+    - line: "^\\s*return\\s+if\\s+"
+
+- key: QG-RB-SML-0009
+  name: Monkey patching should stay out of core classes
+  languages: [rb]
+  category: SML
+  severity: major
+  effort: 25min
+  tags: [design]
+  message: Reopening a core class changes behaviour for every library in the process.
+  summary: A core class is reopened to add or replace methods.
+  why: |
+    The change is global and invisible at the call site, so another library relying on the original
+    behaviour breaks in a way that points at the wrong place. Two patches of the same method silently
+    override each other.
+  fix: |
+    Put the helper in a module of your own and include it where needed, or use a refinement so the change
+    is scoped to the file that asks for it.
+  detect:
+    - line: "^\\s*class\\s+(String|Array|Hash|Integer|Float|Object|Kernel|Symbol|Time)\\s*$"

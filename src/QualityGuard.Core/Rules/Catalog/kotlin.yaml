@@ -1,0 +1,217 @@
+# Kotlin rules (KT): JVM, Android and coroutine specifics.
+
+- key: QG-KT-SEC-0033
+  name: Coroutines should not swallow cancellation
+  languages: [kt]
+  category: SEC
+  severity: major
+  effort: 20min
+  tags: [coroutines, exception]
+  message: Catching every throwable also catches cancellation and keeps the work running.
+  summary: A coroutine body catches Throwable or Exception without rethrowing cancellation.
+  why: |
+    Cancellation is delivered as an exception; swallowing it means the coroutine keeps running after its
+    scope was closed, holding resources and writing to objects that are already gone. Shutdown then hangs
+    or corrupts state.
+  fix: |
+    Catch the specific exceptions you can handle, and rethrow CancellationException — or use the helper
+    that runs the block only when the coroutine is still active.
+  detect:
+    - line: "catch\\s*\\(\\s*\\w+\\s*:\\s*(Throwable|Exception)\\s*\\)"
+      requires: [suspend, launch, async]
+      absent: [CancellationException]
+
+- key: QG-KT-SEC-0034
+  name: Android components should not export themselves implicitly
+  languages: [kt, java]
+  category: SEC
+  severity: critical
+  effort: 20min
+  cwe: [926]
+  tags: [android]
+  message: An exported component with an intent filter is reachable by any application.
+  summary: A component is declared exported without a permission.
+  why: |
+    Any application on the device can start it and pass whatever extras it likes, so the component
+    becomes an entry point that never authenticates its caller. Deep links reach it from the browser too.
+  fix: |
+    Keep the component unexported unless it must be reachable, and protect the ones that must be with a
+    signature-level permission plus validation of every extra.
+  detect:
+    - line: "android:exported\\s*=\\s*\"true\""
+      absent: [android:permission]
+
+- key: QG-KT-BUG-0009
+  name: Nullable receivers should not be forced in chains
+  languages: [kt]
+  category: BUG
+  severity: major
+  effort: 15min
+  tags: [null-safety]
+  message: This chain throws as soon as one link is null.
+  summary: A call chain mixes safe calls with a not-null assertion.
+  why: |
+    The safe call says the value may be absent and the assertion says it is not; only one of them can be
+    right. The result is a crash that the type system was already warning about.
+  fix: |
+    Keep the chain safe end to end and provide a default with the elvis operator, or check once at the
+    top and work with a non-nullable local afterwards.
+  detect:
+    - line: "\\?\\.[\\w.]*!!"
+
+- key: QG-KT-SML-0020
+  name: Data classes should not expose mutable collections
+  languages: [kt]
+  category: SML
+  severity: major
+  effort: 15min
+  tags: [immutability]
+  message: A mutable collection in a data class breaks the equality and hashing it promises.
+  summary: A data class property holds a mutable list, set or map.
+  why: |
+    The generated equals and hashCode read the collection, so mutating it after the object was put in a
+    set or used as a map key makes the entry unreachable. Copies also share the same instance.
+  fix: |
+    Declare the property with the read-only interface and pass a defensive copy in the constructor, or
+    use an immutable collection type.
+  detect:
+    - line: "data\\s+class\\s+\\w+[^)]*:\\s*Mutable(List|Set|Map)<"
+
+
+- key: QG-KT-SEC-0035
+  name: Intents should name the component they target
+  languages: [kt, java]
+  category: SEC
+  severity: major
+  effort: 20min
+  cwe: [927]
+  tags: [android, intent]
+  message: An implicit intent can be intercepted by any application that declares a matching filter.
+  summary: An intent is sent without naming the component or the package that should receive it.
+  why: |
+    The system picks the receiver from whatever is installed, so a malicious application can register the
+    same action and take the payload, or answer with data the caller then trusts. The user may not even
+    see a chooser.
+  fix: |
+    Set the component or at least the package on the intent, and require a signature-level permission
+    when the destination is another application you own.
+  detect:
+    - invocation: [startActivity, startService, bindService]
+      argCount: 1
+      absent: [setPackage, setComponent, setClass]
+
+- key: QG-KT-SEC-0036
+  name: Cryptographic keys should not live in the source
+  languages: [kt]
+  category: SEC
+  severity: blocker
+  effort: 30min
+  cwe: [321]
+  owasp: [A7]
+  tags: [crypto, secret, android]
+  message: This key material is embedded in the application.
+  summary: A key or initialisation vector is built from a literal value in the code.
+  why: |
+    Anything shipped in the binary can be extracted with a decompiler in minutes, so the encryption it
+    protects is decorative. On mobile the binary is in the hands of every user by definition.
+  fix: |
+    Generate the key on the device and store it in the platform key store, or derive it from a secret the
+    user supplies. Never ship a fixed key with the application.
+  detect:
+    - creation: [SecretKeySpec, IvParameterSpec]
+      literalValue: true
+
+- key: QG-KT-BUG-0010
+  name: Data classes should not hold arrays
+  languages: [kt]
+  category: BUG
+  severity: major
+  effort: 15min
+  tags: [equality]
+  message: Arrays compare by reference, so two instances with equal content are not equal.
+  summary: A data class declares a property of array type.
+  why: |
+    The generated equality and hash functions call the array implementations, which compare identity.
+    Two instances built from the same bytes therefore differ, and lookups in sets and maps miss.
+  fix: |
+    Use a list, or override the equality and hash functions with the content-based helpers for that
+    property.
+  detect:
+    - line: "data\\s+class\\s+\\w+\\s*\\([^)]*:\\s*(ByteArray|IntArray|Array<)"
+
+- key: QG-KT-BUG-0011
+  name: Ranges should not be built backwards
+  languages: [kt]
+  category: BUG
+  severity: major
+  effort: 10min
+  tags: [suspicious, loop]
+  message: A range whose start is above its end is empty, so the loop body never runs.
+  summary: A descending range is written with the ascending operator.
+  why: |
+    The range operator only counts upwards; when the first bound is larger the range is empty and the
+    loop silently does nothing. There is no error, so the missing work shows up as absent output.
+  fix: |
+    Use downTo for descending iteration, and add step where the increment is not one.
+  bad: |
+    for (i in items.size..0) { }
+  good: |
+    for (i in items.size downTo 0) { }
+  detect:
+    - line: "for\\s*\\(\\s*\\w+\\s+in\\s+[\\w.()]+\\s*\\.\\.\\s*0\\s*\\)"
+
+- key: QG-KT-SML-0021
+  name: Values coming from Java should be null-checked
+  languages: [kt]
+  category: SML
+  severity: major
+  effort: 15min
+  tags: [null-safety, interop]
+  message: Values returned by Java are not covered by the null checks of the compiler.
+  summary: A value returned by Java interop is dereferenced without a null check.
+  why: |
+    A platform type is accepted as both nullable and non-nullable, so the compiler stays silent and the
+    failure happens at run time inside generated code. The stack trace points at Kotlin while the cause
+    is on the Java side.
+  fix: |
+    Assign the value to an explicitly nullable local and handle the absent case, or annotate the Java API
+    so the compiler can enforce the contract.
+  detect:
+    - line: "System\\.getenv\\s*\\([^)]*\\)\\s*\\."
+    - line: "getProperty\\s*\\([^)]*\\)\\s*\\."
+
+- key: QG-KT-SML-0022
+  name: Scope functions should not be nested
+  languages: [kt]
+  category: SML
+  severity: minor
+  effort: 15min
+  tags: [readability]
+  message: Nested scope functions make it unclear which object a bare property belongs to.
+  summary: Two or more scope functions are nested in the same expression.
+  why: |
+    Each level rebinds the implicit receiver, so a reader has to track which object an unqualified
+    property refers to. Mistakes here compile perfectly and modify the wrong object.
+  fix: |
+    Name the intermediate values with regular locals, or split the chain into statements so every
+    receiver is explicit.
+  detect:
+    - line: "\\.(let|apply|run|also|with)\\s*\\{[^}]*\\.(let|apply|run|also|with)\\s*\\{"
+
+- key: QG-KT-PRF-0001
+  name: Long collection chains should use a sequence
+  languages: [kt]
+  category: PRF
+  severity: minor
+  effort: 10min
+  tags: [performance, collections]
+  message: Each operator in this chain allocates a new list.
+  summary: Three or more collection operators are chained on a list.
+  why: |
+    Collection operators are eager: every step materialises an intermediate list, so a chain over a large
+    collection allocates several copies of it. A sequence streams the elements through the whole chain
+    once.
+  fix: |
+    Call asSequence before the chain and toList after it, so only the final result is materialised.
+  detect:
+    - line: "\\.(map|filter|flatMap)\\s*\\{[^}]*\\}\\s*\\.(map|filter|flatMap)\\s*\\{[^}]*\\}\\s*\\.(map|filter|flatMap|sorted|toList)"
