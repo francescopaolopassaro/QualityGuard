@@ -73,6 +73,7 @@ public enum NodeKind
     MemberSelect,
     Index,
     ArgumentList,
+    NamedArgument,
     Lambda,
     Conditional,
     Parenthesized,

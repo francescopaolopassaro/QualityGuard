@@ -52,7 +52,6 @@ public static class PythonRuleSet
         new PythonVagueVariableNameRule(),
         new PythonPassInExceptRule(),
         new PythonEqWithoutHashRule(),
-        new PythonDuplicatedLiteralsRule(),
         new PythonGlobalStatementRule(),
         new PythonMissingDocstringRule(),
         new PythonNoneComparisonRule(),
@@ -527,13 +526,14 @@ public sealed class PythonPathTraversalRule : PatternRuleBase
 
     public override void Execute(IRuleContext context)
     {
-        var tokens = context.Tokens;
-        for (var i = 0; i < tokens.Count; i++)
+        foreach (var call in QualityGuard.Core.Syntax.SyntaxQuery.InvocationsNamed(context.Root,
+                     "open", "Path", "remove", "unlink", "rmtree", "copyfile"))
         {
-            if (!RuleMatchers.IsName(tokens[i], "open") && !RuleMatchers.IsName(tokens[i], "Path"))
+            var argument = QualityGuard.Core.Syntax.SyntaxQuery.ArgumentAt(call, 0);
+            if (argument == null || !context.IsTainted(argument))
                 continue;
-            if (!RuleMatchers.NextNonParenIsString(tokens, i) || context.IsTaintedLine(tokens[i].Line))
-                context.Report("Do not open files or build paths from untrusted input.", tokens[i].Line);
+            context.Report(call, "This path comes from outside the program; validate it against the "
+                                 + "directory you intend to serve before opening it.", withFlow: true);
         }
     }
 }
@@ -1095,27 +1095,6 @@ public sealed class PythonEqWithoutHashRule : PatternRuleBase
     }
 }
 
-public sealed class PythonDuplicatedLiteralsRule : PatternRuleBase
-{
-    public override string Key => "QG-PY-SML-0011";
-    public override string Name => "Duplicated string literals";
-    public override Severity Severity => Severity.Minor;
-    public override IssueKind Kind => IssueKind.CodeSmell;
-    public override string RemediationEffort => "Define a constant instead of repeating this literal.";
-    public override string[] Languages => ["py"];
-
-    public override void Execute(IRuleContext context)
-    {
-        var groups = context.Tokens.Where(t => RuleMatchers.IsString(t) && t.Text.Length >= 6)
-            .GroupBy(t => t.Text).Where(g => g.Count() > 1);
-        foreach (var group in groups)
-        {
-            var first = group.OrderBy(t => t.Line).First();
-            context.Report($"Define a constant instead of duplicating this literal {group.Count()} times.", first.Line);
-        }
-    }
-}
-
 public sealed class PythonGlobalStatementRule : PatternRuleBase
 {
     public override string Key => "QG-PY-SML-0012";
@@ -1146,24 +1125,18 @@ public sealed class PythonMissingDocstringRule : PatternRuleBase
 
     public override void Execute(IRuleContext context)
     {
-        var lines = PythonRuleSet.Lines(context);
-        for (var i = 0; i < lines.Length; i++)
+        foreach (var function in QualityGuard.Core.Syntax.SyntaxQuery.Functions(context.Root))
         {
-            if (!lines[i].TrimStart().StartsWith("def ", StringComparison.Ordinal))
+            if (function.Text.Length == 0 || function.Text[0] == '_')
+                continue; // private helpers document themselves through their name
+            var body = function.FirstChild(QualityGuard.Core.Syntax.NodeKind.Block);
+            if (body == null || body.Range.LineCount < 8)
                 continue;
-            var j = i + 1;
-            while (j < lines.Length && (string.IsNullOrWhiteSpace(lines[j])
-                || lines[j].TrimStart().StartsWith("#", StringComparison.Ordinal)))
-                j++;
-            if (j >= lines.Length)
-                continue;
-            var next = lines[j].TrimStart();
-            if (next.StartsWith("\"\"\"", StringComparison.Ordinal)
-                || next.StartsWith("'''", StringComparison.Ordinal)
-                || next.StartsWith("\"", StringComparison.Ordinal)
-                || next.StartsWith("'", StringComparison.Ordinal))
-                continue;
-            context.Report("Add a docstring to this function.", i + 1);
+            var first = body.Children.FirstOrDefault();
+            var hasDocstring = first != null
+                && first.DescendantsAndSelf().Any(n => n.Kind == QualityGuard.Core.Syntax.NodeKind.StringLiteral);
+            if (!hasDocstring)
+                context.Report(function, $"Document what '{function.Text}' does: it is part of the public surface.");
         }
     }
 }

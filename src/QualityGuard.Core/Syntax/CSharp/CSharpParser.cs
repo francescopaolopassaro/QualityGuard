@@ -2346,6 +2346,18 @@ public sealed class CSharpParser
             {
                 node.Add(ParseInitializer());
             }
+            else if (IsPropertyKey())
+            {
+                var keyStart = Mark();
+                var key = Take().Text;
+                Accept(":");
+                var entry = new SyntaxNode(NodeKind.Assignment, ":",
+                    TextRange.Of([_tokens[Math.Min(keyStart, _tokens.Count - 1)]]));
+                entry.Add(new SyntaxNode(NodeKind.Identifier, key, entry.Range));
+                if (ParseAssignment() is { } entryValue)
+                    entry.Add(entryValue);
+                node.Add(entry);
+            }
             else if (ParseAssignment() is { } element)
             {
                 node.Add(element);
@@ -2358,6 +2370,11 @@ public sealed class CSharpParser
         node.Range = TextRange.Of(node.Tokens);
         return node;
     }
+
+    /// <summary>An object literal entry: a name or string followed by a colon.</summary>
+    private bool IsPropertyKey()
+        => (IsName || Current is { Kind: TokenKind.String or TokenKind.Number })
+           && PeekText() == ":";
 
     private SyntaxNode ParseArgumentList()
     {
@@ -2426,10 +2443,15 @@ public sealed class CSharpParser
             if (Is(".") || Is("?.") || Is("->"))
             {
                 _index++;
+                var privateMember = IsJs && Accept("#");
                 if (!IsName)
+                {
+                    if (privateMember)
+                        continue;
                     break;
+                }
                 var memberStart = Mark();
-                var member = Take().Text;
+                var member = (privateMember ? "#" : string.Empty) + Take().Text;
                 if (Is("<") && PeekIsGenericCall())
                     SkipGenericParameters();
                 var memberNode = Node(NodeKind.Identifier, memberStart, member);

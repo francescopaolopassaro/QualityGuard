@@ -26,6 +26,13 @@ if (args.Any(a => a is "--rules"))
     return 0;
 }
 
+if (args.Any(a => a is "--rule-list"))
+{
+    foreach (var rule in RuleRepository.GetBuiltInRules().OrderBy(r => r.Key, StringComparer.Ordinal))
+        Console.WriteLine($"{rule.Key}	{rule.Name}");
+    return 0;
+}
+
 if (args.Any(a => a is "--dump-ast") && path != null)
 {
     DumpTree(path);
