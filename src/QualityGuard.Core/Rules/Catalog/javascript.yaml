@@ -1,0 +1,352 @@
+# JavaScript and TypeScript batch (JS/TS): browser, Node and framework rules.
+
+- key: QG-JS-SEC-0025
+  name: Windows opened by the page should not keep a handle on it
+  languages: [js, ts]
+  category: SEC
+  severity: major
+  effort: 10min
+  cwe: [1022]
+  owasp: [A5]
+  tags: [browser, tabnabbing]
+  message: The opened page can navigate this one through the opener reference.
+  summary: A new window or tab is opened without severing the opener link.
+  why: |
+    The opened document receives a reference back to the page that opened it, and it can use that
+    reference to replace the original page with a copy that asks for credentials. The user sees a tab
+    they trust, already open, showing a login form.
+  fix: |
+    Pass the noopener feature to the open call, and add rel="noopener noreferrer" on links that target a
+    new tab.
+  bad: |
+    window.open(url, "_blank");
+  good: |
+    window.open(url, "_blank", "noopener,noreferrer");
+  detect:
+    - invocation: [open]
+      receiver: [window]
+      withoutArgs: [noopener]
+
+- key: QG-JS-SEC-0026
+  name: Shell interpreters should not be used to run commands
+  languages: [js, ts]
+  category: SEC
+  severity: blocker
+  effort: 25min
+  cwe: [78]
+  owasp: [A3]
+  tags: [command-injection, node]
+  message: This runs the command through a shell, so metacharacters in the arguments are interpreted.
+  summary: A command is executed with the shell-based API instead of the argument-array one.
+  why: |
+    Going through a shell means semicolons, pipes and backticks in any part of the command line change
+    what runs. A value that came from a request, a file name or an environment variable is then enough to
+    execute a second command.
+  fix: |
+    Use the variant that takes the program and an array of arguments, with the shell option off, so the
+    values are passed to the process untouched.
+  bad: |
+    exec(`convert ${file} out.png`);
+  good: |
+    execFile("convert", [file, "out.png"]);
+  detect:
+    - invocation: [exec, execSync]
+      receiver: [child_process, cp]
+    - line: "shell\\s*:\\s*true"
+
+- key: QG-JS-SEC-0027
+  name: Framework sanitization should not be bypassed
+  languages: [js, ts]
+  category: SEC
+  severity: critical
+  effort: 25min
+  cwe: [79]
+  owasp: [A3]
+  tags: [xss, angular, dompurify]
+  message: This marks the value as trusted, so it is inserted into the page without sanitization.
+  summary: A value is passed through a trust-bypass helper of the framework or sanitizer.
+  why: |
+    These helpers exist to tell the framework "I have checked this", and the framework believes it.
+    Anything reaching them is inserted as markup or script, which puts the whole safety of the view in
+    the hands of one call.
+  fix: |
+    Render the value normally so the framework escapes it. When markup is genuinely required, sanitize it
+    with a strict allow-list first and keep the bypass out of any path that touches user input.
+  detect:
+    - invocation: [bypassSecurityTrustHtml, bypassSecurityTrustScript, bypassSecurityTrustUrl, bypassSecurityTrustResourceUrl, bypassSecurityTrustStyle]
+    - line: "RETURN_TRUSTED_TYPE\\s*:\\s*true"
+    - line: "SAFE_FOR_TEMPLATES\\s*:\\s*false"
+
+- key: QG-JS-SEC-0028
+  name: Security headers should not be disabled
+  languages: [js, ts]
+  category: SEC
+  severity: major
+  effort: 20min
+  cwe: [693]
+  owasp: [A5]
+  tags: [express, headers]
+  message: This turns off a protection the browser would otherwise enforce.
+  summary: A middleware call disables a security header such as CSP, HSTS, frame options or nosniff.
+  why: |
+    These headers are the part of the defence the browser applies for you: they stop mixed content,
+    framing, MIME sniffing and downgrade attacks. Turning one off usually happens to make one page work
+    and then applies to the entire application.
+  fix: |
+    Keep the defaults of the security middleware and relax the single directive that blocks the page,
+    scoped to the route that needs it.
+  detect:
+    - line: "(contentSecurityPolicy|hsts|frameguard|noSniff|xssFilter)\\s*:\\s*false"
+    - line: "helmet\\s*\\(\\s*\\{\\s*\\}\\s*\\)"
+
+- key: QG-JS-SEC-0029
+  name: Remote scripts should be loaded with an integrity hash
+  languages: [js, ts, html]
+  category: SEC
+  severity: major
+  effort: 15min
+  cwe: [353]
+  owasp: [A8]
+  tags: [supply-chain]
+  message: This external resource is loaded without an integrity check.
+  summary: A script or stylesheet is loaded from a third-party origin without a subresource integrity hash.
+  why: |
+    The application executes whatever that host returns, now and in the future. A compromise of the CDN,
+    or of the account that publishes to it, becomes a compromise of every page that includes the file.
+  fix: |
+    Add the integrity attribute with the hash of the exact version, together with crossorigin, or host
+    the file yourself and pin it in your dependency manifest.
+  detect:
+    - line: "<script[^>]+src\\s*=\\s*[\"']https?://(?![^\"']*integrity)"
+
+- key: QG-JS-SEC-0030
+  name: Client addresses should not be taken from forwarded headers
+  languages: [js, ts]
+  category: SEC
+  severity: major
+  effort: 20min
+  cwe: [348]
+  owasp: [A5]
+  tags: [express, spoofing]
+  message: This header is supplied by the client and can be forged.
+  summary: The client IP address is read from a forwarded header without a trusted proxy configuration.
+  why: |
+    Anyone can send the header with any value, so rate limits, audit logs and IP allow-lists based on it
+    can be bypassed by adding one line to a request. Only a proxy you control can make the value
+    meaningful.
+  fix: |
+    Configure the trust-proxy setting of the framework so the platform resolves the address, and use the
+    resolved property instead of reading the header directly.
+  detect:
+    - line: "headers\\s*\\[\\s*[\"']x-forwarded-for"
+    - line: "headers\\.\\s*[\"']?x-real-ip"
+
+- key: QG-JS-SEC-0031
+  name: Hidden files should not be served by static handlers
+  languages: [js, ts]
+  category: SEC
+  severity: major
+  effort: 15min
+  cwe: [538]
+  owasp: [A5]
+  tags: [express]
+  message: Dotfiles are served, which exposes configuration and version-control data.
+  summary: A static file middleware is configured to serve dotfiles.
+  why: |
+    Hidden files hold exactly what should not be public: environment files with credentials, version
+    control metadata, editor backups. Serving them turns a static directory into a credential leak.
+  fix: |
+    Leave the dotfiles option at its default of ignoring them, and keep sensitive files outside the
+    served directory altogether.
+  detect:
+    - line: "dotfiles\\s*:\\s*[\"']allow"
+
+- key: QG-JS-SEC-0032
+  name: Confidential values should not be logged
+  languages: [js, ts]
+  category: SEC
+  severity: major
+  effort: 15min
+  cwe: [532]
+  owasp: [A9]
+  tags: [logging, secret]
+  message: This log statement writes a secret-looking value.
+  summary: A logging call includes a password, token or key.
+  why: |
+    Log lines are shipped to aggregators, kept for months and read by people who never had access to the
+    data. A secret written once has to be treated as leaked from that moment.
+  fix: |
+    Log an identifier rather than the value, and redact known-sensitive fields before the object reaches
+    the logger.
+  detect:
+    - invocation: [log, info, warn, error, debug]
+      argLiterals: [password, secret, token, apikey, api_key, credential, authorization]
+
+- key: QG-JS-SEC-0033
+  name: Session cookies should not be attached to static responses
+  languages: [js, ts]
+  category: SEC
+  severity: major
+  effort: 20min
+  cwe: [524]
+  tags: [express, cache]
+  message: A session cookie set on a cacheable static response can be shared between users.
+  summary: Session middleware is mounted before the static file handler.
+  why: |
+    The static handler answers with cacheable responses; if the session middleware has already added a
+    Set-Cookie header, a shared cache can store the response together with someone else's session
+    identifier and hand it to the next visitor.
+  fix: |
+    Mount the static handler before the session middleware, or restrict the session middleware to the
+    routes that actually need it.
+  detect:
+    - line: "app\\.use\\s*\\(\\s*session\\s*\\("
+      requires: [express.static]
+
+- key: QG-JS-BUG-0004
+  name: Awaited values should be promises
+  languages: [js, ts]
+  category: BUG
+  severity: major
+  effort: 10min
+  tags: [async]
+  message: Awaiting a value that is not a promise hides a missing call or a forgotten return.
+  summary: An await is applied to a value that is not asynchronous.
+  why: |
+    The await resolves immediately, so the code reads as if it waits for something while it does not.
+    That usually means a function was referenced instead of called, or an inner promise was never
+    returned, and the real work continues in the background.
+  fix: |
+    Call the function, or return the promise from the inner scope so the await has something to wait for.
+  detect:
+    - line: "await\\s+(new\\s+)?(\\d|\"|'|\\[|\\{|true|false|null)"
+
+- key: QG-JS-BUG-0005
+  name: Promises should handle rejection
+  languages: [js, ts]
+  category: BUG
+  severity: major
+  effort: 15min
+  tags: [async]
+  message: This promise chain has no rejection handler.
+  summary: A promise is created or chained without a catch handler.
+  why: |
+    An unhandled rejection terminates the Node process on modern runtimes and is silently swallowed in
+    some browsers. Either way the failure never reaches the code that could retry or report it.
+  fix: |
+    Add a catch to the chain, or await inside a try/catch. At the top level, install a handler for
+    unhandled rejections so nothing is lost.
+  detect:
+    - line: "\\.then\\s*\\([^)]*\\)\\s*;"
+      absent: [.catch, try {]
+
+- key: QG-JS-BUG-0006
+  name: Array callbacks should return a value
+  languages: [js, ts]
+  category: BUG
+  severity: major
+  effort: 10min
+  tags: [suspicious]
+  message: This callback returns nothing, so the operation produces undefined values.
+  summary: A map, filter or reduce callback has no return statement.
+  why: |
+    The higher-order function builds its result from what the callback returns; a callback that only
+    performs side effects produces an array of undefined, or filters everything out. The loop looks
+    right, the data disappears.
+  fix: |
+    Return the mapped value from the callback, or use forEach when the intent really is a side effect.
+  detect:
+    - line: "\\.(map|filter|reduce|some|every|find)\\s*\\(\\s*(function\\s*)?\\([^)]*\\)\\s*(=>)?\\s*\\{\\s*(?![^}]*return)[^}]*\\}"
+
+- key: QG-JS-SML-0009
+  name: Equality with NaN never holds
+  languages: [js, ts]
+  category: SML
+  severity: major
+  effort: 5min
+  tags: [suspicious]
+  message: Comparing with NaN is always false; use Number.isNaN.
+  summary: A value is compared for equality with NaN.
+  why: |
+    NaN is the only value that is not equal to itself, so the branch guarding against invalid numbers is
+    dead code. The invalid value then flows into arithmetic that silently produces more NaN.
+  fix: |
+    Use Number.isNaN, and validate the input with Number.isFinite where infinities also matter.
+  detect:
+    - line: "(===|==|!=|!==)\\s*NaN"
+    - line: "NaN\\s*(===|==|!=|!==)"
+
+- key: QG-JS-SML-0010
+  name: Variables should be declared with let or const
+  languages: [js]
+  category: SML
+  severity: major
+  effort: 10min
+  tags: [scoping]
+  message: This declaration is function-scoped and hoisted, which makes its lifetime hard to follow.
+  summary: A variable is declared with var.
+  why: |
+    A var declaration is visible in the whole function regardless of where it appears, and it can be
+    redeclared without an error. In loops it produces the classic bug where every closure captures the
+    same variable.
+  fix: |
+    Use const by default and let where the value must change, so the scope matches the block the reader
+    sees.
+  detect:
+    - line: "^\\s*var\\s+[A-Za-z_$]"
+
+- key: QG-JS-SML-0011
+  name: Delete should not be used on variables
+  languages: [js]
+  category: SML
+  severity: major
+  effort: 10min
+  tags: [suspicious]
+  message: Delete removes properties, not variables.
+  summary: The delete operator is applied to a variable rather than to a property.
+  why: |
+    On a variable the operator does nothing in normal code and throws in strict mode, so the intended
+    cleanup never happens. It also disables optimisations on the containing object when used on array
+    elements, leaving holes behind.
+  fix: |
+    Assign null or undefined to release a reference, and use the collection API — splice, Map.delete — to
+    remove elements.
+  detect:
+    - line: "delete\\s+[A-Za-z_$][\\w$]*\\s*;"
+
+- key: QG-TS-SML-0004
+  name: Non-null assertions should not hide missing checks
+  languages: [ts]
+  category: SML
+  severity: major
+  effort: 15min
+  tags: [types, null-safety]
+  message: This assertion silences the compiler without making the value non-null.
+  summary: The non-null assertion operator is applied to a possibly-null value.
+  why: |
+    The operator only affects type checking: at run time the value can still be null and the property
+    access throws. Every assertion is a place where the type system was told to stop helping.
+  fix: |
+    Narrow the value with a check, provide a default, or make the type non-nullable at the boundary where
+    the data enters the program.
+  detect:
+    - line: "[A-Za-z_$][\\w$]*!\\.[A-Za-z_$]"
+
+- key: QG-TS-SML-0005
+  name: Enumerations should not be declared as constants of convenience
+  languages: [ts]
+  category: SML
+  severity: minor
+  effort: 10min
+  tags: [types]
+  message: A string union expresses this better than an enum.
+  summary: A numeric enum is declared where a union of literals would be safer.
+  why: |
+    Numeric enums accept any number at run time, so an out-of-range value passes the type check and
+    reaches the switch that has no case for it. They also emit a reverse-mapping object nobody uses.
+  fix: |
+    Use a union of string literals, or a const object with a derived type, so only the declared values
+    are accepted and they survive serialization unchanged.
+  detect:
+    - line: "^\\s*(export\\s+)?enum\\s+\\w+\\s*\\{"
+      absent: ["= \""]

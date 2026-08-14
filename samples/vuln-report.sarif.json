@@ -1,0 +1,3040 @@
+{
+  "version": "2.1.0",
+  "$schema": "https://json.schemastore.org/sarif-2.1.0.json",
+  "runs": [
+    {
+      "tool": {
+        "driver": {
+          "name": "QualityGuard",
+          "informationUri": "https://qualityguard.example",
+          "rules": [
+            {
+              "id": "QG-CC-SEC-0001",
+              "name": "QG-CC-SEC-0001"
+            },
+            {
+              "id": "QG-CC-SEC-0002",
+              "name": "QG-CC-SEC-0002"
+            },
+            {
+              "id": "QG-CC-SEC-0003",
+              "name": "QG-CC-SEC-0003"
+            },
+            {
+              "id": "QG-CC-SEC-0004",
+              "name": "QG-CC-SEC-0004"
+            },
+            {
+              "id": "QG-CC-SML-0001",
+              "name": "QG-CC-SML-0001"
+            },
+            {
+              "id": "QG-CS-SEC-0001",
+              "name": "QG-CS-SEC-0001"
+            },
+            {
+              "id": "QG-CS-SEC-0002",
+              "name": "QG-CS-SEC-0002"
+            },
+            {
+              "id": "QG-CS-SEC-0003",
+              "name": "QG-CS-SEC-0003"
+            },
+            {
+              "id": "QG-CS-SEC-0004",
+              "name": "QG-CS-SEC-0004"
+            },
+            {
+              "id": "QG-CS-SEC-0005",
+              "name": "QG-CS-SEC-0005"
+            },
+            {
+              "id": "QG-CS-SML-0021",
+              "name": "QG-CS-SML-0021"
+            },
+            {
+              "id": "QG-CSS-SML-0001",
+              "name": "QG-CSS-SML-0001"
+            },
+            {
+              "id": "QG-CSS-SML-0002",
+              "name": "QG-CSS-SML-0002"
+            },
+            {
+              "id": "QG-CSS-BUG-0001",
+              "name": "QG-CSS-BUG-0001"
+            },
+            {
+              "id": "QG-ALL-CNV-0002",
+              "name": "QG-ALL-CNV-0002"
+            },
+            {
+              "id": "QG-GO-SEC-0001",
+              "name": "QG-GO-SEC-0001"
+            },
+            {
+              "id": "QG-GO-SEC-0002",
+              "name": "QG-GO-SEC-0002"
+            },
+            {
+              "id": "QG-GO-SEC-0003",
+              "name": "QG-GO-SEC-0003"
+            },
+            {
+              "id": "QG-GO-SEC-0004",
+              "name": "QG-GO-SEC-0004"
+            },
+            {
+              "id": "QG-GO-SEC-0006",
+              "name": "QG-GO-SEC-0006"
+            },
+            {
+              "id": "QG-JV-SEC-0002",
+              "name": "QG-JV-SEC-0002"
+            },
+            {
+              "id": "QG-JV-SEC-0003",
+              "name": "QG-JV-SEC-0003"
+            },
+            {
+              "id": "QG-JV-SEC-0004",
+              "name": "QG-JV-SEC-0004"
+            },
+            {
+              "id": "QG-JV-SEC-0005",
+              "name": "QG-JV-SEC-0005"
+            },
+            {
+              "id": "QG-ALL-SML-0002",
+              "name": "QG-ALL-SML-0002"
+            },
+            {
+              "id": "QG-JS-SEC-0001",
+              "name": "QG-JS-SEC-0001"
+            },
+            {
+              "id": "QG-JS-SEC-0002",
+              "name": "QG-JS-SEC-0002"
+            },
+            {
+              "id": "QG-JS-SEC-0004",
+              "name": "QG-JS-SEC-0004"
+            },
+            {
+              "id": "QG-JS-SEC-0007",
+              "name": "QG-JS-SEC-0007"
+            },
+            {
+              "id": "QG-JS-CNV-0001",
+              "name": "QG-JS-CNV-0001"
+            },
+            {
+              "id": "QG-KT-SEC-0001",
+              "name": "QG-KT-SEC-0001"
+            },
+            {
+              "id": "QG-KT-SEC-0002",
+              "name": "QG-KT-SEC-0002"
+            },
+            {
+              "id": "QG-KT-SEC-0005",
+              "name": "QG-KT-SEC-0005"
+            },
+            {
+              "id": "QG-PP-SEC-0001",
+              "name": "QG-PP-SEC-0001"
+            },
+            {
+              "id": "QG-PP-SEC-0003",
+              "name": "QG-PP-SEC-0003"
+            },
+            {
+              "id": "QG-PP-SEC-0005",
+              "name": "QG-PP-SEC-0005"
+            },
+            {
+              "id": "QG-PP-SEC-0010",
+              "name": "QG-PP-SEC-0010"
+            },
+            {
+              "id": "QG-PP-SEC-0013",
+              "name": "QG-PP-SEC-0013"
+            },
+            {
+              "id": "QG-PY-SEC-0002",
+              "name": "QG-PY-SEC-0002"
+            },
+            {
+              "id": "QG-PY-SEC-0003",
+              "name": "QG-PY-SEC-0003"
+            },
+            {
+              "id": "QG-PY-SEC-0004",
+              "name": "QG-PY-SEC-0004"
+            },
+            {
+              "id": "QG-PY-SEC-0005",
+              "name": "QG-PY-SEC-0005"
+            },
+            {
+              "id": "QG-PY-SEC-0006",
+              "name": "QG-PY-SEC-0006"
+            },
+            {
+              "id": "QG-PY-SEC-0009",
+              "name": "QG-PY-SEC-0009"
+            },
+            {
+              "id": "QG-PY-SEC-0010",
+              "name": "QG-PY-SEC-0010"
+            },
+            {
+              "id": "QG-PY-SML-0013",
+              "name": "QG-PY-SML-0013"
+            },
+            {
+              "id": "QG-RB-SEC-0001",
+              "name": "QG-RB-SEC-0001"
+            },
+            {
+              "id": "QG-RB-SEC-0003",
+              "name": "QG-RB-SEC-0003"
+            },
+            {
+              "id": "QG-RB-SEC-0005",
+              "name": "QG-RB-SEC-0005"
+            },
+            {
+              "id": "QG-RB-SEC-0006",
+              "name": "QG-RB-SEC-0006"
+            },
+            {
+              "id": "QG-RB-SEC-0007",
+              "name": "QG-RB-SEC-0007"
+            },
+            {
+              "id": "QG-RB-CNV-0001",
+              "name": "QG-RB-CNV-0001"
+            },
+            {
+              "id": "QG-RS-SEC-0004",
+              "name": "QG-RS-SEC-0004"
+            },
+            {
+              "id": "QG-RS-SEC-0005",
+              "name": "QG-RS-SEC-0005"
+            },
+            {
+              "id": "QG-RS-SEC-0007",
+              "name": "QG-RS-SEC-0007"
+            },
+            {
+              "id": "QG-RS-SEC-0008",
+              "name": "QG-RS-SEC-0008"
+            },
+            {
+              "id": "QG-RS-SEC-0009",
+              "name": "QG-RS-SEC-0009"
+            },
+            {
+              "id": "QG-RS-SEC-0010",
+              "name": "QG-RS-SEC-0010"
+            },
+            {
+              "id": "QG-RS-SEC-0012",
+              "name": "QG-RS-SEC-0012"
+            },
+            {
+              "id": "QG-RS-SEC-0014",
+              "name": "QG-RS-SEC-0014"
+            },
+            {
+              "id": "QG-RS-SML-0001",
+              "name": "QG-RS-SML-0001"
+            },
+            {
+              "id": "QG-RS-SML-0002",
+              "name": "QG-RS-SML-0002"
+            },
+            {
+              "id": "QG-RS-SML-0003",
+              "name": "QG-RS-SML-0003"
+            },
+            {
+              "id": "QG-RS-SML-0006",
+              "name": "QG-RS-SML-0006"
+            },
+            {
+              "id": "QG-RS-SML-0008",
+              "name": "QG-RS-SML-0008"
+            },
+            {
+              "id": "QG-RS-SML-0009",
+              "name": "QG-RS-SML-0009"
+            },
+            {
+              "id": "QG-SH-SEC-0001",
+              "name": "QG-SH-SEC-0001"
+            },
+            {
+              "id": "QG-SH-SEC-0003",
+              "name": "QG-SH-SEC-0003"
+            },
+            {
+              "id": "QG-SH-SEC-0004",
+              "name": "QG-SH-SEC-0004"
+            },
+            {
+              "id": "QG-SH-SEC-0005",
+              "name": "QG-SH-SEC-0005"
+            },
+            {
+              "id": "QG-SH-BUG-0001",
+              "name": "QG-SH-BUG-0001"
+            },
+            {
+              "id": "QG-SH-SML-0001",
+              "name": "QG-SH-SML-0001"
+            },
+            {
+              "id": "QG-SQL-SEC-0001",
+              "name": "QG-SQL-SEC-0001"
+            },
+            {
+              "id": "QG-SQL-SEC-0002",
+              "name": "QG-SQL-SEC-0002"
+            },
+            {
+              "id": "QG-SQL-SEC-0003",
+              "name": "QG-SQL-SEC-0003"
+            },
+            {
+              "id": "QG-SQL-SML-0001",
+              "name": "QG-SQL-SML-0001"
+            },
+            {
+              "id": "QG-SQL-CNV-0001",
+              "name": "QG-SQL-CNV-0001"
+            },
+            {
+              "id": "QG-SQL-BUG-0002",
+              "name": "QG-SQL-BUG-0002"
+            },
+            {
+              "id": "QG-TS-SEC-0003",
+              "name": "QG-TS-SEC-0003"
+            },
+            {
+              "id": "QG-K8-SEC-0001",
+              "name": "QG-K8-SEC-0001"
+            },
+            {
+              "id": "QG-K8-SML-0001",
+              "name": "QG-K8-SML-0001"
+            },
+            {
+              "id": "QG-K8-SML-0002",
+              "name": "QG-K8-SML-0002"
+            },
+            {
+              "id": "QG-K8-SML-0003",
+              "name": "QG-K8-SML-0003"
+            },
+            {
+              "id": "QG-K8-SML-0004",
+              "name": "QG-K8-SML-0004"
+            },
+            {
+              "id": "QG-K8-CNV-0001",
+              "name": "QG-K8-CNV-0001"
+            },
+            {
+              "id": "QG-DK-SEC-0001",
+              "name": "QG-DK-SEC-0001"
+            },
+            {
+              "id": "QG-DK-SEC-0002",
+              "name": "QG-DK-SEC-0002"
+            },
+            {
+              "id": "QG-DK-SEC-0003",
+              "name": "QG-DK-SEC-0003"
+            },
+            {
+              "id": "QG-DK-SEC-0005",
+              "name": "QG-DK-SEC-0005"
+            },
+            {
+              "id": "QG-DK-SEC-0007",
+              "name": "QG-DK-SEC-0007"
+            },
+            {
+              "id": "QG-DK-SML-0002",
+              "name": "QG-DK-SML-0002"
+            },
+            {
+              "id": "QG-DK-SML-0003",
+              "name": "QG-DK-SML-0003"
+            },
+            {
+              "id": "QG-DK-SML-0005",
+              "name": "QG-DK-SML-0005"
+            },
+            {
+              "id": "QG-TF-SEC-0001",
+              "name": "QG-TF-SEC-0001"
+            },
+            {
+              "id": "QG-TF-SEC-0002",
+              "name": "QG-TF-SEC-0002"
+            },
+            {
+              "id": "QG-TF-SEC-0006",
+              "name": "QG-TF-SEC-0006"
+            },
+            {
+              "id": "QG-TF-SEC-0009",
+              "name": "QG-TF-SEC-0009"
+            },
+            {
+              "id": "QG-TF-SEC-0010",
+              "name": "QG-TF-SEC-0010"
+            },
+            {
+              "id": "QG-HTML-SEC-0001",
+              "name": "QG-HTML-SEC-0001"
+            },
+            {
+              "id": "QG-HTML-SEC-0002",
+              "name": "QG-HTML-SEC-0002"
+            },
+            {
+              "id": "QG-HTML-SEC-0003",
+              "name": "QG-HTML-SEC-0003"
+            },
+            {
+              "id": "QG-HTML-SML-0001",
+              "name": "QG-HTML-SML-0001"
+            },
+            {
+              "id": "QG-HTML-CNV-0001",
+              "name": "QG-HTML-CNV-0001"
+            },
+            {
+              "id": "QG-XML-SEC-0001",
+              "name": "QG-XML-SEC-0001"
+            },
+            {
+              "id": "QG-XML-SML-0001",
+              "name": "QG-XML-SML-0001"
+            }
+          ]
+        }
+      },
+      "results": [
+        {
+          "ruleId": "QG-CC-SEC-0001",
+          "ruleIndex": 0,
+          "level": "error",
+          "message": {
+            "text": "Make sure this OS command is not built from user input."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "samples/vuln/demo.c"
+                },
+                "region": {
+                  "startLine": 7
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "QG-CC-SEC-0002",
+          "ruleIndex": 1,
+          "level": "warning",
+          "message": {
+            "text": "This function can overflow the destination buffer."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "samples/vuln/demo.c"
+                },
+                "region": {
+                  "startLine": 8
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "QG-CC-SEC-0003",
+          "ruleIndex": 2,
+          "level": "error",
+          "message": {
+            "text": "gets cannot bound the input buffer and can overflow it."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "samples/vuln/demo.c"
+                },
+                "region": {
+                  "startLine": 9
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "QG-CC-SEC-0004",
+          "ruleIndex": 3,
+          "level": "error",
+          "message": {
+            "text": "Make sure the format string is not built from user input."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "samples/vuln/demo.c"
+                },
+                "region": {
+                  "startLine": 10
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "QG-CC-SML-0001",
+          "ruleIndex": 4,
+          "level": "note",
+          "message": {
+            "text": "Remove this debug or console output before production."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "samples/vuln/demo.c"
+                },
+                "region": {
+                  "startLine": 10
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "QG-CS-SEC-0001",
+          "ruleIndex": 5,
+          "level": "error",
+          "message": {
+            "text": "Sanitize arguments passed to Process.Start."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "samples/vuln/Demo.cs"
+                },
+                "region": {
+                  "startLine": 9
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "QG-CS-SEC-0002",
+          "ruleIndex": 6,
+          "level": "error",
+          "message": {
+            "text": "Use parameterized queries to prevent SQL injection."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "samples/vuln/Demo.cs"
+                },
+                "region": {
+                  "startLine": 11
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "QG-CS-SEC-0003",
+          "ruleIndex": 7,
+          "level": "warning",
+          "message": {
+            "text": "Replace weak cryptographic primitives with modern algorithms."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "samples/vuln/Demo.cs"
+                },
+                "region": {
+                  "startLine": 10
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "QG-CS-SEC-0004",
+          "ruleIndex": 8,
+          "level": "error",
+          "message": {
+            "text": "Hardcoded credentials must not be committed."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "samples/vuln/Demo.cs"
+                },
+                "region": {
+                  "startLine": 13
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "QG-CS-SEC-0005",
+          "ruleIndex": 9,
+          "level": "warning",
+          "message": {
+            "text": "Use a cryptographically secure random generator."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "samples/vuln/Demo.cs"
+                },
+                "region": {
+                  "startLine": 12
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "QG-CS-SML-0021",
+          "ruleIndex": 10,
+          "level": "note",
+          "message": {
+            "text": "This local variable is assigned but never used."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "samples/vuln/Demo.cs"
+                },
+                "region": {
+                  "startLine": 10
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "QG-CS-SML-0021",
+          "ruleIndex": 10,
+          "level": "note",
+          "message": {
+            "text": "This local variable is assigned but never used."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "samples/vuln/Demo.cs"
+                },
+                "region": {
+                  "startLine": 11
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "QG-CS-SML-0021",
+          "ruleIndex": 10,
+          "level": "note",
+          "message": {
+            "text": "This local variable is assigned but never used."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "samples/vuln/Demo.cs"
+                },
+                "region": {
+                  "startLine": 12
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "QG-CS-SML-0021",
+          "ruleIndex": 10,
+          "level": "note",
+          "message": {
+            "text": "This local variable is assigned but never used."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "samples/vuln/Demo.cs"
+                },
+                "region": {
+                  "startLine": 13
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "QG-CSS-SML-0001",
+          "ruleIndex": 11,
+          "level": "note",
+          "message": {
+            "text": "Avoid using !important; it overrides specificity."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "samples/vuln/demo.css"
+                },
+                "region": {
+                  "startLine": 3
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "QG-CSS-SML-0002",
+          "ruleIndex": 12,
+          "level": "note",
+          "message": {
+            "text": "Avoid @import; it blocks parallel loading."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "samples/vuln/demo.css"
+                },
+                "region": {
+                  "startLine": 1
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "QG-CSS-BUG-0001",
+          "ruleIndex": 13,
+          "level": "warning",
+          "message": {
+            "text": "z-index only applies to positioned elements; set position."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "samples/vuln/demo.css"
+                },
+                "region": {
+                  "startLine": 6
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "QG-ALL-CNV-0002",
+          "ruleIndex": 14,
+          "level": "note",
+          "message": {
+            "text": "Replace all tab characters in this file by sequences of white-spaces."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "samples/vuln/demo.go"
+                },
+                "region": {
+                  "startLine": 4
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "QG-ALL-CNV-0002",
+          "ruleIndex": 14,
+          "level": "note",
+          "message": {
+            "text": "Replace all tab characters in this file by sequences of white-spaces."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "samples/vuln/demo.go"
+                },
+                "region": {
+                  "startLine": 5
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "QG-ALL-CNV-0002",
+          "ruleIndex": 14,
+          "level": "note",
+          "message": {
+            "text": "Replace all tab characters in this file by sequences of white-spaces."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "samples/vuln/demo.go"
+                },
+                "region": {
+                  "startLine": 6
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "QG-ALL-CNV-0002",
+          "ruleIndex": 14,
+          "level": "note",
+          "message": {
+            "text": "Replace all tab characters in this file by sequences of white-spaces."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "samples/vuln/demo.go"
+                },
+                "region": {
+                  "startLine": 7
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "QG-ALL-CNV-0002",
+          "ruleIndex": 14,
+          "level": "note",
+          "message": {
+            "text": "Replace all tab characters in this file by sequences of white-spaces."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "samples/vuln/demo.go"
+                },
+                "region": {
+                  "startLine": 11
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "QG-ALL-CNV-0002",
+          "ruleIndex": 14,
+          "level": "note",
+          "message": {
+            "text": "Replace all tab characters in this file by sequences of white-spaces."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "samples/vuln/demo.go"
+                },
+                "region": {
+                  "startLine": 12
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "QG-ALL-CNV-0002",
+          "ruleIndex": 14,
+          "level": "note",
+          "message": {
+            "text": "Replace all tab characters in this file by sequences of white-spaces."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "samples/vuln/demo.go"
+                },
+                "region": {
+                  "startLine": 13
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "QG-ALL-CNV-0002",
+          "ruleIndex": 14,
+          "level": "note",
+          "message": {
+            "text": "Replace all tab characters in this file by sequences of white-spaces."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "samples/vuln/demo.go"
+                },
+                "region": {
+                  "startLine": 14
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "QG-ALL-CNV-0002",
+          "ruleIndex": 14,
+          "level": "note",
+          "message": {
+            "text": "Replace all tab characters in this file by sequences of white-spaces."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "samples/vuln/demo.go"
+                },
+                "region": {
+                  "startLine": 15
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "QG-GO-SEC-0001",
+          "ruleIndex": 15,
+          "level": "error",
+          "message": {
+            "text": "Do not build shell commands from dynamic input."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "samples/vuln/demo.go"
+                },
+                "region": {
+                  "startLine": 11
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "QG-GO-SEC-0002",
+          "ruleIndex": 16,
+          "level": "error",
+          "message": {
+            "text": "Use parameterized queries to prevent SQL injection."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "samples/vuln/demo.go"
+                },
+                "region": {
+                  "startLine": 13
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "QG-GO-SEC-0003",
+          "ruleIndex": 17,
+          "level": "warning",
+          "message": {
+            "text": "Weak cryptographic hashing function is used."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "samples/vuln/demo.go"
+                },
+                "region": {
+                  "startLine": 5
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "QG-GO-SEC-0003",
+          "ruleIndex": 17,
+          "level": "warning",
+          "message": {
+            "text": "Weak cryptographic hashing function is used."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "samples/vuln/demo.go"
+                },
+                "region": {
+                  "startLine": 12
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "QG-GO-SEC-0004",
+          "ruleIndex": 18,
+          "level": "error",
+          "message": {
+            "text": "Do not hard-code credentials."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "samples/vuln/demo.go"
+                },
+                "region": {
+                  "startLine": 15
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "QG-GO-SEC-0006",
+          "ruleIndex": 19,
+          "level": "warning",
+          "message": {
+            "text": "math/rand is not cryptographically secure."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "samples/vuln/demo.go"
+                },
+                "region": {
+                  "startLine": 7
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "QG-GO-SEC-0006",
+          "ruleIndex": 19,
+          "level": "warning",
+          "message": {
+            "text": "math/rand is not cryptographically secure."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "samples/vuln/demo.go"
+                },
+                "region": {
+                  "startLine": 14
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "QG-JV-SEC-0002",
+          "ruleIndex": 20,
+          "level": "error",
+          "message": {
+            "text": "Make sure the arguments passed to this OS command are not user-controlled."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "samples/vuln/demo.java"
+                },
+                "region": {
+                  "startLine": 6
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "QG-JV-SEC-0003",
+          "ruleIndex": 21,
+          "level": "error",
+          "message": {
+            "text": "Replace this weak cryptographic algorithm \u0027MD5\u0027 with a strong one."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "samples/vuln/demo.java"
+                },
+                "region": {
+                  "startLine": 7
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "QG-JV-SEC-0004",
+          "ruleIndex": 22,
+          "level": "error",
+          "message": {
+            "text": "Make sure this SQL query is not vulnerable to SQL injection."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "samples/vuln/demo.java"
+                },
+                "region": {
+                  "startLine": 9
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "QG-JV-SEC-0005",
+          "ruleIndex": 23,
+          "level": "error",
+          "message": {
+            "text": "Define this credential through configuration or an environment variable."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "samples/vuln/demo.java"
+                },
+                "region": {
+                  "startLine": 10
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "QG-ALL-SML-0002",
+          "ruleIndex": 24,
+          "level": "warning",
+          "message": {
+            "text": "Either remove or fill this block of code."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "samples/vuln/demo.js"
+                },
+                "region": {
+                  "startLine": 3
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "QG-JS-SEC-0001",
+          "ruleIndex": 25,
+          "level": "error",
+          "message": {
+            "text": "Do not evaluate arbitrary code with eval."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "samples/vuln/demo.js"
+                },
+                "region": {
+                  "startLine": 4
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "QG-JS-SEC-0002",
+          "ruleIndex": 26,
+          "level": "error",
+          "message": {
+            "text": "Do not execute operating system commands built from a dynamic argument."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "samples/vuln/demo.js"
+                },
+                "region": {
+                  "startLine": 3
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "QG-JS-SEC-0004",
+          "ruleIndex": 27,
+          "level": "error",
+          "message": {
+            "text": "Do not concatenate user-controlled values into SQL statements."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "samples/vuln/demo.js"
+                },
+                "region": {
+                  "startLine": 7
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "QG-JS-SEC-0007",
+          "ruleIndex": 28,
+          "level": "warning",
+          "message": {
+            "text": "Write cookies with the Secure and HttpOnly attributes."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "samples/vuln/demo.js"
+                },
+                "region": {
+                  "startLine": 8
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "QG-JS-CNV-0001",
+          "ruleIndex": 29,
+          "level": "note",
+          "message": {
+            "text": "Use const or let instead of var."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "samples/vuln/demo.js"
+                },
+                "region": {
+                  "startLine": 6
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "QG-KT-SEC-0001",
+          "ruleIndex": 30,
+          "level": "error",
+          "message": {
+            "text": "Random values must not be used for security-sensitive operations."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "samples/vuln/demo.kt"
+                },
+                "region": {
+                  "startLine": 2
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "QG-KT-SEC-0001",
+          "ruleIndex": 30,
+          "level": "error",
+          "message": {
+            "text": "Random values must not be used for security-sensitive operations."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "samples/vuln/demo.kt"
+                },
+                "region": {
+                  "startLine": 5
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "QG-KT-SEC-0002",
+          "ruleIndex": 31,
+          "level": "error",
+          "message": {
+            "text": "Make sure the arguments passed to this OS command are not user-controlled."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "samples/vuln/demo.kt"
+                },
+                "region": {
+                  "startLine": 6
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "QG-KT-SEC-0005",
+          "ruleIndex": 32,
+          "level": "error",
+          "message": {
+            "text": "Define this credential through configuration or an environment variable."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "samples/vuln/demo.kt"
+                },
+                "region": {
+                  "startLine": 8
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "QG-PP-SEC-0001",
+          "ruleIndex": 33,
+          "level": "error",
+          "message": {
+            "text": "Do not evaluate arbitrary code."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "samples/vuln/demo.php"
+                },
+                "region": {
+                  "startLine": 3
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "QG-PP-SEC-0003",
+          "ruleIndex": 34,
+          "level": "error",
+          "message": {
+            "text": "Sanitize arguments passed to OS command execution."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "samples/vuln/demo.php"
+                },
+                "region": {
+                  "startLine": 4
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "QG-PP-SEC-0005",
+          "ruleIndex": 35,
+          "level": "error",
+          "message": {
+            "text": "Hardcoded credentials must not be committed."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "samples/vuln/demo.php"
+                },
+                "region": {
+                  "startLine": 6
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "QG-PP-SEC-0010",
+          "ruleIndex": 36,
+          "level": "error",
+          "message": {
+            "text": "Unsafe deserialization can lead to code execution."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "samples/vuln/demo.php"
+                },
+                "region": {
+                  "startLine": 7
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "QG-PP-SEC-0013",
+          "ruleIndex": 37,
+          "level": "warning",
+          "message": {
+            "text": "Set the Secure and HttpOnly flags on cookies."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "samples/vuln/demo.php"
+                },
+                "region": {
+                  "startLine": 8
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "QG-PY-SEC-0002",
+          "ruleIndex": 38,
+          "level": "error",
+          "message": {
+            "text": "Do not build shell commands from dynamic input."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "samples/vuln/demo.py"
+                },
+                "region": {
+                  "startLine": 4
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "QG-PY-SEC-0002",
+          "ruleIndex": 38,
+          "level": "error",
+          "message": {
+            "text": "Do not build shell commands from dynamic input."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "samples/vuln/demo.py"
+                },
+                "region": {
+                  "startLine": 5
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "QG-PY-SEC-0003",
+          "ruleIndex": 39,
+          "level": "error",
+          "message": {
+            "text": "Unsafe deserialization may allow remote code execution."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "samples/vuln/demo.py"
+                },
+                "region": {
+                  "startLine": 6
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "QG-PY-SEC-0004",
+          "ruleIndex": 40,
+          "level": "error",
+          "message": {
+            "text": "Use parameterized queries to prevent SQL injection."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "samples/vuln/demo.py"
+                },
+                "region": {
+                  "startLine": 8
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "QG-PY-SEC-0005",
+          "ruleIndex": 41,
+          "level": "warning",
+          "message": {
+            "text": "Weak cryptographic hashing function is used."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "samples/vuln/demo.py"
+                },
+                "region": {
+                  "startLine": 7
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "QG-PY-SEC-0006",
+          "ruleIndex": 42,
+          "level": "error",
+          "message": {
+            "text": "Do not hard-code credentials."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "samples/vuln/demo.py"
+                },
+                "region": {
+                  "startLine": 9
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "QG-PY-SEC-0009",
+          "ruleIndex": 43,
+          "level": "warning",
+          "message": {
+            "text": "The command is passed to the shell; avoid shell=True."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "samples/vuln/demo.py"
+                },
+                "region": {
+                  "startLine": 5
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "QG-PY-SEC-0010",
+          "ruleIndex": 44,
+          "level": "warning",
+          "message": {
+            "text": "Assertions are stripped out when Python is run with -O; validate explicitly instead."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "samples/vuln/demo.py"
+                },
+                "region": {
+                  "startLine": 10
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "QG-PY-SML-0013",
+          "ruleIndex": 45,
+          "level": "note",
+          "message": {
+            "text": "Add a docstring to this function."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "samples/vuln/demo.py"
+                },
+                "region": {
+                  "startLine": 3
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "QG-RB-SEC-0001",
+          "ruleIndex": 46,
+          "level": "error",
+          "message": {
+            "text": "Do not invoke shell commands with dynamic arguments."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "samples/vuln/demo.rb"
+                },
+                "region": {
+                  "startLine": 2
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "QG-RB-SEC-0003",
+          "ruleIndex": 47,
+          "level": "error",
+          "message": {
+            "text": "Unsafe deserialization may allow remote code execution."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "samples/vuln/demo.rb"
+                },
+                "region": {
+                  "startLine": 4
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "QG-RB-SEC-0005",
+          "ruleIndex": 48,
+          "level": "warning",
+          "message": {
+            "text": "Weak cryptographic hashing function is used."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "samples/vuln/demo.rb"
+                },
+                "region": {
+                  "startLine": 5
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "QG-RB-SEC-0006",
+          "ruleIndex": 49,
+          "level": "error",
+          "message": {
+            "text": "Do not hard-code credentials."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "samples/vuln/demo.rb"
+                },
+                "region": {
+                  "startLine": 6
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "QG-RB-SEC-0007",
+          "ruleIndex": 50,
+          "level": "warning",
+          "message": {
+            "text": "Use SecureRandom instead of rand for security-sensitive values."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "samples/vuln/demo.rb"
+                },
+                "region": {
+                  "startLine": 7
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "QG-RB-CNV-0001",
+          "ruleIndex": 51,
+          "level": "note",
+          "message": {
+            "text": "Prefer single quotes for strings without interpolation."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "samples/vuln/demo.rb"
+                },
+                "region": {
+                  "startLine": 3
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "QG-RB-CNV-0001",
+          "ruleIndex": 51,
+          "level": "note",
+          "message": {
+            "text": "Prefer single quotes for strings without interpolation."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "samples/vuln/demo.rb"
+                },
+                "region": {
+                  "startLine": 5
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "QG-RB-CNV-0001",
+          "ruleIndex": 51,
+          "level": "note",
+          "message": {
+            "text": "Prefer single quotes for strings without interpolation."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "samples/vuln/demo.rb"
+                },
+                "region": {
+                  "startLine": 6
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "QG-RS-SEC-0004",
+          "ruleIndex": 52,
+          "level": "error",
+          "message": {
+            "text": "Do not hard-code credentials."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "samples/vuln/demo.rs"
+                },
+                "region": {
+                  "startLine": 22
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "QG-RS-SEC-0005",
+          "ruleIndex": 53,
+          "level": "warning",
+          "message": {
+            "text": "rand is not cryptographically secure."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "samples/vuln/demo.rs"
+                },
+                "region": {
+                  "startLine": 25
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "QG-RS-SEC-0007",
+          "ruleIndex": 54,
+          "level": "warning",
+          "message": {
+            "text": "Replace cleartext HTTP with HTTPS."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "samples/vuln/demo.rs"
+                },
+                "region": {
+                  "startLine": 16
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "QG-RS-SEC-0008",
+          "ruleIndex": 55,
+          "level": "warning",
+          "message": {
+            "text": "Validate file paths passed to file access calls."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "samples/vuln/demo.rs"
+                },
+                "region": {
+                  "startLine": 13
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "QG-RS-SEC-0009",
+          "ruleIndex": 56,
+          "level": "warning",
+          "message": {
+            "text": "Validate and allow list URLs passed to the HTTP client."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "samples/vuln/demo.rs"
+                },
+                "region": {
+                  "startLine": 17
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "QG-RS-SEC-0010",
+          "ruleIndex": 57,
+          "level": "warning",
+          "message": {
+            "text": "Unsafe pointer operation can lead to memory unsafety."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "samples/vuln/demo.rs"
+                },
+                "region": {
+                  "startLine": 29
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "QG-RS-SEC-0012",
+          "ruleIndex": 58,
+          "level": "warning",
+          "message": {
+            "text": "Shell invocation may allow command injection."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "samples/vuln/demo.rs"
+                },
+                "region": {
+                  "startLine": 6
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "QG-RS-SEC-0014",
+          "ruleIndex": 59,
+          "level": "warning",
+          "message": {
+            "text": "Sensitive information should not be logged."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "samples/vuln/demo.rs"
+                },
+                "region": {
+                  "startLine": 23
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "QG-RS-SML-0001",
+          "ruleIndex": 60,
+          "level": "warning",
+          "message": {
+            "text": "unwrap/expect panics if the value is Err or None; handle the failure case."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "samples/vuln/demo.rs"
+                },
+                "region": {
+                  "startLine": 10
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "QG-RS-SML-0001",
+          "ruleIndex": 60,
+          "level": "warning",
+          "message": {
+            "text": "unwrap/expect panics if the value is Err or None; handle the failure case."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "samples/vuln/demo.rs"
+                },
+                "region": {
+                  "startLine": 13
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "QG-RS-SML-0001",
+          "ruleIndex": 60,
+          "level": "warning",
+          "message": {
+            "text": "unwrap/expect panics if the value is Err or None; handle the failure case."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "samples/vuln/demo.rs"
+                },
+                "region": {
+                  "startLine": 17
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "QG-RS-SML-0001",
+          "ruleIndex": 60,
+          "level": "warning",
+          "message": {
+            "text": "unwrap/expect panics if the value is Err or None; handle the failure case."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "samples/vuln/demo.rs"
+                },
+                "region": {
+                  "startLine": 20
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "QG-RS-SML-0002",
+          "ruleIndex": 61,
+          "level": "note",
+          "message": {
+            "text": "Remove this debug output statement."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "samples/vuln/demo.rs"
+                },
+                "region": {
+                  "startLine": 23
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "QG-RS-SML-0002",
+          "ruleIndex": 61,
+          "level": "note",
+          "message": {
+            "text": "Remove this debug output statement."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "samples/vuln/demo.rs"
+                },
+                "region": {
+                  "startLine": 36
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "QG-RS-SML-0003",
+          "ruleIndex": 62,
+          "level": "warning",
+          "message": {
+            "text": "Document why this unsafe block is safe."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "samples/vuln/demo.rs"
+                },
+                "region": {
+                  "startLine": 28
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "QG-RS-SML-0006",
+          "ruleIndex": 63,
+          "level": "note",
+          "message": {
+            "text": "Rename this variable; it shadows an earlier binding."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "samples/vuln/demo.rs"
+                },
+                "region": {
+                  "startLine": 33
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "QG-RS-SML-0008",
+          "ruleIndex": 64,
+          "level": "note",
+          "message": {
+            "text": "Remove the comparison to the boolean literal."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "samples/vuln/demo.rs"
+                },
+                "region": {
+                  "startLine": 34
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "QG-RS-SML-0009",
+          "ruleIndex": 65,
+          "level": "note",
+          "message": {
+            "text": "This loop has no exit condition and may never terminate."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "samples/vuln/demo.rs"
+                },
+                "region": {
+                  "startLine": 35
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "QG-SH-SEC-0001",
+          "ruleIndex": 66,
+          "level": "error",
+          "message": {
+            "text": "Do not evaluate dynamic shell code."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "samples/vuln/demo.sh"
+                },
+                "region": {
+                  "startLine": 2
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "QG-SH-SEC-0003",
+          "ruleIndex": 67,
+          "level": "error",
+          "message": {
+            "text": "Do not pipe downloaded scripts directly into a shell."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "samples/vuln/demo.sh"
+                },
+                "region": {
+                  "startLine": 3
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "QG-SH-SEC-0004",
+          "ruleIndex": 68,
+          "level": "warning",
+          "message": {
+            "text": "Avoid world-writable permissions."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "samples/vuln/demo.sh"
+                },
+                "region": {
+                  "startLine": 5
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "QG-SH-SEC-0005",
+          "ruleIndex": 69,
+          "level": "error",
+          "message": {
+            "text": "Hardcoded credentials must not be committed."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "samples/vuln/demo.sh"
+                },
+                "region": {
+                  "startLine": 4
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "QG-SH-BUG-0001",
+          "ruleIndex": 70,
+          "level": "warning",
+          "message": {
+            "text": "Recursive force removal can destroy data; verify the target."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "samples/vuln/demo.sh"
+                },
+                "region": {
+                  "startLine": 6
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "QG-SH-SML-0001",
+          "ruleIndex": 71,
+          "level": "note",
+          "message": {
+            "text": "Add \u0027set -euo pipefail\u0027 to exit early on errors."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "samples/vuln/demo.sh"
+                },
+                "region": {
+                  "startLine": 1
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "QG-SQL-SEC-0001",
+          "ruleIndex": 72,
+          "level": "warning",
+          "message": {
+            "text": "Do not grant or revoke privileges on PUBLIC."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "samples/vuln/demo.sql"
+                },
+                "region": {
+                  "startLine": 2
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "QG-SQL-SEC-0002",
+          "ruleIndex": 73,
+          "level": "warning",
+          "message": {
+            "text": "Avoid granting ALL privileges."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "samples/vuln/demo.sql"
+                },
+                "region": {
+                  "startLine": 2
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "QG-SQL-SEC-0003",
+          "ruleIndex": 74,
+          "level": "error",
+          "message": {
+            "text": "Do not hardcode credentials in the script."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "samples/vuln/demo.sql"
+                },
+                "region": {
+                  "startLine": 1
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "QG-SQL-SML-0001",
+          "ruleIndex": 75,
+          "level": "note",
+          "message": {
+            "text": "Select only the columns you need instead of SELECT *."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "samples/vuln/demo.sql"
+                },
+                "region": {
+                  "startLine": 4
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "QG-SQL-CNV-0001",
+          "ruleIndex": 76,
+          "level": "note",
+          "message": {
+            "text": "Terminate the statement with a semicolon."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "samples/vuln/demo.sql"
+                },
+                "region": {
+                  "startLine": 4
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "QG-SQL-BUG-0002",
+          "ruleIndex": 77,
+          "level": "warning",
+          "message": {
+            "text": "Avoid conditions that always evaluate to true (1=1)."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "samples/vuln/demo.sql"
+                },
+                "region": {
+                  "startLine": 4
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "QG-TS-SEC-0003",
+          "ruleIndex": 78,
+          "level": "warning",
+          "message": {
+            "text": "Do not load modules from a dynamically constructed path."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "samples/vuln/demo.ts"
+                },
+                "region": {
+                  "startLine": 2
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "QG-CS-SEC-0001",
+          "ruleIndex": 5,
+          "level": "error",
+          "message": {
+            "text": "Sanitize arguments passed to Process.Start."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "samples/vuln/Demo.vb"
+                },
+                "region": {
+                  "startLine": 6
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "QG-CS-SEC-0003",
+          "ruleIndex": 7,
+          "level": "warning",
+          "message": {
+            "text": "Replace weak cryptographic primitives with modern algorithms."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "samples/vuln/Demo.vb"
+                },
+                "region": {
+                  "startLine": 7
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "QG-CS-SEC-0004",
+          "ruleIndex": 8,
+          "level": "error",
+          "message": {
+            "text": "Hardcoded credentials must not be committed."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "samples/vuln/Demo.vb"
+                },
+                "region": {
+                  "startLine": 9
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "QG-K8-SEC-0001",
+          "ruleIndex": 79,
+          "level": "error",
+          "message": {
+            "text": "Do not run containers in privileged mode."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "samples/vuln/deployment.yaml"
+                },
+                "region": {
+                  "startLine": 13
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "QG-K8-SML-0001",
+          "ruleIndex": 80,
+          "level": "note",
+          "message": {
+            "text": "Pin the container image to a specific tag or digest."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "samples/vuln/deployment.yaml"
+                },
+                "region": {
+                  "startLine": 8
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "QG-K8-SML-0002",
+          "ruleIndex": 81,
+          "level": "note",
+          "message": {
+            "text": "Mount the root filesystem as read-only."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "samples/vuln/deployment.yaml"
+                },
+                "region": {
+                  "startLine": 6
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "QG-K8-SML-0003",
+          "ruleIndex": 82,
+          "level": "note",
+          "message": {
+            "text": "Define liveness and readiness probes for the container."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "samples/vuln/deployment.yaml"
+                },
+                "region": {
+                  "startLine": 6
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "QG-K8-SML-0004",
+          "ruleIndex": 83,
+          "level": "note",
+          "message": {
+            "text": "Define resource requests and limits for the container."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "samples/vuln/deployment.yaml"
+                },
+                "region": {
+                  "startLine": 6
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "QG-K8-CNV-0001",
+          "ruleIndex": 84,
+          "level": "note",
+          "message": {
+            "text": "Add an app label to identify the workload."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "samples/vuln/deployment.yaml"
+                },
+                "region": {
+                  "startLine": 3
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "QG-DK-SEC-0001",
+          "ruleIndex": 85,
+          "level": "warning",
+          "message": {
+            "text": "Do not run the container as the root user."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "samples/vuln/Dockerfile"
+                },
+                "region": {
+                  "startLine": 5
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "QG-DK-SEC-0002",
+          "ruleIndex": 86,
+          "level": "error",
+          "message": {
+            "text": "Do not pipe remote scripts directly into a shell."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "samples/vuln/Dockerfile"
+                },
+                "region": {
+                  "startLine": 2
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "QG-DK-SEC-0003",
+          "ruleIndex": 87,
+          "level": "warning",
+          "message": {
+            "text": "Download over HTTPS instead of cleartext HTTP."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "samples/vuln/Dockerfile"
+                },
+                "region": {
+                  "startLine": 2
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "QG-DK-SEC-0005",
+          "ruleIndex": 88,
+          "level": "error",
+          "message": {
+            "text": "Do not bake secrets into environment variables."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "samples/vuln/Dockerfile"
+                },
+                "region": {
+                  "startLine": 3
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "QG-DK-SEC-0007",
+          "ruleIndex": 89,
+          "level": "warning",
+          "message": {
+            "text": "Avoid world-writable permissions (chmod 777)."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "samples/vuln/Dockerfile"
+                },
+                "region": {
+                  "startLine": 4
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "QG-DK-SML-0002",
+          "ruleIndex": 90,
+          "level": "note",
+          "message": {
+            "text": "Avoid using the :latest tag for the base image."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "samples/vuln/Dockerfile"
+                },
+                "region": {
+                  "startLine": 1
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "QG-DK-SML-0003",
+          "ruleIndex": 91,
+          "level": "note",
+          "message": {
+            "text": "Define a HEALTHCHECK for the container."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "samples/vuln/Dockerfile"
+                },
+                "region": {
+                  "startLine": 1
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "QG-DK-SML-0005",
+          "ruleIndex": 92,
+          "level": "note",
+          "message": {
+            "text": "Set a WORKDIR for the container."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "samples/vuln/Dockerfile"
+                },
+                "region": {
+                  "startLine": 1
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "QG-TF-SEC-0001",
+          "ruleIndex": 93,
+          "level": "error",
+          "message": {
+            "text": "Do not open the resource to the whole internet."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "samples/vuln/main.tf"
+                },
+                "region": {
+                  "startLine": 3
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "QG-TF-SEC-0002",
+          "ruleIndex": 94,
+          "level": "error",
+          "message": {
+            "text": "Do not make the database publicly accessible."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "samples/vuln/main.tf"
+                },
+                "region": {
+                  "startLine": 8
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "QG-TF-SEC-0006",
+          "ruleIndex": 95,
+          "level": "error",
+          "message": {
+            "text": "Encrypt the database storage at rest."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "samples/vuln/main.tf"
+                },
+                "region": {
+                  "startLine": 7
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "QG-TF-SEC-0009",
+          "ruleIndex": 96,
+          "level": "error",
+          "message": {
+            "text": "Do not hardcode secrets in configuration."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "samples/vuln/main.tf"
+                },
+                "region": {
+                  "startLine": 9
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "QG-TF-SEC-0010",
+          "ruleIndex": 97,
+          "level": "error",
+          "message": {
+            "text": "Do not set the database admin password as a literal."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "samples/vuln/main.tf"
+                },
+                "region": {
+                  "startLine": 9
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "QG-HTML-SEC-0001",
+          "ruleIndex": 98,
+          "level": "warning",
+          "message": {
+            "text": "Inline event handlers are a vector for XSS; use addEventListener."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "samples/vuln/page.html"
+                },
+                "region": {
+                  "startLine": 5
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "QG-HTML-SEC-0002",
+          "ruleIndex": 99,
+          "level": "warning",
+          "message": {
+            "text": "javascript: URLs are a vector for XSS."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "samples/vuln/page.html"
+                },
+                "region": {
+                  "startLine": 4
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "QG-HTML-SEC-0003",
+          "ruleIndex": 100,
+          "level": "warning",
+          "message": {
+            "text": "The iframe has no sandbox attribute."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "samples/vuln/page.html"
+                },
+                "region": {
+                  "startLine": 7
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "QG-HTML-SML-0001",
+          "ruleIndex": 101,
+          "level": "note",
+          "message": {
+            "text": "Declare the document character encoding with \u003Cmeta charset\u003E."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "samples/vuln/page.html"
+                },
+                "region": {
+                  "startLine": 1
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "QG-HTML-CNV-0001",
+          "ruleIndex": 102,
+          "level": "note",
+          "message": {
+            "text": "Add an alt attribute to the image."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "samples/vuln/page.html"
+                },
+                "region": {
+                  "startLine": 6
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "QG-XML-SEC-0001",
+          "ruleIndex": 103,
+          "level": "error",
+          "message": {
+            "text": "External entities can be exploited for XXE; disable them."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "samples/vuln/payload.xml"
+                },
+                "region": {
+                  "startLine": 3
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "QG-XML-SML-0001",
+          "ruleIndex": 104,
+          "level": "note",
+          "message": {
+            "text": "Declare the encoding in the XML declaration."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "samples/vuln/payload.xml"
+                },
+                "region": {
+                  "startLine": 1
+                }
+              }
+            }
+          ]
+        }
+      ],
+      "invocations": [
+        {
+          "executionSuccessful": true,
+          "properties": {
+            "qualityGate": "Passed"
+          }
+        }
+      ],
+      "properties": {
+        "metrics": {
+          "lines": 5,
+          "ncloc": 5,
+          "comment_lines": 0,
+          "complexity": 3,
+          "cognitive_complexity": 0,
+          "functions": 0,
+          "files": 20,
+          "tokens": 12,
+          "variables": 0,
+          "duplicated_lines_density": 0
+        }
+      }
+    }
+  ]
+}

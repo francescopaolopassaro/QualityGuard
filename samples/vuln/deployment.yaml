@@ -1,0 +1,13 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: web
+spec:
+  containers:
+    - name: web
+      image: nginx:latest
+      env:
+        - name: DB_PASSWORD
+          value: hunter2
+      securityContext:
+        privileged: true

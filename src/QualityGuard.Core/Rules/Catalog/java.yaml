@@ -1,0 +1,402 @@
+# Java security and correctness batch (JV). Written for QualityGuard, English only.
+
+- key: QG-JV-SEC-0024
+  name: Servlet methods should not let exceptions escape
+  languages: [java]
+  category: SEC
+  severity: major
+  effort: 20min
+  cwe: [600]
+  owasp: [A5]
+  tags: [servlet, information-disclosure]
+  message: An exception leaving this servlet method reaches the client as a stack trace.
+  summary: A servlet entry point declares that it throws, or lets exceptions propagate.
+  why: |
+    Whatever escapes the method is rendered by the container, and the default error page includes the
+    exception type, the message and often the stack trace. That tells an attacker which frameworks,
+    versions and internal classes are in use, and sometimes leaks data from the request.
+  fix: |
+    Catch the exceptions the method can produce, log them server-side with context, and send the client a
+    neutral error response with the appropriate status code.
+  detect:
+    - line: "(protected|public)\\s+void\\s+(doGet|doPost|doPut|doDelete|service)\\s*\\([^)]*\\)\\s*throws"
+
+- key: QG-JV-SEC-0025
+  name: Session identifiers should not be taken from the request
+  languages: [java]
+  category: SEC
+  severity: critical
+  effort: 25min
+  cwe: [807]
+  owasp: [A2]
+  tags: [session]
+  message: This session id comes from the client and can be chosen by an attacker.
+  summary: The requested session id is read from the incoming request.
+  why: |
+    The value is whatever the client sent, so it proves nothing about who is calling. Trusting it lets an
+    attacker fix a victim's session id in advance and then reuse it once the victim has authenticated.
+  fix: |
+    Use the session the container established, and call the method that creates a fresh session at login
+    so the identifier changes when the privilege level does.
+  detect:
+    - invocation: [getRequestedSessionId]
+
+- key: QG-JV-SEC-0026
+  name: Basic authentication should not be used
+  languages: [java, kt]
+  category: SEC
+  severity: critical
+  effort: 30min
+  cwe: [522]
+  owasp: [A2]
+  tags: [authentication]
+  message: Basic authentication sends the credentials on every request, only base64-encoded.
+  summary: HTTP basic authentication is configured or sent explicitly.
+  why: |
+    The header carries the password itself, encoded but not protected, on every single request. Anything
+    that logs or caches headers keeps a copy, and there is no way to expire a session short of changing
+    the password.
+  fix: |
+    Use a token-based scheme with short-lived credentials, or the identity provider of the platform.
+    Where basic auth is unavoidable, restrict it to a machine account over TLS with a rotated secret.
+  detect:
+    - string: ["Basic realm", "Authorization: Basic"]
+    - invocation: [httpBasic]
+
+- key: QG-JV-SEC-0027
+  name: Classes should not be loaded from names computed at run time
+  languages: [java, kt]
+  category: SEC
+  severity: critical
+  effort: 25min
+  cwe: [470]
+  owasp: [A8]
+  tags: [reflection]
+  message: The class to load is decided at run time, which allows loading unexpected code.
+  summary: A class is resolved by name through reflection.
+  why: |
+    If the name can be influenced from outside, the application becomes a loader for whatever is on the
+    classpath, and static initialisers run as soon as the class is resolved. Even with a fixed name, the
+    dependency is invisible to the compiler and to dependency analysis.
+  fix: |
+    Reference the class directly, or map a small set of accepted identifiers to the classes you support
+    and reject anything else.
+  detect:
+    - invocation: [forName, loadClass]
+    - invocation: [newInstance]
+      receiver: [Class]
+
+- key: QG-JV-SEC-0028
+  name: Endpoints should restrict the HTTP methods they accept
+  languages: [java, kt]
+  category: SEC
+  severity: major
+  effort: 15min
+  cwe: [352]
+  owasp: [A5]
+  tags: [spring, api]
+  message: This mapping answers every HTTP method.
+  summary: A request mapping is declared without naming the methods it supports.
+  why: |
+    A handler that answers GET as well as POST can be triggered by a link or an image tag, which is
+    exactly what cross-site request forgery needs. It also makes caching proxies store the result of what
+    is really a state-changing call.
+  fix: |
+    Declare the verb explicitly with the dedicated annotation, or set the method attribute of the
+    mapping, so anything else returns a method-not-allowed response.
+  detect:
+    - line: "@RequestMapping\\s*\\(\\s*(\"[^\"]*\"|value\\s*=\\s*\"[^\"]*\")\\s*\\)"
+
+- key: QG-JV-SEC-0029
+  name: Deserialization from directory servers should stay disabled
+  languages: [java]
+  category: SEC
+  severity: blocker
+  effort: 30min
+  cwe: [502]
+  owasp: [A8]
+  tags: [ldap, deserialization]
+  message: Object deserialization from LDAP entries allows remote code execution.
+  summary: An LDAP search is configured to return deserialized Java objects.
+  why: |
+    When the directory is allowed to return serialized objects, whoever controls an entry controls the
+    classes the application instantiates. A directory that is writable by users therefore becomes a way
+    to run code inside the application.
+  fix: |
+    Leave the object-returning flag off and read the attributes you need as plain values. Where objects
+    are genuinely required, restrict deserialization to an allow-list of classes.
+  detect:
+    - line: "setReturningObjFlag\\s*\\(\\s*true\\s*\\)"
+
+- key: QG-JV-SEC-0030
+  name: Template auto-escaping should stay enabled
+  languages: [java, kt]
+  category: SEC
+  severity: critical
+  effort: 20min
+  cwe: [79]
+  owasp: [A3]
+  tags: [xss, template]
+  message: Disabling escaping in the template engine exposes every rendered value.
+  summary: A template engine is configured with auto-escaping turned off.
+  why: |
+    Escaping is what makes a template safe by default; without it every value rendered anywhere in the
+    application becomes an injection point, including ones added long after this setting was changed.
+  fix: |
+    Leave escaping on and mark the individual values that must contain markup, after sanitizing them.
+    Never disable it globally to make one fragment work.
+  detect:
+    - line: "setAutoEscap(e|ing)\\s*\\(\\s*(false|null)"
+    - line: "autoescape\\s*[:=]\\s*false"
+
+- key: QG-JV-SEC-0031
+  name: Android web views should keep scripting and file access off
+  languages: [java, kt]
+  category: SEC
+  severity: critical
+  effort: 25min
+  cwe: [79, 200]
+  owasp: [A5]
+  tags: [android, webview]
+  message: This setting lets loaded content run scripts or read local files.
+  summary: A web view enables JavaScript, universal access or file access.
+  why: |
+    A web view with these settings runs whatever the loaded page contains with access to the application
+    sandbox. Content injected on the network, or a redirect to an attacker page, then reads local files
+    and any bridge the application exposes.
+  fix: |
+    Keep scripting and file access disabled unless the view renders content you control, restrict
+    navigation to an allow-list, and never combine scripting with an unrestricted JavaScript bridge.
+  detect:
+    - invocation: [setJavaScriptEnabled, setAllowFileAccess, setAllowFileAccessFromFileURLs, setAllowUniversalAccessFromFileURLs]
+      argLiterals: [true]
+
+- key: QG-JV-SEC-0032
+  name: Sensitive data should not be written to shared storage
+  languages: [java, kt]
+  category: SEC
+  severity: critical
+  effort: 25min
+  cwe: [200, 312]
+  tags: [android, storage]
+  message: External storage is readable by other applications on the device.
+  summary: Data is written to external or shared storage.
+  why: |
+    Files there survive uninstallation and are visible to any application holding the storage
+    permission, so tokens, exports and caches written to that location are effectively public on the
+    device.
+  fix: |
+    Use the application-private directory, and encrypt anything sensitive before it is written. Share
+    files through a content provider with a per-file grant instead of a shared path.
+  detect:
+    - invocation: [getExternalStorageDirectory, getExternalStoragePublicDirectory, getExternalFilesDir]
+
+- key: QG-JV-SEC-0033
+  name: Broadcasts should be sent with a receiver permission
+  languages: [java, kt]
+  category: SEC
+  severity: major
+  effort: 20min
+  cwe: [927]
+  tags: [android]
+  message: This broadcast can be received by any application on the device.
+  summary: An implicit broadcast is sent without requiring a permission.
+  why: |
+    Every installed application can register for the action and read the payload, so anything included
+    in the intent is disclosed. A malicious receiver can also act on the event before the intended one
+    does.
+  fix: |
+    Send the broadcast to an explicit component, or require a signature-level permission that only your
+    own applications hold. Use the local broadcast mechanism for events that never leave the process.
+  detect:
+    - invocation: [sendBroadcast, sendOrderedBroadcast, sendStickyBroadcast]
+      argCount: 1
+
+- key: QG-JV-SEC-0034
+  name: Long-term cloud access keys should not be embedded
+  languages: [java, kt, py, js, ts, cs]
+  category: SEC
+  severity: blocker
+  effort: 30min
+  cwe: [798]
+  owasp: [A7]
+  tags: [secret, cloud]
+  message: This looks like a long-lived cloud access key committed in the source.
+  summary: A static cloud access key identifier appears in the code.
+  why: |
+    Keys in source control end up in every clone, in build logs and in container images, and they do not
+    expire. Automated scanners find them within minutes of a repository becoming public, which is how
+    most cloud compromises start.
+  fix: |
+    Delete the key, rotate it immediately, and obtain credentials at run time from the platform identity
+    mechanism — instance roles, workload identity or the secret manager.
+  detect:
+    - line: "(AKIA|ASIA)[0-9A-Z]{16}"
+    - line: "aws_secret_access_key\\s*[=:]\\s*[\"'][A-Za-z0-9/+=]{30,}"
+
+- key: QG-JV-SEC-0035
+  name: Version information should not be advertised
+  languages: [java, kt]
+  category: SEC
+  severity: minor
+  effort: 15min
+  cwe: [200]
+  owasp: [A5]
+  tags: [information-disclosure]
+  message: This response header names the technology and its version.
+  summary: The server or framework version is exposed in a response header.
+  why: |
+    Publishing the exact version lets an attacker look up the known vulnerabilities of that build before
+    trying anything, which turns reconnaissance into a lookup. It gives legitimate clients nothing.
+  fix: |
+    Remove or overwrite the header in the server configuration, and disable the framework setting that
+    adds it.
+  detect:
+    - string: ["X-Powered-By", "Server: Apache/", "Server: nginx/"]
+
+- key: QG-JV-BUG-0004
+  name: Resources should be closed
+  languages: [java]
+  category: BUG
+  severity: critical
+  effort: 20min
+  cwe: [772]
+  tags: [resource-leak]
+  message: This resource is opened without a try-with-resources block.
+  summary: A stream, connection or reader is created outside a try-with-resources statement.
+  why: |
+    An exception thrown before the close call leaves the handle open, and the file descriptor or
+    connection stays allocated until the process ends. Under load the pool empties and every later
+    request fails for a reason unrelated to its own work.
+  fix: |
+    Declare the resource in a try-with-resources statement so it is closed on every path, including the
+    exceptional ones.
+  bad: |
+    FileInputStream in = new FileInputStream(path);
+    read(in);
+    in.close();
+  good: |
+    try (FileInputStream in = new FileInputStream(path)) {
+        read(in);
+    }
+  detect:
+    - creation: [FileInputStream, FileOutputStream, FileReader, FileWriter, BufferedReader, Socket, ServerSocket]
+      absent: ["try ("]
+
+- key: QG-JV-BUG-0005
+  name: Boxed types should not be compared with the equality operator
+  languages: [java]
+  category: BUG
+  severity: critical
+  effort: 10min
+  tags: [suspicious, equality]
+  message: This compares references, not values.
+  summary: Two boxed numbers or strings are compared with == instead of equals.
+  why: |
+    The operator compares object identity, and the result depends on whether the runtime happened to
+    cache the value: small integers and interned literals compare equal, everything else does not. The
+    code therefore works in tests and fails on real data.
+  fix: |
+    Use equals, or compare the primitive values after unboxing. For possibly-null references, use the
+    null-safe helper of the standard library.
+  detect:
+    - line: "\\b(Integer|Long|Short|Byte|Double|Float|Character|Boolean|String)\\s+\\w+\\s*==\\s*\\w+"
+
+- key: QG-JV-BUG-0006
+  name: The result of a stream should be consumed
+  languages: [java]
+  category: BUG
+  severity: major
+  effort: 10min
+  tags: [suspicious, streams]
+  message: A stream without a terminal operation never runs.
+  summary: A stream pipeline is built as a statement and never terminated.
+  why: |
+    Intermediate operations are lazy: without a terminal operation nothing is executed, so the mapping or
+    filtering the code appears to perform simply does not happen. Nothing fails, which is what makes it
+    hard to notice.
+  fix: |
+    Add the terminal operation the pipeline needs — collect, forEach, count — or remove the statement if
+    it is left over.
+  detect:
+    - invocation: [stream, filter, map, peek, sorted, distinct]
+      resultUnused: true
+
+- key: QG-JV-SML-0010
+  name: Collections should be iterated with the enhanced for statement
+  languages: [java]
+  category: SML
+  severity: minor
+  effort: 10min
+  tags: [readability]
+  message: An index-based loop over a collection is harder to read and to keep correct.
+  summary: A collection is traversed with a manual index or an explicit iterator.
+  why: |
+    The index adds three places where an off-by-one can hide — the initialiser, the bound and the
+    increment — and none of them says anything about the intent. The enhanced form removes all three.
+  fix: |
+    Use the enhanced for statement, or a stream when the loop only maps or filters the elements.
+  detect:
+    - line: "for\\s*\\(\\s*(int|Integer)\\s+\\w+\\s*=\\s*0\\s*;[^;]*\\.size\\(\\)\\s*;"
+
+- key: QG-JV-SML-0011
+  name: Optional values should not be dereferenced without a check
+  languages: [java]
+  category: SML
+  severity: major
+  effort: 15min
+  tags: [null-safety]
+  message: Calling get on an optional throws when the value is absent.
+  summary: An optional is unwrapped without checking that a value is present.
+  why: |
+    The type exists to make absence explicit; unwrapping without a check reintroduces exactly the
+    failure it was meant to prevent, and the exception it throws says nothing about which value was
+    missing.
+  fix: |
+    Use orElse, orElseGet or orElseThrow with a meaningful exception, or map the value so the absent case
+    flows through naturally.
+  detect:
+    - invocation: [get]
+      receiver: [Optional]
+    - line: "\\.get\\(\\)"
+      requires: [Optional]
+
+- key: QG-JV-SML-0012
+  name: String comparisons should put the constant first
+  languages: [java]
+  category: SML
+  severity: minor
+  effort: 5min
+  tags: [null-safety]
+  message: Calling equals on a value that may be null throws instead of returning false.
+  summary: A possibly-null value is used as the receiver of an equality comparison with a literal.
+  why: |
+    Whichever side is the receiver must be non-null. Putting the variable first means a null value throws
+    where the intended answer was simply "not equal".
+  fix: |
+    Put the literal or constant on the left, or use the null-safe comparison helper of the standard
+    library.
+  bad: |
+    if (status.equals("OPEN")) { ... }
+  good: |
+    if ("OPEN".equals(status)) { ... }
+  detect:
+    - line: "\\b[a-z]\\w*\\.equals\\s*\\(\\s*\""
+
+- key: QG-JV-SML-0013
+  name: Exceptions should carry their cause
+  languages: [java, kt]
+  category: SML
+  severity: major
+  effort: 10min
+  tags: [exception, diagnostics]
+  message: This exception replaces the original one without keeping it as the cause.
+  summary: A caught exception is wrapped in a new one that does not receive it as cause.
+  why: |
+    The stack trace of the original failure is discarded, so the log shows where the wrapper was created
+    and nothing about what actually broke. Diagnosing the incident then requires reproducing it.
+  fix: |
+    Pass the caught exception as the cause of the new one, or add it with initCause, so both traces are
+    printed together.
+  detect:
+    - line: "catch\\s*\\([^)]*\\)\\s*\\{[^}]*throw\\s+new\\s+\\w+\\s*\\(\\s*\"[^\"]*\"\\s*\\)"

@@ -1,0 +1,518 @@
+# C# / .NET maintainability batch 2: async, time, logging, ASP.NET controllers, collections.
+
+- key: QG-CS-SML-0052
+  name: Asynchronous calls should not be awaited by blocking
+  languages: [cs]
+  category: SML
+  severity: critical
+  effort: 20min
+  tags: [async]
+  message: Blocking on an asynchronous call wastes a thread and can deadlock.
+  summary: An awaitable call is completed with a blocking wait instead of await.
+  why: |
+    The thread stays parked until the operation finishes, so the pool loses a worker for the whole
+    duration of an I/O call. If the continuation needs the captured context, neither side can proceed and
+    the request hangs forever.
+  fix: |
+    Make the caller asynchronous and await the call, all the way to the entry point. Only a top-level
+    main method has a reason to block.
+  detect:
+    - invocation: [GetResult, WaitAll, WaitAny]
+      requires: [Task]
+    - line: "\\.Wait\\s*\\(\\s*\\)\\s*;"
+      requires: [Task, async]
+
+- key: QG-CS-SML-0053
+  name: Asynchronous methods should be named accordingly
+  languages: [cs]
+  category: SML
+  severity: minor
+  effort: 10min
+  tags: [async, naming]
+  message: This method returns a task but its name does not end with Async.
+  summary: A method returning Task or ValueTask is not named with the Async suffix.
+  why: |
+    Callers rely on the suffix to know that the result must be awaited. Without it, forgetting the await
+    is easy, and the operation then runs unobserved with its exceptions swallowed.
+  fix: |
+    Rename the method with the Async suffix, and keep the synchronous overload — if there is one — under
+    the plain name.
+  detect:
+    - line: "(public|private|protected|internal)[^\\n(]*\\b(Task|ValueTask)(<[^>]*>)?\\s+(?!\\w*Async\\b)\\w+\\s*\\("
+
+- key: QG-CS-SML-0054
+  name: Library code should not capture the synchronization context
+  languages: [cs]
+  category: SML
+  severity: major
+  effort: 20min
+  tags: [async]
+  message: This await resumes on the captured context; a library should not depend on it.
+  summary: An awaited call in library code does not opt out of context capture.
+  why: |
+    By default the continuation is scheduled back on the caller's context, which costs a hop and, when
+    the caller blocks anywhere up the stack, deadlocks. Library code has no reason to need that context.
+  fix: |
+    Append ConfigureAwait(false) to awaits in library code, or use a synchronization-context-free host.
+    Application code that touches the UI keeps the default.
+  detect:
+    - line: "await\\s+[A-Za-z_][\\w.]*\\([^;]*\\)\\s*;"
+      absent: [ConfigureAwait, Microsoft.AspNetCore, WPF]
+
+- key: QG-CS-SML-0055
+  name: Instants should be recorded in UTC with an explicit kind
+  languages: [cs, vb]
+  category: SML
+  severity: major
+  effort: 15min
+  tags: [time]
+  message: This value has an unspecified time zone, so comparisons and storage are ambiguous.
+  summary: A DateTime is created or parsed without stating its kind or offset.
+  why: |
+    An unspecified kind is interpreted differently by serializers, databases and comparison operators, so
+    the same instant reads as several different times depending on who looks at it. Daylight saving turns
+    the ambiguity into a one-hour error twice a year.
+  fix: |
+    Store instants as UTC, pass DateTimeKind explicitly when constructing one, and prefer DateTimeOffset
+    where the original offset matters.
+  detect:
+    - creation: [DateTime]
+      argCount: 3
+    - creation: [DateTime]
+      argCount: 6
+
+- key: QG-CS-SML-0056
+  name: Date parsing and formatting should state the culture
+  languages: [cs, vb]
+  category: SML
+  severity: major
+  effort: 15min
+  tags: [time, globalization]
+  message: Without a format provider this depends on the culture of the machine.
+  summary: A date is parsed or formatted without a format provider.
+  why: |
+    Day and month order, separators and calendars all come from the current culture, so a value written
+    on one machine is misread on another. Because development machines usually share a locale, this
+    surfaces first in production.
+  fix: |
+    Pass the invariant culture for machine-readable values, with an explicit format string, and use the
+    user's culture only for display.
+  detect:
+    - invocation: [Parse, ParseExact, TryParse]
+      receiver: [DateTime, DateTimeOffset]
+      argCount: 1
+
+- key: QG-CS-SML-0057
+  name: Collections exposed by properties should be read-only
+  languages: [cs]
+  category: SML
+  severity: major
+  effort: 20min
+  tags: [design, api]
+  message: Callers can modify this collection through the property.
+  summary: A property exposes a mutable collection with a public setter or a mutable interface.
+  why: |
+    Handing out a mutable collection lets any caller add or remove items without going through the
+    validation the owning type performs, so its invariants can be broken from the outside. Replacing the
+    whole collection through a setter also breaks any consumer holding the previous reference.
+  fix: |
+    Expose IReadOnlyList or IReadOnlyCollection, keep the mutable instance private, and offer explicit
+    Add and Remove methods where callers legitimately need to change the contents.
+  detect:
+    - line: "public\\s+(List|Dictionary|HashSet|Collection|IList|ICollection|IDictionary)<[^>]*>\\s+\\w+\\s*\\{[^}]*set\\s*;"
+
+- key: QG-CS-SML-0058
+  name: Collection-specific members should be preferred over LINQ
+  languages: [cs]
+  category: SML
+  severity: minor
+  effort: 10min
+  tags: [linq, performance]
+  message: The collection has a direct member for this; the LINQ extension iterates instead.
+  summary: A LINQ extension is used where the concrete collection exposes an equivalent member.
+  why: |
+    The extension methods walk the sequence through an enumerator, while the collection can answer from
+    its own structure — a hash lookup, an index, a cached node. On hot paths that difference shows up as
+    allocations and time spent in the enumerator.
+  fix: |
+    Use the member the collection provides: Contains and Exists on lists, the indexer instead of
+    ElementAt, First and Last properties on linked lists, and the set operations on sets.
+  detect:
+    - invocation: [ElementAt, ElementAtOrDefault]
+
+- key: QG-CS-SML-0059
+  name: Sequences should be filtered before they are sorted
+  languages: [cs]
+  category: SML
+  severity: major
+  effort: 10min
+  tags: [linq, performance]
+  message: This sorts the whole sequence and then discards part of it.
+  summary: A filter is applied after an ordering operator.
+  why: |
+    Sorting is the expensive step and it is being paid for elements that are thrown away immediately
+    afterwards. On a large sequence the wasted work grows faster than the input.
+  fix: |
+    Move the filter before the ordering so only the surviving elements are sorted.
+  bad: |
+    var top = items.OrderBy(i => i.Name).Where(i => i.IsActive);
+  good: |
+    var top = items.Where(i => i.IsActive).OrderBy(i => i.Name);
+  detect:
+    - line: "\\.OrderBy(Descending)?\\s*\\([^)]*\\)\\s*\\.Where\\s*\\("
+
+- key: QG-CS-SML-0060
+  name: Existence checks should use Contains
+  languages: [cs]
+  category: SML
+  severity: minor
+  effort: 5min
+  tags: [linq, readability]
+  message: This equality predicate is what Contains does.
+  summary: Any is used with a lambda that only compares an element for equality.
+  why: |
+    Contains states the intent in one word and lets the collection use its own lookup, which for a set or
+    a dictionary is a hash probe rather than a scan. The lambda form also allocates a closure when it
+    captures the compared value.
+  fix: |
+    Replace the call with Contains and pass the value directly.
+  bad: |
+    if (ids.Any(id => id == wanted)) { ... }
+  good: |
+    if (ids.Contains(wanted)) { ... }
+  detect:
+    - line: "\\.Any\\s*\\(\\s*\\w+\\s*=>\\s*\\w+\\s*==\\s*[\\w.\"]+\\s*\\)"
+
+- key: QG-CS-SML-0062
+  name: Conditional returns of booleans should be simplified
+  languages: [cs, vb]
+  category: SML
+  severity: minor
+  effort: 5min
+  tags: [readability]
+  message: This branch returns the value of its own condition.
+  summary: A condition returns true in one branch and false in the other.
+  why: |
+    Four lines express what the condition already says, and the reader has to check that the branches are
+    not swapped. Every later change has to keep both branches consistent for no benefit.
+  fix: |
+    Return the condition itself, negating it if needed.
+  bad: |
+    if (count > 0) return true;
+    else return false;
+  good: |
+    return count > 0;
+  detect:
+    - line: "if\\s*\\([^)]*\\)\\s*return\\s+(true|false)\\s*;\\s*(else\\s*)?return\\s+(true|false)\\s*;"
+
+- key: QG-CS-SML-0063
+  name: Default clauses should be first or last
+  languages: [cs]
+  category: SML
+  severity: minor
+  effort: 5min
+  tags: [readability]
+  message: A default clause in the middle of the cases is easy to miss.
+  summary: The default clause of a switch is placed between two case clauses.
+  why: |
+    Readers scan for the fallback at the top or the bottom, so a default hidden in the middle reads as
+    another case. Reordering the cases later can also change which clause the eye associates with it.
+  fix: |
+    Move the default clause to the end of the switch, or to the top when it acts as a guard.
+  detect:
+    - line: "^\\s*default\\s*:"
+      requires: [switch]
+      absent: [switch expression]
+
+- key: QG-CS-SML-0064
+  name: Empty clauses should be removed
+  languages: [cs]
+  category: SML
+  severity: minor
+  effort: 5min
+  tags: [readability, suspicious]
+  message: This clause does nothing and can be removed.
+  summary: A case or default clause has no statements and no comment.
+  why: |
+    An empty clause is either a case someone meant to implement or a leftover, and there is no way to
+    tell which from the code. Fall-through behaviour also makes an empty case look intentional when it is
+    not.
+  fix: |
+    Delete the clause, or add the handling it needs. If the case is deliberately ignored, keep it with a
+    comment stating why.
+  detect:
+    - line: "^\\s*default\\s*:\\s*(break\\s*;)?\\s*$"
+
+- key: QG-CS-SML-0066
+  name: Controller actions should declare their HTTP verb
+  languages: [cs]
+  category: SML
+  severity: major
+  effort: 10min
+  tags: [aspnet, api]
+  message: This action has no HTTP verb attribute, so routing has to guess how it is reachable.
+  summary: A public controller action is declared without an HTTP method attribute.
+  why: |
+    Convention-based routing can expose the action to verbs it was never designed for — a read action
+    reachable by POST, or a mutation reachable by GET, which browsers and proxies are free to prefetch.
+    The generated API description is wrong as well.
+  fix: |
+    Annotate every action with the verb it supports, and pair it with the route template so the contract
+    is visible in the signature.
+  detect:
+    - line: "public\\s+(async\\s+)?(Task<)?(IActionResult|ActionResult|IResult)"
+      absent: ["[HttpGet", "[HttpPost", "[HttpPut", "[HttpDelete", "[HttpPatch", "[Route", "[AcceptVerbs"]
+
+- key: QG-CS-SML-0067
+  name: Controller actions should not read the raw request
+  languages: [cs]
+  category: SML
+  severity: major
+  effort: 25min
+  tags: [aspnet]
+  message: Reading the request directly bypasses model binding and validation.
+  summary: An action reads values out of the raw request instead of binding parameters.
+  why: |
+    Model binding converts, validates and documents the input; reading the request by hand skips all
+    three, so type errors become run-time failures and the generated API description no longer matches
+    what the endpoint accepts. Validation attributes on the model are silently ignored.
+  fix: |
+    Declare parameters or a model type and let the framework bind them, then check ModelState. Reach for
+    the raw request only for streaming uploads.
+  detect:
+    - member: [Request.Form, Request.Query, Request.Headers]
+      requires: [Controller, ControllerBase]
+
+- key: QG-CS-SML-0068
+  name: Model validation should be checked before the action acts
+  languages: [cs]
+  category: SML
+  severity: major
+  effort: 15min
+  tags: [aspnet, validation]
+  message: This action uses the bound model without checking whether binding and validation succeeded.
+  summary: An action with a bound model never inspects the model state.
+  why: |
+    Binding failures and violated validation attributes do not stop the action: it runs with default or
+    partially filled values. The request then either fails deeper down with a confusing error or is
+    accepted with invalid data.
+  fix: |
+    Check ModelState and return a bad request early, or enable automatic validation with the ApiController
+    attribute so the framework does it for every action.
+  detect:
+    - line: "public\\s+(async\\s+)?(Task<)?(IActionResult|ActionResult)[^\\n]*\\([^)]*(Model|Dto|Request)\\s+\\w+"
+      absent: [ModelState, ApiController]
+
+- key: QG-CS-SML-0069
+  name: Route templates on actions should be relative
+  languages: [cs]
+  category: SML
+  severity: major
+  effort: 10min
+  tags: [aspnet, routing]
+  message: A leading slash detaches this route from the controller prefix.
+  summary: An action route template starts with a slash.
+  why: |
+    The template replaces the controller prefix instead of extending it, so the endpoint ends up at the
+    root of the application. Moving or renaming the controller no longer moves the action with it, and
+    two controllers can quietly claim the same path.
+  fix: |
+    Write the action template relative to the controller route, and keep the shared prefix on the
+    controller attribute.
+  detect:
+    - line: "\\[(HttpGet|HttpPost|HttpPut|HttpDelete|HttpPatch|Route)\\s*\\(\\s*\"/"
+
+- key: QG-CS-SML-0070
+  name: Exceptions in a catch clause should be logged with the exception
+  languages: [cs]
+  category: SML
+  severity: major
+  effort: 10min
+  tags: [logging, exception]
+  message: This log call in a catch clause does not pass the exception.
+  summary: A logging call inside a catch block omits the caught exception.
+  why: |
+    Without the exception object the log keeps the message and loses the type, the stack trace and the
+    inner exceptions — everything needed to find the cause. The entry then says that something failed but
+    not where or why.
+  fix: |
+    Pass the exception as the first argument of the logging call, and keep the message describing the
+    operation that failed.
+  bad: |
+    catch (IOException ex) { logger.LogError("could not save the file"); }
+  good: |
+    catch (IOException ex) { logger.LogError(ex, "could not save {Path}", path); }
+  detect:
+    - invocation: [LogError, LogCritical, LogWarning]
+      absent: [LogError(ex, LogError(exception, LogCritical(ex]
+
+- key: QG-CS-SML-0071
+  name: Diagnostics should not go through the trace API
+  languages: [cs, vb]
+  category: SML
+  severity: minor
+  effort: 15min
+  tags: [logging]
+  message: Trace output bypasses the logging pipeline.
+  summary: Output is written through the trace helpers.
+  why: |
+    Trace writes have no level and no structure, and they reach whichever listeners happen to be
+    configured — often none in production. The information is therefore either lost or impossible to
+    filter.
+  fix: |
+    Use the injected logger with an appropriate level so the output is routed, filtered and enriched like
+    the rest of the diagnostics.
+  detect:
+    - invocation: [Write, WriteLine, WriteLineIf]
+      receiver: [Trace, Debug]
+
+- key: QG-CS-SML-0072
+  name: Logger fields should follow one naming convention
+  languages: [cs]
+  category: SML
+  severity: minor
+  effort: 5min
+  tags: [logging, naming]
+  message: This logger field does not follow the private static readonly convention.
+  summary: A logger is held in a field that is public, mutable, or unconventionally named.
+  why: |
+    A logger is infrastructure shared by the whole type: exposing or reassigning it lets other code
+    redirect the diagnostics of this class. Inconsistent naming also makes it harder to see at a glance
+    whether a type logs at all.
+  fix: |
+    Declare it private readonly (static where the logger is not injected) and name it consistently across
+    the codebase.
+  detect:
+    - line: "(public|protected|internal)\\s+(static\\s+)?(ILogger|ILog|Logger)\\b"
+
+- key: QG-CS-SML-0073
+  name: Guid values should not be created empty by accident
+  languages: [cs, vb]
+  category: SML
+  severity: major
+  effort: 5min
+  tags: [suspicious]
+  message: This creates the all-zero Guid, not a new identifier.
+  summary: A Guid is constructed with its parameterless constructor.
+  why: |
+    The result is the empty Guid, so every value created this way is identical. Code that expects a fresh
+    identifier ends up with rows or messages that collide, and the mistake looks like a normal
+    construction.
+  fix: |
+    Call Guid.NewGuid for a fresh value, or Guid.Empty when the empty one is intended, so the choice is
+    explicit.
+  detect:
+    - line: "new\\s+Guid\\s*\\(\\s*\\)"
+
+- key: QG-CS-SML-0074
+  name: Substring should not be used to skip a prefix before searching
+  languages: [cs, vb]
+  category: SML
+  severity: minor
+  effort: 10min
+  tags: [performance]
+  message: This allocates a copy of the string only to search inside it.
+  summary: A search is performed on the result of Substring.
+  why: |
+    Substring copies the remainder of the string before the search even starts, so the work is paid twice
+    — once in allocation, once in scanning. The overloads that take a start index do the same job without
+    the copy.
+  fix: |
+    Pass the start index to the search method, or use a span over the original string.
+  bad: |
+    var index = text.Substring(10).IndexOf(needle);
+  good: |
+    var index = text.IndexOf(needle, 10);
+  detect:
+    - line: "\\.Substring\\s*\\([^)]*\\)\\s*\\.(IndexOf|LastIndexOf|Contains|StartsWith)"
+
+- key: QG-CS-SML-0075
+  name: Empty comments should be removed
+  languages: [cs, vb]
+  category: SML
+  severity: minor
+  effort: 2min
+  tags: [readability]
+  message: This comment contains no text.
+  summary: A comment marker is left without any content.
+  why: |
+    An empty comment adds a line that carries no information, and it usually marks where an explanation
+    used to be — so a reader assumes something was meant to be there.
+  fix: |
+    Remove the marker, or write the explanation the code needs.
+  detect:
+    - line: "^\\s*(//+|'+)\\s*$"
+
+- key: QG-CS-SML-0076
+  name: Archive extraction should be bounded
+  languages: [cs, vb]
+  category: SML
+  severity: critical
+  effort: 30min
+  cwe: [409]
+  tags: [dos, io]
+  message: This extraction has no limit on the size or number of entries.
+  summary: An archive is expanded without checking the uncompressed size.
+  why: |
+    A small archive can expand to an arbitrarily large payload, filling the disk or memory of the
+    machine — the classic decompression bomb. Entry names can also contain path segments that escape the
+    destination directory.
+  fix: |
+    Inspect each entry before extracting: cap the total uncompressed size and the entry count, and verify
+    that the resolved destination path stays inside the target directory.
+  detect:
+    - invocation: [ExtractToDirectory, ExtractToFile, ExtractRelativeToDirectory]
+
+- key: QG-CS-CNV-0006
+  name: The goto statement should not be used
+  languages: [cs, vb]
+  category: CNV
+  severity: major
+  effort: 20min
+  tags: [readability]
+  message: A jump to a label makes the control flow hard to follow.
+  summary: Control is transferred with a goto statement.
+  why: |
+    Reading the method no longer follows the page: the reader has to search for the label and reconstruct
+    which paths reach it. Refactoring tools cannot help either, so the code tends to stay as it is.
+  fix: |
+    Restructure with the loop and branch constructs the language provides — an early return, a break with
+    a flag, or an extracted function usually replaces the jump directly.
+  detect:
+    - line: "^\\s*goto\\s+\\w+\\s*;"
+
+- key: QG-CS-CNV-0007
+  name: Numeric literal suffixes should be upper case
+  languages: [cs]
+  category: CNV
+  severity: minor
+  effort: 2min
+  tags: [readability]
+  message: A lower-case l is hard to distinguish from the digit one.
+  summary: A numeric literal uses a lower-case type suffix.
+  why: |
+    In most fonts the lower-case l and the digit 1 are nearly identical, so a long literal can be read as
+    a different value. The upper-case suffix removes the ambiguity at no cost.
+  fix: |
+    Write the suffix in upper case, and consider digit separators for long numbers.
+  detect:
+    - line: "\\b\\d+[lu]\\b"
+
+- key: QG-CS-CNV-0008
+  name: Increments should not be mixed into larger expressions
+  languages: [cs]
+  category: CNV
+  severity: major
+  effort: 10min
+  tags: [readability, suspicious]
+  message: The order in which this increment applies is easy to misread.
+  summary: An increment or decrement operator appears inside a call argument or a compound expression.
+  why: |
+    Whether the surrounding expression sees the old or the new value depends on the position of the
+    operator, and readers routinely get it wrong. When the same variable appears twice in the expression,
+    the result also depends on evaluation order.
+  fix: |
+    Move the increment to its own statement before or after the expression, so the value used is
+    unambiguous.
+  detect:
+    - line: "\\b(?!for|foreach|while|if|switch|return|lock|using)[A-Za-z_]\\w*\\s*\\([^);]*\\w(\\+\\+|--)[^);]*\\)"

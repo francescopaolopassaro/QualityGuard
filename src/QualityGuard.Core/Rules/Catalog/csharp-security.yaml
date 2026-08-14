@@ -1,0 +1,455 @@
+# C# / .NET security batch. Every entry is written from scratch for QualityGuard.
+
+- key: QG-CS-SEC-0047
+  name: Password derivation should use a random salt and enough iterations
+  languages: [cs]
+  category: SEC
+  severity: critical
+  effort: 25min
+  cwe: [759, 916]
+  owasp: [A2]
+  tags: [crypto, password]
+  message: This key derivation uses a fixed salt or too few iterations.
+  summary: A password-based key is derived with a constant salt or a low iteration count.
+  why: |
+    A fixed salt means the same password always produces the same hash, so one precomputed table breaks
+    every account at once. A low iteration count makes each guess cheap, which is the only thing standing
+    between a leaked database and the plaintext passwords.
+  fix: |
+    Generate a random salt of at least 16 bytes per password with a cryptographic RNG, store it next to
+    the hash, and use a high iteration count (or a memory-hard algorithm such as Argon2 or bcrypt).
+  bad: |
+    var kdf = new Rfc2898DeriveBytes(password, Encoding.UTF8.GetBytes("static-salt"));
+  good: |
+    var salt = RandomNumberGenerator.GetBytes(16);
+    var kdf = new Rfc2898DeriveBytes(password, salt, 210_000, HashAlgorithmName.SHA256);
+  detect:
+    - line: "new\\s+Rfc2898DeriveBytes\\s*\\([^,)]+,\\s*(Encoding\\.|\"|new\\s+byte\\[\\s*\\]\\s*\\{)"
+    - line: "new\\s+(PasswordDeriveBytes|Rfc2898DeriveBytes)\\s*\\([^,)]+,[^,)]+,\\s*([0-9]{1,4})\\s*[,)]"
+
+- key: QG-CS-SEC-0048
+  name: Database connections should not use an empty password
+  languages: [cs, vb]
+  category: SEC
+  severity: blocker
+  effort: 20min
+  cwe: [521]
+  owasp: [A7]
+  tags: [database, credentials]
+  message: This connection string authenticates with an empty password.
+  summary: A connection string contains a password field with no value.
+  why: |
+    An account without a password is reachable by anyone who can open a socket to the database, and it
+    usually belongs to a privileged user because that is the account people test with. Network rules are
+    the only remaining control, and they rarely survive a change of environment.
+  fix: |
+    Give the account a strong password, or switch to integrated or managed identity authentication so no
+    secret has to travel at all. Keep the value in the secret store, never in the connection string.
+  detect:
+    - string: ["password=;", "pwd=;", "password= ;", "user id=sa;password=;"]
+
+- key: QG-CS-SEC-0049
+  name: Cryptographic primitives should not be hand-written
+  languages: [cs, vb]
+  category: SEC
+  severity: critical
+  effort: 60min
+  cwe: [327]
+  owasp: [A2]
+  tags: [crypto]
+  message: This type implements a cryptographic primitive by hand.
+  summary: A class derives from a cryptographic base type to provide its own algorithm.
+  why: |
+    Correct cryptography depends on details that do not show up in tests: constant-time comparisons,
+    padding, key schedules and side channels. Code that produces plausible-looking ciphertext can still
+    be trivial to break, and the failure is silent until someone attacks it.
+  fix: |
+    Use the algorithms the platform ships — AES-GCM for encryption, HMAC for authentication, the
+    certified RNG for randomness — and keep custom code to how keys are stored and rotated.
+  detect:
+    - line: "class\\s+\\w+\\s*:\\s*(SymmetricAlgorithm|AsymmetricAlgorithm|HashAlgorithm|KeyedHashAlgorithm|DeriveBytes|RandomNumberGenerator)\\b"
+
+- key: QG-CS-SEC-0050
+  name: File permissions should not grant access to everyone
+  languages: [cs, vb]
+  category: SEC
+  severity: critical
+  effort: 20min
+  cwe: [732]
+  owasp: [A5]
+  tags: [permissions]
+  message: This access rule grants file access to every account on the machine.
+  summary: An access rule is created for the Everyone or Users identity.
+  why: |
+    Any process on the host — including one running as an unprivileged service that was compromised —
+    can then read or overwrite the file. For data files that is a leak; for executables, scripts or
+    configuration it is a way to make the application run someone else's code.
+  fix: |
+    Grant access to the specific service account that needs it, with the smallest right that works, and
+    let inheritance from a properly secured directory handle the rest.
+  detect:
+    - creation: [FileSystemAccessRule, DirectorySecurity, FileSecurity]
+      argLiterals: [Everyone, BUILTIN\Users, World]
+    - identifier: [WorldSid]
+
+- key: QG-CS-SEC-0051
+  name: Initialisation vectors should be random for every message
+  languages: [cs, vb]
+  category: SEC
+  severity: critical
+  effort: 20min
+  cwe: [329, 330]
+  owasp: [A2]
+  tags: [crypto]
+  message: This initialisation vector is fixed, so identical plaintexts produce identical ciphertexts.
+  summary: An IV is assigned a constant or an all-zero buffer.
+  why: |
+    A repeated IV in CBC mode leaks whether two messages start with the same content and enables
+    chosen-plaintext attacks; in counter modes it destroys confidentiality outright. The encryption still
+    works, which is why the mistake survives testing.
+  fix: |
+    Let the algorithm generate the IV, or fill it from a cryptographic RNG for each message, and store it
+    alongside the ciphertext — an IV is not a secret, it only has to be unique.
+  bad: |
+    aes.IV = new byte[16];
+  good: |
+    aes.GenerateIV();
+    // prepend aes.IV to the ciphertext
+  detect:
+    - line: "\\.IV\\s*=\\s*(new\\s+byte\\[|Encoding\\.|\")"
+
+- key: QG-CS-SEC-0052
+  name: Executables should be started with a full path
+  languages: [cs, vb]
+  category: SEC
+  severity: major
+  effort: 20min
+  cwe: [426]
+  owasp: [A1]
+  tags: [process]
+  message: This process is started by name, so the executable is resolved through PATH.
+  summary: A process is launched with a bare executable name instead of an absolute path.
+  why: |
+    The operating system searches a list of directories, and whoever can write to one of the earlier
+    entries — or to the working directory — decides which binary actually runs. The application then
+    executes that code with its own privileges.
+  fix: |
+    Pass the full path of the executable, and set the working directory explicitly. Where the location
+    varies, resolve it once from configuration rather than relying on the search order.
+  detect:
+    - line: "Process\\.Start\\s*\\(\\s*\"[A-Za-z0-9_.-]+\"\\s*[,)]"
+
+- key: QG-CS-SEC-0053
+  name: Obsolete TLS versions should not be selected
+  languages: [cs, vb]
+  category: SEC
+  severity: critical
+  effort: 15min
+  cwe: [326, 327]
+  owasp: [A2]
+  tags: [tls]
+  message: This code pins an obsolete SSL or TLS version.
+  summary: A protocol older than TLS 1.2 is configured explicitly.
+  why: |
+    SSL 3.0 and TLS 1.0/1.1 have published attacks against their cipher suites and handshake, and modern
+    servers are removing them. Pinning them means the application keeps negotiating a protocol whose
+    protection is already considered broken.
+  fix: |
+    Do not set the protocol at all and let the platform choose, or select TLS 1.2 and 1.3 explicitly.
+    Keep the setting in configuration so it can be raised without a code change.
+  detect:
+    - member: [SecurityProtocolType.Ssl3, SecurityProtocolType.Tls, SecurityProtocolType.Tls11, SslProtocols.Ssl2, SslProtocols.Ssl3, SslProtocols.Tls, SslProtocols.Tls11]
+
+- key: QG-CS-SEC-0054
+  name: Directory connections should be authenticated
+  languages: [cs, vb]
+  category: SEC
+  severity: critical
+  effort: 20min
+  cwe: [521]
+  owasp: [A7]
+  tags: [ldap]
+  message: This directory connection binds anonymously.
+  summary: An LDAP or directory connection is opened without credentials.
+  why: |
+    An anonymous bind gives the server no way to apply per-user access rules, so the application sees
+    whatever the directory exposes publicly — and anyone able to reach the endpoint can do the same.
+    Results also change silently when the directory tightens anonymous access.
+  fix: |
+    Bind with a dedicated service account over LDAPS, keeping the credentials in the secret store, and
+    grant that account only the read scope the application needs.
+  detect:
+    - member: [AuthenticationTypes.Anonymous, AuthenticationTypes.None]
+    - line: "new\\s+DirectoryEntry\\s*\\(\\s*[^,)]+\\s*\\)\\s*;"
+
+- key: QG-CS-SEC-0055
+  name: Developer diagnostics should not be enabled unconditionally
+  languages: [cs]
+  category: SEC
+  severity: critical
+  effort: 15min
+  cwe: [489]
+  owasp: [A5]
+  tags: [aspnet, debug]
+  message: This diagnostic middleware is registered without checking the environment.
+  summary: A developer error page or diagnostic endpoint is added outside a development-only branch.
+  why: |
+    The developer exception page prints the stack trace, the source line and the request state to
+    whoever triggered the error. That hands an attacker the internal structure of the application and
+    often connection strings or tokens held in the request context.
+  fix: |
+    Register it only inside an environment check, and give production a generic error handler that logs
+    the detail server-side and returns a neutral page.
+  bad: |
+    app.UseDeveloperExceptionPage();
+  good: |
+    if (app.Environment.IsDevelopment())
+        app.UseDeveloperExceptionPage();
+    else
+        app.UseExceptionHandler("/error");
+  detect:
+    - invocation: [UseDeveloperExceptionPage, UseDatabaseErrorPage, UseBrowserLink]
+      absent: [IsDevelopment]
+
+- key: QG-CS-SEC-0056
+  name: Temporary data should not be written to a shared directory
+  languages: [cs, vb]
+  category: SEC
+  severity: major
+  effort: 20min
+  cwe: [377, 379]
+  tags: [tempfile]
+  message: This path points at a world-writable temporary directory.
+  summary: A file is written to a fixed, publicly writable temporary location.
+  why: |
+    Every account on the machine can create, replace or read files there. Another process can win the
+    race and place a symlink at the path, or simply read the data the application drops — which is often
+    an export, a token or an upload waiting to be processed.
+  fix: |
+    Create the file in a directory the application owns, with restrictive permissions, and use the
+    platform helpers that create and open it atomically with a unique name.
+  detect:
+    - string: ["/tmp/", "/var/tmp/", "C:\\Temp\\", "C:\\Windows\\Temp"]
+
+- key: QG-CS-SEC-0057
+  name: Block ciphers should use an authenticated mode
+  languages: [cs, vb]
+  category: SEC
+  severity: critical
+  effort: 30min
+  cwe: [327]
+  owasp: [A2]
+  tags: [crypto]
+  message: This cipher mode or padding leaves the ciphertext malleable.
+  summary: A cipher is configured with ECB mode or with padding known to enable oracle attacks.
+  why: |
+    ECB encrypts identical blocks identically, so structure in the plaintext survives into the
+    ciphertext. Unauthenticated modes with certain padding let an attacker flip bits or use the error
+    behaviour of the receiver as an oracle to decrypt the data, without ever learning the key.
+  fix: |
+    Use an authenticated mode such as AES-GCM, or CBC combined with a separate HMAC over the ciphertext
+    that is verified before decryption. Never mix mode selection with key reuse across purposes.
+  detect:
+    - member: [CipherMode.ECB, PaddingMode.None, PaddingMode.Zeros, RSAEncryptionPadding.Pkcs1]
+
+- key: QG-CS-SEC-0058
+  name: Framework input validation should not be turned off
+  languages: [cs, vb]
+  category: SEC
+  severity: critical
+  effort: 20min
+  cwe: [20]
+  owasp: [A3]
+  tags: [aspnet, xss]
+  message: Request validation is disabled for this action.
+  summary: An action or page opts out of the framework's request validation.
+  why: |
+    Request validation is a coarse net, but it is the last one that catches markup arriving in a field
+    nobody thought to encode. Turning it off is usually done to accept one rich-text field and then
+    applies to every value the endpoint receives.
+  fix: |
+    Leave validation on and accept rich content through a dedicated field that is sanitized explicitly
+    with an HTML sanitizer before storage and encoded on output.
+  detect:
+    - line: "ValidateInput\\s*\\(\\s*false\\s*\\)"
+    - line: "validateRequest\\s*=\\s*\"false\""
+    - identifier: [AllowHtml]
+
+- key: QG-CS-SEC-0059
+  name: Request size should stay bounded
+  languages: [cs]
+  category: SEC
+  severity: major
+  effort: 15min
+  cwe: [770]
+  owasp: [A6]
+  tags: [aspnet, dos]
+  message: This endpoint accepts requests of unlimited size.
+  summary: A request size limit is removed or set to the maximum value.
+  why: |
+    Without a ceiling, a single client can stream gigabytes into memory or onto disk and exhaust the
+    resources of the whole process. It costs the attacker one connection and takes down every other
+    request being served.
+  fix: |
+    Keep the default limit, or set an explicit maximum that matches the largest legitimate payload.
+    For file uploads, stream to disk with a quota instead of buffering the body.
+  detect:
+    - identifier: [DisableRequestSizeLimit]
+    - line: "(MultipartBodyLengthLimit|MaxRequestBodySize|RequestSizeLimit)\\s*[=(]\\s*(long\\.MaxValue|int\\.MaxValue|null)"
+
+- key: QG-CS-SEC-0060
+  name: XML signatures should be verified against a known key
+  languages: [cs, vb]
+  category: SEC
+  severity: critical
+  effort: 30min
+  cwe: [347]
+  owasp: [A2]
+  tags: [crypto, xml]
+  message: This signature check trusts the key embedded in the document.
+  summary: A signed XML document is verified without supplying the expected key.
+  why: |
+    The parameterless check takes the key from the document's own KeyInfo element, so an attacker signs
+    the payload with their own key, ships the matching public key inside it and the verification
+    succeeds. The signature then proves nothing.
+  fix: |
+    Pass the public key or certificate you already trust to the verification call, and reject documents
+    whose signature does not match it. Validate the reference URIs as well, so only the parts you expect
+    are covered.
+  detect:
+    - invocation: [CheckSignature]
+      argCount: 0
+
+- key: QG-CS-SEC-0061
+  name: Token signing keys should not be embedded in the code
+  languages: [cs, vb]
+  category: SEC
+  severity: blocker
+  effort: 30min
+  cwe: [798, 321]
+  owasp: [A7]
+  tags: [jwt, secret]
+  message: This signing key is a literal in the source.
+  summary: A symmetric security key is built from a hardcoded string.
+  why: |
+    Anyone with the source — or with the compiled assembly, which is just as readable — can mint tokens
+    that the application accepts as genuine. That is authentication bypass for every user, and rotating
+    the key requires a rebuild and redeploy.
+  fix: |
+    Load the key from the secret store or key vault at startup, keep it out of source control, and treat
+    the current value as compromised: rotate it and invalidate the tokens already issued.
+  detect:
+    - line: "new\\s+SymmetricSecurityKey\\s*\\(\\s*Encoding\\.[A-Za-z0-9]+\\.GetBytes\\s*\\(\\s*\""
+
+- key: QG-CS-SEC-0062
+  name: Content security policies should not allow inline code
+  languages: [cs, raz]
+  category: SEC
+  severity: major
+  effort: 25min
+  cwe: [79]
+  owasp: [A3]
+  tags: [csp, xss]
+  message: This content security policy allows inline scripts or any source.
+  summary: A CSP header value contains a wildcard source or permits unsafe inline execution.
+  why: |
+    A policy that allows inline code cannot distinguish the page's own scripts from those an injection
+    adds, which removes the main reason for having a policy. A wildcard source does the same for
+    externally loaded scripts.
+  fix: |
+    Move inline scripts into files, then allow only your origins plus a per-request nonce or hash.
+    Introduce the policy in report-only mode first so violations are visible before they break the page.
+  detect:
+    - string: ["unsafe-inline", "unsafe-eval", "script-src *", "default-src *"]
+
+- key: QG-CS-SEC-0063
+  name: Passwords should not be stored with a fast hash
+  languages: [cs, vb]
+  category: SEC
+  severity: blocker
+  effort: 30min
+  cwe: [916]
+  owasp: [A2]
+  tags: [password, crypto]
+  message: A general-purpose hash is applied to a password value.
+  summary: A password is hashed with a fast digest such as MD5, SHA-1 or SHA-256.
+  why: |
+    Fast hashes are designed for throughput, which is exactly what an attacker with a leaked table
+    wants: commodity hardware tries billions of candidates per second, so common passwords fall in
+    minutes regardless of the salt.
+  fix: |
+    Use a password hashing function designed to be slow and memory-hard — Argon2, scrypt, bcrypt or
+    PBKDF2 with a high iteration count — through the identity library the platform provides.
+  detect:
+    - line: "(MD5|SHA1|SHA256|SHA384|SHA512)[^\\n]{0,40}(password|passwd|pwd)"
+    - line: "(password|passwd|pwd)[^\\n]{0,40}(MD5|SHA1|SHA256)\\s*\\.?\\s*(Create|ComputeHash|HashData)"
+
+- key: QG-CS-SEC-0064
+  name: Random generators used for security should not be seeded
+  languages: [cs, vb]
+  category: SEC
+  severity: critical
+  effort: 15min
+  cwe: [330, 335]
+  owasp: [A2]
+  tags: [crypto, random]
+  message: Seeding the generator makes the sequence reproducible.
+  summary: A pseudo-random generator is constructed with an explicit seed.
+  why: |
+    The same seed always produces the same sequence, so any value derived from it — a token, a
+    temporary password, an identifier — can be recomputed by anyone who learns or guesses the seed.
+    Seeds are frequently a timestamp, which narrows the search to a handful of candidates.
+  fix: |
+    Use the cryptographic generator for anything that must be unpredictable. Keep seeded generators for
+    simulations and tests, where reproducibility is the point.
+  bad: |
+    var token = new Random(42).Next();
+  good: |
+    var token = RandomNumberGenerator.GetInt32(int.MaxValue);
+  detect:
+    - creation: [Random]
+      argCount: 1
+
+- key: QG-CS-SEC-0065
+  name: Cookies should restrict cross-site sending
+  languages: [cs]
+  category: SEC
+  severity: major
+  effort: 10min
+  cwe: [1275]
+  owasp: [A5]
+  tags: [cookie, csrf]
+  message: SameSite is disabled for this cookie, so it is sent on cross-site requests.
+  summary: A cookie is configured with SameSite set to None.
+  why: |
+    With SameSite off, the browser attaches the cookie to requests started by any other site, which is
+    the precondition for cross-site request forgery. It is normally set to make an embedded scenario
+    work and then applies to the session cookie as well.
+  fix: |
+    Use Lax for session cookies, or Strict where no cross-site navigation must stay authenticated. If a
+    third-party context genuinely needs the cookie, pair None with Secure and antiforgery tokens.
+  detect:
+    - member: [SameSiteMode.None]
+
+- key: QG-CS-SEC-0066
+  name: Uploaded files should not be served from their original name
+  languages: [cs]
+  category: SEC
+  severity: critical
+  effort: 30min
+  cwe: [434]
+  owasp: [A1]
+  tags: [upload, aspnet]
+  message: The client-supplied file name is used to store the upload.
+  summary: An uploaded file is saved using the name provided in the request.
+  why: |
+    The name arrives from the browser, so it can contain path segments that escape the upload folder or
+    an extension the web server executes. Storing it as-is turns an upload form into arbitrary file
+    write, and sometimes into remote code execution.
+  fix: |
+    Generate the stored name yourself — an identifier plus an extension derived from a validated content
+    type — keep uploads outside the web root, and serve them through an action that sets the content
+    type and disposition explicitly.
+  detect:
+    - member: [FileName]
+      requires: [IFormFile, HttpPostedFile]

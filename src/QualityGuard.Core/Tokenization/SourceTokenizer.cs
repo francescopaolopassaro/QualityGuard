@@ -1,0 +1,271 @@
+namespace QualityGuard.Core.Tokenization;
+
+public sealed class SourceTokenizer
+{
+    private readonly LanguageInfo _language;
+    private readonly string _source;
+    private readonly List<Token> _tokens = new();
+
+    private const int MaxRegexLen = 8;
+
+    public SourceTokenizer(string source, LanguageInfo language)
+    {
+        _source = source;
+        _language = language;
+    }
+
+    public IReadOnlyList<Token> Tokenize()
+    {
+        var i = 0;
+        var line = 1;
+        var column = 1;
+
+        while (i < _source.Length)
+        {
+            var c = _source[i];
+
+            if (IsLineCommentStart(_source, i))
+            {
+                i = ReadUntilLineEnd(i, ref line, ref column);
+                continue;
+            }
+
+            if (IsBlockCommentStart(_source, i, out var startLen))
+            {
+                var startLine = line;
+                var startColumn = column;
+                i = ReadBlockComment(i + startLen, startLen, ref line, ref column, out var body);
+                _tokens.Add(DirectToken(TokenKind.Comment, body, startLine, startColumn));
+                continue;
+            }
+
+            if (TryMatchString(_source, i, out var delim))
+            {
+                var startLine = line;
+                var startColumn = column;
+                i = ReadString(i + delim.Start.Length, delim, ref line, ref column, out var value);
+                _tokens.Add(DirectToken(TokenKind.String, value, startLine, startColumn));
+                continue;
+            }
+
+            if (char.IsWhiteSpace(c))
+            {
+                if (c == '\n')
+                {
+                    line++;
+                    column = 1;
+                }
+                else
+                {
+                    column++;
+                }
+                i++;
+                continue;
+            }
+
+            if (IsNumberStart(_source, i, out var numLen))
+            {
+                var startLine = line;
+                var startColumn = column;
+                _tokens.Add(DirectToken(TokenKind.Number, _source.Substring(i, numLen), startLine, startColumn));
+                i += numLen;
+                column += numLen;
+                continue;
+            }
+
+            if (IsIdentifierStart(c))
+            {
+                var startLine = line;
+                var startColumn = column;
+                var len = 1;
+                while (i + len < _source.Length && IsIdentifierPart(_source[i + len]))
+                    len++;
+                var word = _source.Substring(i, len);
+                var kind = _language.Keywords.Contains(word, _language.CaseInsensitiveKeywords ? StringComparer.OrdinalIgnoreCase : StringComparer.Ordinal)
+                    ? TokenKind.Keyword
+                    : TokenKind.Identifier;
+                _tokens.Add(DirectToken(kind, word, startLine, startColumn));
+                i += len;
+                column += len;
+                continue;
+            }
+
+            // multi-char operators / punctuation
+            var symLen = FindSymbolLength(_source, i);
+            var symStartLine = line;
+            var symStartColumn = column;
+            _tokens.Add(DirectToken(TokenKind.Symbol, _source.Substring(i, symLen), symStartLine, symStartColumn));
+            i += symLen;
+            column += symLen;
+        }
+        return _tokens;
+    }
+
+    private int ReadUntilLineEnd(int i, ref int line, ref int column)
+    {
+        var start = i;
+        while (i < _source.Length && _source[i] != '\n')
+        {
+            i++;
+            column++;
+        }
+        _tokens.Add(DirectToken(TokenKind.Comment, _source.Substring(start, i - start), line, column - (i - start)));
+        return i;
+    }
+
+    private static Token DirectToken(TokenKind kind, string text, int line, int column)
+        => new(kind, text, line, column);
+
+    private bool IsLineCommentStart(string src, int i)
+    {
+        if (_language.LineComment != null && i + _language.LineComment.Length <= src.Length
+            && src.Substring(i, _language.LineComment.Length) == _language.LineComment)
+            return true;
+        if (_language.HashComments && src[i] == '#')
+            return true;
+        return false;
+    }
+
+    private bool IsBlockCommentStart(string src, int i, out int startLen)
+    {
+        startLen = 0;
+        if (_language.BlockCommentStart == null)
+            return false;
+        if (i + _language.BlockCommentStart.Length <= src.Length
+            && src.Substring(i, _language.BlockCommentStart.Length) == _language.BlockCommentStart)
+        {
+            startLen = _language.BlockCommentStart.Length;
+            return true;
+        }
+        return false;
+    }
+
+    private int ReadBlockComment(int i, int startLen, ref int line, ref int column, out string body)
+    {
+        var end = _language.BlockCommentEnd ?? _language.BlockCommentStart!;
+        var startPos = i;
+        var depth = 1;
+        while (i < _source.Length)
+        {
+            if (_language.NestingBlockComments && _language.BlockCommentStart != null
+                && i + _language.BlockCommentStart.Length <= _source.Length
+                && _source.Substring(i, _language.BlockCommentStart.Length) == _language.BlockCommentStart)
+            {
+                depth++;
+                i += _language.BlockCommentStart.Length;
+                column += _language.BlockCommentStart.Length;
+                continue;
+            }
+            if (i + end.Length <= _source.Length && _source.Substring(i, end.Length) == end)
+            {
+                depth--;
+                i += end.Length;
+                column += end.Length;
+                if (depth == 0)
+                    break;
+                continue;
+            }
+            if (_source[i] == '\n')
+            {
+                line++;
+                column = 1;
+            }
+            else
+            {
+                column++;
+            }
+            i++;
+        }
+        body = _source.Substring(startPos, i - startPos - (depth == 0 ? end.Length : 0));
+        return i;
+    }
+
+    private bool TryMatchString(string src, int i, out StringDelimiter delim)
+    {
+        // strings are tried with the longest start first
+        foreach (var d in _language.StringDelimiters.OrderByDescending(d => d.Start.Length))
+        {
+            if (i + d.Start.Length <= src.Length && src.Substring(i, d.Start.Length) == d.Start)
+            {
+                delim = d;
+                return true;
+            }
+        }
+        delim = null!;
+        return false;
+    }
+
+    private int ReadString(int i, StringDelimiter delim, ref int line, ref int column, out string value)
+    {
+        var sb = new System.Text.StringBuilder();
+        while (i < _source.Length)
+        {
+            if (i + delim.End.Length <= _source.Length && _source.Substring(i, delim.End.Length) == delim.End)
+            {
+                i += delim.End.Length;
+                column += delim.End.Length;
+                value = sb.ToString();
+                return i;
+            }
+            if (!delim.IsVerbatim && _source[i] == '\\' && i + 1 < _source.Length)
+            {
+                sb.Append(_source[i + 1]);
+                i += 2;
+                column += 2;
+                continue;
+            }
+            if (_source[i] == '\n')
+            {
+                line++;
+                column = 1;
+                sb.Append('\n');
+            }
+            else
+            {
+                column++;
+                sb.Append(_source[i]);
+            }
+            i++;
+        }
+        value = sb.ToString();
+        return i;
+    }
+
+    private static bool IsNumberStart(string src, int i, out int len)
+    {
+        var c = src[i];
+        if (!char.IsDigit(c) && !(c == '.' && i + 1 < src.Length && char.IsDigit(src[i + 1])))
+        {
+            len = 0;
+            return false;
+        }
+        len = 1;
+        while (i + len < src.Length)
+        {
+            var ch = src[i + len];
+            if (char.IsLetterOrDigit(ch) || ch == '.' || ch == '_')
+                len++;
+            else
+                break;
+        }
+        return true;
+    }
+
+    private static bool IsIdentifierStart(char c) => char.IsLetter(c) || c == '_' || c == '$';
+
+    private static bool IsIdentifierPart(char c) => char.IsLetterOrDigit(c) || c == '_' || c == '$';
+
+    private int FindSymbolLength(string src, int i)
+    {
+        var three = i + 3 <= src.Length ? src.Substring(i, 3) : null;
+        if (three is "===" or "!==" or "??=" or "<<=" or ">>=" or "..." or "?->" or "<=>" or ">>>")
+            return 3;
+
+        var two = i + 2 <= src.Length ? src.Substring(i, 2) : null;
+        return two is "&&" or "||" or "==" or "!=" or "<=" or ">=" or "++" or "--" or "->" or "=>" or "??"
+            or "**" or "::" or "//" or "/*" or "*/" or "+=" or "-=" or "*=" or "/=" or "%=" or "&=" or "|="
+            or "^=" or "?." or "?[" or "<<" or ">>" or "|>" or ":="
+            ? 2
+            : 1;
+    }
+}

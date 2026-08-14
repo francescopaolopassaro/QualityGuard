@@ -1,0 +1,489 @@
+# C# / .NET correctness batch.
+
+- key: QG-CS-BUG-0011
+  name: Equals and GetHashCode should be overridden together
+  languages: [cs, vb]
+  category: BUG
+  severity: critical
+  effort: 15min
+  tags: [suspicious, equality]
+  message: This type overrides one half of the equality contract only.
+  summary: A type overrides Equals without overriding GetHashCode, or the other way round.
+  why: |
+    Hash-based collections locate an item by hash first and only then compare it. When the two
+    definitions disagree, two objects that are equal land in different buckets, so a dictionary lookup or
+    a Contains call fails for an item that is demonstrably in the collection.
+  fix: |
+    Override both, derive them from the same fields, and make the fields immutable so the hash cannot
+    change while the object is stored. Records give both implementations for free.
+  detect:
+    - line: "public\\s+override\\s+bool\\s+Equals\\s*\\("
+      absent: [override int GetHashCode, override Function GetHashCode]
+
+- key: QG-CS-BUG-0012
+  name: Objects should not be created only to be discarded
+  languages: [cs, vb]
+  category: BUG
+  severity: major
+  effort: 10min
+  tags: [suspicious]
+  message: This object is constructed and thrown away immediately.
+  summary: An object creation is used as a statement, so the instance is never referenced.
+  why: |
+    Either the constructor is being used for a side effect, which hides work in a place nobody expects
+    it, or the result was supposed to be stored and the assignment is missing. Both readings mean the
+    line does not do what it appears to do.
+  fix: |
+    Assign the instance where it is needed, or call the method that performs the intended action. If the
+    construction was left over from a refactoring, delete the line.
+  detect:
+    - creation: []
+      resultUnused: true
+
+- key: QG-CS-BUG-0013
+  name: Exceptions should not be created without being thrown
+  languages: [cs, vb]
+  category: BUG
+  severity: major
+  effort: 10min
+  tags: [exception, suspicious]
+  message: This exception is instantiated but never thrown.
+  summary: An exception object is created as a statement.
+  why: |
+    Creating the exception has no effect on control flow, so the error path silently continues as if
+    nothing was wrong. The code reads as a guard while the invalid case proceeds into the rest of the
+    method.
+  fix: |
+    Add the throw, or return the failure through the result type the method already uses.
+  bad: |
+    if (id <= 0) new ArgumentException("id");
+  good: |
+    if (id <= 0) throw new ArgumentException("id must be positive", nameof(id));
+  detect:
+    - line: "^\\s*new\\s+\\w*Exception\\s*\\("
+
+- key: QG-CS-BUG-0014
+  name: Results of side-effect-free calls should be used
+  languages: [cs, vb]
+  category: BUG
+  severity: major
+  effort: 10min
+  tags: [suspicious, linq]
+  message: This call returns a new value and changes nothing; its result is discarded.
+  summary: A pure method is invoked as a statement.
+  why: |
+    Strings and LINQ sequences are immutable: the call builds a new value and drops it. The line looks
+    like it modifies the variable or the collection, which is exactly why the missing assignment is easy
+    to overlook in review.
+  fix: |
+    Assign the result, pass it on, or — for LINQ — materialise it with ToList when the point is to run
+    the query.
+  detect:
+    - invocation: [Trim, TrimStart, TrimEnd, Substring, Replace, ToUpper, ToLower, ToUpperInvariant, ToLowerInvariant, PadLeft, PadRight, Split, Concat, Select, Where, OrderBy, OrderByDescending, Distinct, Reverse]
+      resultUnused: true
+
+- key: QG-CS-BUG-0015
+  name: A stream read result should be checked
+  languages: [cs, vb]
+  category: BUG
+  severity: critical
+  effort: 15min
+  tags: [io]
+  message: The number of bytes actually read is ignored.
+  summary: A stream read call is made as a statement, discarding the returned length.
+  why: |
+    A read fills the buffer with at most the requested number of bytes and returns how many it actually
+    got. Ignoring that value means the code processes stale bytes from the rest of the buffer, which
+    shows up as corrupted data only for large or slow inputs.
+  fix: |
+    Store the returned count and use it, or loop until the buffer is full. On newer runtimes, use the
+    ReadExactly helpers that either fill the buffer or throw.
+  detect:
+    - invocation: [Read, ReadAsync]
+      resultUnused: true
+      requires: [Stream, FileStream, NetworkStream]
+
+- key: QG-CS-BUG-0016
+  name: Values should not be incremented where the result is dropped
+  languages: [cs, vb]
+  category: BUG
+  severity: major
+  effort: 10min
+  tags: [suspicious]
+  message: This increment is applied to a value that is returned or discarded immediately.
+  summary: A postfix increment or decrement is applied to a value that is then thrown away.
+  why: |
+    A postfix operator returns the old value and stores the new one, so returning it hands back the
+    unchanged number. On a local variable about to go out of scope, the increment has no effect at all.
+  fix: |
+    Increment before returning, or use the prefix form when the new value is the one you want.
+  bad: |
+    return count++;
+  good: |
+    count++;
+    return count;
+  detect:
+    - line: "return\\s+\\w+(\\+\\+|--)\\s*;"
+
+- key: QG-CS-BUG-0017
+  name: Shift counts should stay inside the width of the type
+  languages: [cs, vb]
+  category: BUG
+  severity: major
+  effort: 10min
+  tags: [suspicious, arithmetic]
+  message: This shift count is zero or wider than the type, so the result is not what it looks like.
+  summary: A shift operator is used with a count of zero or one that exceeds the operand width.
+  why: |
+    A shift by zero does nothing, which usually means an index calculation went wrong. A count at or
+    above the bit width is reduced modulo the width, so shifting a 32-bit value by 32 returns the
+    original value instead of zero.
+  fix: |
+    Recompute the shift count, and mask or validate it when it comes from data. Use a 64-bit type when
+    the intent is to shift beyond 31 bits.
+  detect:
+    - line: "<<\\s*(0|3[2-9]|[4-9][0-9])\\b"
+    - line: ">>\\s*(0|3[2-9]|[4-9][0-9])\\b"
+
+- key: QG-CS-BUG-0018
+  name: Integer division should not be assigned to a floating point variable
+  languages: [cs, vb]
+  category: BUG
+  severity: major
+  effort: 10min
+  tags: [arithmetic, suspicious]
+  message: This division is performed on integers, so the fraction is lost before the assignment.
+  summary: The result of an integer division is stored in a floating point variable.
+  why: |
+    The division happens first, in integer arithmetic, and only the truncated result is converted. The
+    declared type suggests a precise value while the code has already discarded everything after the
+    decimal point.
+  fix: |
+    Cast one operand to the floating point type before dividing, or use a decimal literal so the whole
+    expression is evaluated in that type.
+  bad: |
+    double ratio = done / total;
+  good: |
+    double ratio = (double)done / total;
+  detect:
+    - line: "\\b(double|float|decimal)\\s+\\w+\\s*=\\s*[A-Za-z_]\\w*\\s*/\\s*[A-Za-z_]\\w*\\s*;"
+
+- key: QG-CS-BUG-0019
+  name: ToString should never return null
+  languages: [cs, vb]
+  category: BUG
+  severity: critical
+  effort: 10min
+  tags: [suspicious]
+  message: Returning null from ToString breaks every caller that formats this object.
+  summary: An overridden ToString returns null.
+  why: |
+    String interpolation, logging and most formatting paths assume ToString gives them a string. A null
+    slips through some of them and throws in others, and the failure surfaces in a log statement far
+    away from this type.
+  fix: |
+    Return an empty string, or a short description of the object's state. Keep the method free of
+    exceptions as well, since it is often called while handling another error.
+  detect:
+    - line: "override\\s+string\\s+ToString[^{]*\\{[^}]*return\\s+null"
+
+- key: QG-CS-BUG-0020
+  name: Loop counters should move towards the loop condition
+  languages: [cs, vb]
+  category: BUG
+  severity: blocker
+  effort: 15min
+  tags: [suspicious, loop]
+  message: The update clause moves the counter away from the condition, so the loop does not terminate.
+  summary: A for loop compares upwards while decrementing, or downwards while incrementing.
+  why: |
+    The condition can never become false, so the loop runs until the counter overflows or the process is
+    killed. In a request handler it consumes a thread and, if it allocates, takes the process with it.
+  fix: |
+    Match the update to the comparison, or restate the loop as a foreach over the range you mean to
+    cover.
+- key: QG-CS-BUG-0021
+  name: Format strings should match their arguments
+  languages: [cs, vb]
+  category: BUG
+  severity: critical
+  effort: 10min
+  tags: [suspicious, formatting]
+  message: This format string has placeholders but no arguments to fill them.
+  summary: A composite format call supplies fewer arguments than the template requires.
+  why: |
+    The formatting call throws a format exception at run time, and it does so only on the path that
+    builds that particular message — typically an error path, which is where a second failure hurts
+    most.
+  fix: |
+    Pass the missing arguments, or switch to string interpolation so the compiler checks the values for
+    you.
+  detect:
+    - line: "(string\\.Format|String\\.Format)\\s*\\(\\s*(\\$?\")[^\"]*\\{\\d[^\"]*\"\\s*\\)"
+
+- key: QG-CS-BUG-0022
+  name: NaN should not be used in comparisons
+  languages: [cs, vb]
+  category: BUG
+  severity: critical
+  effort: 10min
+  tags: [arithmetic, suspicious]
+  message: Any comparison with NaN is false, including NaN itself.
+  summary: A value is compared for equality with NaN.
+  why: |
+    NaN is defined to be unequal to everything, so the check never succeeds and the branch that was
+    supposed to handle bad numeric input is dead. The invalid value then flows onward and poisons every
+    later calculation.
+  fix: |
+    Use the IsNaN helper of the numeric type. For validation, check IsFinite so infinities are caught as
+    well.
+  bad: |
+    if (result == double.NaN) { ... }
+  good: |
+    if (double.IsNaN(result)) { ... }
+  detect:
+    - line: "(==|!=)\\s*(double|float|Double|Single)\\.NaN"
+    - line: "(double|float|Double|Single)\\.NaN\\s*(==|!=)"
+
+- key: QG-CS-BUG-0023
+  name: Non-existent operators should not be written accidentally
+  languages: [cs, vb]
+  category: BUG
+  severity: critical
+  effort: 5min
+  tags: [suspicious]
+  message: This reads as an assignment of a signed value, not as a compound assignment.
+  summary: An assignment is followed directly by a sign or a negation, as in =+ or =-.
+  why: |
+    There is no =+ operator: the code assigns the positive or negative value instead of adding or
+    subtracting it. The result differs from the intent on every iteration, and the typo is one character
+    away from correct code.
+  fix: |
+    Write += or -= when accumulating, and add a space before a genuine unary sign so the intent is
+    unmistakable.
+  detect:
+    - line: "[A-Za-z_)\\]]\\s=[+-][A-Za-z_(0-9]"
+
+- key: QG-CS-BUG-0024
+  name: Doubled prefix operators should not be used
+  languages: [cs]
+  category: BUG
+  severity: major
+  effort: 5min
+  tags: [suspicious]
+  message: Applying this operator twice cancels it out.
+  summary: A negation or bitwise complement is applied twice in a row.
+  why: |
+    Double negation returns the original value, so the expression is a no-op that reads like a check.
+    It is normally the result of a merge or of a hurried inversion of a condition.
+  fix: |
+    Remove one operator, or both when the intent was to leave the value unchanged.
+  detect:
+    - line: "[^!=]!!\\s*[A-Za-z_(]"
+    - line: "~~\\s*[A-Za-z_(]"
+
+- key: QG-CS-BUG-0025
+  name: Locks should be taken on a private, dedicated object
+  languages: [cs, vb]
+  category: BUG
+  severity: critical
+  effort: 20min
+  cwe: [412]
+  tags: [concurrency]
+  message: Locking on this expression lets unrelated code block the same monitor.
+  summary: A lock is taken on this, on a type, or on a string.
+  why: |
+    Anything reachable from outside can be locked by other code, which turns an internal detail into part
+    of the public contract: two components that know nothing about each other end up serialising, or
+    deadlocking. Interned strings and Type objects are shared process-wide, which makes it worse.
+  fix: |
+    Lock a private readonly object created for that purpose, keep the critical section short, and never
+    call out to unknown code while holding it.
+  bad: |
+    lock (this) { balance += amount; }
+  good: |
+    private readonly object _gate = new();
+    lock (_gate) { balance += amount; }
+  detect:
+    - line: "lock\\s*\\(\\s*(this|typeof|\"|Type\\.)"
+    - line: "SyncLock\\s+(Me|GetType)"
+
+- key: QG-CS-BUG-0026
+  name: Dangerous handle access should be avoided
+  languages: [cs, vb]
+  category: BUG
+  severity: critical
+  effort: 25min
+  cwe: [416]
+  tags: [interop]
+  message: This raw handle can be released while it is still in use.
+  summary: A safe handle is unwrapped into a raw pointer.
+  why: |
+    The safe handle exists to keep the operating system resource alive for as long as managed code can
+    reach it. Once the raw value escapes, the wrapper can be finalised and the handle closed — or
+    recycled for something else — while the pointer is still being used.
+  fix: |
+    Pass the safe handle itself to the interop call, or wrap the usage in DangerousAddRef and
+    DangerousRelease so the lifetime is explicit.
+  detect:
+    - invocation: [DangerousGetHandle]
+
+- key: QG-CS-BUG-0027
+  name: Suspending and resuming threads should not be used
+  languages: [cs, vb]
+  category: BUG
+  severity: critical
+  effort: 30min
+  tags: [concurrency, obsolete]
+  message: Suspending a thread at an arbitrary point can leave shared state inconsistent.
+  summary: Thread suspension or resumption is used to coordinate work.
+  why: |
+    The thread stops wherever it happens to be, possibly holding a lock or halfway through updating a
+    data structure. Whatever runs next sees the half-written state, and the pattern deadlocks as soon as
+    the suspended thread owned something the resuming one needs.
+  fix: |
+    Coordinate with the synchronisation primitives designed for it — a wait handle, a semaphore, or a
+    cancellation token the worker checks at safe points.
+  detect:
+    - invocation: [Suspend, Resume]
+      receiver: [Thread, thread, currentThread]
+
+- key: QG-CS-BUG-0028
+  name: Collection size comparisons should be meaningful
+  languages: [cs, vb]
+  category: BUG
+  severity: major
+  effort: 10min
+  tags: [suspicious]
+  message: A count is never negative, so this comparison is always true or always false.
+  summary: A collection count or array length is compared against a negative value or zero in a way that cannot fail.
+  why: |
+    Because the value cannot be negative, the check always takes the same branch. The guard that was
+    supposed to catch an empty collection therefore does nothing, and the code proceeds to index into it.
+  fix: |
+    Compare with zero using the operator you actually mean — Count == 0 for empty, Count > 0 for
+    non-empty — or use the Any and IsEmpty helpers.
+  detect:
+    - line: "\\.(Count|Length)\\s*(>=\\s*0|<\\s*0|==\\s*-\\d)"
+
+- key: QG-CS-BUG-0029
+  name: Assertions should not change program state
+  languages: [cs, vb]
+  category: BUG
+  severity: critical
+  effort: 15min
+  tags: [suspicious, debug]
+  message: This assertion has a side effect that disappears in release builds.
+  summary: An expression passed to a debug assertion modifies state.
+  why: |
+    Debug assertions are compiled out of release builds, so any work done inside them silently stops
+    happening. The program then behaves differently in production than in every test run, which is the
+    hardest class of defect to reproduce.
+  fix: |
+    Perform the operation before the assertion and assert on the resulting value.
+  bad: |
+    Debug.Assert(queue.Dequeue() != null);
+  good: |
+    var item = queue.Dequeue();
+    Debug.Assert(item != null);
+  detect:
+    - line: "Debug\\.Assert\\s*\\([^)]*(\\+\\+|--|Dequeue\\(|Pop\\(|MoveNext\\(|Remove\\()"
+
+- key: QG-CS-BUG-0030
+  name: Event handlers should be unsubscribed with the same reference
+  languages: [cs, vb]
+  category: BUG
+  severity: major
+  effort: 20min
+  tags: [events, memory-leak]
+  message: This unsubscription creates a new delegate, so nothing is removed.
+  summary: An event is unsubscribed using an inline lambda or anonymous delegate.
+  why: |
+    Removal compares delegate references, and a lambda written at the removal site is a different object
+    from the one that was added. The handler stays attached, keeps the subscriber alive, and continues to
+    run after the object was supposedly detached.
+  fix: |
+    Keep the handler in a field or a named method and use that same reference for both the subscription
+    and the removal.
+  bad: |
+    timer.Elapsed -= (s, e) => Refresh();
+  good: |
+    timer.Elapsed -= OnElapsed;
+  detect:
+    - line: "-=\\s*(delegate\\s*\\(|\\([^)]*\\)\\s*=>|async\\s*\\()"
+
+- key: QG-CS-BUG-0031
+  name: Asynchronous callbacks should be completed
+  languages: [cs, vb]
+  category: BUG
+  severity: major
+  effort: 20min
+  tags: [async]
+  message: A begin call without the matching end call leaks the operation and its exceptions.
+  summary: An asynchronous invocation is started without ever being completed.
+  why: |
+    The end call is what releases the wait handle and rethrows whatever the operation threw. Without it
+    the resources stay allocated and failures vanish, so a broken call looks exactly like a successful
+    one.
+  fix: |
+    Call the matching end method, or move to the task-based API and await it, which handles both
+    completion and exceptions.
+  detect:
+    - invocation: [BeginInvoke]
+      absent: [EndInvoke]
+
+- key: QG-CS-BUG-0032
+  name: Mutable collections should not be exposed as readonly fields
+  languages: [cs, vb]
+  category: BUG
+  severity: major
+  effort: 15min
+  tags: [design, immutability]
+  message: The field cannot be reassigned, but its contents can still be changed by any caller.
+  summary: A non-private readonly field holds a mutable array or collection.
+  why: |
+    Readonly protects the reference, not the object. Callers can add, remove or overwrite elements, so
+    the invariants the type maintains around that collection can be broken from the outside without a
+    single assignment to the field.
+  fix: |
+    Expose a read-only view — a read-only collection, an immutable type, or a method that returns a copy
+    — and keep the mutable instance private.
+  detect:
+    - line: "(public|protected|internal)\\s+(static\\s+)?readonly\\s+[A-Za-z_][\\w.]*(\\[\\]|<[^>]*>)\\s+\\w+"
+
+- key: QG-CS-BUG-0033
+  name: Blazor JavaScript entry points must be public
+  languages: [cs]
+  category: BUG
+  severity: major
+  effort: 10min
+  tags: [blazor]
+  message: A non-public method cannot be invoked from JavaScript.
+  summary: A method marked as JavaScript-invokable is not public.
+  why: |
+    The interop layer resolves the method by name and requires public visibility, so the call fails at
+    run time with an error that names JavaScript rather than the attribute. The code compiles cleanly,
+    which is why this is usually found only when the feature is exercised.
+  fix: |
+    Make the method public, or drop the attribute if it is not meant to be reachable from the browser.
+  detect:
+    - line: "\\[JSInvokable[^\\]]*\\]\\s*\\n?\\s*(private|internal|protected)"
+
+- key: QG-CS-BUG-0034
+  name: Route templates should not contain backslashes
+  languages: [cs, raz]
+  category: BUG
+  severity: major
+  effort: 5min
+  tags: [aspnet, routing]
+  message: A backslash in a route template does not match a URL path.
+  summary: A route or page directive contains a backslash.
+  why: |
+    URLs are separated by forward slashes; a backslash is either part of the segment or rejected outright
+    depending on the host. The route therefore never matches, and the page returns a not-found response
+    that looks like a configuration problem.
+  fix: |
+    Use forward slashes in every route template, and keep the casing consistent with the rest of the
+    application.
+  detect:
+    - line: "(\\[Route\\s*\\(\\s*\"|@page\\s+\")[^\"]*\\\\"

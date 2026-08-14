@@ -1,0 +1,340 @@
+# Python batch (PY): security, correctness and maintainability.
+
+- key: QG-PY-SEC-0037
+  name: Archive extraction should validate entry paths
+  languages: [py]
+  category: SEC
+  severity: blocker
+  effort: 25min
+  cwe: [22]
+  owasp: [A1]
+  tags: [path-traversal, archive]
+  message: Extracting the whole archive lets an entry escape the destination directory.
+  summary: An archive is extracted without checking where its entries resolve.
+  why: |
+    Entry names are stored inside the archive and can contain parent segments or absolute paths, so a
+    crafted file writes wherever the process can write — a startup script, a configuration file, an
+    authorized-keys file. Extraction runs with the privileges of the application.
+  fix: |
+    Resolve each entry against the destination and skip anything that lands outside it, or pass the
+    filter that the standard library provides for exactly this check.
+  bad: |
+    with tarfile.open(path) as tar:
+        tar.extractall(target)
+  good: |
+    with tarfile.open(path) as tar:
+        tar.extractall(target, filter="data")
+  detect:
+    - invocation: [extractall]
+      withoutArgs: [filter, members]
+
+- key: QG-PY-SEC-0038
+  name: Template engines should keep auto-escaping on
+  languages: [py]
+  category: SEC
+  severity: critical
+  effort: 20min
+  cwe: [79]
+  owasp: [A3]
+  tags: [xss, jinja]
+  message: Auto-escaping is disabled, so every rendered value can inject markup.
+  summary: A template environment is created with auto-escaping turned off.
+  why: |
+    Without escaping, any value rendered by any template becomes markup. The setting is global, so it
+    affects templates written long after the decision, including ones handling user content.
+  fix: |
+    Enable auto-escaping for the environment (or use the helper that selects it by file extension) and
+    mark the individual fragments that must contain markup, after sanitizing them.
+  detect:
+    - line: "autoescape\\s*=\\s*False"
+
+- key: QG-PY-SEC-0039
+  name: XML parsing should not resolve entities
+  languages: [py]
+  category: SEC
+  severity: critical
+  effort: 20min
+  cwe: [611]
+  owasp: [A5]
+  tags: [xxe]
+  message: This parser resolves external entities and DTDs.
+  summary: An XML parser is configured to load external entities.
+  why: |
+    A document that declares entities can make the parser read local files or call internal services and
+    return the content inside the parsed tree. The request is issued by the application, so network
+    controls do not apply.
+  fix: |
+    Create the parser with entity resolution and DTD loading disabled, or use a hardened XML library for
+    untrusted documents.
+  detect:
+    - line: "resolve_entities\\s*=\\s*True"
+    - line: "load_dtd\\s*=\\s*True"
+    - line: "XMLParser\\s*\\(\\s*\\)"
+      requires: [lxml]
+
+- key: QG-PY-SEC-0040
+  name: Validation should not rely on assertions
+  languages: [py]
+  category: SEC
+  severity: critical
+  effort: 20min
+  cwe: [617]
+  owasp: [A5]
+  tags: [validation]
+  message: Assertions are removed when the interpreter runs optimised, so this check can disappear.
+  summary: An assert statement is used to validate input or enforce a security condition.
+  why: |
+    Running with optimisations strips every assert, which silently removes the check from production
+    while it keeps passing in development. Anything protected only by an assertion is then unprotected
+    exactly where it matters.
+  fix: |
+    Raise an explicit exception after an if, and keep assertions for invariants that document internal
+    assumptions during development.
+  bad: |
+    assert user.is_admin, "forbidden"
+  good: |
+    if not user.is_admin:
+        raise PermissionError("forbidden")
+  detect:
+    - line: "^\\s*assert\\s+.*(user|token|role|auth|permission|admin|valid)"
+
+- key: QG-PY-SEC-0041
+  name: Outgoing requests should have a timeout
+  languages: [py]
+  category: SEC
+  severity: major
+  effort: 10min
+  cwe: [400]
+  owasp: [A6]
+  tags: [dos, requests]
+  message: Without a timeout this call can block the worker indefinitely.
+  summary: An HTTP call is made without specifying a timeout.
+  why: |
+    The default is to wait forever, so a slow or unresponsive peer holds the thread or process for as
+    long as it likes. A handful of such calls exhausts the worker pool and the service stops answering
+    requests that have nothing to do with that peer.
+  fix: |
+    Pass an explicit timeout — connect and read — and handle the timeout exception with a retry or a
+    degraded response.
+  detect:
+    - invocation: [get, post, put, delete, patch, request]
+      receiver: [requests, session, httpx]
+      withoutArgs: [timeout]
+
+- key: QG-PY-SEC-0042
+  name: Cross-origin policies should name their origins
+  languages: [py]
+  category: SEC
+  severity: major
+  effort: 15min
+  cwe: [942]
+  owasp: [A5]
+  tags: [cors, flask, django]
+  message: This policy accepts requests from every origin.
+  summary: A CORS configuration uses a wildcard origin.
+  why: |
+    Every site is then allowed to call the API from a visitor's browser and read the response. Combined
+    with cookie authentication, that is enough for another page to act as the signed-in user.
+  fix: |
+    List the origins the application serves, load them from configuration, and enable credentials only
+    for that list.
+  detect:
+    - line: "CORS_ORIGIN_ALLOW_ALL\\s*=\\s*True"
+    - line: "(origins|allow_origins)\\s*=\\s*\\[?\\s*[\"']\\*[\"']"
+
+- key: QG-PY-SEC-0043
+  name: Framework secrets should not be hardcoded
+  languages: [py]
+  category: SEC
+  severity: blocker
+  effort: 20min
+  cwe: [798]
+  owasp: [A7]
+  tags: [secret, django, flask]
+  message: This signing key is fixed in the source.
+  summary: A framework secret key is assigned a literal value.
+  why: |
+    The key signs sessions and tokens, so anyone who reads the repository can forge them and impersonate
+    any user. Deployments that share the repository also share the key, which multiplies the exposure.
+  fix: |
+    Read the key from the environment or the secret store at startup, fail fast when it is missing, and
+    rotate the value that was committed.
+  detect:
+    - line: "(SECRET_KEY|secret_key)\\s*=\\s*[\"'][^\"']{8,}[\"']"
+
+- key: QG-PY-BUG-0010
+  name: Identity comparison should not be used for values
+  languages: [py]
+  category: BUG
+  severity: major
+  effort: 10min
+  tags: [suspicious]
+  message: This compares object identity, which is not guaranteed for equal values.
+  summary: A literal is compared with is instead of ==.
+  why: |
+    The interpreter caches small integers and short strings, so the comparison happens to work in the
+    interactive shell and fails on values built at run time. The bug appears only with real data.
+  fix: |
+    Use == for values and keep is for None, True and False, where identity is the defined behaviour.
+  bad: |
+    if status is "open":
+  good: |
+    if status == "open":
+  detect:
+    - line: "\\bis\\s+(not\\s+)?[\"'0-9]"
+
+- key: QG-PY-BUG-0011
+  name: Exception handlers should be ordered from specific to general
+  languages: [py]
+  category: BUG
+  severity: major
+  effort: 15min
+  tags: [exception]
+  message: A handler for a base class before a more specific one makes the later clause unreachable.
+  summary: A broad except clause precedes a narrower one in the same try statement.
+  why: |
+    Handlers are matched in order, so the first one that fits wins. Placing Exception first makes every
+    following clause dead code, which means the specific recovery logic written below never runs.
+  fix: |
+    Order the clauses from the most specific exception to the most general, and keep the broad one last.
+  detect:
+    - line: "^\\s*except\\s+(Exception|BaseException)\\s*(as\\s+\\w+)?\\s*:"
+      requires: ["except "]
+
+- key: QG-PY-BUG-0012
+  name: Loop variables should not be captured by reference in closures
+  languages: [py]
+  category: BUG
+  severity: major
+  effort: 15min
+  tags: [closure, suspicious]
+  message: Every closure created here shares the same loop variable.
+  summary: A lambda or nested function defined in a loop captures the loop variable.
+  why: |
+    The closure reads the variable when it is called, not when it is created, so after the loop finishes
+    all of them see the final value. The list of callbacks then behaves as if it contained the same one
+    repeated.
+  fix: |
+    Bind the current value with a default argument, or build the function through a factory that takes
+    the value as a parameter.
+  bad: |
+    handlers = [lambda: use(i) for i in items]
+  good: |
+    handlers = [lambda i=i: use(i) for i in items]
+  detect:
+    - line: "for\\s+\\w+\\s+in\\s+.*:\\s*$"
+      requires: ["lambda"]
+      absent: ["=i", "= i"]
+
+- key: QG-PY-SML-0017
+  name: Wildcard imports should not be used
+  languages: [py]
+  category: SML
+  severity: major
+  effort: 10min
+  tags: [imports, readability]
+  message: A wildcard import hides where each name comes from.
+  summary: A module is imported with a star import.
+  why: |
+    Every public name of the module lands in the local namespace, so a reader cannot tell which module
+    defines a given function, and a new name added upstream can silently shadow a local one.
+  fix: |
+    Import the names you use explicitly, or import the module and qualify the calls.
+  detect:
+    - line: "^\\s*from\\s+[\\w.]+\\s+import\\s+\\*"
+
+- key: QG-PY-SML-0018
+  name: Lambdas should not be assigned to names
+  languages: [py]
+  category: SML
+  severity: minor
+  effort: 5min
+  tags: [readability]
+  message: A named lambda is a function definition written the hard way.
+  summary: A lambda expression is bound to a variable.
+  why: |
+    The result behaves like a function but has no name in tracebacks, cannot carry a docstring and
+    cannot be decorated. Debugging output shows only "lambda", which is exactly when the name matters.
+  fix: |
+    Declare it with def, which allows a docstring, a proper name in stack traces and type annotations.
+  detect:
+    - line: "^\\s*\\w+\\s*=\\s*lambda\\b"
+
+- key: QG-PY-SML-0019
+  name: Emptiness should be tested directly
+  languages: [py]
+  category: SML
+  severity: minor
+  effort: 5min
+  tags: [readability]
+  message: An empty collection is already falsy; comparing its length adds noise.
+  summary: A length is compared with zero to test for emptiness.
+  why: |
+    The idiomatic test reads better and works for every container, including iterables that compute
+    their length lazily or not at all.
+  fix: |
+    Test the container itself, negating it for the empty case.
+  bad: |
+    if len(items) == 0:
+  good: |
+    if not items:
+  detect:
+    - line: "len\\s*\\([^)]*\\)\\s*(==|!=|>)\\s*0"
+
+- key: QG-PY-SML-0020
+  name: Mutable state should not be shared through module globals
+  languages: [py]
+  category: SML
+  severity: major
+  effort: 20min
+  tags: [design]
+  message: Rebinding a module-level name from a function makes the flow of data invisible.
+  summary: A function declares a global to modify module-level state.
+  why: |
+    The value can be changed by any function in any order, so behaviour depends on which one ran first.
+    Tests interfere with each other and concurrency turns the shared name into a race.
+  fix: |
+    Pass the value in and return the new one, or hold the state in an object whose lifetime is explicit.
+  detect:
+    - line: "^\\s*global\\s+\\w+"
+
+- key: QG-PY-SML-0021
+  name: Comparisons with None should use identity
+  languages: [py]
+  category: SML
+  severity: minor
+  effort: 5min
+  tags: [readability]
+  message: None is a singleton; compare it with is.
+  summary: A value is compared with None using equality.
+  why: |
+    Equality calls the type's own comparison method, which can be overridden and can raise or return
+    something unexpected. Identity is what the language guarantees for the single None object.
+  fix: |
+    Use is None and is not None.
+  detect:
+    - line: "(==|!=)\\s*None\\b"
+
+- key: QG-PY-PRF-0001
+  name: Membership tests should use a set
+  languages: [py]
+  category: PRF
+  severity: minor
+  effort: 10min
+  tags: [performance]
+  message: Membership in a list scans it from the start every time.
+  summary: A repeated membership test is performed against a list literal.
+  why: |
+    Each test walks the list until it finds the element, so a check inside a loop turns into quadratic
+    work. A set answers the same question with a hash lookup.
+  fix: |
+    Build a set once — a literal or a comprehension — and test membership against it.
+  bad: |
+    for name in names:
+        if name in ["a", "b", "c", "d"]:
+  good: |
+    allowed = {"a", "b", "c", "d"}
+    for name in names:
+        if name in allowed:
+  detect:
+    - line: "\\bin\\s*\\[[^\\]]{10,}\\]"

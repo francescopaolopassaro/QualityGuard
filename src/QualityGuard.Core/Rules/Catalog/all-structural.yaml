@@ -1,0 +1,401 @@
+# QualityGuard rule catalog — language-agnostic rules implemented on the syntax tree.
+# Entries without a `detect:` block only carry documentation for a rule written in code.
+# Every text field must be English and written for this engine.
+
+- key: QG-ALL-BUG-0001
+  name: Statements after a jump are never executed
+  languages: []
+  category: BUG
+  severity: major
+  effort: 5min
+  tags: [dead-code, suspicious]
+  summary: A statement follows a return, break, continue or throw in the same block, so it can never run.
+  why: |
+    Control leaves the block at the jump, so everything written after it is dead weight the compiler or
+    interpreter may not even warn about. Dead code is rarely harmless: it is usually a leftover from a
+    refactoring, or a sign that the jump was added one line too early and real work is now being skipped.
+  fix: |
+    Decide which of the two you meant. If the following statements still matter, move them before the
+    jump or make the jump conditional. If they do not, delete them so the block says what it does.
+  bad: |
+    return total;
+    audit.log("computed", total);   // never runs
+  good: |
+    audit.log("computed", total);
+    return total;
+
+- key: QG-ALL-BUG-0002
+  name: A condition should not be repeated in the same branch chain
+  languages: []
+  category: BUG
+  severity: major
+  effort: 10min
+  tags: [suspicious, logic]
+  summary: Two branches of the same if/else-if chain test exactly the same condition.
+  why: |
+    The first matching branch wins, so the second copy is unreachable no matter what the data looks like.
+    In practice one of the two conditions was meant to be different, which means a case the code claims
+    to handle is silently falling through to the wrong branch.
+  fix: |
+    Compare the duplicated conditions and correct the one that is wrong. If both were really meant to be
+    identical, merge the two bodies into a single branch.
+  bad: |
+    if (status == Status.Open) { open(); }
+    else if (status == Status.Open) { escalate(); }   // dead branch
+  good: |
+    if (status == Status.Open) { open(); }
+    else if (status == Status.Blocked) { escalate(); }
+
+- key: QG-ALL-BUG-0003
+  name: Conditions should not always evaluate to the same result
+  languages: []
+  category: BUG
+  severity: major
+  effort: 10min
+  tags: [suspicious, logic]
+  summary: The condition contains a boolean literal that fixes its outcome regardless of the data.
+  why: |
+    A branch whose test cannot change is not a decision: either the guarded code always runs or it never
+    does. This normally survives from debugging ("force this path for a moment") and then ships, leaving
+    a check that reads like a safety net while protecting nothing.
+  fix: |
+    Restore the real condition, or remove the branch and keep only the code path that actually applies.
+    Temporary switches belong in configuration, not in a hardcoded literal.
+  bad: |
+    if (isEnabled || true) { deleteAll(); }
+  good: |
+    if (isEnabled) { deleteAll(); }
+
+- key: QG-ALL-BUG-0004
+  name: A variable should not be assigned to itself
+  languages: []
+  category: BUG
+  severity: major
+  effort: 5min
+  tags: [suspicious]
+  summary: The same name appears on both sides of a plain assignment, so nothing changes.
+  why: |
+    The statement has no effect at all, which means the value the author wanted to store is not being
+    stored. Typical causes are a shadowed parameter that should have been assigned to a field, or a
+    near-identical name picked by autocompletion.
+  fix: |
+    Point one side at the right target: qualify the field, or use the parameter or local that holds the
+    new value. If the statement is genuinely useless, delete it.
+  bad: |
+    this.name = name;
+    price = price;      // intended: this.price = price
+  good: |
+    this.name = name;
+    this.price = price;
+
+- key: QG-ALL-BUG-0005
+  name: Both operands of an operator should not be identical
+  languages: []
+  category: BUG
+  severity: major
+  effort: 10min
+  tags: [suspicious, logic]
+  summary: The left and right sides of a comparison or arithmetic operator are the same expression.
+  why: |
+    Comparing a value with itself gives a constant, subtracting it gives zero, and dividing gives one —
+    none of which is ever the point of writing the expression out. The second operand is almost always a
+    copy-paste that should have named a different variable, index or field.
+  fix: |
+    Replace one operand with the value that belongs there. When the goal really is a constant, write the
+    constant so the intent is visible.
+  bad: |
+    if (start <= start) { ... }
+  good: |
+    if (start <= end) { ... }
+
+- key: QG-ALL-BUG-0006
+  name: Branches of a conditional should not have the same body
+  languages: []
+  category: BUG
+  severity: major
+  effort: 10min
+  tags: [suspicious, logic]
+  summary: Two branches of the same conditional execute an identical block.
+  why: |
+    If both outcomes do the same thing, the condition has no influence on behaviour: it only costs a
+    reader the effort of checking whether the two blocks really are identical. The usual cause is a
+    branch that was duplicated and never adapted.
+  fix: |
+    Give the branch the behaviour it was supposed to have, or drop the condition and keep one block.
+  bad: |
+    if (isAdmin) { grant(user); } else { grant(user); }
+  good: |
+    grant(user);
+
+- key: QG-ALL-SML-0003
+  name: Functions should not take too many parameters
+  languages: []
+  category: SML
+  severity: major
+  effort: 20min
+  tags: [design]
+  summary: The function signature declares more parameters than a caller can reasonably keep straight.
+  why: |
+    Long parameter lists are hard to call correctly: adjacent arguments of the same type can be swapped
+    without any error, and every new requirement tends to add one more parameter. The length is usually a
+    hint that the function is doing several things at once.
+  fix: |
+    Group the parameters that always travel together into a small type or options object, and split the
+    function if the extra parameters only apply to part of its work.
+  bad: |
+    void createUser(string first, string last, string street, string city, string zip, string country, string phone, string email)
+  good: |
+    void createUser(Name name, Address address, ContactDetails contact)
+
+- key: QG-ALL-SML-0004
+  name: Functions should not be too long
+  languages: []
+  category: SML
+  severity: major
+  effort: 30min
+  tags: [design]
+  summary: The function body is longer than what fits in a reader's head at once.
+  why: |
+    A very long function has more local state, more branches and more reasons to change than one unit of
+    behaviour should have. Reviewing it means holding all of it in mind, and testing it usually means
+    going through the public entry point instead of the step that is actually interesting.
+  fix: |
+    Extract the sections that have a name — validation, loading, formatting — into their own functions,
+    and keep the original as the sequence of those steps.
+
+- key: QG-ALL-SML-0005
+  name: Functions should not be too hard to follow
+  languages: []
+  category: SML
+  severity: critical
+  effort: 30min
+  tags: [design, complexity]
+  summary: Nesting-aware complexity of the function exceeds the configured limit.
+  why: |
+    The score counts each branch, loop and catch, and charges more for the ones buried inside others,
+    because that is what makes code expensive to read. A high score means understanding any single line
+    requires reconstructing the conditions that lead to it.
+  fix: |
+    Reduce the depth first: return early on the error cases, replace a nested chain with a lookup or a
+    guard clause, and move an inner block into a named function. Splitting one deep function into two
+    shallow ones lowers the score much faster than shortening lines.
+
+- key: QG-ALL-SML-0006
+  name: Control structures should not be nested too deeply
+  languages: []
+  category: SML
+  severity: major
+  effort: 20min
+  tags: [design, complexity]
+  summary: A block sits deeper in the nesting chain than the configured limit allows.
+  why: |
+    Every extra level adds a condition the reader has to keep true while reading everything inside it.
+    Past a few levels the indentation itself becomes the hardest part of the function, and edits made in
+    the wrong branch are easy to miss in review.
+  fix: |
+    Invert the guards and return early, combine conditions that always appear together, or move the
+    innermost level into a function whose name explains what that branch is for.
+  bad: |
+    if (a) { if (b) { if (c) { if (d) { work(); } } } }
+  good: |
+    if (!a || !b) return;
+    if (c && d) work();
+
+- key: QG-ALL-SML-0007
+  name: Multi-way branches should handle the unexpected value
+  languages: []
+  category: SML
+  severity: major
+  effort: 10min
+  tags: [design, suspicious]
+  summary: A switch or match construct lists cases but has no default branch.
+  why: |
+    Without a default, a value the author did not foresee simply falls through and the code continues as
+    if nothing happened. That includes values added later to an enum or returned by a newer version of an
+    API, which is exactly when a silent no-op is hardest to diagnose.
+  fix: |
+    Add the default branch and make it explicit: handle the value, or fail loudly with an error that
+    names it. An empty default with a comment is still better than none, because it records the decision.
+  bad: |
+    switch (kind) { case A: handleA(); break; case B: handleB(); break; }
+  good: |
+    switch (kind) {
+      case A: handleA(); break;
+      case B: handleB(); break;
+      default: throw new IllegalStateException("unhandled kind: " + kind);
+    }
+
+- key: QG-ALL-SML-0008
+  name: String literals should not be duplicated
+  languages: []
+  category: SML
+  severity: minor
+  effort: 10min
+  tags: [maintainability]
+  summary: The same string literal appears several times in one file.
+  why: |
+    Repeated literals have to be changed together, and nothing links them: the day one occurrence is
+    updated, the others keep the old value. Keys, header names and messages are the usual victims,
+    because a typo in one copy produces a bug that looks like a runtime accident.
+  fix: |
+    Declare the value once as a constant with a name that says what it means, and reference the constant
+    everywhere else.
+
+- key: QG-ALL-SML-0009
+  name: Local variables should be used
+  languages: []
+  category: SML
+  severity: minor
+  effort: 5min
+  tags: [dead-code]
+  summary: A local variable is declared and assigned but its value is never read.
+  why: |
+    The computation behind the value is paid for and thrown away. More importantly, an unread variable is
+    often the tail of a change that was left half-done: the new value was computed but the code that was
+    supposed to use it still reads the old one.
+  fix: |
+    Use the value where it was meant to be used, or remove the declaration and the expression that fed
+    it. If a name is needed only to document a discarded result, prefix it with an underscore.
+
+- key: QG-ALL-SML-0010
+  name: Function bodies should not be empty
+  languages: []
+  category: SML
+  severity: major
+  effort: 5min
+  tags: [suspicious]
+  summary: A function is declared with no statements in its body.
+  why: |
+    Callers assume something happens. An empty body silently satisfies an interface or an override while
+    doing nothing, and the missing behaviour only shows up as a value that never changes or an event that
+    never arrives.
+  fix: |
+    Implement the body, throw a "not implemented" error while the work is pending, or — if doing nothing
+    is deliberate — leave a comment stating why, so the next reader does not treat it as a gap.
+
+- key: QG-ALL-CNV-0004
+  name: One statement per line
+  languages: []
+  category: CNV
+  severity: minor
+  effort: 5min
+  tags: [convention, readability]
+  summary: Two or more statements share a single source line.
+  why: |
+    Packed lines hide statements: a debugger stops on the whole line, a diff shows one change where two
+    happened, and a reader scanning the left edge of the file misses the second statement entirely.
+  fix: |
+    Put each statement on its own line and let the formatter handle the layout.
+
+- key: QG-ALL-PRF-0001
+  name: Strings should not be built by concatenation inside a loop
+  languages: []
+  category: PRF
+  severity: major
+  effort: 15min
+  tags: [performance]
+  summary: A loop appends to a string with concatenation, allocating a new string on every iteration.
+  why: |
+    Strings are immutable in most languages, so each append copies everything accumulated so far. The
+    cost grows with the square of the number of iterations: unnoticeable for ten items, dominant for a
+    few thousand.
+  fix: |
+    Accumulate the pieces in a string builder, or collect them in a list and join once after the loop.
+  bad: |
+    var report = "";
+    foreach (var row in rows) report += row + "\n";
+  good: |
+    var report = new StringBuilder();
+    foreach (var row in rows) report.Append(row).Append('\n');
+
+- key: QG-ALL-SML-0001
+  name: Track uses of TODO and FIXME tags
+  languages: []
+  category: SML
+  severity: info
+  effort: 5min
+  tags: [maintainability]
+  summary: A comment marks work that was left unfinished.
+  why: |
+    A TODO records a decision that was postponed. Left in the code it becomes invisible: nobody knows
+    whether it is still relevant, who owns it, or whether the missing work is now a defect.
+  fix: |
+    Do the work, or move it to the issue tracker and reference the ticket in the comment so the deadline
+    lives somewhere that gets reviewed.
+
+- key: QG-ALL-SML-0002
+  name: Nested blocks of code should not be left empty
+  languages: []
+  category: SML
+  severity: major
+  effort: 10min
+  tags: [suspicious]
+  summary: A block delimits no statements at all.
+  why: |
+    An empty block usually means a case was recognised and then not handled — an ignored exception, a
+    branch someone emptied while debugging. The code reads as if the situation is covered when it is not.
+  fix: |
+    Fill the block with the handling it needs, or remove it. For a deliberately ignored case, add a
+    comment that states the reason.
+
+- key: QG-ALL-CNV-0001
+  name: Trailing commas should not be used
+  languages: []
+  category: CNV
+  severity: minor
+  effort: 2min
+  tags: [convention]
+  summary: A comma is followed directly by a closing bracket or brace.
+  why: |
+    Support for trailing commas differs between language versions and tools, so the same file can parse
+    in one place and fail in another. Where it is accepted it also hides an accidentally deleted element.
+  fix: |
+    Remove the comma before the closing delimiter.
+
+- key: QG-ALL-CNV-0002
+  name: Tabs should not be used for indentation
+  languages: []
+  category: CNV
+  severity: minor
+  effort: 5min
+  tags: [convention, readability]
+  summary: The line contains a tab character.
+  why: |
+    A tab is rendered with a different width by every editor, so mixed indentation makes alignment
+    depend on who opens the file. Diffs then show whitespace-only changes that hide the real edit.
+  fix: |
+    Replace tabs with spaces and set the editor or formatter to do it automatically.
+
+- key: QG-ALL-CNV-0003
+  name: Lines should not be too long
+  languages: []
+  category: CNV
+  severity: major
+  effort: 10min
+  tags: [convention, readability]
+  summary: The line is longer than the configured limit.
+  why: |
+    Long lines force horizontal scrolling and make side-by-side review impractical, which is where most
+    defects are caught. They are usually a symptom too: several operations chained into one expression.
+  fix: |
+    Break the line at a logical boundary, or extract part of the expression into a named local.
+
+- key: QG-ALL-BUG-0007
+  name: Regular expressions should be syntactically valid
+  languages: []
+  category: BUG
+  severity: blocker
+  effort: 15min
+  tags: [regex, suspicious]
+  summary: A regex literal passed to a matching function does not compile.
+  why: |
+    An invalid pattern is only rejected when the expression is first built, which happens on the code
+    path that uses it — often an error path or a rarely exercised branch. The program then fails with a
+    parsing error instead of doing the validation the pattern was written for.
+  fix: |
+    Fix the escaping or the unbalanced group. Where the pattern lives in a string with its own escape
+    rules, prefer a verbatim or raw literal so the backslashes reach the regex engine unchanged.
+  bad: |
+    Regex.IsMatch(input, "^[a-z+$");
+  good: |
+    Regex.IsMatch(input, @"^[a-z]+$");

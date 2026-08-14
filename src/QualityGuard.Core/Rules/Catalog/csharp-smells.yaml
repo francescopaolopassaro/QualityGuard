@@ -1,0 +1,490 @@
+# C# / .NET maintainability batch.
+
+- key: QG-CS-SML-0026
+  name: Library code should not terminate the process
+  languages: [cs, vb]
+  category: SML
+  severity: critical
+  effort: 20min
+  tags: [design]
+  message: Ending the process here removes the caller's ability to recover.
+  summary: Code calls an exit method instead of returning an error.
+  why: |
+    The process dies wherever the call happens: pending writes are lost, finally blocks do not run, and
+    a hosted component takes the whole application with it. The decision to stop belongs to the entry
+    point, which knows whether anything else is still in flight.
+  fix: |
+    Throw or return an error and let the top-level handler decide. Reserve exit codes for the main
+    method, where shutting down is the intended behaviour.
+  detect:
+    - invocation: [Exit, FailFast]
+      receiver: [Environment, Application]
+
+- key: QG-CS-SML-0027
+  name: Catch clauses should name the exceptions they handle
+  languages: [cs, vb]
+  category: SML
+  severity: major
+  effort: 15min
+  tags: [exception]
+  message: Catching the base exception type also swallows failures this code cannot handle.
+  summary: A catch clause catches Exception or SystemException.
+  why: |
+    The handler receives everything, including the bugs — a null reference, an invalid cast — that
+    should surface loudly during testing. They get logged as if they were expected conditions, and the
+    program continues in a state nobody designed for.
+  fix: |
+    Catch the specific exceptions the operation can produce. Keep one broad handler at the process
+    boundary that logs and rethrows, so nothing is silently absorbed deeper in the call stack.
+  detect:
+    - line: "catch\\s*\\(\\s*(System\\.)?(Exception|SystemException)\\s*[a-zA-Z_)]"
+
+- key: QG-CS-SML-0028
+  name: Null reference exceptions should be prevented, not caught
+  languages: [cs, vb]
+  category: SML
+  severity: major
+  effort: 20min
+  tags: [exception, suspicious]
+  message: Catching this exception hides a missing null check.
+  summary: A catch clause handles NullReferenceException.
+  why: |
+    The exception means a bug already happened: something was null where the code assumed a value. The
+    handler hides the defect and leaves the object graph half-initialised, so the real failure appears
+    later somewhere unrelated.
+  fix: |
+    Check the value before using it, or make the field non-nullable and initialise it in the
+    constructor. Remove the catch once the cause is handled at the source.
+  detect:
+    - line: "catch\\s*\\(\\s*(System\\.)?NullReferenceException"
+
+- key: QG-CS-SML-0029
+  name: Boolean values should not be compared with literals
+  languages: [cs, vb]
+  category: SML
+  severity: minor
+  effort: 5min
+  tags: [readability]
+  message: Comparing a boolean with true or false adds nothing.
+  summary: A boolean expression is compared against a boolean literal.
+  why: |
+    The comparison restates what the value already says, so the reader spends a moment checking whether
+    it is == or !=. It is also one keystroke away from an assignment, which changes the meaning silently.
+  fix: |
+    Use the value directly, or negate it with the not operator.
+  bad: |
+    if (isReady == true) { ... }
+  good: |
+    if (isReady) { ... }
+  detect:
+    - line: "(==|!=)\\s*(true|false)\\b"
+
+- key: QG-CS-SML-0030
+  name: Conditions should not contain assignments
+  languages: [cs, vb]
+  category: SML
+  severity: critical
+  effort: 10min
+  tags: [suspicious, readability]
+  message: This condition assigns a value instead of comparing it.
+  summary: An assignment appears inside the condition of a branch or loop.
+  why: |
+    An assignment where a comparison is expected changes state as a side effect of evaluating the test,
+    and in the common typo case — one equals sign instead of two — the condition also becomes constant.
+    The line reads as a check either way.
+  fix: |
+    Move the assignment above the statement and test the resulting variable, so the two intentions stay
+    separate.
+- key: QG-CS-SML-0031
+  name: Obsolete markers should explain the replacement
+  languages: [cs, vb]
+  category: SML
+  severity: minor
+  effort: 10min
+  tags: [maintainability, api]
+  message: This obsolete marker gives the caller no alternative.
+  summary: An Obsolete attribute is applied without a message.
+  why: |
+    The warning tells the caller to stop using the member but not what to use instead, so every consumer
+    has to work it out from the source or leave the call in place. Deprecations without guidance are
+    the ones that never get removed.
+  fix: |
+    Pass a message naming the replacement and, once callers have migrated, set the attribute to raise an
+    error before deleting the member.
+  detect:
+    - line: "\\[\\s*Obsolete\\s*\\]"
+
+- key: QG-CS-SML-0032
+  name: Empty statements should be removed
+  languages: [cs]
+  category: SML
+  severity: major
+  effort: 5min
+  tags: [suspicious]
+  message: This stray semicolon terminates the statement above it.
+  summary: A semicolon stands on its own as a statement.
+  why: |
+    Placed after an if or a loop header it becomes the whole body, so the block that follows always
+    executes. The indentation still suggests the opposite, which makes it one of the hardest typos to
+    spot during review.
+  fix: |
+    Delete the semicolon, and use an empty block when a body really is meant to do nothing.
+- key: QG-CS-SML-0033
+  name: File system paths should not be hardcoded
+  languages: [cs, vb]
+  category: SML
+  severity: major
+  effort: 20min
+  tags: [portability, configuration]
+  message: This absolute path only works on the machine it was written for.
+  summary: A literal contains an absolute file system path.
+  why: |
+    The path breaks on a different operating system, in a container, and on any machine where the
+    directory layout differs. Because it usually points at a share or a data folder, the failure appears
+    at run time in the environment the developer does not have.
+  fix: |
+    Read the location from configuration, and build it with the path helpers so separators are correct
+    on every platform. Use the well-known folder APIs for user and application data.
+  detect:
+    - string: ["C:\\", "D:\\", "/home/", "/usr/local/", "/var/lib/", "\\\\server"]
+
+- key: QG-CS-SML-0034
+  name: Network addresses should not be hardcoded
+  languages: [cs, vb]
+  category: SML
+  severity: major
+  effort: 15min
+  tags: [configuration]
+  message: This IP address is fixed in the code.
+  summary: A literal contains an IP address.
+  why: |
+    Addresses change between environments and when infrastructure moves, and a hardcoded one forces a
+    rebuild for what is a deployment concern. It also documents internal topology to anyone who reads
+    the binary.
+  fix: |
+    Move the address to configuration and resolve services by name, so DNS and the deployment
+    environment decide where the traffic goes.
+  detect:
+    - line: "\"(?!0\\.0\\.0\\.0|127\\.0\\.0\\.1|255\\.255)\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}[\"/:]"
+
+- key: QG-CS-SML-0035
+  name: String casing should state its culture
+  languages: [cs, vb]
+  category: SML
+  severity: major
+  effort: 10min
+  tags: [globalization]
+  message: This conversion uses the current culture, so its result depends on the machine.
+  summary: A case conversion or comparison is performed without specifying a culture.
+  why: |
+    The current culture changes the result for a handful of languages — the Turkish dotless i is the
+    classic example — so a comparison that works everywhere else fails on one locale. Since the culture
+    comes from the machine, the bug is invisible in development.
+  fix: |
+    Use the invariant overloads for values compared programmatically (identifiers, keys, protocol
+    tokens), and the current culture only for text shown to a user.
+  bad: |
+    if (code.ToUpper() == "ID") { ... }
+  good: |
+    if (string.Equals(code, "ID", StringComparison.OrdinalIgnoreCase)) { ... }
+  detect:
+    - invocation: [ToUpper, ToLower]
+      argCount: 0
+
+- key: QG-CS-SML-0036
+  name: Disabled tests should not stay in the suite
+  languages: [cs, vb]
+  category: SML
+  severity: major
+  effort: 15min
+  tags: [tests]
+  message: This test is skipped, so the behaviour it covers is unverified.
+  summary: A test is marked as ignored or skipped.
+  why: |
+    A skipped test reports as green while checking nothing, and the longer it stays disabled the less
+    likely anyone is to remember why. The code it protected then changes freely.
+  fix: |
+    Fix the test and re-enable it, or delete it if the behaviour no longer exists. When it must stay
+    off, reference the ticket that will bring it back.
+  detect:
+    - line: "\\[\\s*(Ignore|Skip)\\b"
+    - line: "\\(\\s*Skip\\s*="
+
+- key: QG-CS-SML-0037
+  name: One declaration per line
+  languages: [cs, vb]
+  category: SML
+  severity: minor
+  effort: 5min
+  tags: [readability]
+  message: Several variables are declared on one line.
+  summary: A single declaration statement introduces more than one variable.
+  why: |
+    Grouped declarations hide their initialisers, and in languages where the type binds to the first
+    name only, they produce types the reader does not expect. Diffs also become larger than the change
+    that caused them.
+  fix: |
+    Declare one variable per line, each with its own initialiser, and let the compiler infer the type
+    where that reads better.
+- key: QG-CS-SML-0038
+  name: Public constants should be static readonly
+  languages: [cs]
+  category: SML
+  severity: major
+  effort: 15min
+  tags: [api, versioning]
+  message: The value of a public constant is copied into every assembly that uses it.
+  summary: A constant is exposed publicly.
+  why: |
+    Constants are inlined at compile time, so consumers keep the old value until they are rebuilt.
+    Changing it in a shipped library produces two different values in the same process, which is the
+    kind of mismatch that takes a long time to explain.
+  fix: |
+    Expose the value as static readonly, which is read from the defining assembly at run time. Keep
+    const for values that can never change, such as mathematical constants.
+  detect:
+    - line: "public\\s+const\\s+"
+
+- key: QG-CS-SML-0039
+  name: Enum names should not repeat their kind
+  languages: [cs, vb]
+  category: SML
+  severity: minor
+  effort: 5min
+  tags: [naming]
+  message: The suffix repeats what the declaration already says.
+  summary: An enumeration name ends with Enum or Flags.
+  why: |
+    The type keyword already states what it is, so the suffix only makes every usage longer. It also
+    tends to hide the concept the type represents behind a technical word.
+  fix: |
+    Name the type after the concept, singular for a plain enumeration and plural for a flags
+    enumeration, and drop the suffix.
+  detect:
+    - line: "enum\\s+\\w*(Enum|Flags)\\b"
+
+- key: QG-CS-SML-0040
+  name: Boolean conditions should short-circuit
+  languages: [cs, vb]
+  category: SML
+  severity: major
+  effort: 10min
+  tags: [suspicious]
+  message: This operator evaluates both sides, even when the first one already decides the result.
+  summary: A non-short-circuiting boolean operator is used in a condition.
+  why: |
+    The right-hand side runs unconditionally, so a null check on the left no longer protects it and any
+    side effect happens even when it should not. Where the second operand is expensive, the cost is paid
+    on every evaluation.
+  fix: |
+    Use the short-circuiting operators in conditions, and keep the bitwise ones for actual bit
+    manipulation.
+  bad: |
+    if (user != null & user.IsActive) { ... }
+  good: |
+    if (user != null && user.IsActive) { ... }
+  detect:
+    - line: "(if|while)\\s*\\([^)]*[^&|]([&|])[^&|=][^)]*\\)"
+
+- key: QG-CS-SML-0041
+  name: Remainder results should be compared safely
+  languages: [cs, vb]
+  category: SML
+  severity: major
+  effort: 10min
+  tags: [arithmetic, suspicious]
+  message: A remainder can be negative, so this equality test fails for negative inputs.
+  summary: The result of a modulus operation is compared for equality with a positive value.
+  why: |
+    In C-like languages the remainder keeps the sign of the dividend, so an odd negative number gives
+    minus one rather than one. A parity or bucket check written this way quietly stops working for half
+    of the input range.
+  fix: |
+    Compare against zero, or normalise the result first. For a parity check, test that the remainder is
+    not zero instead of equal to one.
+  bad: |
+    if (value % 2 == 1) { ... }
+  good: |
+    if (value % 2 != 0) { ... }
+  detect:
+    - line: "%\\s*\\d+\\s*==\\s*[1-9]"
+
+- key: QG-CS-SML-0042
+  name: Log messages should use structured templates
+  languages: [cs]
+  category: SML
+  severity: major
+  effort: 10min
+  tags: [logging]
+  message: This log message is assembled before it reaches the logger.
+  summary: A logging call receives a concatenated or interpolated string instead of a template.
+  why: |
+    A pre-built message cannot be indexed, filtered or aggregated by field, so searching the logs falls
+    back to substring matching. The formatting cost is also paid even when the level is disabled.
+  fix: |
+    Pass a constant template with named placeholders and supply the values as arguments, so the logging
+    pipeline keeps them as structured properties.
+  bad: |
+    logger.LogInformation($"Order {id} shipped to {country}");
+  good: |
+    logger.LogInformation("Order {OrderId} shipped to {Country}", id, country);
+  detect:
+    - invocation: [LogInformation, LogDebug, LogWarning, LogError, LogCritical, LogTrace]
+      argDynamic: true
+      argIndex: 0
+
+- key: QG-CS-SML-0043
+  name: Member names in diagnostics should use nameof
+  languages: [cs]
+  category: SML
+  severity: minor
+  effort: 5min
+  tags: [maintainability]
+  message: This parameter name is a string literal and will not follow a rename.
+  summary: An argument exception is constructed with a hardcoded parameter name.
+  why: |
+    Renaming the parameter leaves the literal behind, so the exception blames a parameter that no longer
+    exists. Compilers and refactoring tools cannot help because the string is opaque to them.
+  fix: |
+    Use nameof so the compiler validates the name and refactoring keeps it in sync.
+  bad: |
+    throw new ArgumentNullException("customer");
+  good: |
+    throw new ArgumentNullException(nameof(customer));
+  detect:
+    - creation: [ArgumentNullException, ArgumentException, ArgumentOutOfRangeException]
+      argLiterals: ["", " "]
+      literalValue: true
+
+- key: QG-CS-SML-0044
+  name: Unimplemented members should not reach production
+  languages: [cs, vb]
+  category: SML
+  severity: major
+  effort: 30min
+  tags: [maintainability]
+  message: This member throws instead of doing its work.
+  summary: A member throws a not-implemented exception.
+  why: |
+    The signature promises behaviour that does not exist, so the gap is discovered at run time by
+    whoever calls it — often a consumer who had no reason to expect it. Interfaces implemented this way
+    hide how much of the contract is really covered.
+  fix: |
+    Implement the member, or remove it from the type and the interface until it exists. If it is
+    deliberately unsupported, throw NotSupportedException with a message explaining why.
+  detect:
+    - creation: [NotImplementedException]
+
+- key: QG-CS-SML-0045
+  name: Ternary operators should not be nested
+  languages: [cs, vb]
+  category: SML
+  severity: major
+  effort: 15min
+  tags: [readability]
+  message: A conditional expression inside another one is hard to read correctly.
+  summary: A ternary expression contains another ternary expression.
+  why: |
+    Nesting makes the association between conditions and results depend on precedence rather than on
+    layout, and reviewers routinely read the branches in the wrong order. Adding a case later means
+    rebuilding the whole expression.
+  fix: |
+    Use an if/else chain or a switch expression, both of which put each case on its own line and make
+    the default explicit.
+  detect:
+    - line: "\\?[^?:;]*\\?[^:]*:[^;]*:"
+
+- key: QG-CS-SML-0046
+  name: Threads should not be paused to wait for work
+  languages: [cs, vb]
+  category: SML
+  severity: major
+  effort: 20min
+  tags: [concurrency, tests]
+  message: Sleeping blocks the thread and makes timing a hidden dependency.
+  summary: Execution is paused with a fixed sleep.
+  why: |
+    A sleep holds a thread from the pool doing nothing, and the duration is a guess: too short and the
+    code races, too long and everything waits. In tests it is the main source of intermittent failures.
+  fix: |
+    Wait on the thing you actually depend on — a task, an event, a cancellation token — or use the
+    asynchronous delay so the thread is released while waiting.
+  detect:
+    - invocation: [Sleep]
+      receiver: [Thread]
+
+- key: QG-CS-SML-0047
+  name: IndexOf results should be compared with minus one
+  languages: [cs, vb]
+  category: SML
+  severity: major
+  effort: 10min
+  tags: [suspicious]
+  message: A match at position zero makes this check false.
+  summary: The result of an index search is tested for being greater than zero.
+  why: |
+    The method returns the position of the match and minus one when there is none, so a match at the
+    start of the string is indistinguishable from no match under this comparison. Prefixes are exactly
+    the case such checks are usually written for.
+  fix: |
+    Compare with minus one to test for absence, or use Contains and StartsWith when the position is not
+    needed.
+  bad: |
+    if (name.IndexOf("admin") > 0) { ... }
+  good: |
+    if (name.Contains("admin")) { ... }
+  detect:
+    - line: "\\.IndexOf\\s*\\([^)]*\\)\\s*>\\s*0"
+
+- key: QG-CS-SML-0049
+  name: Emptiness of a string should be tested with the dedicated helper
+  languages: [cs, vb]
+  category: SML
+  severity: minor
+  effort: 5min
+  tags: [readability]
+  message: Use string.IsNullOrEmpty instead of comparing with an empty literal.
+  summary: A string is compared with an empty literal or its length with zero.
+  why: |
+    The comparison covers empty but not null, so a null value takes the other branch and throws a line
+    or two later. The helper handles both and states the intent in its name.
+  fix: |
+    Use IsNullOrEmpty, or IsNullOrWhiteSpace when blank input should be rejected as well.
+- key: QG-CS-SML-0050
+  name: LINQ chains should not repeat the same operator
+  languages: [cs]
+  category: SML
+  severity: minor
+  effort: 10min
+  tags: [linq, performance]
+  message: This chain can be expressed with a single operator.
+  summary: Two consecutive filters or orderings are applied to the same sequence.
+  why: |
+    Each operator adds an iteration over the sequence and, in the ordering case, the second call
+    discards the first: only the last one has any effect. The chain therefore costs more and says less
+    than the reader assumes.
+  fix: |
+    Combine the filters with a logical AND, and express secondary ordering with ThenBy so the previous
+    ordering is preserved.
+  detect:
+    - line: "\\.Where\\s*\\([^)]*\\)\\s*\\.Where\\s*\\("
+    - line: "\\.OrderBy(Descending)?\\s*\\([^)]*\\)\\s*\\.OrderBy"
+
+- key: QG-CS-SML-0051
+  name: Reflection should not open up private members
+  languages: [cs, vb]
+  category: SML
+  severity: major
+  effort: 25min
+  tags: [reflection, design]
+  message: Reaching non-public members through reflection depends on internals that can change.
+  summary: A reflection call requests non-public members.
+  why: |
+    The code binds to details the other type never promised, so a rename or a refactoring in a
+    dependency breaks it at run time with no compiler warning. Trimming and ahead-of-time compilation
+    can remove those members entirely.
+  fix: |
+    Use the public API, or ask for the extension point you need. In tests, expose the member to the test
+    assembly instead of reaching around the compiler.
+  detect:
+    - member: [BindingFlags.NonPublic]

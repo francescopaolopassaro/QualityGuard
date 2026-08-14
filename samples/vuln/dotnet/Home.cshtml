@@ -1,0 +1,5 @@
+@model OrderModel
+<form asp-action="Transfer" asp-antiforgery="false">
+  <div>@Html.Raw(Model.Comment)</div>
+</form>
+<script>var user = "@Model.Name";</script>

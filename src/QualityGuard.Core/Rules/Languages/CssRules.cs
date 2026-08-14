@@ -1,0 +1,148 @@
+using QualityGuard.Core.Models;
+using QualityGuard.Core.Tokenization;
+
+namespace QualityGuard.Core.Rules.Languages;
+
+public static class CssRuleSet
+{
+    public static IReadOnlyList<IRule> All { get; } =
+    [
+        new CssImportantRule(),
+        new CssImportRule(),
+        new CssUniversalSelectorRule(),
+        new CssEmptyBlockRule(),
+        new CssZIndexRule(),
+        new CssTransitionAllRule(),
+        new CssZeroUnitRule()
+    ];
+}
+
+public sealed class CssImportantRule : PatternRuleBase
+{
+    public override string Key => "QG-CSS-SML-0001";
+    public override string Name => "Avoid the !important annotation";
+    public override Severity Severity => Severity.Minor;
+    public override IssueKind Kind => IssueKind.CodeSmell;
+    public override string RemediationEffort => "Increase specificity instead of using !important.";
+    public override string[] Languages => ["css"];
+
+    public override void Execute(IRuleContext context)
+    {
+        var lines = context.File.Content.Split('\n');
+        for (var i = 0; i < lines.Length; i++)
+            if (RuleMatchers.LineContains(lines[i], "!important"))
+                context.Report("Avoid using !important; it overrides specificity.", i + 1);
+    }
+}
+
+public sealed class CssImportRule : PatternRuleBase
+{
+    public override string Key => "QG-CSS-SML-0002";
+    public override string Name => "Prefer @use or <link> over @import";
+    public override Severity Severity => Severity.Minor;
+    public override IssueKind Kind => IssueKind.CodeSmell;
+    public override string RemediationEffort => "Use @use in Sass or a <link> element to load stylesheets.";
+    public override string[] Languages => ["css"];
+
+    public override void Execute(IRuleContext context)
+    {
+        var lines = context.File.Content.Split('\n');
+        for (var i = 0; i < lines.Length; i++)
+            if (lines[i].TrimStart().StartsWith("@import", StringComparison.Ordinal))
+                context.Report("Avoid @import; it blocks parallel loading.", i + 1);
+    }
+}
+
+public sealed class CssUniversalSelectorRule : PatternRuleBase
+{
+    public override string Key => "QG-CSS-SML-0003";
+    public override string Name => "Avoid the universal selector";
+    public override Severity Severity => Severity.Minor;
+    public override IssueKind Kind => IssueKind.CodeSmell;
+    public override string RemediationEffort => "Replace * with a more specific selector or a reset of the elements you target.";
+    public override string[] Languages => ["css"];
+
+    public override void Execute(IRuleContext context)
+    {
+        var lines = context.File.Content.Split('\n');
+        for (var i = 0; i < lines.Length; i++)
+            if (RuleMatchers.LineContains(lines[i], "*{"))
+                context.Report("Avoid the universal selector; it applies to every element.", i + 1);
+    }
+}
+
+public sealed class CssEmptyBlockRule : PatternRuleBase
+{
+    public override string Key => "QG-CSS-SML-0004";
+    public override string Name => "Remove empty rule blocks";
+    public override Severity Severity => Severity.Minor;
+    public override IssueKind Kind => IssueKind.CodeSmell;
+    public override string RemediationEffort => "Delete the empty rule or fill it with declarations.";
+    public override string[] Languages => ["css"];
+
+    public override void Execute(IRuleContext context)
+    {
+        var lines = context.File.Content.Split('\n');
+        for (var i = 0; i < lines.Length; i++)
+            if (RuleMatchers.LineContains(lines[i], "{}"))
+                context.Report("Remove this empty rule block.", i + 1);
+    }
+}
+
+public sealed class CssZIndexRule : PatternRuleBase
+{
+    public override string Key => "QG-CSS-BUG-0001";
+    public override string Name => "z-index requires a positioned element";
+    public override Severity Severity => Severity.Major;
+    public override IssueKind Kind => IssueKind.Bug;
+    public override string RemediationEffort => "Set a position value (relative, absolute, fixed or sticky) for z-index to apply.";
+    public override string[] Languages => ["css"];
+
+    public override void Execute(IRuleContext context)
+    {
+        var lines = context.File.Content.Split('\n');
+        for (var i = 0; i < lines.Length; i++)
+            if (RuleMatchers.LineContains(lines[i], "z-index:"))
+                context.Report("z-index only applies to positioned elements; set position.", i + 1);
+    }
+}
+
+public sealed class CssTransitionAllRule : PatternRuleBase
+{
+    public override string Key => "QG-CSS-PRF-0001";
+    public override string Name => "Avoid animating the all keyword";
+    public override Severity Severity => Severity.Minor;
+    public override IssueKind Kind => IssueKind.CodeSmell;
+    public override string RemediationEffort => "Animate specific properties instead of the all keyword.";
+    public override string[] Languages => ["css"];
+
+    public override void Execute(IRuleContext context)
+    {
+        var lines = context.File.Content.Split('\n');
+        for (var i = 0; i < lines.Length; i++)
+        {
+            var line = lines[i];
+            if ((RuleMatchers.LineContains(line, "transition") || RuleMatchers.LineContains(line, "animation"))
+                && RuleMatchers.LineContains(line, ": all"))
+                context.Report("Animating the all keyword hurts performance; target specific properties.", i + 1);
+        }
+    }
+}
+
+public sealed class CssZeroUnitRule : PatternRuleBase
+{
+    public override string Key => "QG-CSS-CNV-0001";
+    public override string Name => "Omit the unit on zero values";
+    public override Severity Severity => Severity.Minor;
+    public override IssueKind Kind => IssueKind.CodeSmell;
+    public override string RemediationEffort => "Write 0 instead of 0px; a unit is redundant on zero.";
+    public override string[] Languages => ["css"];
+
+    public override void Execute(IRuleContext context)
+    {
+        var lines = context.File.Content.Split('\n');
+        for (var i = 0; i < lines.Length; i++)
+            if (RuleMatchers.LineContains(lines[i], "0px"))
+                context.Report("Omit the unit on zero values; write 0 instead of 0px.", i + 1);
+    }
+}

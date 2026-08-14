@@ -1,0 +1,9 @@
+﻿{
+  "conditions": [
+    { "metricKey": "new_coverage", "operator": "LESS_THAN", "threshold": 80 },
+    { "metricKey": "new_duplicated_lines_density", "operator": "GREATER_THAN", "threshold": 3 },
+    { "metricKey": "new_security_hotspots_reviewed", "operator": "LESS_THAN", "threshold": 100 },
+    { "metricKey": "new_reliability_rating", "operator": "GREATER_THAN", "threshold": 1 },
+    { "metricKey": "new_maintainability_rating", "operator": "GREATER_THAN", "threshold": 1 }
+  ]
+}

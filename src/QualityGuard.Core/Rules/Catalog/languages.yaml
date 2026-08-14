@@ -1,0 +1,790 @@
+# Java, Kotlin, Python, JavaScript, TypeScript, Go, Rust, CSS and HTML rules.
+
+- key: QG-JV-SEC-0018
+  name: XML factories should be configured against external entities
+  languages: [java]
+  category: SEC
+  severity: critical
+  effort: 20min
+  cwe: [611]
+  owasp: [A5]
+  tags: [xxe]
+  message: This XML factory is used without disabling DTDs and external entities.
+  summary: A parser factory is created without the features that block entity resolution.
+  why: |
+    Java parsers resolve DTDs and external entities by default. A document can therefore make the server
+    read local files or call internal services and return the result inside the parsed data, which turns
+    an ordinary upload endpoint into a file reader.
+  fix: |
+    Disable DTDs on the factory right after creating it, and turn secure processing on, before any
+    document is parsed.
+  bad: |
+    DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+  good: |
+    DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+    factory.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
+    factory.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, true);
+  detect:
+    - invocation: [newInstance]
+      receiver: [DocumentBuilderFactory, SAXParserFactory, XMLInputFactory, TransformerFactory, SchemaFactory]
+      absent: [disallow-doctype-decl, FEATURE_SECURE_PROCESSING, IS_SUPPORTING_EXTERNAL_ENTITIES]
+
+- key: QG-JV-SEC-0019
+  name: Trust managers should verify the certificate chain
+  languages: [java, kt]
+  category: SEC
+  severity: blocker
+  effort: 30min
+  cwe: [295]
+  owasp: [A2]
+  tags: [tls]
+  message: This trust manager or hostname verifier accepts every peer.
+  summary: A custom trust manager or hostname verifier is installed that always succeeds.
+  why: |
+    Once trust checks are stubbed out, TLS only encrypts: it no longer proves who is on the other end.
+    Anyone able to intercept the connection can present their own certificate and read or modify the
+    traffic, and nothing in the application will notice.
+  fix: |
+    Delete the custom implementation and rely on the platform trust store. To accept a private authority,
+    load its certificate into a KeyStore and build the trust manager from it; to accept one host, compare
+    the certificate pin explicitly.
+  detect:
+    - line: "checkServerTrusted\\s*\\([^)]*\\)\\s*(throws [^{]*)?\\{\\s*\\}"
+    - line: "(HostnameVerifier|verify)\\s*\\([^)]*\\)\\s*\\{\\s*return\\s+true"
+    - line: "ALLOW_ALL_HOSTNAME_VERIFIER|NoopHostnameVerifier"
+
+- key: QG-JV-SEC-0020
+  name: Deserialization should not accept types chosen by the payload
+  languages: [java, kt]
+  category: SEC
+  severity: blocker
+  effort: 30min
+  cwe: [502]
+  owasp: [A8]
+  tags: [deserialization, jackson]
+  message: Enabling polymorphic typing lets the payload decide which classes are instantiated.
+  summary: A JSON mapper is configured to trust the type information inside the document.
+  why: |
+    When the document names the class, it also selects the code that runs while the object is built.
+    Published gadget chains for common libraries turn that into command execution, so this single setting
+    is usually enough to compromise the process.
+  fix: |
+    Leave default typing off and bind to a concrete class. If polymorphism is required, register a
+    subtype allow-list or a validator that only permits the classes you expect.
+  detect:
+    - invocation: [enableDefaultTyping, activateDefaultTyping]
+    - line: "@JsonTypeInfo\\s*\\(\\s*use\\s*=\\s*Id\\.CLASS"
+
+- key: QG-JV-SEC-0021
+  name: Cross-origin annotations should name the allowed origins
+  languages: [java, kt]
+  category: SEC
+  severity: major
+  effort: 15min
+  cwe: [942]
+  owasp: [A5]
+  tags: [spring, cors]
+  message: This endpoint accepts cross-origin calls from any site.
+  summary: A cross-origin annotation is declared without restricting origins.
+  why: |
+    A wildcard origin lets scripts on any page call the endpoint and read the response. For anything
+    behind authentication that means another site can act as the signed-in user and collect the data it
+    receives.
+  fix: |
+    List the origins the application actually serves, keep them in configuration, and avoid enabling
+    credentials unless the browser must send them.
+  bad: |
+    @CrossOrigin(origins = "*")
+  good: |
+    @CrossOrigin(origins = "${app.allowed-origins}")
+  detect:
+    - line: "@CrossOrigin\\s*(\\(\\s*(origins\\s*=\\s*\"\\*\"|\"\\*\")\\s*\\))?\\s*$"
+
+- key: QG-JV-SEC-0022
+  name: Reflection should not be used to bypass access control
+  languages: [java, kt]
+  category: SEC
+  severity: major
+  effort: 20min
+  cwe: [470]
+  tags: [reflection]
+  message: Making a member accessible bypasses the visibility the class relies on.
+  summary: setAccessible is used to reach a private member.
+  why: |
+    Private members carry invariants the class enforces in its public methods. Writing them directly
+    skips those checks, and the code silently depends on internals that can change in any release or be
+    blocked by the module system.
+  fix: |
+    Use the public API, or add the accessor the caller needs. Where reflection is unavoidable — a
+    framework binding values — confine it to one place and validate what it writes.
+  detect:
+    - invocation: [setAccessible]
+
+- key: QG-JV-SEC-0023
+  name: Session cookies should not be readable by scripts
+  languages: [java, kt]
+  category: SEC
+  severity: critical
+  effort: 10min
+  cwe: [1004]
+  owasp: [A5]
+  tags: [cookie]
+  message: This cookie is created without HttpOnly and Secure.
+  summary: A cookie is built without the flags that hide it from scripts and plain HTTP.
+  why: |
+    A cookie a script can read is a cookie an injected script can exfiltrate, and a cookie sent over
+    plain HTTP is one that can be captured on the network. Both flags are single calls and apply to every
+    subsequent response.
+  fix: |
+    Call setHttpOnly(true) and setSecure(true) on the cookie, and set SameSite where the container
+    supports it. For session cookies configure it once in the deployment descriptor.
+  detect:
+    - creation: [Cookie]
+      absent: [setHttpOnly]
+
+- key: QG-JV-BUG-0003
+  name: Results of pure methods should be used
+  languages: [java]
+  category: BUG
+  severity: major
+  effort: 10min
+  tags: [suspicious, string]
+  message: This call has no effect unless its result is used.
+  summary: A method that returns a new value is called as a statement and its result is discarded.
+  why: |
+    Strings and other immutable types never change in place, so the call computes a new value and throws
+    it away. The line looks like it transforms the variable, which is why the defect usually survives
+    review: the code reads exactly like the intent.
+  fix: |
+    Assign the result back, or pass it where the transformed value is needed.
+  bad: |
+    name.trim();
+  good: |
+    name = name.trim();
+  detect:
+    - invocation: [trim, strip, toUpperCase, toLowerCase, substring, replace, replaceAll, concat, intern]
+      resultUnused: true
+
+- key: QG-JV-SML-0009
+  name: Diagnostics should go through the logging framework
+  languages: [java, kt]
+  category: SML
+  severity: minor
+  effort: 10min
+  tags: [logging]
+  message: Printing to the console bypasses the logging configuration.
+  summary: Output is written to standard output or standard error directly.
+  why: |
+    Console output has no level, no timestamp and no destination control, so it is invisible to log
+    collection and cannot be turned off in production. It also costs a synchronized write on a stream
+    that is often the slowest part of a request under load.
+  fix: |
+    Use the project logger with an appropriate level, and let the configuration decide where the output
+    goes and how much of it is kept.
+  detect:
+    - member: [System.out, System.err]
+
+- key: QG-KT-SEC-0031
+  name: Web views should not enable JavaScript by default
+  languages: [kt, java]
+  category: SEC
+  severity: critical
+  effort: 20min
+  cwe: [79]
+  owasp: [A3]
+  tags: [android, webview]
+  message: JavaScript is enabled in this web view; any loaded page can then run code in the app context.
+  summary: A web view is configured to execute JavaScript.
+  why: |
+    A web view with scripting on will execute whatever the loaded page contains, including content
+    injected on the network or supplied by a redirect. Combined with a JavaScript bridge, that reaches
+    the application's own methods and the data they expose.
+  fix: |
+    Leave scripting off unless the view renders content you control, restrict navigation to an allow-list
+    of URLs, and never expose an unrestricted bridge object to the page.
+  detect:
+    - invocation: [setJavaScriptEnabled]
+      argLiterals: [true]
+    - line: "javaScriptEnabled\\s*=\\s*true"
+
+- key: QG-KT-SEC-0032
+  name: Files should not be created with world-accessible modes
+  languages: [kt, java]
+  category: SEC
+  severity: critical
+  effort: 15min
+  cwe: [732]
+  tags: [android, permissions]
+  message: This file mode makes the data readable or writable by every application on the device.
+  summary: A file is opened with a world-readable or world-writable mode.
+  why: |
+    Any other application on the device can then read — or replace — the content. For preferences and
+    caches this leaks tokens and personal data; for a writable file it lets another app feed the
+    application data it will treat as its own.
+  fix: |
+    Use the private mode so only this application can access the file, and share data through a content
+    provider with explicit permissions when another app genuinely needs it.
+  detect:
+    - identifier: [MODE_WORLD_READABLE, MODE_WORLD_WRITEABLE]
+
+- key: QG-KT-BUG-0008
+  name: Nullability should not be forced with the not-null assertion
+  languages: [kt]
+  category: BUG
+  severity: major
+  effort: 15min
+  tags: [null-safety]
+  message: This assertion throws at run time when the value is null.
+  summary: The not-null assertion operator is used on a nullable value.
+  why: |
+    The operator does not make the value non-null: it promises the compiler there will be one and crashes
+    when the promise fails. That converts a compile-time guarantee, which is the reason to use Kotlin's
+    type system, into a run-time exception at the least convenient moment.
+  fix: |
+    Handle the null case explicitly with a safe call, an elvis default, or an early return. Where the
+    value truly cannot be null, restructure so the type is non-nullable to begin with.
+  bad: |
+    val length = user!!.name!!.length
+  good: |
+    val length = user?.name?.length ?: 0
+  detect:
+    - line: "\\w!!\\."
+
+- key: QG-KT-SML-0019
+  name: Coroutines should not be launched on the global scope
+  languages: [kt]
+  category: SML
+  severity: major
+  effort: 20min
+  tags: [coroutines, concurrency]
+  message: A coroutine started here outlives its caller and is never cancelled with it.
+  summary: Work is launched on GlobalScope instead of a scope tied to a lifecycle.
+  why: |
+    A global coroutine keeps running after the screen, request or component that started it is gone. It
+    holds references alive, can update objects that are no longer valid, and its failures do not
+    propagate to anything that could handle them.
+  fix: |
+    Launch from a scope that matches the lifetime of the work — a view-model scope, a service scope, or a
+    coroutine scope you own and cancel — so cancellation and error handling are structured.
+  detect:
+    - invocation: [launch, async]
+      receiver: [GlobalScope]
+
+- key: QG-PY-SEC-0033
+  name: YAML should be parsed with the safe loader
+  languages: [py]
+  category: SEC
+  severity: blocker
+  effort: 10min
+  cwe: [502]
+  owasp: [A8]
+  tags: [deserialization, yaml]
+  message: This call can instantiate arbitrary Python objects declared in the document.
+  summary: A YAML document is loaded without restricting the loader to plain data.
+  why: |
+    The default loader understands tags that construct Python objects and call functions while parsing.
+    A configuration file or an upload can therefore execute code before the program has looked at a
+    single value.
+  fix: |
+    Use safe_load, or pass SafeLoader explicitly. Reserve the full loader for documents your own code
+    produced and stored where nobody else can write.
+  bad: |
+    config = yaml.load(stream)
+  good: |
+    config = yaml.safe_load(stream)
+  detect:
+    - invocation: [load]
+      receiver: [yaml]
+      withoutArgs: [SafeLoader, CSafeLoader]
+
+- key: QG-PY-SEC-0034
+  name: TLS verification should not be disabled
+  languages: [py]
+  category: SEC
+  severity: blocker
+  effort: 15min
+  cwe: [295]
+  owasp: [A2]
+  tags: [tls, requests]
+  message: Certificate verification is turned off for this request.
+  summary: An HTTP call is made with certificate verification disabled.
+  why: |
+    Without verification the client accepts any certificate, so an intercepting proxy on the network sees
+    and can rewrite the traffic. This is usually added to silence an error in a test environment and then
+    reaches production untouched.
+  fix: |
+    Leave verification on and point the client at the certificate bundle for your private authority with
+    the verify parameter or the REQUESTS_CA_BUNDLE variable.
+  bad: |
+    requests.get(url, verify=False)
+  good: |
+    requests.get(url, verify="/etc/ssl/certs/internal-ca.pem")
+  detect:
+    - line: "verify\\s*=\\s*False"
+    - invocation: [_create_unverified_context]
+
+- key: QG-PY-SEC-0035
+  name: Debug mode should not be enabled in application code
+  languages: [py]
+  category: SEC
+  severity: critical
+  effort: 10min
+  cwe: [489]
+  owasp: [A5]
+  tags: [flask, django, debug]
+  message: Debug mode exposes an interactive console and full stack traces to every visitor.
+  summary: A web framework is started with debug mode switched on.
+  why: |
+    The debug page shows source code, local variables and, for some frameworks, an interactive console
+    that executes Python on the server. Anyone who triggers an error gets that page, so the setting is a
+    remote shell waiting for an exception.
+  fix: |
+    Read the flag from configuration and keep it off outside local development. Send tracebacks to the
+    logs and return a generic error page to the client.
+  detect:
+    - line: "debug\\s*=\\s*True"
+    - line: "DEBUG\\s*=\\s*True"
+
+- key: QG-PY-SEC-0036
+  name: Temporary files should be created atomically
+  languages: [py]
+  category: SEC
+  severity: major
+  effort: 15min
+  cwe: [377]
+  tags: [tempfile, race]
+  message: This helper returns a name, not an open file, which leaves a window for a race.
+  summary: A temporary file is created by generating a name first and opening it afterwards.
+  why: |
+    Between the name being returned and the file being opened, another process can create that path — as
+    a symlink to a file it wants overwritten, for example. The application then writes wherever the link
+    points, with its own privileges.
+  fix: |
+    Use the helpers that create and open the file in one step, such as NamedTemporaryFile or mkstemp, and
+    let them choose the directory and permissions.
+  bad: |
+    path = tempfile.mktemp()
+  good: |
+    with tempfile.NamedTemporaryFile(delete=False) as handle:
+        path = handle.name
+  detect:
+    - invocation: [mktemp]
+
+- key: QG-PY-BUG-0008
+  name: Default argument values should be immutable
+  languages: [py]
+  category: BUG
+  severity: major
+  effort: 15min
+  tags: [suspicious]
+  message: This default value is created once and shared by every call.
+  summary: A function parameter defaults to a list, dict or set literal.
+  why: |
+    The default object is built when the function is defined, not on each call, so every caller that
+    relies on it sees the mutations made by previous callers. The result is state that leaks between
+    unrelated invocations and grows over the life of the process.
+  fix: |
+    Default to None and create the container inside the function when the argument was not supplied.
+  bad: |
+    def add(item, target=[]):
+        target.append(item)
+  good: |
+    def add(item, target=None):
+        target = [] if target is None else target
+        target.append(item)
+  detect:
+    - line: "def\\s+\\w+\\s*\\([^)]*=\\s*(\\[\\]|\\{\\}|set\\(\\)|dict\\(\\)|list\\(\\))"
+
+- key: QG-PY-BUG-0009
+  name: Exception handlers should name what they catch
+  languages: [py]
+  category: BUG
+  severity: major
+  effort: 10min
+  tags: [exception]
+  message: A bare except also catches interrupts and exit requests.
+  summary: An except clause is written without an exception type.
+  why: |
+    Bare except catches everything, including KeyboardInterrupt and SystemExit, so the process ignores
+    Ctrl-C and shutdown signals. It also hides programming errors such as a misspelled attribute, which
+    then surface far from their cause.
+  fix: |
+    Catch the specific exceptions you can handle. When a catch-all really is needed at a boundary, use
+    Exception and re-raise after logging.
+  detect:
+    - line: "^\\s*except\\s*:"
+
+- key: QG-PY-SML-0016
+  name: Type checks should use isinstance
+  languages: [py]
+  category: SML
+  severity: minor
+  effort: 5min
+  tags: [design]
+  message: Comparing type() ignores subclasses; use isinstance.
+  summary: A type is compared with equality instead of isinstance.
+  why: |
+    Equality on type objects rejects every subclass, so a perfectly valid specialised type takes the
+    wrong branch. It also breaks as soon as a proxy or mock is passed in, which is common in tests.
+  fix: |
+    Use isinstance, and prefer checking for the behaviour you need — an attribute or a protocol — over
+    checking for a concrete class.
+  detect:
+    - line: "type\\s*\\([^)]*\\)\\s*(==|!=)\\s*"
+
+- key: QG-JS-SEC-0020
+  name: React should not be given raw HTML from data
+  languages: [js, ts]
+  category: SEC
+  severity: critical
+  effort: 20min
+  cwe: [79]
+  owasp: [A3]
+  tags: [react, xss]
+  message: This markup is injected without escaping, so any script in it executes.
+  summary: A component renders unescaped HTML through the raw-HTML property.
+  why: |
+    React escapes everything it renders, which is why cross-site scripting is rare in React applications.
+    This property exists to bypass that, and the name warns about exactly what happens: the string
+    becomes markup and runs in the visitor's session.
+  fix: |
+    Render the value as text. When the content really is HTML, sanitize it with a maintained sanitizer
+    immediately before rendering, and keep the sanitizer configuration in one place.
+  detect:
+    - identifier: [dangerouslySetInnerHTML]
+
+- key: QG-JS-SEC-0021
+  name: Cross-window messages should target a specific origin
+  languages: [js, ts]
+  category: SEC
+  severity: major
+  effort: 15min
+  cwe: [346]
+  owasp: [A5]
+  tags: [browser, postmessage]
+  message: This message is sent to any origin and can be read by whatever document is loaded.
+  summary: postMessage is called with a wildcard target origin.
+  why: |
+    The wildcard tells the browser it does not matter who receives the message. If the target window has
+    navigated — after a redirect, or because the opener was replaced — the payload, often a token or user
+    data, is delivered to that site instead.
+  fix: |
+    Pass the exact origin you intend to talk to, and on the receiving side check event.origin before
+    trusting the data.
+  bad: |
+    iframe.contentWindow.postMessage(token, "*");
+  good: |
+    iframe.contentWindow.postMessage(token, "https://app.example.com");
+  detect:
+    - invocation: [postMessage]
+      argLiterals: ["*"]
+
+- key: QG-JS-SEC-0022
+  name: Tokens should be verified, not merely decoded
+  languages: [js, ts]
+  category: SEC
+  severity: blocker
+  effort: 20min
+  cwe: [347]
+  owasp: [A2]
+  tags: [jwt, authentication]
+  message: This reads the token payload without checking its signature.
+  summary: A JSON web token is decoded without verification, or verified accepting the none algorithm.
+  why: |
+    Decoding only parses base64: anybody can craft a token with any claims. If authorization decisions
+    are taken from the result, an attacker simply writes their own token and becomes whoever they like.
+  fix: |
+    Use the verify function with the expected algorithm and the key, and reject tokens whose algorithm,
+    issuer or audience do not match what you configured.
+  bad: |
+    const claims = jwt.decode(token);
+  good: |
+    const claims = jwt.verify(token, publicKey, { algorithms: ["RS256"] });
+  detect:
+    - invocation: [decode]
+      receiver: [jwt, jsonwebtoken]
+    - line: "algorithms\\s*:\\s*\\[\\s*[\"']none[\"']"
+
+- key: QG-JS-BUG-0003
+  name: Integer parsing should specify the radix
+  languages: [js]
+  category: BUG
+  severity: major
+  effort: 5min
+  tags: [suspicious]
+  message: parseInt without a radix depends on the shape of the string.
+  summary: parseInt is called with a single argument.
+  why: |
+    The radix is inferred from the text, so a value with a leading zero or an "0x" prefix is parsed in a
+    base the caller did not intend. Input that comes from a form or a URL is exactly the kind that
+    sometimes carries those prefixes.
+  fix: |
+    Pass the radix explicitly, normally 10, or use Number when the string is expected to be a plain
+    decimal value.
+  bad: |
+    const page = parseInt(query.page);
+  good: |
+    const page = parseInt(query.page, 10);
+  detect:
+    - invocation: [parseInt]
+      argCount: 1
+
+- key: QG-JS-SML-0008
+  name: Console output should not be left in shipped code
+  languages: [js, ts]
+  category: SML
+  severity: minor
+  effort: 5min
+  tags: [logging]
+  message: Console output left in the code leaks internals and clutters the browser console.
+  summary: A console call is present in application code.
+  why: |
+    Console statements survive from debugging and end up printing internal values in users' browsers or
+    in server logs with no level and no context. In hot paths they also slow execution measurably.
+  fix: |
+    Remove the statement, or route it through the project logger so the output can be filtered by level
+    and disabled in production builds.
+  detect:
+    - invocation: [log, debug, trace, info]
+      receiver: [console]
+
+- key: QG-JS-CNV-0002
+  name: Comparisons should be strict
+  languages: [js]
+  category: CNV
+  severity: major
+  effort: 5min
+  tags: [convention, suspicious]
+  message: Loose equality converts the operands; use === or !==.
+  summary: The loose equality or inequality operator is used.
+  why: |
+    Loose comparison applies conversion rules that surprise almost everyone: an empty string equals zero,
+    and a one-element array equals its element. Bugs from this look like data problems rather than logic
+    errors, so they are hard to trace back to the comparison.
+  fix: |
+    Use === and !==, converting the operands yourself when a comparison across types is intended. The
+    only common exception is comparing with null to cover undefined as well.
+  detect:
+    - line: "[^=!<>]\\s(==|!=)\\s[^=]"
+
+- key: QG-TS-SML-0003
+  name: The any type should not be used
+  languages: [ts]
+  category: SML
+  severity: major
+  effort: 15min
+  tags: [types]
+  message: This annotation disables type checking for the value.
+  summary: A declaration is explicitly annotated as any.
+  why: |
+    Every value that passes through any loses its type, and so does everything derived from it. The
+    compiler stops reporting mistakes exactly where the data comes from outside the program, which is
+    where the checks matter most.
+  fix: |
+    Declare the real shape as an interface or type alias. When the shape is genuinely unknown, use
+    unknown and narrow it with a type guard before use.
+  bad: |
+    function handle(payload: any) { return payload.id; }
+  good: |
+    function handle(payload: unknown) {
+      if (isOrder(payload)) return payload.id;
+      throw new Error("unexpected payload");
+    }
+  detect:
+    - line: ":\\s*any\\b"
+
+- key: QG-GO-SEC-0012
+  name: TLS verification should not be skipped
+  languages: [go]
+  category: SEC
+  severity: blocker
+  effort: 15min
+  cwe: [295]
+  owasp: [A2]
+  tags: [tls]
+  message: Skipping certificate verification removes the guarantee of who you are talking to.
+  summary: A TLS configuration is created with certificate verification disabled.
+  why: |
+    The connection stays encrypted while losing all authentication, which makes the problem invisible in
+    testing. Anyone positioned on the network can terminate the session with their own certificate and
+    observe or alter everything that passes.
+  fix: |
+    Remove the flag and provide the certificate authority through RootCAs when the service uses a private
+    one. To accept a single known server, compare the certificate fingerprint in VerifyPeerCertificate.
+  bad: |
+    tr := &http.Transport{TLSClientConfig: &tls.Config{InsecureSkipVerify: true}}
+  good: |
+    tr := &http.Transport{TLSClientConfig: &tls.Config{RootCAs: pool}}
+  detect:
+    - line: "InsecureSkipVerify\\s*:\\s*true"
+
+- key: QG-GO-BUG-0002
+  name: Errors should not be discarded
+  languages: [go]
+  category: BUG
+  severity: major
+  effort: 10min
+  tags: [error-handling]
+  message: This error is assigned to the blank identifier and never inspected.
+  summary: A returned error is explicitly ignored.
+  why: |
+    Go reports failures through return values, so discarding the error means continuing with data that
+    may be empty or a resource that was never acquired. The program then fails later, in a place that
+    gives no hint about what actually went wrong.
+  fix: |
+    Check the error and handle it, or wrap it with context and return it. Ignore one only where it truly
+    cannot fail, and say so in a comment.
+  bad: |
+    _ = json.Unmarshal(body, &payload)
+  good: |
+    if err := json.Unmarshal(body, &payload); err != nil {
+        return fmt.Errorf("decode payload: %w", err)
+    }
+  detect:
+    - line: "^\\s*_\\s*(,\\s*_\\s*)?=\\s*[A-Za-z_][\\w.]*\\("
+
+- key: QG-GO-SML-0006
+  name: Libraries should return errors instead of panicking
+  languages: [go]
+  category: SML
+  severity: major
+  effort: 20min
+  tags: [error-handling]
+  message: A panic here takes down the caller's process instead of letting it decide.
+  summary: Code calls panic outside of an unrecoverable initialisation path.
+  why: |
+    A panic unwinds through every caller and, unless something recovers, ends the process. That decision
+    belongs to the application, not to a package: a caller that could have retried or degraded gracefully
+    never gets the chance.
+  fix: |
+    Return an error and let the caller choose. Reserve panic for situations where continuing is
+    impossible, such as a programming error detected during package initialisation.
+  detect:
+    - invocation: [panic]
+
+- key: QG-RS-BUG-0007
+  name: Fallible results should not be unwrapped
+  languages: [rs]
+  category: BUG
+  severity: major
+  effort: 15min
+  tags: [error-handling, panic]
+  message: This unwrap panics when the value is absent or the operation failed.
+  summary: A Result or Option is unwrapped without handling the failure case.
+  why: |
+    Unwrap turns a value the type system asked you to handle into an abort. In a service that means the
+    task or the process dies on input that was merely unexpected, and the message points at the unwrap
+    rather than at the cause.
+  fix: |
+    Propagate with the question-mark operator, or handle the case with match, unwrap_or or ok_or. Keep
+    expect for invariants that genuinely cannot be violated, and let its message explain why.
+  bad: |
+    let config = std::fs::read_to_string(path).unwrap();
+  good: |
+    let config = std::fs::read_to_string(path)?;
+  detect:
+    - invocation: [unwrap]
+
+- key: QG-RS-SEC-0016
+  name: Destructors should not be skipped for resources
+  languages: [rs]
+  category: SEC
+  severity: major
+  effort: 20min
+  cwe: [401]
+  tags: [memory, resources]
+  message: Forgetting a value skips its destructor, leaking whatever it owns.
+  summary: mem::forget is used on a value that owns a resource.
+  why: |
+    Skipping the destructor leaks memory, file descriptors or locks, and for values holding secrets it
+    also leaves the material in memory instead of zeroing it. Under repeated use the process runs out of
+    the resource entirely.
+  fix: |
+    Let the value drop normally. When the goal is to hand ownership to foreign code, use ManuallyDrop or
+    into_raw so the transfer is explicit and reversible.
+  detect:
+    - invocation: [forget]
+      receiver: [mem, std::mem]
+
+- key: QG-CSS-SEC-0001
+  name: Stylesheets should not load resources over plain HTTP
+  languages: [css]
+  category: SEC
+  severity: major
+  effort: 10min
+  cwe: [319]
+  owasp: [A2]
+  tags: [tls, mixed-content]
+  message: This URL uses plain HTTP; browsers block it on secure pages and it can be tampered with.
+  summary: A stylesheet references an http:// resource.
+  why: |
+    On an HTTPS page the browser blocks or downgrades mixed content, so the resource silently fails to
+    load. Where it does load, anyone on the network can replace the font or image with content of their
+    choosing.
+  fix: |
+    Use https, a protocol-relative path, or host the asset with the application so it inherits the page's
+    security context.
+  detect:
+    - line: "url\\s*\\(\\s*[\"']?http://"
+
+- key: QG-CSS-SML-0005
+  name: Declarations should not rely on the important flag
+  languages: [css]
+  category: SML
+  severity: minor
+  effort: 10min
+  tags: [maintainability]
+  message: The important flag overrides the cascade and makes later fixes harder.
+  summary: A declaration is marked as important.
+  why: |
+    The flag wins over specificity, so the next developer who needs a different value has to add another
+    important flag, and the stylesheet gradually loses the cascade as a working mechanism. Overrides then
+    depend on file order, which is exactly what CSS was designed to avoid.
+  fix: |
+    Increase the specificity of the selector or reorganise the rules so the intended declaration wins
+    naturally. Keep the flag for third-party styles you cannot change.
+  detect:
+    - line: "!\\s*important"
+
+- key: QG-HTML-SEC-0006
+  name: Forms should not submit over plain HTTP
+  languages: [html]
+  category: SEC
+  severity: critical
+  effort: 10min
+  cwe: [319]
+  owasp: [A2]
+  tags: [tls, forms]
+  message: This form posts to an http:// address, so its content travels unprotected.
+  summary: A form action points at a plain HTTP endpoint.
+  why: |
+    Everything typed into the form — credentials included — crosses the network in the clear and can be
+    read or modified on the way. Browsers warn about it, and users have learnt to ignore the warning.
+  fix: |
+    Point the action at an https endpoint and redirect the plain HTTP version of the site so no page ever
+    renders such a form.
+  detect:
+    - line: "<form[^>]*action\\s*=\\s*[\"']http://"
+
+- key: QG-HTML-SML-0002
+  name: Documents should declare their language
+  languages: [html]
+  category: SML
+  severity: minor
+  effort: 5min
+  tags: [accessibility]
+  message: The html element has no lang attribute.
+  summary: The root element of the document does not declare a language.
+  why: |
+    Screen readers choose pronunciation from this attribute, and browsers use it for hyphenation and for
+    offering translation. Without it, assistive technology guesses, and often guesses wrong for anything
+    that is not the reader's default language.
+  fix: |
+    Add the lang attribute with the document language, and mark inline passages in another language with
+    their own lang attribute.
+  bad: |
+    <html>
+  good: |
+    <html lang="en">
+  detect:
+    - line: "<html(?![^>]*\\blang\\s*=)[^>]*>"

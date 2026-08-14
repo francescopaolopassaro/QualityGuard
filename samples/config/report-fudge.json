@@ -1,0 +1,10 @@
+﻿{
+  "version": "2.1.0",
+  "runs": [
+    {
+      "tool": { "driver": { "name": "coverage-tool" } },
+      "results": [],
+      "invocations": [ { "executionSuccessful": true, "properties": { "metrics" : { "new_coverage": 10.0, "new_duplicated_lines_density": 50.0, "new_lines": 5 } } } ]
+    }
+  ]
+}

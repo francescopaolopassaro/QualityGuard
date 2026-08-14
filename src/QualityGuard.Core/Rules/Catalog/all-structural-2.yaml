@@ -1,0 +1,143 @@
+# Documentation for the second wave of language-agnostic AST rules.
+
+- key: QG-ALL-SML-0011
+  name: Files should not grow beyond a readable size
+  languages: []
+  category: SML
+  severity: major
+  effort: 60min
+  tags: [design]
+  summary: The file is longer than the configured limit.
+  why: |
+    A very large file has usually collected several unrelated responsibilities, so every change touches
+    it and every merge conflicts on it. Navigation also degrades: finding the one place that matters
+    means scrolling past code that has nothing to do with the task.
+  fix: |
+    Split it along the responsibilities it has accumulated — one type or one feature per file — and let
+    the directory structure carry the grouping the file used to provide.
+
+- key: QG-ALL-SML-0012
+  name: Function parameters should be used
+  languages: []
+  category: SML
+  severity: major
+  effort: 10min
+  tags: [dead-code]
+  summary: A parameter is declared but never read inside the function.
+  why: |
+    Callers are forced to compute and pass a value that changes nothing, which is misleading at every
+    call site. Just as often the parameter is used in an earlier version of the logic and the body was
+    changed without updating the signature — so the behaviour silently stopped depending on it.
+  fix: |
+    Remove the parameter and update the callers, or use it where the body was supposed to. When an
+    interface or delegate forces the signature, name it with a leading underscore to record the intent.
+
+- key: QG-ALL-SML-0013
+  name: Nested conditions that can be merged should be merged
+  languages: []
+  category: SML
+  severity: major
+  effort: 10min
+  tags: [complexity, readability]
+  summary: An if statement is the only content of another if statement.
+  why: |
+    Two levels of indentation express a single condition, so the reader keeps two contexts in mind where
+    one is enough. It also hides the fact that no other case is handled between the two tests.
+  fix: |
+    Combine the two conditions with a logical AND, or invert them and return early if the nesting exists
+    only to skip the rest of the function.
+  bad: |
+    if (user != null) {
+        if (user.IsActive) { send(user); }
+    }
+  good: |
+    if (user != null && user.IsActive) { send(user); }
+
+- key: QG-ALL-SML-0014
+  name: Blocks should not be nested without a reason
+  languages: []
+  category: SML
+  severity: minor
+  effort: 5min
+  tags: [readability]
+  summary: A block is opened inside another block without belonging to any statement.
+  why: |
+    A free-standing block suggests a control structure that is not there, so a reader looks for the
+    condition or loop that owns it. It is usually the remnant of a removed statement, and it keeps the
+    indentation that made sense before.
+  fix: |
+    Remove the braces and let the statements sit at the level of the surrounding block, or extract them
+    into a function if the intent was to group a step.
+
+- key: QG-ALL-SML-0015
+  name: Condition chains should end with a final branch
+  languages: []
+  category: SML
+  severity: major
+  effort: 10min
+  tags: [suspicious, design]
+  summary: An if/else-if chain has no closing else branch.
+  why: |
+    Values the chain does not list fall through silently, so the code continues as if a decision had been
+    made. When a new case appears — a new enum member, a new status string — nothing signals that the
+    chain stopped covering the input.
+  fix: |
+    Add a final else that handles the remaining cases explicitly, even if it only raises an error naming
+    the unexpected value.
+
+- key: QG-ALL-SML-0016
+  name: Conditions should not combine too many operators
+  languages: []
+  category: SML
+  severity: major
+  effort: 15min
+  tags: [complexity, readability]
+  summary: A single condition combines more logical operators than the limit allows.
+  why: |
+    Reasoning about the expression requires tracking precedence and every combination of operands at
+    once. Conditions like this are where inverted logic and misplaced parentheses hide, and they are
+    almost impossible to test exhaustively.
+  fix: |
+    Give the parts names: assign each sub-condition to a well-named boolean, or move the whole test into
+    a predicate function whose name states what it decides.
+
+- key: QG-ALL-SML-0017
+  name: Multi-way branches should not be nested
+  languages: []
+  category: SML
+  severity: major
+  effort: 25min
+  tags: [complexity]
+  summary: A switch or match construct is nested inside another one.
+  why: |
+    The number of paths a reader has to consider becomes the product of the two branch counts, and the
+    inner construct is easy to miss when scanning the outer cases. Adding a case to either one changes
+    behaviour in places nobody is looking at.
+  fix: |
+    Move the inner construct into a function named after the decision it makes, then call it from the
+    outer case. A lookup table often replaces both.
+
+- key: QG-ALL-CNV-0005
+  name: Control structures should always use a block
+  languages: []
+  category: CNV
+  severity: major
+  effort: 5min
+  tags: [convention, suspicious]
+  summary: The body of a branch or loop is a single statement written without braces.
+  why: |
+    The next person who adds a line to the body has to notice the missing braces, and the indentation
+    will look right whether or not they do. The added statement then runs unconditionally, which is a
+    defect that reviews rarely catch because the code looks correct.
+  fix: |
+    Always wrap the body in braces, even for a single statement, and let the formatter keep the layout
+    consistent.
+  bad: |
+    if (isExpired)
+        logout();
+        clearCache();   // always runs
+  good: |
+    if (isExpired) {
+        logout();
+        clearCache();
+    }

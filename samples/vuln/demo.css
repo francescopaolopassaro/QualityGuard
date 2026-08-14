@@ -1,0 +1,6 @@
+@import url("theme.css");
+a {
+  color: red !important;
+}
+* { margin: 0; }
+.box { z-index: 10; }

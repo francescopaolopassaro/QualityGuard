@@ -1,0 +1,7 @@
+<Window xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation">
+  <StackPanel>
+    <Image Source="http://cdn.example.com/logo.png" />
+    <TextBox Password="hunter2" />
+    <Button Content="Delete all records" />
+  </StackPanel>
+</Window>

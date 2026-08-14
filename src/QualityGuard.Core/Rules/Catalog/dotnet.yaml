@@ -1,0 +1,670 @@
+# .NET stack: C#, VB.NET, ASP.NET Core, Blazor, Razor views, WPF/WinUI XAML.
+# Descriptions are written for QualityGuard: short, concrete, English only.
+
+- key: QG-CS-SEC-0032
+  name: Antiforgery validation should not be switched off
+  languages: [cs]
+  category: SEC
+  severity: critical
+  effort: 15min
+  cwe: [352]
+  owasp: [A1]
+  tags: [aspnet, csrf]
+  message: This endpoint accepts state-changing requests without an antiforgery token.
+  summary: An MVC controller or action opts out of antiforgery token validation.
+  why: |
+    Antiforgery tokens are what stop another site from making a logged-in browser submit a request to
+    yours. Once validation is disabled, any page on the internet can trigger the action with the user's
+    cookies attached, and the request looks completely legitimate on the server side.
+  fix: |
+    Remove the opt-out and let the framework validate the token. If the endpoint is a machine-to-machine
+    API, authenticate it with a bearer token or an API key instead of cookies, which removes the need for
+    antiforgery in the first place.
+  bad: |
+    [HttpPost]
+    [IgnoreAntiforgeryToken]
+    public IActionResult Transfer(TransferModel model) { ... }
+  good: |
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public IActionResult Transfer(TransferModel model) { ... }
+  detect:
+    - identifier: [IgnoreAntiforgeryToken]
+    - line: "SuppressXFrameOptionsHeader\\s*=\\s*true"
+
+- key: QG-CS-SEC-0021
+  name: CORS should not combine a wildcard origin with credentials
+  languages: [cs]
+  category: SEC
+  severity: critical
+  effort: 15min
+  cwe: [942]
+  owasp: [A5]
+  tags: [aspnet, cors]
+  message: This CORS policy allows any origin; combined with credentials it exposes authenticated data.
+  summary: A CORS policy is configured to accept every origin.
+  why: |
+    Allowing any origin tells every website that its JavaScript may read the responses of your API. When
+    credentials are also allowed, a malicious page can call your endpoints as the signed-in user and read
+    the result, which is a full account takeover from the user's own browser.
+  fix: |
+    List the origins you actually serve, and keep credentials enabled only for those. Load the list from
+    configuration so environments differ without a code change.
+  bad: |
+    builder.Services.AddCors(o => o.AddDefaultPolicy(p => p.AllowAnyOrigin().AllowCredentials()));
+  good: |
+    builder.Services.AddCors(o => o.AddDefaultPolicy(
+        p => p.WithOrigins(allowedOrigins).AllowCredentials()));
+- key: QG-CS-SEC-0010
+  name: Authentication cookies should be marked Secure and HttpOnly
+  languages: [cs]
+  category: SEC
+  severity: critical
+  effort: 10min
+  cwe: [1004, 614]
+  owasp: [A5]
+  tags: [aspnet, cookie]
+  message: This cookie is created without HttpOnly and Secure, so scripts and plain HTTP can read it.
+  summary: A cookie is written without the flags that keep it out of scripts and off plain HTTP.
+  why: |
+    Without HttpOnly, any injected script can read the cookie and send the session elsewhere; without
+    Secure, the browser also sends it over plain HTTP where it can be captured on the network. Both flags
+    cost one line each and are the difference between a session that survives a small XSS and one that is
+    handed to the attacker.
+  fix: |
+    Set HttpOnly and Secure on the CookieOptions, and add SameSite to limit cross-site sending. For
+    authentication cookies, configure it once in the cookie options of the auth handler.
+  bad: |
+    Response.Cookies.Append("session", token);
+  good: |
+    Response.Cookies.Append("session", token, new CookieOptions
+    {
+        HttpOnly = true, Secure = true, SameSite = SameSiteMode.Strict
+    });
+- key: QG-CS-SEC-0035
+  name: Endpoints should not opt out of authorization silently
+  languages: [cs]
+  category: SEC
+  severity: major
+  effort: 10min
+  cwe: [306]
+  owasp: [A1]
+  tags: [aspnet, authorization]
+  message: This endpoint is reachable without authentication; confirm that is intended.
+  summary: An action or controller is marked as allowing anonymous access.
+  why: |
+    Anonymous access is legitimate for a login page or a health check, and a mistake almost everywhere
+    else. Because the attribute is one short line placed above the method, it survives refactorings that
+    turn a harmless endpoint into one that returns or changes real data.
+  fix: |
+    Remove the attribute if the endpoint handles user data or state, or keep it and document why the
+    endpoint is safe to call unauthenticated. Prefer a default-deny policy so exposure is always explicit.
+  detect:
+    - identifier: [AllowAnonymous]
+
+- key: QG-CS-SEC-0027
+  name: Certificate validation should not be bypassed
+  languages: [cs]
+  category: SEC
+  severity: blocker
+  effort: 20min
+  cwe: [295]
+  owasp: [A2]
+  tags: [tls, certificate]
+  message: This callback accepts every certificate, which disables TLS trust checks.
+  summary: A certificate validation callback is replaced by one that always succeeds.
+  why: |
+    Accepting any certificate removes the only mechanism that proves you are talking to the right server.
+    The connection is still encrypted, which is what makes this so easy to miss: an attacker who can
+    intercept the traffic simply presents their own certificate and reads and rewrites everything.
+  fix: |
+    Delete the callback and let the platform validate the chain. To trust an internal certificate
+    authority, install its root certificate on the machine, or compare the expected thumbprint inside the
+    callback instead of returning true.
+  bad: |
+    handler.ServerCertificateCustomValidationCallback = (m, c, ch, e) => true;
+  good: |
+    handler.ServerCertificateCustomValidationCallback =
+        (m, cert, chain, errors) => errors == SslPolicyErrors.None
+            || cert.Thumbprint == expectedThumbprint;
+- key: QG-CS-SEC-0037
+  name: Raw HTML should not be produced from values that are not constants
+  languages: [cs, raz]
+  category: SEC
+  severity: critical
+  effort: 20min
+  cwe: [79]
+  owasp: [A3]
+  tags: [xss, aspnet, blazor]
+  message: This value is written to the page without encoding, so any markup in it is executed.
+  summary: A non-constant value is passed to a helper that emits unescaped HTML.
+  why: |
+    Razor encodes output by default; these helpers exist to bypass that. Whatever reaches them is
+    inserted into the page as markup, so a value containing a script tag becomes executable code running
+    with the user's session.
+  fix: |
+    Render the value normally so the framework encodes it. When the goal is formatting, build the markup
+    from a fixed template and interpolate only encoded values, or sanitize with a dedicated HTML
+    sanitizer before rendering.
+  bad: |
+    @Html.Raw(model.Comment)
+  good: |
+    @model.Comment
+  detect:
+    - invocation: [Raw]
+      receiver: [Html]
+      argNotLiteral: true
+    - line: "\\(MarkupString\\)\\s*(?!\")"
+
+- key: QG-CS-SEC-0038
+  name: Entity Framework raw SQL should not be assembled from values
+  languages: [cs]
+  category: SEC
+  severity: blocker
+  effort: 20min
+  cwe: [89]
+  owasp: [A3]
+  tags: [sql-injection, efcore]
+  message: This raw SQL statement is built by concatenation or interpolation instead of parameters.
+  summary: A raw SQL call receives a query that is concatenated or interpolated at run time.
+  why: |
+    The raw SQL escape hatch sends the string to the database exactly as built. A value that contains a
+    quote changes the shape of the statement, which is all an attacker needs to read other tables or drop
+    the filter that limits the rows they see.
+  fix: |
+    Pass values as parameters: use the FromSql/ExecuteSql overloads that take a FormattableString, or
+    supply explicit DbParameter objects. Never concatenate the value into the command text.
+  bad: |
+    context.Users.FromSqlRaw("SELECT * FROM Users WHERE Name = '" + name + "'");
+  good: |
+    context.Users.FromSql($"SELECT * FROM Users WHERE Name = {name}");
+  detect:
+    - invocation: [FromSqlRaw, ExecuteSqlRaw, ExecuteSqlRawAsync, ExecuteSqlCommand]
+      argDynamic: true
+    - invocation: [FromSqlRaw, ExecuteSqlRaw, ExecuteSqlRawAsync]
+      argTainted: true
+
+- key: QG-CS-SEC-0011
+  name: Deserialization should not resolve types named in the payload
+  languages: [cs]
+  category: SEC
+  severity: blocker
+  effort: 30min
+  cwe: [502]
+  owasp: [A8]
+  tags: [deserialization]
+  message: Type information from the payload is honoured here, which allows arbitrary object creation.
+  summary: A serializer is configured to instantiate the types declared inside the incoming data.
+  why: |
+    When the payload chooses the type, it also chooses which constructors and setters run during
+    deserialization. Public gadget chains exist for common libraries, so this setting usually means
+    remote code execution rather than just an unexpected object.
+  fix: |
+    Leave type resolution off and deserialize into the concrete type you expect. If polymorphism is
+    required, map a small allow-list of discriminator values to types yourself.
+  bad: |
+    var settings = new JsonSerializerSettings { TypeNameHandling = TypeNameHandling.All };
+  good: |
+    var settings = new JsonSerializerSettings();   // deserialize into a known type
+- key: QG-CS-SEC-0007
+  name: XML parsers should not resolve external entities
+  languages: [cs]
+  category: SEC
+  severity: critical
+  effort: 20min
+  cwe: [611]
+  owasp: [A5]
+  tags: [xxe]
+  message: This XML reader processes DTDs, which lets a document pull in local files or internal URLs.
+  summary: An XML component is configured to parse DTDs or resolve external entities.
+  why: |
+    A document that is allowed to declare entities can make the parser read files from the server or call
+    internal addresses, and then return their content inside the parsed result. The application does the
+    reading, so network boundaries and firewalls do not help.
+  fix: |
+    Disable DTD processing and remove the entity resolver. In .NET this means DtdProcessing.Prohibit and
+    a null XmlResolver on the reader settings.
+  bad: |
+    var settings = new XmlReaderSettings { DtdProcessing = DtdProcessing.Parse };
+  good: |
+    var settings = new XmlReaderSettings
+    {
+        DtdProcessing = DtdProcessing.Prohibit,
+        XmlResolver = null
+    };
+- key: QG-CS-SEC-0029
+  name: Redirect targets should not come from the request
+  languages: [cs]
+  category: SEC
+  severity: major
+  effort: 20min
+  cwe: [601]
+  owasp: [A1]
+  tags: [open-redirect, aspnet]
+  message: The redirect target comes from user input, which allows redirecting to any site.
+  summary: A redirect is issued to a location taken from request data.
+  why: |
+    An attacker can send a link that starts on your domain and lands on theirs. Because the first hop is
+    genuine, the link survives the checks users and mail filters apply, which is why open redirects are a
+    standard building block of phishing campaigns.
+  fix: |
+    Redirect to a local path only — use LocalRedirect, or validate the value against a list of allowed
+    destinations before using it. Never pass a full URL received from the client to a redirect.
+  bad: |
+    return Redirect(Request.Query["returnUrl"]);
+  good: |
+    return LocalRedirect(returnUrl);
+- key: QG-CS-SEC-0018
+  name: File paths should not be built from request data
+  languages: [cs]
+  category: SEC
+  severity: critical
+  effort: 25min
+  cwe: [22]
+  owasp: [A1]
+  tags: [path-traversal]
+  message: This file path is built from user input, so a crafted value can escape the intended folder.
+  summary: A file is opened using a path that includes values coming from outside the program.
+  why: |
+    Path segments such as ../ are resolved by the file system, not by the application, so an input that
+    looks like a file name can reach configuration files or keys elsewhere on the disk. Path.Combine does
+    not prevent this and will happily discard your base folder if the input is rooted.
+  fix: |
+    Keep the caller from choosing the path: map an identifier to a file name yourself, or resolve the
+    combined path and verify it still starts with the folder you intended before opening it.
+  bad: |
+    var path = Path.Combine(root, Request.Query["file"]);
+    return File.ReadAllBytes(path);
+  good: |
+    var full = Path.GetFullPath(Path.Combine(root, name));
+    if (!full.StartsWith(root, StringComparison.Ordinal)) return Forbid();
+    return File.ReadAllBytes(full);
+- key: QG-CS-SEC-0006
+  name: Types and assemblies should not be loaded from untrusted names
+  languages: [cs]
+  category: SEC
+  severity: critical
+  effort: 25min
+  cwe: [470]
+  owasp: [A8]
+  tags: [reflection]
+  message: The type or assembly to load is chosen by user input, which allows loading arbitrary code.
+  summary: Reflection is used with a type or assembly name that originates from request data.
+  why: |
+    Letting the caller name the type turns the application into a loader for whatever is reachable on the
+    machine. Combined with a constructor or property setter that has side effects, this becomes code
+    execution without any memory-level exploit.
+  fix: |
+    Replace reflection with an explicit mapping from a small set of accepted values to the types you
+    support, so an unknown value is rejected instead of resolved.
+- key: QG-CS-SEC-0044
+  name: Secrets should not be written to logs
+  languages: [cs]
+  category: SEC
+  severity: major
+  effort: 15min
+  cwe: [532]
+  owasp: [A9]
+  tags: [logging, secret]
+  message: This log statement includes a secret-looking value.
+  summary: A logging call mentions a password, token or key value.
+  why: |
+    Logs travel much further than the code that writes them: they are shipped to aggregators, kept for
+    months and read by people who never had access to production data. A secret written once stays
+    recoverable long after it has been rotated — assuming anyone notices it was exposed at all.
+  fix: |
+    Log an identifier instead of the value, or redact it explicitly. Where a payload must be logged for
+    diagnosis, strip the sensitive fields before it reaches the logger.
+  detect:
+    - invocation: [LogInformation, LogDebug, LogTrace, LogWarning, LogError, WriteLine, Info, Debug, Trace]
+      argLiterals: [password, secret, token, apikey, api_key, connectionstring, credential]
+
+- key: QG-CS-SEC-0045
+  name: Regular expressions on user input should have a timeout
+  languages: [cs]
+  category: SEC
+  severity: major
+  effort: 15min
+  cwe: [1333]
+  owasp: [A6]
+  tags: [redos, performance]
+  message: This regular expression runs on user input without a timeout, which allows a denial of service.
+  summary: A regex is evaluated against request data with no matching timeout configured.
+  why: |
+    Backtracking makes some patterns take exponential time on inputs designed to trigger it, so a single
+    short request can pin a CPU core for minutes. Without a timeout there is nothing to interrupt it, and
+    a handful of requests take the service down.
+  fix: |
+    Pass a matching timeout when constructing the Regex or calling the static methods, and simplify the
+    pattern to avoid nested quantifiers on the same input.
+  bad: |
+    if (Regex.IsMatch(userInput, pattern)) { ... }
+  good: |
+    if (Regex.IsMatch(userInput, pattern, RegexOptions.None, TimeSpan.FromMilliseconds(200))) { ... }
+  detect:
+    - invocation: [IsMatch, Match, Matches, Replace, Split]
+      receiver: [Regex]
+      argTainted: true
+      absent: [MatchTimeout, TimeSpan.From]
+
+- key: QG-CS-SEC-0046
+  name: Legacy VB compiler options should stay enabled
+  languages: [vb]
+  category: SEC
+  severity: major
+  effort: 10min
+  tags: [vbnet, type-safety]
+  message: Turning this option off disables compiler checks that catch real defects.
+  summary: A VB.NET file disables Option Strict or Option Explicit.
+  why: |
+    With these options off the compiler accepts undeclared variables and silent narrowing conversions, so
+    a typo becomes a new variable and a type mismatch becomes a run-time failure in production instead of
+    an error at build time.
+  fix: |
+    Set Option Strict On and Option Explicit On, then fix the conversions and declarations the compiler
+    reports. Convert them explicitly where the narrowing is intended.
+  detect:
+    - line: "^\\s*Option\\s+(Strict|Explicit)\\s+Off"
+
+- key: QG-CS-BUG-0001
+  name: Asynchronous methods should not return void
+  languages: [cs]
+  category: BUG
+  severity: major
+  effort: 15min
+  tags: [async]
+  message: An async void method cannot be awaited and its exceptions cannot be caught by the caller.
+  summary: A method is declared async void outside of an event handler.
+  why: |
+    The caller gets no task, so it cannot wait for the work or observe its result. An exception thrown
+    after the first await is raised on the synchronization context instead of at the call site, which
+    usually means an unhandled exception that takes down the process.
+  fix: |
+    Return Task, or Task<T> when there is a result, and await the call. Keep async void only for event
+    handlers, and wrap their body in a try/catch so nothing escapes.
+  bad: |
+    public async void SaveAsync() { await repository.SaveAsync(); }
+  good: |
+    public async Task SaveAsync() { await repository.SaveAsync(); }
+- key: QG-CS-BUG-0006
+  name: Asynchronous results should not be waited on synchronously
+  languages: [cs]
+  category: BUG
+  severity: major
+  effort: 20min
+  tags: [async, deadlock]
+  message: Blocking on a task can deadlock; await it instead.
+  summary: A task result is obtained with .Result or .Wait() instead of await.
+  why: |
+    Blocking holds the current thread until the task finishes, and when the continuation needs that same
+    context to run, neither side can proceed. The deadlock depends on the caller, so it typically appears
+    only under load or only in the hosted environment.
+  fix: |
+    Make the calling method async and await the task. When an entry point must be synchronous, run the
+    work on a dedicated thread rather than blocking a request thread.
+  bad: |
+    var user = repository.GetAsync(id).Result;
+  good: |
+    var user = await repository.GetAsync(id);
+- key: QG-CS-BUG-0010
+  name: Exceptions should be rethrown without discarding the stack trace
+  languages: [cs]
+  category: BUG
+  severity: major
+  effort: 10min
+  tags: [exception, diagnostics]
+  message: Rethrowing the caught exception this way resets its stack trace.
+  summary: A catch block rethrows the caught exception object instead of using a bare throw.
+  why: |
+    Throwing the exception variable restarts the trace at this line, so the frames that show where the
+    failure actually happened are gone. Diagnosing the incident then depends on guesswork, and the log
+    points at the handler rather than the cause.
+  fix: |
+    Use a bare throw to preserve the original trace, or wrap the exception in a new one passing it as the
+    inner exception when you want to add context.
+  bad: |
+    catch (IOException ex) { Log(ex); throw ex; }
+  good: |
+    catch (IOException ex) { Log(ex); throw; }
+  detect:
+    - line: "^\\s*throw\\s+(ex|e|exception|error)\\s*;"
+
+- key: QG-CS-SML-0018
+  name: Emptiness should be tested without counting every element
+  languages: [cs]
+  category: PRF
+  severity: minor
+  effort: 5min
+  tags: [linq, performance]
+  message: Counting the whole sequence to test for emptiness; use Any() instead.
+  summary: A Count() result is compared with zero to decide whether a sequence has elements.
+  why: |
+    Count() walks the entire sequence, and on a database query it becomes an aggregate over the whole
+    table. Any() stops at the first element, and translates to EXISTS, which is what the question
+    actually asks.
+  fix: |
+    Replace the comparison with Any(), or with !Any() for the empty case. Keep Count() only when the
+    number itself is used.
+  bad: |
+    if (orders.Count() > 0) { ... }
+  good: |
+    if (orders.Any()) { ... }
+- key: QG-CS-PRF-0002
+  name: HttpClient instances should not be created per request
+  languages: [cs]
+  category: PRF
+  severity: major
+  effort: 20min
+  tags: [http, sockets]
+  message: Creating an HttpClient here exhausts sockets; resolve one from IHttpClientFactory instead.
+  summary: A new HttpClient is constructed instead of being obtained from the factory.
+  why: |
+    Each instance holds its own connection pool, and disposing it leaves sockets in TIME_WAIT for
+    minutes. Under load the process runs out of ports and every outgoing call starts failing, while a
+    long-lived single instance never picks up DNS changes.
+  fix: |
+    Register the client with AddHttpClient and inject IHttpClientFactory or a typed client. The factory
+    keeps handlers pooled and rotates them so DNS changes are honoured.
+  bad: |
+    using var client = new HttpClient();
+  good: |
+    public OrdersClient(HttpClient client) { _client = client; }  // registered via AddHttpClient
+  detect:
+    - creation: [HttpClient]
+
+- key: QG-CS-SML-0008
+  name: Elapsed time should not be measured with wall-clock time
+  languages: [cs]
+  category: PRF
+  severity: minor
+  effort: 10min
+  tags: [time]
+  message: DateTime.Now is affected by clock changes and time zones; use Stopwatch or UtcNow.
+  summary: Local wall-clock time is used where a monotonic or absolute value is needed.
+  why: |
+    DateTime.Now reads the local clock, which jumps with daylight saving and time synchronisation, so a
+    duration computed from it can come out negative or hours long. It also costs more than UtcNow because
+    of the time-zone conversion.
+  fix: |
+    Measure durations with Stopwatch, and store instants as UtcNow. Convert to local time only when
+    displaying a value to a user.
+- key: QG-CS-SML-0002
+  name: Caught exceptions should not be ignored
+  languages: [cs]
+  category: SML
+  severity: major
+  effort: 10min
+  tags: [exception]
+  message: This catch block discards the exception without handling or logging it.
+  summary: A catch block has no statements, so the failure disappears.
+  why: |
+    Swallowing an exception leaves the program running in a state the code did not plan for, with no
+    record that anything went wrong. The symptom shows up later somewhere unrelated, and the log gives no
+    clue where to start.
+  fix: |
+    Handle the case, or log it with enough context to identify the operation and rethrow. If the failure
+    really is expected and harmless, keep the empty block but state the reason in a comment.
+- key: QG-CS-SML-0016
+  name: Static fields should not be mutable
+  languages: [cs]
+  category: SML
+  severity: major
+  effort: 15min
+  tags: [design, concurrency]
+  message: This public static field can be replaced by any caller and shared across threads.
+  summary: A public static field is declared without readonly or const.
+  why: |
+    Static state is shared by the whole process, so anything can change it at any time from any thread.
+    That makes behaviour depend on execution order, and turns tests into a source of interference between
+    each other.
+  fix: |
+    Mark the field readonly or const, expose it through a property with a private setter, or move the
+    value into a scoped service that is injected where it is needed.
+- key: QG-RAZ-SEC-0001
+  name: Views should not disable the antiforgery token on forms
+  languages: [raz]
+  category: SEC
+  severity: critical
+  effort: 10min
+  cwe: [352]
+  owasp: [A1]
+  tags: [razor, csrf]
+  message: This form is rendered without an antiforgery token.
+  summary: A Razor form explicitly turns the antiforgery token off.
+  why: |
+    The token is what ties the submitted form to the user's session. Without it, a form hosted on another
+    domain can post to this action with the user's cookies, and the server has no way to tell the two
+    apart.
+  fix: |
+    Remove the attribute so the tag helper emits the token, or add it explicitly with the antiforgery
+    helper when the form is written by hand.
+  bad: |
+    <form asp-action="Transfer" asp-antiforgery="false">
+  good: |
+    <form asp-action="Transfer">
+  detect:
+    - line: "asp-antiforgery\\s*=\\s*\"false\""
+
+- key: QG-RAZ-SEC-0002
+  name: Views should not build markup from model values
+  languages: [raz]
+  category: SEC
+  severity: critical
+  effort: 20min
+  cwe: [79]
+  owasp: [A3]
+  tags: [razor, blazor, xss]
+  message: This expression writes unencoded markup into the page.
+  summary: A view renders a value through a helper that bypasses HTML encoding.
+  why: |
+    Razor encodes every expression by default, which is why views are normally safe. These helpers exist
+    to opt out of that, and once a model value flows through them any markup it contains becomes part of
+    the page and runs in the visitor's browser.
+  fix: |
+    Print the value directly so it is encoded. If it must contain markup, sanitize it server-side with a
+    library that keeps a strict allow-list of tags and attributes.
+  detect:
+    - line: "@Html\\.Raw\\s*\\(\\s*(?!\")"
+    - line: "\\(MarkupString\\)\\s*[A-Za-z_@]"
+
+- key: QG-RAZ-SEC-0003
+  name: Views should not contain inline scripts driven by model data
+  languages: [raz]
+  category: SEC
+  severity: major
+  effort: 20min
+  cwe: [79]
+  owasp: [A3]
+  tags: [razor, xss, csp]
+  message: A Razor expression is interpolated inside a script block.
+  summary: Model data is written into a JavaScript block in the view.
+  why: |
+    Inside a script block the HTML encoder is the wrong encoder: a value containing a quote or a closing
+    script tag ends the string or the block and the rest is executed as code. Inline scripts also force a
+    permissive content security policy, which removes a second line of defence.
+  fix: |
+    Move the data into a data attribute or a JSON island serialized with a JavaScript encoder, and read
+    it from an external script file. That keeps the page compatible with a strict content security policy.
+  detect:
+    - line: "<script[^>]*>[^<]*@[A-Za-z(]"
+
+- key: QG-RAZ-SML-0001
+  name: Views should not access the database directly
+  languages: [raz]
+  category: SML
+  severity: major
+  effort: 30min
+  tags: [razor, layering]
+  message: This view performs data access; move it into the controller or a service.
+  summary: A Razor view creates a database connection or queries a context.
+  why: |
+    A query in the view runs while the response is already being written, so failures cannot be turned
+    into a proper error page and the number of round-trips depends on how the markup loops. It also makes
+    the behaviour impossible to test without rendering HTML.
+  fix: |
+    Load the data in the controller, page model or a service, pass it to the view as a prepared model,
+    and keep the view limited to formatting.
+  detect:
+    - creation: [SqlConnection, SqlCommand, OleDbConnection, MySqlConnection, NpgsqlConnection]
+    - invocation: [ToList, FirstOrDefault, SingleOrDefault, Count]
+      receiver: [DbContext, Context, db]
+
+- key: QG-XAML-SEC-0001
+  name: Markup should not reference resources over plain HTTP
+  languages: [xaml]
+  category: SEC
+  severity: major
+  effort: 10min
+  cwe: [319]
+  owasp: [A2]
+  tags: [xaml, wpf, tls]
+  message: This URI uses plain HTTP, so the content can be read and replaced in transit.
+  summary: A XAML attribute points at an http:// address.
+  why: |
+    Anything loaded over plain HTTP can be modified on the way to the application. For an image that
+    means spoofed content; for a web view or a remote resource it can mean executing markup or script
+    chosen by whoever controls the network.
+  fix: |
+    Use https for every remote address, or embed the resource in the application when it does not need to
+    come from the network.
+  detect:
+    - line: "(Source|Uri|NavigateUri|Address|Url|Icon)\\s*=\\s*\"http://"
+
+- key: QG-XAML-SEC-0002
+  name: Credentials should not be stored in markup
+  languages: [xaml]
+  category: SEC
+  severity: blocker
+  effort: 20min
+  cwe: [798]
+  owasp: [A7]
+  tags: [xaml, secret]
+  message: This markup contains a hardcoded credential.
+  summary: A XAML attribute assigns a password, key or token value.
+  why: |
+    Markup ships inside the application package and is trivially readable, so the value is public the
+    moment the application is distributed. Rotating it then requires a new release for every installed
+    copy.
+  fix: |
+    Remove the value from the markup and obtain it at run time from the platform credential store or from
+    configuration outside the package. Treat the leaked value as compromised and rotate it.
+  detect:
+    - line: "(Password|Pwd|Secret|ApiKey|Token|ConnectionString)\\s*=\\s*\"[^\"{}]{3,}\""
+
+- key: QG-XAML-SML-0001
+  name: User-visible text should not be hardcoded in markup
+  languages: [xaml]
+  category: SML
+  severity: minor
+  effort: 15min
+  tags: [xaml, localization]
+  message: This user-visible text is hardcoded; move it to a resource.
+  summary: A XAML attribute contains literal text shown to the user.
+  why: |
+    Text embedded in markup cannot be translated or corrected without rebuilding the application, and the
+    same wording ends up duplicated across screens. Once several copies exist, they drift.
+  fix: |
+    Move the text to a resource file and bind to it, so translations and wording changes happen in one
+    place.
+  detect:
+    - line: "(Content|Header|Text|ToolTip|Title)\\s*=\\s*\"[A-Za-z][A-Za-z ,.'!?]{4,}\""
