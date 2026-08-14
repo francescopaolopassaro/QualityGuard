@@ -1,0 +1,256 @@
+# Java maintainability batch: API surface, exceptions, legacy types and structure.
+
+- key: QG-JV-SML-0014
+  name: Analysis suppression comments should be justified
+  languages: [java]
+  category: SML
+  severity: major
+  effort: 10min
+  tags: [maintainability]
+  message: This comment silences the analyzer without saying why.
+  summary: A suppression marker appears in a comment.
+  why: |
+    A suppression hides a finding forever, and without a reason nobody can tell whether it is still
+    warranted. Over time they accumulate on code that has since changed.
+  fix: |
+    Fix the finding, or keep the suppression and add the reason plus the ticket that will remove it.
+  detect:
+    - line: "//\\s*NOSONAR"
+    - line: "@SuppressWarnings\\s*\\(\\s*\"all\"\\s*\\)"
+
+- key: QG-JV-SML-0015
+  name: Utility classes should not be instantiable
+  languages: [java]
+  category: SML
+  severity: major
+  effort: 10min
+  tags: [design]
+  message: This class only holds static members but can still be constructed.
+  summary: A class with only static members exposes a default constructor.
+  why: |
+    Callers can create an instance that carries no state and offers nothing, and some frameworks will do
+    it automatically. The class also cannot be made final by accident, so it looks extensible when it is
+    not.
+  fix: |
+    Add a private constructor that throws, and mark the class final so the intent is unmistakable.
+  detect:
+    - line: "^(public\\s+)?(final\\s+)?class\\s+\\w+\\s*\\{"
+      requires: [static]
+      absent: [private, interface, enum, abstract]
+
+- key: QG-JV-SML-0016
+  name: Generic exceptions should not be thrown
+  languages: [java]
+  category: SML
+  severity: major
+  effort: 15min
+  tags: [exception]
+  message: Throwing a base exception type forces callers to catch everything.
+  summary: Code throws Exception, RuntimeException, Throwable or Error directly.
+  why: |
+    A caller cannot distinguish this failure from any other, so the only way to handle it is a broad
+    catch that also swallows unrelated bugs. The type also carries no information about what went wrong.
+  fix: |
+    Throw a specific standard exception, or a small custom type that names the failure and carries the
+    context the caller needs.
+  detect:
+    - line: "throw\\s+new\\s+(Exception|RuntimeException|Throwable|Error)\\s*\\("
+
+- key: QG-JV-SML-0017
+  name: Legacy synchronized collections should not be used
+  languages: [java]
+  category: SML
+  severity: major
+  effort: 15min
+  tags: [collections, concurrency]
+  message: This type synchronises every call, which costs more than it protects.
+  summary: A legacy synchronized collection or buffer type is used.
+  why: |
+    These types lock on each operation even in single-threaded code, and the locking is per call, so a
+    sequence of operations is still not atomic. They give the impression of thread safety without
+    providing it where it matters.
+  fix: |
+    Use the modern equivalents — ArrayList, HashMap, ArrayDeque, StringBuilder — and reach for the
+    concurrent collections when several threads really share the instance.
+  detect:
+    - creation: [Vector, Hashtable, Stack, StringBuffer]
+
+- key: QG-JV-SML-0018
+  name: String comparisons should not be wrapped in a conditional
+  languages: [java, cs, js, ts, kt]
+  category: SML
+  severity: minor
+  effort: 5min
+  tags: [readability]
+  message: This returns the value of its own condition.
+  summary: A branch returns true in one case and false in the other.
+  why: |
+    Four lines say what the condition already says, and a reader has to check that the branches are not
+    swapped. Every later change has to keep both consistent for no benefit.
+  fix: |
+    Return the condition directly, negating it when needed.
+  detect:
+    - line: "if\\s*\\([^)]*\\)\\s*\\{?\\s*return\\s+true\\s*;\\s*\\}?\\s*(else\\s*\\{?)?\\s*return\\s+false\\s*;"
+
+- key: QG-JV-SML-0020
+  name: Nested try blocks should be flattened
+  languages: [java, cs, py, js, ts]
+  category: SML
+  severity: major
+  effort: 20min
+  tags: [exception, readability]
+  message: A try inside another try makes it unclear which handler covers what.
+  summary: A try statement appears inside another try block.
+  why: |
+    Readers have to track two sets of handlers at once, and it is easy to attach a catch to the wrong
+    level — which silently changes which failures are recovered from.
+  fix: |
+    Extract the inner block into a method with its own error handling, so each try covers one operation.
+  detect:
+    - line: "try\\s*\\{[^}]*try\\s*\\{"
+
+- key: QG-JV-SML-0021
+  name: Local variables should not shadow fields
+  languages: [java, cs, kt]
+  category: SML
+  severity: major
+  effort: 10min
+  tags: [readability, suspicious]
+  message: This local hides a field with the same name.
+  summary: A local variable or parameter reuses the name of a field of the same class.
+  why: |
+    Inside the method the field is unreachable without qualification, so an assignment that looks like it
+    updates the object only touches the local. The code reads exactly like the intended behaviour.
+  fix: |
+    Rename the local, or qualify the field explicitly when both are genuinely needed.
+  detect:
+    - line: "^\\s*(final\\s+)?[A-Za-z_][\\w<>\\[\\]]*\\s+(this|self)\\w*\\s*="
+
+- key: QG-JV-SML-0022
+  name: Labels should not be used
+  languages: [java]
+  category: SML
+  severity: major
+  effort: 20min
+  tags: [readability]
+  message: A labelled jump makes the control flow hard to follow.
+  summary: A label is declared or used by a break or continue.
+  why: |
+    Reading the loop no longer tells you where control goes: the reader has to find the label and work
+    out which paths reach it. Nested loops that need one are usually doing too much.
+  fix: |
+    Extract the inner loop into a method and return from it, which expresses the same exit without the
+    jump.
+  detect:
+    - line: "^\\s*[A-Za-z_]\\w*\\s*:\\s*(for|while|do)\\b"
+    - line: "\\b(break|continue)\\s+[A-Za-z_]\\w*\\s*;"
+
+- key: QG-JV-SML-0023
+  name: Deprecated members should say what replaces them
+  languages: [java]
+  category: SML
+  severity: minor
+  effort: 10min
+  tags: [api, maintainability]
+  message: This deprecation gives the caller no alternative.
+  summary: A member is marked deprecated without documentation.
+  why: |
+    The warning tells consumers to stop using the member but not what to use instead, so each of them has
+    to work it out from the source. Deprecations without guidance are the ones that never get removed.
+  fix: |
+    Document the replacement next to the annotation, and set a version in which the member will go away.
+  detect:
+    - line: "^\\s*@Deprecated\\s*$"
+      absent: ["@deprecated"]
+
+- key: QG-JV-SML-0024
+  name: Boolean literals should not be compared
+  languages: [java, kt]
+  category: SML
+  severity: minor
+  effort: 5min
+  tags: [readability]
+  message: Comparing a boolean with a literal adds nothing.
+  summary: A boolean expression is compared with true or false.
+  why: |
+    The comparison restates what the value already says, and it is one keystroke away from an assignment
+    that would change the meaning silently.
+  fix: |
+    Use the value directly, or negate it.
+  detect:
+    - line: "(==|!=)\\s*(true|false)\\b"
+
+- key: QG-JV-SML-0025
+  name: Standard output should not be used for diagnostics
+  languages: [java]
+  category: SML
+  severity: minor
+  effort: 10min
+  tags: [logging]
+  message: Console output bypasses the logging configuration.
+  summary: Diagnostics are printed to standard output or standard error.
+  why: |
+    There is no level, no timestamp and no way to route or disable the output, so it is invisible to log
+    collection and cannot be silenced in production. Under load the synchronized write also becomes a
+    bottleneck.
+  fix: |
+    Use the project logger at an appropriate level and let the configuration decide where the output goes.
+  detect:
+    - member: [System.out, System.err]
+
+- key: QG-JV-SML-0026
+  name: Exceptions that cannot be thrown should not be declared
+  languages: [java]
+  category: SML
+  severity: minor
+  effort: 10min
+  tags: [api, exception]
+  message: A throws clause listing an unchecked exception tells the caller nothing.
+  summary: A method declares that it throws a runtime exception type.
+  why: |
+    Unchecked exceptions do not have to be declared and the compiler does not enforce them, so the clause
+    only adds noise to the signature while suggesting a contract that does not exist.
+  fix: |
+    Remove the unchecked types from the clause and document them in the method comment when callers
+    really need to know.
+  detect:
+    - line: "throws\\s+[^{;]*\\b(RuntimeException|IllegalArgumentException|IllegalStateException|NullPointerException|UnsupportedOperationException)\\b"
+
+- key: QG-JV-SML-0027
+  name: Inheritance should not be too deep
+  languages: [java, cs, kt]
+  category: SML
+  severity: major
+  effort: 30min
+  tags: [design]
+  message: A long inheritance chain spreads behaviour across many files.
+  summary: A class extends a type that is itself several levels deep.
+  why: |
+    Understanding one method means opening every ancestor, and a change in the middle of the chain can
+    alter behaviour in classes nobody looked at. Deep hierarchies also make testing a leaf class expensive.
+  fix: |
+    Prefer composition: hold the collaborator instead of inheriting from it, and keep inheritance for
+    genuine specialisation of one concept.
+  detect:
+    - line: "class\\s+\\w+\\s+extends\\s+\\w*(Abstract|Base)\\w*(Abstract|Base)\\w*"
+
+- key: QG-JV-PRF-0001
+  name: Strings should be compared with the constant on the left
+  languages: [java]
+  category: PRF
+  severity: minor
+  effort: 5min
+  tags: [null-safety]
+  message: A null receiver here throws instead of answering false.
+  summary: A possibly-null value is the receiver of an equality comparison with a literal.
+  why: |
+    The receiver has to be non-null, so a null value throws where the intended answer was simply "not
+    equal". Putting the constant first removes the whole class of failure.
+  fix: |
+    Compare with the literal on the left, or use the null-safe helper of the standard library.
+  bad: |
+    if (status.equals("OPEN")) { ... }
+  good: |
+    if ("OPEN".equals(status)) { ... }
+  detect:
+    - line: "\\b[a-z]\\w*\\.equalsIgnoreCase\\s*\\(\\s*\""

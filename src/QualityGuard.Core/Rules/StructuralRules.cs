@@ -38,7 +38,8 @@ public static class StructuralRuleSet
         new IfChainWithoutElseRule(),
         new ComplexConditionRule(),
         new NestedMatchRule(),
-        new MissingBracesRule()
+        new MissingBracesRule(),
+        new TooManyReturnsRule()
     ];
 
     internal static string Normalized(SyntaxNode node)
@@ -775,6 +776,34 @@ public sealed class MissingBracesRule : StructuralRuleBase
                 continue;
             context.Report(branch, "The body of this statement is not wrapped in braces; adding a second "
                                    + "line later then silently leaves it outside the branch.");
+        }
+    }
+}
+
+
+public sealed class TooManyReturnsRule : StructuralRuleBase
+{
+    private const int Max = 6;
+
+    public override string Key => "QG-ALL-SML-0018";
+    public override string Name => "Functions should not have too many exit points";
+    public override Severity Severity => Severity.Major;
+    public override IssueKind Kind => IssueKind.CodeSmell;
+    public override string RemediationEffort => "20min";
+
+    public override void Execute(IRuleContext context)
+    {
+        if (!HasPreciseTree(context))
+            return;
+
+        foreach (var function in SyntaxQuery.Functions(context.Root))
+        {
+            var returns = function.OfKind(NodeKind.Jump)
+                .Count(j => j.Text.StartsWith("return", StringComparison.Ordinal)
+                            && SyntaxQuery.EnclosingFunction(j) == function);
+            if (returns > Max)
+                context.Report(function, $"'{function.Text}' returns from {returns} places (limit is {Max}); "
+                                         + "compute one result and return it once.");
         }
     }
 }

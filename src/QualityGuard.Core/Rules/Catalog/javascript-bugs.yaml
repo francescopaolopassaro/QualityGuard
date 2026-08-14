@@ -71,9 +71,6 @@
     if (0 <= value < 10) { ... }
   good: |
     if (0 <= value && value < 10) { ... }
-  detect:
-    - line: "[<>]=?\\s*[\\w.]+\\s*[<>]=?"
-
 - key: QG-JS-BUG-0011
   name: Array constructors should not be called with one number
   languages: [js]

@@ -7,6 +7,7 @@ public static class JsTsRuleSet
 {
     public static IReadOnlyList<IRule> All { get; } =
     [
+        new JsChainedComparisonRule(),
         new JsEvalRule(),
         new JsCommandExecutionRule(),
         new JsTemplateInjectionRule(),
@@ -910,6 +911,39 @@ public sealed class TsAnyAssertionRule : PatternRuleBase
         {
             if (RuleMatchers.IsName(tokens[i], "as") && RuleMatchers.IsName(tokens[i + 1], "any"))
                 context.Report("Casting to any bypasses TypeScript type checking.", tokens[i].Line);
+        }
+    }
+}
+
+
+/// <summary>
+/// Chained comparisons compile in JavaScript but compare a boolean with the next operand, so the tree
+/// is what tells the difference between a range check and a mistake.
+/// </summary>
+public sealed class JsChainedComparisonRule : PatternRuleBase
+{
+    private static readonly string[] Comparisons = ["<", ">", "<=", ">="];
+
+    public override string Key => "QG-JS-BUG-0010";
+    public override string Name => "Comparisons should not be chained";
+    public override Severity Severity => Severity.Major;
+    public override IssueKind Kind => IssueKind.Bug;
+    public override string RemediationEffort => "10min";
+    public override string[] Languages => ["js", "ts"];
+
+    public override void Execute(IRuleContext context)
+    {
+        foreach (var comparison in context.Root.OfKind(QualityGuard.Core.Syntax.NodeKind.Binary))
+        {
+            if (!Comparisons.Contains(comparison.Text, StringComparer.Ordinal))
+                continue;
+            var nested = comparison.Children.FirstOrDefault(c =>
+                c.Kind == QualityGuard.Core.Syntax.NodeKind.Binary
+                && Comparisons.Contains(c.Text, StringComparer.Ordinal));
+            if (nested == null)
+                continue;
+            context.Report(comparison, "This compares the result of another comparison; "
+                                       + "split the range check into two conditions.");
         }
     }
 }

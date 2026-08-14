@@ -141,3 +141,19 @@
         logout();
         clearCache();
     }
+
+- key: QG-ALL-SML-0018
+  name: Functions should not have too many exit points
+  languages: []
+  category: SML
+  severity: major
+  effort: 20min
+  tags: [complexity]
+  summary: A function returns from more places than the configured limit allows.
+  why: |
+    Every exit is another path a reader has to keep in mind when reasoning about what the function
+    guarantees, and every one of them has to maintain the same invariants. Adding a step later means
+    checking each return again.
+  fix: |
+    Keep the early guards, compute a single result and return it once at the end. Extracting part of the
+    body usually removes several exits at a time.
