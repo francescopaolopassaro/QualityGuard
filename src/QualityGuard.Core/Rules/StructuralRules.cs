@@ -475,8 +475,11 @@ public sealed class MultipleStatementsPerLineRule : StructuralRuleBase
         if (!HasPreciseTree(context))
             return;
 
-        if (context.Tree.Profile.Style is not StructureStyle.Braces)
-            return;
+        // a real separator must exist on the line: this keeps generated terminators out of the result
+        var separators = context.Tokens
+            .Where(t => t.Kind == Tokenization.TokenKind.Symbol && t.Text == ";")
+            .Select(t => t.Line)
+            .ToHashSet();
 
         foreach (var parent in context.Root.DescendantsAndSelf())
         {
@@ -487,12 +490,15 @@ public sealed class MultipleStatementsPerLineRule : StructuralRuleBase
                 .ToList();
             for (var i = 1; i < statements.Count; i++)
             {
-                if (statements[i].Line == statements[i - 1].Line && statements[i].Line != 0)
-                    context.Report(statements[i], "This line holds more than one statement; "
-                                                  + "put each statement on its own line.");
+                var line = statements[i].Line;
+                if (line == 0 || line != statements[i - 1].Line || !separators.Contains(line))
+                    continue;
+                context.Report(statements[i], "This line holds more than one statement; "
+                                              + "put each statement on its own line.");
             }
         }
     }
+
 }
 
 public sealed class StringConcatenationInLoopRule : StructuralRuleBase

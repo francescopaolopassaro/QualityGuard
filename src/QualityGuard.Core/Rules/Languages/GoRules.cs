@@ -408,11 +408,16 @@ public sealed class GoElseAfterReturnRule : PatternRuleBase
 
     public override void Execute(IRuleContext context)
     {
-        var lines = GoRuleSet.Lines(context);
-        for (var i = 0; i < lines.Length; i++)
+        foreach (var branch in context.Root.OfKind(QualityGuard.Core.Syntax.NodeKind.If))
         {
-            if (RuleMatchers.LineContains(lines[i], "else"))
-                context.Report("Unnecessary else after return.", i + 1);
+            var body = branch.FirstChild(QualityGuard.Core.Syntax.NodeKind.Block);
+            var otherwise = branch.FirstChild(QualityGuard.Core.Syntax.NodeKind.Else);
+            if (body == null || otherwise == null || body.Children.Count == 0)
+                continue;
+            var last = body.Children[^1];
+            if (last.Kind != QualityGuard.Core.Syntax.NodeKind.Jump || last.Text is not ("return" or "continue" or "break"))
+                continue;
+            context.Report(otherwise, "The branch above always leaves the function, so this else only adds nesting.");
         }
     }
 }

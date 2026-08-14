@@ -643,25 +643,6 @@
   detect:
     - line: "^\\s*_\\s*(,\\s*_\\s*)?=\\s*[A-Za-z_][\\w.]*\\("
 
-- key: QG-GO-SML-0006
-  name: Libraries should return errors instead of panicking
-  languages: [go]
-  category: SML
-  severity: major
-  effort: 20min
-  tags: [error-handling]
-  message: A panic here takes down the caller's process instead of letting it decide.
-  summary: Code calls panic outside of an unrecoverable initialisation path.
-  why: |
-    A panic unwinds through every caller and, unless something recovers, ends the process. That decision
-    belongs to the application, not to a package: a caller that could have retried or degraded gracefully
-    never gets the chance.
-  fix: |
-    Return an error and let the caller choose. Reserve panic for situations where continuing is
-    impossible, such as a programming error detected during package initialisation.
-  detect:
-    - invocation: [panic]
-
 - key: QG-RS-BUG-0007
   name: Fallible results should not be unwrapped
   languages: [rs]

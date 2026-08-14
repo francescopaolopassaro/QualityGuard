@@ -21,11 +21,15 @@ public sealed class SyntaxTree
     public static SyntaxTree Build(IReadOnlyList<Token> tokens, LanguageInfo language)
     {
         var profile = SyntaxProfile.For(language.LanguageKey);
-        var dedicated = language.LanguageKey is LanguageKeys.CSharp or LanguageKeys.Java;
+        var dedicated = language.LanguageKey is LanguageKeys.CSharp or LanguageKeys.Java
+            or LanguageKeys.Go or LanguageKeys.JavaScript or LanguageKeys.TypeScript;
         var root = language.LanguageKey switch
         {
             LanguageKeys.CSharp => CSharp.CSharpParser.Parse(tokens, language),
             LanguageKeys.Java => CSharp.CSharpParser.Parse(tokens, language, CSharp.CFamilyDialect.Java),
+            LanguageKeys.Go => CSharp.CSharpParser.Parse(tokens, language, CSharp.CFamilyDialect.Go),
+            LanguageKeys.JavaScript => CSharp.CSharpParser.Parse(tokens, language, CSharp.CFamilyDialect.JavaScript),
+            LanguageKeys.TypeScript => CSharp.CSharpParser.Parse(tokens, language, CSharp.CFamilyDialect.TypeScript),
             _ => StructureParser.Parse(tokens, profile)
         };
         return new SyntaxTree

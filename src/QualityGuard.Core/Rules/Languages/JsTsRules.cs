@@ -648,7 +648,10 @@ public sealed class JsStrictEqualityRule : PatternRuleBase
         {
             if (tokens[i].Text != "==" && tokens[i].Text != "!=")
                 continue;
-            if (i + 1 < tokens.Count && tokens[i + 1].Text == "=")
+            // comparing with null covers undefined as well and is the accepted idiom
+            var neighbour = i + 1 < tokens.Count ? tokens[i + 1].Text : string.Empty;
+            var previous = i > 0 ? tokens[i - 1].Text : string.Empty;
+            if (neighbour is "null" or "undefined" || previous is "null" or "undefined")
                 continue;
             context.Report("Use strict equality (===/!==) to avoid type coercion bugs.", tokens[i].Line);
         }

@@ -6,7 +6,10 @@ namespace QualityGuard.Core.Syntax.CSharp;
 public enum CFamilyDialect
 {
     CSharp,
-    Java
+    Java,
+    Go,
+    JavaScript,
+    TypeScript
 }
 
 /// <summary>
@@ -56,6 +59,13 @@ public sealed class CSharpParser
     private int _index;
     private string _currentType = string.Empty;
 
+    /// <summary>
+    /// Go allows a composite literal after a type name, which collides with the brace that opens the
+    /// body of a control statement. While a control header is being parsed the literal form is banned,
+    /// exactly as the language specification requires.
+    /// </summary>
+    private int _compositeLiteralBan;
+
     private CSharpParser(IReadOnlyList<Token> tokens, LanguageInfo language, CFamilyDialect dialect)
     {
         _tokens = tokens;
@@ -63,21 +73,55 @@ public sealed class CSharpParser
         _dialect = dialect;
     }
 
+    private static readonly string[] GoTypeKeywords = ["type"];
+
+    private static readonly string[] JsModifiers =
+    [
+        "export", "default", "async", "static", "public", "private", "protected", "readonly",
+        "abstract", "declare", "override", "accessor"
+    ];
+
+    private static readonly string[] JsTypeKeywords = ["class", "interface", "enum", "namespace"];
+
+    private static readonly string[] JsDeclarationKeywords = ["const", "let", "var"];
+
     private bool IsJava => _dialect == CFamilyDialect.Java;
 
-    private string[] ModifierWords => IsJava ? JavaModifiers : Modifiers;
+    private bool IsGo => _dialect == CFamilyDialect.Go;
 
-    private string[] TypeWords => IsJava ? JavaTypeKeywords : TypeKeywords;
+    private bool IsJs => _dialect is CFamilyDialect.JavaScript or CFamilyDialect.TypeScript;
+
+    private bool IsTs => _dialect == CFamilyDialect.TypeScript;
+
+    private string[] ModifierWords => _dialect switch
+    {
+        CFamilyDialect.Java => JavaModifiers,
+        CFamilyDialect.Go => [],
+        CFamilyDialect.JavaScript or CFamilyDialect.TypeScript => JsModifiers,
+        _ => Modifiers
+    };
+
+    private string[] TypeWords => _dialect switch
+    {
+        CFamilyDialect.Java => JavaTypeKeywords,
+        CFamilyDialect.Go => GoTypeKeywords,
+        CFamilyDialect.JavaScript or CFamilyDialect.TypeScript => JsTypeKeywords,
+        _ => TypeKeywords
+    };
 
     private bool IsLambdaArrow => Is("=>") || (IsJava && Is("->"));
 
     public static SyntaxNode Parse(IReadOnlyList<Token> tokens, LanguageInfo language,
         CFamilyDialect dialect = CFamilyDialect.CSharp)
     {
-        var code = tokens.Where(t => t.Kind != TokenKind.Comment).ToArray();
+        var code = (IReadOnlyList<Token>)tokens.Where(t => t.Kind != TokenKind.Comment).ToArray();
         var root = new SyntaxNode(NodeKind.TopLevel, "", TextRange.Of(tokens), tokens);
-        if (code.Length == 0)
+        if (code.Count == 0)
             return root;
+        if (dialect == CFamilyDialect.Go)
+            code = GoSemicolons.Insert(code);
+        else if (dialect is CFamilyDialect.JavaScript or CFamilyDialect.TypeScript)
+            code = JsSemicolons.Insert(code);
         new CSharpParser(code, language, dialect).FillCompilationUnit(root);
         return root;
     }
@@ -170,10 +214,29 @@ public sealed class CSharpParser
         if (!IsJava && Is("using") && PeekText() != "(" && !IsUsingDeclaration())
             return ParseUsingDirective(start);
 
-        if (IsJava && (Is("import") || Is("package")))
+        if ((IsJava || IsGo) && (Is("import") || Is("package")))
         {
             var isPackage = Is("package");
             _index++;
+            if (IsGo && Is("("))
+            {
+                // grouped import block: one node holding every imported path
+                var group = Node(NodeKind.ImportDeclaration, start, "imports");
+                Accept("(");
+                while (!AtEnd && !Is(")"))
+                {
+                    if (Current is { Kind: TokenKind.String } path)
+                        group.Add(new SyntaxNode(NodeKind.ImportDeclaration, path.Text,
+                            TextRange.Of(path, path), [path]));
+                    _index++;
+                }
+                Accept(")");
+                Accept(";");
+                group.Tokens = SliceFrom(start);
+                group.Range = TextRange.Of(group.Tokens);
+                return group;
+            }
+
             var name = new System.Text.StringBuilder();
             while (!AtEnd && !Is(";"))
                 name.Append(Take().Text);
@@ -192,7 +255,20 @@ public sealed class CSharpParser
             return Node(NodeKind.ImportDeclaration, start);
         }
 
+        if (IsJs && (Is("import") || Is("export")) && !IsExportedDeclaration())
+            return ParseJsImportOrExport(start);
+
         var modifiers = ParseModifiers();
+        if (IsJs && Is("function"))
+            return ParseJsFunction(start, modifiers);
+        if (IsTs && Is("type") && Peek() is { Kind: TokenKind.Identifier })
+            return ParseTsTypeAlias(start);
+        if (IsGo && Is("func"))
+            return ParseGoFunction(start);
+        if (IsGo && Is("type"))
+            return ParseGoTypeDeclaration(start);
+        if (IsGo && (Is("var") || Is("const")))
+            return ParseGoVariableBlock(start);
         if (IsAny(TypeWords))
             return ParseTypeDeclaration(start, attributes, modifiers);
 
@@ -342,6 +418,416 @@ public sealed class CSharpParser
         return node;
     }
 
+    /// <summary>True when export is followed by a declaration rather than by a list or a binding.</summary>
+    private bool IsExportedDeclaration()
+        => Is("export") && PeekText() is "class" or "function" or "const" or "let" or "var" or "async"
+            or "interface" or "enum" or "abstract" or "default" or "namespace" or "type";
+
+    private SyntaxNode ParseJsImportOrExport(int start)
+    {
+        var isImport = Is("import");
+        _index++;
+        var name = new System.Text.StringBuilder();
+        while (!AtEnd && !Is(";"))
+        {
+            if (Current is { Kind: TokenKind.String } path)
+                name.Append(path.Text);
+            _index++;
+        }
+        Accept(";");
+        return Node(isImport ? NodeKind.ImportDeclaration : NodeKind.PackageDeclaration, start,
+            name.ToString());
+    }
+
+    /// <summary>function declarations, including generators and the async form.</summary>
+    private SyntaxNode ParseJsFunction(int start, List<string> modifiers)
+    {
+        Expect("function");
+        Accept("*");
+        var name = IsName ? Take().Text : string.Empty;
+        if (Is("<"))
+            SkipGenericParameters();
+        var node = Node(NodeKind.FunctionDeclaration, start, name);
+        foreach (var modifier in modifiers)
+            node.Add(new SyntaxNode(NodeKind.Modifier, modifier, node.Range));
+        if (Is("("))
+            node.Add(ParseParameterList());
+        SkipTsReturnType();
+        AddBody(node);
+        return node;
+    }
+
+    private SyntaxNode ParseTsTypeAlias(int start)
+    {
+        Expect("type");
+        var name = IsName ? Take().Text : string.Empty;
+        if (Is("<"))
+            SkipGenericParameters();
+        Accept("=");
+        var depth = 0;
+        while (!AtEnd)
+        {
+            if (Is("{") || Is("(") || Is("["))
+                depth++;
+            else if (Is("}") || Is(")") || Is("]"))
+                depth--;
+            else if (Is(";") && depth <= 0)
+                break;
+            _index++;
+        }
+        Accept(";");
+        return Node(NodeKind.ClassDeclaration, start, name);
+    }
+
+    private void SkipTsReturnType()
+    {
+        if (!IsTs || !Is(":"))
+            return;
+        _index++;
+        var depth = 0;
+        var expectingType = true;
+        while (!AtEnd)
+        {
+            if (Is("{"))
+            {
+                if (depth == 0 && !expectingType)
+                    return; // the body of the function starts here
+                SkipBalanced("{", "}");
+                expectingType = false;
+                continue;
+            }
+            if (Is("(") || Is("[") || Is("<"))
+            {
+                depth++;
+                expectingType = true;
+            }
+            else if (Is(")") || Is("]") || Is(">"))
+            {
+                if (depth == 0)
+                    return;
+                depth--;
+                expectingType = false;
+            }
+            else if ((Is(";") || Is("=>") || Is("=")) && depth <= 0)
+            {
+                return;
+            }
+            else
+            {
+                expectingType = IsAny("|", "&", ",", ":", "extends", "keyof", "readonly");
+            }
+            _index++;
+        }
+    }
+
+    /// <summary>Members of a JavaScript or TypeScript class.</summary>
+    private SyntaxNode? ParseJsMember()
+    {
+        var start = Mark();
+        ParseAttributes();
+        var modifiers = ParseModifiers();
+
+        if (Accept(";"))
+            return null;
+        if (IsAny(TypeWords))
+            return ParseTypeDeclaration(start, [], modifiers);
+
+        var isAccessor = IsAny("get", "set") && Peek() is { Kind: TokenKind.Identifier or TokenKind.Keyword };
+        var accessorKind = isAccessor ? Take().Text : string.Empty;
+        Accept("*");
+        Accept("#");
+
+        if (!IsName && Current is not { Kind: TokenKind.String })
+            return ParseStatement();
+
+        var name = Take().Text;
+        if (Is("<"))
+            SkipGenericParameters();
+
+        if (Is("("))
+        {
+            var kind = isAccessor ? NodeKind.Accessor : NodeKind.FunctionDeclaration;
+            var member = Node(kind, start, isAccessor ? accessorKind : name);
+            foreach (var modifier in modifiers)
+                member.Add(new SyntaxNode(NodeKind.Modifier, modifier, member.Range));
+            member.Add(ParseParameterList());
+            SkipTsReturnType();
+            AddBody(member);
+            return member;
+        }
+
+        var field = Node(NodeKind.FieldDeclaration, start, name);
+        foreach (var modifier in modifiers)
+            field.Add(new SyntaxNode(NodeKind.Modifier, modifier, field.Range));
+        Accept("?");
+        Accept("!");
+        if (IsTs && Accept(":"))
+            field.Add(ParseType());
+        if (Accept("="))
+        {
+            if (ParseExpression() is { } value)
+            {
+                var assignment = new SyntaxNode(NodeKind.Assignment, "=", field.Range);
+                assignment.Add(new SyntaxNode(NodeKind.Identifier, name, field.Range));
+                assignment.Add(value);
+                field.Add(assignment);
+            }
+        }
+        Accept(";");
+        field.Tokens = SliceFrom(start);
+        field.Range = TextRange.Of(field.Tokens);
+        return field;
+    }
+
+    /// <summary>const, let and var declarations, including destructuring.</summary>
+    private SyntaxNode ParseJsDeclaration(int start)
+    {
+        var keyword = Take().Text;
+        var node = Node(NodeKind.VariableDeclaration, start, string.Empty);
+        while (!AtEnd)
+        {
+            var names = new List<string>();
+            if (Is("{") || Is("["))
+            {
+                var open = Text;
+                var close = open == "{" ? "}" : "]";
+                var depth = 0;
+                while (!AtEnd)
+                {
+                    if (Is(open))
+                        depth++;
+                    else if (Is(close))
+                    {
+                        depth--;
+                        if (depth == 0)
+                        {
+                            _index++;
+                            break;
+                        }
+                    }
+                    else if (IsIdentifier && !Is("as"))
+                        names.Add(Text);
+                    _index++;
+                }
+            }
+            else if (IsName)
+            {
+                names.Add(Take().Text);
+            }
+            else
+            {
+                break;
+            }
+
+            if (names.Count > 0 && node.Text.Length == 0)
+                node.Text = names[0];
+            Accept("?");
+            Accept("!");
+            if (IsTs && Accept(":"))
+                node.Add(ParseType());
+
+            if (Accept("="))
+            {
+                var value = ParseAssignment();
+                var assignment = new SyntaxNode(NodeKind.Assignment, "=", node.Range);
+                assignment.Add(new SyntaxNode(NodeKind.Identifier, names.Count > 0 ? names[0] : string.Empty,
+                    node.Range));
+                if (value != null)
+                    assignment.Add(value);
+                node.Add(assignment);
+            }
+            foreach (var extra in names.Skip(1))
+                node.Add(new SyntaxNode(NodeKind.Identifier, extra, node.Range));
+
+            if (!Accept(","))
+                break;
+        }
+        Accept(";");
+        node.Tokens = SliceFrom(start);
+        node.Range = TextRange.Of(node.Tokens);
+        _ = keyword;
+        return node;
+    }
+
+    /// <summary>Go named types: the kind follows the name, and struct fields are name/type pairs.</summary>
+    private SyntaxNode ParseGoTypeDeclaration(int start)
+    {
+        Expect("type");
+        if (Is("("))
+        {
+            // grouped type block
+            var group = Node(NodeKind.ClassDeclaration, start, "types");
+            Accept("(");
+            while (!AtEnd && !Is(")"))
+            {
+                var before = _index;
+                if (IsIdentifier)
+                    group.Add(ParseGoNamedType(Mark()));
+                if (_index == before)
+                    _index++;
+            }
+            Accept(")");
+            return group;
+        }
+        return ParseGoNamedType(start);
+    }
+
+    private SyntaxNode ParseGoNamedType(int start)
+    {
+        var name = IsName ? Take().Text : string.Empty;
+        if (Is("["))
+            SkipBalanced("[", "]");
+        var isStruct = Is("struct");
+        var isInterface = Is("interface");
+        if (isStruct || isInterface)
+            _index++;
+
+        var node = Node(NodeKind.ClassDeclaration, start, name);
+        if (!Is("{"))
+        {
+            // alias to another type
+            node.Add(ParseType());
+            Accept(";");
+            return node;
+        }
+
+        var body = ParseGoTypeBody(isInterface);
+        node.Add(body);
+        node.Range = node.Range with { EndLine = body.Range.EndLine };
+        Accept(";");
+        return node;
+    }
+
+    private SyntaxNode ParseGoTypeBody(bool isInterface)
+    {
+        var start = Mark();
+        var block = new SyntaxNode(NodeKind.Block, "",
+            TextRange.Of([_tokens[Math.Min(start, _tokens.Count - 1)]]));
+        if (!Accept("{"))
+            return block;
+
+        while (!AtEnd && !Is("}"))
+        {
+            var before = _index;
+            if (Accept(";"))
+                continue;
+            if (!IsIdentifier)
+            {
+                _index++;
+                continue;
+            }
+
+            var memberStart = Mark();
+            var name = Take().Text;
+            if (isInterface && Is("("))
+            {
+                var method = Node(NodeKind.FunctionDeclaration, memberStart, name);
+                method.Add(ParseParameterList());
+                if (Is("(")) SkipBalanced("(", ")");
+                else if (IsName || Is("*") || Is("[")) method.Add(ParseType());
+                block.Add(method);
+            }
+            else
+            {
+                var field = Node(NodeKind.FieldDeclaration, memberStart, name);
+                if (!Is(";") && !Is("}"))
+                    field.Add(ParseType());
+                if (Current is { Kind: TokenKind.String })
+                    _index++; // struct tag
+                block.Add(field);
+            }
+            if (_index == before)
+                _index++;
+        }
+        var closing = Current;
+        Accept("}");
+        block.Tokens = SliceFrom(start);
+        block.Range = TextRange.Of(block.Tokens);
+        if (closing != null)
+            block.Range = block.Range with { EndLine = closing.Line };
+        return block;
+    }
+
+    /// <summary>Package-level var and const declarations, single or grouped.</summary>
+    private SyntaxNode ParseGoVariableBlock(int start)
+    {
+        _index++; // var | const
+        if (Is("("))
+        {
+            var group = Node(NodeKind.Block, start, "declarations");
+            Accept("(");
+            while (!AtEnd && !Is(")"))
+            {
+                var before = _index;
+                if (Accept(";"))
+                    continue;
+                var declaration = ParseGoSingleVariable(Mark());
+                if (declaration != null)
+                    group.Add(declaration);
+                if (_index == before)
+                    _index++;
+            }
+            Accept(")");
+            Accept(";");
+            return group;
+        }
+        return ParseGoSingleVariable(start) ?? Node(NodeKind.Unknown, start);
+    }
+
+    private SyntaxNode? ParseGoSingleVariable(int start)
+    {
+        if (!IsIdentifier)
+            return null;
+        var name = Take().Text;
+        var node = new SyntaxNode(NodeKind.VariableDeclaration, name,
+            TextRange.Of([_tokens[Math.Min(start, _tokens.Count - 1)]]));
+        while (Accept(","))
+        {
+            if (IsIdentifier)
+                _index++;
+        }
+        if (!Is("=") && !Is(";") && (IsName || Is("*") || Is("[")))
+            node.Add(ParseType());
+        if (Accept("="))
+        {
+            var value = ParseExpression();
+            var assignment = new SyntaxNode(NodeKind.Assignment, "=", node.Range);
+            assignment.Add(new SyntaxNode(NodeKind.Identifier, name, node.Range));
+            if (value != null)
+                assignment.Add(value);
+            node.Add(assignment);
+        }
+        Accept(";");
+        node.Tokens = SliceFrom(start);
+        node.Range = TextRange.Of(node.Tokens);
+        return node;
+    }
+
+    /// <summary>Go functions and methods, including the optional receiver.</summary>
+    private SyntaxNode ParseGoFunction(int start)
+    {
+        Expect("func");
+        if (Is("("))
+            SkipBalanced("(", ")"); // receiver
+        var name = IsName ? Take().Text : string.Empty;
+        if (Is("["))
+            SkipBalanced("[", "]"); // type parameters
+        var node = Node(NodeKind.FunctionDeclaration, start, name);
+        if (Is("("))
+            node.Add(ParseParameterList());
+        if (Is("("))
+            SkipBalanced("(", ")"); // result list
+        else if (IsName || Is("*") || Is("["))
+            node.Add(ParseType());
+        if (Is("{"))
+        {
+            var body = ParseBlock();
+            node.Add(body);
+            node.Range = node.Range with { EndLine = body.Range.EndLine };
+        }
+        return node;
+    }
+
     private SyntaxNode ParseDelegate(int start, List<SyntaxNode> attributes, List<string> modifiers)
     {
         ParseType();
@@ -367,7 +853,7 @@ public sealed class CSharpParser
         while (!AtEnd && !Is("}"))
         {
             var before = _index;
-            var member = isEnum ? ParseEnumMember() : ParseMember();
+            var member = isEnum ? ParseEnumMember() : IsJs ? ParseJsMember() : ParseMember();
             if (member != null)
                 block.Add(member);
             if (_index == before)
@@ -674,6 +1160,11 @@ public sealed class CSharpParser
         if (IsAny("ref", "out", "in", "params", "scoped", "this"))
             _index++;
 
+        if (IsGo)
+            return ParseGoType(start);
+        if (IsJs)
+            return ParseJsType(start);
+
         var name = ParseQualifiedName();
         while (true)
         {
@@ -698,6 +1189,85 @@ public sealed class CSharpParser
             break;
         }
         return Node(NodeKind.TypeReference, start, name);
+    }
+
+    /// <summary>TypeScript annotations: unions, arrays, generics and object literals.</summary>
+    private SyntaxNode ParseJsType(int start)
+    {
+        var text = new System.Text.StringBuilder();
+        var depth = 0;
+        while (!AtEnd)
+        {
+            if (Is("{") || Is("(") || Is("[") || Is("<"))
+                depth++;
+            else if (Is("}") || Is(")") || Is("]"))
+            {
+                if (depth == 0)
+                    break;
+                depth--;
+            }
+            else if (Is(">") || Is(">>"))
+            {
+                depth -= Is(">>") ? 2 : 1;
+                if (depth < 0)
+                    break;
+            }
+            else if (depth == 0 && (Is("=") || Is(";") || Is(",")))
+                break;
+            // a function type keeps going after its arrow
+            text.Append(Take().Text);
+        }
+        return Node(NodeKind.TypeReference, start, text.ToString());
+    }
+
+    /// <summary>Go types read from the outside in: pointers, slices, maps, channels and functions.</summary>
+    private SyntaxNode ParseGoType(int start)
+    {
+        var prefix = new System.Text.StringBuilder();
+        while (!AtEnd)
+        {
+            if (Is("*") || Is("...") || Is("&"))
+            {
+                prefix.Append(Take().Text);
+                continue;
+            }
+            if (Is("["))
+            {
+                SkipBalanced("[", "]");
+                prefix.Append("[]");
+                continue;
+            }
+            if (Is("chan"))
+            {
+                prefix.Append(Take().Text).Append(' ');
+                continue;
+            }
+            if (Is("map"))
+            {
+                prefix.Append(Take().Text);
+                if (Is("["))
+                    SkipBalanced("[", "]");
+                continue;
+            }
+            if (Is("func"))
+            {
+                prefix.Append(Take().Text);
+                if (Is("("))
+                    SkipBalanced("(", ")");
+                continue;
+            }
+            if (Is("interface") || Is("struct"))
+            {
+                prefix.Append(Take().Text);
+                if (Is("{"))
+                    SkipBalanced("{", "}");
+                return Node(NodeKind.TypeReference, start, prefix.ToString());
+            }
+            break;
+        }
+
+        var name = ParseQualifiedName();
+        return Node(NodeKind.TypeReference, start, prefix + name);
     }
 
     private string ParseQualifiedName()
@@ -787,10 +1357,78 @@ public sealed class CSharpParser
         {
             var before = _index;
             ParseAttributes();
-            while (IsAny("ref", "out", "in", "params", "this", "scoped", "readonly"))
+            while (!IsJs && !IsGo && IsAny("ref", "out", "in", "params", "this", "scoped", "readonly"))
                 _index++;
 
             var parameterStart = Mark();
+            if (IsJs)
+            {
+                while (IsAny("public", "private", "protected", "readonly"))
+                    _index++;
+                Accept("...");
+                if (Is("{") || Is("["))
+                {
+                    // destructured parameter: keep the names it binds
+                    var open = Text;
+                    var close = open == "{" ? "}" : "]";
+                    var depth = 0;
+                    while (!AtEnd)
+                    {
+                        if (Is(open))
+                            depth++;
+                        else if (Is(close))
+                        {
+                            depth--;
+                            if (depth == 0)
+                            {
+                                _index++;
+                                break;
+                            }
+                        }
+                        else if (IsIdentifier)
+                            list.Add(new SyntaxNode(NodeKind.Parameter, Text, TextRange.Of([Current!])));
+                        _index++;
+                    }
+                }
+                else if (IsName)
+                {
+                    var jsName = Take().Text;
+                    var jsParameter = Node(NodeKind.Parameter, parameterStart, jsName);
+                    Accept("?");
+                    if (IsTs && Accept(":"))
+                        jsParameter.Add(ParseType());
+                    if (Accept("=") && ParseAssignment() is { } jsDefault)
+                        jsParameter.Add(jsDefault);
+                    list.Add(jsParameter);
+                }
+                if (!Accept(",") && !Is(")") && _index == before)
+                    _index++;
+                continue;
+            }
+
+            if (IsGo)
+            {
+                // Go writes the name before the type
+                var goName = IsIdentifier ? Take().Text : string.Empty;
+                if (Is(",") || Is(")"))
+                {
+                    // a parameter list that only declares types, or a shared type across names
+                    if (goName.Length > 0)
+                        list.Add(new SyntaxNode(NodeKind.Parameter, goName,
+                            TextRange.Of(SliceFrom(parameterStart)), SliceFrom(parameterStart)));
+                }
+                else
+                {
+                    var goType = ParseType();
+                    var goParameter = Node(NodeKind.Parameter, parameterStart, goName);
+                    goParameter.Add(goType);
+                    list.Add(goParameter);
+                }
+                if (!Accept(",") && !Is(")") && _index == before)
+                    _index++;
+                continue;
+            }
+
             var type = ParseType();
             if (!IsName)
             {
@@ -869,13 +1507,38 @@ public sealed class CSharpParser
                 return ParseBlock();
             case ";":
                 _index++;
-                return Node(NodeKind.ExpressionStatement, start, ";");
+                // generated terminators are not empty statements
+                return IsGo || IsJs ? null : Node(NodeKind.ExpressionStatement, start, ";");
             case "if":
                 return ParseIf(start);
             case "switch":
                 return ParseSwitchStatement(start);
             case "for":
-                return ParseFor(start);
+                return IsGo ? ParseGoFor(start) : ParseFor(start);
+            case "var" when IsGo:
+            case "const" when IsGo:
+                return ParseGoVariableBlock(start);
+            case "const" when IsJs:
+            case "let" when IsJs:
+            case "var" when IsJs:
+                return ParseJsDeclaration(start);
+            case "function" when IsJs:
+                return ParseJsFunction(start, []);
+            case "import" when IsJs:
+            case "export" when IsJs:
+                return ParseJsImportOrExport(start);
+            case "type" when IsGo:
+                return ParseGoTypeDeclaration(start);
+            case "func" when IsGo && PeekText() != "(":
+                return ParseGoFunction(start);
+            case "go" when IsGo:
+            case "defer" when IsGo:
+                var concurrencyKeyword = Take().Text;
+                var deferred = Node(NodeKind.ExpressionStatement, start, concurrencyKeyword);
+                if (ParseExpression() is { } deferredCall)
+                    deferred.Add(deferredCall);
+                Accept(";");
+                return deferred;
             case "foreach":
                 return ParseForEach(start);
             case "while":
@@ -918,6 +1581,9 @@ public sealed class CSharpParser
         }
         _ = modifiers;
 
+        if (IsGo && TryParseGoShortDeclaration(start) is { } shortDeclaration)
+            return shortDeclaration;
+
         if (TryParseLocalDeclaration(start) is { } declaration)
             return declaration;
 
@@ -927,6 +1593,45 @@ public sealed class CSharpParser
         if (expression != null)
             statement.Add(expression);
         return statement;
+    }
+
+    /// <summary>Short variable declarations of the form name := value.</summary>
+    private SyntaxNode? TryParseGoShortDeclaration(int start)
+    {
+        if (!IsIdentifier)
+            return null;
+        var reset = _index;
+        var names = new List<string> { Take().Text };
+        while (Accept(","))
+        {
+            if (!IsIdentifier)
+            {
+                _index = reset;
+                return null;
+            }
+            names.Add(Take().Text);
+        }
+        if (!Is(":="))
+        {
+            _index = reset;
+            return null;
+        }
+        _index++;
+
+        var anchor = TextRange.Of([_tokens[Math.Min(reset, _tokens.Count - 1)]]);
+        var declaration = new SyntaxNode(NodeKind.VariableDeclaration, names[0], anchor);
+        var value = ParseExpression();
+        var assignment = new SyntaxNode(NodeKind.Assignment, "=", anchor);
+        assignment.Add(new SyntaxNode(NodeKind.Identifier, names[0], anchor));
+        if (value != null)
+            assignment.Add(value);
+        declaration.Add(assignment);
+        foreach (var extra in names.Skip(1))
+            declaration.Add(new SyntaxNode(NodeKind.Identifier, extra, anchor));
+        Accept(";");
+        declaration.Tokens = SliceFrom(start);
+        declaration.Range = TextRange.Of(declaration.Tokens);
+        return declaration;
     }
 
     private bool LooksLikeLocalFunction()
@@ -999,6 +1704,15 @@ public sealed class CSharpParser
                 node.Add(condition);
             Accept(")");
         }
+        else if (IsGo)
+        {
+            _compositeLiteralBan++;
+            if (TryParseGoShortDeclaration(Mark()) is { } init)
+                node.Add(init);
+            if (!Is("{") && ParseExpression() is { } goCondition)
+                node.Add(goCondition);
+            _compositeLiteralBan--;
+        }
         AddEmbeddedStatement(node);
 
         if (Is("else"))
@@ -1042,6 +1756,13 @@ public sealed class CSharpParser
             if (ParseExpression() is { } subject)
                 node.Add(subject);
             Accept(")");
+        }
+        else if (IsGo && !Is("{"))
+        {
+            _compositeLiteralBan++;
+            if (ParseExpression() is { } goSubject)
+                node.Add(goSubject);
+            _compositeLiteralBan--;
         }
 
         var body = new SyntaxNode(NodeKind.Block, "", node.Range, node.Tokens);
@@ -1091,7 +1812,11 @@ public sealed class CSharpParser
         var node = Node(NodeKind.Loop, start, "for");
         if (Accept("("))
         {
-            if (!Is(";") && TryParseLocalDeclaration(Mark()) is { } initializer)
+            if (IsJs && IsAny("const", "let", "var"))
+            {
+                node.Add(ParseJsDeclaration(Mark()));
+            }
+            else if (!Is(";") && TryParseLocalDeclaration(Mark()) is { } initializer)
                 node.Add(initializer);
             else
             {
@@ -1158,6 +1883,33 @@ public sealed class CSharpParser
             }
             Accept(")");
         }
+        AddEmbeddedStatement(node);
+        return node;
+    }
+
+    /// <summary>The single Go loop form: condition only, three-clause, or range.</summary>
+    private SyntaxNode ParseGoFor(int start)
+    {
+        Expect("for");
+        var node = Node(NodeKind.Loop, start, "for");
+        _compositeLiteralBan++;
+        while (!AtEnd && !Is("{"))
+        {
+            var before = _index;
+            if (TryParseGoShortDeclaration(Mark()) is { } init)
+                node.Add(init);
+            else if (Is("range"))
+            {
+                _index++;
+                if (ParseExpression() is { } sequence)
+                    node.Add(sequence);
+            }
+            else if (ParseExpression() is { } part)
+                node.Add(part);
+            if (!Accept(";") && _index == before)
+                _index++;
+        }
+        _compositeLiteralBan--;
         AddEmbeddedStatement(node);
         return node;
     }
@@ -1296,6 +2048,14 @@ public sealed class CSharpParser
         {
             if (ParseExpression() is { } value)
                 node.Add(value);
+            // Go returns several values at once
+            while (Accept(","))
+            {
+                if (ParseExpression() is { } extra)
+                    node.Add(extra);
+                else
+                    break;
+            }
         }
         Accept(";");
         node.Tokens = SliceFrom(start);
@@ -1358,11 +2118,12 @@ public sealed class CSharpParser
         "|" => 4,
         "^" => 5,
         "&" => 6,
-        "==" or "!=" => 7,
-        "<" or ">" or "<=" or ">=" or "is" or "as" or "instanceof" => 8,
-        "<<" or ">>" => 9,
+        "==" or "!=" or "===" or "!==" => 7,
+        "<" or ">" or "<=" or ">=" or "is" or "as" or "instanceof" or "in" or "satisfies" => 8,
+        "<<" or ">>" or ">>>" => 9,
         "+" or "-" => 10,
         "*" or "/" or "%" => 11,
+        "**" => 12,
         _ => -1
     };
 
@@ -1383,7 +2144,7 @@ public sealed class CSharpParser
             SyntaxNode? right;
             if (op is "is" or "instanceof")
                 right = ParsePattern();
-            else if (op == "as")
+            else if (op is "as" or "satisfies")
                 right = ParseType();
             else
                 right = ParseBinary(precedence + 1);
@@ -1477,7 +2238,8 @@ public sealed class CSharpParser
             return null;
         var start = Mark();
 
-        if (IsAny("!", "-", "+", "~", "++", "--", "await", "&", "*", "^"))
+        if (IsAny("!", "-", "+", "~", "++", "--", "await", "&", "*", "^")
+            || (IsJs && IsAny("typeof", "void", "delete", "yield", "new")))
         {
             var op = Take().Text;
             var operand = ParseUnary();
@@ -1487,10 +2249,10 @@ public sealed class CSharpParser
             return node;
         }
 
-        if (Is("new"))
+        if (Is("new") && !IsJs)
             return ParseObjectCreation(start);
 
-        if (Is("(") && LooksLikeCast())
+        if (Is("(") && !IsJs && !IsGo && LooksLikeCast())
         {
             Accept("(");
             var type = ParseType();
@@ -1599,6 +2361,20 @@ public sealed class CSharpParser
 
     private SyntaxNode ParseArgumentList()
     {
+        var ban = _compositeLiteralBan;
+        _compositeLiteralBan = 0;
+        try
+        {
+            return ParseArgumentListCore();
+        }
+        finally
+        {
+            _compositeLiteralBan = ban;
+        }
+    }
+
+    private SyntaxNode ParseArgumentListCore()
+    {
         var start = Mark();
         var list = new SyntaxNode(NodeKind.ArgumentList, "",
             TextRange.Of([_tokens[Math.Min(start, _tokens.Count - 1)]]));
@@ -1608,7 +2384,7 @@ public sealed class CSharpParser
         while (!AtEnd && !Is(")"))
         {
             var before = _index;
-            while (IsAny("ref", "out", "in"))
+            while (!IsJs && !IsGo && IsAny("ref", "out", "in"))
                 _index++;
             // named argument
             if (IsIdentifier && PeekText() == ":" && PeekText(2) != ":")
@@ -1631,6 +2407,22 @@ public sealed class CSharpParser
     {
         while (node != null && !AtEnd)
         {
+            if (IsGo && Is(".") && PeekText() == "(")
+            {
+                // type assertion: value.(Type)
+                _index++;
+                Accept("(");
+                var asserted = Is("type") ? Node(NodeKind.TypeReference, Mark(), "type") : ParseType();
+                if (asserted.Text == "type")
+                    _index++;
+                Accept(")");
+                var assertion = new SyntaxNode(NodeKind.Cast, asserted.Text, node.Range, node.Tokens);
+                assertion.Add(asserted);
+                assertion.Add(node);
+                node = assertion;
+                continue;
+            }
+
             if (Is(".") || Is("?.") || Is("->"))
             {
                 _index++;
@@ -1669,9 +2461,21 @@ public sealed class CSharpParser
             if (Is("["))
             {
                 var start = Mark();
-                SkipBalanced("[", "]");
+                Accept("[");
+                var arguments = new List<SyntaxNode>();
+                while (!AtEnd && !Is("]"))
+                {
+                    var before = _index;
+                    if (ParseAssignment() is { } key)
+                        arguments.Add(key);
+                    if (!Accept(",") && _index == before)
+                        _index++;
+                }
+                Accept("]");
                 var index = Node(NodeKind.Index, start, SyntaxQuery.DottedName(node));
                 index.Add(node);
+                foreach (var argument in arguments)
+                    index.Add(argument);
                 node = index;
                 continue;
             }
@@ -1689,6 +2493,17 @@ public sealed class CSharpParser
             if (Is("{") && node.Kind is NodeKind.ObjectCreation)
             {
                 node.Add(ParseInitializer());
+                continue;
+            }
+
+            if (IsGo && Is("{") && _compositeLiteralBan == 0
+                && node.Kind is NodeKind.Identifier or NodeKind.MemberSelect or NodeKind.Index)
+            {
+                var literal = new SyntaxNode(NodeKind.ObjectCreation, SyntaxQuery.DottedName(node),
+                    node.Range, node.Tokens);
+                literal.Add(node);
+                literal.Add(ParseInitializer());
+                node = literal;
                 continue;
             }
 
@@ -1774,6 +2589,8 @@ public sealed class CSharpParser
                 var call = Node(NodeKind.Invocation, start, keyword);
                 if (Is("("))
                     call.Add(ParseArgumentList());
+                else if (IsJs && keyword != "default" && ParseUnary() is { } operand)
+                    call.Add(operand); // operator form, as in typeof value
                 return call;
             case "switch":
                 return ParseSwitchExpression(start);
@@ -1872,6 +2689,8 @@ public sealed class CSharpParser
         if (LooksLikeParenthesizedLambda())
         {
             var parameters = ParseParameterList();
+            if (IsTs && Is(":"))
+                SkipTsReturnType();
             if (!Accept("=>"))
                 Accept("->");
             var lambda = Node(NodeKind.Lambda, start, "=>");
@@ -1918,6 +2737,8 @@ public sealed class CSharpParser
                 if (depth == 0)
                 {
                     _index++;
+                    if (IsTs && Is(":"))
+                        SkipTsReturnType(); // an annotated lambda: (x): T => ...
                     var isLambda = IsLambdaArrow;
                     _index = start;
                     return isLambda;
