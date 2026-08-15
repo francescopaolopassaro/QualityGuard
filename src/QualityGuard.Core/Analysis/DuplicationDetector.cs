@@ -4,17 +4,40 @@ namespace QualityGuard.Core.Analysis;
 
 public sealed class DuplicationDetector
 {
-    private const int WindowSize = 6;
-    private const int MinTokens = 12;
+    private const int WindowSize = 20;
+
+    /// <summary>
+    /// A block has to be long enough that copying it was a decision, not a coincidence. Twelve tokens
+    /// matched anything — a property, a guard clause, two lines of boilerplate — and reported almost
+    /// every file as duplicated. A hundred tokens over at least six lines is a block a reviewer would
+    /// also call a copy.
+    /// </summary>
+    private const int MinTokens = 100;
+
+    private const int MinLines = 6;
     private const uint Base = 31;
     private const uint Prime = 1_000_000_007;
 
+    /// <summary>
+    /// Languages whose files are data, not code. A catalog, a manifest or a configuration repeats the
+    /// same field skeleton on purpose; measuring that as duplication says nothing about quality and
+    /// drowns the number that does.
+    /// </summary>
+    private static readonly string[] DataLanguages = ["yaml", "yml", "json", "xml", "k8", "cf", "ar", "tf", "md"];
+
     public IReadOnlyList<DuplicateBlock> FindDuplicates(SourceFile file, IReadOnlyList<Token> tokens)
     {
+        if (file.Language is { } language
+            && DataLanguages.Contains(language.LanguageKey, StringComparer.OrdinalIgnoreCase))
+            return [];
+
         // normalized token sequence — ignore comments and maps each symbol/ident to normalized form
+        // literals are normalised because a copy usually changes them; identifiers are kept, since
+        // two blocks that differ in every name are two different pieces of code, however alike their
+        // shape is. Normalising them too turned "same structure" into "duplicate".
         var normalized = tokens
             .Where(t => t.Kind != TokenKind.Comment)
-            .Select(t => t.Kind == TokenKind.Identifier ? "ID" : t.Kind == TokenKind.String ? "STR" : t.Kind == TokenKind.Number ? "NUM" : t.Text)
+            .Select(t => t.Kind == TokenKind.String ? "STR" : t.Kind == TokenKind.Number ? "NUM" : t.Text)
             .ToArray();
 
         if (normalized.Length < WindowSize * 2)
@@ -98,7 +121,7 @@ public sealed class DuplicationDetector
         }
         blocks.Add(BuildBlock(file, tokens, groupStart, prev, maxOccurrences));
 
-        return blocks.Where(b => b.TokensCount >= MinTokens).ToList();
+        return blocks.Where(b => b.TokensCount >= MinTokens && b.Lines >= MinLines).ToList();
     }
 
     private static int ExtendMatch(string[] normalized, int p1, int p2, int len)

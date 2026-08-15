@@ -111,6 +111,24 @@ public class CSharpParserTests
     }
 
     [Fact]
+    public void A_discarded_out_argument_does_not_swallow_the_rest_of_the_file()
+    {
+        var root = Parse("""
+            class A
+            {
+                void First() { var ok = Try(out _); }
+                void Second() { }
+                void Third() { }
+            }
+            """);
+
+        // the discard is not an expression: losing it used to eat the closing parenthesis and
+        // everything after it, which silently corrupted every rule downstream
+        Assert.Equal(3, root.OfKind(NodeKind.FunctionDeclaration).Count());
+        Assert.Empty(root.OfKind(NodeKind.Unknown));
+    }
+
+    [Fact]
     public void Switch_expressions_are_parsed_as_expressions()
     {
         var root = Parse("""

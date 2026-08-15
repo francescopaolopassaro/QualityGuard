@@ -75,6 +75,26 @@ project index → type resolution → interprocedural taint → rules → qualit
 
 If **at least one** condition fails, the gate is `FAILED`.
 
+### Quality numbers
+
+Every figure in the report is derived from the findings, so it can be traced back to the lines that
+produced it. The CLI prints them after each run:
+
+| Number | How it is computed |
+| --- | --- |
+| Bugs / vulnerabilities / hotspots / code smells | counted by kind, broken down by severity |
+| **Reliability rating** | from the **worst** bug: A = none, B = minor, C = major, D = critical, E = blocker |
+| **Security rating** | same scale, over the vulnerabilities |
+| **Technical debt** | sum of the remediation effort of the code smells (`5min`, `1h30min`, `2d`; a day is 8 hours) |
+| **Debt ratio** | debt divided by the estimated cost of writing the code (30 minutes per line) |
+| **Maintainability rating** | from the ratio: A ≤ 5 %, B ≤ 10 %, C ≤ 20 %, D ≤ 50 %, E above |
+| **Duplicated lines density** | duplicated lines over total ncloc |
+
+A rating follows the worst finding rather than the number of findings: one blocker has to outweigh
+forty minor smells, otherwise the letter says nothing and nobody acts on it. Maintainability is the
+exception, because "twelve smells" means something different in a hundred lines and in a hundred
+thousand.
+
 ### Default gate profile
 
 | Metric | Operator | Error threshold |
@@ -112,7 +132,7 @@ Severity and issue kind follow the category: `SEC` → vulnerability (major or a
 
 ## 5. Rules
 
-**1038 rules are loaded and executable**, backed by **2560 catalog entries** (a catalog entry either
+**1065 rules are loaded and executable**, backed by **2496 catalog entries** (a catalog entry either
 carries its own detection or documents a rule implemented in code).
 
 | Area | Code | Rules |
@@ -122,7 +142,7 @@ carries its own detection or documents a rule implemented in code).
 | Python | `PY` | 136 |
 | JavaScript | `JS` | 96 |
 | Kotlin | `KT` | 83 |
-| Multi-language | `ALL` | 67 |
+| Multi-language | `ALL` | 94 |
 | PHP | `PP` | 58 |
 | Rust | `RS` | 37 |
 | Go | `GO` | 28 |
@@ -261,6 +281,15 @@ QUALITY GATE: Passed
   ISSUE QG-CS-SEC-0018 Critical: Validate the path to prevent path traversal. (src/DocumentService.cs:10)
       flow  line 7: 'ReadRequestedFile' returns data that enters the program in RequestReader.cs
       flow  line 10: tainted value reaches this sink
+
+SUMMARY  107 files, 68434 ncloc, 16082 complexity, 4.8% duplicated
+  Bugs                76   reliability C   major 75, minor 1
+  Vulnerabilities     50   security    D   critical 9, major 41
+  Security hotspots    0   reviewed    100%
+  Code smells        953   maintainability A   critical 147, major 308, minor 498
+  Technical debt   22.0d   ratio 0.51%
+  Most frequent rules:
+    QG-ALL-SML-0005   146  'FindDuplicates' scores 44 on nesting-aware complexity (limit is 15)
 
 FOLDER                                     FILES   NCLOC  BUGS  VULN SMELLS
 src/QualityGuard.Core/Analysis                10    1042     5     3     66

@@ -78,25 +78,6 @@
   detect:
     - creation: [End]
 
-- key: QG-CS-SML-0370
-  name: Exceptions should make failure handling explicit
-  languages: [vb]
-  category: SML
-  severity: minor
-  effort: 15min
-  tags: [exception, generated]
-  generated: true
-  status: planned
-  message: This handling hides the failure instead of dealing with it.
-  summary: An exception is thrown, caught or propagated in a way that hides the failure.
-  why: |
-    Handlers that are too broad, empty, or that replace the original error remove the information needed
-    to diagnose the incident, and let the program continue in a state nobody designed for. The symptom
-    then appears far from the cause.
-  fix: |
-    Catch the specific failures this code can recover from, keep the original exception as the cause when
-    wrapping, and let everything else reach the boundary handler.
-
 - key: QG-CS-SML-0372
   name: Array designators () should be simplified
   languages: [vb]
@@ -297,25 +278,6 @@
   fix: |
     Use the algorithms the platform recommends today — authenticated encryption, a modern hash, a key
     size at or above the current guidance — and keep the choice in one place so it can be raised.
-
-- key: QG-CS-SML-0384
-  name: Classes named like Exception should make failure handling explicit
-  languages: [vb]
-  category: SML
-  severity: minor
-  effort: 15min
-  tags: [exception, generated]
-  generated: true
-  status: planned
-  message: This handling hides the failure instead of dealing with it.
-  summary: An exception is thrown, caught or propagated in a way that hides the failure.
-  why: |
-    Handlers that are too broad, empty, or that replace the original error remove the information needed
-    to diagnose the incident, and let the program continue in a state nobody designed for. The symptom
-    then appears far from the cause.
-  fix: |
-    Catch the specific failures this code can recover from, keep the original exception as the cause when
-    wrapping, and let everything else reach the boundary handler.
 
 - key: QG-CS-BUG-0111
   name: ToString() method should match the behaviour the code describes
@@ -801,25 +763,6 @@
   fix: |
     Remove what is not used, name what is unclear, and keep one piece of behaviour in one place so the
     next change touches a single spot.
-
-- key: QG-CS-SML-0410
-  name: Catch clauses should make failure handling explicit
-  languages: [vb]
-  category: SML
-  severity: minor
-  effort: 15min
-  tags: [exception, generated]
-  generated: true
-  status: planned
-  message: This handling hides the failure instead of dealing with it.
-  summary: An exception is thrown, caught or propagated in a way that hides the failure.
-  why: |
-    Handlers that are too broad, empty, or that replace the original error remove the information needed
-    to diagnose the incident, and let the program continue in a state nobody designed for. The symptom
-    then appears far from the cause.
-  fix: |
-    Catch the specific failures this code can recover from, keep the original exception as the cause when
-    wrapping, and let everything else reach the boundary handler.
 
 - key: QG-CS-BUG-0115
   name: Not boolean operator should match the behaviour the code describes
@@ -1780,25 +1723,6 @@
   fix: |
     Check the value where it enters the program, model absence in the type where the language allows it,
     and provide the default or the error at that point instead of deeper down.
-
-- key: QG-CS-SML-0436
-  name: Comments should not be left empty
-  languages: [vb]
-  category: SML
-  severity: minor
-  effort: 15min
-  tags: [empty, generated]
-  generated: true
-  status: planned
-  message: This construct is empty, so it does nothing.
-  summary: A construct is declared with no content.
-  why: |
-    An empty body reads as if the case is handled while nothing happens, which is exactly how ignored
-    errors and unimplemented branches survive review. It is also indistinguishable from an accidental
-    deletion.
-  fix: |
-    Implement the behaviour, or remove the construct. When doing nothing is deliberate, say so in a
-    comment so the next reader does not treat it as a gap.
 
 - key: QG-CS-SEC-0088
   name: Server certificates should be verified before use

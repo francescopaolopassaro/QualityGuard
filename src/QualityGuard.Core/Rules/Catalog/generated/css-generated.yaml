@@ -293,25 +293,6 @@
     Make the intended behaviour explicit — fix the condition, the operator or the order of operations —
     and cover the case that used to fail with a test.
 
-- key: QG-CSS-SML-0013
-  name: Multi-line comments should not be left empty
-  languages: [css]
-  category: SML
-  severity: minor
-  effort: 15min
-  tags: [empty, generated]
-  generated: true
-  status: planned
-  message: This construct is empty, so it does nothing.
-  summary: A construct is declared with no content.
-  why: |
-    An empty body reads as if the case is handled while nothing happens, which is exactly how ignored
-    errors and unimplemented branches survive review. It is also indistinguishable from an accidental
-    deletion.
-  fix: |
-    Implement the behaviour, or remove the construct. When doing nothing is deliberate, say so in a
-    comment so the next reader does not treat it as a gap.
-
 - key: QG-CSS-SML-0014
   name: Selectors of lower specificity should be simplified
   languages: [css]

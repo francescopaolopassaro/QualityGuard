@@ -279,25 +279,6 @@
     Move the value to configuration, read it at start-up, and fail with a clear message when it is
     missing so a misconfigured deployment stops before it does anything.
 
-- key: QG-PP-SML-0032
-  name: Octal values should not be used
-  languages: [php]
-  category: SML
-  severity: minor
-  effort: 15min
-  tags: [avoid_api, generated]
-  generated: true
-  status: planned
-  message: This API should be replaced by the current alternative.
-  summary: Code calls an API that is unsafe, obsolete or superseded by a better alternative.
-  why: |
-    The API stays available for compatibility, so nothing fails at build time, but it carries behaviour
-    the platform now considers a defect — unchecked input, a weak guarantee, or a cost the replacement
-    avoids. Its presence also spreads: new code copies what it finds nearby.
-  fix: |
-    Replace the call with the current API, and keep the old one only behind a compatibility layer that is
-    documented and dated.
-
 - key: QG-PP-SML-0033
   name: Comments should be resolved rather than left in the code
   languages: [php]
@@ -352,25 +333,6 @@
   fix: |
     Split along the responsibilities the code has accumulated: extract the sections that already have a
     name, and keep the original as the sequence of those steps.
-
-- key: QG-PP-SML-0036
-  name: Local variables should make failure handling explicit
-  languages: [php]
-  category: SML
-  severity: minor
-  effort: 15min
-  tags: [exception, generated]
-  generated: true
-  status: planned
-  message: This handling hides the failure instead of dealing with it.
-  summary: An exception is thrown, caught or propagated in a way that hides the failure.
-  why: |
-    Handlers that are too broad, empty, or that replace the original error remove the information needed
-    to diagnose the incident, and let the program continue in a state nobody designed for. The symptom
-    then appears far from the cause.
-  fix: |
-    Catch the specific failures this code can recover from, keep the original exception as the cause when
-    wrapping, and let everything else reach the boundary handler.
 
 - key: QG-PP-SML-0037
   name: Variable variables should not be used
@@ -1183,43 +1145,6 @@
     Switch to the recommended construct; the behaviour is the same in the normal case and defined in the
     cases the old form got wrong.
 
-- key: QG-PP-SML-0069
-  name: Classes named like Exception should make failure handling explicit
-  languages: [php]
-  category: SML
-  severity: minor
-  effort: 15min
-  tags: [exception, generated]
-  generated: true
-  status: planned
-  message: This handling hides the failure instead of dealing with it.
-  summary: An exception is thrown, caught or propagated in a way that hides the failure.
-  why: |
-    Handlers that are too broad, empty, or that replace the original error remove the information needed
-    to diagnose the incident, and let the program continue in a state nobody designed for. The symptom
-    then appears far from the cause.
-  fix: |
-    Catch the specific failures this code can recover from, keep the original exception as the cause when
-    wrapping, and let everything else reach the boundary handler.
-
-- key: QG-PP-SML-0070
-  name: Tests should assert something
-  languages: [php]
-  category: SML
-  severity: minor
-  effort: 15min
-  tags: [tests, generated]
-  generated: true
-  status: planned
-  message: This test cannot fail, so it verifies nothing.
-  summary: A test does not assert, is disabled, or cannot fail.
-  why: |
-    A test that cannot fail reports success forever while covering nothing, and the suite keeps its green
-    status. That is worse than having no test at all, because it removes the incentive to write one.
-  fix: |
-    Assert the behaviour the test exists for, re-enable it, and make sure it fails when the behaviour is
-    broken before trusting it again.
-
 - key: QG-PP-SML-0071
   name: Parameters should be simplified
   languages: [php]
@@ -1297,25 +1222,6 @@
     - invocation: [mcrypt_encrypt]
     - invocation: [openssl_encrypt]
       argLiterals: [des, rc2, rc4]
-
-- key: QG-PP-SML-0073
-  name: Catch clauses should make failure handling explicit
-  languages: [php]
-  category: SML
-  severity: minor
-  effort: 15min
-  tags: [exception, generated]
-  generated: true
-  status: planned
-  message: This handling hides the failure instead of dealing with it.
-  summary: An exception is thrown, caught or propagated in a way that hides the failure.
-  why: |
-    Handlers that are too broad, empty, or that replace the original error remove the information needed
-    to diagnose the incident, and let the program continue in a state nobody designed for. The symptom
-    then appears far from the cause.
-  fix: |
-    Catch the specific failures this code can recover from, keep the original exception as the cause when
-    wrapping, and let everything else reach the boundary handler.
 
 - key: QG-PP-BUG-0018
   name: Unary prefix operators should match the behaviour the code describes
@@ -1599,43 +1505,6 @@
   fix: |
     Assert the behaviour the test exists for, re-enable it, and make sure it fails when the behaviour is
     broken before trusting it again.
-
-- key: QG-PP-SML-0078
-  name: Tests should assert something
-  languages: [php]
-  category: SML
-  severity: minor
-  effort: 15min
-  tags: [tests, generated]
-  generated: true
-  status: planned
-  message: This test cannot fail, so it verifies nothing.
-  summary: A test does not assert, is disabled, or cannot fail.
-  why: |
-    A test that cannot fail reports success forever while covering nothing, and the suite keeps its green
-    status. That is worse than having no test at all, because it removes the incentive to write one.
-  fix: |
-    Assert the behaviour the test exists for, re-enable it, and make sure it fails when the behaviour is
-    broken before trusting it again.
-
-- key: QG-PP-BUG-0019
-  name: Unsafe APIs should not be used
-  languages: [php]
-  category: BUG
-  severity: major
-  effort: 15min
-  tags: [avoid_api, generated]
-  generated: true
-  status: planned
-  message: This API should be replaced by the current alternative.
-  summary: Code calls an API that is unsafe, obsolete or superseded by a better alternative.
-  why: |
-    The API stays available for compatibility, so nothing fails at build time, but it carries behaviour
-    the platform now considers a defect — unchecked input, a weak guarantee, or a cost the replacement
-    avoids. Its presence also spreads: new code copies what it finds nearby.
-  fix: |
-    Replace the call with the current API, and keep the old one only behind a compatibility layer that is
-    documented and dated.
 
 - key: QG-PP-SML-0080
   name: Functions should be simplified
@@ -2113,24 +1982,6 @@
     Assert the behaviour the test exists for, re-enable it, and make sure it fails when the behaviour is
     broken before trusting it again.
 
-- key: QG-PP-SML-0090
-  name: Tests should assert something
-  languages: [php]
-  category: SML
-  severity: minor
-  effort: 15min
-  tags: [tests, generated]
-  generated: true
-  status: planned
-  message: This test cannot fail, so it verifies nothing.
-  summary: A test does not assert, is disabled, or cannot fail.
-  why: |
-    A test that cannot fail reports success forever while covering nothing, and the suite keeps its green
-    status. That is worse than having no test at all, because it removes the incentive to write one.
-  fix: |
-    Assert the behaviour the test exists for, re-enable it, and make sure it fails when the behaviour is
-    broken before trusting it again.
-
 - key: QG-PP-SML-0091
   name: Constants should not be used
   languages: [php]
@@ -2226,25 +2077,6 @@
     Simplify the pattern so no quantifier can match the same text in several ways, add a matching timeout
     for input that comes from outside, and cover the pattern with a test.
 
-- key: QG-PP-BUG-0027
-  name: Regular expressions should be safe and correct
-  languages: [php]
-  category: BUG
-  severity: major
-  effort: 15min
-  tags: [regex, generated]
-  generated: true
-  status: planned
-  message: This pattern is unsafe or incorrect as written.
-  summary: A regular expression is malformed, ambiguous, or able to backtrack catastrophically.
-  why: |
-    A pattern is only validated when it first runs, so a mistake surfaces on the path that uses it —
-    often an error path. Patterns with nested quantifiers can also take exponential time on crafted
-    input, which turns one request into a stalled CPU core.
-  fix: |
-    Simplify the pattern so no quantifier can match the same text in several ways, add a matching timeout
-    for input that comes from outside, and cover the pattern with a test.
-
 - key: QG-PP-SML-0093
   name: Character classes should be replaced by the recommended alternative
   languages: [php]
@@ -2263,24 +2095,6 @@
   fix: |
     Switch to the recommended construct; the behaviour is the same in the normal case and defined in the
     cases the old form got wrong.
-
-- key: QG-PP-BUG-0028
-  name: Tests should assert something
-  languages: [php]
-  category: BUG
-  severity: major
-  effort: 15min
-  tags: [tests, generated]
-  generated: true
-  status: planned
-  message: This test cannot fail, so it verifies nothing.
-  summary: A test does not assert, is disabled, or cannot fail.
-  why: |
-    A test that cannot fail reports success forever while covering nothing, and the suite keeps its green
-    status. That is worse than having no test at all, because it removes the incentive to write one.
-  fix: |
-    Assert the behaviour the test exists for, re-enable it, and make sure it fails when the behaviour is
-    broken before trusting it again.
 
 - key: QG-PP-SML-0094
   name: Unicode-aware versions of character classes should be replaced by the recommended alternative
@@ -2306,25 +2120,6 @@
   languages: [php]
   category: BUG
   severity: major
-  effort: 15min
-  tags: [regex, generated]
-  generated: true
-  status: planned
-  message: This pattern is unsafe or incorrect as written.
-  summary: A regular expression is malformed, ambiguous, or able to backtrack catastrophically.
-  why: |
-    A pattern is only validated when it first runs, so a mistake surfaces on the path that uses it —
-    often an error path. Patterns with nested quantifiers can also take exponential time on crafted
-    input, which turns one request into a stalled CPU core.
-  fix: |
-    Simplify the pattern so no quantifier can match the same text in several ways, add a matching timeout
-    for input that comes from outside, and cover the pattern with a test.
-
-- key: QG-PP-SML-0095
-  name: Regular expressions should be safe and correct
-  languages: [php]
-  category: SML
-  severity: minor
   effort: 15min
   tags: [regex, generated]
   generated: true
@@ -2470,25 +2265,6 @@
     Replace the call with the current API, and keep the old one only behind a compatibility layer that is
     documented and dated.
 
-- key: QG-PP-BUG-0034
-  name: Regular expressions should be safe and correct
-  languages: [php]
-  category: BUG
-  severity: major
-  effort: 15min
-  tags: [regex, generated]
-  generated: true
-  status: planned
-  message: This pattern is unsafe or incorrect as written.
-  summary: A regular expression is malformed, ambiguous, or able to backtrack catastrophically.
-  why: |
-    A pattern is only validated when it first runs, so a mistake surfaces on the path that uses it —
-    often an error path. Patterns with nested quantifiers can also take exponential time on crafted
-    input, which turns one request into a stalled CPU core.
-  fix: |
-    Simplify the pattern so no quantifier can match the same text in several ways, add a matching timeout
-    for input that comes from outside, and cover the pattern with a test.
-
 - key: QG-PP-BUG-0035
   name: Regular expressions should be safe and correct
   languages: [php]
@@ -2526,63 +2302,6 @@
   fix: |
     Implement the behaviour, or remove the construct. When doing nothing is deliberate, say so in a
     comment so the next reader does not treat it as a gap.
-
-- key: QG-PP-SML-0099
-  name: Regular expressions should be safe and correct
-  languages: [php]
-  category: SML
-  severity: minor
-  effort: 15min
-  tags: [regex, generated]
-  generated: true
-  status: planned
-  message: This pattern is unsafe or incorrect as written.
-  summary: A regular expression is malformed, ambiguous, or able to backtrack catastrophically.
-  why: |
-    A pattern is only validated when it first runs, so a mistake surfaces on the path that uses it —
-    often an error path. Patterns with nested quantifiers can also take exponential time on crafted
-    input, which turns one request into a stalled CPU core.
-  fix: |
-    Simplify the pattern so no quantifier can match the same text in several ways, add a matching timeout
-    for input that comes from outside, and cover the pattern with a test.
-
-- key: QG-PP-BUG-0036
-  name: Alternation in regular expressions should not be left empty
-  languages: [php]
-  category: BUG
-  severity: major
-  effort: 15min
-  tags: [empty, generated]
-  generated: true
-  status: planned
-  message: This construct is empty, so it does nothing.
-  summary: A construct is declared with no content.
-  why: |
-    An empty body reads as if the case is handled while nothing happens, which is exactly how ignored
-    errors and unimplemented branches survive review. It is also indistinguishable from an accidental
-    deletion.
-  fix: |
-    Implement the behaviour, or remove the construct. When doing nothing is deliberate, say so in a
-    comment so the next reader does not treat it as a gap.
-
-- key: QG-PP-SML-0100
-  name: Regular expressions should be safe and correct
-  languages: [php]
-  category: SML
-  severity: minor
-  effort: 15min
-  tags: [regex, generated]
-  generated: true
-  status: planned
-  message: This pattern is unsafe or incorrect as written.
-  summary: A regular expression is malformed, ambiguous, or able to backtrack catastrophically.
-  why: |
-    A pattern is only validated when it first runs, so a mistake surfaces on the path that uses it —
-    often an error path. Patterns with nested quantifiers can also take exponential time on crafted
-    input, which turns one request into a stalled CPU core.
-  fix: |
-    Simplify the pattern so no quantifier can match the same text in several ways, add a matching timeout
-    for input that comes from outside, and cover the pattern with a test.
 
 - key: QG-PP-BUG-0037
   name: Replacement strings should be safe and correct
@@ -2828,25 +2547,6 @@
     Replace the call with the current API, and keep the old one only behind a compatibility layer that is
     documented and dated.
 
-- key: QG-PP-SML-0107
-  name: Regular expressions should be safe and correct
-  languages: [php]
-  category: SML
-  severity: minor
-  effort: 15min
-  tags: [regex, generated]
-  generated: true
-  status: planned
-  message: This pattern is unsafe or incorrect as written.
-  summary: A regular expression is malformed, ambiguous, or able to backtrack catastrophically.
-  why: |
-    A pattern is only validated when it first runs, so a mistake surfaces on the path that uses it —
-    often an error path. Patterns with nested quantifiers can also take exponential time on crafted
-    input, which turns one request into a stalled CPU core.
-  fix: |
-    Simplify the pattern so no quantifier can match the same text in several ways, add a matching timeout
-    for input that comes from outside, and cover the pattern with a test.
-
 - key: QG-PP-SML-0108
   name: Unnecessary parentheses should not be used
   languages: [php]
@@ -2883,25 +2583,6 @@
   fix: |
     Make the intended behaviour explicit — fix the condition, the operator or the order of operations —
     and cover the case that used to fail with a test.
-
-- key: QG-PP-SML-0109
-  name: Increment (++) and decrement (--) operators should not be used
-  languages: [php]
-  category: SML
-  severity: minor
-  effort: 15min
-  tags: [avoid_api, generated]
-  generated: true
-  status: planned
-  message: This API should be replaced by the current alternative.
-  summary: Code calls an API that is unsafe, obsolete or superseded by a better alternative.
-  why: |
-    The API stays available for compatibility, so nothing fails at build time, but it carries behaviour
-    the platform now considers a defect — unchecked input, a weak guarantee, or a cost the replacement
-    avoids. Its presence also spreads: new code copies what it finds nearby.
-  fix: |
-    Replace the call with the current API, and keep the old one only behind a compatibility layer that is
-    documented and dated.
 
 - key: QG-PP-SML-0110
   name: Goto statement should not be used

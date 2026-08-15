@@ -56,25 +56,6 @@
     Move the value to configuration, read it at start-up, and fail with a clear message when it is
     missing so a misconfigured deployment stops before it does anything.
 
-- key: QG-RB-SML-0015
-  name: Octal values should not be used
-  languages: [rb]
-  category: SML
-  severity: minor
-  effort: 15min
-  tags: [avoid_api, generated]
-  generated: true
-  status: planned
-  message: This API should be replaced by the current alternative.
-  summary: Code calls an API that is unsafe, obsolete or superseded by a better alternative.
-  why: |
-    The API stays available for compatibility, so nothing fails at build time, but it carries behaviour
-    the platform now considers a defect — unchecked input, a weak guarantee, or a cost the replacement
-    avoids. Its presence also spreads: new code copies what it finds nearby.
-  fix: |
-    Replace the call with the current API, and keep the old one only behind a compatibility layer that is
-    documented and dated.
-
 - key: QG-RB-SML-0016
   name: Copyright and license headers should be resolved rather than left in the code
   languages: [rb]
@@ -165,22 +146,3 @@
   fix: |
     Keep one definition and reference it from the other places, or extract the shared part into a named
     function or constant.
-
-- key: QG-RB-SML-0021
-  name: Multi-line comments should not be left empty
-  languages: [rb]
-  category: SML
-  severity: minor
-  effort: 15min
-  tags: [empty, generated]
-  generated: true
-  status: planned
-  message: This construct is empty, so it does nothing.
-  summary: A construct is declared with no content.
-  why: |
-    An empty body reads as if the case is handled while nothing happens, which is exactly how ignored
-    errors and unimplemented branches survive review. It is also indistinguishable from an accidental
-    deletion.
-  fix: |
-    Implement the behaviour, or remove the construct. When doing nothing is deliberate, say so in a
-    comment so the next reader does not treat it as a gap.

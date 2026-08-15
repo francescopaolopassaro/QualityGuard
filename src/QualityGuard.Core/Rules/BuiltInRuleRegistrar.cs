@@ -32,6 +32,10 @@ public static class BuiltInRuleRegistrar
         ..Languages.RustRuleSet.All,
         ..StructuralRuleSet.All,
         ..CorrectnessRuleSet.All,
+        ..RegexRuleSet.All,
+        ..TestQualityRuleSet.All,
+        ..ApiUsageRuleSet.All,
+        ..ExceptionRuleSet.All,
         ..Catalog.RuleCatalog.Rules
     ];
 }

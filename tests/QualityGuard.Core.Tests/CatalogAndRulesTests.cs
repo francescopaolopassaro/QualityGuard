@@ -101,7 +101,7 @@ public class CatalogAndRulesTests
             }
             """, "QG-CS-SEC-0018");
 
-        Assert.True(Analyze.LinesOf(analysis, "QG-CS-SEC-0018").Distinct().Count()
-                    == Analyze.LinesOf(analysis, "QG-CS-SEC-0018").Count);
+        var reported = Analyze.LinesOf(analysis, "QG-CS-SEC-0018");
+        Assert.Equal(reported.Distinct().Count(), reported.Count);
     }
 }

@@ -619,24 +619,6 @@
     Make the intended behaviour explicit — fix the condition, the operator or the order of operations —
     and cover the case that used to fail with a test.
 
-- key: QG-PY-SML-0051
-  name: Tests should assert something
-  languages: [py]
-  category: SML
-  severity: minor
-  effort: 15min
-  tags: [tests, generated]
-  generated: true
-  status: planned
-  message: This test cannot fail, so it verifies nothing.
-  summary: A test does not assert, is disabled, or cannot fail.
-  why: |
-    A test that cannot fail reports success forever while covering nothing, and the suite keeps its green
-    status. That is worse than having no test at all, because it removes the incentive to write one.
-  fix: |
-    Assert the behaviour the test exists for, re-enable it, and make sure it fails when the behaviour is
-    broken before trusting it again.
-
 - key: QG-PY-BUG-0031
   name: Recursion should match the behaviour the code describes
   languages: [py]
@@ -991,25 +973,6 @@
   fix: |
     Remove what is not used, name what is unclear, and keep one piece of behaviour in one place so the
     next change touches a single spot.
-
-- key: QG-PY-BUG-0040
-  name: Unsafe APIs should not be used
-  languages: [py]
-  category: BUG
-  severity: major
-  effort: 15min
-  tags: [avoid_api, generated]
-  generated: true
-  status: planned
-  message: This API should be replaced by the current alternative.
-  summary: Code calls an API that is unsafe, obsolete or superseded by a better alternative.
-  why: |
-    The API stays available for compatibility, so nothing fails at build time, but it carries behaviour
-    the platform now considers a defect — unchecked input, a weak guarantee, or a cost the replacement
-    avoids. Its presence also spreads: new code copies what it finds nearby.
-  fix: |
-    Replace the call with the current API, and keep the old one only behind a compatibility layer that is
-    documented and dated.
 
 - key: QG-PY-SML-0064
   name: Functions should be simplified
@@ -1798,25 +1761,6 @@
     Simplify the pattern so no quantifier can match the same text in several ways, add a matching timeout
     for input that comes from outside, and cover the pattern with a test.
 
-- key: QG-PY-BUG-0060
-  name: Regular expressions should be safe and correct
-  languages: [py]
-  category: BUG
-  severity: major
-  effort: 15min
-  tags: [regex, generated]
-  generated: true
-  status: planned
-  message: This pattern is unsafe or incorrect as written.
-  summary: A regular expression is malformed, ambiguous, or able to backtrack catastrophically.
-  why: |
-    A pattern is only validated when it first runs, so a mistake surfaces on the path that uses it —
-    often an error path. Patterns with nested quantifiers can also take exponential time on crafted
-    input, which turns one request into a stalled CPU core.
-  fix: |
-    Simplify the pattern so no quantifier can match the same text in several ways, add a matching timeout
-    for input that comes from outside, and cover the pattern with a test.
-
 - key: QG-PY-SML-0090
   name: Character classes should be replaced by the recommended alternative
   languages: [py]
@@ -1855,24 +1799,6 @@
     Switch to the recommended construct; the behaviour is the same in the normal case and defined in the
     cases the old form got wrong.
 
-- key: QG-PY-BUG-0061
-  name: Tests should assert something
-  languages: [py]
-  category: BUG
-  severity: major
-  effort: 15min
-  tags: [tests, generated]
-  generated: true
-  status: planned
-  message: This test cannot fail, so it verifies nothing.
-  summary: A test does not assert, is disabled, or cannot fail.
-  why: |
-    A test that cannot fail reports success forever while covering nothing, and the suite keeps its green
-    status. That is worse than having no test at all, because it removes the incentive to write one.
-  fix: |
-    Assert the behaviour the test exists for, re-enable it, and make sure it fails when the behaviour is
-    broken before trusting it again.
-
 - key: QG-PY-SML-0092
   name: Type checks shouldnt be confusing should be simplified
   languages: [py]
@@ -1896,25 +1822,6 @@
   languages: [py]
   category: BUG
   severity: major
-  effort: 15min
-  tags: [regex, generated]
-  generated: true
-  status: planned
-  message: This pattern is unsafe or incorrect as written.
-  summary: A regular expression is malformed, ambiguous, or able to backtrack catastrophically.
-  why: |
-    A pattern is only validated when it first runs, so a mistake surfaces on the path that uses it —
-    often an error path. Patterns with nested quantifiers can also take exponential time on crafted
-    input, which turns one request into a stalled CPU core.
-  fix: |
-    Simplify the pattern so no quantifier can match the same text in several ways, add a matching timeout
-    for input that comes from outside, and cover the pattern with a test.
-
-- key: QG-PY-SML-0093
-  name: Regular expressions should be safe and correct
-  languages: [py]
-  category: SML
-  severity: minor
   effort: 15min
   tags: [regex, generated]
   generated: true
@@ -2169,25 +2076,6 @@
     Replace the call with the current API, and keep the old one only behind a compatibility layer that is
     documented and dated.
 
-- key: QG-PY-BUG-0068
-  name: Regular expressions should be safe and correct
-  languages: [py]
-  category: BUG
-  severity: major
-  effort: 15min
-  tags: [regex, generated]
-  generated: true
-  status: planned
-  message: This pattern is unsafe or incorrect as written.
-  summary: A regular expression is malformed, ambiguous, or able to backtrack catastrophically.
-  why: |
-    A pattern is only validated when it first runs, so a mistake surfaces on the path that uses it —
-    often an error path. Patterns with nested quantifiers can also take exponential time on crafted
-    input, which turns one request into a stalled CPU core.
-  fix: |
-    Simplify the pattern so no quantifier can match the same text in several ways, add a matching timeout
-    for input that comes from outside, and cover the pattern with a test.
-
 - key: QG-PY-BUG-0069
   name: Regular expressions should be safe and correct
   languages: [py]
@@ -2225,25 +2113,6 @@
   fix: |
     Implement the behaviour, or remove the construct. When doing nothing is deliberate, say so in a
     comment so the next reader does not treat it as a gap.
-
-- key: QG-PY-SML-0103
-  name: Regular expressions should be safe and correct
-  languages: [py]
-  category: SML
-  severity: minor
-  effort: 15min
-  tags: [regex, generated]
-  generated: true
-  status: planned
-  message: This pattern is unsafe or incorrect as written.
-  summary: A regular expression is malformed, ambiguous, or able to backtrack catastrophically.
-  why: |
-    A pattern is only validated when it first runs, so a mistake surfaces on the path that uses it —
-    often an error path. Patterns with nested quantifiers can also take exponential time on crafted
-    input, which turns one request into a stalled CPU core.
-  fix: |
-    Simplify the pattern so no quantifier can match the same text in several ways, add a matching timeout
-    for input that comes from outside, and cover the pattern with a test.
 
 - key: QG-PY-SML-0104
   name: Reusable resources should be simplified
@@ -2547,44 +2416,6 @@
     Grant the narrowest right that works, to the specific identity that needs it, and rely on inherited
     permissions from a properly secured parent instead of widening the resource itself.
 
-- key: QG-PY-BUG-0070
-  name: Alternation in regular expressions should not be left empty
-  languages: [py]
-  category: BUG
-  severity: major
-  effort: 15min
-  tags: [empty, generated]
-  generated: true
-  status: planned
-  message: This construct is empty, so it does nothing.
-  summary: A construct is declared with no content.
-  why: |
-    An empty body reads as if the case is handled while nothing happens, which is exactly how ignored
-    errors and unimplemented branches survive review. It is also indistinguishable from an accidental
-    deletion.
-  fix: |
-    Implement the behaviour, or remove the construct. When doing nothing is deliberate, say so in a
-    comment so the next reader does not treat it as a gap.
-
-- key: QG-PY-SML-0107
-  name: Regular expressions should be safe and correct
-  languages: [py]
-  category: SML
-  severity: minor
-  effort: 15min
-  tags: [regex, generated]
-  generated: true
-  status: planned
-  message: This pattern is unsafe or incorrect as written.
-  summary: A regular expression is malformed, ambiguous, or able to backtrack catastrophically.
-  why: |
-    A pattern is only validated when it first runs, so a mistake surfaces on the path that uses it —
-    often an error path. Patterns with nested quantifiers can also take exponential time on crafted
-    input, which turns one request into a stalled CPU core.
-  fix: |
-    Simplify the pattern so no quantifier can match the same text in several ways, add a matching timeout
-    for input that comes from outside, and cover the pattern with a test.
-
 - key: QG-PY-SEC-0070
   name: Amazon SNS topics should use current cryptographic parameters
   languages: [py]
@@ -2774,25 +2605,6 @@
   fix: |
     Replace the call with the current API, and keep the old one only behind a compatibility layer that is
     documented and dated.
-
-- key: QG-PY-SML-0111
-  name: Regular expressions should be safe and correct
-  languages: [py]
-  category: SML
-  severity: minor
-  effort: 15min
-  tags: [regex, generated]
-  generated: true
-  status: planned
-  message: This pattern is unsafe or incorrect as written.
-  summary: A regular expression is malformed, ambiguous, or able to backtrack catastrophically.
-  why: |
-    A pattern is only validated when it first runs, so a mistake surfaces on the path that uses it —
-    often an error path. Patterns with nested quantifiers can also take exponential time on crafted
-    input, which turns one request into a stalled CPU core.
-  fix: |
-    Simplify the pattern so no quantifier can match the same text in several ways, add a matching timeout
-    for input that comes from outside, and cover the pattern with a test.
 
 - key: QG-PY-SEC-0076
   name: Security groups should not weaken the security of the application
@@ -6171,24 +5983,6 @@
   detect:
     - invocation: [tmp_path]
     - invocation: [tmp_path_factory]
-
-- key: QG-PY-SML-0226
-  name: Tests should assert something
-  languages: [py]
-  category: SML
-  severity: minor
-  effort: 15min
-  tags: [tests, generated]
-  generated: true
-  status: planned
-  message: This test cannot fail, so it verifies nothing.
-  summary: A test does not assert, is disabled, or cannot fail.
-  why: |
-    A test that cannot fail reports success forever while covering nothing, and the suite keeps its green
-    status. That is worse than having no test at all, because it removes the incentive to write one.
-  fix: |
-    Assert the behaviour the test exists for, re-enable it, and make sure it fails when the behaviour is
-    broken before trusting it again.
 
 - key: QG-PY-SML-0227
   name: Pytest marks and usefixtures should be simplified

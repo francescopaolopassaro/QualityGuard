@@ -43,6 +43,12 @@ public static class CoreMetrics
     public const string Functions = "functions";
     public const string CognitiveComplexity = "cognitive_complexity";
 
+    /// <summary>Remediation effort of every code smell, in minutes.</summary>
+    public const string TechnicalDebt = "sqale_index";
+
+    /// <summary>Debt as a percentage of the estimated cost of writing the code.</summary>
+    public const string DebtRatio = "sqale_debt_ratio";
+
     public static readonly IReadOnlyList<Metric> All =
     [
         new Metric(NewCoverage, "Coverage on New Code", "Coverage of new/changed code"),
@@ -58,6 +64,8 @@ public static class CoreMetrics
         new Metric(DuplicatedLinesDensity, "Duplicated Lines Density", "Duplicated lines density"),
         new Metric(Files, "Files", "Number of analyzed files"),
         new Metric(Functions, "Functions", "Number of functions"),
+        new Metric(TechnicalDebt, "Technical Debt", "Remediation effort of the code smells, in minutes"),
+        new Metric(DebtRatio, "Technical Debt Ratio", "Debt as a share of the estimated development cost"),
         new Metric(CognitiveComplexity, "Cognitive Complexity", "Cognitive complexity")
     ];
 }

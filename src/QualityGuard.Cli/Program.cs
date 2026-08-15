@@ -6,6 +6,9 @@ using QualityGuard.Core.Rules;
 using QualityGuard.Core.Tokenization;
 using QualityGuard.Sources.Sarif;
 
+// the report is English everywhere, so numbers must not pick up the machine's locale
+System.Globalization.CultureInfo.DefaultThreadCurrentCulture = System.Globalization.CultureInfo.InvariantCulture;
+
 if (args.Length == 0)
 {
     PrintUsage();
@@ -88,6 +91,8 @@ try
         }
     }
 
+    PrintQualitySummary(analyses, metrics);
+
     if (byFolder)
         PrintFolderSummary(analyses);
 
@@ -145,36 +150,104 @@ static List<FileAnalysis> AnalyzeAndScan(ScanOptions options, bool verbose)
 static Dictionary<string, double> AggregateMetrics(List<FileAnalysis> all)
 {
     var metrics = new Dictionary<string, double>();
+    var duplicatedLines = 0.0;
     foreach (var a in all)
     {
         var dupLines = a.Duplicates.Sum(d => d.Lines);
+        duplicatedLines += dupLines;
         a.Metrics[CoreMetrics.DuplicatedLinesDensity] =
             a.Metrics.GetValueOrDefault(CoreMetrics.Ncloc) > 0
                 ? dupLines / Math.Max(1, a.Metrics[CoreMetrics.Ncloc]) * 100.0
                 : 0;
         foreach (var (k, v) in a.Metrics)
+        {
+            // a density is a ratio: summing one per file would report hundreds of per cent
+            if (k == CoreMetrics.DuplicatedLinesDensity)
+                continue;
             metrics[k] = metrics.GetValueOrDefault(k) + v;
+        }
     }
 
-    metrics[CoreMetrics.Bugs] = all.Sum(a => a.IssuesOf(IssueKind.Bug).Count());
-    metrics[CoreMetrics.Vulnerabilities] = all.Sum(a => a.IssuesOf(IssueKind.Vulnerability).Count());
-    metrics[CoreMetrics.CodeSmells] = all.Sum(a => a.IssuesOf(IssueKind.CodeSmell).Count());
+    var totalNcloc = metrics.GetValueOrDefault(CoreMetrics.Ncloc);
+    metrics[CoreMetrics.DuplicatedLinesDensity] = totalNcloc > 0 ? duplicatedLines / totalNcloc * 100.0 : 0;
+    metrics[CoreMetrics.Files] = all.Count;
+
+    // counts, debt and ratings come from the findings themselves, so every number in the report can
+    // be traced back to the lines that produced it
+    var issues = all.SelectMany(a => a.Issues).ToList();
+    foreach (var (key, value) in QualityRatings.ComputeMetrics(issues, metrics.GetValueOrDefault(CoreMetrics.Ncloc)))
+        metrics[key] = value;
+    metrics[CoreMetrics.NewSecurityHotspotsReviewed] =
+        issues.Any(i => i.Kind == IssueKind.SecurityHotspot) ? 0.0 : 100.0;
     metrics[CoreMetrics.NewLines] = metrics.GetValueOrDefault(CoreMetrics.Ncloc);
     return metrics;
 }
 
 static void ApplyNewCodeMetrics(Dictionary<string, double> metrics, List<FileAnalysis> all)
 {
-    var bugs = all.Sum(a => a.IssuesOf(IssueKind.Bug).Count());
-    var vulns = all.Sum(a => a.IssuesOf(IssueKind.Vulnerability).Count());
-    var smells = all.Sum(a => a.IssuesOf(IssueKind.CodeSmell).Count());
-    var hotspots = all.Sum(a => a.IssuesOf(IssueKind.SecurityHotspot).Count());
-    foreach (var (k, v) in QualityRatings.ComputeNewCodeMetrics(bugs, vulns, smells, hotspots,
+    var issues = all.SelectMany(a => a.Issues).ToList();
+    foreach (var (k, v) in QualityRatings.ComputeNewCodeMetrics(issues,
                  metrics.GetValueOrDefault(CoreMetrics.NewLines)))
     {
         metrics[k] = v;
     }
     metrics[CoreMetrics.NewDuplicatedLinesDensity] = metrics.GetValueOrDefault(CoreMetrics.DuplicatedLinesDensity);
+}
+
+/// <summary>
+/// The numbers of the scan: how much code was read, what was found, how it breaks down by severity,
+/// what it costs to fix and which letter each rating lands on. Printed for every run, because a
+/// verdict without the figures behind it is impossible to argue with.
+/// </summary>
+static void PrintQualitySummary(List<FileAnalysis> analyses, Dictionary<string, double> metrics)
+{
+    var issues = analyses.SelectMany(a => a.Issues).ToList();
+    var debt = (int)metrics.GetValueOrDefault(CoreMetrics.TechnicalDebt);
+
+    Console.WriteLine();
+    Console.WriteLine($"SUMMARY  {analyses.Count} files, {metrics.GetValueOrDefault(CoreMetrics.Ncloc):0} ncloc, "
+                      + $"{metrics.GetValueOrDefault(CoreMetrics.Complexity):0} complexity, "
+                      + $"{metrics.GetValueOrDefault(CoreMetrics.DuplicatedLinesDensity):0.0}% duplicated");
+
+    Console.WriteLine($"  Bugs             {Count(IssueKind.Bug),5}   reliability {Letter(CoreMetrics.ReliabilityRating)}"
+                      + $"   {Breakdown(IssueKind.Bug)}");
+    Console.WriteLine($"  Vulnerabilities  {Count(IssueKind.Vulnerability),5}   security    {Letter(CoreMetrics.SecurityRating)}"
+                      + $"   {Breakdown(IssueKind.Vulnerability)}");
+    Console.WriteLine($"  Security hotspots{Count(IssueKind.SecurityHotspot),5}   reviewed    "
+                      + $"{metrics.GetValueOrDefault(CoreMetrics.NewSecurityHotspotsReviewed):0}%");
+    Console.WriteLine($"  Code smells      {Count(IssueKind.CodeSmell),5}   maintainability {Letter(CoreMetrics.MaintainabilityRating)}"
+                      + $"   {Breakdown(IssueKind.CodeSmell)}");
+    Console.WriteLine($"  Technical debt   {FormatDebt(debt),5}   ratio {metrics.GetValueOrDefault(CoreMetrics.DebtRatio):0.00}%");
+
+    var worst = issues.GroupBy(i => i.RuleKey)
+        .OrderByDescending(g => g.Count())
+        .Take(5)
+        .ToList();
+    if (worst.Count > 0)
+    {
+        Console.WriteLine("  Most frequent rules:");
+        foreach (var group in worst)
+            Console.WriteLine($"    {group.Key} {group.Count(),5}  {group.First().Message[..Math.Min(70, group.First().Message.Length)]}");
+    }
+
+    int Count(IssueKind kind) => issues.Count(i => i.Kind == kind);
+
+    string Letter(string metric) => QualityRatings.Letter(metrics.GetValueOrDefault(metric, 1));
+
+    string Breakdown(IssueKind kind)
+    {
+        var parts = new List<string>();
+        foreach (var severity in new[] { Severity.Blocker, Severity.Critical, Severity.Major, Severity.Minor, Severity.Info })
+        {
+            var count = issues.Count(i => i.Kind == kind && i.Severity == severity);
+            if (count > 0)
+                parts.Add($"{severity.ToString().ToLowerInvariant()} {count}");
+        }
+        return parts.Count == 0 ? "-" : string.Join(", ", parts);
+    }
+
+    static string FormatDebt(int minutes)
+        => minutes >= 480 ? $"{minutes / 480.0:0.0}d" : minutes >= 60 ? $"{minutes / 60.0:0.0}h" : $"{minutes}m";
 }
 
 /// <summary>

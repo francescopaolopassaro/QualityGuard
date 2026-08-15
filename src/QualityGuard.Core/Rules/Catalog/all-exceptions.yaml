@@ -1,0 +1,93 @@
+# Descriptions for the failure-handling rules implemented in Rules/ExceptionRules.cs.
+
+- key: QG-ALL-SML-0048
+  name: A catch clause should do more than rethrow
+  languages: []
+  category: SML
+  severity: major
+  effort: 10min
+  tags: [exceptions]
+  summary: The handler catches an exception and throws it straight back.
+  why: |
+    The try/catch adds nothing except the risk of resetting the stack trace, and it makes the reader
+    look for the handling that is not there. Worse, it hides that the failure is in fact unhandled: the
+    code looks defensive and is not.
+  fix: |
+    Remove the try/catch and let the exception travel, or add what the caller cannot supply — context,
+    cleanup, or an exception that names the operation that failed and keeps the original as its cause.
+
+- key: QG-ALL-SML-0049
+  name: A type named like an exception should be one
+  languages: []
+  category: SML
+  severity: major
+  effort: 15min
+  tags: [exceptions, naming]
+  summary: A class whose name ends in Exception does not derive from an exception type.
+  why: |
+    Callers read the name and write a catch for it; the compiler then refuses, or worse, the type is
+    used as a plain value and the error it represents travels through the code unnoticed.
+  fix: |
+    Derive the type from the exception base of the platform, or rename it to something that does not
+    promise it can be thrown and caught.
+
+- key: QG-ALL-BUG-0037
+  name: A finally block should not throw
+  languages: []
+  category: BUG
+  severity: critical
+  effort: 20min
+  tags: [exceptions, suspicious]
+  summary: An exception is thrown from a finally block.
+  why: |
+    The finally block runs while another exception is already travelling. Throwing there replaces it,
+    so the failure that started everything is lost and the report points at the cleanup instead of the
+    cause. Debugging then starts from the wrong end.
+  fix: |
+    Handle the cleanup error where it happens — log it, or attach it to the original exception as a
+    suppressed one — and let the first exception continue on its way.
+
+- key: QG-ALL-SML-0050
+  name: A local should not be declared only to be returned on the next line
+  languages: []
+  category: SML
+  severity: minor
+  effort: 5min
+  tags: [readability]
+  summary: A variable is assigned and immediately handed back.
+  why: |
+    The extra name adds a step for the reader and nothing for the program. It is normally what is left
+    of a debugging session, when a value was extracted to be inspected and never put back.
+  fix: |
+    Return the expression directly. Keep the variable only when its name explains something the
+    expression does not.
+
+- key: QG-ALL-BUG-0038
+  name: A failure the program cannot recover from should not be caught
+  languages: []
+  category: BUG
+  severity: critical
+  effort: 15min
+  tags: [exceptions, suspicious]
+  summary: The handler catches a root type or a failure that signals a broken process.
+  why: |
+    Out of memory, a stack overflow or a null dereference are not conditions a handler can fix. Catching
+    them lets the process continue with a state nobody can reason about, and it swallows the very
+    information needed to understand what happened.
+  fix: |
+    Catch the exceptions the operation can really produce, and let everything else travel to the top,
+    where the process can log and stop.
+
+- key: QG-ALL-SML-0051
+  name: A comment should say something
+  languages: []
+  category: SML
+  severity: info
+  effort: 2min
+  tags: [readability]
+  summary: A comment or documentation block contains no text.
+  why: |
+    An empty comment is a promise of an explanation that never arrives. In a documentation block it is
+    worse: the tooling publishes it, and the reader concludes the member is undocumented on purpose.
+  fix: |
+    Write the sentence that was meant to be there, or delete the comment.

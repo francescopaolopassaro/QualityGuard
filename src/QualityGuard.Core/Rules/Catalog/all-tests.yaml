@@ -1,0 +1,77 @@
+# Descriptions for the test-quality rules implemented in Rules/TestQualityRules.cs.
+
+- key: QG-ALL-BUG-0031
+  name: An assertion should not compare a value with itself
+  languages: []
+  category: BUG
+  severity: critical
+  effort: 10min
+  tags: [tests, suspicious]
+  summary: Both sides of the assertion are the same expression.
+  why: |
+    The assertion holds whatever the code under test does, so the test reports green even when the
+    behaviour it covers is completely broken. It is the worst kind of failure to notice, because the
+    suite says the case is covered.
+  fix: |
+    Put the value produced by the code on one side and the value you expect on the other, then check
+    that the test fails when the behaviour is changed on purpose.
+
+- key: QG-ALL-BUG-0032
+  name: The expected value should come first in an assertion
+  languages: []
+  category: BUG
+  severity: major
+  effort: 5min
+  tags: [tests, readability]
+  summary: The constant sits in the argument the framework reads as the actual value.
+  why: |
+    The assertion still passes and fails at the right times, but the failure message names the two
+    values the wrong way round: it reports the expectation as what the code produced. Whoever reads
+    the failure starts by looking for a defect in the wrong place.
+  fix: |
+    Swap the arguments so the expected value comes first, the way the framework documents it.
+
+- key: QG-ALL-SML-0042
+  name: An assertion should check one thing
+  languages: []
+  category: SML
+  severity: minor
+  effort: 10min
+  tags: [tests, readability]
+  summary: A boolean assertion is given two conditions joined by a logical and.
+  why: |
+    When the assertion fails, the report says only that the whole expression was false. Finding out
+    which half broke means running the test again by hand, which is exactly the work the test was
+    supposed to save.
+  fix: |
+    Write one assertion per condition, so the failure points at the part that broke.
+
+- key: QG-ALL-SML-0043
+  name: A comparison inside a boolean assertion should use the dedicated assertion
+  languages: []
+  category: SML
+  severity: minor
+  effort: 5min
+  tags: [tests, readability]
+  summary: An equality or null comparison is wrapped in an assert-true style call.
+  why: |
+    The framework only sees a boolean, so the failure message is "expected true, got false" and both
+    values are lost. The dedicated assertion prints what was expected and what was found, which is
+    usually enough to understand the failure without opening the test.
+  fix: |
+    Use the equality or the null assertion of the framework and pass the two values to it.
+
+- key: QG-ALL-SML-0044
+  name: A test class should contain at least one test
+  languages: []
+  category: SML
+  severity: major
+  effort: 20min
+  tags: [tests]
+  summary: A class named as a test declares methods, but none of them is a test.
+  why: |
+    The suite reports green while nothing in this file is exercised. The name promises coverage that
+    does not exist, so the gap stays invisible in every review and every coverage discussion.
+  fix: |
+    Add the missing test, or rename the class to say what it really is — a fixture, a helper or a
+    builder — so nobody counts it as coverage.

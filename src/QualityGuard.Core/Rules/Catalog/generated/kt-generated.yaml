@@ -357,25 +357,6 @@
     Validate the incoming value against an allowed set, pass it as data rather than as code or command,
     and replace weakened mechanisms with the current recommended one.
 
-- key: QG-KT-SML-0036
-  name: Multi-line comments should not be left empty
-  languages: [kt]
-  category: SML
-  severity: minor
-  effort: 15min
-  tags: [empty, generated]
-  generated: true
-  status: planned
-  message: This construct is empty, so it does nothing.
-  summary: A construct is declared with no content.
-  why: |
-    An empty body reads as if the case is handled while nothing happens, which is exactly how ignored
-    errors and unimplemented branches survive review. It is also indistinguishable from an accidental
-    deletion.
-  fix: |
-    Implement the behaviour, or remove the construct. When doing nothing is deliberate, say so in a
-    comment so the next reader does not treat it as a gap.
-
 - key: QG-KT-SML-0037
   name: Native features should be replaced by the recommended alternative
   languages: [kt]
@@ -590,25 +571,6 @@
   languages: [kt]
   category: BUG
   severity: major
-  effort: 15min
-  tags: [regex, generated]
-  generated: true
-  status: planned
-  message: This pattern is unsafe or incorrect as written.
-  summary: A regular expression is malformed, ambiguous, or able to backtrack catastrophically.
-  why: |
-    A pattern is only validated when it first runs, so a mistake surfaces on the path that uses it —
-    often an error path. Patterns with nested quantifiers can also take exponential time on crafted
-    input, which turns one request into a stalled CPU core.
-  fix: |
-    Simplify the pattern so no quantifier can match the same text in several ways, add a matching timeout
-    for input that comes from outside, and cover the pattern with a test.
-
-- key: QG-KT-SML-0043
-  name: Regular expressions should be safe and correct
-  languages: [kt]
-  category: SML
-  severity: minor
   effort: 15min
   tags: [regex, generated]
   generated: true

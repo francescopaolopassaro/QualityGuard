@@ -1,0 +1,144 @@
+# Descriptions for the regular-expression rules implemented in Rules/RegexRules.cs. The pattern is
+# parsed by the analyzer; this file supplies the reasoning and the fix shown in the report.
+
+- key: QG-ALL-BUG-0025
+  name: A character class should not list the same character twice
+  languages: []
+  category: BUG
+  severity: major
+  effort: 5min
+  tags: [regex, suspicious]
+  summary: The same character appears more than once inside one character class.
+  why: |
+    A class is a set, so the repetition changes nothing about what matches. It survives review because
+    it looks deliberate, and it usually means one of the two entries was meant to be a different
+    character — the pattern then silently fails to match the input it was written for.
+  fix: |
+    Decide which character the second entry should be and write it, or remove it when the class is
+    already complete.
+
+- key: QG-ALL-SML-0039
+  name: A character class holding one character should be that character
+  languages: []
+  category: SML
+  severity: minor
+  effort: 5min
+  tags: [regex, readability]
+  summary: A character class contains a single character.
+  why: |
+    The brackets suggest a choice where there is none, so every reader stops to check whether
+    something was removed from the class. It also hides a real mistake: a class that lost its other
+    entries in an edit looks exactly like this one.
+  fix: |
+    Write the character directly, escaping it when the flavour requires it.
+
+- key: QG-ALL-SML-0040
+  name: Alternations of single characters should be a character class
+  languages: []
+  category: SML
+  severity: minor
+  effort: 5min
+  tags: [regex, performance]
+  summary: An alternation only offers single characters as branches.
+  why: |
+    The engine treats an alternation as a decision point and remembers it for backtracking, while a
+    character class is a single test. The pattern is both slower and harder to read than the class
+    that says the same thing.
+  fix: |
+    Replace the alternation with a character class listing the same characters.
+
+- key: QG-ALL-SML-0041
+  name: Repeated spaces in a pattern should be written as a count
+  languages: []
+  category: SML
+  severity: minor
+  effort: 5min
+  tags: [regex, readability]
+  summary: The pattern contains several consecutive spaces.
+  why: |
+    Nobody counts spaces correctly while reading, and editors and merge tools alter them without
+    anyone noticing. A pattern whose meaning depends on how many spaces survived a copy is a pattern
+    that will break on a change unrelated to it.
+  fix: |
+    State the number explicitly with a quantifier, as in ' {3}', so the intent is visible and stable.
+
+- key: QG-ALL-BUG-0026
+  name: An alternation should not contain an empty branch
+  languages: []
+  category: BUG
+  severity: major
+  effort: 10min
+  tags: [regex, suspicious]
+  summary: One branch of an alternation matches the empty string.
+  why: |
+    An empty branch always succeeds, so the group matches nothing at all and the other branches never
+    get to decide anything. Every input passes the part of the pattern that was supposed to constrain
+    it, which turns a validation into a formality.
+  fix: |
+    Remove the stray separator, or write what the empty branch should match. When the part really is
+    optional, mark it with '?' so the intent is explicit.
+
+- key: QG-ALL-BUG-0027
+  name: An alternation should not repeat the same branch
+  languages: []
+  category: BUG
+  severity: major
+  effort: 10min
+  tags: [regex, suspicious]
+  summary: The same alternative appears twice in one alternation.
+  why: |
+    The second occurrence can never match: the first one already accepted the input. It is dead
+    weight at best, and normally the sign of a branch that was copied and never adapted, so the case
+    it was meant to cover is missing.
+  fix: |
+    Remove the duplicate, or correct it to the alternative that is actually missing.
+
+- key: QG-ALL-BUG-0028
+  name: A quantifier should not be applied to an already repeating group
+  languages: []
+  category: BUG
+  severity: critical
+  effort: 20min
+  cwe: [1333]
+  tags: [regex, performance, denial-of-service]
+  summary: A repeating group is itself repeated, so the same text can be split in many ways.
+  why: |
+    On input that almost matches, the engine tries every way of dividing the text between the two
+    levels of repetition, and the number of ways grows exponentially with the length of the input. A
+    few dozen characters are enough to occupy a thread for minutes, which is a denial of service that
+    an attacker can trigger with one request.
+  fix: |
+    Keep a single level of repetition — usually by making the inner element non-repeating — or use a
+    possessive quantifier or an atomic group where the flavour supports it, so the engine cannot
+    backtrack into the group.
+
+- key: QG-ALL-BUG-0029
+  name: A back reference should point at a group that exists
+  languages: []
+  category: BUG
+  severity: critical
+  effort: 10min
+  tags: [regex, suspicious]
+  summary: The pattern refers to a capturing group it does not declare.
+  why: |
+    Depending on the engine the reference either never matches or is reinterpreted as an octal escape,
+    so the pattern quietly stops doing what it says. It is the usual consequence of adding or removing
+    a group without renumbering the references.
+  fix: |
+    Point the reference at the right group, or switch to named groups so a renumbering cannot break
+    the pattern again.
+
+- key: QG-ALL-BUG-0030
+  name: A pattern should not contain a raw control character
+  languages: []
+  category: BUG
+  severity: major
+  effort: 10min
+  tags: [regex, readability]
+  summary: A control character is written literally inside the pattern.
+  why: |
+    The character is invisible in review, disappears through copy and paste, and is rewritten by some
+    editors. The pattern then behaves differently from the one everybody read, with nothing in the
+    diff to explain it.
+  fix: |
+    Write the escape sequence — \t, \n, \r, \x1b — so the character is visible and survives editing.

@@ -2418,8 +2418,16 @@ public sealed class CSharpParser
             // named argument
             if (IsIdentifier && PeekText() == ":" && PeekText(2) != ":")
                 _index += 2;
-            if (Is("out") || (IsName && PeekText() == ")" && Is("_")))
+
+            // a discard stands where an argument would be but is not an expression: consuming it
+            // here keeps the closing parenthesis in reach, which is what `out _` used to lose
+            if (Is("_") && PeekText() is ")" or ",")
+            {
                 _index++;
+                if (!Accept(","))
+                    break;
+                continue;
+            }
 
             if (ParseAssignment() is { } argument)
                 list.Add(argument);
