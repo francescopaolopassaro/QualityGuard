@@ -1,0 +1,105 @@
+# Descriptions for the infrastructure rules implemented in Rules/Languages/InfrastructureRules.cs.
+# The detection reads the file as a tree of blocks (Analysis/ConfigTree.cs), so these rules see the
+# relationship between a setting and the resource that owns it, not just the keyword.
+
+- key: QG-TF-SEC-0063
+  name: Stored data should be encrypted at rest
+  languages: [tf]
+  category: SEC
+  severity: critical
+  effort: 20min
+  cwe: [311]
+  tags: [infrastructure, encryption]
+  summary: A storage resource is declared without encryption at rest.
+  why: |
+    The data survives the machine it was written on: snapshots are copied, volumes are detached,
+    backups travel, disks are decommissioned. Encryption at rest is the only control that still applies
+    once the storage leaves the context it was created in, and it costs nothing to turn on at creation
+    while it means rebuilding the resource afterwards.
+  fix: |
+    Enable encryption on the resource and point it at a key the organisation controls, so access can be
+    revoked without touching the data.
+
+- key: QG-TF-SEC-0064
+  name: A resource should not be reachable from the whole internet
+  languages: [tf]
+  category: SEC
+  severity: critical
+  effort: 20min
+  cwe: [284]
+  tags: [infrastructure, network]
+  summary: A rule opens the resource to every address, or marks it publicly accessible.
+  why: |
+    An open range is not "temporarily convenient": it is permanent until someone notices, and the
+    address space is scanned continuously. Whatever authentication sits behind it becomes the only
+    control left, and the first weakness in it is reachable from everywhere.
+  fix: |
+    List the networks that need the access, or put the resource behind a gateway that authenticates the
+    caller. Where a public endpoint is genuinely required, say so next to the rule.
+
+- key: QG-TF-SEC-0065
+  name: Transport security should require a current TLS version
+  languages: [tf]
+  category: SEC
+  severity: major
+  effort: 10min
+  cwe: [327]
+  tags: [infrastructure, encryption]
+  summary: An endpoint accepts a TLS version with known weaknesses.
+  why: |
+    A client that offers the old version will be served over it, so the weakest protocol the endpoint
+    accepts is the one that matters. The attacks against these versions are implemented in tools anyone
+    can download.
+  fix: |
+    Require TLS 1.2 as a minimum, and check that the clients you control already negotiate it before
+    raising the floor.
+
+- key: QG-TF-SEC-0066
+  name: Audit logging should stay enabled
+  languages: [tf]
+  category: SEC
+  severity: major
+  effort: 15min
+  tags: [infrastructure, logging]
+  summary: Logging is explicitly switched off on a resource.
+  why: |
+    Without records there is no way to answer the only question that matters after an incident: what
+    was reached, by whom, and when. The gap is invisible until it is needed, and by then the events are
+    gone for good.
+  fix: |
+    Turn logging on and send the records to a destination the resource itself cannot modify, so they
+    survive whatever happens to it.
+
+- key: QG-TF-SEC-0067
+  name: A policy should not grant every action to everyone
+  languages: [tf]
+  category: SEC
+  severity: critical
+  effort: 30min
+  cwe: [732]
+  tags: [infrastructure, permissions]
+  summary: A policy uses a wildcard for its actions, resources or principals.
+  why: |
+    The wildcard is usually written to get something working and never narrowed afterwards. It turns
+    every credential the policy applies to into a key for the whole account, so a single leaked token
+    is no longer a contained incident.
+  fix: |
+    List the actions and the resources the role really uses — the access logs of the first week give
+    you exactly that list — and keep the wildcard out of the principal.
+
+- key: QG-K8-SEC-0023
+  name: A role should not grant every permission
+  languages: [k8]
+  category: SEC
+  severity: critical
+  effort: 30min
+  cwe: [732]
+  tags: [infrastructure, permissions]
+  summary: A role or cluster role uses a wildcard for its resources, verbs or API groups.
+  why: |
+    Anything that obtains the bound service account inherits the whole cluster: reading every secret,
+    creating pods on any node, editing the objects that define the security posture itself. A wildcard
+    in a role is therefore not a scoping detail, it is the scope.
+  fix: |
+    Name the resources and the verbs the workload uses. Start from what it does today and add to the
+    list when something legitimately fails.

@@ -95,25 +95,6 @@
     Read the value at run time from the platform secret store or the environment, fail fast when it is
     missing, and treat the committed value as compromised: rotate it before removing it.
 
-- key: QG-K8-SEC-0013
-  name: Containers should not grant more access than needed
-  languages: [k8]
-  category: SEC
-  severity: critical
-  effort: 15min
-  tags: [permissions, generated]
-  generated: true
-  status: planned
-  message: This grants wider access than the operation needs.
-  summary: A resource is created or shared with permissions wider than the task requires.
-  why: |
-    Every account that can reach the resource can also change it, so a single compromised process is
-    enough to alter data or code the application later trusts. Wide permissions are also invisible at the
-    call site: nothing in the reading code says who else can write.
-  fix: |
-    Grant the narrowest right that works, to the specific identity that needs it, and rely on inherited
-    permissions from a properly secured parent instead of widening the resource itself.
-
 - key: QG-K8-SEC-0014
   name: Docker sockets should not weaken the security of the application
   languages: [k8]
@@ -211,25 +192,6 @@
 
 - key: QG-K8-SEC-0018
   name: Service account permissions should not grant more access than needed
-  languages: [k8]
-  category: SEC
-  severity: critical
-  effort: 15min
-  tags: [permissions, generated]
-  generated: true
-  status: planned
-  message: This grants wider access than the operation needs.
-  summary: A resource is created or shared with permissions wider than the task requires.
-  why: |
-    Every account that can reach the resource can also change it, so a single compromised process is
-    enough to alter data or code the application later trusts. Wide permissions are also invisible at the
-    call site: nothing in the reading code says who else can write.
-  fix: |
-    Grant the narrowest right that works, to the specific identity that needs it, and rely on inherited
-    permissions from a properly secured parent instead of widening the resource itself.
-
-- key: QG-K8-SEC-0019
-  name: Wildcards should not grant more access than needed
   languages: [k8]
   category: SEC
   severity: critical

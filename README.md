@@ -132,7 +132,7 @@ Severity and issue kind follow the category: `SEC` → vulnerability (major or a
 
 ## 5. Rules
 
-**1065 rules are loaded and executable**, backed by **2496 catalog entries** (a catalog entry either
+**1077 rules are loaded and executable**, backed by **2466 catalog entries** (a catalog entry either
 carries its own detection or documents a rule implemented in code).
 
 | Area | Code | Rules |
@@ -143,13 +143,13 @@ carries its own detection or documents a rule implemented in code).
 | JavaScript | `JS` | 96 |
 | Kotlin | `KT` | 83 |
 | Multi-language | `ALL` | 94 |
+| Dockerfile | `DK` | 21 |
 | PHP | `PP` | 58 |
 | Rust | `RS` | 37 |
 | Go | `GO` | 28 |
 | Ruby | `RB` | 26 |
 | C / C++ | `CC` | 16 |
-| Terraform | `TF` | 16 |
-| Docker | `DK` | 14 |
+| Terraform | `TF` | 21 |
 | Kubernetes | `K8` | 14 |
 | Shell | `SH` | 13 |
 | TypeScript-specific | `TS` | 10 |
@@ -188,6 +188,22 @@ accesses, identifiers, string literals, assignments, declared and parameter type
 plus filters such as `argTainted`, `argDynamic`, `resultUnused`, `withoutArgs`, `requires`, `absent`.
 Anything that needs real reasoning over the tree is written in C# instead, against `SyntaxQuery`, the
 semantic model and the taint result.
+
+### Infrastructure as code
+
+Configuration files are read as a **tree of keys and blocks**, not as lines, so a rule can see the
+relationship that makes a finding true: a port opened next to its source range, a flag inside a
+container's security context, a setting missing from the resource that needs it. Two syntaxes are
+covered by one reader — braces with labels (Terraform, JSON) and indentation with list items
+(Kubernetes, CloudFormation) — and Dockerfiles are read as their instruction list.
+
+* **Terraform** — storage without encryption at rest, resources reachable from the whole internet,
+  outdated TLS versions, logging switched off, policies granting every action to everyone.
+* **Kubernetes** — privileged containers, privilege escalation, host namespaces, running as root,
+  missing resource limits, writable root filesystem, unpinned images, wildcard RBAC.
+* **Dockerfile** — lower-case instructions, relative WORKDIR, duplicated CMD/ENTRYPOINT, ADD for
+  local files, the whole build context copied into the image, spaces around `=` in ENV/ARG, runs of
+  consecutive RUN instructions, unpinned base images, secrets in ENV.
 
 ### Security coverage
 

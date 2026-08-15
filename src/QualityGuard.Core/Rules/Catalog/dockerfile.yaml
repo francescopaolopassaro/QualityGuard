@@ -1,0 +1,111 @@
+# Descriptions for the Dockerfile rules implemented in Rules/Languages/DockerfileRules.cs.
+
+- key: QG-DK-CNV-0002
+  name: Instructions should be written in upper case
+  languages: [dk]
+  category: CNV
+  severity: minor
+  effort: 2min
+  tags: [containers, readability]
+  summary: A Dockerfile instruction is written in lower or mixed case.
+  why: |
+    The convention exists so a reader can separate the instruction from its arguments at a glance, and
+    so the tools that read Dockerfiles line by line keep working. A file that mixes both forms costs a
+    moment of doubt on every line.
+  fix: |
+    Write the instruction in upper case and leave the arguments as they are.
+
+- key: QG-DK-BUG-0005
+  name: WORKDIR should take an absolute path
+  languages: [dk]
+  category: BUG
+  severity: major
+  effort: 5min
+  tags: [containers, suspicious]
+  summary: A WORKDIR instruction is given a relative path.
+  why: |
+    A relative path is resolved against whatever WORKDIR ran before it, including the ones inherited
+    from the base image. Change the base, or reorder two instructions, and the build lands somewhere
+    else — usually without failing, which is what makes it expensive to find.
+  fix: |
+    Write the absolute path, so the instruction means the same thing wherever it runs.
+
+- key: QG-DK-BUG-0006
+  name: Only the last CMD or ENTRYPOINT of a stage takes effect
+  languages: [dk]
+  category: BUG
+  severity: major
+  effort: 10min
+  tags: [containers, suspicious]
+  summary: A stage declares CMD or ENTRYPOINT more than once.
+  why: |
+    Docker keeps the last one and drops the rest without a warning. The earlier instruction is dead,
+    but it is still the one a reader finds first, so the file documents a behaviour the image does not
+    have.
+  fix: |
+    Keep one CMD and one ENTRYPOINT per stage. When two commands are genuinely needed, put the second
+    one in a script the entry point calls.
+
+- key: QG-DK-SML-0017
+  name: Local files should be copied with COPY
+  languages: [dk]
+  category: SML
+  severity: minor
+  effort: 5min
+  tags: [containers]
+  summary: ADD is used to copy a local file that COPY would copy.
+  why: |
+    ADD does three things: it copies, it downloads URLs and it unpacks archives. The extra behaviour is
+    decided by the name of the source, so renaming a file can change what the instruction does. COPY
+    only ever copies, which is what the line was meant to say.
+  fix: |
+    Use COPY for local files, and keep ADD for a remote source or an archive you deliberately want
+    unpacked.
+
+- key: QG-DK-SEC-0019
+  name: The whole build context should not be copied into the image
+  languages: [dk]
+  category: SEC
+  severity: major
+  effort: 15min
+  cwe: [200]
+  tags: [containers, secrets]
+  summary: COPY or ADD takes the entire build context as its source.
+  why: |
+    Whatever sits in the directory travels into the image: local configuration, private keys someone
+    tested with, the .git history with every secret ever committed. The image is then published, and
+    the layers keep the files even if a later instruction deletes them.
+  fix: |
+    Copy the paths the image needs. If the whole context really is the answer, keep a .dockerignore and
+    review it as carefully as this file.
+
+- key: QG-DK-BUG-0007
+  name: A key and its value should not be separated from the equal sign
+  languages: [dk]
+  category: BUG
+  severity: major
+  effort: 5min
+  tags: [containers, suspicious]
+  summary: An ENV, ARG or LABEL instruction has a space around its equal sign.
+  why: |
+    The parser splits the instruction on spaces, so the key, the sign and the value become separate
+    arguments: the variable ends up named differently or set to an empty string. The build succeeds and
+    the container starts without the setting.
+  fix: |
+    Write key=value with no spaces around the sign, and quote the value when it contains one.
+
+- key: QG-DK-SML-0018
+  name: Consecutive RUN instructions should be merged
+  languages: [dk]
+  category: SML
+  severity: minor
+  effort: 10min
+  tags: [containers, performance]
+  summary: Three or more RUN instructions follow one another.
+  why: |
+    Each RUN creates a layer, and a layer keeps everything the previous one left behind: package
+    caches, build tools, temporary files. Deleting them in a later instruction does not shrink the
+    image, because the earlier layer still contains them.
+  fix: |
+    Merge the commands into one RUN joined by &&, and clean up inside the same instruction so nothing
+    is captured in the layer.

@@ -30,6 +30,8 @@ public static class BuiltInRuleRegistrar
         ..Languages.SqlRuleSet.All,
         ..Languages.MarkupRuleSet.All,
         ..Languages.RustRuleSet.All,
+        ..Languages.InfrastructureRuleSet.All,
+        ..Languages.DockerfileRuleSet.All,
         ..StructuralRuleSet.All,
         ..CorrectnessRuleSet.All,
         ..RegexRuleSet.All,

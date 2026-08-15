@@ -61,6 +61,13 @@ public interface IRuleContext
 
     TaintResult? Taint { get; }
 
+    /// <summary>
+    /// The file read as a tree of keys and blocks. Only meaningful for configuration languages —
+    /// manifests, templates, infrastructure definitions — where the defect is a value in the wrong
+    /// place rather than a statement. Empty for source code.
+    /// </summary>
+    ConfigNode Config { get; }
+
     bool IsTainted(string identifier);
     bool IsTaintedLine(int line);
 
@@ -77,6 +84,7 @@ internal sealed class RuleContext(SourceFile file, FileAnalysis analysis) : IRul
 {
     private readonly FileAnalysis _analysis = analysis;
     private TypeResolver? _types;
+    private ConfigNode? _config;
 
     public SourceFile File { get; } = file;
     public IReadOnlyList<Token> Tokens => _analysis.Tokens;
@@ -88,6 +96,7 @@ internal sealed class RuleContext(SourceFile file, FileAnalysis analysis) : IRul
     public ProjectIndex Project => _analysis.Project ?? ProjectIndex.Empty;
     public TypeResolver Types => _types ??= new TypeResolver(_analysis.Semantics, Project);
     public TaintResult? Taint => _analysis.Taint;
+    public ConfigNode Config => _config ??= ConfigTree.Parse(File.Content, Language.LanguageKey);
 
     public IRule CurrentRule { get; set; } = null!;
 

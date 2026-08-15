@@ -7,19 +7,11 @@ public static class KubernetesRuleSet
 {
     public static IReadOnlyList<IRule> All { get; } =
     [
-        new KubernetesPrivilegedContainerRule(),
-        new KubernetesPrivilegeEscalationRule(),
-        new KubernetesRunAsNonRootRule(),
-        new KubernetesRunAsUserRootRule(),
         new KubernetesMissingSecurityContextRule(),
-        new KubernetesHostNamespaceRule(),
         new KubernetesAddCapabilitiesRule(),
         new KubernetesSecretsInEnvRule(),
         new KubernetesAutomountTokenRule(),
-        new KubernetesUnpinnedImageRule(),
-        new KubernetesReadOnlyRootFsRule(),
         new KubernetesMissingProbesRule(),
-        new KubernetesMissingResourcesRule(),
         new KubernetesMissingAppLabelRule()
     ];
 }
@@ -28,90 +20,6 @@ internal static class KubernetesLine
 {
     public static bool Starts(string line, string key)
         => line.TrimStart().StartsWith(key, StringComparison.OrdinalIgnoreCase);
-}
-
-public sealed class KubernetesPrivilegedContainerRule : PatternRuleBase
-{
-    public override string Key => "QG-K8-SEC-0001";
-    public override string Name => "Container runs in privileged mode";
-    public override Severity Severity => Severity.Critical;
-    public override IssueKind Kind => IssueKind.Vulnerability;
-    public override string RemediationEffort => "Remove privileged mode and grant only the capabilities the container needs.";
-    public override string[] Languages => ["k8"];
-
-    public override void Execute(IRuleContext context)
-    {
-        var lines = context.File.Content.Split('\n');
-        for (var i = 0; i < lines.Length; i++)
-        {
-            if (RuleMatchers.LineContains(lines[i], "privileged")
-                && RuleMatchers.LineContains(lines[i], "true"))
-                context.Report("Do not run containers in privileged mode.", i + 1);
-        }
-    }
-}
-
-public sealed class KubernetesPrivilegeEscalationRule : PatternRuleBase
-{
-    public override string Key => "QG-K8-SEC-0002";
-    public override string Name => "Privilege escalation is allowed";
-    public override Severity Severity => Severity.Critical;
-    public override IssueKind Kind => IssueKind.Vulnerability;
-    public override string RemediationEffort => "Set allowPrivilegeEscalation to false.";
-    public override string[] Languages => ["k8"];
-
-    public override void Execute(IRuleContext context)
-    {
-        var lines = context.File.Content.Split('\n');
-        for (var i = 0; i < lines.Length; i++)
-        {
-            if (RuleMatchers.LineContains(lines[i], "allowPrivilegeEscalation")
-                && RuleMatchers.LineContains(lines[i], "true"))
-                context.Report("Disable privilege escalation for the container.", i + 1);
-        }
-    }
-}
-
-public sealed class KubernetesRunAsNonRootRule : PatternRuleBase
-{
-    public override string Key => "QG-K8-SEC-0003";
-    public override string Name => "Container may run as root";
-    public override Severity Severity => Severity.Major;
-    public override IssueKind Kind => IssueKind.Vulnerability;
-    public override string RemediationEffort => "Set runAsNonRoot to true and define a non-zero runAsUser.";
-    public override string[] Languages => ["k8"];
-
-    public override void Execute(IRuleContext context)
-    {
-        var lines = context.File.Content.Split('\n');
-        for (var i = 0; i < lines.Length; i++)
-        {
-            if (RuleMatchers.LineContains(lines[i], "runAsNonRoot")
-                && RuleMatchers.LineContains(lines[i], "false"))
-                context.Report("Enable runAsNonRoot for the container.", i + 1);
-        }
-    }
-}
-
-public sealed class KubernetesRunAsUserRootRule : PatternRuleBase
-{
-    public override string Key => "QG-K8-SEC-0004";
-    public override string Name => "Container runs as the root user";
-    public override Severity Severity => Severity.Major;
-    public override IssueKind Kind => IssueKind.Vulnerability;
-    public override string RemediationEffort => "Run the container as a non-root user (runAsUser other than 0).";
-    public override string[] Languages => ["k8"];
-
-    public override void Execute(IRuleContext context)
-    {
-        var lines = context.File.Content.Split('\n');
-        for (var i = 0; i < lines.Length; i++)
-        {
-            if (RuleMatchers.LineContains(lines[i], "runAsUser")
-                && RuleMatchers.SplitWords(lines[i]).Any(w => w == "0"))
-                context.Report("Do not run the container as root.", i + 1);
-        }
-    }
 }
 
 public sealed class KubernetesMissingSecurityContextRule : PatternRuleBase
@@ -137,30 +45,6 @@ public sealed class KubernetesMissingSecurityContextRule : PatternRuleBase
         }
         if (containersLine > 0 && !hasSecurityContext)
             context.Report("Define a securityContext for containers.", containersLine);
-    }
-}
-
-public sealed class KubernetesHostNamespaceRule : PatternRuleBase
-{
-    public override string Key => "QG-K8-SEC-0006";
-    public override string Name => "Container shares the host namespace";
-    public override Severity Severity => Severity.Critical;
-    public override IssueKind Kind => IssueKind.Vulnerability;
-    public override string RemediationEffort => "Do not enable hostNetwork, hostPID or hostIPC.";
-    public override string[] Languages => ["k8"];
-
-    public override void Execute(IRuleContext context)
-    {
-        var lines = context.File.Content.Split('\n');
-        for (var i = 0; i < lines.Length; i++)
-        {
-            var line = lines[i];
-            var sharesHost = RuleMatchers.LineContains(line, "hostNetwork")
-                || RuleMatchers.LineContains(line, "hostPID")
-                || RuleMatchers.LineContains(line, "hostIPC");
-            if (sharesHost && RuleMatchers.LineContains(line, "true"))
-                context.Report("Do not share the host network, PID or IPC namespace.", i + 1);
-        }
     }
 }
 
@@ -236,59 +120,6 @@ public sealed class KubernetesAutomountTokenRule : PatternRuleBase
     }
 }
 
-public sealed class KubernetesUnpinnedImageRule : PatternRuleBase
-{
-    public override string Key => "QG-K8-SML-0001";
-    public override string Name => "Container image is not pinned";
-    public override Severity Severity => Severity.Minor;
-    public override IssueKind Kind => IssueKind.CodeSmell;
-    public override string RemediationEffort => "Pin the image to a specific tag or digest.";
-    public override string[] Languages => ["k8"];
-
-    public override void Execute(IRuleContext context)
-    {
-        var lines = context.File.Content.Split('\n');
-        for (var i = 0; i < lines.Length; i++)
-        {
-            var trimmed = lines[i].TrimStart();
-            if (!trimmed.StartsWith("image:", StringComparison.OrdinalIgnoreCase))
-                continue;
-            var value = trimmed["image:".Length..].Trim();
-            if (value.Length == 0 || value.StartsWith('$'))
-                continue;
-            if (value.Contains(":latest", StringComparison.OrdinalIgnoreCase)
-                || !value.Contains(':'))
-                context.Report("Pin the container image to a specific tag or digest.", i + 1);
-        }
-    }
-}
-
-public sealed class KubernetesReadOnlyRootFsRule : PatternRuleBase
-{
-    public override string Key => "QG-K8-SML-0002";
-    public override string Name => "Container root filesystem is writable";
-    public override Severity Severity => Severity.Minor;
-    public override IssueKind Kind => IssueKind.CodeSmell;
-    public override string RemediationEffort => "Set readOnlyRootFilesystem to true and write only to mounted volumes.";
-    public override string[] Languages => ["k8"];
-
-    public override void Execute(IRuleContext context)
-    {
-        var lines = context.File.Content.Split('\n');
-        var containersLine = 0;
-        var hasReadOnlyRoot = false;
-        for (var i = 0; i < lines.Length; i++)
-        {
-            if (KubernetesLine.Starts(lines[i], "containers:"))
-                containersLine = i + 1;
-            if (RuleMatchers.LineContains(lines[i], "readOnlyRootFilesystem"))
-                hasReadOnlyRoot = true;
-        }
-        if (containersLine > 0 && !hasReadOnlyRoot)
-            context.Report("Mount the root filesystem as read-only.", containersLine);
-    }
-}
-
 public sealed class KubernetesMissingProbesRule : PatternRuleBase
 {
     public override string Key => "QG-K8-SML-0003";
@@ -313,32 +144,6 @@ public sealed class KubernetesMissingProbesRule : PatternRuleBase
         }
         if (containersLine > 0 && !hasProbes)
             context.Report("Define liveness and readiness probes for the container.", containersLine);
-    }
-}
-
-public sealed class KubernetesMissingResourcesRule : PatternRuleBase
-{
-    public override string Key => "QG-K8-SML-0004";
-    public override string Name => "Container has no resource limits";
-    public override Severity Severity => Severity.Minor;
-    public override IssueKind Kind => IssueKind.CodeSmell;
-    public override string RemediationEffort => "Define resource requests and limits for the container.";
-    public override string[] Languages => ["k8"];
-
-    public override void Execute(IRuleContext context)
-    {
-        var lines = context.File.Content.Split('\n');
-        var containersLine = 0;
-        var hasResources = false;
-        for (var i = 0; i < lines.Length; i++)
-        {
-            if (KubernetesLine.Starts(lines[i], "containers:"))
-                containersLine = i + 1;
-            if (KubernetesLine.Starts(lines[i], "resources:"))
-                hasResources = true;
-        }
-        if (containersLine > 0 && !hasResources)
-            context.Report("Define resource requests and limits for the container.", containersLine);
     }
 }
 

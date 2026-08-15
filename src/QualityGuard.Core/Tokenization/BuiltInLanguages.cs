@@ -168,6 +168,20 @@ public static class BuiltInLanguages
         [new("\"", "\""), new("\"\"", "\"\"")],
         HashComments: true, NestingBlockComments: false);
 
+    public static readonly LanguageInfo Dart = new(
+        "dart", [".dart"],
+        ["abstract", "as", "assert", "async", "await", "break", "case", "catch", "class", "const",
+         "continue", "covariant", "default", "deferred", "do", "dynamic", "else", "enum", "export",
+         "extends", "extension", "external", "factory", "false", "final", "finally", "for", "get",
+         "hide", "if", "implements", "import", "in", "interface", "is", "late", "library", "mixin",
+         "new", "null", "on", "operator", "part", "required", "rethrow", "return", "sealed", "set",
+         "show", "static", "super", "switch", "sync", "this", "throw", "true", "try", "typedef",
+         "var", "void", "while", "with", "yield"],
+        ["if", "else", "for", "while", "do", "switch", "case", "catch", "&&", "||", "?"],
+        "//", "/*", "*/",
+        [new("\"", "\""), new("'", "'")],
+        HashComments: false, NestingBlockComments: true);
+
     public static readonly LanguageInfo Css = new(
         "css", [".css", ".less", ".scss", ".sass"],
         [],
@@ -182,6 +196,14 @@ public static class BuiltInLanguages
         [],
         null, "<!--", "-->",
         [new("\"", "\""), new("'", "'")],
+        HashComments: false, NestingBlockComments: false);
+
+    public static readonly LanguageInfo Json = new(
+        "json", [".json", ".jsonc", ".json5", ".webmanifest"],
+        ["true", "false", "null"],
+        [],
+        "//", "/*", "*/",
+        [new("\"", "\"")],
         HashComments: false, NestingBlockComments: false);
 
     public static readonly LanguageInfo Xml = new(
@@ -305,8 +327,10 @@ public static class BuiltInLanguages
         Ruby,
         Kotlin,
         Basic,
+        Dart,
         Css,
         Html,
+        Json,
         Xml,
         Sql,
         Shell,

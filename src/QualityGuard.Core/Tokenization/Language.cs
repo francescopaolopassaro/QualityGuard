@@ -19,7 +19,9 @@ public static class LanguageKeys
     public const string Ruby = "rb";
     public const string Kotlin = "kt";
     public const string Basic = "vb";
+    public const string Dart = "dart";
     public const string Css = "css";
+    public const string Json = "json";
     public const string Html = "html";
     public const string Xml = "xml";
     public const string Sql = "sql";
