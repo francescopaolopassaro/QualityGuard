@@ -1,313 +1,295 @@
-# QualityGuard — Comprehensive Technical Architecture & Domain Specification
+# QualityGuard
 
-**QualityGuard** is a lightweight, **stateless, and in-memory** code quality engine built in **C#**. It is designed specifically for execution within continuous integration (CI) pipelines such as GitHub Actions, Azure DevOps, and GitLab CI.
+**QualityGuard** is a stateless, in-memory code quality engine written in C# for continuous
+integration pipelines. It parses source code, computes metrics, runs static analysis rules, evaluates
+a configurable Quality Gate and exits with `PASSED` or `FAILED` — no server, no database, no UI.
 
-It evaluates metrics against configurable Quality Gate conditions, executes static code analysis across multiple languages, and outputs deterministic results (**PASSED** or **FAILED**) with actionable explanations.
+```bash
+dotnet run --project src/QualityGuard.Cli -- --path ./src --by-folder
+```
 
 ---
 
-## 1. Core Architecture & NuGet Package Structure
+## 1. Packages
 
-QualityGuard is structured as a modular set of C# assemblies with zero external server or database dependencies:
-
-| Project / Package | Role & Responsibility |
+| Project | Responsibility |
 | --- | --- |
-| **`QualityGuard.Core`** | Core domain models, tokenization engine, taint analysis, sliding-window duplication detector, rule framework, and in-memory gate evaluator.
-
- |
-| **`QualityGuard.Sources.Sarif`** | Reader and writer for the standard **SARIF 2.1.0** format, extracting metrics and exporting structured analysis findings.
-
- |
-| **`QualityGuard.Cli`** | Executable CLI entry point designed to run inside pipeline jobs, returning explicit exit codes (`0` for success, non-zero for failures).
-
- |
+| `QualityGuard.Core` | Domain models, tokenizers, parsers, semantic model, taint analysis, duplication detection, rule framework and gate evaluator. |
+| `QualityGuard.Sources.Sarif` | Reader and writer for **SARIF 2.1.0**: imports metrics from an existing report, exports findings and gate state. |
+| `QualityGuard.Cli` | Executable entry point for pipeline jobs; explicit exit codes. |
 
 ---
 
-## 2. Domain Model & Evaluation Pipeline
+## 2. Analysis pipeline
 
-### Key Domain Entities
+Per file:
 
-* **`Metric` / `CoreMetrics**`: Key metrics tracked during analysis, centered on new code modifications:
+```
+tokenize → syntax tree → semantic model → taint → metrics
+```
 
+Then across the whole scan:
 
-* `new_coverage`: Test coverage percentage on new code.
+```
+project index → type resolution → interprocedural taint → rules → quality gate
+```
 
+* **Syntax tree** — recursive-descent parsers for C#, Java, Go, JavaScript and TypeScript (one
+  C-family parser with dialects) and an indentation-driven parser for Python. Other languages fall
+  back to a generic structural parser; `SyntaxTree.HasDedicatedParser` tells a rule whether the tree
+  is exact enough to reason about statements.
+* **Semantic model** — scopes, symbols and usages. Declarations, assignments and reads are linked, so
+  a rule works on "this symbol" rather than "this name".
+* **Project index** — types, base types, members, return types and reference counts across every
+  scanned file, which is what makes cross-file rules possible.
+* **Type resolution** — best-effort type of an expression. It answers `null` for "cannot tell", and
+  rules must stay silent on that rather than guess.
+* **Taint analysis** — sources (request data, environment, argv, superglobals), propagation through
+  assignments and calls, sanitizers, and sinks. It runs **interprocedurally**: a function returning
+  untrusted data becomes a source for every caller in any file, and a tainted argument taints the
+  matching parameter of the callee wherever it is declared. Findings carry the source-to-sink flow.
+* **Duplication** — lexical tokenization plus sliding-window hashing, no compilation required.
 
-* `new_duplicated_lines_density`: Percentage of duplicated lines on new code.
+---
 
+## 3. Domain model
 
-* `new_security_rating`: Security rating on new code ($1 \dots 5$, where $1 = \text{A}$).
+* **`Metric` / `CoreMetrics`** — measures collected per file and aggregated per scan. The gate profile
+  is centred on new code: `new_coverage`, `new_duplicated_lines_density`, `new_security_rating`,
+  `new_reliability_rating`, `new_maintainability_rating`, `new_security_hotspots_reviewed`.
+* **`Condition`** — one gate rule: `metricKey`, `operator` (`LESS_THAN`, `GREATER_THAN`) and a numeric
+  `threshold`.
+* **`QualityGateResult`** — global status plus the per-condition outcome and message.
+* **`Severity`** — `BLOCKER`, `CRITICAL`, `MAJOR`, `MINOR`, `INFO`.
+* **Issue kinds** — `Bug`, `Vulnerability`, `SecurityHotspot`, `CodeSmell`.
+* **Technical debt** — remediation effort attached to every finding.
 
-
-* `new_reliability_rating`: Reliability rating (bugs) on new code ($1 \dots 5$).
-
-
-* `new_maintainability_rating`: Maintainability rating (code smells) on new code ($1 \dots 5$).
-
-
-* `new_security_hotspots_reviewed`: Percentage of reviewed security hotspots on new code.
-
-
-
-
-* **`Condition`**: A Quality Gate rule containing a `metricKey`, an `operator` (`LESS_THAN`, `GREATER_THAN`), and a numeric `threshold`.
-
-
-* **`QualityGateResult`**: Overall analysis output containing global status (`PASSED` or `FAILED`) and per-condition evaluation results.
-
-
-* **`Severity`**: Issue severity levels: `BLOCKER`, `CRITICAL`, `MAJOR`, `MINOR`, and `INFO`.
-
-
-* **`Issue Types`**: Categorized into `Bug`, `Vulnerability`, and `Code Smell`.
-
-
-* **`Technical Debt`**: Estimated remediation effort associated with identified findings.
-
-
-
-### 3-Stage Evaluation Pipeline
+### Evaluation
 
 ```
 ┌─────────────────┐      ┌──────────────────┐      ┌─────────────────────────┐
 │  MetricReader   │ ---> │    Evaluator     │ ---> │    StatusCalculator     │
-│ (Reads Metrics) │      │(Evaluates Rules) │      │ (Outputs PASSED/FAILED) │
+│ (Reads metrics) │      │(Evaluates rules) │      │ (Outputs PASSED/FAILED) │
 └─────────────────┘      └──────────────────┘      └─────────────────────────┘
-
 ```
 
-1. **`MetricReader`**: Receives a `Map<string, double>` of measured metric values for the commit/PR.
+If **at least one** condition fails, the gate is `FAILED`.
 
+### Default gate profile
 
-2. **`Evaluator`**: Iterates over active conditions and compares measured values against configured thresholds.
-
-
-3. **`StatusCalculator`**: If **at least one** condition fails, the global gate status resolves to `FAILED`.
-
-
-
----
-
-## 3. Standard Quality Gate Profile & Fudge Factor
-
-QualityGuard provides a pre-configured standard gate profile targeting new code:
-
-| Metric | Operator | Error Threshold |
+| Metric | Operator | Error threshold |
 | --- | --- | --- |
-| **New Coverage** | `LESS_THAN` | **80.0%**<br> |
-| **New Duplicated Lines** | `GREATER_THAN` | **3.0%**<br> |
-| **New Maintainability Rating** | `GREATER_THAN` | **1** (Worse than A)
+| New coverage | `LESS_THAN` | 80.0 % |
+| New duplicated lines density | `GREATER_THAN` | 3.0 % |
+| New maintainability rating | `GREATER_THAN` | 1 (worse than A) |
+| New reliability rating | `GREATER_THAN` | 1 (worse than A) |
+| New security hotspots reviewed | `LESS_THAN` | 100.0 % |
 
- |
-| **New Security Hotspots Reviewed** | `LESS_THAN` | **100.0%**<br> |
-| **New Reliability Rating** | `GREATER_THAN` | **1** (Worse than A)
-
- |
-
-> **Fudge Factor (Minimum Threshold)**: To prevent false-positive pipeline failures on tiny modifications, conditions on *Coverage* and *Duplication* are evaluated **only if** the pull request or commit contains at least **20 modified or added lines of code**.
-> 
-> 
+> **Minimum activation threshold** — coverage and duplication conditions are evaluated only when the
+> change contains at least **20 added or modified lines**, so a two-line fix cannot fail the pipeline
+> on a percentage computed from almost nothing.
 
 ---
 
-## 4. Proprietary Rule ID Schema (`QG-*`)
+## 4. Rule identifiers
 
-QualityGuard implements a strictly structured, proprietary rule identification schema:
+```
+QG-<LANG>-<CAT>-<NNNN>
+```
 
-$$\text{Rule ID Format: } \mathbf{QG-\langle LANG \rangle-\langle CAT \rangle-\langle NNNN \rangle}$$
+* **`<LANG>`** — `ALL` (multi-language), `CS` (C# and VB.NET), `JV`, `JS`, `TS`, `PY`, `PP` (PHP),
+  `GO`, `RB`, `KT`, `RS` (Rust), `CC` (C/C++), `SH`, `TF`, `DK`, `K8`, `CF`, `CSS`, `SQL`, `HTML`,
+  `XML`, `RAZ` (Razor), `XAML`.
+* **`<CAT>`** — `BUG` (correctness), `SEC` (security), `SML` (maintainability), `PRF` (performance),
+  `CNV` (naming and formatting).
+* **`<NNNN>`** — sequential per `(LANG, CAT)`, zero-padded, **never reused** — a number stays retired
+  even when its rule is removed.
 
-* **`<LANG>` (Language Scope)**:
-* `ALL` (Multi-language)
-
-
-* `CS` (C# / VB.NET), `JV` (Java), `JS` (JavaScript), `TS` (TypeScript), `PY` (Python), `PP` (PHP), `GO` (Go), `RB` (Ruby), `KT` (Kotlin), `CC` (C/C++), `SH` (Shell)
-
-
-* `TF` (Terraform), `DK` (Docker), `K8` (Kubernetes), `CF` (CloudFormation), `AR` (ARM)
-
-
-* `CSS` (CSS), `SQL` (SQL), `HTML` (HTML), `XML` (XML)
-
-
-
-
-* **`<CAT>` (Category)**:
-* `BUG` (Correctness / Bugs)
-
-
-* `SEC` (Security / Vulnerabilities)
-
-
-* `SML` (Code Smells / Maintainability)
-
-
-* `PRF` (Performance)
-
-
-* `CNV` (Naming / Formatting Conventions)
-
-
-
-
-* **`<NNNN>`**: Sequential 4-digit zero-padded number per (`LANG`, `CAT`) starting at `0001`.
-
-
+Severity and issue kind follow the category: `SEC` → vulnerability (major or above), `BUG` → bug,
+`SML` / `CNV` / `PRF` → code smell.
 
 ---
 
-## 5. Complete Language Support & Rule Catalog Breakdown
+## 5. Rules
 
-QualityGuard features **263 total built-in rules** (258 language-specific rules + 5 generic multi-language rules):
+**1038 rules are loaded and executable**, backed by **2560 catalog entries** (a catalog entry either
+carries its own detection or documents a rule implemented in code).
 
-| Language / Area | LANG Code | Implementation File | Security Rules (SEC) | Quality Rules (SML/CNV/BUG/PRF) | Total Rules |
-| --- | --- | --- | --- | --- | --- |
-| **C# / VB.NET** | `CS` | `CSharpRules.cs` | 11 | 9 | **20**<br> |
-| **Java** | `JV` | `JavaRules.cs` | 12 | 10 | **22**<br> |
-| **Kotlin** | `KT` | `KotlinRules.cs` | 12 | 10 | **22**<br> |
-| **JavaScript / TypeScript** | `JS` / `TS` | `JsTsRules.cs` | 17 | 9 | **26**<br> |
-| **Python** | `PY` | `PythonRules.cs` | 14 | 6 | **20**<br> |
-| **Ruby** | `RB` | `RubyRules.cs` | 9 | 4 | **13**<br> |
-| **Go** | `GO` | `GoRules.cs` | 8 | 5 | **13**<br> |
-| **PHP** | `PP` | `PhpRules.cs` | 15 | 7 | **22**<br> |
-| **Terraform** | `TF` | `TerraformRules.cs` | 14 | 2 | **16**<br> |
-| **Docker** | `DK` | `DockerRules.cs` | 8 | 6 | **14**<br> |
-| **Kubernetes** | `K8` | `KubernetesRules.cs` | 9 | 5 | **14**<br> |
-| **C / C++** | `CC` | `CCRules.cs` | 10 | 6 | **16**<br> |
-| **Shell Scripting** | `SH` | `ShellRules.cs` | 7 | 6 | **13**<br> |
-| **CSS** | `CSS` | `CssRules.cs` | 0 | 7 | **7**<br> |
-| **SQL** | `SQL` | `SqlRules.cs` | 5 | 4 | **9**<br> |
-| **HTML** | `HTML` | `MarkupRules.cs` | 5 | 2 | **7**<br> |
-| **XML** | `XML` | `MarkupRules.cs` | 3 | 1 | **4**<br> |
-| **Generic Multi-Language** | `ALL` | `BuiltInRuleRegistrar.cs` | 0 | 5 | **5**<br> |
-| **TOTAL** |  |  | **164** | **99** | **263**<br> |
+| Area | Code | Rules |
+| --- | --- | --- |
+| C# / VB.NET | `CS` | 234 |
+| Java | `JV` | 151 |
+| Python | `PY` | 136 |
+| JavaScript | `JS` | 96 |
+| Kotlin | `KT` | 83 |
+| Multi-language | `ALL` | 67 |
+| PHP | `PP` | 58 |
+| Rust | `RS` | 37 |
+| Go | `GO` | 28 |
+| Ruby | `RB` | 26 |
+| C / C++ | `CC` | 16 |
+| Terraform | `TF` | 16 |
+| Docker | `DK` | 14 |
+| Kubernetes | `K8` | 14 |
+| Shell | `SH` | 13 |
+| TypeScript-specific | `TS` | 10 |
+| CSS | `CSS` | 10 |
+| HTML | `HTML` | 9 |
+| SQL | `SQL` | 9 |
+| Razor / XAML / XML | `RAZ`, `XAML`, `XML` | 11 |
 
----
+Every rule ships an English **summary**, a **why is this an issue** explanation and a **how to fix**
+section; the CLI prints the fix guidance with `--fix-hints`, and SARIF carries it in the rule
+metadata.
 
-## 6. Security Analysis & Advanced Engine Capabilities
+### Rules as data
 
-### Security Vulnerability Coverage
+A rule can be written declaratively in `src/QualityGuard.Core/Rules/Catalog/*.yaml`:
 
-QualityGuard inspects code across major security flaw categories using heuristic token and line analysis:
+```yaml
+- key: QG-PY-SEC-0055
+  name: Encryption algorithms should use current cryptographic parameters
+  languages: [py]
+  category: SEC
+  severity: critical
+  message: ECB reveals the shape of the plaintext; use an authenticated mode such as GCM.
+  summary: A block cipher is used in a mode that leaks structure.
+  why: |
+    ECB encrypts equal blocks to equal ciphertext, so patterns in the plaintext survive encryption.
+  fix: |
+    Use an authenticated mode (GCM, ChaCha20-Poly1305) and a fresh nonce for every message.
+  detect:
+    - member: [AES.MODE_ECB]
+    - member: [modes.ECB]
+```
 
-* **OS Command Injection**: Detects unsafe system calls (e.g., `Process.Start` in C#, `Runtime.exec` in Java, `child_process` in JS, `subprocess` in Python, `system`/`exec` in PHP/Ruby/Shell).
+Matchers cover invocations (with receiver, arguments, argument literals), object creations, member
+accesses, identifiers, string literals, assignments, declared and parameter types, and line patterns,
+plus filters such as `argTainted`, `argDynamic`, `resultUnused`, `withoutArgs`, `requires`, `absent`.
+Anything that needs real reasoning over the tree is written in C# instead, against `SyntaxQuery`, the
+semantic model and the taint result.
 
+### Security coverage
 
-* **SQL Injection**: Identifies dynamic string concatenations (`+`, `$"..."`, `%`, f-strings) inside database execution methods.
-
-
-* **Weak Cryptography**: Flags weak algorithms (`MD5`, `SHA-1`, `DES`, `3DES`, `RC4`, `ECB` mode).
-
-
-* **Hardcoded Credentials**: Detects secrets, tokens, API keys, and passwords assigned to string literals.
-
-
-* **Arbitrary Code Execution**: Flags unsafe execution sinks like `eval()`, `exec()`, and dynamic function invocation.
-
-
-* **Insecure Deserialization**: Identifies unsafe serialization parsers (e.g., `BinaryFormatter`, `pickle.loads`, `ObjectInputStream`, `unserialize`).
-
-
-* **Infrastructure as Code (IaC)**: Checks for open CIDR blocks (`0.0.0.0/0`), unencrypted databases, wildcard IAM policies, `root` container execution, and insecure Kubernetes privileges (`privileged: true`, `hostNetwork`).
-
-
-
-### Dataflow-Lite Taint Analysis (`TaintAnalyzer`)
-
-`QualityGuard.Core` incorporates a line/token-level taint analysis engine:
-
-* **Sources**: Tracks untrusted input points (e.g., `Request.QueryString`, `os.environ`, `$_GET`/`$_POST`, `sys.argv`, `getenv`).
-
-
-* **Propagation**: Propagates taint status through variable assignments (`x = source`) across file lines.
-
-
-* **Sinks**: Exposes `IsTainted(variable)` and `IsTaintedLine(line)` methods to rule checks to validate whether tainted data reaches sensitive sinks.
-
-
-
-### Code Duplication Detection (`DuplicationDetector`)
-
-* Utilizes **lexical tokenization** (`SourceTokenizer`) supporting 19 built-in grammar profiles.
-
-
-* Applies a **sliding-window hashing algorithm** to identify duplicate code blocks across files without requiring full AST compilation.
-
-
+Command injection, SQL injection, path traversal, open redirect, server-side request forgery, unsafe
+deserialization, XML external entities, dynamic code execution, weak cryptography (broken hashes,
+obsolete ciphers, ECB, predictable randomness, weak key sizes), disabled certificate validation,
+cleartext transport, hardcoded credentials, permissive CORS, insecure cookies, and infrastructure as
+code (open CIDR blocks, unencrypted storage, wildcard IAM policies, privileged containers).
 
 ---
 
-## 7. CLI Execution & Pipeline Workflow
+## 6. Scanning files and folders
 
-The `QualityGuard.Cli` tool serves as the interface for CI/CD environments:
+`--path` accepts a **file** or a **directory**, and a directory is walked all the way down, including
+every subfolder. The option is repeatable and accepts comma-separated values, so several trees can be
+analysed in one run.
 
 ```bash
-# Direct source scanning with custom gate rules and SARIF output export
-dotnet run --project src/QualityGuard.Cli -- \
-  --path ./src \
-  --gate ./config/gate.json \
-  --sarif ./artifacts/report.sarif.json
+# one file
+dotnet run --project src/QualityGuard.Cli -- --path ./src/App/Program.cs
 
-# Evaluates Quality Gate against an existing SARIF file
-dotnet run --project src/QualityGuard.Cli -- \
-  --sarif-in ./artifacts/input.sarif.json \
-  --gate ./config/gate.json
+# a tree, with a per-directory summary
+dotnet run --project src/QualityGuard.Cli -- --path ./src --by-folder
 
-# Derives ratings (new_*) directly from issue findings
+# several trees, only C#, skipping generated code
 dotnet run --project src/QualityGuard.Cli -- \
-  --path ./src \
-  --new-code
-
+  --path ./src,./tests \
+  --include "**/*.cs" \
+  --exclude "**/Generated/**"
 ```
 
-### Command Line Options
+What is skipped by default, because analysing it produces findings nobody can act on:
+
+* dependency and build directories — `bin`, `obj`, `build`, `dist`, `out`, `target`, `node_modules`,
+  `bower_components`, `packages`, `vendor`, `venv`, `__pycache__`, `coverage`, `Pods`, `.git`, `.gradle`,
+  `.terraform` and similar (the directory is never opened);
+* generated and bundled files — `*.min.js`, `*.bundle.js`, `*.map`, `*-lock.json`, `*.designer.cs`,
+  `*.generated.*`, `*.pb.go`, `*_pb2.py`, `*.d.ts`, `*.snap`;
+* files larger than `--max-file-kb` (default 2048) and anything with a NUL byte in its first 512 bytes.
+
+Pass `--all-files` to keep them. A path that does not exist is reported as a warning and does not stop
+the scan; `--verbose` prints how many files were skipped and why.
+
+---
+
+## 7. CLI
+
+```bash
+# scan, custom gate, SARIF export
+dotnet run --project src/QualityGuard.Cli -- \
+  --path ./src --gate ./config/gate.json --sarif ./artifacts/report.sarif.json
+
+# evaluate the gate from an existing SARIF report
+dotnet run --project src/QualityGuard.Cli -- \
+  --sarif-in ./artifacts/input.sarif.json --gate ./config/gate.json
+
+# derive the new_* ratings from the findings
+dotnet run --project src/QualityGuard.Cli -- --path ./src --new-code
+```
 
 | Option | Function |
 | --- | --- |
-| `--path <dir|file>` | Scans directory/file (tokenization + metrics + duplication + rules + gate).
+| `--path <dir\|file>` | Scan a file or a directory tree. Repeatable, comma-separated values allowed. |
+| `--include <glob>` | Only scan files matching the glob (`**` crosses directories, `*` stays inside one, `?` is one character). |
+| `--exclude <glob>` | Skip files or directories matching the glob. |
+| `--all-files` | Keep the build, dependency and generated files skipped by default. |
+| `--max-file-kb <n>` | Skip files above this size (default 2048). |
+| `--by-folder` | Print a per-directory summary of files, ncloc, bugs, vulnerabilities and code smells. |
+| `--gate <json>` | Custom Quality Gate configuration; falls back to the built-in profile. |
+| `--sarif <out.json>` | Export findings and gate state as SARIF 2.1.0. |
+| `--sarif-in <file>` | Read metrics from an existing SARIF report instead of scanning. |
+| `--new-code` | Map finding counts into the `new_*` rating metrics before evaluating the gate. |
+| `--fix-hints` | Print the remediation steps under every finding. |
+| `--verbose` | Per-file metrics, taint flow steps and what the scan skipped. |
+| `--rules` | List loaded rules and description coverage. |
+| `--dump-ast` | Print the syntax tree of one file. |
 
- |
-| `--sarif-in <file>` | Reads metrics directly from an existing SARIF 2.1.0 report.
+### Exit codes
 
- |
-| `--gate <json>` | Path to custom Quality Gate JSON config (falls back to built-in gate).
+| Code | Meaning |
+| --- | --- |
+| `0` | `PASSED` — every gate condition met. |
+| `1` | `FAILED` — at least one condition failed. |
+| `2` | `ERROR` — invalid arguments, missing input or a runtime failure. |
 
- |
-| `--sarif <out.json>` | Exports analysis findings and gate execution state to SARIF.
+### Example output
 
- |
-| `--new-code` | Opt-in flag to map finding counts into `new_*` metric ratings.
+```
+QUALITY GATE: Passed
+  [OK  ] new_coverage: N/A vs 80.0 (LessThan) - passed
+  ISSUE QG-CS-SEC-0018 Critical: Validate the path to prevent path traversal. (src/DocumentService.cs:10)
+      flow  line 7: 'ReadRequestedFile' returns data that enters the program in RequestReader.cs
+      flow  line 10: tainted value reaches this sink
 
- |
-
-### Pipeline Exit Codes
-
-* **`0`**: `PASSED` — All Quality Gate conditions met.
-
-
-* **`1`**: `FAILED` — One or more Quality Gate conditions failed.
-
-
-* **`2`**: `ERROR` — Execution error (invalid arguments, missing files, runtime exception).
-
-
+FOLDER                                     FILES   NCLOC  BUGS  VULN SMELLS
+src/QualityGuard.Core/Analysis                10    1042     5     3     66
+src/QualityGuard.Core/Semantics                3     416     1     0     21
+```
 
 ---
 
-## 8. Explicit Non-Goals & Scope Boundaries
+## 8. Quality bar
 
-To maintain high performance and simplicity inside CI jobs, QualityGuard explicitly excludes:
+The engine is measured on real code, not only on fixtures: every new rule is run against this
+repository and against a real project in the rule's own language before it is considered finished. A
+rule that produces noise is rewritten on the syntax tree or removed, and the false positives that were
+fixed are pinned by regression tests so the precision cannot be lost again silently.
 
-* ❌ **No Database / SQL Persistence**: Operates strictly in-memory.
+Automated checks:
 
+```bash
+dotnet build QualityGuard.sln
+dotnet test                       # parser, semantics, taint, scanner, rule precision
+./tools/RuleCatalog.ps1 -Validate # catalog shape, identifiers, English descriptions
+```
 
-* ❌ **No UI / Web Dashboard**: Outputs directly to standard logs and SARIF files.
+---
 
+## 9. Non-goals
 
-* ❌ **No Server / Background Orchestration**: Designed as an ephemeral CLI runner.
-
-
-* ❌ **No User Management / RBAC / SAML**: No authentication or user access management.
-
-
-* ❌ **No Third-Party Platform Coupling**: Independent execution without mandatory cloud dependencies.
+* No database or SQL persistence — the engine is strictly in-memory.
+* No UI or web dashboard — output is the console and SARIF.
+* No server or background orchestration — it is an ephemeral CLI runner.
+* No user management, RBAC or SSO.
+* No mandatory coupling to a hosting platform or cloud service.
