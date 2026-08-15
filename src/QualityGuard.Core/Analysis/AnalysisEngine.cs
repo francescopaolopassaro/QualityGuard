@@ -41,6 +41,9 @@ public sealed class AnalysisEngine
         foreach (var analysis in context.Results)
             analysis.Project = index;
 
+        // untrusted data crosses files: close the loop once every file has its own result
+        InterproceduralTaint.Run(context.Results);
+
         return context.Results;
     }
 }

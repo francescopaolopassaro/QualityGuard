@@ -336,3 +336,79 @@
   fix: |
     Override both from the same fields, and keep those fields immutable so the hash cannot change while
     the object is stored.
+
+- key: QG-ALL-SML-0036
+  name: Fields set only during construction should be read-only
+  languages: []
+  category: SML
+  severity: minor
+  effort: 10min
+  tags: [immutability]
+  summary: A private field is assigned in the constructor and never changed afterwards.
+  why: |
+    Nothing prevents a later change, so every reader has to scan the whole type to know whether the value
+    is stable. Making it read-only turns that reasoning into a compiler guarantee and makes the object
+    safe to share between threads.
+  fix: |
+    Add the read-only or final modifier. If a later assignment is genuinely needed, keep the field mutable
+    and say in the code why the value changes.
+
+- key: QG-ALL-SML-0037
+  name: Members that ignore instance state should be static
+  languages: []
+  category: SML
+  severity: minor
+  effort: 10min
+  tags: [design]
+  summary: A method never reads any instance member, yet requires an object to be called.
+  why: |
+    Callers have to construct or hold an instance for no reason, and readers cannot tell from the
+    signature that the result depends only on the arguments. Testing it also means building an object
+    that contributes nothing.
+  fix: |
+    Make the member static, or use the instance state it was supposed to read.
+
+- key: QG-ALL-SML-0038
+  name: Shared state should not be mutable
+  languages: []
+  category: SML
+  severity: major
+  effort: 20min
+  tags: [design, concurrency]
+  summary: A non-private static field can be replaced by any caller.
+  why: |
+    Static state is shared by the whole process, so anything can change it at any time from any thread.
+    Behaviour then depends on execution order, and tests interfere with each other through it.
+  fix: |
+    Make the field read-only, or move the value into a scoped service that is injected where it is needed.
+
+- key: QG-ALL-BUG-0014
+  name: Resources should be released on every path
+  languages: []
+  category: BUG
+  severity: critical
+  effort: 20min
+  tags: [resource-leak]
+  summary: A stream, connection or client is created without a scope that closes it.
+  why: |
+    An exception thrown before the close call leaves the handle open, and the descriptor or connection
+    stays allocated until the process ends. Under load the pool empties and unrelated requests start
+    failing.
+  fix: |
+    Declare the resource in a using or try-with-resources block so it closes on every path, including
+    the exceptional ones.
+
+- key: QG-ALL-BUG-0015
+  name: Values of unrelated types should not be compared
+  languages: []
+  category: BUG
+  severity: major
+  effort: 15min
+  tags: [suspicious, types]
+  summary: An equality test compares two expressions whose declared types cannot match.
+  why: |
+    The comparison is constant: it always answers the same way regardless of the data, so the branch it
+    guards is dead. It usually comes from comparing a value with the wrong field after a refactoring.
+  fix: |
+    Compare the values that belong together, converting explicitly when a cross-type comparison is
+    really intended.

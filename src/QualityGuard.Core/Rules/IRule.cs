@@ -56,6 +56,9 @@ public interface IRuleContext
     /// </summary>
     ProjectIndex Project { get; }
 
+    /// <summary>Best-effort type of an expression; null means the analysis cannot tell.</summary>
+    TypeResolver Types { get; }
+
     TaintResult? Taint { get; }
 
     bool IsTainted(string identifier);
@@ -73,6 +76,7 @@ public interface IRuleContext
 internal sealed class RuleContext(SourceFile file, FileAnalysis analysis) : IRuleContext
 {
     private readonly FileAnalysis _analysis = analysis;
+    private TypeResolver? _types;
 
     public SourceFile File { get; } = file;
     public IReadOnlyList<Token> Tokens => _analysis.Tokens;
@@ -82,6 +86,7 @@ internal sealed class RuleContext(SourceFile file, FileAnalysis analysis) : IRul
     public SyntaxNode Root => _analysis.Tree.Root;
     public SemanticModel Semantics => _analysis.Semantics;
     public ProjectIndex Project => _analysis.Project ?? ProjectIndex.Empty;
+    public TypeResolver Types => _types ??= new TypeResolver(_analysis.Semantics, Project);
     public TaintResult? Taint => _analysis.Taint;
 
     public IRule CurrentRule { get; set; } = null!;

@@ -61,7 +61,12 @@ public static class StructuralRuleSet
         new DuplicateTypeNameRule(),
         new EqualityContractRule(),
         new OverrideOnlyCallsBaseRule(),
-        new EmptyTypeRule()
+        new EmptyTypeRule(),
+        new FieldCouldBeReadOnlyRule(),
+        new MethodCouldBeStaticRule(),
+        new MutableStaticStateRule(),
+        new UnreleasedResourceRule(),
+        new MismatchedComparisonRule()
     ];
 
     internal static string Normalized(SyntaxNode node)
@@ -1532,4 +1537,207 @@ internal static class TypeNodeExtensions
     /// <summary>Number of base types the declaration names, as seen by the project index.</summary>
     public static int BaseCount(this SyntaxNode type, IRuleContext context)
         => context.Project.FindTypes(type.Text).FirstOrDefault(t => t.Node == type)?.BaseNames.Count ?? 0;
+}
+
+public sealed class FieldCouldBeReadOnlyRule : StructuralRuleBase
+{
+    public override string Key => "QG-ALL-SML-0036";
+    public override string Name => "Fields set only during construction should be read-only";
+    public override Severity Severity => Severity.Minor;
+    public override IssueKind Kind => IssueKind.CodeSmell;
+    public override string RemediationEffort => "10min";
+
+    public override void Execute(IRuleContext context)
+    {
+        if (!HasPreciseTree(context) || context.Language.LanguageKey is not ("cs" or "java" or "kt"))
+            return;
+
+        foreach (var type in context.Root.OfKind(NodeKind.ClassDeclaration))
+        {
+            foreach (var field in type.OfKind(NodeKind.FieldDeclaration))
+            {
+                if (field.Ancestor(NodeKind.ClassDeclaration) != type || field.Text.Length == 0)
+                    continue;
+                var modifiers = field.ChildrenOf(NodeKind.Modifier).Select(m => m.Text).ToArray();
+                if (modifiers.Any(m => m is "readonly" or "const" or "final" or "static" or "volatile"))
+                    continue;
+                if (!modifiers.Contains("private"))
+                    continue;
+
+                var assignments = type.OfKind(NodeKind.Assignment)
+                    .Where(a => SyntaxQuery.SimpleName(a.ChildAt(0)) == field.Text)
+                    .ToList();
+                if (assignments.Count == 0)
+                    continue;
+
+                var outsideConstruction = assignments.Any(a =>
+                    a.Ancestor(NodeKind.ConstructorDeclaration) == null
+                    && a.Ancestor(NodeKind.FieldDeclaration) == null);
+                if (outsideConstruction)
+                    continue;
+
+                context.Report(field, $"'{field.Text}' never changes after construction; "
+                                      + "mark it read-only so the compiler enforces that.");
+            }
+        }
+    }
+}
+
+public sealed class MethodCouldBeStaticRule : StructuralRuleBase
+{
+    public override string Key => "QG-ALL-SML-0037";
+    public override string Name => "Members that ignore instance state should be static";
+    public override Severity Severity => Severity.Minor;
+    public override IssueKind Kind => IssueKind.CodeSmell;
+    public override string RemediationEffort => "10min";
+
+    public override void Execute(IRuleContext context)
+    {
+        if (!HasPreciseTree(context) || context.Language.LanguageKey is not ("cs" or "java"))
+            return;
+
+        foreach (var type in context.Root.OfKind(NodeKind.ClassDeclaration))
+        {
+            var instanceMembers = type
+                .OfKind(NodeKind.FieldDeclaration, NodeKind.PropertyDeclaration, NodeKind.FunctionDeclaration)
+                .Where(m => m.Ancestor(NodeKind.ClassDeclaration) == type
+                            && !m.ChildrenOf(NodeKind.Modifier).Any(x => x.Text == "static"))
+                .Select(m => m.Text)
+                .Where(name => name.Length > 0)
+                .ToHashSet(StringComparer.Ordinal);
+
+            foreach (var method in type.OfKind(NodeKind.FunctionDeclaration))
+            {
+                if (method.Ancestor(NodeKind.ClassDeclaration) != type || method.Text.Length == 0)
+                    continue;
+                var modifiers = method.ChildrenOf(NodeKind.Modifier).Select(m => m.Text).ToArray();
+                if (modifiers.Any(m => m is "static" or "override" or "virtual" or "abstract" or "partial"))
+                    continue;
+                if (method.ChildrenOf(NodeKind.Attribute).Any())
+                    continue; // a framework may require the instance form
+                var body = SyntaxQuery.Body(method);
+                if (body is null or { Children.Count: 0 })
+                    continue;
+
+                var touchesInstance = body.OfKind(NodeKind.Identifier)
+                    .Any(i => i.Text is "this" or "base" or "super" || instanceMembers.Contains(i.Text))
+                    || body.OfKind(NodeKind.Invocation)
+                        .Any(call => instanceMembers.Contains(SyntaxQuery.InvokedName(call)));
+                if (touchesInstance)
+                    continue;
+
+                context.Report(method, $"'{method.Text}' never reads the instance; "
+                                       + "make it static so callers do not need an object.");
+            }
+        }
+    }
+}
+
+public sealed class MutableStaticStateRule : StructuralRuleBase
+{
+    public override string Key => "QG-ALL-SML-0038";
+    public override string Name => "Shared state should not be mutable";
+    public override Severity Severity => Severity.Major;
+    public override IssueKind Kind => IssueKind.CodeSmell;
+    public override string RemediationEffort => "20min";
+
+    public override void Execute(IRuleContext context)
+    {
+        if (!HasPreciseTree(context))
+            return;
+
+        foreach (var field in context.Root.OfKind(NodeKind.FieldDeclaration))
+        {
+            var modifiers = field.ChildrenOf(NodeKind.Modifier).Select(m => m.Text).ToArray();
+            if (!modifiers.Contains("static") || modifiers.Any(m => m is "readonly" or "const" or "final"))
+                continue;
+            if (modifiers.Contains("private"))
+                continue;
+            context.Report(field, $"'{field.Text}' is shared by the whole process and can be replaced by "
+                                  + "any caller, from any thread; make it read-only or move it behind a "
+                                  + "scoped service.");
+        }
+    }
+}
+
+public sealed class UnreleasedResourceRule : StructuralRuleBase
+{
+    private static readonly string[] ResourceTypes =
+    [
+        "FileStream", "StreamReader", "StreamWriter", "SqlConnection", "SqlCommand", "HttpClient",
+        "MemoryStream", "Socket", "TcpClient", "NpgsqlConnection", "MySqlConnection", "FileInputStream",
+        "FileOutputStream", "FileReader", "FileWriter", "BufferedReader", "ServerSocket", "Scanner"
+    ];
+
+    private static readonly string[] ReleaseNames = ["Dispose", "close", "Close", "DisposeAsync"];
+
+    public override string Key => "QG-ALL-BUG-0014";
+    public override string Name => "Resources should be released on every path";
+    public override Severity Severity => Severity.Critical;
+    public override IssueKind Kind => IssueKind.Bug;
+    public override string RemediationEffort => "20min";
+
+    public override void Execute(IRuleContext context)
+    {
+        if (!HasPreciseTree(context) || context.Language.LanguageKey is not ("cs" or "java" or "kt"))
+            return;
+
+        foreach (var declaration in context.Root.OfKind(NodeKind.VariableDeclaration))
+        {
+            var creation = declaration.OfKind(NodeKind.ObjectCreation).FirstOrDefault();
+            if (creation == null)
+                continue;
+            var type = Semantics.TypeResolver.Normalize(creation.Text);
+            if (!ResourceTypes.Contains(type, StringComparer.Ordinal))
+                continue;
+            if (declaration.Ancestor(NodeKind.Using) != null || declaration.Kind == NodeKind.Using)
+                continue;
+            if (declaration.Parent?.Kind == NodeKind.Using)
+                continue;
+
+            var function = SyntaxQuery.EnclosingFunction(declaration);
+            var released = function != null && function.OfKind(NodeKind.Invocation)
+                .Any(call => ReleaseNames.Contains(SyntaxQuery.InvokedName(call), StringComparer.Ordinal)
+                             && SyntaxQuery.Receiver(call) == declaration.Text);
+            if (released)
+                continue;
+
+            context.Report(declaration, $"'{declaration.Text}' holds a {type} that is never released; "
+                                        + "declare it in a using or try-with-resources block so it closes "
+                                        + "on every path, including the exceptional ones.");
+        }
+    }
+}
+
+public sealed class MismatchedComparisonRule : StructuralRuleBase
+{
+    private static readonly string[] Numeric = ["int", "long", "short", "byte", "double", "float", "decimal"];
+
+    public override string Key => "QG-ALL-BUG-0015";
+    public override string Name => "Values of unrelated types should not be compared";
+    public override Severity Severity => Severity.Major;
+    public override IssueKind Kind => IssueKind.Bug;
+    public override string RemediationEffort => "15min";
+
+    public override void Execute(IRuleContext context)
+    {
+        if (!HasPreciseTree(context))
+            return;
+
+        foreach (var comparison in context.Root.OfKind(NodeKind.Binary))
+        {
+            if (comparison.Text is not ("==" or "!=" or "===" or "!=="))
+                continue;
+            var left = context.Types.TypeOf(comparison.ChildAt(0));
+            var right = context.Types.TypeOf(comparison.ChildAt(1));
+            if (left == null || right == null || left == right)
+                continue;
+            if (Numeric.Contains(left, StringComparer.Ordinal) && Numeric.Contains(right, StringComparer.Ordinal))
+                continue;
+            if (context.Types.IsOrDerivesFrom(left, right) || context.Types.IsOrDerivesFrom(right, left))
+                continue;
+            context.Report(comparison, $"A value of type {left} can never equal one of type {right}, "
+                                       + "so this comparison is constant.");
+        }
+    }
 }

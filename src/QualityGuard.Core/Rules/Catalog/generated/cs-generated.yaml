@@ -984,24 +984,6 @@
     Remove what is not used, name what is unclear, and keep one piece of behaviour in one place so the
     next change touches a single spot.
 
-- key: QG-CS-SML-0132
-  name: Non-constant static fields should be simplified
-  languages: [cs]
-  category: SML
-  severity: minor
-  effort: 15min
-  tags: [sml, generated]
-  generated: true
-  status: planned
-  message: This code is harder to read or change than the behaviour requires.
-  summary: The code works but is harder to read or change than the behaviour requires.
-  why: |
-    The intent is buried, duplicated, or spread across places that must stay in sync, so every future
-    change costs more than it should and carries a risk that has nothing to do with the change itself.
-  fix: |
-    Remove what is not used, name what is unclear, and keep one piece of behaviour in one place so the
-    next change touches a single spot.
-
 - key: QG-CS-SML-0133
   name: Arguments should be simplified
   languages: [cs]
@@ -1176,24 +1158,6 @@
   detect:
     - invocation: [async]
     - invocation: [await]
-
-- key: QG-CS-SML-0139
-  name: Methods and properties that don't access instance data should be simplified
-  languages: [cs]
-  category: SML
-  severity: minor
-  effort: 15min
-  tags: [sml, generated]
-  generated: true
-  status: planned
-  message: This code is harder to read or change than the behaviour requires.
-  summary: The code works but is harder to read or change than the behaviour requires.
-  why: |
-    The intent is buried, duplicated, or spread across places that must stay in sync, so every future
-    change costs more than it should and carries a risk that has nothing to do with the change itself.
-  fix: |
-    Remove what is not used, name what is unclear, and keep one piece of behaviour in one place so the
-    next change touches a single spot.
 
 - key: QG-CS-BUG-0047
   name: GetHashCode should behave the way it reads
@@ -1399,24 +1363,6 @@
     Replace the call with the current API, and keep the old one only behind a compatibility layer that is
     documented and dated.
 
-- key: QG-CS-SML-0153
-  name: Mutable fields should be simplified
-  languages: [cs]
-  category: SML
-  severity: minor
-  effort: 15min
-  tags: [sml, generated]
-  generated: true
-  status: planned
-  message: This code is harder to read or change than the behaviour requires.
-  summary: The code works but is harder to read or change than the behaviour requires.
-  why: |
-    The intent is buried, duplicated, or spread across places that must stay in sync, so every future
-    change costs more than it should and carries a risk that has nothing to do with the change itself.
-  fix: |
-    Remove what is not used, name what is unclear, and keep one piece of behaviour in one place so the
-    next change touches a single spot.
-
 - key: QG-CS-SML-0155
   name: Unnecessary bit operations should be simplified
   languages: [cs]
@@ -1529,25 +1475,6 @@
     Catch the specific failures this code can recover from, keep the original exception as the cause when
     wrapping, and let everything else reach the boundary handler.
 
-- key: QG-CS-SML-0160
-  name: The Static fields API should not be used
-  languages: [cs]
-  category: SML
-  severity: minor
-  effort: 15min
-  tags: [avoid_api, generated]
-  generated: true
-  status: planned
-  message: This API should be replaced by the current alternative.
-  summary: Code calls an API that is unsafe, obsolete or superseded by a better alternative.
-  why: |
-    The API stays available for compatibility, so nothing fails at build time, but it carries behaviour
-    the platform now considers a defect — unchecked input, a weak guarantee, or a cost the replacement
-    avoids. Its presence also spreads: new code copies what it finds nearby.
-  fix: |
-    Replace the call with the current API, and keep the old one only behind a compatibility layer that is
-    documented and dated.
-
 - key: QG-CS-BUG-0052
   name: SQL keywords should behave the way it reads
   languages: [cs]
@@ -1589,24 +1516,6 @@
     - invocation: [Sleep]
       receiver: [Thread]
 
-- key: QG-CS-SML-0162
-  name: Fields that are only assigned in the constructor should be simplified
-  languages: [cs]
-  category: SML
-  severity: minor
-  effort: 15min
-  tags: [sml, generated]
-  generated: true
-  status: planned
-  message: This code is harder to read or change than the behaviour requires.
-  summary: The code works but is harder to read or change than the behaviour requires.
-  why: |
-    The intent is buried, duplicated, or spread across places that must stay in sync, so every future
-    change costs more than it should and carries a risk that has nothing to do with the change itself.
-  fix: |
-    Remove what is not used, name what is unclear, and keep one piece of behaviour in one place so the
-    next change touches a single spot.
-
 - key: QG-CS-BUG-0055
   name: Property assignments should behave the way it reads
   languages: [cs]
@@ -1642,24 +1551,6 @@
   fix: |
     Make the intended behaviour explicit — fix the condition, the operator or the order of operations —
     and cover the case that used to fail with a test.
-
-- key: QG-CS-BUG-0057
-  name: Absent values around Generic parameters not constrained to reference types should be handled explicitly
-  languages: [cs]
-  category: BUG
-  severity: major
-  effort: 15min
-  tags: [nullability, generated]
-  generated: true
-  status: planned
-  message: An absent value is not handled on this path.
-  summary: A value that can be absent is used without checking, or a check is written that cannot work.
-  why: |
-    The failure surfaces as a null dereference at run time, in a place that often has nothing to do with
-    where the value was produced. Checks that cannot succeed are worse, because they read as protection.
-  fix: |
-    Check the value where it enters the program, model absence in the type where the language allows it,
-    and provide the default or the error at that point instead of deeper down.
 
 - key: QG-CS-SML-0164
   name: LINQ expressions should be simplified
@@ -1742,24 +1633,6 @@
     documented and dated.
   detect:
     - creation: [ThreadStatic]
-
-- key: QG-CS-SML-0165
-  name: Static fields should be simplified
-  languages: [cs]
-  category: SML
-  severity: minor
-  effort: 15min
-  tags: [sml, generated]
-  generated: true
-  status: planned
-  message: This code is harder to read or change than the behaviour requires.
-  summary: The code works but is harder to read or change than the behaviour requires.
-  why: |
-    The intent is buried, duplicated, or spread across places that must stay in sync, so every future
-    change costs more than it should and carries a risk that has nothing to do with the change itself.
-  fix: |
-    Remove what is not used, name what is unclear, and keep one piece of behaviour in one place so the
-    next change touches a single spot.
 
 - key: QG-CS-SML-0166
   name: The Reflection API should not be used
@@ -3839,24 +3712,6 @@
 
 - key: QG-CS-SML-0259
   name: Pointers to unmanaged memory should be simplified
-  languages: [cs]
-  category: SML
-  severity: minor
-  effort: 15min
-  tags: [sml, generated]
-  generated: true
-  status: planned
-  message: This code is harder to read or change than the behaviour requires.
-  summary: The code works but is harder to read or change than the behaviour requires.
-  why: |
-    The intent is buried, duplicated, or spread across places that must stay in sync, so every future
-    change costs more than it should and carries a risk that has nothing to do with the change itself.
-  fix: |
-    Remove what is not used, name what is unclear, and keep one piece of behaviour in one place so the
-    next change touches a single spot.
-
-- key: QG-CS-SML-0261
-  name: Collection properties should be simplified
   languages: [cs]
   category: SML
   severity: minor

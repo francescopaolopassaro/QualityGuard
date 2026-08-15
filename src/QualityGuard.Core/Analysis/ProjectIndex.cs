@@ -10,6 +10,10 @@ public sealed class TypeInfo
     public required SyntaxNode Node { get; init; }
     public required IReadOnlyList<string> BaseNames { get; init; }
     public required IReadOnlyList<string> MemberNames { get; init; }
+
+    /// <summary>Declared type of each member, when the declaration states one.</summary>
+    public required IReadOnlyDictionary<string, string> MemberTypes { get; init; }
+
     public required bool IsInterface { get; init; }
 
     public override string ToString() => $"{Name} ({File})";
@@ -26,6 +30,8 @@ public sealed class ProjectIndex
     private readonly Dictionary<string, int> _declaredFunctions = new(StringComparer.Ordinal);
     private readonly HashSet<string> _invoked = new(StringComparer.Ordinal);
     private readonly Dictionary<string, int> _referenced = new(StringComparer.Ordinal);
+    private readonly Dictionary<string, string> _returnTypes = new(StringComparer.Ordinal);
+    private readonly HashSet<string> _ambiguousReturns = new(StringComparer.Ordinal);
 
     public static ProjectIndex Empty { get; } = new();
 
@@ -58,6 +64,7 @@ public sealed class ProjectIndex
                     .Where(m => m.Ancestor(NodeKind.ClassDeclaration) == type && m.Text.Length > 0)
                     .Select(m => m.Text)
                     .ToList(),
+                MemberTypes = MemberTypesOf(type),
                 IsInterface = type.Tokens.Any(t => t.Text == "interface")
             };
             if (!_types.TryGetValue(info.Name, out var list))
@@ -70,6 +77,14 @@ public sealed class ProjectIndex
             if (function.Text.Length == 0)
                 continue;
             _declaredFunctions[function.Text] = _declaredFunctions.GetValueOrDefault(function.Text) + 1;
+
+            var returned = function.FirstChild(NodeKind.TypeReference)?.Text;
+            if (string.IsNullOrEmpty(returned))
+                continue;
+            if (_returnTypes.TryGetValue(function.Text, out var known) && known != returned)
+                _ambiguousReturns.Add(function.Text);
+            else
+                _returnTypes[function.Text] = returned;
         }
 
         foreach (var call in root.OfKind(NodeKind.Invocation))
@@ -77,6 +92,21 @@ public sealed class ProjectIndex
 
         foreach (var identifier in root.OfKind(NodeKind.Identifier))
             _referenced[identifier.Text] = _referenced.GetValueOrDefault(identifier.Text) + 1;
+    }
+
+    private static IReadOnlyDictionary<string, string> MemberTypesOf(SyntaxNode type)
+    {
+        var types = new Dictionary<string, string>(StringComparer.Ordinal);
+        foreach (var member in type.OfKind(NodeKind.FunctionDeclaration, NodeKind.PropertyDeclaration,
+                     NodeKind.FieldDeclaration))
+        {
+            if (member.Ancestor(NodeKind.ClassDeclaration) != type || member.Text.Length == 0)
+                continue;
+            var declared = member.FirstChild(NodeKind.TypeReference)?.Text;
+            if (!string.IsNullOrEmpty(declared))
+                types[member.Text] = declared;
+        }
+        return types;
     }
 
     /// <summary>Base types named in the declaration, whether or not they are declared in this code.</summary>
@@ -145,6 +175,27 @@ public sealed class ProjectIndex
         }
         return members;
     }
+
+    /// <summary>Declared type of a member of a known type, following the base chain.</summary>
+    public string? MemberType(string typeName, string memberName, int guard = 0)
+    {
+        if (guard > 8 || FindType(typeName) is not { } info)
+            return null;
+        if (info.MemberTypes.TryGetValue(memberName, out var declared))
+            return declared;
+        foreach (var baseName in info.BaseNames)
+        {
+            if (MemberType(baseName, memberName, guard + 1) is { } inherited)
+                return inherited;
+        }
+        return null;
+    }
+
+    /// <summary>Return type of a function declared once in the scanned code.</summary>
+    public string? ReturnType(string functionName)
+        => !_ambiguousReturns.Contains(functionName) && _returnTypes.TryGetValue(functionName, out var type)
+            ? type
+            : null;
 
     public bool IsCalledAnywhere(string name) => _invoked.Contains(name);
 

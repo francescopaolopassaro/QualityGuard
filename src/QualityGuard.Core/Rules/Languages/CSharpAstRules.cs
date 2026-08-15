@@ -39,6 +39,9 @@ public sealed class CsOneDeclarationPerStatementRule : CSharpAstRuleBase
     {
         foreach (var declaration in context.Root.OfKind(NodeKind.VariableDeclaration, NodeKind.FieldDeclaration))
         {
+            // a foreach header may bind several names through deconstruction, which is one declaration
+            if (declaration.Parent?.Kind is NodeKind.Loop or NodeKind.Using)
+                continue;
             var declarators = declaration.Children
                 .Count(c => c.Kind == NodeKind.Identifier
                             || (c.Kind == NodeKind.Assignment && c.Text == "="));

@@ -24,7 +24,7 @@ public sealed class FileAnalysis
     public required IReadOnlyList<Token> Tokens { get; init; }
     public required Syntax.SyntaxTree Tree { get; init; }
     public required Semantics.SemanticModel Semantics { get; init; }
-    public TaintResult? Taint { get; init; }
+    public TaintResult? Taint { get; internal set; }
 
     /// <summary>Set once every file has been parsed, so rules can look across the code base.</summary>
     public ProjectIndex? Project { get; internal set; }

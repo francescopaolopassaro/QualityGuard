@@ -1510,24 +1510,6 @@
     Replace the call with the current API, and keep the old one only behind a compatibility layer that is
     documented and dated.
 
-- key: QG-JS-SML-0082
-  name: Fields that are only assigned in the constructor should be simplified
-  languages: [js, ts]
-  category: SML
-  severity: minor
-  effort: 15min
-  tags: [sml, generated]
-  generated: true
-  status: planned
-  message: This code is harder to read or change than the behaviour requires.
-  summary: The code works but is harder to read or change than the behaviour requires.
-  why: |
-    The intent is buried, duplicated, or spread across places that must stay in sync, so every future
-    change costs more than it should and carries a risk that has nothing to do with the change itself.
-  fix: |
-    Remove what is not used, name what is unclear, and keep one piece of behaviour in one place so the
-    next change touches a single spot.
-
 - key: QG-JS-SML-0083
   name: The The global this object API should not be used
   languages: [js, ts]
@@ -3391,24 +3373,6 @@
   fix: |
     Simplify the pattern so no quantifier can match the same text in several ways, add a matching timeout
     for input that comes from outside, and cover the pattern with a test.
-
-- key: QG-JS-BUG-0060
-  name: Tests around Assertions comparing incompatible types should verify something
-  languages: [js, ts]
-  category: BUG
-  severity: major
-  effort: 15min
-  tags: [tests, generated]
-  generated: true
-  status: planned
-  message: This test cannot fail, so it verifies nothing.
-  summary: A test does not assert, is disabled, or cannot fail.
-  why: |
-    A test that cannot fail reports success forever while covering nothing, and the suite keeps its green
-    status. That is worse than having no test at all, because it removes the incentive to write one.
-  fix: |
-    Assert the behaviour the test exists for, re-enable it, and make sure it fails when the behaviour is
-    broken before trusting it again.
 
 - key: QG-JS-BUG-0061
   name: Regular expressions around Alternatives in regular expressions should be safe and correct

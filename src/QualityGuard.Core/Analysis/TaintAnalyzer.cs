@@ -13,6 +13,9 @@ public sealed class TaintResult
     public required IReadOnlyList<Symbol> TaintedSymbols { get; init; }
     public required IReadOnlyList<SyntaxNode> Sources { get; init; }
 
+    /// <summary>What the rest of the scan knows about untrusted data.</summary>
+    public TaintContext Context { get; init; } = TaintContext.Empty;
+
     /// <summary>Name-based check kept for line/token rules; prefer the expression overload.</summary>
     public bool IsTainted(string identifier) => TaintedIdentifiers.Contains(identifier);
 
@@ -25,7 +28,7 @@ public sealed class TaintResult
             return false;
         foreach (var node in expression.DescendantsAndSelf())
         {
-            if (TaintEngine.IsSource(node))
+            if (TaintEngine.IsSource(node, Context))
                 return true;
             if (node.Kind == NodeKind.Identifier && node.Symbol is { IsTainted: true })
                 return true;
@@ -39,6 +42,14 @@ public sealed class TaintResult
     public IReadOnlyList<FlowStep> FlowTo(SyntaxNode sink)
     {
         var steps = new List<FlowStep>();
+        foreach (var call in sink.DescendantsAndSelf().Where(n => n.Kind == NodeKind.Invocation))
+        {
+            var name = SyntaxQuery.InvokedName(call);
+            if (Context.OriginOf(name) is not { } origin)
+                continue;
+            steps.Add(new FlowStep(origin.Line,
+                $"'{name}' returns data that enters the program in {System.IO.Path.GetFileName(origin.File)}"));
+        }
         foreach (var node in sink.DescendantsAndSelf())
         {
             if (node.Kind != NodeKind.Identifier || node.Symbol is not { IsTainted: true } symbol)
@@ -98,14 +109,19 @@ public static class TaintEngine
         "Guid", "Base64", "toBase64", "encodeBase64", "getId", "Sanitizer", "Encode"
     ];
 
-    public static TaintResult Analyze(SyntaxTree tree, SemanticModel model)
+    public static TaintResult Analyze(SyntaxTree tree, SemanticModel model, TaintContext? shared = null,
+        bool keepExistingMarks = false)
     {
-        var sources = tree.Root.DescendantsAndSelf().Where(IsSource).ToList();
+        var context = shared ?? TaintContext.Empty;
+        var sources = tree.Root.DescendantsAndSelf().Where(node => IsSource(node, context)).ToList();
 
-        foreach (var symbol in model.AllSymbols())
+        if (!keepExistingMarks)
         {
-            symbol.IsTainted = false;
-            symbol.TaintSource = null;
+            foreach (var symbol in model.AllSymbols())
+            {
+                symbol.IsTainted = false;
+                symbol.TaintSource = null;
+            }
         }
 
         for (var pass = 0; pass < MaxPasses; pass++)
@@ -117,15 +133,15 @@ public static class TaintEngine
                     continue;
                 foreach (var usage in symbol.Usages)
                 {
-                    if (usage.Value == null || !CarriesTaint(usage.Value))
+                    if (usage.Value == null || !CarriesTaint(usage.Value, context))
                         continue;
                     symbol.IsTainted = true;
-                    symbol.TaintSource = SourceIn(usage.Value) ?? usage.Value;
+                    symbol.TaintSource = SourceIn(usage.Value, context) ?? usage.Value;
                     changed = true;
                     break;
                 }
             }
-            changed |= PropagateThroughCalls(tree, model);
+            changed |= PropagateThroughCalls(tree, model, context);
             if (!changed)
                 break;
         }
@@ -144,12 +160,13 @@ public static class TaintEngine
             TaintedIdentifiers = names,
             TaintedLines = lines,
             TaintedSymbols = tainted,
-            Sources = sources
+            Sources = sources,
+            Context = context
         };
     }
 
     /// <summary>Arguments flowing into a function declared in the same file taint its parameters.</summary>
-    private static bool PropagateThroughCalls(SyntaxTree tree, SemanticModel model)
+    private static bool PropagateThroughCalls(SyntaxTree tree, SemanticModel model, TaintContext context)
     {
         var functions = SyntaxQuery.Functions(tree.Root)
             .Where(f => !string.IsNullOrEmpty(f.Text))
@@ -167,20 +184,20 @@ public static class TaintEngine
             var arguments = SyntaxQuery.Arguments(invocation);
             for (var i = 0; i < parameters.Count && i < arguments.Count; i++)
             {
-                if (!CarriesTaint(arguments[i]))
+                if (!CarriesTaint(arguments[i], context))
                     continue;
                 var symbol = model.ScopeOf(function).Lookup(parameters[i].Text);
                 if (symbol is null or { IsTainted: true })
                     continue;
                 symbol.IsTainted = true;
-                symbol.TaintSource = SourceIn(arguments[i]) ?? arguments[i];
+                symbol.TaintSource = SourceIn(arguments[i], context) ?? arguments[i];
                 changed = true;
             }
         }
         return changed;
     }
 
-    private static bool CarriesTaint(SyntaxNode value)
+    internal static bool CarriesTaint(SyntaxNode value, TaintContext context)
     {
         if (IsSanitized(value))
             return false;
@@ -188,7 +205,7 @@ public static class TaintEngine
         {
             if (IsSanitized(node) && node != value)
                 continue;
-            if (IsSource(node))
+            if (IsSource(node, context))
                 return true;
             if (node.Kind == NodeKind.Identifier && node.Symbol is { IsTainted: true })
                 return true;
@@ -196,11 +213,12 @@ public static class TaintEngine
         return false;
     }
 
-    private static SyntaxNode? SourceIn(SyntaxNode value)
-        => value.DescendantsAndSelf().FirstOrDefault(IsSource);
+    private static SyntaxNode? SourceIn(SyntaxNode value, TaintContext context)
+        => value.DescendantsAndSelf().FirstOrDefault(node => IsSource(node, context));
 
-    public static bool IsSource(SyntaxNode node)
+    public static bool IsSource(SyntaxNode node, TaintContext? shared = null)
     {
+        var context = shared ?? TaintContext.Empty;
         switch (node.Kind)
         {
             case NodeKind.Identifier:
@@ -211,8 +229,10 @@ public static class TaintEngine
                 return MatchesMember(SyntaxQuery.DottedName(node));
             case NodeKind.Invocation:
                 var dotted = SyntaxQuery.InvokedDottedName(node);
-                return SourceNames.Contains(SyntaxQuery.InvokedName(node), StringComparer.Ordinal)
-                       || MatchesMember(dotted);
+                var simple = SyntaxQuery.InvokedName(node);
+                return SourceNames.Contains(simple, StringComparer.Ordinal)
+                       || MatchesMember(dotted)
+                       || context.ReturnsTainted(simple);
             default:
                 return false;
         }
