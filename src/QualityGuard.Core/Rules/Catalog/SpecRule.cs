@@ -170,7 +170,8 @@ public sealed class SpecRule(CatalogEntry entry) : IRule
     {
         foreach (var parameter in context.Root.OfKind(NodeKind.Parameter))
         {
-            var type = parameter.FirstChild(NodeKind.Identifier)?.Text;
+            var type = (parameter.FirstChild(NodeKind.TypeReference)
+                        ?? parameter.FirstChild(NodeKind.Identifier))?.Text;
             if (type == null || !Matches(type, spec.Names))
                 continue;
             Report(context, parameter, spec);

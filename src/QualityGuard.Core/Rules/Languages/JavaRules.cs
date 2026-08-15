@@ -1,4 +1,5 @@
 using QualityGuard.Core.Models;
+using QualityGuard.Core.Syntax;
 using QualityGuard.Core.Tokenization;
 
 namespace QualityGuard.Core.Rules.Languages;
@@ -8,6 +9,7 @@ public static class JavaRuleSet
     public static IReadOnlyList<IRule> All { get; } =
     [
         new JavaInsecureRandomRule(),
+        new JavaOptionalGetRule(),
         new JavaUnsafeCommandExecutionRule(),
         new JavaWeakCryptoRule(),
         new JavaSqlInjectionRule(),
@@ -28,7 +30,6 @@ public static class JavaRuleSet
         new JavaSystemExitRule(),
         new JavaInfiniteLoopRule(),
         new JavaTypeNameConventionRule(),
-        new JavaDuplicatedLiteralsRule(),
         new JavaServerSideRequestForgeryRule(),
         new JavaPathTraversalRule(),
         new JavaLdapInjectionRule(),
@@ -626,24 +627,36 @@ public sealed class JavaTypeNameConventionRule : PatternRuleBase
     }
 }
 
-public sealed class JavaDuplicatedLiteralsRule : PatternRuleBase
+/// <summary>
+/// An optional unwrapped without a check. The receiver has to be typed before reporting: `.get()`
+/// belongs to Map, List and half the standard library too, and matching the text alone turned every
+/// lookup in a file that merely mentions Optional into a finding.
+/// </summary>
+public sealed class JavaOptionalGetRule : RuleBase
 {
-    public override string Key => "QG-JV-CNV-0002";
-    public override string Name => "String literals should not be duplicated";
-    public override Severity Severity => Severity.Minor;
+    public override string Key => "QG-JV-SML-0011";
+    public override string Name => "Optional values should not be dereferenced without a check";
+    public override Severity Severity => Severity.Major;
     public override IssueKind Kind => IssueKind.CodeSmell;
-    public override string RemediationEffort => "Define a named constant for this repeated literal.";
-    public override string[] Languages => ["java"];
+    public override string RemediationEffort => "15min";
+    public override string[] Languages => ["java", "kt"];
 
     public override void Execute(IRuleContext context)
     {
-        var groups = context.Tokens.Where(t => RuleMatchers.IsString(t) && t.Text.Length >= 6)
-            .GroupBy(t => t.Text)
-            .Where(g => g.Count() > 1);
-        foreach (var group in groups)
+        if (!context.Tree.HasDedicatedParser)
+            return;
+
+        foreach (var call in SyntaxQuery.InvocationsNamed(context.Root, "get"))
         {
-            var first = group.OrderBy(t => t.Line).First();
-            context.Report($"Define a constant instead of duplicating this literal {group.Count()} times.", first.Line);
+            if (SyntaxQuery.Arguments(call).Count > 0)
+                continue;
+            var receiver = call.ChildAt(0)?.ChildAt(0);
+            var type = context.Types.TypeOf(receiver);
+            if (type is not ("Optional" or "OptionalInt" or "OptionalLong" or "OptionalDouble"))
+                continue;
+            context.Report(call, "This optional is unwrapped without checking that it holds a value, so "
+                                 + "the call throws on the absent case; use orElse, orElseGet or "
+                                 + "orElseThrow with a message that names the missing value.");
         }
     }
 }

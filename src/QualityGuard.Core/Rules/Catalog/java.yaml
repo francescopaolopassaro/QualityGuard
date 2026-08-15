@@ -355,11 +355,8 @@
   fix: |
     Use orElse, orElseGet or orElseThrow with a meaningful exception, or map the value so the absent case
     flows through naturally.
-  detect:
-    - invocation: [get]
-      receiver: [Optional]
-    - line: "\\.get\\(\\)"
-      requires: [Optional]
+  # Detection lives in JavaOptionalGetRule: telling an optional's get() apart from Map.get() needs the
+  # type of the receiver, which a text pattern cannot see.
 
 - key: QG-JV-SML-0012
   name: String comparisons should put the constant first

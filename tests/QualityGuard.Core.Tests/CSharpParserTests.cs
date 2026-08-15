@@ -88,6 +88,29 @@ public class CSharpParserTests
     }
 
     [Fact]
+    public void A_combinator_after_a_null_or_property_pattern_stays_inside_the_pattern()
+    {
+        var root = Parse("""
+            class A
+            {
+                bool Check(object value)
+                {
+                    return value is null or { Length: 3, Name: "a" or "b" };
+                }
+
+                void After() { }
+            }
+            """);
+
+        // the whole chain belongs to the return statement: nothing after it is a statement of its own
+        var body = root.OfKind(NodeKind.FunctionDeclaration).First().FirstChild(NodeKind.Block)!;
+        Assert.Single(body.Children);
+        Assert.Equal(NodeKind.Jump, body.Children[0].Kind);
+        Assert.Empty(root.OfKind(NodeKind.Unknown));
+        Assert.Equal(2, root.OfKind(NodeKind.FunctionDeclaration).Count());
+    }
+
+    [Fact]
     public void Switch_expressions_are_parsed_as_expressions()
     {
         var root = Parse("""

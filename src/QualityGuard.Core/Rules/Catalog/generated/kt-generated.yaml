@@ -20,26 +20,26 @@
     next change touches a single spot.
 
 - key: QG-KT-SML-0029
-  name: Secrets should not be written into IP addresses
+  name: IP addresses should not be hardcoded in the source
   languages: [kt]
   category: SML
   severity: minor
   effort: 15min
-  tags: [secret, generated]
+  tags: [hardcoded_value, generated]
   generated: true
   status: planned
-  message: This value looks like a credential committed with the source.
-  summary: A credential, key or token appears directly in the source instead of coming from a secret store.
+  message: This value is fixed in the source and cannot be changed without a rebuild.
+  summary: An address, path or other deployment-specific value is written into the code.
   why: |
-    Anything committed with the code is readable by everyone who can clone the repository, and it
-    survives in the history even after being deleted. Scanners find these values within minutes of a
-    repository becoming reachable, and rotating them means editing and redeploying every copy.
+    The value is right for exactly one environment. Every other environment needs a code change, so the
+    same build cannot be promoted from test to production, and a value that has to be corrected under
+    pressure gets corrected in the wrong place.
   fix: |
-    Read the value at run time from the platform secret store or the environment, fail fast when it is
-    missing, and treat the committed value as compromised: rotate it before removing it.
+    Move the value to configuration, read it at start-up, and fail with a clear message when it is
+    missing so a misconfigured deployment stops before it does anything.
 
 - key: QG-KT-SML-0030
-  name: Uses of Lack of copyright and license headers should be reviewed
+  name: Copyright and license headers should be resolved rather than left in the code
   languages: [kt]
   category: SML
   severity: minor
@@ -57,7 +57,7 @@
     lives somewhere that gets reviewed.
 
 - key: QG-KT-SML-0031
-  name: When statements should stay within a size that can be reviewed
+  name: Oversized declarations should stay within a size that can be reviewed
   languages: [kt]
   category: SML
   severity: minor
@@ -76,7 +76,7 @@
     name, and keep the original as the sequence of those steps.
 
 - key: QG-KT-SML-0032
-  name: When statements should not be nested inside another one
+  name: Nested constructs should not be nested inside another one
   languages: [kt]
   category: SML
   severity: minor
@@ -94,7 +94,7 @@
     outer one.
 
 - key: QG-KT-SML-0033
-  name: The Code annotated as deprecated API should not be used
+  name: Code annotated as deprecated should not be used
   languages: [kt]
   category: SML
   severity: minor
@@ -150,7 +150,7 @@
     size at or above the current guidance — and keep the choice in one place so it can be raised.
 
 - key: QG-KT-BUG-0014
-  name: Tests around Equals(other: Any?) should verify something
+  name: Equals(other: Any?) should assert something
   languages: [kt]
   category: BUG
   severity: major
@@ -167,26 +167,8 @@
     Assert the behaviour the test exists for, re-enable it, and make sure it fails when the behaviour is
     broken before trusting it again.
 
-- key: QG-KT-BUG-0015
-  name: Collections should behave the way it reads
-  languages: [kt]
-  category: BUG
-  severity: major
-  effort: 15min
-  tags: [bug, generated]
-  generated: true
-  status: planned
-  message: This code does not behave the way it reads.
-  summary: The code does not do what its shape suggests, or fails on ordinary input.
-  why: |
-    Written this way the code works by accident or breaks on values that are perfectly normal, and the
-    mistake is easy to miss in review because the intent reads correctly.
-  fix: |
-    Make the intended behaviour explicit — fix the condition, the operator or the order of operations —
-    and cover the case that used to fail with a test.
-
 - key: QG-KT-BUG-0016
-  name: The HashCode and toString API should not be used
+  name: HashCode and toString should not be used
   languages: [kt]
   category: BUG
   severity: major
@@ -205,7 +187,7 @@
     documented and dated.
 
 - key: QG-KT-BUG-0017
-  name: Concurrent access around ScheduledThreadPoolExecutor should be coordinated correctly
+  name: ScheduledThreadPoolExecutor should be accessed in a thread-safe way
   languages: [kt]
   category: BUG
   severity: major
@@ -224,27 +206,8 @@
   detect:
     - creation: [ScheduledThreadPoolExecutor]
 
-- key: QG-KT-BUG-0018
-  name: Values should use current cryptographic parameters
-  languages: [kt]
-  category: BUG
-  severity: major
-  effort: 15min
-  tags: [crypto, generated]
-  generated: true
-  status: planned
-  message: This cryptographic choice no longer provides the protection it suggests.
-  summary: A cryptographic primitive, mode or key size that is no longer considered safe is used.
-  why: |
-    Broken primitives keep producing output that looks correct, so nothing fails while the protection is
-    already gone. Data encrypted today is often kept for years, which means an algorithm that is merely
-    weak now will be readable later.
-  fix: |
-    Use the algorithms the platform recommends today — authenticated encryption, a modern hash, a key
-    size at or above the current guidance — and keep the choice in one place so it can be raised.
-
 - key: QG-KT-BUG-0019
-  name: The RunFinalizersOnExit API should not be used
+  name: RunFinalizersOnExit should not be used
   languages: [kt]
   category: BUG
   severity: major
@@ -265,7 +228,7 @@
     - invocation: [runFinalizersOnExit]
 
 - key: QG-KT-BUG-0020
-  name: Inappropriate collection calls should behave the way it reads
+  name: Inappropriate collection calls should match the behaviour the code describes
   languages: [kt]
   category: BUG
   severity: major
@@ -283,7 +246,7 @@
     and cover the case that used to fail with a test.
 
 - key: QG-KT-BUG-0021
-  name: PreparedStatement and ResultSet methods should behave the way it reads
+  name: PreparedStatement and ResultSet methods should match the behaviour the code describes
   languages: [kt]
   category: BUG
   severity: major
@@ -320,7 +283,7 @@
     size at or above the current guidance — and keep the choice in one place so it can be raised.
 
 - key: QG-KT-BUG-0022
-  name: Intermediate Sequence and Stream functions should be removed when it is no longer used
+  name: Intermediate Sequence and Stream functions should be removed once nothing uses it
   languages: [kt]
   category: BUG
   severity: major
@@ -337,24 +300,6 @@
   fix: |
     Delete it. Version control keeps the history, so nothing is lost, and the file becomes an accurate
     description of what the program does.
-
-- key: QG-KT-BUG-0023
-  name: Collection and array sizes comparisons should behave the way it reads
-  languages: [kt]
-  category: BUG
-  severity: major
-  effort: 15min
-  tags: [bug, generated]
-  generated: true
-  status: planned
-  message: This code does not behave the way it reads.
-  summary: The code does not do what its shape suggests, or fails on ordinary input.
-  why: |
-    Written this way the code works by accident or breaks on values that are perfectly normal, and the
-    mistake is easy to miss in review because the intent reads correctly.
-  fix: |
-    Make the intended behaviour explicit — fix the condition, the operator or the order of operations —
-    and cover the case that used to fail with a test.
 
 - key: QG-KT-SML-0035
   name: Functions should not be duplicated
@@ -451,7 +396,7 @@
     cases the old form got wrong.
 
 - key: QG-KT-SEC-0041
-  name: Intents should not be granted more access than it needs
+  name: Intents should not grant more access than needed
   languages: [kt]
   category: SEC
   severity: critical
@@ -470,7 +415,7 @@
     permissions from a properly secured parent instead of widening the resource itself.
 
 - key: QG-KT-SEC-0042
-  name: Android broadcast receivers should not be granted more access than it needs
+  name: Android broadcast receivers should not grant more access than needed
   languages: [kt]
   category: SEC
   severity: critical
@@ -546,7 +491,7 @@
     comment so the next reader does not treat it as a gap.
 
 - key: QG-KT-SML-0039
-  name: Regular expressions around Regular expressions should be safe and correct
+  name: Regular expressions should be safe and correct
   languages: [kt]
   category: SML
   severity: minor
@@ -584,7 +529,7 @@
     comment so the next reader does not treat it as a gap.
 
 - key: QG-KT-BUG-0025
-  name: Regular expressions around Alternatives in regular expressions should be safe and correct
+  name: Regular expressions should be safe and correct
   languages: [kt]
   category: BUG
   severity: major
@@ -641,7 +586,7 @@
     cases the old form got wrong.
 
 - key: QG-KT-BUG-0026
-  name: Regular expressions around Unicode Grapheme Clusters should be safe and correct
+  name: Unicode Grapheme Clusters should be safe and correct
   languages: [kt]
   category: BUG
   severity: major
@@ -660,7 +605,7 @@
     for input that comes from outside, and cover the pattern with a test.
 
 - key: QG-KT-SML-0043
-  name: Regular expressions around Character classes in regular expressions should be safe and correct
+  name: Regular expressions should be safe and correct
   languages: [kt]
   category: SML
   severity: minor
@@ -679,7 +624,7 @@
     for input that comes from outside, and cover the pattern with a test.
 
 - key: QG-KT-SML-0044
-  name: Operator is should be replaced by the recommended alternative
+  name: Outdated constructs should be replaced by the recommended alternative
   languages: [kt]
   category: SML
   severity: minor
@@ -718,7 +663,7 @@
     next change touches a single spot.
 
 - key: QG-KT-BUG-0027
-  name: Equals method should behave the way it reads
+  name: Equals method should match the behaviour the code describes
   languages: [kt]
   category: BUG
   severity: major
@@ -774,7 +719,7 @@
     size at or above the current guidance — and keep the choice in one place so it can be raised.
 
 - key: QG-KT-SEC-0046
-  name: Secrets should not be written into Mobile database encryption keys
+  name: Mobile database encryption keys should not be committed with the source
   languages: [kt]
   category: SEC
   severity: critical
@@ -865,7 +810,7 @@
     next change touches a single spot.
 
 - key: QG-KT-SML-0051
-  name: The Suspending functions API should not be used
+  name: Suspending functions should not be used
   languages: [kt]
   category: SML
   severity: minor
@@ -920,7 +865,7 @@
     next change touches a single spot.
 
 - key: QG-KT-BUG-0028
-  name: Flow intermediate operation results should be removed when it is no longer used
+  name: Flow intermediate operation results should be removed once nothing uses it
   languages: [kt]
   category: BUG
   severity: major
@@ -939,7 +884,7 @@
     description of what the program does.
 
 - key: QG-KT-SML-0054
-  name: The return value of functions returning Deferred should be replaced by the recommended alternative
+  name: Return value of functions returning Deferred should be replaced by the recommended alternative
   languages: [kt]
   category: SML
   severity: minor
@@ -1019,7 +964,7 @@
     and replace weakened mechanisms with the current recommended one.
 
 - key: QG-KT-SEC-0048
-  name: WebViews should not be granted more access than it needs
+  name: WebViews should not grant more access than needed
   languages: [kt]
   category: SEC
   severity: critical
@@ -1057,7 +1002,7 @@
     and replace weakened mechanisms with the current recommended one.
 
 - key: QG-KT-SEC-0050
-  name: Remote artifacts should be verified before it is trusted
+  name: Remote artifacts should be verified before use
   languages: [kt]
   category: SEC
   severity: critical
@@ -1115,7 +1060,7 @@
     next change touches a single spot.
 
 - key: QG-KT-SML-0059
-  name: When statements should be replaced by the recommended alternative
+  name: Outdated constructs should be replaced by the recommended alternative
   languages: [kt]
   category: SML
   severity: minor
@@ -1242,7 +1187,7 @@
     next change touches a single spot.
 
 - key: QG-KT-SML-0066
-  name: Tests around Structural equality tests should verify something
+  name: Tests should assert something
   languages: [kt]
   category: SML
   severity: minor
@@ -1373,7 +1318,7 @@
     next change touches a single spot.
 
 - key: QG-KT-SML-0075
-  name: It should be simplified
+  name: Hard-to-read code should be simplified
   languages: [kt]
   category: SML
   severity: minor
@@ -1391,7 +1336,7 @@
     next change touches a single spot.
 
 - key: QG-KT-BUG-0029
-  name: Map values should behave the way it reads
+  name: Map values should match the behaviour the code describes
   languages: [kt]
   category: BUG
   severity: major
@@ -1427,7 +1372,7 @@
     next change touches a single spot.
 
 - key: QG-KT-SML-0077
-  name: Absent values around Null checks should be handled explicitly
+  name: Null checks should be handled explicitly when absent
   languages: [kt]
   category: SML
   severity: minor
@@ -1471,7 +1416,7 @@
       receiver: [tasks]
 
 - key: QG-KT-SML-0079
-  name: Secrets should not be written into Dependency versions shouldn't be hard-coded
+  name: Dependency versions shouldnt be hard-coded should not be committed with the source
   languages: [kt]
   category: SML
   severity: minor
@@ -1580,7 +1525,7 @@
     next change touches a single spot.
 
 - key: QG-KT-SEC-0051
-  name: The protection around Obfuscation should stay enabled
+  name: Obfuscation should keep the platform protection enabled
   languages: [kt]
   category: SEC
   severity: critical
@@ -1656,7 +1601,7 @@
     and replace weakened mechanisms with the current recommended one.
 
 - key: QG-KT-SEC-0055
-  name: Using persistent unique identifiers should not weaken the security of the application
+  name: Persistent unique identifiers should not weaken the security of the application
   languages: [kt]
   category: SEC
   severity: critical
@@ -1675,7 +1620,7 @@
     and replace weakened mechanisms with the current recommended one.
 
 - key: QG-KT-BUG-0030
-  name: Return values should behave the way it reads
+  name: Return values should match the behaviour the code describes
   languages: [kt]
   category: BUG
   severity: major

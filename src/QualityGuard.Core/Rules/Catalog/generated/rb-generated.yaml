@@ -38,26 +38,26 @@
     next change touches a single spot.
 
 - key: QG-RB-SML-0014
-  name: Secrets should not be written into IP addresses
+  name: IP addresses should not be hardcoded in the source
   languages: [rb]
   category: SML
   severity: minor
   effort: 15min
-  tags: [secret, generated]
+  tags: [hardcoded_value, generated]
   generated: true
   status: planned
-  message: This value looks like a credential committed with the source.
-  summary: A credential, key or token appears directly in the source instead of coming from a secret store.
+  message: This value is fixed in the source and cannot be changed without a rebuild.
+  summary: An address, path or other deployment-specific value is written into the code.
   why: |
-    Anything committed with the code is readable by everyone who can clone the repository, and it
-    survives in the history even after being deleted. Scanners find these values within minutes of a
-    repository becoming reachable, and rotating them means editing and redeploying every copy.
+    The value is right for exactly one environment. Every other environment needs a code change, so the
+    same build cannot be promoted from test to production, and a value that has to be corrected under
+    pressure gets corrected in the wrong place.
   fix: |
-    Read the value at run time from the platform secret store or the environment, fail fast when it is
-    missing, and treat the committed value as compromised: rotate it before removing it.
+    Move the value to configuration, read it at start-up, and fail with a clear message when it is
+    missing so a misconfigured deployment stops before it does anything.
 
 - key: QG-RB-SML-0015
-  name: The Octal values API should not be used
+  name: Octal values should not be used
   languages: [rb]
   category: SML
   severity: minor
@@ -76,7 +76,7 @@
     documented and dated.
 
 - key: QG-RB-SML-0016
-  name: Uses of Lack of copyright and license headers should be reviewed
+  name: Copyright and license headers should be resolved rather than left in the code
   languages: [rb]
   category: SML
   severity: minor

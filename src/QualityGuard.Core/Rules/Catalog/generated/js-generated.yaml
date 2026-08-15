@@ -2,7 +2,7 @@
 # tools/generate_rules.py and are refined by hand as each family is reviewed.
 
 - key: QG-JS-SML-0016
-  name: This construct should be simplified
+  name: Hard-to-read code should be simplified
   languages: [js, ts]
   category: SML
   severity: minor
@@ -20,7 +20,7 @@
     next change touches a single spot.
 
 - key: QG-JS-SML-0019
-  name: Image, area, button with image and object elements should be simplified
+  name: Hard-to-read code should be simplified
   languages: [js, ts]
   category: SML
   severity: minor
@@ -38,7 +38,7 @@
     next change touches a single spot.
 
 - key: QG-JS-BUG-0014
-  name: Mouse events should behave the way it reads
+  name: Mouse events should match the behaviour the code describes
   languages: [js, ts]
   category: BUG
   severity: major
@@ -56,7 +56,7 @@
     and cover the case that used to fail with a test.
 
 - key: QG-JS-SML-0020
-  name: IFrames must have a title should be simplified
+  name: Hard-to-read code should be simplified
   languages: [js, ts]
   category: SML
   severity: minor
@@ -92,7 +92,7 @@
     next change touches a single spot.
 
 - key: QG-JS-SML-0024
-  name: The Labels API should not be used
+  name: Labels should not be used
   languages: [js, ts]
   category: SML
   severity: minor
@@ -111,7 +111,7 @@
     documented and dated.
 
 - key: QG-JS-SML-0026
-  name: The Boolean literals API should not be used
+  name: Boolean literals should not be used
   languages: [js, ts]
   category: SML
   severity: minor
@@ -184,7 +184,7 @@
     next change touches a single spot.
 
 - key: QG-JS-BUG-0015
-  name: Results of operations on strings should behave the way it reads
+  name: Results of operations on strings should match the behaviour the code describes
   languages: [js, ts]
   category: BUG
   severity: major
@@ -220,7 +220,7 @@
     next change touches a single spot.
 
 - key: QG-JS-SML-0033
-  name: Regular expressions around Comments matching a regular expression should be safe and correct
+  name: Regular expressions should be safe and correct
   languages: [js, ts]
   category: SML
   severity: minor
@@ -239,7 +239,7 @@
     for input that comes from outside, and cover the pattern with a test.
 
 - key: QG-JS-SML-0034
-  name: A while loop should be replaced by the recommended alternative
+  name: While loop should be replaced by the recommended alternative
   languages: [js, ts]
   category: SML
   severity: minor
@@ -276,7 +276,7 @@
     next change touches a single spot.
 
 - key: QG-JS-SML-0036
-  name: Uses of NOSONAR should be reviewed
+  name: NOSONAR comments should be resolved rather than left in the code
   languages: [js, ts]
   category: SML
   severity: minor
@@ -313,26 +313,26 @@
     cases the old form got wrong.
 
 - key: QG-JS-SML-0038
-  name: Secrets should not be written into IP addresses
+  name: IP addresses should not be hardcoded in the source
   languages: [js, ts]
   category: SML
   severity: minor
   effort: 15min
-  tags: [secret, generated]
+  tags: [hardcoded_value, generated]
   generated: true
   status: planned
-  message: This value looks like a credential committed with the source.
-  summary: A credential, key or token appears directly in the source instead of coming from a secret store.
+  message: This value is fixed in the source and cannot be changed without a rebuild.
+  summary: An address, path or other deployment-specific value is written into the code.
   why: |
-    Anything committed with the code is readable by everyone who can clone the repository, and it
-    survives in the history even after being deleted. Scanners find these values within minutes of a
-    repository becoming reachable, and rotating them means editing and redeploying every copy.
+    The value is right for exactly one environment. Every other environment needs a code change, so the
+    same build cannot be promoted from test to production, and a value that has to be corrected under
+    pressure gets corrected in the wrong place.
   fix: |
-    Read the value at run time from the platform secret store or the environment, fail fast when it is
-    missing, and treat the committed value as compromised: rotate it before removing it.
+    Move the value to configuration, read it at start-up, and fail with a clear message when it is
+    missing so a misconfigured deployment stops before it does anything.
 
 - key: QG-JS-SML-0039
-  name: The Octal values API should not be used
+  name: Octal values should not be used
   languages: [js, ts]
   category: SML
   severity: minor
@@ -351,7 +351,7 @@
     documented and dated.
 
 - key: QG-JS-BUG-0016
-  name: The With statements API should not be used
+  name: With statements should not be used
   languages: [js, ts]
   category: BUG
   severity: major
@@ -388,7 +388,7 @@
     next change touches a single spot.
 
 - key: QG-JS-SML-0041
-  name: Uses of Comments should be reviewed
+  name: Comments should be resolved rather than left in the code
   languages: [js, ts]
   category: SML
   severity: minor
@@ -424,7 +424,7 @@
     next change touches a single spot.
 
 - key: QG-JS-SML-0043
-  name: Only while, do, for and switch statements should be simplified
+  name: Hard-to-read code should be simplified
   languages: [js, ts]
   category: SML
   severity: minor
@@ -480,7 +480,7 @@
     cases the old form got wrong.
 
 - key: QG-JS-SEC-0034
-  name: The Alert(...) API should not be used
+  name: Alert(...) should not be used
   languages: [js, ts]
   category: SEC
   severity: critical
@@ -517,7 +517,7 @@
     next change touches a single spot.
 
 - key: QG-JS-SML-0047
-  name: Uses of Lack of copyright and license headers should be reviewed
+  name: Copyright and license headers should be resolved rather than left in the code
   languages: [js, ts]
   category: SML
   severity: minor
@@ -572,7 +572,7 @@
     name, and keep the original as the sequence of those steps.
 
 - key: QG-JS-SML-0050
-  name: Exception handling around Local variables should be explicit
+  name: Local variables should make failure handling explicit
   languages: [js, ts]
   category: SML
   severity: minor
@@ -609,7 +609,7 @@
     next change touches a single spot.
 
 - key: QG-JS-SML-0052
-  name: The Multiline string literals API should not be used
+  name: Multiline string literals should not be used
   languages: [js, ts]
   category: SML
   severity: minor
@@ -628,7 +628,7 @@
     documented and dated.
 
 - key: QG-JS-SEC-0035
-  name: The Debugger statements API should not be used
+  name: Debugger statements should not be used
   languages: [js, ts]
   category: SEC
   severity: critical
@@ -647,7 +647,7 @@
     documented and dated.
 
 - key: QG-JS-SML-0053
-  name: The Future reserved words API should not be used
+  name: Future reserved words should not be used
   languages: [js, ts]
   category: SML
   severity: minor
@@ -666,7 +666,7 @@
     documented and dated.
 
 - key: QG-JS-SML-0054
-  name: The Array constructors API should not be used
+  name: Array constructors should not be used
   languages: [js, ts]
   category: SML
   severity: minor
@@ -685,7 +685,7 @@
     documented and dated.
 
 - key: QG-JS-BUG-0017
-  name: The Bitwise operators API should not be used
+  name: Bitwise operators should not be used
   languages: [js, ts]
   category: BUG
   severity: major
@@ -704,7 +704,7 @@
     documented and dated.
 
 - key: QG-JS-BUG-0018
-  name: Concurrent access around Function declarations should be coordinated correctly
+  name: Function declarations should be accessed in a thread-safe way
   languages: [js, ts]
   category: BUG
   severity: major
@@ -722,7 +722,7 @@
     the concurrent collections and higher-level primitives the platform provides.
 
 - key: QG-JS-SML-0055
-  name: The Wrapper objects API should not be used
+  name: Wrapper objects should not be used
   languages: [js, ts]
   category: SML
   severity: minor
@@ -759,7 +759,7 @@
     function or constant.
 
 - key: QG-JS-BUG-0020
-  name: For...in loops should behave the way it reads
+  name: For...in loops should match the behaviour the code describes
   languages: [js, ts]
   category: BUG
   severity: major
@@ -777,7 +777,7 @@
     and cover the case that used to fail with a test.
 
 - key: QG-JS-BUG-0021
-  name: Function argument names should behave the way it reads
+  name: Function argument names should match the behaviour the code describes
   languages: [js, ts]
   category: BUG
   severity: major
@@ -795,7 +795,7 @@
     and cover the case that used to fail with a test.
 
 - key: QG-JS-SML-0056
-  name: The Trailing commas API should not be used
+  name: Trailing commas should not be used
   languages: [js, ts]
   category: SML
   severity: minor
@@ -835,7 +835,7 @@
     - invocation: [strict]
 
 - key: QG-JS-SML-0058
-  name: Tests around Tests should verify something
+  name: Tests should assert something
   languages: [js, ts]
   category: SML
   severity: minor
@@ -852,26 +852,8 @@
     Assert the behaviour the test exists for, re-enable it, and make sure it fails when the behaviour is
     broken before trusting it again.
 
-- key: QG-JS-BUG-0022
-  name: Loops with at most one iteration should behave the way it reads
-  languages: [js, ts]
-  category: BUG
-  severity: major
-  effort: 15min
-  tags: [bug, generated]
-  generated: true
-  status: planned
-  message: This code does not behave the way it reads.
-  summary: The code does not do what its shape suggests, or fails on ordinary input.
-  why: |
-    Written this way the code works by accident or breaks on values that are perfectly normal, and the
-    mistake is easy to miss in review because the intent reads correctly.
-  fix: |
-    Make the intended behaviour explicit — fix the condition, the operator or the order of operations —
-    and cover the case that used to fail with a test.
-
 - key: QG-JS-SML-0059
-  name: The The ternary operator API should not be used
+  name: Ternary operator should not be used
   languages: [js, ts]
   category: SML
   severity: minor
@@ -908,7 +890,7 @@
     next change touches a single spot.
 
 - key: QG-JS-SML-0062
-  name: The Deprecated APIs API should not be used
+  name: Deprecated APIs should not be used
   languages: [js, ts]
   category: SML
   severity: minor
@@ -983,27 +965,8 @@
   detect:
     - invocation: [secure]
 
-- key: QG-JS-BUG-0023
-  name: Values should use current cryptographic parameters
-  languages: [js, ts]
-  category: BUG
-  severity: major
-  effort: 15min
-  tags: [crypto, generated]
-  generated: true
-  status: planned
-  message: This cryptographic choice no longer provides the protection it suggests.
-  summary: A cryptographic primitive, mode or key size that is no longer considered safe is used.
-  why: |
-    Broken primitives keep producing output that looks correct, so nothing fails while the protection is
-    already gone. Data encrypted today is often kept for years, which means an algorithm that is merely
-    weak now will be readable later.
-  fix: |
-    Use the algorithms the platform recommends today — authenticated encryption, a modern hash, a key
-    size at or above the current guidance — and keep the choice in one place so it can be raised.
-
 - key: QG-JS-BUG-0024
-  name: Special identifiers should behave the way it reads
+  name: Special identifiers should match the behaviour the code describes
   languages: [js, ts]
   category: BUG
   severity: major
@@ -1039,7 +1002,7 @@
     next change touches a single spot.
 
 - key: QG-JS-SML-0067
-  name: Tests around Test files should verify something
+  name: Tests should assert something
   languages: [js, ts]
   category: SML
   severity: minor
@@ -1057,25 +1020,7 @@
     broken before trusting it again.
 
 - key: QG-JS-BUG-0025
-  name: Loops should behave the way it reads
-  languages: [js, ts]
-  category: BUG
-  severity: major
-  effort: 15min
-  tags: [bug, generated]
-  generated: true
-  status: planned
-  message: This code does not behave the way it reads.
-  summary: The code does not do what its shape suggests, or fails on ordinary input.
-  why: |
-    Written this way the code works by accident or breaks on values that are perfectly normal, and the
-    mistake is easy to miss in review because the intent reads correctly.
-  fix: |
-    Make the intended behaviour explicit — fix the condition, the operator or the order of operations —
-    and cover the case that used to fail with a test.
-
-- key: QG-JS-BUG-0026
-  name: Return values from functions without side effects should behave the way it reads
+  name: Loops should match the behaviour the code describes
   languages: [js, ts]
   category: BUG
   severity: major
@@ -1093,7 +1038,7 @@
     and cover the case that used to fail with a test.
 
 - key: QG-JS-SML-0068
-  name: The Wildcard imports API should not be used
+  name: Wildcard imports should not be used
   languages: [js, ts]
   category: SML
   severity: minor
@@ -1129,26 +1074,8 @@
     Remove what is not used, name what is unclear, and keep one piece of behaviour in one place so the
     next change touches a single spot.
 
-- key: QG-JS-BUG-0027
-  name: A for loop update clause should behave the way it reads
-  languages: [js, ts]
-  category: BUG
-  severity: major
-  effort: 15min
-  tags: [bug, generated]
-  generated: true
-  status: planned
-  message: This code does not behave the way it reads.
-  summary: The code does not do what its shape suggests, or fails on ordinary input.
-  why: |
-    Written this way the code works by accident or breaks on values that are perfectly normal, and the
-    mistake is easy to miss in review because the intent reads correctly.
-  fix: |
-    Make the intended behaviour explicit — fix the condition, the operator or the order of operations —
-    and cover the case that used to fail with a test.
-
 - key: QG-JS-BUG-0028
-  name: Absent values around Properties of variables with null or undefined values should be handled explicitly
+  name: Absent values should be handled explicitly when absent
   languages: [js, ts]
   category: BUG
   severity: major
@@ -1241,7 +1168,7 @@
     cases the old form got wrong.
 
 - key: QG-JS-BUG-0029
-  name: Built-in objects should behave the way it reads
+  name: Built-in objects should match the behaviour the code describes
   languages: [js, ts]
   category: BUG
   severity: major
@@ -1278,7 +1205,7 @@
     cases the old form got wrong.
 
 - key: QG-JS-BUG-0031
-  name: Setters should behave the way it reads
+  name: Setters should match the behaviour the code describes
   languages: [js, ts]
   category: BUG
   severity: major
@@ -1315,7 +1242,7 @@
     and replace weakened mechanisms with the current recommended one.
 
 - key: QG-JS-BUG-0032
-  name: The Empty character classes API should not be used
+  name: Empty character classes should not be used
   languages: [js, ts]
   category: BUG
   severity: major
@@ -1334,7 +1261,7 @@
     documented and dated.
 
 - key: QG-JS-SML-0075
-  name: The Arguments.caller and arguments.callee API should not be used
+  name: Arguments.caller and arguments.callee should not be used
   languages: [js, ts]
   category: SML
   severity: minor
@@ -1360,7 +1287,7 @@
       receiver: [arguments]
 
 - key: QG-JS-BUG-0033
-  name: The NaN API should not be used
+  name: NaN should not be used
   languages: [js, ts]
   category: BUG
   severity: major
@@ -1418,7 +1345,7 @@
     read-only whatever is not meant to change.
 
 - key: QG-JS-SML-0078
-  name: Exception handling around Catch clauses should be explicit
+  name: Catch clauses should make failure handling explicit
   languages: [js, ts]
   category: SML
   severity: minor
@@ -1455,7 +1382,7 @@
     next change touches a single spot.
 
 - key: QG-JS-SEC-0038
-  name: The Web SQL databases API should not be used
+  name: Web SQL databases should not be used
   languages: [js, ts]
   category: SEC
   severity: critical
@@ -1474,7 +1401,7 @@
     documented and dated.
 
 - key: QG-JS-BUG-0034
-  name: Array.prototype.sort() and Array.prototype.toSorted() should behave the way it reads
+  name: Array.prototype.sort() and Array.prototype.toSorted() should match the behaviour the code describes
   languages: [js, ts]
   category: BUG
   severity: major
@@ -1492,7 +1419,7 @@
     and cover the case that used to fail with a test.
 
 - key: QG-JS-SML-0081
-  name: The Fixed waits API should not be used
+  name: Fixed waits should not be used
   languages: [js, ts]
   category: SML
   severity: minor
@@ -1511,7 +1438,7 @@
     documented and dated.
 
 - key: QG-JS-SML-0083
-  name: The The global this object API should not be used
+  name: Global this object should not be used
   languages: [js, ts]
   category: SML
   severity: minor
@@ -1530,7 +1457,7 @@
     documented and dated.
 
 - key: QG-JS-BUG-0035
-  name: New should behave the way it reads
+  name: New should match the behaviour the code describes
   languages: [js, ts]
   category: BUG
   severity: major
@@ -1548,7 +1475,7 @@
     and cover the case that used to fail with a test.
 
 - key: QG-JS-SML-0084
-  name: The Comparison operators API should not be used
+  name: Comparison operators should not be used
   languages: [js, ts]
   category: SML
   severity: minor
@@ -1660,7 +1587,7 @@
     next change touches a single spot.
 
 - key: QG-JS-SML-0089
-  name: Tests around Assertion arguments should verify something
+  name: Tests should assert something
   languages: [js, ts]
   category: SML
   severity: minor
@@ -1715,7 +1642,7 @@
     next change touches a single spot.
 
 - key: QG-JS-BUG-0038
-  name: Const variables should behave the way it reads
+  name: Const variables should match the behaviour the code describes
   languages: [js, ts]
   category: BUG
   severity: major
@@ -1807,7 +1734,7 @@
     next change touches a single spot.
 
 - key: QG-JS-SML-0096
-  name: The Function constructors API should not be used
+  name: Function constructors should not be used
   languages: [js, ts]
   category: SML
   severity: minor
@@ -1866,7 +1793,7 @@
     - invocation: [prototype]
 
 - key: QG-JS-BUG-0039
-  name: Generators should behave the way it reads
+  name: Generators should match the behaviour the code describes
   languages: [js, ts]
   category: BUG
   severity: major
@@ -1923,7 +1850,7 @@
     next change touches a single spot.
 
 - key: QG-JS-BUG-0040
-  name: The Comma and logical OR operators API should not be used
+  name: Comma and logical OR operators should not be used
   languages: [js, ts]
   category: BUG
   severity: major
@@ -1960,7 +1887,7 @@
     next change touches a single spot.
 
 - key: QG-JS-SML-0103
-  name: Exception handling around Literals should be explicit
+  name: Literals should make failure handling explicit
   languages: [js, ts]
   category: SML
   severity: minor
@@ -1979,7 +1906,7 @@
     wrapping, and let everything else reach the boundary handler.
 
 - key: QG-JS-BUG-0041
-  name: The The return value of void functions API should not be used
+  name: Return value of void functions should not be used
   languages: [js, ts]
   category: BUG
   severity: major
@@ -2017,7 +1944,7 @@
     cases the old form got wrong.
 
 - key: QG-JS-SML-0105
-  name: The Void API should not be used
+  name: Void should not be used
   languages: [js, ts]
   category: SML
   severity: minor
@@ -2036,7 +1963,7 @@
     documented and dated.
 
 - key: QG-JS-SML-0107
-  name: The Values not convertible to numbers API should not be used
+  name: Values not convertible to numbers should not be used
   languages: [js, ts]
   category: SML
   severity: minor
@@ -2091,7 +2018,7 @@
     next change touches a single spot.
 
 - key: QG-JS-BUG-0042
-  name: The In API should not be used
+  name: In should not be used
   languages: [js, ts]
   category: BUG
   severity: major
@@ -2110,7 +2037,7 @@
     documented and dated.
 
 - key: QG-JS-BUG-0043
-  name: The Template literal placeholder syntax API should not be used
+  name: Template literal placeholder syntax should not be used
   languages: [js, ts]
   category: BUG
   severity: major
@@ -2240,7 +2167,7 @@
     read-only whatever is not meant to change.
 
 - key: QG-JS-BUG-0047
-  name: The New operator API should not be used
+  name: New operator should not be used
   languages: [js, ts]
   category: BUG
   severity: major
@@ -2259,7 +2186,7 @@
     documented and dated.
 
 - key: QG-JS-BUG-0048
-  name: Super() should behave the way it reads
+  name: Super() should match the behaviour the code describes
   languages: [js, ts]
   category: BUG
   severity: major
@@ -2313,7 +2240,7 @@
     next change touches a single spot.
 
 - key: QG-JS-SML-0115
-  name: A conditionally executed single line should be simplified
+  name: Conditionally executed single line should be simplified
   languages: [js, ts]
   category: SML
   severity: minor
@@ -2329,24 +2256,6 @@
   fix: |
     Remove what is not used, name what is unclear, and keep one piece of behaviour in one place so the
     next change touches a single spot.
-
-- key: QG-JS-BUG-0049
-  name: Collection size and array length comparisons should behave the way it reads
-  languages: [js, ts]
-  category: BUG
-  severity: major
-  effort: 15min
-  tags: [bug, generated]
-  generated: true
-  status: planned
-  message: This code does not behave the way it reads.
-  summary: The code does not do what its shape suggests, or fails on ordinary input.
-  why: |
-    Written this way the code works by accident or breaks on values that are perfectly normal, and the
-    mistake is easy to miss in review because the intent reads correctly.
-  fix: |
-    Make the intended behaviour explicit — fix the condition, the operator or the order of operations —
-    and cover the case that used to fail with a test.
 
 - key: QG-JS-SML-0117
   name: Collection contents should be replaced by the recommended alternative
@@ -2368,7 +2277,7 @@
     cases the old form got wrong.
 
 - key: QG-JS-SML-0118
-  name: The Array-mutating methods API should not be used
+  name: Array-mutating methods should not be used
   languages: [js, ts]
   category: SML
   severity: minor
@@ -2405,7 +2314,7 @@
     next change touches a single spot.
 
 - key: QG-JS-BUG-0050
-  name: Constructors should behave the way it reads
+  name: Constructors should match the behaviour the code describes
   languages: [js, ts]
   category: BUG
   severity: major
@@ -2423,7 +2332,7 @@
     and cover the case that used to fail with a test.
 
 - key: QG-JS-BUG-0051
-  name: Typeof expressions should behave the way it reads
+  name: Typeof expressions should match the behaviour the code describes
   languages: [js, ts]
   category: BUG
   severity: major
@@ -2459,7 +2368,7 @@
     next change touches a single spot.
 
 - key: QG-JS-SML-0122
-  name: Tests around Type assertions should verify something
+  name: Tests should assert something
   languages: [js, ts]
   category: SML
   severity: minor
@@ -2496,7 +2405,7 @@
     cases the old form got wrong.
 
 - key: QG-JS-SML-0124
-  name: The For in API should not be used
+  name: For in should not be used
   languages: [js, ts]
   category: SML
   severity: minor
@@ -2533,7 +2442,7 @@
     next change touches a single spot.
 
 - key: QG-JS-BUG-0052
-  name: Collection elements should behave the way it reads
+  name: Collection elements should match the behaviour the code describes
   languages: [js, ts]
   category: BUG
   severity: major
@@ -2569,7 +2478,7 @@
     function or constant.
 
 - key: QG-JS-SML-0127
-  name: The Module API should not be used
+  name: Module should not be used
   languages: [js, ts]
   category: SML
   severity: minor
@@ -2645,7 +2554,7 @@
     next change touches a single spot.
 
 - key: QG-JS-SML-0130
-  name: The The any type API should not be used
+  name: Any type should not be used
   languages: [js, ts]
   category: SML
   severity: minor
@@ -2664,7 +2573,7 @@
     documented and dated.
 
 - key: QG-JS-BUG-0054
-  name: Getters and setters should behave the way it reads
+  name: Getters and setters should match the behaviour the code describes
   languages: [js, ts]
   category: BUG
   severity: major
@@ -2739,7 +2648,7 @@
     cases the old form got wrong.
 
 - key: QG-JS-SML-0134
-  name: The Await API should not be used
+  name: Await should not be used
   languages: [js, ts]
   category: SML
   severity: minor
@@ -2796,7 +2705,7 @@
     next change touches a single spot.
 
 - key: QG-JS-BUG-0055
-  name: Type intersections should behave the way it reads
+  name: Type intersections should match the behaviour the code describes
   languages: [js, ts]
   category: BUG
   severity: major
@@ -2833,7 +2742,7 @@
     size at or above the current guidance — and keep the choice in one place so it can be raised.
 
 - key: QG-JS-SEC-0041
-  name: The protection around CSRF protections should stay enabled
+  name: CSRF protections should keep the platform protection enabled
   languages: [js, ts]
   category: SEC
   severity: critical
@@ -2852,7 +2761,7 @@
     single endpoint or value that needs it, and document why it is safe there.
 
 - key: QG-JS-SML-0137
-  name: The In API should not be used
+  name: In should not be used
   languages: [js, ts]
   category: SML
   severity: minor
@@ -2980,15 +2889,15 @@
     next change touches a single spot.
 
 - key: QG-JS-SEC-0042
-  name: Server certificates should be verified before it is trusted
+  name: Server certificates should be verified before use
   languages: [js, ts]
   category: SEC
   severity: critical
   effort: 15min
   tags: [verification, generated]
   generated: true
-  status: planned
-  message: This value is accepted without the check that proves it is legitimate.
+  status: ready
+  message: Skipping certificate validation turns TLS into plain text with extra steps: anyone on the path can present their own certificate.
   summary: A value or a peer is accepted without the check that proves it is legitimate.
   why: |
     Without verification the program trusts whatever it received, so an attacker who can supply or
@@ -2997,6 +2906,11 @@
   fix: |
     Perform the check with the platform API — signature, certificate chain, hostname or token validation
     — and reject the value when it fails, instead of logging and continuing.
+  detect:
+    - assignTo: [rejectUnauthorized]
+      contains: [false]
+    - assignTo: [NODE_TLS_REJECT_UNAUTHORIZED]
+      contains: [0]
 
 - key: QG-JS-SML-0145
   name: HTML elements should be simplified
@@ -3017,7 +2931,7 @@
     next change touches a single spot.
 
 - key: QG-JS-BUG-0057
-  name: Tables should behave the way it reads
+  name: Tables should match the behaviour the code describes
   languages: [js, ts]
   category: BUG
   severity: major
@@ -3035,7 +2949,7 @@
     and cover the case that used to fail with a test.
 
 - key: QG-JS-SML-0146
-  name: The HTML <table> API should not be used
+  name: HTML <table> should not be used
   languages: [js, ts]
   category: SML
   severity: minor
@@ -3054,7 +2968,7 @@
     documented and dated.
 
 - key: QG-JS-BUG-0058
-  name: Table cells should behave the way it reads
+  name: Table cells should match the behaviour the code describes
   languages: [js, ts]
   category: BUG
   severity: major
@@ -3090,7 +3004,7 @@
     next change touches a single spot.
 
 - key: QG-JS-SEC-0043
-  name: Server hostnames should be verified before it is trusted
+  name: Server hostnames should be verified before use
   languages: [js, ts]
   category: SEC
   severity: critical
@@ -3116,8 +3030,8 @@
   effort: 15min
   tags: [crypto, generated]
   generated: true
-  status: planned
-  message: This cryptographic choice no longer provides the protection it suggests.
+  status: ready
+  message: ECB encrypts equal blocks to equal ciphertext, so the plaintext shape survives encryption; use an authenticated mode such as GCM.
   summary: A cryptographic primitive, mode or key size that is no longer considered safe is used.
   why: |
     Broken primitives keep producing output that looks correct, so nothing fails while the protection is
@@ -3126,9 +3040,12 @@
   fix: |
     Use the algorithms the platform recommends today — authenticated encryption, a modern hash, a key
     size at or above the current guidance — and keep the choice in one place so it can be raised.
+  detect:
+    - invocation: [createCipheriv]
+      argLiterals: [-ecb]
 
 - key: QG-JS-SEC-0045
-  name: Sensitive permissions should not be granted more access than it needs
+  name: Sensitive permissions should not grant more access than needed
   languages: [js, ts]
   category: SEC
   severity: critical
@@ -3204,7 +3121,7 @@
     and replace weakened mechanisms with the current recommended one.
 
 - key: QG-JS-SEC-0049
-  name: The Remote artifacts API should not be used
+  name: Remote artifacts should not be used
   languages: [js, ts]
   category: SEC
   severity: critical
@@ -3223,7 +3140,7 @@
     documented and dated.
 
 - key: QG-JS-SEC-0050
-  name: The protection around Content security policy fetch directives should stay enabled
+  name: Content security policy fetch directives should keep the platform protection enabled
   languages: [js, ts]
   category: SEC
   severity: critical
@@ -3242,7 +3159,7 @@
     single endpoint or value that needs it, and document why it is safe there.
 
 - key: QG-JS-SEC-0051
-  name: The protection around Content Security Policy frame-ancestors directive should stay enabled
+  name: Content Security Policy frame-ancestors directive should keep the platform protection enabled
   languages: [js, ts]
   category: SEC
   severity: critical
@@ -3299,7 +3216,7 @@
     and replace weakened mechanisms with the current recommended one.
 
 - key: QG-JS-SEC-0054
-  name: The protection around HTTP Strict-Transport-Security policy should stay enabled
+  name: HTTP Strict-Transport-Security policy should keep the platform protection enabled
   languages: [js, ts]
   category: SEC
   severity: critical
@@ -3356,7 +3273,7 @@
     comment so the next reader does not treat it as a gap.
 
 - key: QG-JS-SML-0148
-  name: Regular expressions around Regular expressions should be safe and correct
+  name: Regular expressions should be safe and correct
   languages: [js, ts]
   category: SML
   severity: minor
@@ -3375,7 +3292,7 @@
     for input that comes from outside, and cover the pattern with a test.
 
 - key: QG-JS-BUG-0061
-  name: Regular expressions around Alternatives in regular expressions should be safe and correct
+  name: Regular expressions should be safe and correct
   languages: [js, ts]
   category: BUG
   severity: major
@@ -3413,7 +3330,7 @@
     cases the old form got wrong.
 
 - key: QG-JS-BUG-0062
-  name: Tests around Assertions should verify something
+  name: Tests should assert something
   languages: [js, ts]
   category: BUG
   severity: major
@@ -3431,7 +3348,7 @@
     broken before trusting it again.
 
 - key: QG-JS-BUG-0063
-  name: Regular expressions around Regular expressions using Unicode character classes should be safe and correct
+  name: Regular expressions should be safe and correct
   languages: [js, ts]
   category: BUG
   severity: major
@@ -3450,7 +3367,7 @@
     for input that comes from outside, and cover the pattern with a test.
 
 - key: QG-JS-BUG-0064
-  name: Regular expressions around Unicode Grapheme Clusters should be safe and correct
+  name: Unicode Grapheme Clusters should be safe and correct
   languages: [js, ts]
   category: BUG
   severity: major
@@ -3469,7 +3386,7 @@
     for input that comes from outside, and cover the pattern with a test.
 
 - key: QG-JS-SML-0150
-  name: Regular expressions around Character classes in regular expressions should be safe and correct
+  name: Regular expressions should be safe and correct
   languages: [js, ts]
   category: SML
   severity: minor
@@ -3488,7 +3405,7 @@
     for input that comes from outside, and cover the pattern with a test.
 
 - key: QG-JS-SEC-0056
-  name: A new session should not weaken the security of the application
+  name: New session should not weaken the security of the application
   languages: [js, ts]
   category: SEC
   severity: critical
@@ -3507,7 +3424,7 @@
     and replace weakened mechanisms with the current recommended one.
 
 - key: QG-JS-SML-0151
-  name: The most specific assertion should be replaced by the recommended alternative
+  name: Most specific assertion should be replaced by the recommended alternative
   languages: [js, ts]
   category: SML
   severity: minor
@@ -3526,7 +3443,7 @@
     cases the old form got wrong.
 
 - key: QG-JS-SML-0152
-  name: Tests around Assertions should verify something
+  name: Tests should assert something
   languages: [js, ts]
   category: SML
   severity: minor
@@ -3544,7 +3461,7 @@
     broken before trusting it again.
 
 - key: QG-JS-SML-0153
-  name: Tests around Tests should verify something
+  name: Tests should assert something
   languages: [js, ts]
   category: SML
   severity: minor
@@ -3562,7 +3479,7 @@
     broken before trusting it again.
 
 - key: QG-JS-SML-0154
-  name: Tests around Tests should verify something
+  name: Tests should assert something
   languages: [js, ts]
   category: SML
   severity: minor
@@ -3580,7 +3497,7 @@
     broken before trusting it again.
 
 - key: QG-JS-SML-0155
-  name: Tests around Similar tests should verify something
+  name: Tests should assert something
   languages: [js, ts]
   category: SML
   severity: minor
@@ -3617,7 +3534,7 @@
     comment so the next reader does not treat it as a gap.
 
 - key: QG-JS-SML-0157
-  name: Regular expressions around Single-character alternations in regular expressions should be safe and correct
+  name: Regular expressions should be safe and correct
   languages: [js, ts]
   category: SML
   severity: minor
@@ -3636,7 +3553,7 @@
     for input that comes from outside, and cover the pattern with a test.
 
 - key: QG-JS-SML-0158
-  name: Tests around Tests should verify something
+  name: Tests should assert something
   languages: [js, ts]
   category: SML
   severity: minor
@@ -3656,7 +3573,7 @@
     - invocation: [done]
 
 - key: QG-JS-BUG-0065
-  name: Disabling Mocha timeouts should behave the way it reads
+  name: Mocha timeouts should match the behaviour the code describes
   languages: [js, ts]
   category: BUG
   severity: major
@@ -3674,7 +3591,7 @@
     and cover the case that used to fail with a test.
 
 - key: QG-JS-SML-0159
-  name: Tests around Chai assertions should verify something
+  name: Tests should assert something
   languages: [js, ts]
   category: SML
   severity: minor
@@ -3692,23 +3609,23 @@
     broken before trusting it again.
 
 - key: QG-JS-SEC-0057
-  name: S3 buckets should not be granted more access than it needs
+  name: S3 buckets should use current cryptographic parameters
   languages: [js, ts]
   category: SEC
   severity: critical
   effort: 15min
-  tags: [permissions, generated]
+  tags: [crypto, generated]
   generated: true
   status: planned
-  message: This grants wider access than the operation needs.
-  summary: A resource is created or shared with permissions wider than the task requires.
+  message: This cryptographic choice no longer provides the protection it suggests.
+  summary: A cryptographic primitive, mode or key size that is no longer considered safe is used.
   why: |
-    Every account that can reach the resource can also change it, so a single compromised process is
-    enough to alter data or code the application later trusts. Wide permissions are also invisible at the
-    call site: nothing in the reading code says who else can write.
+    Broken primitives keep producing output that looks correct, so nothing fails while the protection is
+    already gone. Data encrypted today is often kept for years, which means an algorithm that is merely
+    weak now will be readable later.
   fix: |
-    Grant the narrowest right that works, to the specific identity that needs it, and rely on inherited
-    permissions from a properly secured parent instead of widening the resource itself.
+    Use the algorithms the platform recommends today — authenticated encryption, a modern hash, a key
+    size at or above the current guidance — and keep the choice in one place so it can be raised.
 
 - key: QG-JS-SEC-0058
   name: Amazon S3 buckets should not weaken the security of the application
@@ -3730,7 +3647,7 @@
     and replace weakened mechanisms with the current recommended one.
 
 - key: QG-JS-SEC-0059
-  name: S3 buckets should not be granted more access than it needs
+  name: S3 buckets should not grant more access than needed
   languages: [js, ts]
   category: SEC
   severity: critical
@@ -3749,7 +3666,7 @@
     permissions from a properly secured parent instead of widening the resource itself.
 
 - key: QG-JS-SEC-0060
-  name: The protection around Angular built-in sanitization should stay enabled
+  name: Angular built-in sanitization should keep the platform protection enabled
   languages: [js, ts]
   category: SEC
   severity: critical
@@ -3768,7 +3685,7 @@
     single endpoint or value that needs it, and document why it is safe there.
 
 - key: QG-JS-SEC-0061
-  name: AWS resource-based policies should not be granted more access than it needs
+  name: AWS resource-based policies should not grant more access than needed
   languages: [js, ts]
   category: SEC
   severity: critical
@@ -3806,7 +3723,7 @@
     size at or above the current guidance — and keep the choice in one place so it can be raised.
 
 - key: QG-JS-SEC-0063
-  name: Amazon S3 bucket public access should not be granted more access than it needs
+  name: Amazon S3 bucket public access should not grant more access than needed
   languages: [js, ts]
   category: SEC
   severity: critical
@@ -3825,7 +3742,7 @@
     permissions from a properly secured parent instead of widening the resource itself.
 
 - key: QG-JS-SEC-0064
-  name: Policies should not be granted more access than it needs
+  name: Policies should not grant more access than needed
   languages: [js, ts]
   category: SEC
   severity: critical
@@ -3863,7 +3780,7 @@
     size at or above the current guidance — and keep the choice in one place so it can be raised.
 
 - key: QG-JS-SEC-0066
-  name: IAM policies should not be granted more access than it needs
+  name: IAM policies should not grant more access than needed
   languages: [js, ts]
   category: SEC
   severity: critical
@@ -3901,7 +3818,7 @@
     size at or above the current guidance — and keep the choice in one place so it can be raised.
 
 - key: QG-JS-SEC-0068
-  name: AWS IAM policies should not be granted more access than it needs
+  name: AWS IAM policies should not grant more access than needed
   languages: [js, ts]
   category: SEC
   severity: critical
@@ -3939,7 +3856,7 @@
     size at or above the current guidance — and keep the choice in one place so it can be raised.
 
 - key: QG-JS-SEC-0070
-  name: Administration services access should not be granted more access than it needs
+  name: Administration services access should not grant more access than needed
   languages: [js, ts]
   category: SEC
   severity: critical
@@ -3977,7 +3894,7 @@
     comment so the next reader does not treat it as a gap.
 
 - key: QG-JS-BUG-0067
-  name: Regular expressions around Regular expressions should be safe and correct
+  name: Regular expressions should be safe and correct
   languages: [js, ts]
   category: BUG
   severity: major
@@ -4015,7 +3932,7 @@
     cases the old form got wrong.
 
 - key: QG-JS-SML-0161
-  name: Regular expressions around Regular expressions should be safe and correct
+  name: Regular expressions should be safe and correct
   languages: [js, ts]
   category: SML
   severity: minor
@@ -4053,7 +3970,7 @@
     size at or above the current guidance — and keep the choice in one place so it can be raised.
 
 - key: QG-JS-BUG-0068
-  name: Regular expressions around Replacement strings should be safe and correct
+  name: Replacement strings should be safe and correct
   languages: [js, ts]
   category: BUG
   severity: major
@@ -4072,7 +3989,7 @@
     for input that comes from outside, and cover the pattern with a test.
 
 - key: QG-JS-SEC-0072
-  name: Public network access to cloud resources should not be granted more access than it needs
+  name: Public network access to cloud resources should not grant more access than needed
   languages: [js, ts]
   category: SEC
   severity: critical
@@ -4205,7 +4122,7 @@
     cases the old form got wrong.
 
 - key: QG-JS-SML-0164
-  name: Regular expressions around Character classes in regular expressions should be safe and correct
+  name: Regular expressions should be safe and correct
   languages: [js, ts]
   category: SML
   severity: minor
@@ -4224,7 +4141,7 @@
     for input that comes from outside, and cover the pattern with a test.
 
 - key: QG-JS-BUG-0070
-  name: Tests around Exclusive tests should verify something
+  name: Tests should assert something
   languages: [js, ts]
   category: BUG
   severity: major
@@ -4242,7 +4159,7 @@
     broken before trusting it again.
 
 - key: QG-JS-BUG-0071
-  name: React render functions should behave the way it reads
+  name: React render functions should match the behaviour the code describes
   languages: [js, ts]
   category: BUG
   severity: major
@@ -4260,7 +4177,7 @@
     and cover the case that used to fail with a test.
 
 - key: QG-JS-BUG-0072
-  name: React components should behave the way it reads
+  name: React components should match the behaviour the code describes
   languages: [js, ts]
   category: BUG
   severity: major
@@ -4278,7 +4195,7 @@
     and cover the case that used to fail with a test.
 
 - key: QG-JS-BUG-0073
-  name: React Hooks should behave the way it reads
+  name: React Hooks should match the behaviour the code describes
   languages: [js, ts]
   category: BUG
   severity: major
@@ -4296,7 +4213,7 @@
     and cover the case that used to fail with a test.
 
 - key: QG-JS-BUG-0074
-  name: The React's useState hook API should not be used
+  name: Reacts useState hook should not be used
   languages: [js, ts]
   category: BUG
   severity: major
@@ -4315,7 +4232,7 @@
     documented and dated.
 
 - key: QG-JS-BUG-0075
-  name: The React state setter function API should not be used
+  name: React state setter function should not be used
   languages: [js, ts]
   category: BUG
   severity: major
@@ -4388,7 +4305,7 @@
     next change touches a single spot.
 
 - key: QG-JS-SML-0169
-  name: Disallow `.bind()` and arrow functions in should be simplified
+  name: Hard-to-read code should be simplified
   languages: [js, ts]
   category: SML
   severity: minor
@@ -4460,7 +4377,7 @@
     next change touches a single spot.
 
 - key: QG-JS-BUG-0076
-  name: The Optional chaining API should not be used
+  name: Optional chaining should not be used
   languages: [js, ts]
   category: BUG
   severity: major
@@ -4481,7 +4398,7 @@
     - invocation: [undefined]
 
 - key: QG-JS-BUG-0077
-  name: Numbers should behave the way it reads
+  name: Numbers should match the behaviour the code describes
   languages: [js, ts]
   category: BUG
   severity: major
@@ -4517,7 +4434,7 @@
     next change touches a single spot.
 
 - key: QG-JS-SML-0176
-  name: Objects and classes converted or coerced to strings should be simplified
+  name: Hard-to-read code should be simplified
   languages: [js, ts]
   category: SML
   severity: minor
@@ -4553,7 +4470,7 @@
     next change touches a single spot.
 
 - key: QG-JS-SML-0178
-  name: The Redundant type aliases API should not be used
+  name: Redundant type aliases should not be used
   languages: [js, ts]
   category: SML
   severity: minor
@@ -4800,7 +4717,7 @@
     next change touches a single spot.
 
 - key: QG-JS-SML-0192
-  name: The Unnecessary calls to .bind() API should not be used
+  name: Unnecessary calls to .bind() should not be used
   languages: [js, ts]
   category: SML
   severity: minor
@@ -4819,7 +4736,7 @@
     documented and dated.
 
 - key: QG-JS-BUG-0079
-  name: Binary expressions should behave the way it reads
+  name: Binary expressions should match the behaviour the code describes
   languages: [js, ts]
   category: BUG
   severity: major
@@ -4855,7 +4772,7 @@
     next change touches a single spot.
 
 - key: QG-JS-SML-0194
-  name: The Ternary operator API should not be used
+  name: Ternary operator should not be used
   languages: [js, ts]
   category: SML
   severity: minor
@@ -4910,7 +4827,7 @@
     next change touches a single spot.
 
 - key: QG-JS-SML-0198
-  name: Use Object.hasOwn static method instead of should be replaced by the recommended alternative
+  name: Outdated constructs should be replaced by the recommended alternative
   languages: [js, ts]
   category: SML
   severity: minor
@@ -4929,7 +4846,7 @@
     cases the old form got wrong.
 
 - key: QG-JS-SML-0199
-  name: The __proto__ property API should not be used
+  name: __proto__ property should not be used
   languages: [js, ts]
   category: SML
   severity: minor
@@ -4948,7 +4865,7 @@
     documented and dated.
 
 - key: QG-JS-SML-0200
-  name: The Octal escape sequences API should not be used
+  name: Octal escape sequences should not be used
   languages: [js, ts]
   category: SML
   severity: minor
@@ -4967,7 +4884,7 @@
     documented and dated.
 
 - key: QG-JS-SML-0201
-  name: Concurrent access around If statements should be coordinated correctly
+  name: If statements should be accessed in a thread-safe way
   languages: [js, ts]
   category: SML
   severity: minor
@@ -5125,7 +5042,7 @@
     next change touches a single spot.
 
 - key: QG-JS-SML-0211
-  name: The The return value of ReactDOM.render API should not be used
+  name: Return value of ReactDOM.render should not be used
   languages: [js, ts]
   category: SML
   severity: minor
@@ -5148,7 +5065,7 @@
       receiver: [ReactDOM]
 
 - key: QG-JS-SML-0212
-  name: The return value of useState should be simplified
+  name: Return value of useState should be simplified
   languages: [js, ts]
   category: SML
   severity: minor
@@ -5166,7 +5083,7 @@
     next change touches a single spot.
 
 - key: QG-JS-BUG-0080
-  name: SetState should behave the way it reads
+  name: SetState should match the behaviour the code describes
   languages: [js, ts]
   category: BUG
   severity: major
@@ -5184,7 +5101,7 @@
     and cover the case that used to fail with a test.
 
 - key: QG-JS-BUG-0081
-  name: The This API should not be used
+  name: This should not be used
   languages: [js, ts]
   category: BUG
   severity: major
@@ -5221,7 +5138,7 @@
     next change touches a single spot.
 
 - key: QG-JS-BUG-0082
-  name: The Children and dangerouslySetInnerHTML API should not be used
+  name: Children and dangerouslySetInnerHTML should not be used
   languages: [js, ts]
   category: BUG
   severity: major
@@ -5351,7 +5268,7 @@
     next change touches a single spot.
 
 - key: QG-JS-SML-0221
-  name: The React's findDOMNode API should not be used
+  name: Reacts findDOMNode should not be used
   languages: [js, ts]
   category: SML
   severity: minor
@@ -5372,7 +5289,7 @@
     - invocation: [findDOMNode]
 
 - key: QG-JS-SML-0222
-  name: The React's isMounted API should not be used
+  name: Reacts isMounted should not be used
   languages: [js, ts]
   category: SML
   severity: minor
@@ -5393,7 +5310,7 @@
     - invocation: [isMounted]
 
 - key: QG-JS-SML-0223
-  name: The String references API should not be used
+  name: String references should not be used
   languages: [js, ts]
   category: SML
   severity: minor
@@ -5412,7 +5329,7 @@
     documented and dated.
 
 - key: QG-JS-SML-0224
-  name: The React legacy lifecycle methods API should not be used
+  name: React legacy lifecycle methods should not be used
   languages: [js, ts]
   category: SML
   severity: minor
@@ -5557,7 +5474,7 @@
     next change touches a single spot.
 
 - key: QG-JS-SML-0232
-  name: No ARIA role or property for should be simplified
+  name: Hard-to-read code should be simplified
   languages: [js, ts]
   category: SML
   severity: minor
@@ -5683,7 +5600,7 @@
     next change touches a single spot.
 
 - key: QG-JS-SML-0239
-  name: The Anchor tags API should not be used
+  name: Anchor tags should not be used
   languages: [js, ts]
   category: SML
   severity: minor
@@ -5738,7 +5655,7 @@
     next change touches a single spot.
 
 - key: QG-JS-SML-0242
-  name: Non-interactive elements shouldn't have event handlers should be simplified
+  name: Non-interactive elements shouldnt have event handlers should be simplified
   languages: [js, ts]
   category: SML
   severity: minor
@@ -5882,7 +5799,7 @@
     next change touches a single spot.
 
 - key: QG-JS-SML-0250
-  name: The Deprecated React APIs API should not be used
+  name: Deprecated React APIs should not be used
   languages: [js, ts]
   category: SML
   severity: minor
@@ -5901,7 +5818,7 @@
     documented and dated.
 
 - key: QG-JS-BUG-0083
-  name: The Literals API should not be used
+  name: Literals should not be used
   languages: [js, ts]
   category: BUG
   severity: major
@@ -5920,7 +5837,7 @@
     documented and dated.
 
 - key: QG-JS-BUG-0084
-  name: Array.reduce() calls should behave the way it reads
+  name: Array.reduce() calls should match the behaviour the code describes
   languages: [js, ts]
   category: BUG
   severity: major
@@ -5938,7 +5855,7 @@
     and cover the case that used to fail with a test.
 
 - key: QG-JS-SML-0251
-  name: Concurrent access around Constructors should be coordinated correctly
+  name: Constructors should be accessed in a thread-safe way
   languages: [js, ts]
   category: SML
   severity: minor
@@ -5974,7 +5891,7 @@
     next change touches a single spot.
 
 - key: QG-JS-SEC-0076
-  name: Secrets should not be written into Wallet phrases
+  name: Wallet phrases should not be committed with the source
   languages: [js, ts]
   category: SEC
   severity: critical
@@ -6120,7 +6037,7 @@
     next change touches a single spot.
 
 - key: QG-JS-SML-0261
-  name: The The outputs metadata property API should not be used
+  name: Outputs metadata property should not be used
   languages: [js, ts]
   category: SML
   severity: minor
@@ -6285,7 +6202,7 @@
     next change touches a single spot.
 
 - key: QG-JS-SML-0270
-  name: Uses of ESLint disable comments should be reviewed
+  name: ESLint disable comments should be resolved rather than left in the code
   languages: [js, ts]
   category: SML
   severity: minor
@@ -6303,7 +6220,7 @@
     lives somewhere that gets reviewed.
 
 - key: QG-JS-BUG-0085
-  name: Getters and setters should behave the way it reads
+  name: Getters and setters should match the behaviour the code describes
   languages: [js, ts]
   category: BUG
   severity: major
@@ -6339,7 +6256,7 @@
     stay in sync.
 
 - key: QG-JS-BUG-0086
-  name: Function references should behave the way it reads
+  name: Function references should match the behaviour the code describes
   languages: [js, ts]
   category: BUG
   severity: major
@@ -6357,7 +6274,7 @@
     and cover the case that used to fail with a test.
 
 - key: QG-JS-SML-0272
-  name: for...of should be replaced by the recommended alternative
+  name: Outdated constructs should be replaced by the recommended alternative
   languages: [js, ts]
   category: SML
   severity: minor
@@ -6435,7 +6352,7 @@
     next change touches a single spot.
 
 - key: QG-JS-SML-0276
-  name: The Instanceof API should not be used
+  name: Instanceof should not be used
   languages: [js, ts]
   category: SML
   severity: minor
@@ -6454,7 +6371,7 @@
     documented and dated.
 
 - key: QG-JS-BUG-0087
-  name: HTTP GET and HEAD requests should behave the way it reads
+  name: HTTP GET and HEAD requests should match the behaviour the code describes
   languages: [js, ts]
   category: BUG
   severity: major
@@ -6508,7 +6425,7 @@
     next change touches a single spot.
 
 - key: QG-JS-BUG-0088
-  name: The Negated expressions API should not be used
+  name: Negated expressions should not be used
   languages: [js, ts]
   category: BUG
   severity: major
@@ -6527,7 +6444,7 @@
     documented and dated.
 
 - key: QG-JS-SML-0279
-  name: The Objects API should not be used
+  name: Objects should not be used
   languages: [js, ts]
   category: SML
   severity: minor
@@ -6546,7 +6463,7 @@
     documented and dated.
 
 - key: QG-JS-BUG-0089
-  name: Objects should behave the way it reads
+  name: Objects should match the behaviour the code describes
   languages: [js, ts]
   category: BUG
   severity: major
@@ -6582,7 +6499,7 @@
     next change touches a single spot.
 
 - key: QG-JS-SML-0282
-  name: The Typeof API should not be used
+  name: Typeof should not be used
   languages: [js, ts]
   category: SML
   severity: minor
@@ -6603,7 +6520,7 @@
     - invocation: [undefined]
 
 - key: QG-JS-SML-0283
-  name: The Polyfills API should not be used
+  name: Polyfills should not be used
   languages: [js, ts]
   category: SML
   severity: minor
@@ -6622,7 +6539,7 @@
     documented and dated.
 
 - key: QG-JS-SML-0284
-  name: Immediately invoked arrow functions with parenthesized expressions should be simplified
+  name: Hard-to-read code should be simplified
   languages: [js, ts]
   category: SML
   severity: minor
@@ -6640,7 +6557,7 @@
     next change touches a single spot.
 
 - key: QG-JS-SML-0285
-  name: The Unnecessary fallback objects API should not be used
+  name: Unnecessary fallback objects should not be used
   languages: [js, ts]
   category: SML
   severity: minor
@@ -6659,7 +6576,7 @@
     documented and dated.
 
 - key: QG-JS-SML-0286
-  name: The Array length checks API should not be used
+  name: Array length checks should not be used
   languages: [js, ts]
   category: SML
   severity: minor
@@ -6678,7 +6595,7 @@
     documented and dated.
 
 - key: QG-JS-SML-0288
-  name: The Spread syntax API should not be used
+  name: Spread syntax should not be used
   languages: [js, ts]
   category: SML
   severity: minor
@@ -6792,7 +6709,7 @@
     - invocation: [findIndex]
 
 - key: QG-JS-SML-0294
-  name: Use .some() instead of .filter().length checks should be replaced by the recommended alternative
+  name: Outdated constructs should be replaced by the recommended alternative
   languages: [js, ts]
   category: SML
   severity: minor
@@ -6886,7 +6803,7 @@
     cases the old form got wrong.
 
 - key: QG-JS-SML-0299
-  name: Date.now should be replaced by the recommended alternative
+  name: Outdated constructs should be replaced by the recommended alternative
   languages: [js, ts]
   category: SML
   severity: minor
@@ -6985,7 +6902,7 @@
     next change touches a single spot.
 
 - key: QG-JS-SML-0304
-  name: globalThis should be replaced by the recommended alternative
+  name: Outdated constructs should be replaced by the recommended alternative
   languages: [js, ts]
   category: SML
   severity: minor
@@ -7045,7 +6962,7 @@
     next change touches a single spot.
 
 - key: QG-JS-SML-0307
-  name: The Bitwise operators API should not be used
+  name: Bitwise operators should not be used
   languages: [js, ts]
   category: SML
   severity: minor
@@ -7102,7 +7019,7 @@
     cases the old form got wrong.
 
 - key: QG-JS-SML-0310
-  name: Wrapper functions around built-in type conversion functions should be simplified
+  name: Hard-to-read code should be simplified
   languages: [js, ts]
   category: SML
   severity: minor
@@ -7194,7 +7111,7 @@
     next change touches a single spot.
 
 - key: QG-JS-SML-0315
-  name: RegExp.test should be replaced by the recommended alternative
+  name: Outdated constructs should be replaced by the recommended alternative
   languages: [js, ts]
   category: SML
   severity: minor
@@ -7260,7 +7177,7 @@
     cases the old form got wrong.
 
 - key: QG-JS-SML-0318
-  name: Multiple consecutive calls to methods that should be simplified
+  name: Hard-to-read code should be simplified
   languages: [js, ts]
   category: SML
   severity: minor
@@ -7339,7 +7256,7 @@
     - invocation: [structuredClone]
 
 - key: QG-JS-SML-0323
-  name: Exception handling around Generic Error should be explicit
+  name: Generic Error should make failure handling explicit
   languages: [js, ts]
   category: SML
   severity: minor
@@ -7417,7 +7334,7 @@
     and replace weakened mechanisms with the current recommended one.
 
 - key: QG-JS-SML-0325
-  name: Tests around Test titles should verify something
+  name: Tests should assert something
   languages: [js, ts]
   category: SML
   severity: minor
@@ -7435,7 +7352,7 @@
     broken before trusting it again.
 
 - key: QG-JS-SML-0326
-  name: The Comma operator API should not be used
+  name: Comma operator should not be used
   languages: [js, ts]
   category: SML
   severity: minor
@@ -7454,7 +7371,7 @@
     documented and dated.
 
 - key: QG-JS-BUG-0090
-  name: Tests around Async test assertions should verify something
+  name: Tests should assert something
   languages: [js, ts]
   category: BUG
   severity: major
@@ -7491,7 +7408,7 @@
     comment so the next reader does not treat it as a gap.
 
 - key: QG-JS-SML-0328
-  name: Tests around Lifecycle hooks should verify something
+  name: Lifecycle hooks should assert something
   languages: [js, ts]
   category: SML
   severity: minor
@@ -7527,7 +7444,7 @@
     next change touches a single spot.
 
 - key: QG-JS-SML-0330
-  name: Tests around Assertions should verify something
+  name: Tests should assert something
   languages: [js, ts]
   category: SML
   severity: minor
@@ -7545,7 +7462,7 @@
     broken before trusting it again.
 
 - key: QG-JS-BUG-0091
-  name: Tests around Tests should verify something
+  name: Tests should assert something
   languages: [js, ts]
   category: BUG
   severity: major
@@ -7563,7 +7480,7 @@
     broken before trusting it again.
 
 - key: QG-JS-SML-0331
-  name: The Increment (++) and decrement (--) operators API should not be used
+  name: Increment (++) and decrement (--) operators should not be used
   languages: [js, ts]
   category: SML
   severity: minor
@@ -7582,7 +7499,7 @@
     documented and dated.
 
 - key: QG-JS-SML-0332
-  name: The Equality operators API should not be used
+  name: Equality operators should not be used
   languages: [js, ts]
   category: SML
   severity: minor
@@ -7620,7 +7537,7 @@
     cases the old form got wrong.
 
 - key: QG-JS-SML-0334
-  name: The Default imports from modular utility libraries API should not be used
+  name: Default imports from modular utility libraries should not be used
   languages: [js, ts]
   category: SML
   severity: minor
@@ -7639,7 +7556,7 @@
     documented and dated.
 
 - key: QG-JS-SML-0335
-  name: Lodash and Underscore.js `memoize` calls on should be simplified
+  name: Hard-to-read code should be simplified
   languages: [js, ts]
   category: SML
   severity: minor
@@ -7711,7 +7628,7 @@
     next change touches a single spot.
 
 - key: QG-JS-BUG-0092
-  name: Tests around UI test debug commands should verify something
+  name: Tests should assert something
   languages: [js, ts]
   category: BUG
   severity: major
@@ -7729,7 +7646,7 @@
     broken before trusting it again.
 
 - key: QG-JS-BUG-0093
-  name: Tests around Test and hook callbacks should verify something
+  name: Tests should assert something
   languages: [js, ts]
   category: BUG
   severity: major
@@ -7801,7 +7718,7 @@
     next change touches a single spot.
 
 - key: QG-JS-SML-0342
-  name: Tests around Tests should verify something
+  name: Tests should assert something
   languages: [js, ts]
   category: SML
   severity: minor
@@ -7819,7 +7736,7 @@
     broken before trusting it again.
 
 - key: QG-JS-SML-0343
-  name: Tests around React Testing Library calls should verify something
+  name: Tests should assert something
   languages: [js, ts]
   category: SML
   severity: minor
@@ -7839,7 +7756,7 @@
     - invocation: [act]
 
 - key: QG-JS-SML-0344
-  name: Regular expressions around Regular expressions used in Testing Library queries should be safe and correct
+  name: Regular expressions should be safe and correct
   languages: [js, ts]
   category: SML
   severity: minor
@@ -7858,7 +7775,7 @@
     for input that comes from outside, and cover the pattern with a test.
 
 - key: QG-JS-BUG-0094
-  name: HTML elements with v-for should behave the way it reads
+  name: HTML elements with v-for should match the behaviour the code describes
   languages: [js, ts]
   category: BUG
   severity: major
@@ -7876,7 +7793,7 @@
     and cover the case that used to fail with a test.
 
 - key: QG-JS-BUG-0095
-  name: Vue v-for directives should behave the way it reads
+  name: Vue v-for directives should match the behaviour the code describes
   languages: [js, ts]
   category: BUG
   severity: major
@@ -7894,7 +7811,7 @@
     and cover the case that used to fail with a test.
 
 - key: QG-JS-BUG-0096
-  name: Side effects should behave the way it reads
+  name: Side effects should match the behaviour the code describes
   languages: [js, ts]
   category: BUG
   severity: major
@@ -7912,7 +7829,7 @@
     and cover the case that used to fail with a test.
 
 - key: QG-JS-SML-0345
-  name: The V-if and v-for API should not be used
+  name: V-if and v-for should not be used
   languages: [js, ts]
   category: SML
   severity: minor
@@ -7931,7 +7848,7 @@
     documented and dated.
 
 - key: QG-JS-BUG-0097
-  name: Side effects should behave the way it reads
+  name: Side effects should match the behaviour the code describes
   languages: [js, ts]
   category: BUG
   severity: major
@@ -7986,7 +7903,7 @@
     next change touches a single spot.
 
 - key: QG-JS-BUG-0100
-  name: Tests around Snapshots should verify something
+  name: Snapshots should assert something
   languages: [js, ts]
   category: BUG
   severity: major
@@ -8004,7 +7921,7 @@
     broken before trusting it again.
 
 - key: QG-JS-BUG-0101
-  name: The Vue refs API should not be used
+  name: Vue refs should not be used
   languages: [js, ts]
   category: BUG
   severity: major
@@ -8023,7 +7940,7 @@
     documented and dated.
 
 - key: QG-JS-SML-0347
-  name: Tests around Use find* to query Testing Library should verify something
+  name: Tests should assert something
   languages: [js, ts]
   category: SML
   severity: minor
@@ -8041,7 +7958,7 @@
     broken before trusting it again.
 
 - key: QG-JS-BUG-0102
-  name: The Asynchronous actions API should not be used
+  name: Asynchronous actions should not be used
   languages: [js, ts]
   category: BUG
   severity: major
@@ -8060,7 +7977,7 @@
     documented and dated.
 
 - key: QG-JS-SML-0348
-  name: Tests around Testing Library queries should verify something
+  name: Tests should assert something
   languages: [js, ts]
   category: SML
   severity: minor
@@ -8078,7 +7995,7 @@
     broken before trusting it again.
 
 - key: QG-JS-BUG-0104
-  name: Tests around Synchronous exception assertions should verify something
+  name: Tests should assert something
   languages: [js, ts]
   category: BUG
   severity: major
@@ -8096,7 +8013,7 @@
     broken before trusting it again.
 
 - key: QG-JS-SML-0349
-  name: Tests around Composite assertions should verify something
+  name: Tests should assert something
   languages: [js, ts]
   category: SML
   severity: minor
@@ -8114,7 +8031,7 @@
     broken before trusting it again.
 
 - key: QG-JS-SML-0350
-  name: Tests around Parameterized tests should verify something
+  name: Tests should assert something
   languages: [js, ts]
   category: SML
   severity: minor
@@ -8132,7 +8049,7 @@
     broken before trusting it again.
 
 - key: QG-JS-SML-0351
-  name: The Continue API should not be used
+  name: Continue should not be used
   languages: [js, ts]
   category: SML
   severity: minor
@@ -8151,7 +8068,7 @@
     documented and dated.
 
 - key: QG-JS-BUG-0105
-  name: Vue component prop types should behave the way it reads
+  name: Vue component prop types should match the behaviour the code describes
   languages: [js, ts]
   category: BUG
   severity: major
@@ -8169,7 +8086,7 @@
     and cover the case that used to fail with a test.
 
 - key: QG-JS-BUG-0106
-  name: Lodash and Underscore.js debounced or throttled functions should behave the way it reads
+  name: Suspicious code should match the behaviour the code describes
   languages: [js, ts]
   category: BUG
   severity: major
@@ -8205,7 +8122,7 @@
     function or constant.
 
 - key: QG-JS-SML-0352
-  name: Nested properties of Lodash and Underscore.js clone results should be simplified
+  name: Hard-to-read code should be simplified
   languages: [js, ts]
   category: SML
   severity: minor
@@ -8242,7 +8159,7 @@
     cases the old form got wrong.
 
 - key: QG-JS-SML-0354
-  name: Deprecated code around Vue components should be retired
+  name: Vue components should be retired
   languages: [js, ts]
   category: SML
   severity: minor
@@ -8279,7 +8196,7 @@
     next change touches a single spot.
 
 - key: QG-JS-BUG-0109
-  name: Tests around Testing Library disappearance waits should verify something
+  name: Tests should assert something
   languages: [js, ts]
   category: BUG
   severity: major
@@ -8297,7 +8214,7 @@
     broken before trusting it again.
 
 - key: QG-JS-BUG-0110
-  name: Reactive state should behave the way it reads
+  name: Reactive state should match the behaviour the code describes
   languages: [js, ts]
   category: BUG
   severity: major
@@ -8334,7 +8251,7 @@
     read-only whatever is not meant to change.
 
 - key: QG-JS-BUG-0111
-  name: Function calls should behave the way it reads
+  name: Function calls should match the behaviour the code describes
   languages: [js, ts]
   category: BUG
   severity: major
@@ -8352,7 +8269,7 @@
     and cover the case that used to fail with a test.
 
 - key: QG-JS-SML-0357
-  name: The Playwright networkidle waits API should not be used
+  name: Playwright networkidle waits should not be used
   languages: [js, ts]
   category: SML
   severity: minor
@@ -8371,4 +8288,3 @@
     documented and dated.
   detect:
     - invocation: [networkidle]
-

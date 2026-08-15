@@ -2,7 +2,7 @@
 # tools/generate_rules.py and are refined by hand as each family is reviewed.
 
 - key: QG-K8-SML-0005
-  name: The Deprecated code API should not be used
+  name: Deprecated code should not be used
   languages: [k8]
   category: SML
   severity: minor
@@ -39,7 +39,7 @@
     next change touches a single spot.
 
 - key: QG-K8-SEC-0010
-  name: The Clear-text protocols API should not be used
+  name: Clear-text protocols should not be used
   languages: [k8]
   category: SEC
   severity: critical
@@ -77,7 +77,7 @@
     and replace weakened mechanisms with the current recommended one.
 
 - key: QG-K8-SEC-0012
-  name: Secrets should not be written into Secrets
+  name: Secrets should not be committed with the source
   languages: [k8]
   category: SEC
   severity: critical
@@ -96,7 +96,7 @@
     missing, and treat the committed value as compromised: rotate it before removing it.
 
 - key: QG-K8-SEC-0013
-  name: Containers should not be granted more access than it needs
+  name: Containers should not grant more access than needed
   languages: [k8]
   category: SEC
   severity: critical
@@ -210,7 +210,7 @@
     and replace weakened mechanisms with the current recommended one.
 
 - key: QG-K8-SEC-0018
-  name: Service account permissions should not be granted more access than it needs
+  name: Service account permissions should not grant more access than needed
   languages: [k8]
   category: SEC
   severity: critical
@@ -229,7 +229,7 @@
     permissions from a properly secured parent instead of widening the resource itself.
 
 - key: QG-K8-SEC-0019
-  name: Wildcards should not be granted more access than it needs
+  name: Wildcards should not grant more access than needed
   languages: [k8]
   category: SEC
   severity: critical

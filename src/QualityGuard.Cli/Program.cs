@@ -12,13 +12,23 @@ if (args.Length == 0)
     return 2;
 }
 
-var path = ExtractArg(args, "--path", "--dir", "--input");
+var paths = ExtractAll(args, "--path", "--dir", "--input", "--file");
+var path = paths.FirstOrDefault();
 var gateFile = ExtractArg(args, "--gate", "--config");
 var sarifOut = ExtractArg(args, "--sarif", "--sarif-out");
 var sarifIn = ExtractArg(args, "--sarif-in", "--report");
 var verbose = args.Any(a => a is "--verbose" or "-v");
 var newCodeMode = args.Any(a => a is "--new-code");
 var showFixes = args.Any(a => a is "--fix-hints" or "--how-to-fix") || verbose;
+var byFolder = args.Any(a => a is "--by-folder" or "--folders");
+var scanOptions = new ScanOptions
+{
+    Paths = paths,
+    Include = ExtractAll(args, "--include", "--only"),
+    Exclude = ExtractAll(args, "--exclude", "--ignore"),
+    UseDefaultExcludes = !args.Any(a => a is "--no-default-excludes" or "--all-files"),
+    MaxFileKilobytes = int.TryParse(ExtractArg(args, "--max-file-kb"), out var kb) ? kb : 2048
+};
 
 if (args.Any(a => a is "--rules"))
 {
@@ -59,7 +69,7 @@ try
         return 2;
     }
 
-    var analyses = AnalyzeAndScan(path);
+    var analyses = AnalyzeAndScan(scanOptions, verbose);
     var metrics = AggregateMetrics(analyses);
 
     if (newCodeMode)
@@ -78,6 +88,9 @@ try
         }
     }
 
+    if (byFolder)
+        PrintFolderSummary(analyses);
+
     if (sarifOut != null)
         SarifWriter.Write(sarifOut, analyses, gateResult);
 
@@ -91,16 +104,21 @@ catch (Exception ex)
     return 2;
 }
 
-static List<FileAnalysis> AnalyzeAndScan(string path)
+static List<FileAnalysis> AnalyzeAndScan(ScanOptions options, bool verbose)
 {
-    var attr = File.GetAttributes(path);
-    IEnumerable<string> filePaths = (attr & FileAttributes.Directory) == FileAttributes.Directory
-        ? Directory.EnumerateFiles(path, "*", SearchOption.AllDirectories)
-            .Where(f => BuiltInLanguages.Recognizer.Recognize(f) != null)
-        : [path];
+    var scan = SourceScanner.Scan(options);
+    foreach (var missing in scan.MissingPaths)
+        Console.Error.WriteLine($"WARNING: {missing} does not exist");
+    if (verbose)
+    {
+        Console.WriteLine($"SCAN {scan.Files.Count} files to analyse "
+                          + $"(skipped: {scan.SkippedUnknownLanguage} unknown language, "
+                          + $"{scan.SkippedExcluded} excluded, {scan.SkippedTooLarge} too large, "
+                          + $"{scan.SkippedBinary} binary)");
+    }
 
     var files = new List<SourceFile>();
-    foreach (var filePath in filePaths)
+    foreach (var filePath in scan.Files)
     {
         if (BuiltInLanguages.Recognizer.Recognize(filePath) is not { } lang)
             continue;
@@ -157,6 +175,39 @@ static void ApplyNewCodeMetrics(Dictionary<string, double> metrics, List<FileAna
         metrics[k] = v;
     }
     metrics[CoreMetrics.NewDuplicatedLinesDensity] = metrics.GetValueOrDefault(CoreMetrics.DuplicatedLinesDensity);
+}
+
+/// <summary>
+/// One line per directory, deepest counts rolled up into their parents. On a tree of any size this is
+/// what tells you where the debt actually sits: a flat list of issues cannot.
+/// </summary>
+static void PrintFolderSummary(List<FileAnalysis> analyses)
+{
+    var folders = new SortedDictionary<string, (int Files, int Bugs, int Vulns, int Smells, double Ncloc)>(
+        StringComparer.OrdinalIgnoreCase);
+
+    foreach (var analysis in analyses)
+    {
+        var folder = Path.GetDirectoryName(analysis.File.Path)?.Replace('\\', '/') ?? ".";
+        if (folder.Length == 0)
+            folder = ".";
+        var current = folders.GetValueOrDefault(folder);
+        folders[folder] = (
+            current.Files + 1,
+            current.Bugs + analysis.IssuesOf(IssueKind.Bug).Count(),
+            current.Vulns + analysis.IssuesOf(IssueKind.Vulnerability).Count(),
+            current.Smells + analysis.IssuesOf(IssueKind.CodeSmell).Count(),
+            current.Ncloc + analysis.Metrics.GetValueOrDefault(CoreMetrics.Ncloc));
+    }
+
+    Console.WriteLine();
+    Console.WriteLine($"{"FOLDER",-58} {"FILES",5} {"NCLOC",7} {"BUGS",5} {"VULN",5} {"SMELLS",6}");
+    foreach (var (folder, totals) in folders)
+    {
+        var name = folder.Length > 58 ? "…" + folder[^57..] : folder;
+        Console.WriteLine($"{name,-58} {totals.Files,5} {totals.Ncloc,7:0} {totals.Bugs,5} "
+                          + $"{totals.Vulns,5} {totals.Smells,6}");
+    }
 }
 
 static void PrintResult(QualityGateResult result, bool verbose)
@@ -219,6 +270,23 @@ static void PrintRuleCatalog()
 static string FormatNoUnits(double v)
     => double.IsNaN(v) ? "N/A" : v.ToString("0.0", System.Globalization.CultureInfo.InvariantCulture);
 
+/// <summary>
+/// Every value given for an option, whether repeated (--path a --path b) or listed once
+/// (--path a,b). Scanning several trees in one run is the normal case in a monorepo.
+/// </summary>
+static List<string> ExtractAll(string[] args, params string[] names)
+{
+    var values = new List<string>();
+    for (var i = 0; i < args.Length; i++)
+    {
+        if (!names.Contains(args[i]) || i + 1 >= args.Length)
+            continue;
+        foreach (var value in args[i + 1].Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries))
+            values.Add(value);
+    }
+    return values;
+}
+
 static string? ExtractArg(string[] args, params string[] names)
 {
     for (var i = 0; i < args.Length; i++)
@@ -234,13 +302,26 @@ static void PrintUsage()
     Console.WriteLine("""
         QualityGuard CLI
         Usage:
-          QualityGuard.Cli --path <dir|file> [--gate <json>] [--sarif <out.json>] [--verbose] [--new-code]
+          QualityGuard.Cli --path <dir|file> [--path <more>] [--gate <json>] [--sarif <out.json>]
+                           [--include <glob>] [--exclude <glob>] [--by-folder] [--verbose] [--new-code]
           QualityGuard.Cli --sarif-in <report.json> [--gate <json>]
           QualityGuard.Cli --rules
 
-        --new-code    derive the new_* rating metrics from the issues and evaluate them in the gate.
-        --fix-hints   print the fix guidance of every reported rule.
-        --rules       list loaded rules and description coverage.
+        Input
+          --path        file or directory; directories are scanned to the bottom, including every
+                        subfolder. Repeat the option or separate values with commas to scan several.
+          --include     only scan files matching this glob (repeatable, e.g. --include "src/**/*.cs").
+          --exclude     skip files or directories matching this glob (repeatable).
+          --max-file-kb skip files larger than this (default 2048).
+          --all-files   keep the build, dependency and generated files that are skipped by default
+                        (bin, obj, node_modules, vendor, dist, *.min.js, *.designer.cs, …).
+
+        Output
+          --by-folder   summary table of files, ncloc and issues per directory.
+          --new-code    derive the new_* rating metrics from the issues and evaluate them in the gate.
+          --fix-hints   print the fix guidance of every reported rule.
+          --verbose     per-file metrics, flow steps and what the scan skipped.
+          --rules       list loaded rules and description coverage.
         Exit codes: 0 = PASSED, 1 = FAILED, 2 = error.
         """);
 }

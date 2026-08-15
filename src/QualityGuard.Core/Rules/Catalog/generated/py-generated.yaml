@@ -2,7 +2,7 @@
 # tools/generate_rules.py and are refined by hand as each family is reviewed.
 
 - key: QG-PY-SML-0022
-  name: The Backticks API should not be used
+  name: Backticks should not be used
   languages: [py]
   category: SML
   severity: minor
@@ -21,7 +21,7 @@
     documented and dated.
 
 - key: QG-PY-SML-0023
-  name: Regular expressions around Comments matching a regular expression should be safe and correct
+  name: Regular expressions should be safe and correct
   languages: [py]
   category: SML
   severity: minor
@@ -40,7 +40,7 @@
     for input that comes from outside, and cover the pattern with a test.
 
 - key: QG-PY-SML-0024
-  name: The The exec statement API should not be used
+  name: Exec statement should not be used
   languages: [py]
   category: SML
   severity: minor
@@ -61,7 +61,7 @@
     - invocation: [exec]
 
 - key: QG-PY-SML-0025
-  name: The <> API should not be used
+  name: <> should not be used
   languages: [py]
   category: SML
   severity: minor
@@ -98,7 +98,7 @@
     next change touches a single spot.
 
 - key: QG-PY-SML-0027
-  name: Uses of NOSONAR should be reviewed
+  name: NOSONAR comments should be resolved rather than left in the code
   languages: [py]
   category: SML
   severity: minor
@@ -134,7 +134,7 @@
     next change touches a single spot.
 
 - key: QG-PY-BUG-0023
-  name: The Increment and decrement operators API should not be used
+  name: Increment and decrement operators should not be used
   languages: [py]
   category: BUG
   severity: major
@@ -153,7 +153,7 @@
     documented and dated.
 
 - key: QG-PY-SML-0029
-  name: The The print statement API should not be used
+  name: Print statement should not be used
   languages: [py]
   category: SML
   severity: minor
@@ -172,7 +172,7 @@
     documented and dated.
 
 - key: QG-PY-BUG-0024
-  name: Exception handling around All except blocks should be explicit
+  name: All except blocks should make failure handling explicit
   languages: [py]
   category: BUG
   severity: major
@@ -193,7 +193,7 @@
     - invocation: [except]
 
 - key: QG-PY-SML-0031
-  name: Exception handling around Exception and BaseException should be explicit
+  name: Exception and BaseException should make failure handling explicit
   languages: [py]
   category: SML
   severity: minor
@@ -250,7 +250,7 @@
     next change touches a single spot.
 
 - key: QG-PY-BUG-0026
-  name: Function parameters initial values should behave the way it reads
+  name: Function parameters initial values should match the behaviour the code describes
   languages: [py]
   category: BUG
   severity: major
@@ -268,7 +268,7 @@
     and cover the case that used to fail with a test.
 
 - key: QG-PY-SML-0037
-  name: Uses of Noqa comments should be reviewed
+  name: Noqa comments should be resolved rather than left in the code
   languages: [py]
   category: SML
   severity: minor
@@ -286,26 +286,26 @@
     lives somewhere that gets reviewed.
 
 - key: QG-PY-SML-0038
-  name: Secrets should not be written into IP addresses
+  name: IP addresses should not be hardcoded in the source
   languages: [py]
   category: SML
   severity: minor
   effort: 15min
-  tags: [secret, generated]
+  tags: [hardcoded_value, generated]
   generated: true
   status: planned
-  message: This value looks like a credential committed with the source.
-  summary: A credential, key or token appears directly in the source instead of coming from a secret store.
+  message: This value is fixed in the source and cannot be changed without a rebuild.
+  summary: An address, path or other deployment-specific value is written into the code.
   why: |
-    Anything committed with the code is readable by everyone who can clone the repository, and it
-    survives in the history even after being deleted. Scanners find these values within minutes of a
-    repository becoming reachable, and rotating them means editing and redeploying every copy.
+    The value is right for exactly one environment. Every other environment needs a code change, so the
+    same build cannot be promoted from test to production, and a value that has to be corrected under
+    pressure gets corrected in the wrong place.
   fix: |
-    Read the value at run time from the platform secret store or the environment, fail fast when it is
-    missing, and treat the committed value as compromised: rotate it before removing it.
+    Move the value to configuration, read it at start-up, and fail with a clear message when it is
+    missing so a misconfigured deployment stops before it does anything.
 
 - key: QG-PY-SML-0039
-  name: Uses of Comments should be reviewed
+  name: Comments should be resolved rather than left in the code
   languages: [py]
   category: SML
   severity: minor
@@ -323,7 +323,7 @@
     lives somewhere that gets reviewed.
 
 - key: QG-PY-SML-0040
-  name: Uses of Lack of copyright and license headers should be reviewed
+  name: Copyright and license headers should be resolved rather than left in the code
   languages: [py]
   category: SML
   severity: minor
@@ -359,7 +359,7 @@
     next change touches a single spot.
 
 - key: QG-PY-SML-0042
-  name: Tests around A reason should verify something
+  name: Reason should assert something
   languages: [py]
   category: SML
   severity: minor
@@ -377,7 +377,7 @@
     broken before trusting it again.
 
 - key: QG-PY-SML-0043
-  name: A field should not be duplicated
+  name: Field should not be duplicated
   languages: [py]
   category: SML
   severity: minor
@@ -395,7 +395,7 @@
     function or constant.
 
 - key: QG-PY-SML-0044
-  name: Uses of TODO should be reviewed
+  name: Markers left in the code should be resolved rather than left in the code
   languages: [py]
   category: SML
   severity: minor
@@ -413,7 +413,7 @@
     lives somewhere that gets reviewed.
 
 - key: QG-PY-BUG-0027
-  name: The Break and continue API should not be used
+  name: Break and continue should not be used
   languages: [py]
   category: BUG
   severity: major
@@ -432,7 +432,7 @@
     documented and dated.
 
 - key: QG-PY-BUG-0028
-  name: \ should behave the way it reads
+  name: \ should match the behaviour the code describes
   languages: [py]
   category: BUG
   severity: major
@@ -469,7 +469,7 @@
     read-only whatever is not meant to change.
 
 - key: QG-PY-SML-0046
-  name: The Parentheses API should not be used
+  name: Parentheses should not be used
   languages: [py]
   category: SML
   severity: minor
@@ -505,24 +505,6 @@
   fix: |
     Switch to the recommended construct; the behaviour is the same in the normal case and defined in the
     cases the old form got wrong.
-
-- key: QG-PY-BUG-0029
-  name: Loops with at most one iteration should behave the way it reads
-  languages: [py]
-  category: BUG
-  severity: major
-  effort: 15min
-  tags: [bug, generated]
-  generated: true
-  status: planned
-  message: This code does not behave the way it reads.
-  summary: The code does not do what its shape suggests, or fails on ordinary input.
-  why: |
-    Written this way the code works by accident or breaks on values that are perfectly normal, and the
-    mistake is easy to miss in review because the intent reads correctly.
-  fix: |
-    Make the intended behaviour explicit — fix the condition, the operator or the order of operations —
-    and cover the case that used to fail with a test.
 
 - key: QG-PY-SML-0048
   name: Methods and field names should be simplified
@@ -601,7 +583,7 @@
     - invocation: [secure]
 
 - key: QG-PY-SEC-0051
-  name: A secure password should be replaced by the recommended alternative
+  name: Secure password should be replaced by the recommended alternative
   languages: [py]
   category: SEC
   severity: critical
@@ -620,7 +602,7 @@
     cases the old form got wrong.
 
 - key: QG-PY-BUG-0030
-  name: Unnecessary equality checks should behave the way it reads
+  name: Unnecessary equality checks should match the behaviour the code describes
   languages: [py]
   category: BUG
   severity: major
@@ -638,7 +620,7 @@
     and cover the case that used to fail with a test.
 
 - key: QG-PY-SML-0051
-  name: Tests around TestCases should verify something
+  name: Tests should assert something
   languages: [py]
   category: SML
   severity: minor
@@ -656,25 +638,7 @@
     broken before trusting it again.
 
 - key: QG-PY-BUG-0031
-  name: Recursion should behave the way it reads
-  languages: [py]
-  category: BUG
-  severity: major
-  effort: 15min
-  tags: [bug, generated]
-  generated: true
-  status: planned
-  message: This code does not behave the way it reads.
-  summary: The code does not do what its shape suggests, or fails on ordinary input.
-  why: |
-    Written this way the code works by accident or breaks on values that are perfectly normal, and the
-    mistake is easy to miss in review because the intent reads correctly.
-  fix: |
-    Make the intended behaviour explicit — fix the condition, the operator or the order of operations —
-    and cover the case that used to fail with a test.
-
-- key: QG-PY-BUG-0032
-  name: Return values from functions without side effects should behave the way it reads
+  name: Recursion should match the behaviour the code describes
   languages: [py]
   category: BUG
   severity: major
@@ -711,7 +675,7 @@
     size at or above the current guidance — and keep the choice in one place so it can be raised.
 
 - key: QG-PY-BUG-0033
-  name: String formatting should behave the way it reads
+  name: String formatting should match the behaviour the code describes
   languages: [py]
   category: BUG
   severity: major
@@ -747,7 +711,7 @@
     next change touches a single spot.
 
 - key: QG-PY-SML-0055
-  name: The first argument to class methods should follow the naming convention of the codebase
+  name: First argument to class methods should follow the naming convention of the codebase
   languages: [py]
   category: SML
   severity: minor
@@ -765,7 +729,7 @@
     stay in sync.
 
 - key: QG-PY-BUG-0034
-  name: The Yield and return API should not be used
+  name: Yield and return should not be used
   languages: [py]
   category: BUG
   severity: major
@@ -786,7 +750,7 @@
     - invocation: [yield]
 
 - key: QG-PY-BUG-0035
-  name: The Return with a value API should not be used
+  name: Return with a value should not be used
   languages: [py]
   category: BUG
   severity: major
@@ -805,7 +769,7 @@
     documented and dated.
 
 - key: QG-PY-BUG-0036
-  name: __init__ should behave the way it reads
+  name: __init__ should match the behaviour the code describes
   languages: [py]
   category: BUG
   severity: major
@@ -841,28 +805,28 @@
     next change touches a single spot.
 
 - key: QG-PY-SML-0057
-  name: Pass should use current cryptographic parameters
+  name: Pass should not be used
   languages: [py]
   category: SML
   severity: minor
   effort: 15min
-  tags: [crypto, generated]
+  tags: [avoid_api, generated]
   generated: true
   status: ready
-  message: This cryptographic choice no longer provides the protection it suggests.
-  summary: A cryptographic primitive, mode or key size that is no longer considered safe is used.
+  message: This API should be replaced by the current alternative.
+  summary: Code calls an API that is unsafe, obsolete or superseded by a better alternative.
   why: |
-    Broken primitives keep producing output that looks correct, so nothing fails while the protection is
-    already gone. Data encrypted today is often kept for years, which means an algorithm that is merely
-    weak now will be readable later.
+    The API stays available for compatibility, so nothing fails at build time, but it carries behaviour
+    the platform now considers a defect — unchecked input, a weak guarantee, or a cost the replacement
+    avoids. Its presence also spreads: new code copies what it finds nearby.
   fix: |
-    Use the algorithms the platform recommends today — authenticated encryption, a modern hash, a key
-    size at or above the current guidance — and keep the choice in one place so it can be raised.
+    Replace the call with the current API, and keep the old one only behind a compatibility layer that is
+    documented and dated.
   detect:
     - invocation: [pass]
 
 - key: QG-PY-BUG-0037
-  name: Only strings should behave the way it reads
+  name: Only strings should match the behaviour the code describes
   languages: [py]
   category: BUG
   severity: major
@@ -898,7 +862,7 @@
     next change touches a single spot.
 
 - key: QG-PY-BUG-0038
-  name: __iter__ should behave the way it reads
+  name: __iter__ should match the behaviour the code describes
   languages: [py]
   category: BUG
   severity: major
@@ -974,7 +938,7 @@
     outer one.
 
 - key: QG-PY-SML-0060
-  name: Tests around Assertion argument order should verify something
+  name: Tests should assert something
   languages: [py]
   category: SML
   severity: minor
@@ -1029,7 +993,7 @@
     next change touches a single spot.
 
 - key: QG-PY-BUG-0040
-  name: The The output of functions that don't return anything API should not be used
+  name: Unsafe APIs should not be used
   languages: [py]
   category: BUG
   severity: major
@@ -1085,25 +1049,7 @@
     read-only whatever is not meant to change.
 
 - key: QG-PY-BUG-0042
-  name: Iterable unpacking, for-in loops and yield from should behave the way it reads
-  languages: [py]
-  category: BUG
-  severity: major
-  effort: 15min
-  tags: [bug, generated]
-  generated: true
-  status: planned
-  message: This code does not behave the way it reads.
-  summary: The code does not do what its shape suggests, or fails on ordinary input.
-  why: |
-    Written this way the code works by accident or breaks on values that are perfectly normal, and the
-    mistake is easy to miss in review because the intent reads correctly.
-  fix: |
-    Make the intended behaviour explicit — fix the condition, the operator or the order of operations —
-    and cover the case that used to fail with a test.
-
-- key: QG-PY-BUG-0043
-  name: Collection sizes and array length comparisons should behave the way it reads
+  name: Suspicious code should match the behaviour the code describes
   languages: [py]
   category: BUG
   severity: major
@@ -1121,7 +1067,7 @@
     and cover the case that used to fail with a test.
 
 - key: QG-PY-BUG-0044
-  name: Collection content should behave the way it reads
+  name: Collection content should match the behaviour the code describes
   languages: [py]
   category: BUG
   severity: major
@@ -1157,7 +1103,7 @@
     function or constant.
 
 - key: QG-PY-SML-0068
-  name: OS process signal parameters should be verified before it is trusted
+  name: OS process signal parameters should be verified before use
   languages: [py]
   category: SML
   severity: minor
@@ -1202,8 +1148,8 @@
   effort: 15min
   tags: [crypto, generated]
   generated: true
-  status: planned
-  message: This cryptographic choice no longer provides the protection it suggests.
+  status: ready
+  message: ECB encrypts equal blocks to equal ciphertext, so the plaintext shape survives encryption; use an authenticated mode such as GCM.
   summary: A cryptographic primitive, mode or key size that is no longer considered safe is used.
   why: |
     Broken primitives keep producing output that looks correct, so nothing fails while the protection is
@@ -1212,9 +1158,12 @@
   fix: |
     Use the algorithms the platform recommends today — authenticated encryption, a modern hash, a key
     size at or above the current guidance — and keep the choice in one place so it can be raised.
+  detect:
+    - member: [AES.MODE_ECB]
+    - member: [modes.ECB]
 
 - key: QG-PY-BUG-0045
-  name: Function arguments should behave the way it reads
+  name: Function arguments should match the behaviour the code describes
   languages: [py]
   category: BUG
   severity: major
@@ -1251,7 +1200,7 @@
     cases the old form got wrong.
 
 - key: QG-PY-BUG-0047
-  name: Exception handling around Raised Exceptions must derive from BaseException should be explicit
+  name: Failure paths should make failure handling explicit
   languages: [py]
   category: BUG
   severity: major
@@ -1289,7 +1238,7 @@
     cases the old form got wrong.
 
 - key: QG-PY-BUG-0049
-  name: Item operations should behave the way it reads
+  name: Item operations should match the behaviour the code describes
   languages: [py]
   category: BUG
   severity: major
@@ -1362,7 +1311,7 @@
     next change touches a single spot.
 
 - key: QG-PY-SML-0073
-  name: The Bare raise statements API should not be used
+  name: Bare raise statements should not be used
   languages: [py]
   category: SML
   severity: minor
@@ -1383,7 +1332,7 @@
     - invocation: [raise]
 
 - key: QG-PY-SML-0074
-  name: Exception handling around Special method __exit__ should be explicit
+  name: Special method __exit__ should make failure handling explicit
   languages: [py]
   category: SML
   severity: minor
@@ -1402,7 +1351,7 @@
     wrapping, and let everything else reach the boundary handler.
 
 - key: QG-PY-BUG-0050
-  name: Exception handling around Exceptions' __cause__ should be explicit
+  name: Exceptions __cause__ should make failure handling explicit
   languages: [py]
   category: BUG
   severity: major
@@ -1421,7 +1370,7 @@
     wrapping, and let everything else reach the boundary handler.
 
 - key: QG-PY-SML-0075
-  name: Exception handling around Custom Exception classes should be explicit
+  name: Custom Exception classes should make failure handling explicit
   languages: [py]
   category: SML
   severity: minor
@@ -1462,7 +1411,7 @@
     - creation: [NotImplementedError]
 
 - key: QG-PY-SML-0077
-  name: A subclass should be simplified
+  name: Subclass should be simplified
   languages: [py]
   category: SML
   severity: minor
@@ -1480,7 +1429,7 @@
     next change touches a single spot.
 
 - key: QG-PY-BUG-0051
-  name: The Boolean expressions of exceptions API should not be used
+  name: Boolean expressions of exceptions should not be used
   languages: [py]
   category: BUG
   severity: major
@@ -1501,7 +1450,7 @@
     - invocation: [except]
 
 - key: QG-PY-SML-0078
-  name: Function parameters' default values should be simplified
+  name: Function parameters default values should be simplified
   languages: [py]
   category: SML
   severity: minor
@@ -1519,7 +1468,7 @@
     next change touches a single spot.
 
 - key: QG-PY-BUG-0052
-  name: Instance and class methods should behave the way it reads
+  name: Instance and class methods should match the behaviour the code describes
   languages: [py]
   category: BUG
   severity: major
@@ -1573,7 +1522,7 @@
     next change touches a single spot.
 
 - key: QG-PY-SML-0081
-  name: Concurrent access around Bare raise statements should be coordinated correctly
+  name: Bare raise statements should be accessed in a thread-safe way
   languages: [py]
   category: SML
   severity: minor
@@ -1612,7 +1561,7 @@
     next change touches a single spot.
 
 - key: QG-PY-BUG-0053
-  name: Calls should behave the way it reads
+  name: Calls should match the behaviour the code describes
   languages: [py]
   category: BUG
   severity: major
@@ -1630,7 +1579,7 @@
     and cover the case that used to fail with a test.
 
 - key: QG-PY-SML-0083
-  name: Tests around Only one method invocation is expected should verify something
+  name: Tests should assert something
   languages: [py]
   category: SML
   severity: minor
@@ -1648,7 +1597,7 @@
     broken before trusting it again.
 
 - key: QG-PY-BUG-0054
-  name: Tests around Assertions should verify something
+  name: Tests should assert something
   languages: [py]
   category: BUG
   severity: major
@@ -1702,7 +1651,7 @@
     function or constant.
 
 - key: QG-PY-SML-0086
-  name: The Constants API should not be used
+  name: Constants should not be used
   languages: [py]
   category: SML
   severity: minor
@@ -1757,7 +1706,7 @@
     next change touches a single spot.
 
 - key: QG-PY-BUG-0055
-  name: Only defined names should behave the way it reads
+  name: Only defined names should match the behaviour the code describes
   languages: [py]
   category: BUG
   severity: major
@@ -1775,7 +1724,7 @@
     and cover the case that used to fail with a test.
 
 - key: QG-PY-BUG-0056
-  name: The open builtin function should behave the way it reads
+  name: Open builtin function should match the behaviour the code describes
   languages: [py]
   category: BUG
   severity: major
@@ -1812,7 +1761,7 @@
     comment so the next reader does not treat it as a gap.
 
 - key: QG-PY-SML-0089
-  name: Regular expressions around Regular expressions should be safe and correct
+  name: Regular expressions should be safe and correct
   languages: [py]
   category: SML
   severity: minor
@@ -1831,7 +1780,7 @@
     for input that comes from outside, and cover the pattern with a test.
 
 - key: QG-PY-BUG-0059
-  name: Regular expressions around Alternatives in regular expressions should be safe and correct
+  name: Regular expressions should be safe and correct
   languages: [py]
   category: BUG
   severity: major
@@ -1850,7 +1799,7 @@
     for input that comes from outside, and cover the pattern with a test.
 
 - key: QG-PY-BUG-0060
-  name: Regular expressions around Regex alternatives should be safe and correct
+  name: Regular expressions should be safe and correct
   languages: [py]
   category: BUG
   severity: major
@@ -1907,7 +1856,7 @@
     cases the old form got wrong.
 
 - key: QG-PY-BUG-0061
-  name: Tests around Assertions should verify something
+  name: Tests should assert something
   languages: [py]
   category: BUG
   severity: major
@@ -1925,7 +1874,7 @@
     broken before trusting it again.
 
 - key: QG-PY-SML-0092
-  name: Type checks shouldn't be confusing should be simplified
+  name: Type checks shouldnt be confusing should be simplified
   languages: [py]
   category: SML
   severity: minor
@@ -1943,7 +1892,7 @@
     next change touches a single spot.
 
 - key: QG-PY-BUG-0062
-  name: Regular expressions around Unicode Grapheme Clusters should be safe and correct
+  name: Unicode Grapheme Clusters should be safe and correct
   languages: [py]
   category: BUG
   severity: major
@@ -1962,7 +1911,7 @@
     for input that comes from outside, and cover the pattern with a test.
 
 - key: QG-PY-SML-0093
-  name: Regular expressions around Character classes in regular expressions should be safe and correct
+  name: Regular expressions should be safe and correct
   languages: [py]
   category: SML
   severity: minor
@@ -2017,7 +1966,7 @@
     next change touches a single spot.
 
 - key: QG-PY-SML-0096
-  name: Tests around Test methods should verify something
+  name: Tests should assert something
   languages: [py]
   category: SML
   severity: minor
@@ -2035,7 +1984,7 @@
     broken before trusting it again.
 
 - key: QG-PY-BUG-0063
-  name: The Assert API should not be used
+  name: Assert should not be used
   languages: [py]
   category: BUG
   severity: major
@@ -2054,7 +2003,7 @@
     documented and dated.
 
 - key: QG-PY-SML-0097
-  name: The most specific unittest assertion should be replaced by the recommended alternative
+  name: Most specific unittest assertion should be replaced by the recommended alternative
   languages: [py]
   category: SML
   severity: minor
@@ -2075,7 +2024,7 @@
     - invocation: [unittest]
 
 - key: QG-PY-SML-0098
-  name: Tests around Assertions should verify something
+  name: Tests should assert something
   languages: [py]
   category: SML
   severity: minor
@@ -2093,7 +2042,7 @@
     broken before trusting it again.
 
 - key: QG-PY-BUG-0064
-  name: Tests around Assertions should verify something
+  name: Tests should assert something
   languages: [py]
   category: BUG
   severity: major
@@ -2111,7 +2060,7 @@
     broken before trusting it again.
 
 - key: QG-PY-SML-0099
-  name: Tests around Tests should verify something
+  name: Tests should assert something
   languages: [py]
   category: SML
   severity: minor
@@ -2129,7 +2078,7 @@
     broken before trusting it again.
 
 - key: QG-PY-BUG-0065
-  name: Variables, classes and functions should behave the way it reads
+  name: Variables, classes and functions should match the behaviour the code describes
   languages: [py]
   category: BUG
   severity: major
@@ -2147,7 +2096,7 @@
     and cover the case that used to fail with a test.
 
 - key: QG-PY-SML-0100
-  name: Tests around Tests should verify something
+  name: Tests should assert something
   languages: [py]
   category: SML
   severity: minor
@@ -2165,7 +2114,7 @@
     broken before trusting it again.
 
 - key: QG-PY-SML-0101
-  name: Tests around Similar tests should verify something
+  name: Tests should assert something
   languages: [py]
   category: SML
   severity: minor
@@ -2183,7 +2132,7 @@
     broken before trusting it again.
 
 - key: QG-PY-BUG-0066
-  name: Regular expressions around Regex patterns following a possessive quantifier should be safe and correct
+  name: Regular expressions should be safe and correct
   languages: [py]
   category: BUG
   severity: major
@@ -2202,7 +2151,7 @@
     for input that comes from outside, and cover the pattern with a test.
 
 - key: QG-PY-BUG-0067
-  name: The Regex boundaries API should not be used
+  name: Regex boundaries should not be used
   languages: [py]
   category: BUG
   severity: major
@@ -2221,7 +2170,7 @@
     documented and dated.
 
 - key: QG-PY-BUG-0068
-  name: Regular expressions around Back references in regular expressions should be safe and correct
+  name: Regular expressions should be safe and correct
   languages: [py]
   category: BUG
   severity: major
@@ -2240,7 +2189,7 @@
     for input that comes from outside, and cover the pattern with a test.
 
 - key: QG-PY-BUG-0069
-  name: Regular expressions around Regex lookahead assertions should be safe and correct
+  name: Regular expressions should be safe and correct
   languages: [py]
   category: BUG
   severity: major
@@ -2278,7 +2227,7 @@
     comment so the next reader does not treat it as a gap.
 
 - key: QG-PY-SML-0103
-  name: Regular expressions around Single-character alternations in regular expressions should be safe and correct
+  name: Regular expressions should be safe and correct
   languages: [py]
   category: SML
   severity: minor
@@ -2315,7 +2264,7 @@
     next change touches a single spot.
 
 - key: QG-PY-SML-0105
-  name: Concurrent access around Lambdas should be coordinated correctly
+  name: Lambdas should be accessed in a thread-safe way
   languages: [py]
   category: SML
   severity: minor
@@ -2333,23 +2282,23 @@
     the concurrent collections and higher-level primitives the platform provides.
 
 - key: QG-PY-SEC-0057
-  name: S3 buckets should not be granted more access than it needs
+  name: S3 buckets should use current cryptographic parameters
   languages: [py]
   category: SEC
   severity: critical
   effort: 15min
-  tags: [permissions, generated]
+  tags: [crypto, generated]
   generated: true
   status: planned
-  message: This grants wider access than the operation needs.
-  summary: A resource is created or shared with permissions wider than the task requires.
+  message: This cryptographic choice no longer provides the protection it suggests.
+  summary: A cryptographic primitive, mode or key size that is no longer considered safe is used.
   why: |
-    Every account that can reach the resource can also change it, so a single compromised process is
-    enough to alter data or code the application later trusts. Wide permissions are also invisible at the
-    call site: nothing in the reading code says who else can write.
+    Broken primitives keep producing output that looks correct, so nothing fails while the protection is
+    already gone. Data encrypted today is often kept for years, which means an algorithm that is merely
+    weak now will be readable later.
   fix: |
-    Grant the narrowest right that works, to the specific identity that needs it, and rely on inherited
-    permissions from a properly secured parent instead of widening the resource itself.
+    Use the algorithms the platform recommends today — authenticated encryption, a modern hash, a key
+    size at or above the current guidance — and keep the choice in one place so it can be raised.
 
 - key: QG-PY-SEC-0058
   name: Amazon S3 buckets should not weaken the security of the application
@@ -2371,7 +2320,7 @@
     and replace weakened mechanisms with the current recommended one.
 
 - key: QG-PY-SML-0106
-  name: Secrets should not be written into AWS region
+  name: AWS region should not be committed with the source
   languages: [py]
   category: SML
   severity: minor
@@ -2390,7 +2339,7 @@
     missing, and treat the committed value as compromised: rotate it before removing it.
 
 - key: QG-PY-SEC-0059
-  name: S3 buckets should not be granted more access than it needs
+  name: S3 buckets should not grant more access than needed
   languages: [py]
   category: SEC
   severity: critical
@@ -2409,7 +2358,7 @@
     permissions from a properly secured parent instead of widening the resource itself.
 
 - key: QG-PY-SEC-0060
-  name: AWS resource-based policies should not be granted more access than it needs
+  name: AWS resource-based policies should not grant more access than needed
   languages: [py]
   category: SEC
   severity: critical
@@ -2447,7 +2396,7 @@
     size at or above the current guidance — and keep the choice in one place so it can be raised.
 
 - key: QG-PY-SEC-0062
-  name: Amazon S3 bucket public access should not be granted more access than it needs
+  name: Amazon S3 bucket public access should not grant more access than needed
   languages: [py]
   category: SEC
   severity: critical
@@ -2466,7 +2415,7 @@
     permissions from a properly secured parent instead of widening the resource itself.
 
 - key: QG-PY-SEC-0063
-  name: Policies should not be granted more access than it needs
+  name: Policies should not grant more access than needed
   languages: [py]
   category: SEC
   severity: critical
@@ -2504,7 +2453,7 @@
     size at or above the current guidance — and keep the choice in one place so it can be raised.
 
 - key: QG-PY-SEC-0065
-  name: IAM policies should not be granted more access than it needs
+  name: IAM policies should not grant more access than needed
   languages: [py]
   category: SEC
   severity: critical
@@ -2542,7 +2491,7 @@
     size at or above the current guidance — and keep the choice in one place so it can be raised.
 
 - key: QG-PY-SEC-0067
-  name: AWS IAM policies should not be granted more access than it needs
+  name: AWS IAM policies should not grant more access than needed
   languages: [py]
   category: SEC
   severity: critical
@@ -2580,7 +2529,7 @@
     size at or above the current guidance — and keep the choice in one place so it can be raised.
 
 - key: QG-PY-SEC-0069
-  name: Administration services access should not be granted more access than it needs
+  name: Administration services access should not grant more access than needed
   languages: [py]
   category: SEC
   severity: critical
@@ -2618,7 +2567,7 @@
     comment so the next reader does not treat it as a gap.
 
 - key: QG-PY-SML-0107
-  name: Regular expressions around Regular expressions should be safe and correct
+  name: Regular expressions should be safe and correct
   languages: [py]
   category: SML
   severity: minor
@@ -2656,7 +2605,7 @@
     size at or above the current guidance — and keep the choice in one place so it can be raised.
 
 - key: QG-PY-BUG-0071
-  name: Regular expressions around Replacement strings should be safe and correct
+  name: Replacement strings should be safe and correct
   languages: [py]
   category: BUG
   severity: major
@@ -2675,7 +2624,7 @@
     for input that comes from outside, and cover the pattern with a test.
 
 - key: QG-PY-SEC-0071
-  name: Public network access to cloud resources should not be granted more access than it needs
+  name: Public network access to cloud resources should not grant more access than needed
   languages: [py]
   category: SEC
   severity: critical
@@ -2789,7 +2738,7 @@
     cases the old form got wrong.
 
 - key: QG-PY-SEC-0075
-  name: XML signatures should be verified before it is trusted
+  name: XML signatures should be verified before use
   languages: [py]
   category: SEC
   severity: critical
@@ -2808,7 +2757,7 @@
     — and reject the value when it fails, instead of logging and continuing.
 
 - key: QG-PY-SML-0110
-  name: The Non-capturing groups without quantifier API should not be used
+  name: Non-capturing groups without quantifier should not be used
   languages: [py]
   category: SML
   severity: minor
@@ -2827,7 +2776,7 @@
     documented and dated.
 
 - key: QG-PY-SML-0111
-  name: Regular expressions around Character classes in regular expressions should be safe and correct
+  name: Regular expressions should be safe and correct
   languages: [py]
   category: SML
   severity: minor
@@ -2865,7 +2814,7 @@
     and replace weakened mechanisms with the current recommended one.
 
 - key: QG-PY-SML-0112
-  name: The Octal escape sequences API should not be used
+  name: Octal escape sequences should not be used
   languages: [py]
   category: SML
   severity: minor
@@ -2920,7 +2869,7 @@
     next change touches a single spot.
 
 - key: QG-PY-SML-0115
-  name: The Any API should not be used
+  name: Any should not be used
   languages: [py]
   category: SML
   severity: minor
@@ -2999,7 +2948,7 @@
       receiver: [typing]
 
 - key: QG-PY-BUG-0073
-  name: The '@receiver' (Django) and '@route' (Flask) decorators should behave the way it reads
+  name: @receiver (Django) and @route (Flask) decorators should match the behaviour the code describes
   languages: [py]
   category: BUG
   severity: major
@@ -3017,7 +2966,7 @@
     and cover the case that used to fail with a test.
 
 - key: QG-PY-SML-0119
-  name: The 'null=True' API should not be used
+  name: Null=True should not be used
   languages: [py]
   category: SML
   severity: minor
@@ -3091,7 +3040,7 @@
     read-only whatever is not meant to change.
 
 - key: QG-PY-BUG-0074
-  name: The safe flag should behave the way it reads
+  name: Safe flag should match the behaviour the code describes
   languages: [py]
   category: BUG
   severity: major
@@ -3109,7 +3058,7 @@
     and cover the case that used to fail with a test.
 
 - key: QG-PY-SML-0123
-  name: 'startswith' or 'endswith' methods should be replaced by the recommended alternative
+  name: Startswith or endswith methods should be replaced by the recommended alternative
   languages: [py]
   category: SML
   severity: minor
@@ -3135,7 +3084,7 @@
   effort: 15min
   tags: [prefer_api, generated]
   generated: true
-  status: ready
+  status: planned
   message: The platform offers a clearer or safer construct for this.
   summary: A construct is used where the platform offers one that is clearer or safer.
   why: |
@@ -3145,9 +3094,6 @@
   fix: |
     Switch to the recommended construct; the behaviour is the same in the normal case and defined in the
     cases the old form got wrong.
-  detect:
-    - invocation: [isinstance]
-
 - key: QG-PY-SML-0125
   name: Assignments of lambdas to variables should be simplified
   languages: [py]
@@ -3167,7 +3113,7 @@
     next change touches a single spot.
 
 - key: QG-PY-BUG-0075
-  name: Set members and dictionary keys should behave the way it reads
+  name: Set members and dictionary keys should match the behaviour the code describes
   languages: [py]
   category: BUG
   severity: major
@@ -3185,7 +3131,7 @@
     and cover the case that used to fail with a test.
 
 - key: QG-PY-BUG-0076
-  name: Sequence indexes must have an __index__ should behave the way it reads
+  name: Suspicious code should match the behaviour the code describes
   languages: [py]
   category: BUG
   severity: major
@@ -3203,7 +3149,7 @@
     and cover the case that used to fail with a test.
 
 - key: QG-PY-SML-0126
-  name: Results that depend on random number generation should be simplified
+  name: Hard-to-read code should be simplified
   languages: [py]
   category: SML
   severity: minor
@@ -3259,7 +3205,7 @@
     cases the old form got wrong.
 
 - key: QG-PY-BUG-0077
-  name: Equality checks should behave the way it reads
+  name: Equality checks should match the behaviour the code describes
   languages: [py]
   category: BUG
   severity: major
@@ -3277,7 +3223,7 @@
     and cover the case that used to fail with a test.
 
 - key: QG-PY-BUG-0078
-  name: The abs_tol parameter should behave the way it reads
+  name: Abs_tol parameter should match the behaviour the code describes
   languages: [py]
   category: BUG
   severity: major
@@ -3314,7 +3260,7 @@
     cases the old form got wrong.
 
 - key: QG-PY-SML-0130
-  name: The Deprecated NumPy aliases of built-in types API should not be used
+  name: Deprecated NumPy aliases of built-in types should not be used
   languages: [py]
   category: SML
   severity: minor
@@ -3333,7 +3279,7 @@
     documented and dated.
 
 - key: QG-PY-SML-0131
-  name: The Inplace=True API should not be used
+  name: Inplace=True should not be used
   languages: [py]
   category: SML
   severity: minor
@@ -3352,7 +3298,7 @@
     documented and dated.
 
 - key: QG-PY-SML-0132
-  name: When using pandas.merge or pandas.join, the should be simplified
+  name: Hard-to-read code should be simplified
   languages: [py]
   category: SML
   severity: minor
@@ -3370,7 +3316,7 @@
     next change touches a single spot.
 
 - key: QG-PY-SML-0133
-  name: 'dtype' parameter should be simplified
+  name: Dtype parameter should be simplified
   languages: [py]
   category: SML
   severity: minor
@@ -3388,7 +3334,7 @@
     next change touches a single spot.
 
 - key: QG-PY-SML-0134
-  name: The pandas.DataFrame.to_numpy() method should be replaced by the recommended alternative
+  name: Pandas.DataFrame.to_numpy() method should be replaced by the recommended alternative
   languages: [py]
   category: SML
   severity: minor
@@ -3433,7 +3379,7 @@
     cases the old form got wrong.
 
 - key: QG-PY-SEC-0077
-  name: Secrets should not be written into Flask secret keys
+  name: Flask secret keys should not be committed with the source
   languages: [py]
   category: SEC
   severity: critical
@@ -3452,7 +3398,7 @@
     missing, and treat the committed value as compromised: rotate it before removing it.
 
 - key: QG-PY-SEC-0078
-  name: Secrets should not be written into JWT secret keys
+  name: JWT secret keys should not be committed with the source
   languages: [py]
   category: SEC
   severity: critical
@@ -3565,7 +3511,7 @@
     read-only whatever is not meant to change.
 
 - key: QG-PY-BUG-0079
-  name: Flask error handlers should behave the way it reads
+  name: Flask error handlers should match the behaviour the code describes
   languages: [py]
   category: BUG
   severity: major
@@ -3583,7 +3529,7 @@
     and cover the case that used to fail with a test.
 
 - key: QG-PY-SML-0139
-  name: Constructor attributes of date and time objects should be simplified
+  name: Hard-to-read code should be simplified
   languages: [py]
   category: SML
   severity: minor
@@ -3601,7 +3547,7 @@
     next change touches a single spot.
 
 - key: QG-PY-SML-0140
-  name: The 12-hour format should be replaced by the recommended alternative
+  name: 12-hour format should be replaced by the recommended alternative
   languages: [py]
   category: SML
   severity: minor
@@ -3696,7 +3642,7 @@
     next change touches a single spot.
 
 - key: QG-PY-SML-0145
-  name: Using timezone-aware datetime objects should be replaced by the recommended alternative
+  name: Timezone-aware datetime objects should be replaced by the recommended alternative
   languages: [py]
   category: SML
   severity: minor
@@ -3759,7 +3705,7 @@
     next change touches a single spot.
 
 - key: QG-PY-SML-0149
-  name: The input_shape parameter should be simplified
+  name: Input_shape parameter should be simplified
   languages: [py]
   category: SML
   severity: minor
@@ -3777,7 +3723,7 @@
     next change touches a single spot.
 
 - key: QG-PY-SML-0150
-  name: The validate_indices argument should be simplified
+  name: Validate_indices argument should be simplified
   languages: [py]
   category: SML
   severity: minor
@@ -3795,7 +3741,7 @@
     next change touches a single spot.
 
 - key: QG-PY-SML-0151
-  name: The Python side effects API should not be used
+  name: Python side effects should not be used
   languages: [py]
   category: SML
   severity: minor
@@ -3818,7 +3764,7 @@
       receiver: [tf]
 
 - key: QG-PY-SML-0152
-  name: The reduction axis/dimension should be simplified
+  name: Reduction axis/dimension should be simplified
   languages: [py]
   category: SML
   severity: minor
@@ -3872,7 +3818,7 @@
     next change touches a single spot.
 
 - key: QG-PY-BUG-0080
-  name: Transformers should behave the way it reads
+  name: Transformers should match the behaviour the code describes
   languages: [py]
   category: BUG
   severity: major
@@ -3890,7 +3836,7 @@
     and cover the case that used to fail with a test.
 
 - key: QG-PY-SML-0155
-  name: Nested estimator parameters modification in a Pipeline should be simplified
+  name: Hard-to-read code should be simplified
   languages: [py]
   category: SML
   severity: minor
@@ -3926,7 +3872,7 @@
     next change touches a single spot.
 
 - key: QG-PY-SML-0157
-  name: Subclasses of Scikit-Learn's BaseEstimator should be simplified
+  name: Subclasses of Scikit-Learns BaseEstimator should be simplified
   languages: [py]
   category: SML
   severity: minor
@@ -3944,7 +3890,7 @@
     next change touches a single spot.
 
 - key: QG-PY-BUG-0081
-  name: Subclasses of torch.nn.Module should behave the way it reads
+  name: Subclasses of torch.nn.Module should match the behaviour the code describes
   languages: [py]
   category: BUG
   severity: major
@@ -3988,7 +3934,7 @@
       receiver: [torch.autograd]
 
 - key: QG-PY-SML-0159
-  name: The num_workers parameter should be simplified
+  name: Num_workers parameter should be simplified
   languages: [py]
   category: SML
   severity: minor
@@ -4006,7 +3952,7 @@
     next change touches a single spot.
 
 - key: QG-PY-BUG-0082
-  name: Einops pattern should behave the way it reads
+  name: Einops pattern should match the behaviour the code describes
   languages: [py]
   category: BUG
   severity: major
@@ -4047,7 +3993,7 @@
       receiver: [torch]
 
 - key: QG-PY-SML-0160
-  name: Concurrent access around Asynchronous functions should be coordinated correctly
+  name: Asynchronous functions should be accessed in a thread-safe way
   languages: [py]
   category: SML
   severity: minor
@@ -4103,7 +4049,7 @@
     cases the old form got wrong.
 
 - key: QG-PY-BUG-0083
-  name: Concurrent access around Async functions should be coordinated correctly
+  name: Async functions should be accessed in a thread-safe way
   languages: [py]
   category: BUG
   severity: major
@@ -4121,7 +4067,7 @@
     the concurrent collections and higher-level primitives the platform provides.
 
 - key: QG-PY-BUG-0084
-  name: Concurrent access around Use non-blocking sleep functions in asynchronous should be coordinated correctly
+  name: Shared state should be accessed in a thread-safe way
   languages: [py]
   category: BUG
   severity: major
@@ -4139,7 +4085,7 @@
     the concurrent collections and higher-level primitives the platform provides.
 
 - key: QG-PY-BUG-0085
-  name: Concurrent access around Async functions should be coordinated correctly
+  name: Async functions should be accessed in a thread-safe way
   languages: [py]
   category: BUG
   severity: major
@@ -4157,7 +4103,7 @@
     the concurrent collections and higher-level primitives the platform provides.
 
 - key: QG-PY-BUG-0086
-  name: Cancellation scopes should behave the way it reads
+  name: Cancellation scopes should match the behaviour the code describes
   languages: [py]
   category: BUG
   severity: major
@@ -4194,7 +4140,7 @@
     cases the old form got wrong.
 
 - key: QG-PY-SML-0164
-  name: The List comprehensions API should not be used
+  name: List comprehensions should not be used
   languages: [py]
   category: SML
   severity: minor
@@ -4215,7 +4161,7 @@
     - invocation: [all]
 
 - key: QG-PY-BUG-0087
-  name: Concurrent access around Async functions should be coordinated correctly
+  name: Async functions should be accessed in a thread-safe way
   languages: [py]
   category: BUG
   severity: major
@@ -4252,7 +4198,7 @@
     cases the old form got wrong.
 
 - key: QG-PY-SML-0166
-  name: Creation of collections with literals or comprehensions should be simplified
+  name: Hard-to-read code should be simplified
   languages: [py]
   category: SML
   severity: minor
@@ -4270,7 +4216,7 @@
     next change touches a single spot.
 
 - key: QG-PY-BUG-0088
-  name: Exception handling around Cancellation exceptions should be explicit
+  name: Cancellation exceptions should make failure handling explicit
   languages: [py]
   category: BUG
   severity: major
@@ -4308,7 +4254,7 @@
     cases the old form got wrong.
 
 - key: QG-PY-BUG-0089
-  name: Concurrent access around Async functions should be coordinated correctly
+  name: Async functions should be accessed in a thread-safe way
   languages: [py]
   category: BUG
   severity: major
@@ -4344,7 +4290,7 @@
     next change touches a single spot.
 
 - key: QG-PY-BUG-0090
-  name: Async functions should behave the way it reads
+  name: Async functions should match the behaviour the code describes
   languages: [py]
   category: BUG
   severity: major
@@ -4362,7 +4308,7 @@
     and cover the case that used to fail with a test.
 
 - key: QG-PY-BUG-0091
-  name: Asyncio tasks should behave the way it reads
+  name: Asyncio tasks should match the behaviour the code describes
   languages: [py]
   category: BUG
   severity: major
@@ -4398,7 +4344,7 @@
     next change touches a single spot.
 
 - key: QG-PY-SML-0170
-  name: When iterating over an iterable object, using list() should be simplified
+  name: Hard-to-read code should be simplified
   languages: [py]
   category: SML
   severity: minor
@@ -4489,7 +4435,7 @@
     next change touches a single spot.
 
 - key: QG-PY-SML-0175
-  name: The sorted function call should be simplified
+  name: Sorted function call should be simplified
   languages: [py]
   category: SML
   severity: minor
@@ -4507,7 +4453,7 @@
     next change touches a single spot.
 
 - key: QG-PY-SML-0176
-  name: sorted should be simplified
+  name: Hard-to-read code should be simplified
   languages: [py]
   category: SML
   severity: minor
@@ -4525,7 +4471,7 @@
     next change touches a single spot.
 
 - key: QG-PY-SML-0177
-  name: Using .items() to iterate over a dictionary should be simplified
+  name: .items() to iterate over a dictionary should be simplified
   languages: [py]
   category: SML
   severity: minor
@@ -4543,7 +4489,7 @@
     next change touches a single spot.
 
 - key: QG-PY-SML-0178
-  name: The TaskGroup/Nursery API should not be used
+  name: TaskGroup/Nursery should not be used
   languages: [py]
   category: SML
   severity: minor
@@ -4562,7 +4508,7 @@
     documented and dated.
 
 - key: QG-PY-BUG-0092
-  name: The Control flow statements API should not be used
+  name: Control flow statements should not be used
   languages: [py]
   category: BUG
   severity: major
@@ -4618,7 +4564,7 @@
     next change touches a single spot.
 
 - key: QG-PY-SML-0180
-  name: Iteration over a dictionary key value pairs should be simplified
+  name: Hard-to-read code should be simplified
   languages: [py]
   category: SML
   severity: minor
@@ -4636,7 +4582,7 @@
     next change touches a single spot.
 
 - key: QG-PY-SML-0181
-  name: Populating a dictionary with a constant value should be simplified
+  name: Hard-to-read code should be simplified
   languages: [py]
   category: SML
   severity: minor
@@ -4691,7 +4637,7 @@
     next change touches a single spot.
 
 - key: QG-PY-BUG-0094
-  name: AWS Lambda handlers should behave the way it reads
+  name: AWS Lambda handlers should match the behaviour the code describes
   languages: [py]
   category: BUG
   severity: major
@@ -4709,7 +4655,7 @@
     and cover the case that used to fail with a test.
 
 - key: QG-PY-SML-0183
-  name: AWS Lambda handlers must not be should be simplified
+  name: Hard-to-read code should be simplified
   languages: [py]
   category: SML
   severity: minor
@@ -4745,7 +4691,7 @@
     next change touches a single spot.
 
 - key: QG-PY-BUG-0095
-  name: Network calls in AWS Lambda functions should behave the way it reads
+  name: Suspicious code should match the behaviour the code describes
   languages: [py]
   category: BUG
   severity: major
@@ -4763,7 +4709,7 @@
     and cover the case that used to fail with a test.
 
 - key: QG-PY-SML-0185
-  name: Exception handling around Botocore.exceptions.ClientError should be explicit
+  name: Botocore.exceptions.ClientError should make failure handling explicit
   languages: [py]
   category: SML
   severity: minor
@@ -4805,7 +4751,7 @@
     cases the old form got wrong.
 
 - key: QG-PY-SML-0187
-  name: Boto3 operations that support pagination should be simplified
+  name: Hard-to-read code should be simplified
   languages: [py]
   category: SML
   severity: minor
@@ -4823,7 +4769,7 @@
     next change touches a single spot.
 
 - key: QG-PY-SML-0188
-  name: Uses of Issue suppression comment should be reviewed
+  name: Issue suppression comment should be resolved rather than left in the code
   languages: [py]
   category: SML
   severity: minor
@@ -4841,7 +4787,7 @@
     lives somewhere that gets reviewed.
 
 - key: QG-PY-BUG-0096
-  name: The NotImplemented API should not be used
+  name: NotImplemented should not be used
   languages: [py]
   category: BUG
   severity: major
@@ -4862,7 +4808,7 @@
     - creation: [NotImplemented]
 
 - key: QG-PY-BUG-0097
-  name: Concurrent access around Return, break, or continue statements should be coordinated correctly
+  name: Return, break, or continue statements should be accessed in a thread-safe way
   languages: [py]
   category: BUG
   severity: major
@@ -4898,7 +4844,7 @@
     next change touches a single spot.
 
 - key: QG-PY-BUG-0098
-  name: Template strings should behave the way it reads
+  name: Template strings should match the behaviour the code describes
   languages: [py]
   category: BUG
   severity: major
@@ -4916,7 +4862,7 @@
     and cover the case that used to fail with a test.
 
 - key: QG-PY-BUG-0099
-  name: Template and str should behave the way it reads
+  name: Template and str should match the behaviour the code describes
   languages: [py]
   category: BUG
   severity: major
@@ -4952,7 +4898,7 @@
     next change touches a single spot.
 
 - key: QG-PY-SML-0191
-  name: The Query parameters API should not be used
+  name: Query parameters should not be used
   languages: [py]
   category: SML
   severity: minor
@@ -4971,7 +4917,7 @@
     documented and dated.
 
 - key: QG-PY-BUG-0100
-  name: Exception handling around HTTP headers should be explicit
+  name: HTTP headers should make failure handling explicit
   languages: [py]
   category: BUG
   severity: major
@@ -4990,7 +4936,7 @@
     wrapping, and let everything else reach the boundary handler.
 
 - key: QG-PY-BUG-0101
-  name: Flask class-based view decorators should behave the way it reads
+  name: Flask class-based view decorators should match the behaviour the code describes
   languages: [py]
   category: BUG
   severity: major
@@ -5008,7 +4954,7 @@
     and cover the case that used to fail with a test.
 
 - key: QG-PY-BUG-0102
-  name: Flask preprocess_request() return values should behave the way it reads
+  name: Flask preprocess_request() return values should match the behaviour the code describes
   languages: [py]
   category: BUG
   severity: major
@@ -5026,7 +4972,7 @@
     and cover the case that used to fail with a test.
 
 - key: QG-PY-BUG-0103
-  name: Send_file should behave the way it reads
+  name: Send_file should match the behaviour the code describes
   languages: [py]
   category: BUG
   severity: major
@@ -5141,7 +5087,7 @@
     comment so the next reader does not treat it as a gap.
 
 - key: QG-PY-BUG-0105
-  name: Child routers should behave the way it reads
+  name: Child routers should match the behaviour the code describes
   languages: [py]
   category: BUG
   severity: major
@@ -5159,22 +5105,22 @@
     and cover the case that used to fail with a test.
 
 - key: QG-PY-SML-0194
-  name: Tests around TestClient requests should verify something
+  name: TestClient requests should be simplified
   languages: [py]
   category: SML
   severity: minor
   effort: 15min
-  tags: [tests, generated]
+  tags: [sml, generated]
   generated: true
   status: ready
-  message: This test cannot fail, so it verifies nothing.
-  summary: A test does not assert, is disabled, or cannot fail.
+  message: This code is harder to read or change than the behaviour requires.
+  summary: The code works but is harder to read or change than the behaviour requires.
   why: |
-    A test that cannot fail reports success forever while covering nothing, and the suite keeps its green
-    status. That is worse than having no test at all, because it removes the incentive to write one.
+    The intent is buried, duplicated, or spread across places that must stay in sync, so every future
+    change costs more than it should and carries a risk that has nothing to do with the change itself.
   fix: |
-    Assert the behaviour the test exists for, re-enable it, and make sure it fails when the behaviour is
-    broken before trusting it again.
+    Remove what is not used, name what is unclear, and keep one piece of behaviour in one place so the
+    next change touches a single spot.
   detect:
     - invocation: [content]
 
@@ -5234,7 +5180,7 @@
     read-only whatever is not meant to change.
 
 - key: QG-PY-SML-0197
-  name: The Generic route decorators API should not be used
+  name: Generic route decorators should not be used
   languages: [py]
   category: SML
   severity: minor
@@ -5274,7 +5220,7 @@
     - creation: [APIRouter]
 
 - key: QG-PY-SML-0199
-  name: Exception handling around HTTPException responses should be explicit
+  name: HTTPException responses should make failure handling explicit
   languages: [py]
   category: SML
   severity: minor
@@ -5293,7 +5239,7 @@
     wrapping, and let everything else reach the boundary handler.
 
 - key: QG-PY-BUG-0107
-  name: Enum classes should behave the way it reads
+  name: Enum classes should match the behaviour the code describes
   languages: [py]
   category: BUG
   severity: major
@@ -5334,7 +5280,7 @@
       receiver: [set]
 
 - key: QG-PY-BUG-0108
-  name: StopIteration should behave the way it reads
+  name: StopIteration should match the behaviour the code describes
   languages: [py]
   category: BUG
   severity: major
@@ -5352,7 +5298,7 @@
     and cover the case that used to fail with a test.
 
 - key: QG-PY-BUG-0109
-  name: Attributes should behave the way it reads
+  name: Attributes should match the behaviour the code describes
   languages: [py]
   category: BUG
   severity: major
@@ -5449,7 +5395,7 @@
     comment so the next reader does not treat it as a gap.
 
 - key: QG-PY-BUG-0111
-  name: Property methods should behave the way it reads
+  name: Property methods should match the behaviour the code describes
   languages: [py]
   category: BUG
   severity: major
@@ -5467,7 +5413,7 @@
     and cover the case that used to fail with a test.
 
 - key: QG-PY-BUG-0112
-  name: @singledispatch and @singledispatchmethod should behave the way it reads
+  name: @singledispatch and @singledispatchmethod should match the behaviour the code describes
   languages: [py]
   category: BUG
   severity: major
@@ -5503,7 +5449,7 @@
     next change touches a single spot.
 
 - key: QG-PY-BUG-0113
-  name: The Mutable default values API should not be used
+  name: Mutable default values should not be used
   languages: [py]
   category: BUG
   severity: major
@@ -5562,7 +5508,7 @@
     next change touches a single spot.
 
 - key: QG-PY-BUG-0114
-  name: Multiple inheritance should behave the way it reads
+  name: Multiple inheritance should match the behaviour the code describes
   languages: [py]
   category: BUG
   severity: major
@@ -5638,7 +5584,7 @@
     next change touches a single spot.
 
 - key: QG-PY-BUG-0115
-  name: TypeVars should behave the way it reads
+  name: TypeVars should match the behaviour the code describes
   languages: [py]
   category: BUG
   severity: major
@@ -5656,7 +5602,7 @@
     and cover the case that used to fail with a test.
 
 - key: QG-PY-BUG-0116
-  name: Group iterators from itertools.groupby should behave the way it reads
+  name: Group iterators from itertools.groupby should match the behaviour the code describes
   languages: [py]
   category: BUG
   severity: major
@@ -5674,7 +5620,7 @@
     and cover the case that used to fail with a test.
 
 - key: QG-PY-SML-0210
-  name: The Sorted() API should not be used
+  name: Sorted() should not be used
   languages: [py]
   category: SML
   severity: minor
@@ -5716,7 +5662,7 @@
     - invocation: [enumerate]
 
 - key: QG-PY-SML-0212
-  name: The List(...)[0] API should not be used
+  name: List(...)[0] should not be used
   languages: [py]
   category: SML
   severity: minor
@@ -5735,7 +5681,7 @@
     documented and dated.
 
 - key: QG-PY-SML-0213
-  name: The Sum() API should not be used
+  name: Sum() should not be used
   languages: [py]
   category: SML
   severity: minor
@@ -5756,7 +5702,7 @@
     - invocation: [sum]
 
 - key: QG-PY-SML-0214
-  name: Tests around Dictionary membership tests should verify something
+  name: Tests should assert something
   languages: [py]
   category: SML
   severity: minor
@@ -5818,7 +5764,7 @@
       receiver: [logging]
 
 - key: QG-PY-BUG-0117
-  name: The Mutable or stateful values API should not be used
+  name: Mutable or stateful values should not be used
   languages: [py]
   category: BUG
   severity: major
@@ -5858,7 +5804,7 @@
     - invocation: [fail]
 
 - key: QG-PY-SML-0218
-  name: Deprecated code around Deprecated Beautiful Soup methods should be retired
+  name: Deprecated code should be retired
   languages: [py]
   category: SML
   severity: minor
@@ -5898,7 +5844,7 @@
     - invocation: [new_tag]
 
 - key: QG-PY-BUG-0118
-  name: BeautifulSoup elements should behave the way it reads
+  name: BeautifulSoup elements should match the behaviour the code describes
   languages: [py]
   category: BUG
   severity: major
@@ -5953,7 +5899,7 @@
     cases the old form got wrong.
 
 - key: QG-PY-BUG-0120
-  name: Pydantic models should behave the way it reads
+  name: Pydantic models should match the behaviour the code describes
   languages: [py]
   category: BUG
   severity: major
@@ -5989,7 +5935,7 @@
     next change touches a single spot.
 
 - key: QG-PY-BUG-0121
-  name: Pydantic-core serialization calls should behave the way it reads
+  name: Pydantic-core serialization calls should match the behaviour the code describes
   languages: [py]
   category: BUG
   severity: major
@@ -6007,7 +5953,7 @@
     and cover the case that used to fail with a test.
 
 - key: QG-PY-BUG-0122
-  name: SkipValidation should behave the way it reads
+  name: SkipValidation should match the behaviour the code describes
   languages: [py]
   category: BUG
   severity: major
@@ -6025,7 +5971,7 @@
     and cover the case that used to fail with a test.
 
 - key: QG-PY-BUG-0123
-  name: The Double leading underscores API should not be used
+  name: Double leading underscores should not be used
   languages: [py]
   category: BUG
   severity: major
@@ -6044,7 +5990,7 @@
     documented and dated.
 
 - key: QG-PY-BUG-0124
-  name: The Json_schema_input_type API should not be used
+  name: Json_schema_input_type should not be used
   languages: [py]
   category: BUG
   severity: major
@@ -6065,46 +6011,46 @@
     - invocation: [json_schema_input_type]
 
 - key: QG-PY-BUG-0125
-  name: Tests around Pytest fixtures should verify something
+  name: Pytest fixtures should match the behaviour the code describes
   languages: [py]
   category: BUG
   severity: major
   effort: 15min
-  tags: [tests, generated]
+  tags: [bug, generated]
   generated: true
   status: ready
-  message: This test cannot fail, so it verifies nothing.
-  summary: A test does not assert, is disabled, or cannot fail.
+  message: This code does not behave the way it reads.
+  summary: The code does not do what its shape suggests, or fails on ordinary input.
   why: |
-    A test that cannot fail reports success forever while covering nothing, and the suite keeps its green
-    status. That is worse than having no test at all, because it removes the incentive to write one.
+    Written this way the code works by accident or breaks on values that are perfectly normal, and the
+    mistake is easy to miss in review because the intent reads correctly.
   fix: |
-    Assert the behaviour the test exists for, re-enable it, and make sure it fails when the behaviour is
-    broken before trusting it again.
+    Make the intended behaviour explicit — fix the condition, the operator or the order of operations —
+    and cover the case that used to fail with a test.
   detect:
     - invocation: [autouse]
     - invocation: [params]
 
 - key: QG-PY-BUG-0126
-  name: Tests around Pytest fixtures should verify something
+  name: Pytest fixtures should match the behaviour the code describes
   languages: [py]
   category: BUG
   severity: major
   effort: 15min
-  tags: [tests, generated]
+  tags: [bug, generated]
   generated: true
   status: planned
-  message: This test cannot fail, so it verifies nothing.
-  summary: A test does not assert, is disabled, or cannot fail.
+  message: This code does not behave the way it reads.
+  summary: The code does not do what its shape suggests, or fails on ordinary input.
   why: |
-    A test that cannot fail reports success forever while covering nothing, and the suite keeps its green
-    status. That is worse than having no test at all, because it removes the incentive to write one.
+    Written this way the code works by accident or breaks on values that are perfectly normal, and the
+    mistake is easy to miss in review because the intent reads correctly.
   fix: |
-    Assert the behaviour the test exists for, re-enable it, and make sure it fails when the behaviour is
-    broken before trusting it again.
+    Make the intended behaviour explicit — fix the condition, the operator or the order of operations —
+    and cover the case that used to fail with a test.
 
 - key: QG-PY-SML-0222
-  name: Tests around Tests should verify something
+  name: Tests should assert something
   languages: [py]
   category: SML
   severity: minor
@@ -6143,22 +6089,23 @@
     comment so the next reader does not treat it as a gap.
 
 - key: QG-PY-SML-0223
-  name: Tests around Pytest_plugins should verify something
+  name: Pytest_plugins should be declared the way the language intends
   languages: [py]
   category: SML
   severity: minor
   effort: 15min
-  tags: [tests, generated]
+  tags: [declaration, generated]
   generated: true
   status: ready
-  message: This test cannot fail, so it verifies nothing.
-  summary: A test does not assert, is disabled, or cannot fail.
+  message: This declaration exposes more than it should.
+  summary: A declaration uses modifiers, order or visibility that do not match its purpose.
   why: |
-    A test that cannot fail reports success forever while covering nothing, and the suite keeps its green
-    status. That is worse than having no test at all, because it removes the incentive to write one.
+    Declarations are the contract other code relies on. A wider visibility than needed makes an internal
+    detail part of the public surface, and unusual modifier combinations hide the intent from readers and
+    tools alike.
   fix: |
-    Assert the behaviour the test exists for, re-enable it, and make sure it fails when the behaviour is
-    broken before trusting it again.
+    Declare the narrowest visibility that works, in the conventional modifier order, and mark as final or
+    read-only whatever is not meant to change.
   detect:
     - invocation: [pytest_plugins]
 
@@ -6186,7 +6133,7 @@
       receiver: [pytest]
 
 - key: QG-PY-SML-0224
-  name: Tests around Expected test failures should verify something
+  name: Tests should assert something
   languages: [py]
   category: SML
   severity: minor
@@ -6226,7 +6173,7 @@
     - invocation: [tmp_path_factory]
 
 - key: QG-PY-SML-0226
-  name: Tests around Composite assertions should verify something
+  name: Tests should assert something
   languages: [py]
   category: SML
   severity: minor
@@ -6244,26 +6191,25 @@
     broken before trusting it again.
 
 - key: QG-PY-SML-0227
-  name: Pytest marks and usefixtures should use current cryptographic parameters
+  name: Pytest marks and usefixtures should be simplified
   languages: [py]
   category: SML
   severity: minor
   effort: 15min
-  tags: [crypto, generated]
+  tags: [sml, generated]
   generated: true
   status: planned
-  message: This cryptographic choice no longer provides the protection it suggests.
-  summary: A cryptographic primitive, mode or key size that is no longer considered safe is used.
+  message: This code is harder to read or change than the behaviour requires.
+  summary: The code works but is harder to read or change than the behaviour requires.
   why: |
-    Broken primitives keep producing output that looks correct, so nothing fails while the protection is
-    already gone. Data encrypted today is often kept for years, which means an algorithm that is merely
-    weak now will be readable later.
+    The intent is buried, duplicated, or spread across places that must stay in sync, so every future
+    change costs more than it should and carries a risk that has nothing to do with the change itself.
   fix: |
-    Use the algorithms the platform recommends today — authenticated encryption, a modern hash, a key
-    size at or above the current guidance — and keep the choice in one place so it can be raised.
+    Remove what is not used, name what is unclear, and keep one piece of behaviour in one place so the
+    next change touches a single spot.
 
 - key: QG-PY-SML-0228
-  name: Tests around Tests should verify something
+  name: Tests should assert something
   languages: [py]
   category: SML
   severity: minor
@@ -6281,25 +6227,26 @@
     broken before trusting it again.
 
 - key: QG-PY-SML-0229
-  name: Tests around Deprecated pytest.yield_fixture should verify something
+  name: Deprecated code should be retired
   languages: [py]
   category: SML
   severity: minor
   effort: 15min
-  tags: [tests, generated]
+  tags: [deprecation, generated]
   generated: true
   status: planned
-  message: This test cannot fail, so it verifies nothing.
-  summary: A test does not assert, is disabled, or cannot fail.
+  message: This deprecated element still needs to be retired.
+  summary: A deprecated member is declared, used, or marked without an alternative.
   why: |
-    A test that cannot fail reports success forever while covering nothing, and the suite keeps its green
-    status. That is worse than having no test at all, because it removes the incentive to write one.
+    A deprecation is a promise to remove something; left unattended it becomes permanent, and callers
+    keep appearing because the member still works. Without a documented replacement nobody can migrate
+    even if they want to.
   fix: |
-    Assert the behaviour the test exists for, re-enable it, and make sure it fails when the behaviour is
-    broken before trusting it again.
+    Document the replacement next to the marker, migrate the callers, and delete the member in a planned
+    release rather than leaving the warning in place.
 
 - key: QG-PY-SML-0230
-  name: Tests around Intentional test failures should verify something
+  name: Tests should assert something
   languages: [py]
   category: SML
   severity: minor
@@ -6317,7 +6264,7 @@
     broken before trusting it again.
 
 - key: QG-PY-SML-0231
-  name: Tests around Parametrize decorators should verify something
+  name: Parametrize decorators should assert something
   languages: [py]
   category: SML
   severity: minor
@@ -6335,22 +6282,22 @@
     broken before trusting it again.
 
 - key: QG-PY-SML-0232
-  name: Tests around Pytest fixtures should verify something
+  name: Pytest fixtures should be simplified
   languages: [py]
   category: SML
   severity: minor
   effort: 15min
-  tags: [tests, generated]
+  tags: [sml, generated]
   generated: true
   status: planned
-  message: This test cannot fail, so it verifies nothing.
-  summary: A test does not assert, is disabled, or cannot fail.
+  message: This code is harder to read or change than the behaviour requires.
+  summary: The code works but is harder to read or change than the behaviour requires.
   why: |
-    A test that cannot fail reports success forever while covering nothing, and the suite keeps its green
-    status. That is worse than having no test at all, because it removes the incentive to write one.
+    The intent is buried, duplicated, or spread across places that must stay in sync, so every future
+    change costs more than it should and carries a risk that has nothing to do with the change itself.
   fix: |
-    Assert the behaviour the test exists for, re-enable it, and make sure it fails when the behaviour is
-    broken before trusting it again.
+    Remove what is not used, name what is unclear, and keep one piece of behaviour in one place so the
+    next change touches a single spot.
 
 - key: QG-PY-SML-0233
   name: Mocks should be replaced by the recommended alternative
@@ -6372,43 +6319,43 @@
     cases the old form got wrong.
 
 - key: QG-PY-SML-0234
-  name: Tests around Pytest fixture and mark decorators should verify something
+  name: Pytest fixture and mark decorators should be simplified
   languages: [py]
   category: SML
   severity: minor
   effort: 15min
-  tags: [tests, generated]
+  tags: [sml, generated]
   generated: true
   status: planned
-  message: This test cannot fail, so it verifies nothing.
-  summary: A test does not assert, is disabled, or cannot fail.
+  message: This code is harder to read or change than the behaviour requires.
+  summary: The code works but is harder to read or change than the behaviour requires.
   why: |
-    A test that cannot fail reports success forever while covering nothing, and the suite keeps its green
-    status. That is worse than having no test at all, because it removes the incentive to write one.
+    The intent is buried, duplicated, or spread across places that must stay in sync, so every future
+    change costs more than it should and carries a risk that has nothing to do with the change itself.
   fix: |
-    Assert the behaviour the test exists for, re-enable it, and make sure it fails when the behaviour is
-    broken before trusting it again.
+    Remove what is not used, name what is unclear, and keep one piece of behaviour in one place so the
+    next change touches a single spot.
 
 - key: QG-PY-SML-0235
-  name: Tests around Pytest should verify something
+  name: Pytest should be simplified
   languages: [py]
   category: SML
   severity: minor
   effort: 15min
-  tags: [tests, generated]
+  tags: [sml, generated]
   generated: true
   status: planned
-  message: This test cannot fail, so it verifies nothing.
-  summary: A test does not assert, is disabled, or cannot fail.
+  message: This code is harder to read or change than the behaviour requires.
+  summary: The code works but is harder to read or change than the behaviour requires.
   why: |
-    A test that cannot fail reports success forever while covering nothing, and the suite keeps its green
-    status. That is worse than having no test at all, because it removes the incentive to write one.
+    The intent is buried, duplicated, or spread across places that must stay in sync, so every future
+    change costs more than it should and carries a risk that has nothing to do with the change itself.
   fix: |
-    Assert the behaviour the test exists for, re-enable it, and make sure it fails when the behaviour is
-    broken before trusting it again.
+    Remove what is not used, name what is unclear, and keep one piece of behaviour in one place so the
+    next change touches a single spot.
 
 - key: QG-PY-SML-0236
-  name: Tests around Only one method invocation is expected should verify something
+  name: Tests should assert something
   languages: [py]
   category: SML
   severity: minor
@@ -6445,7 +6392,7 @@
     cases the old form got wrong.
 
 - key: QG-PY-SML-0238
-  name: Tests around Pytest test and fixture parameters should verify something
+  name: Tests should assert something
   languages: [py]
   category: SML
   severity: minor
@@ -6463,43 +6410,43 @@
     broken before trusting it again.
 
 - key: QG-PY-SML-0239
-  name: Tests around Pytest fixture options should verify something
+  name: Pytest fixture options should be simplified
   languages: [py]
   category: SML
   severity: minor
   effort: 15min
-  tags: [tests, generated]
+  tags: [sml, generated]
   generated: true
   status: planned
-  message: This test cannot fail, so it verifies nothing.
-  summary: A test does not assert, is disabled, or cannot fail.
+  message: This code is harder to read or change than the behaviour requires.
+  summary: The code works but is harder to read or change than the behaviour requires.
   why: |
-    A test that cannot fail reports success forever while covering nothing, and the suite keeps its green
-    status. That is worse than having no test at all, because it removes the incentive to write one.
+    The intent is buried, duplicated, or spread across places that must stay in sync, so every future
+    change costs more than it should and carries a risk that has nothing to do with the change itself.
   fix: |
-    Assert the behaviour the test exists for, re-enable it, and make sure it fails when the behaviour is
-    broken before trusting it again.
+    Remove what is not used, name what is unclear, and keep one piece of behaviour in one place so the
+    next change touches a single spot.
 
 - key: QG-PY-SML-0240
-  name: Tests around Pytest fixtures should verify something
+  name: Pytest fixtures should be simplified
   languages: [py]
   category: SML
   severity: minor
   effort: 15min
-  tags: [tests, generated]
+  tags: [sml, generated]
   generated: true
   status: planned
-  message: This test cannot fail, so it verifies nothing.
-  summary: A test does not assert, is disabled, or cannot fail.
+  message: This code is harder to read or change than the behaviour requires.
+  summary: The code works but is harder to read or change than the behaviour requires.
   why: |
-    A test that cannot fail reports success forever while covering nothing, and the suite keeps its green
-    status. That is worse than having no test at all, because it removes the incentive to write one.
+    The intent is buried, duplicated, or spread across places that must stay in sync, so every future
+    change costs more than it should and carries a risk that has nothing to do with the change itself.
   fix: |
-    Assert the behaviour the test exists for, re-enable it, and make sure it fails when the behaviour is
-    broken before trusting it again.
+    Remove what is not used, name what is unclear, and keep one piece of behaviour in one place so the
+    next change touches a single spot.
 
 - key: QG-PY-BUG-0129
-  name: Pydantic field validators should behave the way it reads
+  name: Pydantic field validators should match the behaviour the code describes
   languages: [py]
   category: BUG
   severity: major
@@ -6517,7 +6464,7 @@
     and cover the case that used to fail with a test.
 
 - key: QG-PY-SML-0241
-  name: Tests around Mock assertion method names should verify something
+  name: Tests should assert something
   languages: [py]
   category: SML
   severity: minor
@@ -6553,7 +6500,7 @@
     next change touches a single spot.
 
 - key: QG-PY-BUG-0130
-  name: The number and name of arguments should behave the way it reads
+  name: Suspicious code should match the behaviour the code describes
   languages: [py]
   category: BUG
   severity: major
@@ -6571,7 +6518,7 @@
     and cover the case that used to fail with a test.
 
 - key: QG-PY-BUG-0131
-  name: Functions and methods should behave the way it reads
+  name: Functions and methods should match the behaviour the code describes
   languages: [py]
   category: BUG
   severity: major

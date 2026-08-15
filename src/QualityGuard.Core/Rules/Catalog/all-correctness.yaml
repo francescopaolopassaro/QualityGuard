@@ -1,0 +1,146 @@
+# Descriptions for the correctness rules implemented in Rules/CorrectnessRules.cs. The detection lives
+# in the analyzer; this file supplies the reasoning and the fix shown in the report.
+
+- key: QG-ALL-BUG-0016
+  name: Loops should be able to run more than once
+  languages: []
+  category: BUG
+  severity: major
+  effort: 10min
+  tags: [suspicious, control-flow]
+  summary: The body of the loop always breaks or returns, so it runs a single time.
+  why: |
+    The code reads as a repetition but behaves as a single step. Whoever wrote it expected the jump to
+    happen only in one case, so the loop silently processes the first element and drops the rest — a
+    defect that is invisible in tests written with one-element inputs.
+  fix: |
+    Decide which of the two the code means. If a single step is correct, remove the loop and keep the
+    body. If the repetition is correct, move the jump under the condition that is supposed to end it.
+
+- key: QG-ALL-BUG-0017
+  name: Size comparisons should be able to fail
+  languages: []
+  category: BUG
+  severity: major
+  effort: 5min
+  tags: [suspicious, collections]
+  summary: A count or a length is compared with a bound that it can never cross.
+  why: |
+    A size is never negative, so a test against zero or minus one has a fixed answer. The guard that was
+    meant to protect the code protects nothing, and the branch behind it is either always taken or never
+    taken — usually the check was copied from a search that returns -1 when it finds nothing.
+  fix: |
+    Compare with the bound you actually mean: emptiness with == 0, presence with > 0, and a search result
+    with the index the search returns rather than the size of the collection.
+
+- key: QG-ALL-BUG-0018
+  name: A collection should not be passed to its own method
+  languages: []
+  category: BUG
+  severity: major
+  effort: 10min
+  tags: [suspicious, collections]
+  summary: The receiver of the call and its only argument are the same collection.
+  why: |
+    The call cannot do anything useful: adding a collection to itself either does nothing or grows
+    without end, removing it empties it, and testing it against itself always answers the same way. It
+    is almost always a name that was not updated when the second collection was introduced.
+  fix: |
+    Pass the other collection. If there genuinely is only one, delete the call — it is not doing what
+    the surrounding code expects.
+
+- key: QG-ALL-BUG-0019
+  name: The result of a pure call should be used
+  languages: []
+  category: BUG
+  severity: major
+  effort: 5min
+  tags: [suspicious, no-effect]
+  summary: A call that only computes a value is used as a statement, so the value is dropped.
+  why: |
+    These methods return a new value and leave the receiver untouched. Written as a statement the line
+    computes something and throws it away, which reads as if the object had been modified. The mistake
+    survives review because the line looks like an operation.
+  fix: |
+    Assign the result to the variable it belongs to, or pass it on. If nothing needs the value, delete
+    the line rather than leaving a call that suggests an effect it does not have.
+
+- key: QG-ALL-BUG-0020
+  name: Unary operators should not be repeated
+  languages: []
+  category: BUG
+  severity: major
+  effort: 5min
+  tags: [suspicious, readability]
+  summary: The same unary operator is applied twice to the same operand.
+  why: |
+    Two negations cancel out, and so do two minus signs: the operand is used exactly as it was. Either a
+    keystroke was duplicated, or the double form was used as a shortcut for a conversion, which hides
+    the real intent behind an operator that officially does nothing.
+  fix: |
+    Remove the pair. When the intent was to convert a value to a boolean or a number, use the explicit
+    conversion of the language so the next reader does not have to infer it.
+
+- key: QG-ALL-BUG-0021
+  name: Shift distances should be inside the width of the value
+  languages: []
+  category: BUG
+  severity: major
+  effort: 10min
+  tags: [suspicious, arithmetic]
+  summary: A shift moves the value by zero bits, or by more bits than the type has.
+  why: |
+    A shift by zero is a no-op that looks like a calculation. A shift wider than the type does not give
+    zero as one would expect: most languages take the distance modulo the width, so the result is the
+    value shifted by a small amount — a number that looks plausible and is wrong.
+  fix: |
+    Use the distance the calculation needs, and widen the value first when the shift really has to move
+    it further than its current type allows.
+
+- key: QG-ALL-BUG-0022
+  name: A loop counter should move towards the bound that ends the loop
+  languages: []
+  category: BUG
+  severity: critical
+  effort: 10min
+  tags: [suspicious, control-flow]
+  summary: The update of the counter moves it away from the condition that stops the loop.
+  why: |
+    The condition can never become false, so the loop only ends when something else interrupts it —
+    an exception, an overflow, or nothing at all. It typically appears after a loop is changed from
+    counting up to counting down and only one of the two places is updated.
+  fix: |
+    Make the update and the comparison agree: count up towards an upper bound, or down towards a lower
+    one. Then check the boundary values, because this defect usually comes with an off-by-one.
+
+- key: QG-ALL-BUG-0023
+  name: An always-true loop should contain a way out
+  languages: []
+  category: BUG
+  severity: critical
+  effort: 20min
+  tags: [suspicious, control-flow]
+  summary: The loop condition is always true and the body contains no break, return or throw.
+  why: |
+    Nothing in the body can end the iteration, so the thread stays inside forever. When it happens on a
+    request path the request never answers and the connection stays open; when it happens at start-up
+    the process appears to hang with no error to explain it.
+  fix: |
+    Add the exit that ends the work — a break on the terminating condition, a return of the result, or
+    an error when the loop cannot make progress — or replace the condition with one that can fail.
+
+- key: QG-ALL-BUG-0024
+  name: A value assigned to a local should be read before the local goes away
+  languages: []
+  category: BUG
+  severity: major
+  effort: 10min
+  tags: [suspicious, no-effect]
+  summary: A local or a parameter is incremented in a return statement, so the new value is lost.
+  why: |
+    The postfix form yields the value from before the change, and the variable itself disappears with
+    the call, so the increment affects nothing at all. The line reads as if the caller received the
+    incremented value, which is the opposite of what happens.
+  fix: |
+    Return the value you mean — the incremented one, computed before the return — and drop the operator
+    from the return statement so the code says what it does.

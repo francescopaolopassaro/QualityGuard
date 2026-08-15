@@ -168,4 +168,3 @@
   detect:
     - line: "errors\\.New\\s*\\(\\s*\"[A-Z]"
     - line: "fmt\\.Errorf\\s*\\(\\s*\"[A-Z]"
-

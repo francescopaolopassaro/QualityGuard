@@ -1,4 +1,5 @@
 using QualityGuard.Core.Models;
+using QualityGuard.Core.Syntax;
 using QualityGuard.Core.Tokenization;
 
 namespace QualityGuard.Core.Rules.Languages;
@@ -282,12 +283,37 @@ public sealed class PythonAssertRule : PatternRuleBase
 
     public override void Execute(IRuleContext context)
     {
-        foreach (var t in context.Tokens)
+        // in a test an assert is the assertion, not a validation that disappears in production
+        if (IsTestFile(context.File.FileName))
+            return;
+
+        foreach (var function in SyntaxQuery.Functions(context.Root))
         {
-            if (t.Kind == TokenKind.Keyword && t.Text == "assert")
-                context.Report("Assertions are stripped out when Python is run with -O; validate explicitly instead.", t.Line);
+            if (function.Text.StartsWith("test", StringComparison.Ordinal))
+                continue;
+            var parameters = SyntaxQuery.Parameters(function).Select(p => p.Text).ToHashSet(StringComparer.Ordinal);
+            if (parameters.Count == 0)
+                continue;
+
+            foreach (var assertion in function.OfKind(NodeKind.Jump))
+            {
+                if (assertion.Text != "assert" || SyntaxQuery.EnclosingFunction(assertion) != function)
+                    continue;
+                // only an assert that checks an argument is standing in for input validation; the
+                // others state an internal invariant, which is what assert is for
+                if (!SyntaxQuery.Identifiers(assertion).Any(i => parameters.Contains(i.Text)))
+                    continue;
+                context.Report(assertion, "This check on an argument disappears when Python runs with -O, "
+                                          + "so the value reaches the rest of the function unvalidated; "
+                                          + "raise an explicit error instead.");
+            }
         }
     }
+
+    private static bool IsTestFile(string fileName)
+        => fileName.StartsWith("test_", StringComparison.OrdinalIgnoreCase)
+           || fileName.EndsWith("_test.py", StringComparison.OrdinalIgnoreCase)
+           || fileName.Equals("conftest.py", StringComparison.OrdinalIgnoreCase);
 }
 
 public sealed class PythonEnvSecretsRule : PatternRuleBase
@@ -397,8 +423,18 @@ public sealed class PythonPrintRule : PatternRuleBase
 
     public override void Execute(IRuleContext context)
     {
-        foreach (var t in RuleMatchers.Names(context.Tokens, ["print"]))
-            context.Report("Remove this debug print statement.", t.Line);
+        // a script prints because printing is what it does; the smell is a print left inside library
+        // code, where the caller expects a return value and gets output on the console instead
+        if (context.File.Content.Contains("__main__", StringComparison.Ordinal))
+            return;
+
+        foreach (var call in SyntaxQuery.InvocationsNamed(context.Root, "print"))
+        {
+            if (call.Ancestor(NodeKind.ClassDeclaration) == null)
+                continue;
+            context.Report(call, "This print writes to the console from inside a class; return the value "
+                                 + "or log it, so the caller decides where it goes.");
+        }
     }
 }
 

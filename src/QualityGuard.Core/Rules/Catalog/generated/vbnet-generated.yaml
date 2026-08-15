@@ -2,26 +2,26 @@
 # tools/generate_rules.py and are refined by hand as each family is reviewed.
 
 - key: QG-CS-SML-0363
-  name: Secrets should not be written into URIs
+  name: URIs should not be hardcoded in the source
   languages: [vb]
   category: SML
   severity: minor
   effort: 15min
-  tags: [secret, generated]
+  tags: [hardcoded_value, generated]
   generated: true
   status: planned
-  message: This value looks like a credential committed with the source.
-  summary: A credential, key or token appears directly in the source instead of coming from a secret store.
+  message: This value is fixed in the source and cannot be changed without a rebuild.
+  summary: An address, path or other deployment-specific value is written into the code.
   why: |
-    Anything committed with the code is readable by everyone who can clone the repository, and it
-    survives in the history even after being deleted. Scanners find these values within minutes of a
-    repository becoming reachable, and rotating them means editing and redeploying every copy.
+    The value is right for exactly one environment. Every other environment needs a code change, so the
+    same build cannot be promoted from test to production, and a value that has to be corrected under
+    pressure gets corrected in the wrong place.
   fix: |
-    Read the value at run time from the platform secret store or the environment, fail fast when it is
-    missing, and treat the committed value as compromised: rotate it before removing it.
+    Move the value to configuration, read it at start-up, and fail with a clear message when it is
+    missing so a misconfigured deployment stops before it does anything.
 
 - key: QG-CS-SML-0365
-  name: Exception handling around General or reserved exceptions should be explicit
+  name: General or reserved exceptions should make failure handling explicit
   languages: [vb]
   category: SML
   severity: minor
@@ -58,7 +58,7 @@
     next change touches a single spot.
 
 - key: QG-CS-SML-0368
-  name: The End statements API should not be used
+  name: End statements should not be used
   languages: [vb]
   category: SML
   severity: minor
@@ -79,7 +79,7 @@
     - creation: [End]
 
 - key: QG-CS-SML-0370
-  name: Exception handling around Exceptions should be explicit
+  name: Exceptions should make failure handling explicit
   languages: [vb]
   category: SML
   severity: minor
@@ -134,26 +134,26 @@
     next change touches a single spot.
 
 - key: QG-CS-SML-0374
-  name: Secrets should not be written into IP addresses
+  name: IP addresses should not be hardcoded in the source
   languages: [vb]
   category: SML
   severity: minor
   effort: 15min
-  tags: [secret, generated]
+  tags: [hardcoded_value, generated]
   generated: true
   status: planned
-  message: This value looks like a credential committed with the source.
-  summary: A credential, key or token appears directly in the source instead of coming from a secret store.
+  message: This value is fixed in the source and cannot be changed without a rebuild.
+  summary: An address, path or other deployment-specific value is written into the code.
   why: |
-    Anything committed with the code is readable by everyone who can clone the repository, and it
-    survives in the history even after being deleted. Scanners find these values within minutes of a
-    repository becoming reachable, and rotating them means editing and redeploying every copy.
+    The value is right for exactly one environment. Every other environment needs a code change, so the
+    same build cannot be promoted from test to production, and a value that has to be corrected under
+    pressure gets corrected in the wrong place.
   fix: |
-    Read the value at run time from the platform secret store or the environment, fail fast when it is
-    missing, and treat the committed value as compromised: rotate it before removing it.
+    Move the value to configuration, read it at start-up, and fail with a clear message when it is
+    missing so a misconfigured deployment stops before it does anything.
 
 - key: QG-CS-SML-0375
-  name: Uses of Comments should be reviewed
+  name: Comments should be resolved rather than left in the code
   languages: [vb]
   category: SML
   severity: minor
@@ -171,7 +171,7 @@
     lives somewhere that gets reviewed.
 
 - key: QG-CS-SML-0376
-  name: Uses of Lack of copyright and license headers should be reviewed
+  name: Copyright and license headers should be resolved rather than left in the code
   languages: [vb]
   category: SML
   severity: minor
@@ -189,7 +189,7 @@
     lives somewhere that gets reviewed.
 
 - key: QG-CS-SML-0377
-  name: Select Case statement with many Case clauses should be simplified
+  name: Hard-to-read code should be simplified
   languages: [vb]
   category: SML
   severity: minor
@@ -207,7 +207,7 @@
     next change touches a single spot.
 
 - key: QG-CS-SML-0378
-  name: The & operator should be replaced by the recommended alternative
+  name: & operator should be replaced by the recommended alternative
   languages: [vb]
   category: SML
   severity: minor
@@ -224,24 +224,6 @@
   fix: |
     Switch to the recommended construct; the behaviour is the same in the normal case and defined in the
     cases the old form got wrong.
-
-- key: QG-CS-BUG-0109
-  name: Loops with at most one iteration should behave the way it reads
-  languages: [vb]
-  category: BUG
-  severity: major
-  effort: 15min
-  tags: [bug, generated]
-  generated: true
-  status: planned
-  message: This code does not behave the way it reads.
-  summary: The code does not do what its shape suggests, or fails on ordinary input.
-  why: |
-    Written this way the code works by accident or breaks on values that are perfectly normal, and the
-    mistake is easy to miss in review because the intent reads correctly.
-  fix: |
-    Make the intended behaviour explicit — fix the condition, the operator or the order of operations —
-    and cover the case that used to fail with a test.
 
 - key: QG-CS-SML-0380
   name: Select Case statements should not be nested inside another one
@@ -317,7 +299,7 @@
     size at or above the current guidance — and keep the choice in one place so it can be raised.
 
 - key: QG-CS-SML-0384
-  name: Exception handling around Classes named like Exception should be explicit
+  name: Classes named like Exception should make failure handling explicit
   languages: [vb]
   category: SML
   severity: minor
@@ -336,7 +318,7 @@
     wrapping, and let everything else reach the boundary handler.
 
 - key: QG-CS-BUG-0111
-  name: ToString() method should behave the way it reads
+  name: ToString() method should match the behaviour the code describes
   languages: [vb]
   category: BUG
   severity: major
@@ -391,7 +373,7 @@
     size at or above the current guidance — and keep the choice in one place so it can be raised.
 
 - key: QG-CS-BUG-0112
-  name: Absent values around Null pointers should be handled explicitly
+  name: Null pointers should be handled explicitly when absent
   languages: [vb]
   category: BUG
   severity: major
@@ -430,7 +412,7 @@
     - creation: [NameOf]
 
 - key: QG-CS-SML-0387
-  name: The Public constant members API should not be used
+  name: Public constant members should not be used
   languages: [vb]
   category: SML
   severity: minor
@@ -449,7 +431,7 @@
     documented and dated.
 
 - key: QG-CS-BUG-0113
-  name: Flags enumerations should behave the way it reads
+  name: Flags enumerations should match the behaviour the code describes
   languages: [vb]
   category: BUG
   severity: major
@@ -503,7 +485,7 @@
     next change touches a single spot.
 
 - key: QG-CS-SML-0391
-  name: The Indexed properties with more than one parameter API should not be used
+  name: Unsafe APIs should not be used
   languages: [vb]
   category: SML
   severity: minor
@@ -522,7 +504,7 @@
     documented and dated.
 
 - key: QG-CS-SML-0392
-  name: The Line continuations API should not be used
+  name: Line continuations should not be used
   languages: [vb]
   category: SML
   severity: minor
@@ -581,7 +563,7 @@
     - creation: [IsNot]
 
 - key: QG-CS-SML-0396
-  name: The On Error statements API should not be used
+  name: On Error statements should not be used
   languages: [vb]
   category: SML
   severity: minor
@@ -600,7 +582,7 @@
     documented and dated.
 
 - key: QG-CS-SML-0397
-  name: The Optional parameters API should not be used
+  name: Optional parameters should not be used
   languages: [vb]
   category: SML
   severity: minor
@@ -691,7 +673,7 @@
     stay in sync.
 
 - key: QG-CS-SML-0402
-  name: Exception handling around Exceptions should be explicit
+  name: Exceptions should make failure handling explicit
   languages: [vb]
   category: SML
   severity: minor
@@ -748,7 +730,7 @@
     cases the old form got wrong.
 
 - key: QG-CS-SML-0405
-  name: The Write-only properties API should not be used
+  name: Write-only properties should not be used
   languages: [vb]
   category: SML
   severity: minor
@@ -821,7 +803,7 @@
     next change touches a single spot.
 
 - key: QG-CS-SML-0410
-  name: Exception handling around Catch clauses should be explicit
+  name: Catch clauses should make failure handling explicit
   languages: [vb]
   category: SML
   severity: minor
@@ -840,7 +822,7 @@
     wrapping, and let everything else reach the boundary handler.
 
 - key: QG-CS-BUG-0115
-  name: 'Not' boolean operator should behave the way it reads
+  name: Not boolean operator should match the behaviour the code describes
   languages: [vb]
   category: BUG
   severity: major
@@ -858,7 +840,7 @@
     and cover the case that used to fail with a test.
 
 - key: QG-CS-SML-0411
-  name: The Thread.Sleep API should not be used
+  name: Thread.Sleep should not be used
   languages: [vb]
   category: SML
   severity: minor
@@ -881,7 +863,7 @@
       receiver: [Thread]
 
 - key: QG-CS-SML-0412
-  name: The Exit Select statements API should not be used
+  name: Exit Select statements should not be used
   languages: [vb]
   category: SML
   severity: minor
@@ -900,7 +882,7 @@
     documented and dated.
 
 - key: QG-CS-SML-0413
-  name: The Reflection API should not be used
+  name: Reflection should not be used
   languages: [vb]
   category: SML
   severity: minor
@@ -977,7 +959,7 @@
     outer one.
 
 - key: QG-CS-BUG-0116
-  name: The Date and time API should not be used
+  name: Date and time should not be used
   languages: [vb]
   category: BUG
   severity: major
@@ -996,7 +978,7 @@
     documented and dated.
 
 - key: QG-CS-SML-0416
-  name: The Exit statements API should not be used
+  name: Exit statements should not be used
   languages: [vb]
   category: SML
   severity: minor
@@ -1017,7 +999,7 @@
     - creation: [Exit]
 
 - key: QG-CS-SML-0417
-  name: The [ExpectedException] API should not be used
+  name: [ExpectedException] should not be used
   languages: [vb]
   category: SML
   severity: minor
@@ -1036,7 +1018,7 @@
     documented and dated.
 
 - key: QG-CS-BUG-0117
-  name: Right operands of shift operators should behave the way it reads
+  name: Right operands of shift operators should match the behaviour the code describes
   languages: [vb]
   category: BUG
   severity: major
@@ -1054,7 +1036,7 @@
     and cover the case that used to fail with a test.
 
 - key: QG-CS-BUG-0118
-  name: Classes should behave the way it reads
+  name: Classes should match the behaviour the code describes
   languages: [vb]
   category: BUG
   severity: major
@@ -1072,7 +1054,7 @@
     and cover the case that used to fail with a test.
 
 - key: QG-CS-BUG-0119
-  name: Type inheritance should behave the way it reads
+  name: Type inheritance should match the behaviour the code describes
   languages: [vb]
   category: BUG
   severity: major
@@ -1090,7 +1072,7 @@
     and cover the case that used to fail with a test.
 
 - key: QG-CS-BUG-0120
-  name: Optional parameters should behave the way it reads
+  name: Optional parameters should match the behaviour the code describes
   languages: [vb]
   category: BUG
   severity: major
@@ -1108,7 +1090,7 @@
     and cover the case that used to fail with a test.
 
 - key: QG-CS-BUG-0121
-  name: One-way OperationContract methods should behave the way it reads
+  name: One-way OperationContract methods should match the behaviour the code describes
   languages: [vb]
   category: BUG
   severity: major
@@ -1126,7 +1108,7 @@
     and cover the case that used to fail with a test.
 
 - key: QG-CS-BUG-0122
-  name: Methods with Pure attribute should behave the way it reads
+  name: Methods with Pure attribute should match the behaviour the code describes
   languages: [vb]
   category: BUG
   severity: major
@@ -1163,7 +1145,7 @@
     comment so the next reader does not treat it as a gap.
 
 - key: QG-CS-SML-0418
-  name: The ByVal API should not be used
+  name: ByVal should not be used
   languages: [vb]
   category: SML
   severity: minor
@@ -1184,7 +1166,7 @@
     - creation: [ByVal]
 
 - key: QG-CS-SML-0419
-  name: The IIf API should not be used
+  name: IIf should not be used
   languages: [vb]
   category: SML
   severity: minor
@@ -1205,7 +1187,7 @@
     - creation: [IIf]
 
 - key: QG-CS-BUG-0124
-  name: The SafeHandle.DangerousGetHandle API should not be used
+  name: SafeHandle.DangerousGetHandle should not be used
   languages: [vb]
   category: BUG
   severity: major
@@ -1228,7 +1210,7 @@
       receiver: [SafeHandle]
 
 - key: QG-CS-SML-0420
-  name: Exception handling around Exception types should be explicit
+  name: Exception types should make failure handling explicit
   languages: [vb]
   category: SML
   severity: minor
@@ -1265,7 +1247,7 @@
     next change touches a single spot.
 
 - key: QG-CS-SEC-0086
-  name: The CoSetProxyBlanket and CoInitializeSecurity API should not be used
+  name: CoSetProxyBlanket and CoInitializeSecurity should not be used
   languages: [vb]
   category: SEC
   severity: critical
@@ -1305,7 +1287,7 @@
     next change touches a single spot.
 
 - key: QG-CS-SML-0423
-  name: Arguments of public methods should be verified before it is trusted
+  name: Arguments of public methods should be verified before use
   languages: [vb]
   category: SML
   severity: minor
@@ -1361,7 +1343,7 @@
     next change touches a single spot.
 
 - key: QG-CS-BUG-0126
-  name: Serialization event handlers should behave the way it reads
+  name: Serialization event handlers should match the behaviour the code describes
   languages: [vb]
   category: BUG
   severity: major
@@ -1379,7 +1361,7 @@
     and cover the case that used to fail with a test.
 
 - key: QG-CS-BUG-0127
-  name: Calculations should behave the way it reads
+  name: Calculations should match the behaviour the code describes
   languages: [vb]
   category: BUG
   severity: major
@@ -1413,24 +1395,6 @@
   fix: |
     Remove what is not used, name what is unclear, and keep one piece of behaviour in one place so the
     next change touches a single spot.
-
-- key: QG-CS-BUG-0128
-  name: Collection sizes and array length comparisons should behave the way it reads
-  languages: [vb]
-  category: BUG
-  severity: major
-  effort: 15min
-  tags: [bug, generated]
-  generated: true
-  status: planned
-  message: This code does not behave the way it reads.
-  summary: The code does not do what its shape suggests, or fails on ordinary input.
-  why: |
-    Written this way the code works by accident or breaks on values that are perfectly normal, and the
-    mistake is easy to miss in review because the intent reads correctly.
-  fix: |
-    Make the intended behaviour explicit — fix the condition, the operator or the order of operations —
-    and cover the case that used to fail with a test.
 
 - key: QG-CS-SML-0426
   name: Assemblies should be simplified
@@ -1469,7 +1433,7 @@
     next change touches a single spot.
 
 - key: QG-CS-SML-0428
-  name: Concurrent access around Threads should be coordinated correctly
+  name: Threads should be accessed in a thread-safe way
   languages: [vb]
   category: SML
   severity: minor
@@ -1541,7 +1505,7 @@
     next change touches a single spot.
 
 - key: QG-CS-BUG-0129
-  name: Map values should behave the way it reads
+  name: Map values should match the behaviour the code describes
   languages: [vb]
   category: BUG
   severity: major
@@ -1596,7 +1560,7 @@
     comment so the next reader does not treat it as a gap.
 
 - key: QG-CS-BUG-0131
-  name: Classes should behave the way it reads
+  name: Classes should match the behaviour the code describes
   languages: [vb]
   category: BUG
   severity: major
@@ -1614,7 +1578,7 @@
     and cover the case that used to fail with a test.
 
 - key: QG-CS-BUG-0132
-  name: Concurrent access around Windows Forms entry points should be coordinated correctly
+  name: Windows Forms entry points should be accessed in a thread-safe way
   languages: [vb]
   category: BUG
   severity: major
@@ -1650,7 +1614,7 @@
     next change touches a single spot.
 
 - key: QG-CS-BUG-0133
-  name: ConstructorArgument parameters should behave the way it reads
+  name: ConstructorArgument parameters should match the behaviour the code describes
   languages: [vb]
   category: BUG
   severity: major
@@ -1668,7 +1632,7 @@
     and cover the case that used to fail with a test.
 
 - key: QG-CS-BUG-0134
-  name: Property procedures should behave the way it reads
+  name: Property procedures should match the behaviour the code describes
   languages: [vb]
   category: BUG
   severity: major
@@ -1686,7 +1650,7 @@
     and cover the case that used to fail with a test.
 
 - key: QG-CS-BUG-0135
-  name: Shared parts should behave the way it reads
+  name: Shared parts should match the behaviour the code describes
   languages: [vb]
   category: BUG
   severity: major
@@ -1763,7 +1727,7 @@
     next change touches a single spot.
 
 - key: QG-CS-SML-0435
-  name: The New Guid() API should not be used
+  name: New Guid() should not be used
   languages: [vb]
   category: SML
   severity: minor
@@ -1782,7 +1746,7 @@
     documented and dated.
 
 - key: QG-CS-BUG-0137
-  name: Calls to delegate's method BeginInvoke should behave the way it reads
+  name: Calls to delegates method BeginInvoke should match the behaviour the code describes
   languages: [vb]
   category: BUG
   severity: major
@@ -1800,7 +1764,7 @@
     and cover the case that used to fail with a test.
 
 - key: QG-CS-BUG-0138
-  name: Absent values around Non-async Task/Task<T> methods should be handled explicitly
+  name: Non-async Task/Task<T> methods should be handled explicitly when absent
   languages: [vb]
   category: BUG
   severity: major
@@ -1837,7 +1801,7 @@
     comment so the next reader does not treat it as a gap.
 
 - key: QG-CS-SEC-0088
-  name: Server certificates should be verified before it is trusted
+  name: Server certificates should be verified before use
   languages: [vb]
   category: SEC
   severity: critical
@@ -1913,7 +1877,7 @@
     and replace weakened mechanisms with the current recommended one.
 
 - key: QG-CS-SEC-0092
-  name: The protection around ASP.NET Request Validation should stay enabled
+  name: ASP.NET Request Validation should keep the platform protection enabled
   languages: [vb]
   category: SEC
   severity: critical
@@ -1951,7 +1915,7 @@
     cases the old form got wrong.
 
 - key: QG-CS-SML-0438
-  name: The protection around Option Strict should stay enabled
+  name: Option Strict should keep the platform protection enabled
   languages: [vb]
   category: SML
   severity: minor
@@ -1970,7 +1934,7 @@
     single endpoint or value that needs it, and document why it is safe there.
 
 - key: QG-CS-SML-0439
-  name: The protection around Option Explicit should stay enabled
+  name: Option Explicit should keep the platform protection enabled
   languages: [vb]
   category: SML
   severity: minor
@@ -1989,22 +1953,22 @@
     single endpoint or value that needs it, and document why it is safe there.
 
 - key: QG-CS-SML-0440
-  name: Tests around Use a testable date/time provider should verify something
+  name: Use a testable date/time provider should be simplified
   languages: [vb]
   category: SML
   severity: minor
   effort: 15min
-  tags: [tests, generated]
+  tags: [sml, generated]
   generated: true
   status: planned
-  message: This test cannot fail, so it verifies nothing.
-  summary: A test does not assert, is disabled, or cannot fail.
+  message: This code is harder to read or change than the behaviour requires.
+  summary: The code works but is harder to read or change than the behaviour requires.
   why: |
-    A test that cannot fail reports success forever while covering nothing, and the suite keeps its green
-    status. That is worse than having no test at all, because it removes the incentive to write one.
+    The intent is buried, duplicated, or spread across places that must stay in sync, so every future
+    change costs more than it should and carries a risk that has nothing to do with the change itself.
   fix: |
-    Assert the behaviour the test exists for, re-enable it, and make sure it fails when the behaviour is
-    broken before trusting it again.
+    Remove what is not used, name what is unclear, and keep one piece of behaviour in one place so the
+    next change touches a single spot.
 
 - key: QG-CS-SML-0441
   name: ExcludeFromCodeCoverage attributes should be simplified
@@ -2025,7 +1989,7 @@
     next change touches a single spot.
 
 - key: QG-CS-SML-0443
-  name: DateTimeKind should be simplified
+  name: Hard-to-read code should be simplified
   languages: [vb]
   category: SML
   severity: minor
@@ -2043,7 +2007,7 @@
     next change touches a single spot.
 
 - key: QG-CS-SML-0445
-  name: DateTimeOffset should be replaced by the recommended alternative
+  name: Use DateTimeOffset instead of DateTime should be replaced by the recommended alternative
   languages: [vb]
   category: SML
   severity: minor
@@ -2065,7 +2029,7 @@
     - creation: [DateTime]
 
 - key: QG-CS-SML-0446
-  name: TimeZoneInfo.FindSystemTimeZoneById should be simplified
+  name: Hard-to-read code should be simplified
   languages: [vb]
   category: SML
   severity: minor
@@ -2083,7 +2047,7 @@
     next change touches a single spot.
 
 - key: QG-CS-SML-0447
-  name: Use a format provider when parsing should be simplified
+  name: Hard-to-read code should be simplified
   languages: [vb]
   category: SML
   severity: minor
@@ -2101,7 +2065,7 @@
     next change touches a single spot.
 
 - key: QG-CS-SML-0448
-  name: Hardcode the format when turning dates and times to strings should be simplified
+  name: Hard-to-read code should be simplified
   languages: [vb]
   category: SML
   severity: minor
@@ -2119,7 +2083,7 @@
     next change touches a single spot.
 
 - key: QG-CS-SML-0449
-  name: UnixEpoch should be replaced by the recommended alternative
+  name: Outdated constructs should be replaced by the recommended alternative
   languages: [vb]
   category: SML
   severity: minor
@@ -2163,7 +2127,7 @@
     - creation: [FirstOrDefault]
 
 - key: QG-CS-SML-0451
-  name: The collection-specific TrueForAll method should be replaced by the recommended alternative
+  name: Collection-specific TrueForAll method should be replaced by the recommended alternative
   languages: [vb]
   category: SML
   severity: minor
@@ -2206,7 +2170,7 @@
     - creation: [Exists]
 
 - key: QG-CS-SML-0453
-  name: The collection should be simplified
+  name: Collection should be simplified
   languages: [vb]
   category: SML
   severity: minor
@@ -2224,7 +2188,7 @@
     next change touches a single spot.
 
 - key: QG-CS-SML-0454
-  name: Enumerable should be replaced by the recommended alternative
+  name: Outdated constructs should be replaced by the recommended alternative
   languages: [vb]
   category: SML
   severity: minor
@@ -2267,7 +2231,7 @@
     - creation: [Enumerable]
 
 - key: QG-CS-SML-0456
-  name: StartsWith and EndsWith overloads that take a char should be replaced by the recommended alternative
+  name: Outdated constructs should be replaced by the recommended alternative
   languages: [vb]
   category: SML
   severity: minor
@@ -2289,7 +2253,7 @@
     - creation: [EndsWith]
 
 - key: QG-CS-SML-0457
-  name: The lambda parameter should be replaced by the recommended alternative
+  name: Lambda parameter should be replaced by the recommended alternative
   languages: [vb]
   category: SML
   severity: minor
@@ -2354,7 +2318,7 @@
     - creation: [Contains]
 
 - key: QG-CS-BUG-0139
-  name: Backslash should behave the way it reads
+  name: Backslash should match the behaviour the code describes
   languages: [vb]
   category: BUG
   severity: major
@@ -2409,7 +2373,7 @@
     cases the old form got wrong.
 
 - key: QG-CS-BUG-0140
-  name: Concurrent access around A write lock should be coordinated correctly
+  name: Write lock should be accessed in a thread-safe way
   languages: [vb]
   category: BUG
   severity: major
@@ -2427,7 +2391,7 @@
     the concurrent collections and higher-level primitives the platform provides.
 
 - key: QG-CS-SML-0462
-  name: The GoTo statements API should not be used
+  name: GoTo statements should not be used
   languages: [vb]
   category: SML
   severity: minor

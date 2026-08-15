@@ -278,9 +278,9 @@
     It is normally the result of a merge or of a hurried inversion of a condition.
   fix: |
     Remove one operator, or both when the intent was to leave the value unchanged.
-  detect:
-    - line: "[^!=]!!\\s*[A-Za-z_(]"
-    - line: "~~\\s*[A-Za-z_(]"
+  # Detection handed over to QG-ALL-BUG-0020, which reads the syntax tree: the line patterns this
+  # rule used also matched the same characters inside comments and string literals.
+  status: planned
 
 - key: QG-CS-BUG-0025
   name: Locks should be taken on a private, dedicated object

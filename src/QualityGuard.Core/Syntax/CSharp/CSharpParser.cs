@@ -2165,9 +2165,26 @@ public sealed class CSharpParser
 
     private static readonly string[] PatternKeywords = ["and", "or", "not", "when"];
 
+    /// <summary>
+    /// A pattern, including the <c>and</c> / <c>or</c> chain that may follow it. The combinator is
+    /// handled here, once, for every shape of pattern: handling it only in the general branch used to
+    /// leave the rest of a chain such as <c>null or { Kind: 3 }</c> to be parsed as statements, which
+    /// then showed up as unreachable code and stray semicolons.
+    /// </summary>
     private SyntaxNode ParsePattern()
     {
         var start = Mark();
+        var pattern = ParsePrimaryPattern(start);
+        while (IsAny("and", "or"))
+        {
+            _index++;
+            ParsePattern();
+        }
+        return pattern;
+    }
+
+    private SyntaxNode ParsePrimaryPattern(int start)
+    {
         while (Accept("not"))
         {
             // repeated negation is legal and changes nothing here
@@ -2217,11 +2234,6 @@ public sealed class CSharpParser
         if (Is("{"))
             SkipBalanced("{", "}");
         AcceptDesignation();
-        while (IsAny("and", "or"))
-        {
-            _index++;
-            ParsePattern();
-        }
         return Node(NodeKind.Pattern, start, text);
     }
 

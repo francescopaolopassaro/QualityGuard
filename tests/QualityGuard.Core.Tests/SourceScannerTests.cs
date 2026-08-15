@@ -1,0 +1,119 @@
+using QualityGuard.Core.Analysis;
+using Xunit;
+
+namespace QualityGuard.Core.Tests;
+
+/// <summary>
+/// The scanner decides what a run even looks at, so its exclusions are as much part of the result as
+/// the rules are. These tests pin the behaviour on a small tree written to a temporary directory.
+/// </summary>
+public class SourceScannerTests : IDisposable
+{
+    private readonly string _root = Path.Combine(Path.GetTempPath(), "qg-scan-" + Guid.NewGuid().ToString("N"));
+
+    public SourceScannerTests()
+    {
+        Write("src/App.cs", "public class App { }");
+        Write("src/nested/deep/Helper.cs", "public class Helper { }");
+        Write("src/app.min.js", "var a=1");
+        Write("src/notes.txt", "not source");
+        Write("bin/Debug/App.cs", "public class Built { }");
+        Write("node_modules/pkg/index.js", "module.exports = 1;");
+        Write("tests/AppTests.cs", "public class AppTests { }");
+    }
+
+    private void Write(string relative, string content)
+    {
+        var path = Path.Combine(_root, relative.Replace('/', Path.DirectorySeparatorChar));
+        Directory.CreateDirectory(Path.GetDirectoryName(path)!);
+        File.WriteAllText(path, content);
+    }
+
+    private IReadOnlyList<string> Scan(ScanOptions options)
+        => SourceScanner.Scan(options).Files
+            .Select(f => Path.GetRelativePath(_root, f).Replace('\\', '/'))
+            .ToList();
+
+    public void Dispose() => Directory.Delete(_root, recursive: true);
+
+    [Fact]
+    public void Every_subfolder_is_walked()
+    {
+        var files = Scan(new ScanOptions { Paths = [_root] });
+        Assert.Contains("src/App.cs", files);
+        Assert.Contains("src/nested/deep/Helper.cs", files);
+        Assert.Contains("tests/AppTests.cs", files);
+    }
+
+    [Fact]
+    public void Build_output_and_dependencies_are_left_out_by_default()
+    {
+        var files = Scan(new ScanOptions { Paths = [_root] });
+        Assert.DoesNotContain("bin/Debug/App.cs", files);
+        Assert.DoesNotContain("node_modules/pkg/index.js", files);
+        Assert.DoesNotContain("src/app.min.js", files);
+    }
+
+    [Fact]
+    public void The_default_exclusions_can_be_turned_off()
+    {
+        var files = Scan(new ScanOptions { Paths = [_root], UseDefaultExcludes = false });
+        Assert.Contains("bin/Debug/App.cs", files);
+        Assert.Contains("node_modules/pkg/index.js", files);
+    }
+
+    [Fact]
+    public void A_single_file_can_be_scanned_on_its_own()
+    {
+        var files = Scan(new ScanOptions { Paths = [Path.Combine(_root, "src", "App.cs")] });
+        Assert.Equal(["src/App.cs"], files);
+    }
+
+    [Fact]
+    public void Several_paths_are_scanned_in_one_run_without_duplicates()
+    {
+        var files = Scan(new ScanOptions
+        {
+            Paths = [Path.Combine(_root, "src"), Path.Combine(_root, "tests"), Path.Combine(_root, "src")]
+        });
+        Assert.Equal(["src/App.cs", "src/nested/deep/Helper.cs", "tests/AppTests.cs"], files.Order().ToList());
+    }
+
+    [Fact]
+    public void Include_narrows_the_scan_and_exclude_removes_from_it()
+    {
+        Assert.Equal(["tests/AppTests.cs"],
+            Scan(new ScanOptions { Paths = [_root], Include = ["tests/**"] }));
+        Assert.DoesNotContain("src/nested/deep/Helper.cs",
+            Scan(new ScanOptions { Paths = [_root], Exclude = ["**/nested/**"] }));
+    }
+
+    [Fact]
+    public void A_file_in_an_unknown_language_is_counted_but_not_analysed()
+    {
+        var result = SourceScanner.Scan(new ScanOptions { Paths = [_root] });
+        Assert.DoesNotContain(result.Files, f => f.EndsWith("notes.txt", StringComparison.Ordinal));
+        Assert.True(result.SkippedUnknownLanguage >= 1);
+    }
+
+    [Fact]
+    public void A_path_that_does_not_exist_is_reported_instead_of_failing_the_run()
+    {
+        var result = SourceScanner.Scan(new ScanOptions { Paths = [Path.Combine(_root, "missing")] });
+        Assert.Empty(result.Files);
+        Assert.Single(result.MissingPaths);
+    }
+
+    [Theory]
+    [InlineData("*.cs", "App.cs", true)]
+    [InlineData("*.cs", "src/App.cs", false)]
+    [InlineData("**/*.cs", "src/nested/App.cs", true)]
+    [InlineData("src/**", "src/nested/App.cs", true)]
+    [InlineData("src/**", "tests/App.cs", false)]
+    [InlineData("App?.cs", "App1.cs", true)]
+    public void Globs_follow_the_usual_conventions(string glob, string path, bool expected)
+    {
+        var regex = new System.Text.RegularExpressions.Regex(SourceScanner.GlobToRegex(glob));
+        Assert.Equal(expected, regex.IsMatch(path));
+    }
+}

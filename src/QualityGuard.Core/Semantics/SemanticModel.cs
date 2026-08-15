@@ -105,7 +105,10 @@ public sealed class SemanticModel
             {
                 if (string.IsNullOrEmpty(parameter.Text))
                     continue;
-                var type = parameter.FirstChild(NodeKind.Identifier)?.Text;
+                // the parser records the declared type as a TypeReference; the identifier fallback
+                // is for the dialects that carry the type as a plain name
+                var type = (parameter.FirstChild(NodeKind.TypeReference)
+                            ?? parameter.FirstChild(NodeKind.Identifier))?.Text;
                 var symbol = functionScope.Declare(parameter.Text, type);
                 symbol.Usages.Add(new Usage(parameter, null, UsageKind.Parameter));
             }
@@ -186,7 +189,10 @@ public sealed class SemanticModel
                     case NodeKind.BooleanLiteral:
                         return "bool";
                     case NodeKind.Invocation:
-                        return SyntaxQuery.InvokedDottedName(value);
+                        // the name of the called method is not the type of the result: claiming it
+                        // would make every comparison between two such values look impossible.
+                        // Resolving the real return type is the job of the type resolver.
+                        return null;
                 }
             }
 

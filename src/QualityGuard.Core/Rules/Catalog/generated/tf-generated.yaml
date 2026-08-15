@@ -20,7 +20,7 @@
     next change touches a single spot.
 
 - key: QG-TF-SEC-0015
-  name: The Clear-text protocols API should not be used
+  name: Clear-text protocols should not be used
   languages: [tf]
   category: SEC
   severity: critical
@@ -39,23 +39,23 @@
     documented and dated.
 
 - key: QG-TF-SEC-0016
-  name: S3 buckets should not be granted more access than it needs
+  name: S3 buckets should use current cryptographic parameters
   languages: [tf]
   category: SEC
   severity: critical
   effort: 15min
-  tags: [permissions, generated]
+  tags: [crypto, generated]
   generated: true
   status: planned
-  message: This grants wider access than the operation needs.
-  summary: A resource is created or shared with permissions wider than the task requires.
+  message: This cryptographic choice no longer provides the protection it suggests.
+  summary: A cryptographic primitive, mode or key size that is no longer considered safe is used.
   why: |
-    Every account that can reach the resource can also change it, so a single compromised process is
-    enough to alter data or code the application later trusts. Wide permissions are also invisible at the
-    call site: nothing in the reading code says who else can write.
+    Broken primitives keep producing output that looks correct, so nothing fails while the protection is
+    already gone. Data encrypted today is often kept for years, which means an algorithm that is merely
+    weak now will be readable later.
   fix: |
-    Grant the narrowest right that works, to the specific identity that needs it, and rely on inherited
-    permissions from a properly secured parent instead of widening the resource itself.
+    Use the algorithms the platform recommends today — authenticated encryption, a modern hash, a key
+    size at or above the current guidance — and keep the choice in one place so it can be raised.
 
 - key: QG-TF-SEC-0017
   name: Amazon S3 buckets should not weaken the security of the application
@@ -96,7 +96,7 @@
     and replace weakened mechanisms with the current recommended one.
 
 - key: QG-TF-SEC-0019
-  name: The protection around Cloud resources logging should stay enabled
+  name: Cloud resources logging should keep the platform protection enabled
   languages: [tf]
   category: SEC
   severity: critical
@@ -115,7 +115,7 @@
     single endpoint or value that needs it, and document why it is safe there.
 
 - key: QG-TF-SEC-0020
-  name: S3 buckets should not be granted more access than it needs
+  name: S3 buckets should not grant more access than needed
   languages: [tf]
   category: SEC
   severity: critical
@@ -134,7 +134,7 @@
     permissions from a properly secured parent instead of widening the resource itself.
 
 - key: QG-TF-SEC-0021
-  name: AWS resource-based policies should not be granted more access than it needs
+  name: AWS resource-based policies should not grant more access than needed
   languages: [tf]
   category: SEC
   severity: critical
@@ -172,7 +172,7 @@
     size at or above the current guidance — and keep the choice in one place so it can be raised.
 
 - key: QG-TF-SEC-0023
-  name: Amazon S3 bucket public access should not be granted more access than it needs
+  name: Amazon S3 bucket public access should not grant more access than needed
   languages: [tf]
   category: SEC
   severity: critical
@@ -191,7 +191,7 @@
     permissions from a properly secured parent instead of widening the resource itself.
 
 - key: QG-TF-SEC-0024
-  name: Policies should not be granted more access than it needs
+  name: Policies should not grant more access than needed
   languages: [tf]
   category: SEC
   severity: critical
@@ -229,7 +229,7 @@
     size at or above the current guidance — and keep the choice in one place so it can be raised.
 
 - key: QG-TF-SEC-0026
-  name: IAM policies should not be granted more access than it needs
+  name: IAM policies should not grant more access than needed
   languages: [tf]
   category: SEC
   severity: critical
@@ -267,7 +267,7 @@
     size at or above the current guidance — and keep the choice in one place so it can be raised.
 
 - key: QG-TF-SEC-0028
-  name: AWS IAM policies should not be granted more access than it needs
+  name: AWS IAM policies should not grant more access than needed
   languages: [tf]
   category: SEC
   severity: critical
@@ -305,7 +305,7 @@
     size at or above the current guidance — and keep the choice in one place so it can be raised.
 
 - key: QG-TF-SEC-0030
-  name: Administration services access should not be granted more access than it needs
+  name: Administration services access should not grant more access than needed
   languages: [tf]
   category: SEC
   severity: critical
@@ -343,7 +343,7 @@
     size at or above the current guidance — and keep the choice in one place so it can be raised.
 
 - key: QG-TF-SEC-0032
-  name: Public network access to cloud resources should not be granted more access than it needs
+  name: Public network access to cloud resources should not grant more access than needed
   languages: [tf]
   category: SEC
   severity: critical
@@ -438,7 +438,7 @@
     and replace weakened mechanisms with the current recommended one.
 
 - key: QG-TF-SEC-0037
-  name: High-privilege Microsoft Entra ID built-in roles should not be granted more access than it needs
+  name: High-privilege Microsoft Entra ID built-in roles should not grant more access than needed
   languages: [tf]
   category: SEC
   severity: critical
@@ -495,7 +495,7 @@
     and replace weakened mechanisms with the current recommended one.
 
 - key: QG-TF-SEC-0040
-  name: Azure resources should not be granted more access than it needs
+  name: Azure resources should not grant more access than needed
   languages: [tf]
   category: SEC
   severity: critical
@@ -514,7 +514,7 @@
     permissions from a properly secured parent instead of widening the resource itself.
 
 - key: QG-TF-SEC-0041
-  name: High-privilege Azure built-in roles should not be granted more access than it needs
+  name: High-privilege Azure built-in roles should not grant more access than needed
   languages: [tf]
   category: SEC
   severity: critical
@@ -533,7 +533,7 @@
     permissions from a properly secured parent instead of widening the resource itself.
 
 - key: QG-TF-SEC-0042
-  name: The protection around Client certificate authentication should stay enabled
+  name: Client certificate authentication should keep the platform protection enabled
   languages: [tf]
   category: SEC
   severity: critical
@@ -552,7 +552,7 @@
     single endpoint or value that needs it, and document why it is safe there.
 
 - key: QG-TF-SEC-0043
-  name: The protection around Azure Role-Based Access Control should stay enabled
+  name: Azure Role-Based Access Control should keep the platform protection enabled
   languages: [tf]
   category: SEC
   severity: critical
@@ -609,7 +609,7 @@
     and replace weakened mechanisms with the current recommended one.
 
 - key: QG-TF-SEC-0046
-  name: The protection around Cloud storage encryption should stay enabled
+  name: Cloud storage encryption should keep the platform protection enabled
   languages: [tf]
   category: SEC
   severity: critical
@@ -628,7 +628,7 @@
     single endpoint or value that needs it, and document why it is safe there.
 
 - key: QG-TF-SEC-0047
-  name: GCP IAM policies should not be granted more access than it needs
+  name: GCP IAM policies should not grant more access than needed
   languages: [tf]
   category: SEC
   severity: critical
@@ -704,7 +704,7 @@
     size at or above the current guidance — and keep the choice in one place so it can be raised.
 
 - key: QG-TF-SEC-0051
-  name: GCP resources should not be granted more access than it needs
+  name: GCP resources should not grant more access than needed
   languages: [tf]
   category: SEC
   severity: critical
@@ -723,7 +723,7 @@
     permissions from a properly secured parent instead of widening the resource itself.
 
 - key: QG-TF-SEC-0052
-  name: Project-wide SSH keys should not be granted more access than it needs
+  name: Project-wide SSH keys should not grant more access than needed
   languages: [tf]
   category: SEC
   severity: critical
@@ -742,7 +742,7 @@
     permissions from a properly secured parent instead of widening the resource itself.
 
 - key: QG-TF-SEC-0053
-  name: GCP IAM custom roles should not be granted more access than it needs
+  name: GCP IAM custom roles should not grant more access than needed
   languages: [tf]
   category: SEC
   severity: critical
@@ -780,7 +780,7 @@
     size at or above the current guidance — and keep the choice in one place so it can be raised.
 
 - key: QG-TF-SEC-0055
-  name: GCP IAM custom roles should not be granted more access than it needs
+  name: GCP IAM custom roles should not grant more access than needed
   languages: [tf]
   category: SEC
   severity: critical
@@ -799,7 +799,7 @@
     permissions from a properly secured parent instead of widening the resource itself.
 
 - key: QG-TF-SEC-0056
-  name: Legacy Attribute-Based Access Control should not be granted more access than it needs
+  name: Legacy Attribute-Based Access Control should not grant more access than needed
   languages: [tf]
   category: SEC
   severity: critical
@@ -931,7 +931,7 @@
     and replace weakened mechanisms with the current recommended one.
 
 - key: QG-TF-SEC-0062
-  name: GCP Cloud Storage buckets should not be granted more access than it needs
+  name: GCP Cloud Storage buckets should not grant more access than needed
   languages: [tf]
   category: SEC
   severity: critical

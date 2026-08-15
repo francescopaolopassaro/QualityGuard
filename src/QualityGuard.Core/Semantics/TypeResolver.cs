@@ -20,9 +20,12 @@ public sealed class TypeResolver
         _project = project;
     }
 
+    /// <summary>How far the resolver follows one expression into another before giving up.</summary>
+    private const int MaxDepth = 8;
+
     public string? TypeOf(SyntaxNode? expression, int depth = 0)
     {
-        if (expression == null || depth > 8)
+        if (expression == null || depth > MaxDepth)
             return null;
 
         switch (expression.Kind)
@@ -44,7 +47,7 @@ public sealed class TypeResolver
             case NodeKind.Parenthesized:
                 return TypeOf(expression.ChildAt(0), depth + 1);
             case NodeKind.Identifier:
-                return TypeOfIdentifier(expression);
+                return TypeOfIdentifier(expression, depth);
             case NodeKind.MemberSelect:
                 return TypeOfMember(expression, depth);
             case NodeKind.Invocation:
@@ -60,11 +63,15 @@ public sealed class TypeResolver
         }
     }
 
-    private string? TypeOfIdentifier(SyntaxNode identifier)
+    private string? TypeOfIdentifier(SyntaxNode identifier, int depth = 0)
     {
         var symbol = _semantics.Resolve(identifier);
         if (symbol?.DeclaredType is { Length: > 0 } declared)
             return Normalize(declared);
+        // `var` keeps no type of its own: take it from the expression the variable was assigned,
+        // but only when that assignment is the single one, so the answer cannot depend on the path
+        if (symbol?.SafeValue() is { } value && depth < MaxDepth)
+            return TypeOf(value, depth + 1);
         // a bare name may also be a type used statically
         return _project.FindType(identifier.Text) != null ? Normalize(identifier.Text) : null;
     }
@@ -105,6 +112,23 @@ public sealed class TypeResolver
         var dot = text.LastIndexOf('.');
         return dot >= 0 && dot < text.Length - 1 ? text[(dot + 1)..] : text;
     }
+
+    private static readonly string[] Primitives =
+    [
+        "int", "long", "short", "byte", "sbyte", "uint", "ulong", "ushort", "float", "double", "decimal",
+        "bool", "char", "string", "str", "object", "number", "boolean", "String", "Integer", "Boolean",
+        "Double", "Float", "Long", "Short", "Byte", "Character", "BigDecimal", "BigInteger"
+    ];
+
+    /// <summary>
+    /// True when the name really is a type: a primitive, or a type declared in the scanned code.
+    /// Rules that compare two types must ask this first — a name that came out of an expression the
+    /// resolver could not follow is a guess, and acting on a guess is how a checker earns its
+    /// reputation for crying wolf.
+    /// </summary>
+    public bool IsKnownType(string? type)
+        => type is { Length: > 0 }
+           && (Primitives.Contains(type, StringComparer.Ordinal) || _project.FindType(type) != null);
 
     /// <summary>True when the type, or one of its ancestors in the scanned code, has that name.</summary>
     public bool IsOrDerivesFrom(string? type, params string[] names)

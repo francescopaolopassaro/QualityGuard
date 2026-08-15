@@ -39,7 +39,7 @@
     and replace weakened mechanisms with the current recommended one.
 
 - key: QG-DK-SEC-0010
-  name: The Clear-text protocols API should not be used
+  name: Clear-text protocols should not be used
   languages: [dk]
   category: SEC
   severity: critical
@@ -77,7 +77,7 @@
     and replace weakened mechanisms with the current recommended one.
 
 - key: QG-DK-SEC-0012
-  name: Permissions of sensitive mount points should not be granted more access than it needs
+  name: Permissions of sensitive mount points should not grant more access than needed
   languages: [dk]
   category: SEC
   severity: critical
@@ -115,7 +115,7 @@
     and replace weakened mechanisms with the current recommended one.
 
 - key: QG-DK-SEC-0014
-  name: Docker containers should not be granted more access than it needs
+  name: Docker containers should not grant more access than needed
   languages: [dk]
   category: SEC
   severity: critical
@@ -134,7 +134,7 @@
     permissions from a properly secured parent instead of widening the resource itself.
 
 - key: QG-DK-SEC-0015
-  name: The Dockerfile ARG and ENV instructions API should not be used
+  name: Dockerfile ARG and ENV instructions should not be used
   languages: [dk]
   category: SEC
   severity: critical
@@ -190,7 +190,7 @@
     next change touches a single spot.
 
 - key: QG-DK-SEC-0017
-  name: The protection around Builder sandboxes should stay enabled
+  name: Builder sandboxes should keep the platform protection enabled
   languages: [dk]
   category: SEC
   severity: critical
@@ -228,7 +228,7 @@
     and replace weakened mechanisms with the current recommended one.
 
 - key: QG-DK-BUG-0001
-  name: A space before the equal sign should behave the way it reads
+  name: Suspicious code should match the behaviour the code describes
   languages: [dk]
   category: BUG
   severity: major
@@ -246,7 +246,7 @@
     and cover the case that used to fail with a test.
 
 - key: QG-DK-BUG-0002
-  name: Access variable which is not available should behave the way it reads
+  name: Access variable which should match the behaviour the code describes
   languages: [dk]
   category: BUG
   severity: major
@@ -264,7 +264,7 @@
     and cover the case that used to fail with a test.
 
 - key: QG-DK-SML-0008
-  name: The Deprecated instructions API should not be used
+  name: Deprecated instructions should not be used
   languages: [dk]
   category: SML
   severity: minor
@@ -283,7 +283,7 @@
     documented and dated.
 
 - key: QG-DK-BUG-0003
-  name: Dockerfile should behave the way it reads
+  name: Dockerfile should match the behaviour the code describes
   languages: [dk]
   category: BUG
   severity: major
@@ -357,7 +357,7 @@
     next change touches a single spot.
 
 - key: QG-DK-SML-0012
-  name: Use digest to pin versions of should be simplified
+  name: Hard-to-read code should be simplified
   languages: [dk]
   category: SML
   severity: minor
@@ -375,7 +375,7 @@
     next change touches a single spot.
 
 - key: QG-DK-SML-0013
-  name: Descriptive labels are mandatory should be simplified
+  name: Hard-to-read code should be simplified
   languages: [dk]
   category: SML
   severity: minor
@@ -393,7 +393,7 @@
     next change touches a single spot.
 
 - key: QG-DK-SML-0014
-  name: COPY over ADD for copying local resources should be simplified
+  name: Hard-to-read code should be simplified
   languages: [dk]
   category: SML
   severity: minor
@@ -411,7 +411,7 @@
     next change touches a single spot.
 
 - key: QG-DK-BUG-0004
-  name: Malformed JSON in Exec form leads should behave the way it reads
+  name: Suspicious code should match the behaviour the code describes
   languages: [dk]
   category: BUG
   severity: major
@@ -429,7 +429,7 @@
     and cover the case that used to fail with a test.
 
 - key: QG-DK-SML-0015
-  name: Reduce the amount of consecutive RUN should be simplified
+  name: Hard-to-read code should be simplified
   languages: [dk]
   category: SML
   severity: minor
@@ -447,7 +447,7 @@
     next change touches a single spot.
 
 - key: QG-DK-SML-0016
-  name: Specify either version tag or digest should be simplified
+  name: Hard-to-read code should be simplified
   languages: [dk]
   category: SML
   severity: minor

@@ -560,11 +560,23 @@ public sealed class StringConcatenationInLoopRule : StructuralRuleBase
 
 public sealed class InvalidRegexRule : StructuralRuleBase
 {
+    /// <summary>Calls whose first string argument is a pattern whatever the receiver is.</summary>
     private static readonly string[] RegexEntryPoints =
     [
-        "Match", "Matches", "IsMatch", "Replace", "Split", "compile", "match", "search", "findall",
-        "fullmatch", "test", "exec", "matches", "Pattern", "Regex", "RegExp", "new_regex", "MustCompile"
+        "MustCompile", "MustCompilePOSIX", "new_regex", "RegExp", "Regex", "compile", "findall",
+        "fullmatch", "IsMatch", "Matches"
     ];
+
+    /// <summary>
+    /// The same names exist on strings and on collections, where the argument is plain text:
+    /// "path".Replace("\\", "/") is not a broken pattern. They only count when the receiver says
+    /// the call goes through a regular expression engine.
+    /// </summary>
+    private static readonly string[] AmbiguousEntryPoints =
+        ["Match", "Replace", "Split", "match", "search", "test", "exec", "matches", "sub", "subn"];
+
+    private static readonly string[] RegexReceivers =
+        ["Regex", "RegExp", "re", "Pattern", "regexp", "System.Text.RegularExpressions.Regex"];
 
     public override string Key => "QG-ALL-BUG-0007";
     public override string Name => "Regular expressions should be syntactically valid";
@@ -577,13 +589,16 @@ public sealed class InvalidRegexRule : StructuralRuleBase
         foreach (var call in SyntaxQuery.Invocations(context.Root))
         {
             var name = SyntaxQuery.InvokedName(call);
-            if (!RegexEntryPoints.Contains(name, StringComparer.Ordinal))
+            var known = RegexEntryPoints.Contains(name, StringComparer.Ordinal);
+            if (!known && !(AmbiguousEntryPoints.Contains(name, StringComparer.Ordinal)
+                            && RegexReceivers.Contains(SyntaxQuery.Receiver(call), StringComparer.Ordinal)))
                 continue;
 
             foreach (var argument in SyntaxQuery.Arguments(call).Where(SyntaxQuery.IsStringLiteral))
             {
                 var pattern = argument.Text;
-                if (pattern.Length == 0 || !LooksLikePattern(pattern) || IsValid(pattern))
+                // a single character is a separator, never a pattern worth compiling
+                if (pattern.Length <= 1 || !LooksLikePattern(pattern) || IsValid(pattern))
                     continue;
                 context.Report(argument, "This pattern does not compile, so the call throws the first "
                                          + "time it runs; fix the escaping or the unbalanced group.");
@@ -1227,11 +1242,18 @@ public sealed class UnusedPrivateFunctionRule : StructuralRuleBase
             .Select(SyntaxQuery.InvokedName)
             .ToHashSet(StringComparer.Ordinal);
 
+        // when the whole project was indexed, QG-ALL-SML-0032 answers the same question with more
+        // evidence; running both would report one declaration twice
+        var projectWideRuleApplies = context.Project.Types.Count > 0;
+
         foreach (var function in SyntaxQuery.Functions(context.Root))
         {
-            var isPrivate = function.ChildrenOf(NodeKind.Modifier).Any(m => m.Text == "private")
-                            || (context.Language.LanguageKey == "py" && function.Text.StartsWith('_')
-                                && !function.Text.StartsWith("__", StringComparison.Ordinal));
+            var declaredPrivate = function.ChildrenOf(NodeKind.Modifier).Any(m => m.Text == "private");
+            var privateByConvention = context.Language.LanguageKey == "py" && function.Text.StartsWith('_')
+                                      && !function.Text.StartsWith("__", StringComparison.Ordinal);
+            if (declaredPrivate && projectWideRuleApplies)
+                continue;
+            var isPrivate = declaredPrivate || privateByConvention;
             if (!isPrivate || function.Text.Length == 0 || called.Contains(function.Text))
                 continue;
             // a member referenced without a call, for instance as a delegate, still counts as used
@@ -1711,7 +1733,12 @@ public sealed class UnreleasedResourceRule : StructuralRuleBase
 
 public sealed class MismatchedComparisonRule : StructuralRuleBase
 {
-    private static readonly string[] Numeric = ["int", "long", "short", "byte", "double", "float", "decimal"];
+    private static readonly string[] Numeric =
+        ["int", "long", "short", "byte", "double", "float", "decimal", "number", "Integer", "Double"];
+
+    private static readonly string[] Primitive =
+        ["int", "long", "short", "byte", "double", "float", "decimal", "number", "bool", "boolean",
+         "string", "str", "char", "object"];
 
     public override string Key => "QG-ALL-BUG-0015";
     public override string Name => "Values of unrelated types should not be compared";
@@ -1732,7 +1759,18 @@ public sealed class MismatchedComparisonRule : StructuralRuleBase
             var right = context.Types.TypeOf(comparison.ChildAt(1));
             if (left == null || right == null || left == right)
                 continue;
+            // only compare names that are really types: anything else is an expression the resolver
+            // could not follow, and two unknowns never prove that a comparison is impossible
+            if (!context.Types.IsKnownType(left) || !context.Types.IsKnownType(right))
+                continue;
             if (Numeric.Contains(left, StringComparer.Ordinal) && Numeric.Contains(right, StringComparer.Ordinal))
+                continue;
+            // TypeScript names a union of literals with `type X = 'a' | 'b'`, which the index sees as
+            // a declaration with no shape. Comparing such a name with a primitive proves nothing, so
+            // the pair is only reported where a named type cannot be an alias for a primitive.
+            if (context.Language.LanguageKey is "ts" or "js"
+                && (Primitive.Contains(left, StringComparer.Ordinal)
+                    || Primitive.Contains(right, StringComparer.Ordinal)))
                 continue;
             if (context.Types.IsOrDerivesFrom(left, right) || context.Types.IsOrDerivesFrom(right, left))
                 continue;

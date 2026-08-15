@@ -2,7 +2,7 @@
 # tools/generate_rules.py and are refined by hand as each family is reviewed.
 
 - key: QG-JV-SML-0028
-  name: Uses of NOSONAR should be reviewed
+  name: NOSONAR comments should be resolved rather than left in the code
   languages: [java]
   category: SML
   severity: minor
@@ -20,26 +20,26 @@
     lives somewhere that gets reviewed.
 
 - key: QG-JV-SML-0032
-  name: Secrets should not be written into URIs
+  name: URIs should not be hardcoded in the source
   languages: [java]
   category: SML
   severity: minor
   effort: 15min
-  tags: [secret, generated]
+  tags: [hardcoded_value, generated]
   generated: true
   status: planned
-  message: This value looks like a credential committed with the source.
-  summary: A credential, key or token appears directly in the source instead of coming from a secret store.
+  message: This value is fixed in the source and cannot be changed without a rebuild.
+  summary: An address, path or other deployment-specific value is written into the code.
   why: |
-    Anything committed with the code is readable by everyone who can clone the repository, and it
-    survives in the history even after being deleted. Scanners find these values within minutes of a
-    repository becoming reachable, and rotating them means editing and redeploying every copy.
+    The value is right for exactly one environment. Every other environment needs a code change, so the
+    same build cannot be promoted from test to production, and a value that has to be corrected under
+    pressure gets corrected in the wrong place.
   fix: |
-    Read the value at run time from the platform secret store or the environment, fail fast when it is
-    missing, and treat the committed value as compromised: rotate it before removing it.
+    Move the value to configuration, read it at start-up, and fail with a clear message when it is
+    missing so a misconfigured deployment stops before it does anything.
 
 - key: QG-JV-BUG-0022
-  name: The The Object.finalize() method API should not be used
+  name: Object.finalize() method should not be used
   languages: [java]
   category: BUG
   severity: major
@@ -62,7 +62,7 @@
       receiver: [Object]
 
 - key: QG-JV-SML-0035
-  name: The Object.finalize() method should be simplified
+  name: Object.finalize() method should be simplified
   languages: [java]
   category: SML
   severity: minor
@@ -80,7 +80,7 @@
     next change touches a single spot.
 
 - key: QG-JV-BUG-0023
-  name: Super.finalize() should behave the way it reads
+  name: Super.finalize() should match the behaviour the code describes
   languages: [java]
   category: BUG
   severity: major
@@ -171,7 +171,7 @@
     next change touches a single spot.
 
 - key: QG-JV-SML-0045
-  name: Exception handling around Exceptions in throws clauses should be explicit
+  name: Exceptions in throws clauses should make failure handling explicit
   languages: [java]
   category: SML
   severity: minor
@@ -190,7 +190,7 @@
     wrapping, and let everything else reach the boundary handler.
 
 - key: QG-JV-SML-0049
-  name: The Exit methods API should not be used
+  name: Exit methods should not be used
   languages: [java]
   category: SML
   severity: minor
@@ -209,7 +209,7 @@
     documented and dated.
 
 - key: QG-JV-SML-0050
-  name: The Synchronized classes Vector, Hashtable, Stack and StringBuffer API should not be used
+  name: Unsafe APIs should not be used
   languages: [java]
   category: SML
   severity: minor
@@ -327,7 +327,7 @@
     next change touches a single spot.
 
 - key: QG-JV-SML-0056
-  name: Exception handling around Public methods should be explicit
+  name: Public methods should make failure handling explicit
   languages: [java]
   category: SML
   severity: minor
@@ -365,7 +365,7 @@
     cases the old form got wrong.
 
 - key: QG-JV-SML-0058
-  name: Exception handling around Checked exceptions should be explicit
+  name: Checked exceptions should make failure handling explicit
   languages: [java]
   category: SML
   severity: minor
@@ -384,7 +384,7 @@
     wrapping, and let everything else reach the boundary handler.
 
 - key: QG-JV-SML-0059
-  name: Exception handling around Exceptions should be explicit
+  name: Exceptions should make failure handling explicit
   languages: [java]
   category: SML
   severity: minor
@@ -403,7 +403,7 @@
     wrapping, and let everything else reach the boundary handler.
 
 - key: QG-JV-SML-0060
-  name: Exception handling around Exception classes should be explicit
+  name: Exception classes should make failure handling explicit
   languages: [java]
   category: SML
   severity: minor
@@ -422,7 +422,7 @@
     wrapping, and let everything else reach the boundary handler.
 
 - key: QG-JV-SML-0061
-  name: Exception handling around Exception handlers should be explicit
+  name: Exception handlers should make failure handling explicit
   languages: [java]
   category: SML
   severity: minor
@@ -497,7 +497,7 @@
     next change touches a single spot.
 
 - key: QG-JV-BUG-0024
-  name: The signature of finalize() should behave the way it reads
+  name: Signature of finalize() should match the behaviour the code describes
   languages: [java]
   category: BUG
   severity: major
@@ -533,7 +533,7 @@
     next change touches a single spot.
 
 - key: QG-JV-SML-0067
-  name: Exception handling around Throwable and Error should be explicit
+  name: Throwable and Error should make failure handling explicit
   languages: [java]
   category: SML
   severity: minor
@@ -552,7 +552,7 @@
     wrapping, and let everything else reach the boundary handler.
 
 - key: QG-JV-SML-0068
-  name: Classes that override clone should be simplified
+  name: Hard-to-read code should be simplified
   languages: [java]
   category: SML
   severity: minor
@@ -570,7 +570,7 @@
     next change touches a single spot.
 
 - key: QG-JV-SML-0070
-  name: The Future keywords API should not be used
+  name: Future keywords should not be used
   languages: [java]
   category: SML
   severity: minor
@@ -589,7 +589,7 @@
     documented and dated.
 
 - key: QG-JV-SML-0071
-  name: The Classes from sun.* packages API should not be used
+  name: Classes from sun.* packages should not be used
   languages: [java]
   category: SML
   severity: minor
@@ -608,22 +608,23 @@
     documented and dated.
 
 - key: QG-JV-SML-0072
-  name: Tests around Exception types should verify something
+  name: Exception types should make failure handling explicit
   languages: [java]
   category: SML
   severity: minor
   effort: 15min
-  tags: [tests, generated]
+  tags: [exception, generated]
   generated: true
   status: planned
-  message: This test cannot fail, so it verifies nothing.
-  summary: A test does not assert, is disabled, or cannot fail.
+  message: This handling hides the failure instead of dealing with it.
+  summary: An exception is thrown, caught or propagated in a way that hides the failure.
   why: |
-    A test that cannot fail reports success forever while covering nothing, and the suite keeps its green
-    status. That is worse than having no test at all, because it removes the incentive to write one.
+    Handlers that are too broad, empty, or that replace the original error remove the information needed
+    to diagnose the incident, and let the program continue in a state nobody designed for. The symptom
+    then appears far from the cause.
   fix: |
-    Assert the behaviour the test exists for, re-enable it, and make sure it fails when the behaviour is
-    broken before trusting it again.
+    Catch the specific failures this code can recover from, keep the original exception as the cause when
+    wrapping, and let everything else reach the boundary handler.
 
 - key: QG-JV-SML-0073
   name: Java.lang.Error should be simplified
@@ -699,7 +700,7 @@
     name, and keep the original as the sequence of those steps.
 
 - key: QG-JV-BUG-0025
-  name: Equals method overrides should behave the way it reads
+  name: Equals method overrides should match the behaviour the code describes
   languages: [java]
   category: BUG
   severity: major
@@ -735,7 +736,7 @@
     next change touches a single spot.
 
 - key: QG-JV-SML-0078
-  name: The members of an interface or class declaration should be simplified
+  name: Hard-to-read code should be simplified
   languages: [java]
   category: SML
   severity: minor
@@ -807,7 +808,7 @@
     next change touches a single spot.
 
 - key: QG-JV-SML-0082
-  name: The The default unnamed package API should not be used
+  name: Default unnamed package should not be used
   languages: [java]
   category: SML
   severity: minor
@@ -826,7 +827,7 @@
     documented and dated.
 
 - key: QG-JV-BUG-0027
-  name: Methods should behave the way it reads
+  name: Methods should match the behaviour the code describes
   languages: [java]
   category: BUG
   severity: major
@@ -880,7 +881,7 @@
     next change touches a single spot.
 
 - key: QG-JV-SML-0085
-  name: Regular expressions around Comments matching a regular expression should be safe and correct
+  name: Regular expressions should be safe and correct
   languages: [java]
   category: SML
   severity: minor
@@ -917,7 +918,7 @@
     next change touches a single spot.
 
 - key: QG-JV-SML-0087
-  name: A while loop should be replaced by the recommended alternative
+  name: While loop should be replaced by the recommended alternative
   languages: [java]
   category: SML
   severity: minor
@@ -990,7 +991,7 @@
     next change touches a single spot.
 
 - key: QG-JV-SML-0091
-  name: Uses of @SuppressWarnings annotations should be reviewed
+  name: @SuppressWarnings annotations should be resolved rather than left in the code
   languages: [java]
   category: SML
   severity: minor
@@ -1008,7 +1009,7 @@
     lives somewhere that gets reviewed.
 
 - key: QG-JV-SML-0092
-  name: Uses of NOPMD should be reviewed
+  name: NOPMD suppression comments should be resolved rather than left in the code
   languages: [java]
   category: SML
   severity: minor
@@ -1044,26 +1045,26 @@
     stay in sync.
 
 - key: QG-JV-SML-0094
-  name: Secrets should not be written into IP addresses
+  name: IP addresses should not be hardcoded in the source
   languages: [java]
   category: SML
   severity: minor
   effort: 15min
-  tags: [secret, generated]
+  tags: [hardcoded_value, generated]
   generated: true
   status: planned
-  message: This value looks like a credential committed with the source.
-  summary: A credential, key or token appears directly in the source instead of coming from a secret store.
+  message: This value is fixed in the source and cannot be changed without a rebuild.
+  summary: An address, path or other deployment-specific value is written into the code.
   why: |
-    Anything committed with the code is readable by everyone who can clone the repository, and it
-    survives in the history even after being deleted. Scanners find these values within minutes of a
-    repository becoming reachable, and rotating them means editing and redeploying every copy.
+    The value is right for exactly one environment. Every other environment needs a code change, so the
+    same build cannot be promoted from test to production, and a value that has to be corrected under
+    pressure gets corrected in the wrong place.
   fix: |
-    Read the value at run time from the platform secret store or the environment, fail fast when it is
-    missing, and treat the committed value as compromised: rotate it before removing it.
+    Move the value to configuration, read it at start-up, and fail with a clear message when it is
+    missing so a misconfigured deployment stops before it does anything.
 
 - key: QG-JV-SML-0095
-  name: The Octal values API should not be used
+  name: Octal values should not be used
   languages: [java]
   category: SML
   severity: minor
@@ -1082,7 +1083,7 @@
     documented and dated.
 
 - key: QG-JV-SML-0096
-  name: Uses of CHECKSTYLE:OFF suppression comments should be reviewed
+  name: CHECKSTYLE:OFF suppression comments should be resolved rather than left in the code
   languages: [java]
   category: SML
   severity: minor
@@ -1155,7 +1156,7 @@
     name, and keep the original as the sequence of those steps.
 
 - key: QG-JV-SML-0100
-  name: Uses of Comments should be reviewed
+  name: Comments should be resolved rather than left in the code
   languages: [java]
   category: SML
   severity: minor
@@ -1209,7 +1210,7 @@
     next change touches a single spot.
 
 - key: QG-JV-SML-0103
-  name: Uses of Lack of copyright and license headers should be reviewed
+  name: Copyright and license headers should be resolved rather than left in the code
   languages: [java]
   category: SML
   severity: minor
@@ -1246,7 +1247,7 @@
     name, and keep the original as the sequence of those steps.
 
 - key: QG-JV-SML-0105
-  name: Exception handling around Local variables should be explicit
+  name: Local variables should make failure handling explicit
   languages: [java]
   category: SML
   severity: minor
@@ -1265,7 +1266,7 @@
     wrapping, and let everything else reach the boundary handler.
 
 - key: QG-JV-SML-0106
-  name: The Collections.EMPTY_LIST, EMPTY_MAP, and EMPTY_SET API should not be used
+  name: Collections.EMPTY_LIST, EMPTY_MAP, and EMPTY_SET should not be used
   languages: [java]
   category: SML
   severity: minor
@@ -1306,7 +1307,7 @@
     next change touches a single spot.
 
 - key: QG-JV-SML-0108
-  name: Concurrent access around Lambdas containing only one statement should be coordinated correctly
+  name: Lambdas containing only one statement should be accessed in a thread-safe way
   languages: [java]
   category: SML
   severity: minor
@@ -1324,7 +1325,7 @@
     the concurrent collections and higher-level primitives the platform provides.
 
 - key: QG-JV-SML-0109
-  name: Anonymous inner classes containing only one method should be simplified
+  name: Hard-to-read code should be simplified
   languages: [java]
   category: SML
   severity: minor
@@ -1379,7 +1380,7 @@
     next change touches a single spot.
 
 - key: QG-JV-SML-0112
-  name: Parentheses should be removed when it is no longer used
+  name: Parentheses should be removed once nothing uses it
   languages: [java]
   category: SML
   severity: minor
@@ -1416,7 +1417,7 @@
     next change touches a single spot.
 
 - key: QG-JV-SML-0114
-  name: Maps with keys that are enum values should be simplified
+  name: Hard-to-read code should be simplified
   languages: [java]
   category: SML
   severity: minor
@@ -1434,7 +1435,7 @@
     next change touches a single spot.
 
 - key: QG-JV-SML-0115
-  name: Sets with elements that are enum values should be simplified
+  name: Hard-to-read code should be simplified
   languages: [java]
   category: SML
   severity: minor
@@ -1452,7 +1453,7 @@
     next change touches a single spot.
 
 - key: QG-JV-SML-0117
-  name: An abstract class should be simplified
+  name: Abstract class should be simplified
   languages: [java]
   category: SML
   severity: minor
@@ -1470,7 +1471,7 @@
     next change touches a single spot.
 
 - key: QG-JV-SML-0118
-  name: Exception handling around NullPointerException should be explicit
+  name: NullPointerException should make failure handling explicit
   languages: [java]
   category: SML
   severity: minor
@@ -1491,7 +1492,7 @@
     - creation: [NullPointerException]
 
 - key: QG-JV-SML-0119
-  name: Exception handling around NullPointerException should be explicit
+  name: NullPointerException should make failure handling explicit
   languages: [java]
   category: SML
   severity: minor
@@ -1512,7 +1513,7 @@
     - creation: [NullPointerException]
 
 - key: QG-JV-SML-0120
-  name: The == and != API should not be used
+  name: == and != should not be used
   languages: [java]
   category: SML
   severity: minor
@@ -1549,7 +1550,7 @@
     next change touches a single spot.
 
 - key: QG-JV-SML-0122
-  name: A field should not be duplicated
+  name: Field should not be duplicated
   languages: [java]
   category: SML
   severity: minor
@@ -1602,26 +1603,8 @@
     Remove what is not used, name what is unclear, and keep one piece of behaviour in one place so the
     next change touches a single spot.
 
-- key: QG-JV-BUG-0029
-  name: Loops with at most one iteration should behave the way it reads
-  languages: [java]
-  category: BUG
-  severity: major
-  effort: 15min
-  tags: [bug, generated]
-  generated: true
-  status: planned
-  message: This code does not behave the way it reads.
-  summary: The code does not do what its shape suggests, or fails on ordinary input.
-  why: |
-    Written this way the code works by accident or breaks on values that are perfectly normal, and the
-    mistake is easy to miss in review because the intent reads correctly.
-  fix: |
-    Make the intended behaviour explicit — fix the condition, the operator or the order of operations —
-    and cover the case that used to fail with a test.
-
 - key: QG-JV-SML-0125
-  name: The The ternary operator API should not be used
+  name: Ternary operator should not be used
   languages: [java]
   category: SML
   severity: minor
@@ -1640,7 +1623,7 @@
     documented and dated.
 
 - key: QG-JV-SML-0126
-  name: The Object.wait API should not be used
+  name: Object.wait should not be used
   languages: [java]
   category: SML
   severity: minor
@@ -1684,7 +1667,7 @@
     next change touches a single spot.
 
 - key: QG-JV-BUG-0030
-  name: Iterator.hasNext() should behave the way it reads
+  name: Iterator.hasNext() should match the behaviour the code describes
   languages: [java]
   category: BUG
   severity: major
@@ -1720,7 +1703,7 @@
     next change touches a single spot.
 
 - key: QG-JV-SML-0131
-  name: The Redundant casts API should not be used
+  name: Redundant casts should not be used
   languages: [java]
   category: SML
   severity: minor
@@ -1812,7 +1795,7 @@
     cases the old form got wrong.
 
 - key: QG-JV-SML-0136
-  name: The Classes and methods that rely on API should not be used
+  name: Unsafe APIs should not be used
   languages: [java]
   category: SML
   severity: minor
@@ -1903,7 +1886,7 @@
     next change touches a single spot.
 
 - key: QG-JV-SML-0141
-  name: The names of methods with boolean return values should be simplified
+  name: Hard-to-read code should be simplified
   languages: [java]
   category: SML
   severity: minor
@@ -1940,7 +1923,7 @@
     size at or above the current guidance — and keep the choice in one place so it can be raised.
 
 - key: QG-JV-BUG-0033
-  name: The non-serializable super class of a Serializable class should behave the way it reads
+  name: Suspicious code should match the behaviour the code describes
   languages: [java]
   category: BUG
   severity: major
@@ -1976,7 +1959,7 @@
     next change touches a single spot.
 
 - key: QG-JV-BUG-0034
-  name: Externalizable classes should behave the way it reads
+  name: Externalizable classes should match the behaviour the code describes
   languages: [java]
   category: BUG
   severity: major
@@ -1994,7 +1977,7 @@
     and cover the case that used to fail with a test.
 
 - key: QG-JV-BUG-0035
-  name: Custom serialization methods should behave the way it reads
+  name: Custom serialization methods should match the behaviour the code describes
   languages: [java]
   category: BUG
   severity: major
@@ -2106,7 +2089,7 @@
     cases the old form got wrong.
 
 - key: QG-JV-SML-0148
-  name: Exception handling around Main should be explicit
+  name: Main should make failure handling explicit
   languages: [java]
   category: SML
   severity: minor
@@ -2125,7 +2108,7 @@
     wrapping, and let everything else reach the boundary handler.
 
 - key: QG-JV-BUG-0036
-  name: Tests around Equals(Object obj) should verify something
+  name: Equals(Object obj) should assert something
   languages: [java]
   category: BUG
   severity: major
@@ -2143,7 +2126,7 @@
     broken before trusting it again.
 
 - key: QG-JV-BUG-0037
-  name: The Reflection API should not be used
+  name: Reflection should not be used
   languages: [java]
   category: BUG
   severity: major
@@ -2162,7 +2145,7 @@
     documented and dated.
 
 - key: QG-JV-BUG-0038
-  name: The Invalid Date values API should not be used
+  name: Invalid Date values should not be used
   languages: [java]
   category: BUG
   severity: major
@@ -2183,7 +2166,7 @@
     - creation: [Date]
 
 - key: QG-JV-BUG-0039
-  name: The BigDecimal(double) API should not be used
+  name: BigDecimal(double) should not be used
   languages: [java]
   category: BUG
   severity: major
@@ -2201,26 +2184,8 @@
     Replace the call with the current API, and keep the old one only behind a compatibility layer that is
     documented and dated.
 
-- key: QG-JV-BUG-0040
-  name: Collections should behave the way it reads
-  languages: [java]
-  category: BUG
-  severity: major
-  effort: 15min
-  tags: [bug, generated]
-  generated: true
-  status: planned
-  message: This code does not behave the way it reads.
-  summary: The code does not do what its shape suggests, or fails on ordinary input.
-  why: |
-    Written this way the code works by accident or breaks on values that are perfectly normal, and the
-    mistake is easy to miss in review because the intent reads correctly.
-  fix: |
-    Make the intended behaviour explicit — fix the condition, the operator or the order of operations —
-    and cover the case that used to fail with a test.
-
 - key: QG-JV-SEC-0038
-  name: A secure password should be replaced by the recommended alternative
+  name: Secure password should be replaced by the recommended alternative
   languages: [java]
   category: SEC
   severity: critical
@@ -2239,7 +2204,7 @@
     cases the old form got wrong.
 
 - key: QG-JV-BUG-0041
-  name: The HashCode and toString API should not be used
+  name: HashCode and toString should not be used
   languages: [java]
   category: BUG
   severity: major
@@ -2258,7 +2223,7 @@
     documented and dated.
 
 - key: QG-JV-BUG-0042
-  name: writeObject should behave the way it reads
+  name: Suspicious code should match the behaviour the code describes
   languages: [java]
   category: BUG
   severity: major
@@ -2276,7 +2241,7 @@
     and cover the case that used to fail with a test.
 
 - key: QG-JV-BUG-0043
-  name: Random objects should behave the way it reads
+  name: Random objects should match the behaviour the code describes
   languages: [java]
   category: BUG
   severity: major
@@ -2294,7 +2259,7 @@
     and cover the case that used to fail with a test.
 
 - key: QG-JV-BUG-0044
-  name: String operations with predictable outcomes should behave the way it reads
+  name: String operations with predictable outcomes should match the behaviour the code describes
   languages: [java]
   category: BUG
   severity: major
@@ -2312,7 +2277,7 @@
     and cover the case that used to fail with a test.
 
 - key: QG-JV-BUG-0045
-  name: Concurrent access around ScheduledThreadPoolExecutor should be coordinated correctly
+  name: ScheduledThreadPoolExecutor should be accessed in a thread-safe way
   languages: [java]
   category: BUG
   severity: major
@@ -2331,27 +2296,8 @@
   detect:
     - creation: [ScheduledThreadPoolExecutor]
 
-- key: QG-JV-BUG-0046
-  name: Values should use current cryptographic parameters
-  languages: [java]
-  category: BUG
-  severity: major
-  effort: 15min
-  tags: [crypto, generated]
-  generated: true
-  status: planned
-  message: This cryptographic choice no longer provides the protection it suggests.
-  summary: A cryptographic primitive, mode or key size that is no longer considered safe is used.
-  why: |
-    Broken primitives keep producing output that looks correct, so nothing fails while the protection is
-    already gone. Data encrypted today is often kept for years, which means an algorithm that is merely
-    weak now will be readable later.
-  fix: |
-    Use the algorithms the platform recommends today — authenticated encryption, a modern hash, a key
-    size at or above the current guidance — and keep the choice in one place so it can be raised.
-
 - key: QG-JV-BUG-0047
-  name: Double.longBitsToDouble should behave the way it reads
+  name: Double.longBitsToDouble should match the behaviour the code describes
   languages: [java]
   category: BUG
   severity: major
@@ -2369,7 +2315,7 @@
     and cover the case that used to fail with a test.
 
 - key: QG-JV-SML-0150
-  name: The Constructors API should not be used
+  name: Constructors should not be used
   languages: [java]
   category: SML
   severity: minor
@@ -2430,7 +2376,7 @@
     next change touches a single spot.
 
 - key: QG-JV-BUG-0048
-  name: Concurrent access around Classes extending java.lang.Thread should be coordinated correctly
+  name: Classes extending java.lang.Thread should be accessed in a thread-safe way
   languages: [java]
   category: BUG
   severity: major
@@ -2448,7 +2394,7 @@
     the concurrent collections and higher-level primitives the platform provides.
 
 - key: QG-JV-SML-0153
-  name: The Methods of Random that return floating point values API should not be used
+  name: Unsafe APIs should not be used
   languages: [java]
   category: SML
   severity: minor
@@ -2469,7 +2415,7 @@
     - creation: [Random]
 
 - key: QG-JV-BUG-0049
-  name: The Classes that don't define hashCode() API should not be used
+  name: Unsafe APIs should not be used
   languages: [java]
   category: BUG
   severity: major
@@ -2488,7 +2434,7 @@
     documented and dated.
 
 - key: QG-JV-BUG-0050
-  name: Exception handling around InterruptedException and ThreadDeath should be explicit
+  name: InterruptedException and ThreadDeath should make failure handling explicit
   languages: [java]
   category: BUG
   severity: major
@@ -2533,7 +2479,7 @@
       receiver: [java]
 
 - key: QG-JV-SML-0155
-  name: Exception handling around Catches should be explicit
+  name: Catches should make failure handling explicit
   languages: [java]
   category: SML
   severity: minor
@@ -2571,7 +2517,7 @@
     cases the old form got wrong.
 
 - key: QG-JV-BUG-0051
-  name: The RunFinalizersOnExit API should not be used
+  name: RunFinalizersOnExit should not be used
   languages: [java]
   category: BUG
   severity: major
@@ -2592,7 +2538,7 @@
     - invocation: [runFinalizersOnExit]
 
 - key: QG-JV-BUG-0052
-  name: Unnecessary boxing and unboxing should behave the way it reads
+  name: Unnecessary boxing and unboxing should match the behaviour the code describes
   languages: [java]
   category: BUG
   severity: major
@@ -2610,7 +2556,7 @@
     and cover the case that used to fail with a test.
 
 - key: QG-JV-BUG-0053
-  name: The Dissimilar primitive wrappers API should not be used
+  name: Dissimilar primitive wrappers should not be used
   languages: [java]
   category: BUG
   severity: major
@@ -2665,7 +2611,7 @@
     next change touches a single spot.
 
 - key: QG-JV-BUG-0054
-  name: Unnecessary equality checks should behave the way it reads
+  name: Unnecessary equality checks should match the behaviour the code describes
   languages: [java]
   category: BUG
   severity: major
@@ -2683,7 +2629,7 @@
     and cover the case that used to fail with a test.
 
 - key: QG-JV-BUG-0055
-  name: Equals methods should behave the way it reads
+  name: Equals methods should match the behaviour the code describes
   languages: [java]
   category: BUG
   severity: major
@@ -2701,7 +2647,7 @@
     and cover the case that used to fail with a test.
 
 - key: QG-JV-BUG-0056
-  name: Math should behave the way it reads
+  name: Math should match the behaviour the code describes
   languages: [java]
   category: BUG
   severity: major
@@ -2719,7 +2665,7 @@
     and cover the case that used to fail with a test.
 
 - key: QG-JV-SML-0159
-  name: Absent values around Finalize should be handled explicitly
+  name: Finalize should be handled explicitly when absent
   languages: [java]
   category: SML
   severity: minor
@@ -2739,7 +2685,7 @@
     - invocation: [finalize]
 
 - key: QG-JV-SML-0160
-  name: Exception handling around Classes named like Exception should be explicit
+  name: Classes named like Exception should make failure handling explicit
   languages: [java]
   category: SML
   severity: minor
@@ -2758,7 +2704,7 @@
     wrapping, and let everything else reach the boundary handler.
 
 - key: QG-JV-BUG-0057
-  name: CompareTo should behave the way it reads
+  name: CompareTo should match the behaviour the code describes
   languages: [java]
   category: BUG
   severity: major
@@ -2776,7 +2722,7 @@
     and cover the case that used to fail with a test.
 
 - key: QG-JV-BUG-0058
-  name: Inappropriate Collection calls should behave the way it reads
+  name: Inappropriate Collection calls should match the behaviour the code describes
   languages: [java]
   category: BUG
   severity: major
@@ -2794,25 +2740,7 @@
     and cover the case that used to fail with a test.
 
 - key: QG-JV-BUG-0059
-  name: Child class methods named for parent class methods should behave the way it reads
-  languages: [java]
-  category: BUG
-  severity: major
-  effort: 15min
-  tags: [bug, generated]
-  generated: true
-  status: planned
-  message: This code does not behave the way it reads.
-  summary: The code does not do what its shape suggests, or fails on ordinary input.
-  why: |
-    Written this way the code works by accident or breaks on values that are perfectly normal, and the
-    mistake is easy to miss in review because the intent reads correctly.
-  fix: |
-    Make the intended behaviour explicit — fix the condition, the operator or the order of operations —
-    and cover the case that used to fail with a test.
-
-- key: QG-JV-BUG-0060
-  name: Ints and longs should behave the way it reads
+  name: Suspicious code should match the behaviour the code describes
   languages: [java]
   category: BUG
   severity: major
@@ -2830,7 +2758,7 @@
     and cover the case that used to fail with a test.
 
 - key: QG-JV-BUG-0061
-  name: Math operands should behave the way it reads
+  name: Math operands should match the behaviour the code describes
   languages: [java]
   category: BUG
   severity: major
@@ -2866,7 +2794,7 @@
     next change touches a single spot.
 
 - key: QG-JV-SML-0163
-  name: The JUnit assertions API should not be used
+  name: JUnit assertions should not be used
   languages: [java]
   category: SML
   severity: minor
@@ -2885,7 +2813,7 @@
     documented and dated.
 
 - key: QG-JV-SML-0164
-  name: Tests around TestCases should verify something
+  name: Tests should assert something
   languages: [java]
   category: SML
   severity: minor
@@ -2903,7 +2831,7 @@
     broken before trusting it again.
 
 - key: QG-JV-SML-0165
-  name: Tests around JUnit test cases should verify something
+  name: Tests should assert something
   languages: [java]
   category: SML
   severity: minor
@@ -2976,25 +2904,7 @@
     next change touches a single spot.
 
 - key: QG-JV-BUG-0062
-  name: CompareTo results should behave the way it reads
-  languages: [java]
-  category: BUG
-  severity: major
-  effort: 15min
-  tags: [bug, generated]
-  generated: true
-  status: planned
-  message: This code does not behave the way it reads.
-  summary: The code does not do what its shape suggests, or fails on ordinary input.
-  why: |
-    Written this way the code works by accident or breaks on values that are perfectly normal, and the
-    mistake is easy to miss in review because the intent reads correctly.
-  fix: |
-    Make the intended behaviour explicit — fix the condition, the operator or the order of operations —
-    and cover the case that used to fail with a test.
-
-- key: QG-JV-BUG-0063
-  name: Return values from functions without side effects should behave the way it reads
+  name: CompareTo results should match the behaviour the code describes
   languages: [java]
   category: BUG
   severity: major
@@ -3019,7 +2929,7 @@
   effort: 15min
   tags: [prefer_api, generated]
   generated: true
-  status: ready
+  status: planned
   message: The platform offers a clearer or safer construct for this.
   summary: A construct is used where the platform offers one that is clearer or safer.
   why: |
@@ -3029,12 +2939,8 @@
   fix: |
     Switch to the recommended construct; the behaviour is the same in the normal case and defined in the
     cases the old form got wrong.
-  detect:
-    - invocation: [collect]
-    - creation: [Streams]
-
 - key: QG-JV-BUG-0064
-  name: The .equals() API should not be used
+  name: .equals() should not be used
   languages: [java]
   category: BUG
   severity: major
@@ -3055,7 +2961,7 @@
     - creation: [Atomic]
 
 - key: QG-JV-BUG-0065
-  name: Uses of Mix field and getter persistence annotations should be reviewed
+  name: Mix field and getter persistence annotations should be resolved rather than left in the code
   languages: [java]
   category: BUG
   severity: major
@@ -3073,7 +2979,7 @@
     lives somewhere that gets reviewed.
 
 - key: QG-JV-SML-0170
-  name: The Wildcard imports API should not be used
+  name: Wildcard imports should not be used
   languages: [java]
   category: SML
   severity: minor
@@ -3129,7 +3035,7 @@
     cases the old form got wrong.
 
 - key: QG-JV-BUG-0066
-  name: Servlets should behave the way it reads
+  name: Servlets should match the behaviour the code describes
   languages: [java]
   category: BUG
   severity: major
@@ -3147,7 +3053,7 @@
     and cover the case that used to fail with a test.
 
 - key: QG-JV-BUG-0068
-  name: Methods with Spring proxying annotations should behave the way it reads
+  name: Methods with Spring proxying annotations should match the behaviour the code describes
   languages: [java]
   category: BUG
   severity: major
@@ -3165,7 +3071,7 @@
     and cover the case that used to fail with a test.
 
 - key: QG-JV-SML-0174
-  name: The ResultSet.isLast() API should not be used
+  name: ResultSet.isLast() should not be used
   languages: [java]
   category: SML
   severity: minor
@@ -3206,7 +3112,7 @@
     next change touches a single spot.
 
 - key: QG-JV-SML-0176
-  name: Exception handling around IllegalMonitorStateException should be explicit
+  name: IllegalMonitorStateException should make failure handling explicit
   languages: [java]
   category: SML
   severity: minor
@@ -3227,7 +3133,7 @@
     - creation: [IllegalMonitorStateException]
 
 - key: QG-JV-BUG-0069
-  name: The Methods wait(...), notify() and notifyAll() API should not be used
+  name: Methods wait(...), notify() and notifyAll() should not be used
   languages: [java]
   category: BUG
   severity: major
@@ -3267,26 +3173,8 @@
     Switch to the recommended construct; the behaviour is the same in the normal case and defined in the
     cases the old form got wrong.
 
-- key: QG-JV-BUG-0070
-  name: A for loop update clause should behave the way it reads
-  languages: [java]
-  category: BUG
-  severity: major
-  effort: 15min
-  tags: [bug, generated]
-  generated: true
-  status: planned
-  message: This code does not behave the way it reads.
-  summary: The code does not do what its shape suggests, or fails on ordinary input.
-  why: |
-    Written this way the code works by accident or breaks on values that are perfectly normal, and the
-    mistake is easy to miss in review because the intent reads correctly.
-  fix: |
-    Make the intended behaviour explicit — fix the condition, the operator or the order of operations —
-    and cover the case that used to fail with a test.
-
 - key: QG-JV-BUG-0071
-  name: Loop conditions should behave the way it reads
+  name: Loop conditions should match the behaviour the code describes
   languages: [java]
   category: BUG
   severity: major
@@ -3304,7 +3192,7 @@
     and cover the case that used to fail with a test.
 
 - key: QG-JV-SML-0178
-  name: Uses of Disallowed methods should be reviewed
+  name: Disallowed methods should be resolved rather than left in the code
   languages: [java]
   category: SML
   severity: minor
@@ -3322,7 +3210,7 @@
     lives somewhere that gets reviewed.
 
 - key: QG-JV-SEC-0039
-  name: The HttpServletRequest.getRequestedSessionId() API should not be used
+  name: HttpServletRequest.getRequestedSessionId() should not be used
   languages: [java]
   category: SEC
   severity: critical
@@ -3382,14 +3270,14 @@
     next change touches a single spot.
 
 - key: QG-JV-BUG-0072
-  name: Exception handling around Iterator.next() methods should be explicit
+  name: Iterator.next() methods should make failure handling explicit
   languages: [java]
   category: BUG
   severity: major
   effort: 15min
   tags: [exception, generated]
   generated: true
-  status: ready
+  status: planned
   message: This handling hides the failure instead of dealing with it.
   summary: An exception is thrown, caught or propagated in a way that hides the failure.
   why: |
@@ -3399,14 +3287,8 @@
   fix: |
     Catch the specific failures this code can recover from, keep the original exception as the cause when
     wrapping, and let everything else reach the boundary handler.
-  detect:
-    - member: [Iterator.next]
-    - invocation: [next]
-      receiver: [Iterator]
-    - creation: [NoSuchElementException]
-
 - key: QG-JV-BUG-0073
-  name: Concurrent access around Object.wait(), Object.notify() and Object.notifyAll() should be coordinated correctly
+  name: Object.wait(), Object.notify() and Object.notifyAll() should be accessed in a thread-safe way
   languages: [java]
   category: BUG
   severity: major
@@ -3452,7 +3334,7 @@
     next change touches a single spot.
 
 - key: QG-JV-BUG-0074
-  name: Printf-style format strings should behave the way it reads
+  name: Printf-style format strings should match the behaviour the code describes
   languages: [java]
   category: BUG
   severity: major
@@ -3489,7 +3371,7 @@
     cases the old form got wrong.
 
 - key: QG-JV-SML-0181
-  name: The diamond operator (<>) should be replaced by the recommended alternative
+  name: Diamond operator (<>) should be replaced by the recommended alternative
   languages: [java]
   category: SML
   severity: minor
@@ -3526,7 +3408,7 @@
     next change touches a single spot.
 
 - key: QG-JV-SML-0183
-  name: The DeleteOnExit API should not be used
+  name: DeleteOnExit should not be used
   languages: [java]
   category: SML
   severity: minor
@@ -3566,7 +3448,7 @@
     comment so the next reader does not treat it as a gap.
 
 - key: QG-JV-SML-0187
-  name: The Redundant modifiers API should not be used
+  name: Redundant modifiers should not be used
   languages: [java]
   category: SML
   severity: minor
@@ -3603,7 +3485,7 @@
     next change touches a single spot.
 
 - key: QG-JV-SML-0191
-  name: Inner class calls to super class methods should be simplified
+  name: Hard-to-read code should be simplified
   languages: [java]
   category: SML
   severity: minor
@@ -3621,7 +3503,7 @@
     next change touches a single spot.
 
 - key: QG-JV-BUG-0076
-  name: Classes should behave the way it reads
+  name: Classes should match the behaviour the code describes
   languages: [java]
   category: BUG
   severity: major
@@ -3657,7 +3539,7 @@
     next change touches a single spot.
 
 - key: QG-JV-SML-0193
-  name: The Thread API should not be used
+  name: Thread should not be used
   languages: [java]
   category: SML
   severity: minor
@@ -3697,7 +3579,7 @@
     next change touches a single spot.
 
 - key: QG-JV-BUG-0077
-  name: Non-serializable objects should behave the way it reads
+  name: Non-serializable objects should match the behaviour the code describes
   languages: [java]
   category: BUG
   severity: major
@@ -3715,7 +3597,7 @@
     and cover the case that used to fail with a test.
 
 - key: QG-JV-SML-0195
-  name: Concurrent access around Synchronizing on a Lock object should be coordinated correctly
+  name: Synchronizing on a Lock object should be accessed in a thread-safe way
   languages: [java]
   category: SML
   severity: minor
@@ -3735,7 +3617,7 @@
     - creation: [Lock]
 
 - key: QG-JV-SML-0196
-  name: Concurrent access around Lazy initialization of static fields should be coordinated correctly
+  name: Lazy initialization of static fields should be accessed in a thread-safe way
   languages: [java]
   category: SML
   severity: minor
@@ -3777,7 +3659,7 @@
     - invocation: [notify]
 
 - key: QG-JV-SML-0197
-  name: Absent values around Null should be handled explicitly
+  name: Null should be handled explicitly when absent
   languages: [java]
   category: SML
   severity: minor
@@ -3831,7 +3713,7 @@
     next change touches a single spot.
 
 - key: QG-JV-BUG-0080
-  name: The Inappropriate regular expressions API should not be used
+  name: Inappropriate regular expressions should not be used
   languages: [java]
   category: BUG
   severity: major
@@ -3850,7 +3732,7 @@
     documented and dated.
 
 - key: QG-JV-SEC-0041
-  name: The Basic authentication API should not be used
+  name: Basic authentication should not be used
   languages: [java]
   category: SEC
   severity: critical
@@ -3888,7 +3770,7 @@
     and replace weakened mechanisms with the current recommended one.
 
 - key: QG-JV-SML-0200
-  name: Concurrent access around ReadObject should be coordinated correctly
+  name: ReadObject should be accessed in a thread-safe way
   languages: [java]
   category: SML
   severity: minor
@@ -3909,7 +3791,7 @@
     - invocation: [synchronized]
 
 - key: QG-JV-BUG-0082
-  name: The Math.abs and negation API should not be used
+  name: Math.abs and negation should not be used
   languages: [java]
   category: BUG
   severity: major
@@ -3971,7 +3853,7 @@
     next change touches a single spot.
 
 - key: QG-JV-SML-0202
-  name: Concurrent access around Threads should be coordinated correctly
+  name: Threads should be accessed in a thread-safe way
   languages: [java]
   category: SML
   severity: minor
@@ -3989,7 +3871,7 @@
     the concurrent collections and higher-level primitives the platform provides.
 
 - key: QG-JV-SML-0203
-  name: Inner classes which do not reference should be simplified
+  name: Hard-to-read code should be simplified
   languages: [java]
   category: SML
   severity: minor
@@ -4007,7 +3889,7 @@
     next change touches a single spot.
 
 - key: QG-JV-BUG-0084
-  name: PreparedStatement and ResultSet methods should behave the way it reads
+  name: PreparedStatement and ResultSet methods should match the behaviour the code describes
   languages: [java]
   category: BUG
   severity: major
@@ -4043,7 +3925,7 @@
     next change touches a single spot.
 
 - key: QG-JV-SML-0205
-  name: Tests around Test assertions should verify something
+  name: Tests should assert something
   languages: [java]
   category: SML
   severity: minor
@@ -4061,7 +3943,7 @@
     broken before trusting it again.
 
 - key: QG-JV-SML-0206
-  name: The DateUtils.truncate from Apache Commons Lang library API should not be used
+  name: DateUtils.truncate from Apache Commons Lang library should not be used
   languages: [java]
   category: SML
   severity: minor
@@ -4084,7 +3966,7 @@
       receiver: [DateUtils]
 
 - key: QG-JV-SML-0207
-  name: Exception handling around Catch clauses should be explicit
+  name: Catch clauses should make failure handling explicit
   languages: [java]
   category: SML
   severity: minor
@@ -4101,24 +3983,6 @@
   fix: |
     Catch the specific failures this code can recover from, keep the original exception as the cause when
     wrapping, and let everything else reach the boundary handler.
-
-- key: QG-JV-BUG-0085
-  name: Unary prefix operators should behave the way it reads
-  languages: [java]
-  category: BUG
-  severity: major
-  effort: 15min
-  tags: [bug, generated]
-  generated: true
-  status: planned
-  message: This code does not behave the way it reads.
-  summary: The code does not do what its shape suggests, or fails on ordinary input.
-  why: |
-    Written this way the code works by accident or breaks on values that are perfectly normal, and the
-    mistake is easy to miss in review because the intent reads correctly.
-  fix: |
-    Make the intended behaviour explicit — fix the condition, the operator or the order of operations —
-    and cover the case that used to fail with a test.
 
 - key: QG-JV-SML-0208
   name: Nested enums should be simplified
@@ -4139,7 +4003,7 @@
     next change touches a single spot.
 
 - key: QG-JV-BUG-0086
-  name: The Null API should not be used
+  name: Null should not be used
   languages: [java]
   category: BUG
   severity: major
@@ -4178,7 +4042,7 @@
     next change touches a single spot.
 
 - key: QG-JV-BUG-0087
-  name: Concurrent access around Non-thread-safe fields should be coordinated correctly
+  name: Non-thread-safe fields should be accessed in a thread-safe way
   languages: [java]
   category: BUG
   severity: major
@@ -4196,7 +4060,7 @@
     the concurrent collections and higher-level primitives the platform provides.
 
 - key: QG-JV-BUG-0088
-  name: Concurrent access around Getters and setters should be coordinated correctly
+  name: Getters and setters should be accessed in a thread-safe way
   languages: [java]
   category: BUG
   severity: major
@@ -4233,7 +4097,7 @@
     cases the old form got wrong.
 
 - key: QG-JV-SML-0211
-  name: The Thread.sleep API should not be used
+  name: Thread.sleep should not be used
   languages: [java]
   category: SML
   severity: minor
@@ -4274,7 +4138,7 @@
     next change touches a single spot.
 
 - key: QG-JV-SML-0213
-  name: The Escaped Unicode characters API should not be used
+  name: Escaped Unicode characters should not be used
   languages: [java]
   category: SML
   severity: minor
@@ -4329,7 +4193,7 @@
     next change touches a single spot.
 
 - key: QG-JV-SML-0217
-  name: The Reflection API should not be used
+  name: Reflection should not be used
   languages: [java]
   category: SML
   severity: minor
@@ -4366,7 +4230,7 @@
     next change touches a single spot.
 
 - key: QG-JV-SML-0219
-  name: The ThreadGroup API should not be used
+  name: ThreadGroup should not be used
   languages: [java]
   category: SML
   severity: minor
@@ -4387,7 +4251,7 @@
     - creation: [ThreadGroup]
 
 - key: QG-JV-BUG-0089
-  name: Collection.toArray() should behave the way it reads
+  name: Collection.toArray() should match the behaviour the code describes
   languages: [java]
   category: BUG
   severity: major
@@ -4423,28 +4287,27 @@
     next change touches a single spot.
 
 - key: QG-JV-BUG-0090
-  name: JEE applications should use current cryptographic parameters
+  name: JEE applications should match the behaviour the code describes
   languages: [java]
   category: BUG
   severity: major
   effort: 15min
-  tags: [crypto, generated]
+  tags: [bug, generated]
   generated: true
   status: ready
-  message: This cryptographic choice no longer provides the protection it suggests.
-  summary: A cryptographic primitive, mode or key size that is no longer considered safe is used.
+  message: This code does not behave the way it reads.
+  summary: The code does not do what its shape suggests, or fails on ordinary input.
   why: |
-    Broken primitives keep producing output that looks correct, so nothing fails while the protection is
-    already gone. Data encrypted today is often kept for years, which means an algorithm that is merely
-    weak now will be readable later.
+    Written this way the code works by accident or breaks on values that are perfectly normal, and the
+    mistake is easy to miss in review because the intent reads correctly.
   fix: |
-    Use the algorithms the platform recommends today — authenticated encryption, a modern hash, a key
-    size at or above the current guidance — and keep the choice in one place so it can be raised.
+    Make the intended behaviour explicit — fix the condition, the operator or the order of operations —
+    and cover the case that used to fail with a test.
   detect:
     - invocation: [getClassLoader]
 
 - key: QG-JV-BUG-0091
-  name: The Raw byte values API should not be used
+  name: Raw byte values should not be used
   languages: [java]
   category: BUG
   severity: major
@@ -4481,7 +4344,7 @@
     next change touches a single spot.
 
 - key: QG-JV-BUG-0092
-  name: Indexes to passed to String operations should behave the way it reads
+  name: Indexes to passed to String operations should match the behaviour the code describes
   languages: [java]
   category: BUG
   severity: major
@@ -4499,7 +4362,7 @@
     and cover the case that used to fail with a test.
 
 - key: QG-JV-SML-0223
-  name: Concurrent access around WriteObject should be coordinated correctly
+  name: WriteObject should be accessed in a thread-safe way
   languages: [java]
   category: SML
   severity: minor
@@ -4520,7 +4383,7 @@
     - invocation: [synchronized]
 
 - key: QG-JV-BUG-0093
-  name: The Wait API should not be used
+  name: Wait should not be used
   languages: [java]
   category: BUG
   severity: major
@@ -4616,7 +4479,7 @@
     - creation: [StringBuilder]
 
 - key: QG-JV-BUG-0094
-  name: Concurrent access around Assignment of lazy-initialized members should be coordinated correctly
+  name: Assignment of lazy-initialized members should be accessed in a thread-safe way
   languages: [java]
   category: BUG
   severity: major
@@ -4652,7 +4515,7 @@
     next change touches a single spot.
 
 - key: QG-JV-BUG-0095
-  name: The GetClass API should not be used
+  name: GetClass should not be used
   languages: [java]
   category: BUG
   severity: major
@@ -4673,7 +4536,7 @@
     - invocation: [getClass]
 
 - key: QG-JV-BUG-0096
-  name: Non-primitive fields should behave the way it reads
+  name: Non-primitive fields should match the behaviour the code describes
   languages: [java]
   category: BUG
   severity: major
@@ -4691,7 +4554,7 @@
     and cover the case that used to fail with a test.
 
 - key: QG-JV-BUG-0097
-  name: The Volatile variables API should not be used
+  name: Volatile variables should not be used
   languages: [java]
   category: BUG
   severity: major
@@ -4826,7 +4689,7 @@
     - creation: [HttpOnly]
 
 - key: QG-JV-BUG-0099
-  name: Tests around Expressions used in assert should verify something
+  name: Tests should assert something
   languages: [java]
   category: BUG
   severity: major
@@ -4864,7 +4727,7 @@
     next change touches a single spot.
 
 - key: QG-JV-SML-0233
-  name: Private methods called only by inner classes should be simplified
+  name: Hard-to-read code should be simplified
   languages: [java]
   category: SML
   severity: minor
@@ -4900,7 +4763,7 @@
     next change touches a single spot.
 
 - key: QG-JV-SML-0235
-  name: Tests around Tests should verify something
+  name: Tests should assert something
   languages: [java]
   category: SML
   severity: minor
@@ -4918,7 +4781,7 @@
     broken before trusting it again.
 
 - key: QG-JV-SML-0236
-  name: Tests around Assertion arguments should verify something
+  name: Tests should assert something
   languages: [java]
   category: SML
   severity: minor
@@ -4991,7 +4854,7 @@
     cases the old form got wrong.
 
 - key: QG-JV-SML-0240
-  name: The Optional API should not be used
+  name: Optional should not be used
   languages: [java]
   category: SML
   severity: minor
@@ -5012,7 +4875,7 @@
     - creation: [Optional]
 
 - key: QG-JV-BUG-0102
-  name: The Double Brace Initialization API should not be used
+  name: Double Brace Initialization should not be used
   languages: [java]
   category: BUG
   severity: major
@@ -5054,7 +4917,7 @@
       receiver: [Arrays]
 
 - key: QG-JV-SML-0243
-  name: Tests around Unit tests should verify something
+  name: Tests should assert something
   languages: [java]
   category: SML
   severity: minor
@@ -5072,7 +4935,7 @@
     broken before trusting it again.
 
 - key: QG-JV-SML-0244
-  name: Uses of Disallowed classes should be reviewed
+  name: Disallowed classes should be resolved rather than left in the code
   languages: [java]
   category: SML
   severity: minor
@@ -5090,7 +4953,7 @@
     lives somewhere that gets reviewed.
 
 - key: QG-JV-SML-0245
-  name: The Stream API should not be used
+  name: Stream should not be used
   languages: [java]
   category: SML
   severity: minor
@@ -5107,8 +4970,9 @@
   fix: |
     Replace the call with the current API, and keep the old one only behind a compatibility layer that is
     documented and dated.
+
 - key: QG-JV-SML-0246
-  name: The Java 8's Files.exists API should not be used
+  name: Java 8s Files.exists should not be used
   languages: [java]
   category: SML
   severity: minor
@@ -5131,7 +4995,7 @@
       receiver: [Files]
 
 - key: QG-JV-SML-0247
-  name: The Raw types API should not be used
+  name: Raw types should not be used
   languages: [java]
   category: SML
   severity: minor
@@ -5168,7 +5032,7 @@
     next change touches a single spot.
 
 - key: QG-JV-BUG-0103
-  name: Spring @Controller classes should behave the way it reads
+  name: Spring @Controller classes should match the behaviour the code describes
   languages: [java]
   category: BUG
   severity: major
@@ -5204,7 +5068,7 @@
     next change touches a single spot.
 
 - key: QG-JV-BUG-0104
-  name: setComplete should behave the way it reads
+  name: Suspicious code should match the behaviour the code describes
   languages: [java]
   category: BUG
   severity: major
@@ -5299,7 +5163,7 @@
     next change touches a single spot.
 
 - key: QG-JV-SML-0254
-  name: A conditionally executed single line should be simplified
+  name: Conditionally executed single line should be simplified
   languages: [java]
   category: SML
   severity: minor
@@ -5316,26 +5180,8 @@
     Remove what is not used, name what is unclear, and keep one piece of behaviour in one place so the
     next change touches a single spot.
 
-- key: QG-JV-BUG-0105
-  name: Collection sizes and array length comparisons should behave the way it reads
-  languages: [java]
-  category: BUG
-  severity: major
-  effort: 15min
-  tags: [bug, generated]
-  generated: true
-  status: planned
-  message: This code does not behave the way it reads.
-  summary: The code does not do what its shape suggests, or fails on ordinary input.
-  why: |
-    Written this way the code works by accident or breaks on values that are perfectly normal, and the
-    mistake is easy to miss in review because the intent reads correctly.
-  fix: |
-    Make the intended behaviour explicit — fix the condition, the operator or the order of operations —
-    and cover the case that used to fail with a test.
-
 - key: QG-JV-BUG-0106
-  name: The Week Year (YYYY) API should not be used
+  name: Week Year (YYYY) should not be used
   languages: [java]
   category: BUG
   severity: major
@@ -5354,7 +5200,7 @@
     documented and dated.
 
 - key: QG-JV-SML-0256
-  name: Uses of Disallowed constructors should be reviewed
+  name: Disallowed constructors should be resolved rather than left in the code
   languages: [java]
   category: SML
   severity: minor
@@ -5469,7 +5315,7 @@
     next change touches a single spot.
 
 - key: QG-JV-BUG-0107
-  name: Map values should behave the way it reads
+  name: Map values should match the behaviour the code describes
   languages: [java]
   category: BUG
   severity: major
@@ -5505,7 +5351,7 @@
     function or constant.
 
 - key: QG-JV-SML-0264
-  name: The Null checks API should not be used
+  name: Null checks should not be used
   languages: [java]
   category: SML
   severity: minor
@@ -5524,23 +5370,23 @@
     documented and dated.
 
 - key: QG-JV-SML-0265
-  name: Regex patterns should use current cryptographic parameters
+  name: Regular expressions should be safe and correct
   languages: [java]
   category: SML
   severity: minor
   effort: 15min
-  tags: [crypto, generated]
+  tags: [regex, generated]
   generated: true
   status: planned
-  message: This cryptographic choice no longer provides the protection it suggests.
-  summary: A cryptographic primitive, mode or key size that is no longer considered safe is used.
+  message: This pattern is unsafe or incorrect as written.
+  summary: A regular expression is malformed, ambiguous, or able to backtrack catastrophically.
   why: |
-    Broken primitives keep producing output that looks correct, so nothing fails while the protection is
-    already gone. Data encrypted today is often kept for years, which means an algorithm that is merely
-    weak now will be readable later.
+    A pattern is only validated when it first runs, so a mistake surfaces on the path that uses it —
+    often an error path. Patterns with nested quantifiers can also take exponential time on crafted
+    input, which turns one request into a stalled CPU core.
   fix: |
-    Use the algorithms the platform recommends today — authenticated encryption, a modern hash, a key
-    size at or above the current guidance — and keep the choice in one place so it can be raised.
+    Simplify the pattern so no quantifier can match the same text in several ways, add a matching timeout
+    for input that comes from outside, and cover the pattern with a test.
 
 - key: QG-JV-SML-0266
   name: Stream.collect() calls should be simplified
@@ -5561,7 +5407,7 @@
     next change touches a single spot.
 
 - key: QG-JV-SML-0267
-  name: The Asserts API should not be used
+  name: Asserts should not be used
   languages: [java]
   category: SML
   severity: minor
@@ -5580,7 +5426,7 @@
     documented and dated.
 
 - key: QG-JV-BUG-0108
-  name: Getters and setters should behave the way it reads
+  name: Getters and setters should match the behaviour the code describes
   languages: [java]
   category: BUG
   severity: major
@@ -5634,7 +5480,7 @@
     next change touches a single spot.
 
 - key: QG-JV-BUG-0109
-  name: Iterator should behave the way it reads
+  name: Iterator should match the behaviour the code describes
   languages: [java]
   category: BUG
   severity: major
@@ -5670,7 +5516,7 @@
     next change touches a single spot.
 
 - key: QG-JV-BUG-0110
-  name: CompareTo should behave the way it reads
+  name: CompareTo should match the behaviour the code describes
   languages: [java]
   category: BUG
   severity: major
@@ -5688,7 +5534,7 @@
     and cover the case that used to fail with a test.
 
 - key: QG-JV-SML-0271
-  name: The Integer.toHexString API should not be used
+  name: Integer.toHexString should not be used
   languages: [java]
   category: SML
   severity: minor
@@ -5730,7 +5576,7 @@
     size at or above the current guidance — and keep the choice in one place so it can be raised.
 
 - key: QG-JV-SML-0272
-  name: Absent values around Equals method parameters should be handled explicitly
+  name: Equals method parameters should be handled explicitly when absent
   languages: [java]
   category: SML
   severity: minor
@@ -5786,7 +5632,7 @@
     and replace weakened mechanisms with the current recommended one.
 
 - key: QG-JV-BUG-0111
-  name: InputSteam.read() implementation should behave the way it reads
+  name: InputSteam.read() implementation should match the behaviour the code describes
   languages: [java]
   category: BUG
   severity: major
@@ -5843,7 +5689,7 @@
     - creation: [HttpSecurity]
 
 - key: QG-JV-BUG-0112
-  name: The @SpringBootApplication and @ComponentScan API should not be used
+  name: @SpringBootApplication and @ComponentScan should not be used
   languages: [java]
   category: BUG
   severity: major
@@ -5917,7 +5763,7 @@
     cases the old form got wrong.
 
 - key: QG-JV-SML-0278
-  name: The @CheckForNull or @Nullable API should not be used
+  name: @CheckForNull or @Nullable should not be used
   languages: [java]
   category: SML
   severity: minor
@@ -6049,7 +5895,7 @@
     next change touches a single spot.
 
 - key: QG-JV-SML-0284
-  name: The upper bound of type variables and wildcards should be simplified
+  name: Hard-to-read code should be simplified
   languages: [java]
   category: SML
   severity: minor
@@ -6067,7 +5913,7 @@
     next change touches a single spot.
 
 - key: QG-JV-SML-0285
-  name: Exception handling around Derived exceptions should be explicit
+  name: Derived exceptions should make failure handling explicit
   languages: [java]
   category: SML
   severity: minor
@@ -6104,7 +5950,7 @@
     next change touches a single spot.
 
 - key: QG-JV-BUG-0113
-  name: Concurrent access around ThreadLocal variables should be coordinated correctly
+  name: ThreadLocal variables should be accessed in a thread-safe way
   languages: [java]
   category: BUG
   severity: major
@@ -6181,7 +6027,7 @@
     - creation: [ActiveMQConnectionFactory]
 
 - key: QG-JV-SEC-0050
-  name: Intents should not be granted more access than it needs
+  name: Intents should not grant more access than needed
   languages: [java]
   category: SEC
   severity: critical
@@ -6200,7 +6046,7 @@
     permissions from a properly secured parent instead of widening the resource itself.
 
 - key: QG-JV-SEC-0051
-  name: Android broadcast receivers should not be granted more access than it needs
+  name: Android broadcast receivers should not grant more access than needed
   languages: [java]
   category: SEC
   severity: critical
@@ -6219,7 +6065,7 @@
     permissions from a properly secured parent instead of widening the resource itself.
 
 - key: QG-JV-SML-0290
-  name: The Collection constructors API should not be used
+  name: Collection constructors should not be used
   languages: [java]
   category: SML
   severity: minor
@@ -6257,7 +6103,7 @@
     cases the old form got wrong.
 
 - key: QG-JV-SML-0292
-  name: Using boxed Boolean types directly in boolean expressions should be simplified
+  name: Hard-to-read code should be simplified
   languages: [java]
   category: SML
   severity: minor
@@ -6275,7 +6121,7 @@
     next change touches a single spot.
 
 - key: QG-JV-SML-0293
-  name: The 'List.remove()' API should not be used
+  name: List.remove() should not be used
   languages: [java]
   category: SML
   severity: minor
@@ -6301,8 +6147,8 @@
   effort: 15min
   tags: [crypto, generated]
   generated: true
-  status: planned
-  message: This cryptographic choice no longer provides the protection it suggests.
+  status: ready
+  message: ECB encrypts equal blocks to equal ciphertext, so the plaintext shape survives encryption; use an authenticated mode such as GCM.
   summary: A cryptographic primitive, mode or key size that is no longer considered safe is used.
   why: |
     Broken primitives keep producing output that looks correct, so nothing fails while the protection is
@@ -6311,6 +6157,10 @@
   fix: |
     Use the algorithms the platform recommends today — authenticated encryption, a modern hash, a key
     size at or above the current guidance — and keep the choice in one place so it can be raised.
+  detect:
+    - invocation: [getInstance]
+      receiver: [Cipher]
+      argLiterals: [/ECB/, NoPadding, PKCS1Padding]
 
 - key: QG-JV-SML-0294
   name: Lambdas should stay within a size that can be reviewed
@@ -6370,7 +6220,7 @@
     cases the old form got wrong.
 
 - key: QG-JV-SML-0296
-  name: Concurrent access around Whitespace for text block indent should be coordinated correctly
+  name: Whitespace for text block indent should be accessed in a thread-safe way
   languages: [java]
   category: SML
   severity: minor
@@ -6388,7 +6238,7 @@
     the concurrent collections and higher-level primitives the platform provides.
 
 - key: QG-JV-SML-0297
-  name: The Escape sequences API should not be used
+  name: Escape sequences should not be used
   languages: [java]
   category: SML
   severity: minor
@@ -6500,7 +6350,7 @@
     and replace weakened mechanisms with the current recommended one.
 
 - key: QG-JV-SML-0301
-  name: Tests around Exception testing via JUnit ExpectedException rule should verify something
+  name: Tests should assert something
   languages: [java]
   category: SML
   severity: minor
@@ -6518,7 +6368,7 @@
     broken before trusting it again.
 
 - key: QG-JV-SML-0302
-  name: Tests around Exception testing via JUnit @Test annotation should verify something
+  name: Tests should assert something
   languages: [java]
   category: SML
   severity: minor
@@ -6536,7 +6386,7 @@
     broken before trusting it again.
 
 - key: QG-JV-SML-0303
-  name: Tests around Only one method invocation is expected should verify something
+  name: Tests should assert something
   languages: [java]
   category: SML
   severity: minor
@@ -6554,7 +6404,7 @@
     broken before trusting it again.
 
 - key: QG-JV-BUG-0114
-  name: The Assertion methods API should not be used
+  name: Assertion methods should not be used
   languages: [java]
   category: BUG
   severity: major
@@ -6573,7 +6423,7 @@
     documented and dated.
 
 - key: QG-JV-BUG-0115
-  name: Tests around Only one method invocation is expected should verify something
+  name: Tests should assert something
   languages: [java]
   category: BUG
   severity: major
@@ -6591,7 +6441,7 @@
     broken before trusting it again.
 
 - key: QG-JV-SML-0304
-  name: Tests around JUnit assertTrue/assertFalse should verify something
+  name: Tests should assert something
   languages: [java]
   category: SML
   severity: minor
@@ -6609,7 +6459,7 @@
     broken before trusting it again.
 
 - key: QG-JV-SML-0305
-  name: Tests around JUnit5 test classes and methods should verify something
+  name: Tests should assert something
   languages: [java]
   category: SML
   severity: minor
@@ -6627,7 +6477,7 @@
     broken before trusting it again.
 
 - key: QG-JV-BUG-0116
-  name: Tests around JUnit5 inner test classes should verify something
+  name: Tests should assert something
   languages: [java]
   category: BUG
   severity: major
@@ -6645,7 +6495,7 @@
     broken before trusting it again.
 
 - key: QG-JV-SML-0306
-  name: Tests around Migrate your tests from JUnit4 to should verify something
+  name: Tests should assert something
   languages: [java]
   category: SML
   severity: minor
@@ -6663,22 +6513,22 @@
     broken before trusting it again.
 
 - key: QG-JV-SML-0307
-  name: Tests around Class members annotated with @VisibleForTesting should verify something
+  name: Class members annotated with @VisibleForTesting should be simplified
   languages: [java]
   category: SML
   severity: minor
   effort: 15min
-  tags: [tests, generated]
+  tags: [sml, generated]
   generated: true
   status: planned
-  message: This test cannot fail, so it verifies nothing.
-  summary: A test does not assert, is disabled, or cannot fail.
+  message: This code is harder to read or change than the behaviour requires.
+  summary: The code works but is harder to read or change than the behaviour requires.
   why: |
-    A test that cannot fail reports success forever while covering nothing, and the suite keeps its green
-    status. That is worse than having no test at all, because it removes the incentive to write one.
+    The intent is buried, duplicated, or spread across places that must stay in sync, so every future
+    change costs more than it should and carries a risk that has nothing to do with the change itself.
   fix: |
-    Assert the behaviour the test exists for, re-enable it, and make sure it fails when the behaviour is
-    broken before trusting it again.
+    Remove what is not used, name what is unclear, and keep one piece of behaviour in one place so the
+    next change touches a single spot.
 
 - key: QG-JV-SEC-0057
   name: Authentication mechanisms should not weaken the security of the application
@@ -6719,7 +6569,7 @@
     and replace weakened mechanisms with the current recommended one.
 
 - key: QG-JV-BUG-0117
-  name: Tests around JUnit5 test classes and methods should verify something
+  name: Tests should assert something
   languages: [java]
   category: BUG
   severity: major
@@ -6755,7 +6605,7 @@
     next change touches a single spot.
 
 - key: QG-JV-BUG-0118
-  name: Tests around AssertJ configuration should verify something
+  name: Tests should assert something
   languages: [java]
   category: BUG
   severity: major
@@ -6773,7 +6623,7 @@
     broken before trusting it again.
 
 - key: QG-JV-BUG-0119
-  name: Tests around AssertJ methods setting the assertion context should verify something
+  name: Tests should assert something
   languages: [java]
   category: BUG
   severity: major
@@ -6791,7 +6641,7 @@
     broken before trusting it again.
 
 - key: QG-JV-SML-0309
-  name: Tests around AssertJ assertions should verify something
+  name: Tests should assert something
   languages: [java]
   category: SML
   severity: minor
@@ -6809,14 +6659,14 @@
     broken before trusting it again.
 
 - key: QG-JV-BUG-0120
-  name: Tests around AssertJ assertions allMatch and doesNotContain should verify something
+  name: Tests should assert something
   languages: [java]
   category: BUG
   severity: major
   effort: 15min
   tags: [tests, generated]
   generated: true
-  status: ready
+  status: planned
   message: This test cannot fail, so it verifies nothing.
   summary: A test does not assert, is disabled, or cannot fail.
   why: |
@@ -6825,10 +6675,6 @@
   fix: |
     Assert the behaviour the test exists for, re-enable it, and make sure it fails when the behaviour is
     broken before trusting it again.
-  detect:
-    - invocation: [allMatch]
-    - invocation: [doesNotContain]
-
 - key: QG-JV-BUG-0121
   name: Repeated patterns in regular expressions should not be left empty
   languages: [java]
@@ -6849,7 +6695,7 @@
     comment so the next reader does not treat it as a gap.
 
 - key: QG-JV-SML-0310
-  name: Regular expressions around Regular expressions should be safe and correct
+  name: Regular expressions should be safe and correct
   languages: [java]
   category: SML
   severity: minor
@@ -6887,7 +6733,7 @@
     comment so the next reader does not treat it as a gap.
 
 - key: QG-JV-BUG-0123
-  name: Regular expressions around Alternatives in regular expressions should be safe and correct
+  name: Regular expressions should be safe and correct
   languages: [java]
   category: BUG
   severity: major
@@ -6906,14 +6752,14 @@
     for input that comes from outside, and cover the pattern with a test.
 
 - key: QG-JV-SML-0312
-  name: Tests around Consecutive AssertJ assertThat statements should verify something
+  name: Tests should assert something
   languages: [java]
   category: SML
   severity: minor
   effort: 15min
   tags: [tests, generated]
   generated: true
-  status: ready
+  status: planned
   message: This test cannot fail, so it verifies nothing.
   summary: A test does not assert, is disabled, or cannot fail.
   why: |
@@ -6922,11 +6768,8 @@
   fix: |
     Assert the behaviour the test exists for, re-enable it, and make sure it fails when the behaviour is
     broken before trusting it again.
-  detect:
-    - invocation: [assertThat]
-
 - key: QG-JV-SML-0313
-  name: Regular expressions around Regexes containing characters subject to normalization should be safe and correct
+  name: Regular expressions should be safe and correct
   languages: [java]
   category: SML
   severity: minor
@@ -6945,7 +6788,7 @@
     for input that comes from outside, and cover the pattern with a test.
 
 - key: QG-JV-BUG-0124
-  name: Regular expressions around Regex alternatives should be safe and correct
+  name: Regular expressions should be safe and correct
   languages: [java]
   category: BUG
   severity: major
@@ -7002,7 +6845,7 @@
     cases the old form got wrong.
 
 - key: QG-JV-BUG-0125
-  name: Tests around Assertions should verify something
+  name: Tests should assert something
   languages: [java]
   category: BUG
   severity: major
@@ -7020,7 +6863,7 @@
     broken before trusting it again.
 
 - key: QG-JV-BUG-0126
-  name: Regular expressions around Case insensitive Unicode regular expressions should be safe and correct
+  name: Regular expressions should be safe and correct
   languages: [java]
   category: BUG
   severity: major
@@ -7058,7 +6901,7 @@
     cases the old form got wrong.
 
 - key: QG-JV-BUG-0127
-  name: Regular expressions around Unicode Grapheme Clusters should be safe and correct
+  name: Unicode Grapheme Clusters should be safe and correct
   languages: [java]
   category: BUG
   severity: major
@@ -7077,7 +6920,7 @@
     for input that comes from outside, and cover the pattern with a test.
 
 - key: QG-JV-SML-0317
-  name: Regular expressions around Character classes in regular expressions should be safe and correct
+  name: Regular expressions should be safe and correct
   languages: [java]
   category: SML
   severity: minor
@@ -7096,7 +6939,7 @@
     for input that comes from outside, and cover the pattern with a test.
 
 - key: QG-JV-SEC-0059
-  name: A new session should not weaken the security of the application
+  name: New session should not weaken the security of the application
   languages: [java]
   category: SEC
   severity: critical
@@ -7115,7 +6958,7 @@
     and replace weakened mechanisms with the current recommended one.
 
 - key: QG-JV-BUG-0128
-  name: DateTimeFormatters should behave the way it reads
+  name: DateTimeFormatters should match the behaviour the code describes
   languages: [java]
   category: BUG
   severity: major
@@ -7133,14 +6976,14 @@
     and cover the case that used to fail with a test.
 
 - key: QG-JV-SML-0318
-  name: The AssertJ assertThatThrownBy API should not be used
+  name: AssertJ assertThatThrownBy should not be used
   languages: [java]
   category: SML
   severity: minor
   effort: 15min
   tags: [avoid_api, generated]
   generated: true
-  status: ready
+  status: planned
   message: This API should be replaced by the current alternative.
   summary: Code calls an API that is unsafe, obsolete or superseded by a better alternative.
   why: |
@@ -7150,11 +6993,8 @@
   fix: |
     Replace the call with the current API, and keep the old one only behind a compatibility layer that is
     documented and dated.
-  detect:
-    - invocation: [assertThatThrownBy]
-
 - key: QG-JV-BUG-0129
-  name: The Assertions API should not be used
+  name: Assertions should not be used
   languages: [java]
   category: BUG
   severity: major
@@ -7192,7 +7032,7 @@
     name, and keep the original as the sequence of those steps.
 
 - key: QG-JV-BUG-0130
-  name: Tests around Tests method should verify something
+  name: Tests should assert something
   languages: [java]
   category: BUG
   severity: major
@@ -7210,7 +7050,7 @@
     broken before trusting it again.
 
 - key: QG-JV-SML-0320
-  name: Mocking all non-private methods of a class should be simplified
+  name: Hard-to-read code should be simplified
   languages: [java]
   category: SML
   severity: minor
@@ -7228,7 +7068,7 @@
     next change touches a single spot.
 
 - key: QG-JV-SML-0321
-  name: Spring's ModelAndViewAssert assertions should be replaced by the recommended alternative
+  name: Springs ModelAndViewAssert assertions should be replaced by the recommended alternative
   languages: [java]
   category: SML
   severity: minor
@@ -7247,7 +7087,7 @@
     cases the old form got wrong.
 
 - key: QG-JV-SML-0322
-  name: Tests around Tests should verify something
+  name: Tests should assert something
   languages: [java]
   category: SML
   severity: minor
@@ -7265,7 +7105,7 @@
     broken before trusting it again.
 
 - key: QG-JV-SML-0323
-  name: Tests around Similar tests should verify something
+  name: Tests should assert something
   languages: [java]
   category: SML
   severity: minor
@@ -7302,7 +7142,7 @@
     cases the old form got wrong.
 
 - key: QG-JV-BUG-0131
-  name: Annotated Mockito objects should behave the way it reads
+  name: Annotated Mockito objects should match the behaviour the code describes
   languages: [java]
   category: BUG
   severity: major
@@ -7338,7 +7178,7 @@
     next change touches a single spot.
 
 - key: QG-JV-BUG-0132
-  name: Regular expressions around Regex patterns following a possessive quantifier should be safe and correct
+  name: Regular expressions should be safe and correct
   languages: [java]
   category: BUG
   severity: major
@@ -7357,7 +7197,7 @@
     for input that comes from outside, and cover the pattern with a test.
 
 - key: QG-JV-BUG-0133
-  name: The Regex boundaries API should not be used
+  name: Regex boundaries should not be used
   languages: [java]
   category: BUG
   severity: major
@@ -7376,7 +7216,7 @@
     documented and dated.
 
 - key: QG-JV-BUG-0134
-  name: Regular expressions around Regular expressions should be safe and correct
+  name: Regular expressions should be safe and correct
   languages: [java]
   category: BUG
   severity: major
@@ -7395,7 +7235,7 @@
     for input that comes from outside, and cover the pattern with a test.
 
 - key: QG-JV-BUG-0135
-  name: Regular expressions around Back references in regular expressions should be safe and correct
+  name: Regular expressions should be safe and correct
   languages: [java]
   category: BUG
   severity: major
@@ -7414,7 +7254,7 @@
     for input that comes from outside, and cover the pattern with a test.
 
 - key: QG-JV-BUG-0136
-  name: Regular expressions around Regex lookahead assertions should be safe and correct
+  name: Regular expressions should be safe and correct
   languages: [java]
   category: BUG
   severity: major
@@ -7452,7 +7292,7 @@
     comment so the next reader does not treat it as a gap.
 
 - key: QG-JV-SML-0327
-  name: Regular expressions around Single-character alternations in regular expressions should be safe and correct
+  name: Regular expressions should be safe and correct
   languages: [java]
   category: SML
   severity: minor
@@ -7471,7 +7311,7 @@
     for input that comes from outside, and cover the pattern with a test.
 
 - key: QG-JV-SML-0328
-  name: Call to Mockito method verify, when or given should be simplified
+  name: Hard-to-read code should be simplified
   languages: [java]
   category: SML
   severity: minor
@@ -7489,7 +7329,7 @@
     next change touches a single spot.
 
 - key: QG-JV-BUG-0137
-  name: Regular expressions around The regex escape sequence \cX should be safe and correct
+  name: Regular expressions should be safe and correct
   languages: [java]
   category: BUG
   severity: major
@@ -7527,7 +7367,7 @@
     cases the old form got wrong.
 
 - key: QG-JV-BUG-0139
-  name: Tests around AssertJ assertions with Consumer arguments should verify something
+  name: Tests should assert something
   languages: [java]
   category: BUG
   severity: major
@@ -7547,14 +7387,14 @@
     - creation: [Consumer]
 
 - key: QG-JV-BUG-0140
-  name: The Map computeIfAbsent() and computeIfPresent() API should not be used
+  name: Map computeIfAbsent() and computeIfPresent() should not be used
   languages: [java]
   category: BUG
   severity: major
   effort: 15min
   tags: [avoid_api, generated]
   generated: true
-  status: ready
+  status: planned
   message: This API should be replaced by the current alternative.
   summary: Code calls an API that is unsafe, obsolete or superseded by a better alternative.
   why: |
@@ -7564,12 +7404,8 @@
   fix: |
     Replace the call with the current API, and keep the old one only behind a compatibility layer that is
     documented and dated.
-  detect:
-    - invocation: [computeIfAbsent]
-    - invocation: [computeIfPresent]
-
 - key: QG-JV-SML-0329
-  name: Concurrent access around String multiline concatenation should be coordinated correctly
+  name: String multiline concatenation should be accessed in a thread-safe way
   languages: [java]
   category: SML
   severity: minor
@@ -7629,7 +7465,7 @@
       receiver: [A.class]
 
 - key: QG-JV-SML-0332
-  name: The Text blocks API should not be used
+  name: Text blocks should not be used
   languages: [java]
   category: SML
   severity: minor
@@ -7655,7 +7491,7 @@
   effort: 15min
   tags: [prefer_api, generated]
   generated: true
-  status: ready
+  status: planned
   message: The platform offers a clearer or safer construct for this.
   summary: A construct is used where the platform offers one that is clearer or safer.
   why: |
@@ -7665,12 +7501,6 @@
   fix: |
     Switch to the recommended construct; the behaviour is the same in the normal case and defined in the
     cases the old form got wrong.
-  detect:
-    - member: [Stream.toList]
-    - invocation: [toList]
-      receiver: [Stream]
-    - invocation: [collectors]
-
 - key: QG-JV-SML-0334
   name: Switch arrow labels should be simplified
   languages: [java]
@@ -7746,7 +7576,7 @@
     cases the old form got wrong.
 
 - key: QG-JV-BUG-0141
-  name: The Members ignored during record serialization API should not be used
+  name: Members ignored during record serialization should not be used
   languages: [java]
   category: BUG
   severity: major
@@ -7765,7 +7595,7 @@
     documented and dated.
 
 - key: QG-JV-SML-0338
-  name: The Custom getter method API should not be used
+  name: Custom getter method should not be used
   languages: [java]
   category: SML
   severity: minor
@@ -7803,7 +7633,7 @@
     cases the old form got wrong.
 
 - key: QG-JV-SML-0340
-  name: The Restricted Identifiers API should not be used
+  name: Restricted Identifiers should not be used
   languages: [java]
   category: SML
   severity: minor
@@ -7822,7 +7652,7 @@
     documented and dated.
 
 - key: QG-JV-BUG-0142
-  name: The Reflection API should not be used
+  name: Reflection should not be used
   languages: [java]
   category: BUG
   severity: major
@@ -7859,7 +7689,7 @@
     next change touches a single spot.
 
 - key: QG-JV-BUG-0143
-  name: Equals method should behave the way it reads
+  name: Equals method should match the behaviour the code describes
   languages: [java]
   category: BUG
   severity: major
@@ -7877,7 +7707,7 @@
     and cover the case that used to fail with a test.
 
 - key: QG-JV-SML-0342
-  name: 'serialVersionUID' field should be simplified
+  name: SerialVersionUID field should be simplified
   languages: [java]
   category: SML
   severity: minor
@@ -7968,7 +7798,7 @@
     cases the old form got wrong.
 
 - key: QG-JV-SML-0347
-  name: Concurrent access around Lambdas should be coordinated correctly
+  name: Lambdas should be accessed in a thread-safe way
   languages: [java]
   category: SML
   severity: minor
@@ -7986,7 +7816,7 @@
     the concurrent collections and higher-level primitives the platform provides.
 
 - key: QG-JV-SML-0348
-  name: Secrets should not be written into AWS region
+  name: AWS region should not be committed with the source
   languages: [java]
   category: SML
   severity: minor
@@ -8043,7 +7873,7 @@
     size at or above the current guidance — and keep the choice in one place so it can be raised.
 
 - key: QG-JV-SEC-0062
-  name: Secrets should not be written into Mobile database encryption keys
+  name: Mobile database encryption keys should not be committed with the source
   languages: [java]
   category: SEC
   severity: critical
@@ -8062,7 +7892,7 @@
     missing, and treat the committed value as compromised: rotate it before removing it.
 
 - key: QG-JV-SML-0349
-  name: Regular expressions around Regular expressions should be safe and correct
+  name: Regular expressions should be safe and correct
   languages: [java]
   category: SML
   severity: minor
@@ -8138,7 +7968,7 @@
     and replace weakened mechanisms with the current recommended one.
 
 - key: QG-JV-SEC-0064
-  name: WebViews should not be granted more access than it needs
+  name: WebViews should not grant more access than needed
   languages: [java]
   category: SEC
   severity: critical
@@ -8157,7 +7987,7 @@
     permissions from a properly secured parent instead of widening the resource itself.
 
 - key: QG-JV-SML-0353
-  name: The Non-capturing groups without quantifier API should not be used
+  name: Non-capturing groups without quantifier should not be used
   languages: [java]
   category: SML
   severity: minor
@@ -8176,7 +8006,7 @@
     documented and dated.
 
 - key: QG-JV-SML-0354
-  name: Regular expressions around Character classes in regular expressions should be safe and correct
+  name: Regular expressions should be safe and correct
   languages: [java]
   category: SML
   severity: minor
@@ -8268,7 +8098,7 @@
     name, and keep the original as the sequence of those steps.
 
 - key: QG-JV-SML-0359
-  name: The Singleton design pattern should be replaced by the recommended alternative
+  name: Singleton design pattern should be replaced by the recommended alternative
   languages: [java]
   category: SML
   severity: minor
@@ -8323,7 +8153,7 @@
     stay in sync.
 
 - key: QG-JV-SML-0362
-  name: The Methods with Spring proxy API should not be used
+  name: Methods with Spring proxy should not be used
   languages: [java]
   category: SML
   severity: minor
@@ -8378,7 +8208,7 @@
     next change touches a single spot.
 
 - key: QG-JV-BUG-0145
-  name: Absent values around Nullable injected fields and parameters should be handled explicitly
+  name: Nullable injected fields and parameters should be handled explicitly when absent
   languages: [java]
   category: BUG
   severity: major
@@ -8396,7 +8226,7 @@
     and provide the default or the error at that point instead of deeper down.
 
 - key: QG-JV-BUG-0146
-  name: Uses of Use of the @Async annotation on should be reviewed
+  name: Markers left in the code should be resolved rather than left in the code
   languages: [java]
   category: BUG
   severity: major
@@ -8414,7 +8244,7 @@
     lives somewhere that gets reviewed.
 
 - key: QG-JV-BUG-0147
-  name: @Autowired should behave the way it reads
+  name: @Autowired should match the behaviour the code describes
   languages: [java]
   category: BUG
   severity: major
@@ -8469,7 +8299,7 @@
     stay in sync.
 
 - key: QG-JV-BUG-0148
-  name: The @Qualifier API should not be used
+  name: @Qualifier should not be used
   languages: [java]
   category: BUG
   severity: major
@@ -8524,7 +8354,7 @@
     next change touches a single spot.
 
 - key: QG-JV-BUG-0149
-  name: The @Bean methods for Singleton API should not be used
+  name: @Bean methods for Singleton should not be used
   languages: [java]
   category: BUG
   severity: major
@@ -8543,7 +8373,7 @@
     documented and dated.
 
 - key: QG-JV-BUG-0150
-  name: Path template variables should behave the way it reads
+  name: Path template variables should match the behaviour the code describes
   languages: [java]
   category: BUG
   severity: major
@@ -8561,7 +8391,7 @@
     and cover the case that used to fail with a test.
 
 - key: QG-JV-BUG-0151
-  name: SpEL expression should behave the way it reads
+  name: SpEL expression should match the behaviour the code describes
   languages: [java]
   category: BUG
   severity: major
@@ -8579,7 +8409,7 @@
     and cover the case that used to fail with a test.
 
 - key: QG-JV-BUG-0152
-  name: Beans in @Configuration class should behave the way it reads
+  name: Beans in @Configuration class should match the behaviour the code describes
   languages: [java]
   category: BUG
   severity: major
@@ -8597,7 +8427,7 @@
     and cover the case that used to fail with a test.
 
 - key: QG-JV-BUG-0153
-  name: Set appropriate Status Codes on HTTP should behave the way it reads
+  name: Suspicious code should match the behaviour the code describes
   languages: [java]
   category: BUG
   severity: major
@@ -8652,7 +8482,7 @@
     cases the old form got wrong.
 
 - key: QG-JV-SML-0372
-  name: Use record pattern instead of explicit should be replaced by the recommended alternative
+  name: Outdated constructs should be replaced by the recommended alternative
   languages: [java]
   category: SML
   severity: minor
@@ -8671,7 +8501,7 @@
     cases the old form got wrong.
 
 - key: QG-JV-SML-0373
-  name: Use switch instead of if-else chain should be replaced by the recommended alternative
+  name: Outdated constructs should be replaced by the recommended alternative
   languages: [java]
   category: SML
   severity: minor
@@ -8709,7 +8539,7 @@
     cases the old form got wrong.
 
 - key: QG-JV-SML-0374
-  name: Math.clamp should be simplified
+  name: Use built-in Math.clamp methods should be simplified
   languages: [java]
   category: SML
   severity: minor
@@ -8763,7 +8593,7 @@
     next change touches a single spot.
 
 - key: QG-JV-SML-0377
-  name: The High frame rates API should not be used
+  name: High frame rates should not be used
   languages: [java]
   category: SML
   severity: minor
@@ -8782,7 +8612,7 @@
     documented and dated.
 
 - key: QG-JV-BUG-0155
-  name: The SetDaemon, setPriority and getThreadGroup API should not be used
+  name: SetDaemon, setPriority and getThreadGroup should not be used
   languages: [java]
   category: BUG
   severity: major
@@ -8823,7 +8653,7 @@
     next change touches a single spot.
 
 - key: QG-JV-BUG-0156
-  name: Concurrent access around Virtual threads should be coordinated correctly
+  name: Virtual threads should be accessed in a thread-safe way
   languages: [java]
   category: BUG
   severity: major
@@ -8900,7 +8730,7 @@
       receiver: [Math]
 
 - key: QG-JV-SML-0381
-  name: Use Fused Location to optimize battery should be simplified
+  name: Hard-to-read code should be simplified
   languages: [java]
   category: SML
   severity: minor
@@ -8941,7 +8771,7 @@
       receiver: [String]
 
 - key: QG-JV-SML-0382
-  name: Use when instead of a single should be replaced by the recommended alternative
+  name: Outdated constructs should be replaced by the recommended alternative
   languages: [java]
   category: SML
   severity: minor
@@ -9037,7 +8867,7 @@
     next change touches a single spot.
 
 - key: QG-JV-SML-0387
-  name: Injecting data into static fields is should be simplified
+  name: Injecting data into static fields should be simplified
   languages: [java]
   category: SML
   severity: minor
@@ -9091,7 +8921,7 @@
     next change touches a single spot.
 
 - key: QG-JV-BUG-0159
-  name: @Scheduled annotation should behave the way it reads
+  name: @Scheduled annotation should match the behaviour the code describes
   languages: [java]
   category: BUG
   severity: major
@@ -9109,7 +8939,7 @@
     and cover the case that used to fail with a test.
 
 - key: QG-JV-BUG-0160
-  name: @EventListener methods should behave the way it reads
+  name: @EventListener methods should match the behaviour the code describes
   languages: [java]
   category: BUG
   severity: major
@@ -9127,7 +8957,7 @@
     and cover the case that used to fail with a test.
 
 - key: QG-JV-SML-0390
-  name: Page should be simplified
+  name: Hard-to-read code should be simplified
   languages: [java]
   category: SML
   severity: minor
@@ -9145,7 +8975,7 @@
     next change touches a single spot.
 
 - key: QG-JV-SML-0391
-  name: Methods annotated with @BeforeTransaction or @AfterTransaction should be simplified
+  name: Hard-to-read code should be simplified
   languages: [java]
   category: SML
   severity: minor
@@ -9182,7 +9012,7 @@
     and replace weakened mechanisms with the current recommended one.
 
 - key: QG-JV-SEC-0067
-  name: Using persistent unique identifiers should not weaken the security of the application
+  name: Persistent unique identifiers should not weaken the security of the application
   languages: [java]
   category: SEC
   severity: critical
@@ -9219,7 +9049,7 @@
     next change touches a single spot.
 
 - key: QG-JV-SML-0393
-  name: Unused exception parameter should be removed when it is no longer used
+  name: Unused exception parameter should be removed once nothing uses it
   languages: [java]
   category: SML
   severity: minor
@@ -9256,7 +9086,7 @@
     next change touches a single spot.
 
 - key: QG-JV-SML-0395
-  name: Types of unused record components should be removed when it is no longer used
+  name: Types of unused record components should be removed once nothing uses it
   languages: [java]
   category: SML
   severity: minor
@@ -9275,7 +9105,7 @@
     description of what the program does.
 
 - key: QG-JV-SML-0396
-  name: Uses of Comments should be reviewed
+  name: Comments should be resolved rather than left in the code
   languages: [java]
   category: SML
   severity: minor
@@ -9328,6 +9158,7 @@
   fix: |
     Switch to the recommended construct; the behaviour is the same in the normal case and defined in the
     cases the old form got wrong.
+
 - key: QG-JV-SML-0399
   name: ClassBuilder.withMethodBody should be replaced by the recommended alternative
   languages: [java]
@@ -9374,7 +9205,7 @@
     cases the old form got wrong.
 
 - key: QG-JV-SML-0401
-  name: Provide an initializer for a stateless stream gatherer should be simplified
+  name: Hard-to-read code should be simplified
   languages: [java]
   category: SML
   severity: minor
@@ -9392,7 +9223,7 @@
     next change touches a single spot.
 
 - key: QG-JV-SML-0402
-  name: When a defaultFinisher is passed to should be simplified
+  name: Hard-to-read code should be simplified
   languages: [java]
   category: SML
   severity: minor
@@ -9410,7 +9241,7 @@
     next change touches a single spot.
 
 - key: QG-JV-BUG-0161
-  name: Conversions between local and timezone-aware types should behave the way it reads
+  name: Conversions between local and timezone-aware types should match the behaviour the code describes
   languages: [java]
   category: BUG
   severity: major
@@ -9428,7 +9259,7 @@
     and cover the case that used to fail with a test.
 
 - key: QG-JV-SML-0403
-  name: The Increment and decrement operators (++/--) API should not be used
+  name: Increment and decrement operators (++/--) should not be used
   languages: [java]
   category: SML
   severity: minor
@@ -9538,7 +9369,7 @@
     read-only whatever is not meant to change.
 
 - key: QG-JV-BUG-0162
-  name: Subclass fields should behave the way it reads
+  name: Subclass fields should match the behaviour the code describes
   languages: [java]
   category: BUG
   severity: major
@@ -9556,7 +9387,7 @@
     and cover the case that used to fail with a test.
 
 - key: QG-JV-SML-0409
-  name: IO.readln should be simplified
+  name: IO.readln() over BufferedReader boilerplate should be simplified
   languages: [java]
   category: SML
   severity: minor
@@ -9574,7 +9405,7 @@
     next change touches a single spot.
 
 - key: QG-JV-BUG-0163
-  name: ScopedValue instances should behave the way it reads
+  name: ScopedValue instances should match the behaviour the code describes
   languages: [java]
   category: BUG
   severity: major
@@ -9592,7 +9423,7 @@
     and cover the case that used to fail with a test.
 
 - key: QG-JV-SML-0410
-  name: IO.readln should be simplified
+  name: Hard-to-read code should be simplified
   languages: [java]
   category: SML
   severity: minor
@@ -9628,7 +9459,7 @@
     next change touches a single spot.
 
 - key: QG-JV-SML-0413
-  name: Concurrent access around Time-based .now() methods should be coordinated correctly
+  name: Time-based .now() methods should be accessed in a thread-safe way
   languages: [java]
   category: SML
   severity: minor
@@ -9646,7 +9477,7 @@
     the concurrent collections and higher-level primitives the platform provides.
 
 - key: QG-JV-SML-0414
-  name: The The system clock API should not be used
+  name: System clock should not be used
   languages: [java]
   category: SML
   severity: minor
@@ -9705,7 +9536,7 @@
     next change touches a single spot.
 
 - key: QG-JV-BUG-0164
-  name: Value-based classes should behave the way it reads
+  name: Value-based classes should match the behaviour the code describes
   languages: [java]
   category: BUG
   severity: major
@@ -9763,7 +9594,7 @@
     - invocation: [fail]
 
 - key: QG-JV-SML-0418
-  name: Tests around JUnit Jupiter tests should verify something
+  name: Tests should assert something
   languages: [java]
   category: SML
   severity: minor
@@ -9781,7 +9612,7 @@
     broken before trusting it again.
 
 - key: QG-JV-BUG-0166
-  name: Tests around Test classes should verify something
+  name: Tests should assert something
   languages: [java]
   category: BUG
   severity: major
@@ -9799,7 +9630,7 @@
     broken before trusting it again.
 
 - key: QG-JV-SML-0419
-  name: The Increment (++) and decrement (--) operators API should not be used
+  name: Increment (++) and decrement (--) operators should not be used
   languages: [java]
   category: SML
   severity: minor
@@ -9818,7 +9649,7 @@
     documented and dated.
 
 - key: QG-JV-SML-0420
-  name: The Equality operators API should not be used
+  name: Equality operators should not be used
   languages: [java]
   category: SML
   severity: minor
@@ -9855,7 +9686,7 @@
     next change touches a single spot.
 
 - key: QG-JV-BUG-0167
-  name: CacheKeyGenerator implementations should behave the way it reads
+  name: CacheKeyGenerator implementations should match the behaviour the code describes
   languages: [java]
   category: BUG
   severity: major
@@ -9891,7 +9722,7 @@
     next change touches a single spot.
 
 - key: QG-JV-BUG-0168
-  name: Methods annotated with @Startup should behave the way it reads
+  name: Methods annotated with @Startup should match the behaviour the code describes
   languages: [java]
   category: BUG
   severity: major
@@ -9909,7 +9740,7 @@
     and cover the case that used to fail with a test.
 
 - key: QG-JV-BUG-0169
-  name: Custom CredentialsProvider implementations should behave the way it reads
+  name: Custom CredentialsProvider implementations should match the behaviour the code describes
   languages: [java]
   category: BUG
   severity: major
@@ -9945,7 +9776,7 @@
     next change touches a single spot.
 
 - key: QG-JV-BUG-0170
-  name: JPA entity classes and methods should behave the way it reads
+  name: JPA entity classes and methods should match the behaviour the code describes
   languages: [java]
   category: BUG
   severity: major
@@ -9981,7 +9812,7 @@
     next change touches a single spot.
 
 - key: QG-JV-BUG-0171
-  name: Bean Validation constraints should behave the way it reads
+  name: Bean Validation constraints should match the behaviour the code describes
   languages: [java]
   category: BUG
   severity: major
@@ -9999,7 +9830,7 @@
     and cover the case that used to fail with a test.
 
 - key: QG-JV-BUG-0172
-  name: The return value of EntityManager.merge() should be replaced by the recommended alternative
+  name: Return value of EntityManager.merge() should be replaced by the recommended alternative
   languages: [java]
   category: BUG
   severity: major
@@ -10022,7 +9853,7 @@
       receiver: [EntityManager]
 
 - key: QG-JV-BUG-0173
-  name: Stateless session beans should behave the way it reads
+  name: Stateless session beans should match the behaviour the code describes
   languages: [java]
   category: BUG
   severity: major
@@ -10040,7 +9871,7 @@
     and cover the case that used to fail with a test.
 
 - key: QG-JV-SML-0426
-  name: Exception handling around Methods with @Transactional should be explicit
+  name: Methods with @Transactional should make failure handling explicit
   languages: [java]
   category: SML
   severity: minor
@@ -10059,7 +9890,7 @@
     wrapping, and let everything else reach the boundary handler.
 
 - key: QG-JV-BUG-0174
-  name: Return values should behave the way it reads
+  name: Return values should match the behaviour the code describes
   languages: [java]
   category: BUG
   severity: major
@@ -10113,7 +9944,7 @@
     next change touches a single spot.
 
 - key: QG-JV-BUG-0175
-  name: Mockito stubbing chains should behave the way it reads
+  name: Mockito stubbing chains should match the behaviour the code describes
   languages: [java]
   category: BUG
   severity: major
@@ -10131,7 +9962,7 @@
     and cover the case that used to fail with a test.
 
 - key: QG-JV-BUG-0176
-  name: @Configuration classes should behave the way it reads
+  name: @Configuration classes should match the behaviour the code describes
   languages: [java]
   category: BUG
   severity: major
@@ -10187,7 +10018,7 @@
     cases the old form got wrong.
 
 - key: QG-JV-SML-0431
-  name: The ScheduledThreadPoolExecutor.setMaximumPoolSize API should not be used
+  name: ScheduledThreadPoolExecutor.setMaximumPoolSize should not be used
   languages: [java]
   category: SML
   severity: minor
@@ -10210,7 +10041,7 @@
       receiver: [ScheduledThreadPoolExecutor]
 
 - key: QG-JV-SML-0432
-  name: Secrets should not be written into Predefined mathematical constants
+  name: Predefined mathematical constants should not be committed with the source
   languages: [java]
   category: SML
   severity: minor
@@ -10248,22 +10079,22 @@
     and replace weakened mechanisms with the current recommended one.
 
 - key: QG-JV-BUG-0177
-  name: Tests around NaN should verify something
+  name: NaN should match the behaviour the code describes
   languages: [java]
   category: BUG
   severity: major
   effort: 15min
-  tags: [tests, generated]
+  tags: [bug, generated]
   generated: true
   status: ready
-  message: This test cannot fail, so it verifies nothing.
-  summary: A test does not assert, is disabled, or cannot fail.
+  message: This code does not behave the way it reads.
+  summary: The code does not do what its shape suggests, or fails on ordinary input.
   why: |
-    A test that cannot fail reports success forever while covering nothing, and the suite keeps its green
-    status. That is worse than having no test at all, because it removes the incentive to write one.
+    Written this way the code works by accident or breaks on values that are perfectly normal, and the
+    mistake is easy to miss in review because the intent reads correctly.
   fix: |
-    Assert the behaviour the test exists for, re-enable it, and make sure it fails when the behaviour is
-    broken before trusting it again.
+    Make the intended behaviour explicit — fix the condition, the operator or the order of operations —
+    and cover the case that used to fail with a test.
   detect:
     - creation: [NaN]
 

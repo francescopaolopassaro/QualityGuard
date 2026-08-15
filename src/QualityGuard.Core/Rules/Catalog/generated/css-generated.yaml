@@ -2,7 +2,7 @@
 # tools/generate_rules.py and are refined by hand as each family is reviewed.
 
 - key: QG-CSS-SML-0009
-  name: The Deprecated CSS features API should not be used
+  name: Deprecated CSS features should not be used
   languages: [css]
   category: SML
   severity: minor
@@ -39,7 +39,7 @@
     next change touches a single spot.
 
 - key: QG-CSS-BUG-0002
-  name: Color definitions should behave the way it reads
+  name: Color definitions should match the behaviour the code describes
   languages: [css]
   category: BUG
   severity: major
@@ -57,7 +57,7 @@
     and cover the case that used to fail with a test.
 
 - key: QG-CSS-BUG-0003
-  name: Font declarations should behave the way it reads
+  name: Font declarations should match the behaviour the code describes
   languages: [css]
   category: BUG
   severity: major
@@ -75,7 +75,7 @@
     and cover the case that used to fail with a test.
 
 - key: QG-CSS-BUG-0004
-  name: Calc operands should behave the way it reads
+  name: Calc operands should match the behaviour the code describes
   languages: [css]
   category: BUG
   severity: major
@@ -93,7 +93,7 @@
     and cover the case that used to fail with a test.
 
 - key: QG-CSS-BUG-0005
-  name: Linear-gradient directions should behave the way it reads
+  name: Linear-gradient directions should match the behaviour the code describes
   languages: [css]
   category: BUG
   severity: major
@@ -129,7 +129,7 @@
     next change touches a single spot.
 
 - key: QG-CSS-BUG-0006
-  name: Units should behave the way it reads
+  name: Units should match the behaviour the code describes
   languages: [css]
   category: BUG
   severity: major
@@ -147,7 +147,7 @@
     and cover the case that used to fail with a test.
 
 - key: QG-CSS-BUG-0007
-  name: CSS properties should behave the way it reads
+  name: CSS properties should match the behaviour the code describes
   languages: [css]
   category: BUG
   severity: major
@@ -165,7 +165,7 @@
     and cover the case that used to fail with a test.
 
 - key: QG-CSS-BUG-0008
-  name: The !important API should not be used
+  name: !important should not be used
   languages: [css]
   category: BUG
   severity: major
@@ -204,7 +204,7 @@
     function or constant.
 
 - key: QG-CSS-BUG-0010
-  name: Shorthand properties that override related longhand properties should behave the way it reads
+  name: Suspicious code should match the behaviour the code describes
   languages: [css]
   category: BUG
   severity: major
@@ -222,7 +222,7 @@
     and cover the case that used to fail with a test.
 
 - key: QG-CSS-BUG-0011
-  name: Pseudo-class selectors should behave the way it reads
+  name: Pseudo-class selectors should match the behaviour the code describes
   languages: [css]
   category: BUG
   severity: major
@@ -240,7 +240,7 @@
     and cover the case that used to fail with a test.
 
 - key: QG-CSS-BUG-0012
-  name: Pseudo-element selectors should behave the way it reads
+  name: Pseudo-element selectors should match the behaviour the code describes
   languages: [css]
   category: BUG
   severity: major
@@ -258,7 +258,7 @@
     and cover the case that used to fail with a test.
 
 - key: QG-CSS-BUG-0013
-  name: Media features should behave the way it reads
+  name: Media features should match the behaviour the code describes
   languages: [css]
   category: BUG
   severity: major
@@ -276,7 +276,7 @@
     and cover the case that used to fail with a test.
 
 - key: QG-CSS-BUG-0014
-  name: At-rules should behave the way it reads
+  name: At-rules should match the behaviour the code describes
   languages: [css]
   category: BUG
   severity: major
@@ -368,7 +368,7 @@
     comment so the next reader does not treat it as a gap.
 
 - key: QG-CSS-BUG-0015
-  name: The Single line comment syntax API should not be used
+  name: Single line comment syntax should not be used
   languages: [css]
   category: BUG
   severity: major
@@ -387,7 +387,7 @@
     documented and dated.
 
 - key: QG-CSS-BUG-0016
-  name: Selectors should behave the way it reads
+  name: Selectors should match the behaviour the code describes
   languages: [css]
   category: BUG
   severity: major
@@ -405,7 +405,7 @@
     and cover the case that used to fail with a test.
 
 - key: QG-CSS-BUG-0017
-  name: Expressions within calc should behave the way it reads
+  name: Expressions within calc should match the behaviour the code describes
   languages: [css]
   category: BUG
   severity: major
@@ -477,7 +477,7 @@
     next change touches a single spot.
 
 - key: QG-CSS-BUG-0018
-  name: CSS annotations should behave the way it reads
+  name: CSS annotations should match the behaviour the code describes
   languages: [css]
   category: BUG
   severity: major
@@ -513,7 +513,7 @@
     next change touches a single spot.
 
 - key: QG-CSS-BUG-0019
-  name: Custom properties should behave the way it reads
+  name: Custom properties should match the behaviour the code describes
   languages: [css]
   category: BUG
   severity: major
@@ -531,7 +531,7 @@
     and cover the case that used to fail with a test.
 
 - key: QG-CSS-BUG-0020
-  name: CSS declarations should behave the way it reads
+  name: CSS declarations should match the behaviour the code describes
   languages: [css]
   category: BUG
   severity: major
@@ -549,7 +549,7 @@
     and cover the case that used to fail with a test.
 
 - key: QG-CSS-BUG-0021
-  name: Descriptors within at-rules should behave the way it reads
+  name: Descriptors within at-rules should match the behaviour the code describes
   languages: [css]
   category: BUG
   severity: major
@@ -585,7 +585,7 @@
     function or constant.
 
 - key: QG-CSS-BUG-0023
-  name: An+B selectors should behave the way it reads
+  name: An+B selectors should match the behaviour the code describes
   languages: [css]
   category: BUG
   severity: major
@@ -603,7 +603,7 @@
     and cover the case that used to fail with a test.
 
 - key: QG-CSS-BUG-0024
-  name: At-rule descriptor values should behave the way it reads
+  name: At-rule descriptor values should match the behaviour the code describes
   languages: [css]
   category: BUG
   severity: major
@@ -621,7 +621,7 @@
     and cover the case that used to fail with a test.
 
 - key: QG-CSS-BUG-0025
-  name: At-rule preludes should behave the way it reads
+  name: At-rule preludes should match the behaviour the code describes
   languages: [css]
   category: BUG
   severity: major
@@ -639,7 +639,7 @@
     and cover the case that used to fail with a test.
 
 - key: QG-CSS-BUG-0026
-  name: @import rules should behave the way it reads
+  name: @import rules should match the behaviour the code describes
   languages: [css]
   category: BUG
   severity: major

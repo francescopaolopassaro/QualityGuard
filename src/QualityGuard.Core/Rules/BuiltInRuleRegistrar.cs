@@ -31,6 +31,7 @@ public static class BuiltInRuleRegistrar
         ..Languages.MarkupRuleSet.All,
         ..Languages.RustRuleSet.All,
         ..StructuralRuleSet.All,
+        ..CorrectnessRuleSet.All,
         ..Catalog.RuleCatalog.Rules
     ];
 }

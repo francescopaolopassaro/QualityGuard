@@ -21,7 +21,7 @@
     name, and keep the original as the sequence of those steps.
 
 - key: QG-GO-SML-0012
-  name: The Octal values API should not be used
+  name: Octal values should not be used
   languages: [go]
   category: SML
   severity: minor
@@ -40,7 +40,7 @@
     documented and dated.
 
 - key: QG-GO-SML-0013
-  name: Uses of Lack of copyright and license headers should be reviewed
+  name: Copyright and license headers should be resolved rather than left in the code
   languages: [go]
   category: SML
   severity: minor
