@@ -108,6 +108,18 @@ public sealed class CatalogEntry
     public required RuleDescription Description { get; init; }
     public IReadOnlyList<MatchSpec> Detect { get; init; } = [];
 
+    /// <summary>
+    /// Porting state. <c>ready</c> is the default; <c>planned</c> marks a catalog rule that is mapped and
+    /// documented but whose detection needs analysis the engine does not perform yet, so it carries no
+    /// clauses and reports nothing.
+    /// </summary>
+    public string Status { get; init; } = "ready";
+
+    /// <summary>True when the entry was produced by the catalog generator rather than written by hand.</summary>
+    public bool Generated { get; init; }
+
+    public bool IsPlanned => string.Equals(Status, "planned", StringComparison.OrdinalIgnoreCase);
+
     /// <summary>Entries without detection clauses only carry documentation for a hand-written rule.</summary>
     public bool IsDocumentationOnly => Detect.Count == 0;
 
@@ -133,6 +145,8 @@ public sealed class CatalogEntry
             Cwe = map.Integers("cwe"),
             Owasp = map.Strings("owasp"),
             Message = map.Str("message") ?? name,
+            Status = map.Str("status") ?? "ready",
+            Generated = map.Flag("generated"),
             Description = new RuleDescription(
                 Summary: map.Str("summary") ?? name,
                 WhyIsThisAnIssue: map.Text("why"),

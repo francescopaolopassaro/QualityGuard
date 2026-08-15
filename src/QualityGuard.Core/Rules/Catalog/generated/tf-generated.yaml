@@ -1,0 +1,950 @@
+# Generated catalog entries for tf. Texts come from the family templates in
+# tools/generate_rules.py and are refined by hand as each family is reviewed.
+
+- key: QG-TF-SML-0003
+  name: Terraform parsing failure should be simplified
+  languages: [tf]
+  category: SML
+  severity: minor
+  effort: 15min
+  tags: [sml, generated]
+  generated: true
+  status: planned
+  message: This code is harder to read or change than the behaviour requires.
+  summary: The code works but is harder to read or change than the behaviour requires.
+  why: |
+    The intent is buried, duplicated, or spread across places that must stay in sync, so every future
+    change costs more than it should and carries a risk that has nothing to do with the change itself.
+  fix: |
+    Remove what is not used, name what is unclear, and keep one piece of behaviour in one place so the
+    next change touches a single spot.
+
+- key: QG-TF-SEC-0015
+  name: The Clear-text protocols API should not be used
+  languages: [tf]
+  category: SEC
+  severity: critical
+  effort: 15min
+  tags: [avoid_api, generated]
+  generated: true
+  status: planned
+  message: This API should be replaced by the current alternative.
+  summary: Code calls an API that is unsafe, obsolete or superseded by a better alternative.
+  why: |
+    The API stays available for compatibility, so nothing fails at build time, but it carries behaviour
+    the platform now considers a defect — unchecked input, a weak guarantee, or a cost the replacement
+    avoids. Its presence also spreads: new code copies what it finds nearby.
+  fix: |
+    Replace the call with the current API, and keep the old one only behind a compatibility layer that is
+    documented and dated.
+
+- key: QG-TF-SEC-0016
+  name: S3 buckets should not be granted more access than it needs
+  languages: [tf]
+  category: SEC
+  severity: critical
+  effort: 15min
+  tags: [permissions, generated]
+  generated: true
+  status: planned
+  message: This grants wider access than the operation needs.
+  summary: A resource is created or shared with permissions wider than the task requires.
+  why: |
+    Every account that can reach the resource can also change it, so a single compromised process is
+    enough to alter data or code the application later trusts. Wide permissions are also invisible at the
+    call site: nothing in the reading code says who else can write.
+  fix: |
+    Grant the narrowest right that works, to the specific identity that needs it, and rely on inherited
+    permissions from a properly secured parent instead of widening the resource itself.
+
+- key: QG-TF-SEC-0017
+  name: Amazon S3 buckets should not weaken the security of the application
+  languages: [tf]
+  category: SEC
+  severity: critical
+  effort: 15min
+  tags: [sec, generated]
+  generated: true
+  status: planned
+  message: This construct weakens the security of the application.
+  summary: A construct that attackers routinely target is used without the guard it needs.
+  why: |
+    The pattern either trusts data the program does not control, or relies on a mechanism that no longer
+    offers the protection it appears to offer. Both keep working normally, which is why they survive
+    until someone looks for them.
+  fix: |
+    Validate the incoming value against an allowed set, pass it as data rather than as code or command,
+    and replace weakened mechanisms with the current recommended one.
+
+- key: QG-TF-SEC-0018
+  name: S3 buckets should not weaken the security of the application
+  languages: [tf]
+  category: SEC
+  severity: critical
+  effort: 15min
+  tags: [sec, generated]
+  generated: true
+  status: planned
+  message: This construct weakens the security of the application.
+  summary: A construct that attackers routinely target is used without the guard it needs.
+  why: |
+    The pattern either trusts data the program does not control, or relies on a mechanism that no longer
+    offers the protection it appears to offer. Both keep working normally, which is why they survive
+    until someone looks for them.
+  fix: |
+    Validate the incoming value against an allowed set, pass it as data rather than as code or command,
+    and replace weakened mechanisms with the current recommended one.
+
+- key: QG-TF-SEC-0019
+  name: The protection around Cloud resources logging should stay enabled
+  languages: [tf]
+  category: SEC
+  severity: critical
+  effort: 15min
+  tags: [protection_off, generated]
+  generated: true
+  status: planned
+  message: A protection provided by the platform is switched off here.
+  summary: A safety mechanism the platform provides is switched off.
+  why: |
+    The setting exists because the default behaviour blocks a known class of attack. Turning it off is
+    usually done to make one case work and then applies everywhere, so the whole application loses the
+    protection while nothing in the code says so.
+  fix: |
+    Restore the default and solve the original problem in a narrower way — scope the exception to the
+    single endpoint or value that needs it, and document why it is safe there.
+
+- key: QG-TF-SEC-0020
+  name: S3 buckets should not be granted more access than it needs
+  languages: [tf]
+  category: SEC
+  severity: critical
+  effort: 15min
+  tags: [permissions, generated]
+  generated: true
+  status: planned
+  message: This grants wider access than the operation needs.
+  summary: A resource is created or shared with permissions wider than the task requires.
+  why: |
+    Every account that can reach the resource can also change it, so a single compromised process is
+    enough to alter data or code the application later trusts. Wide permissions are also invisible at the
+    call site: nothing in the reading code says who else can write.
+  fix: |
+    Grant the narrowest right that works, to the specific identity that needs it, and rely on inherited
+    permissions from a properly secured parent instead of widening the resource itself.
+
+- key: QG-TF-SEC-0021
+  name: AWS resource-based policies should not be granted more access than it needs
+  languages: [tf]
+  category: SEC
+  severity: critical
+  effort: 15min
+  tags: [permissions, generated]
+  generated: true
+  status: planned
+  message: This grants wider access than the operation needs.
+  summary: A resource is created or shared with permissions wider than the task requires.
+  why: |
+    Every account that can reach the resource can also change it, so a single compromised process is
+    enough to alter data or code the application later trusts. Wide permissions are also invisible at the
+    call site: nothing in the reading code says who else can write.
+  fix: |
+    Grant the narrowest right that works, to the specific identity that needs it, and rely on inherited
+    permissions from a properly secured parent instead of widening the resource itself.
+
+- key: QG-TF-SEC-0022
+  name: EBS volumes should use current cryptographic parameters
+  languages: [tf]
+  category: SEC
+  severity: critical
+  effort: 15min
+  tags: [crypto, generated]
+  generated: true
+  status: planned
+  message: This cryptographic choice no longer provides the protection it suggests.
+  summary: A cryptographic primitive, mode or key size that is no longer considered safe is used.
+  why: |
+    Broken primitives keep producing output that looks correct, so nothing fails while the protection is
+    already gone. Data encrypted today is often kept for years, which means an algorithm that is merely
+    weak now will be readable later.
+  fix: |
+    Use the algorithms the platform recommends today — authenticated encryption, a modern hash, a key
+    size at or above the current guidance — and keep the choice in one place so it can be raised.
+
+- key: QG-TF-SEC-0023
+  name: Amazon S3 bucket public access should not be granted more access than it needs
+  languages: [tf]
+  category: SEC
+  severity: critical
+  effort: 15min
+  tags: [permissions, generated]
+  generated: true
+  status: planned
+  message: This grants wider access than the operation needs.
+  summary: A resource is created or shared with permissions wider than the task requires.
+  why: |
+    Every account that can reach the resource can also change it, so a single compromised process is
+    enough to alter data or code the application later trusts. Wide permissions are also invisible at the
+    call site: nothing in the reading code says who else can write.
+  fix: |
+    Grant the narrowest right that works, to the specific identity that needs it, and rely on inherited
+    permissions from a properly secured parent instead of widening the resource itself.
+
+- key: QG-TF-SEC-0024
+  name: Policies should not be granted more access than it needs
+  languages: [tf]
+  category: SEC
+  severity: critical
+  effort: 15min
+  tags: [permissions, generated]
+  generated: true
+  status: planned
+  message: This grants wider access than the operation needs.
+  summary: A resource is created or shared with permissions wider than the task requires.
+  why: |
+    Every account that can reach the resource can also change it, so a single compromised process is
+    enough to alter data or code the application later trusts. Wide permissions are also invisible at the
+    call site: nothing in the reading code says who else can write.
+  fix: |
+    Grant the narrowest right that works, to the specific identity that needs it, and rely on inherited
+    permissions from a properly secured parent instead of widening the resource itself.
+
+- key: QG-TF-SEC-0025
+  name: Amazon RDS resources should use current cryptographic parameters
+  languages: [tf]
+  category: SEC
+  severity: critical
+  effort: 15min
+  tags: [crypto, generated]
+  generated: true
+  status: planned
+  message: This cryptographic choice no longer provides the protection it suggests.
+  summary: A cryptographic primitive, mode or key size that is no longer considered safe is used.
+  why: |
+    Broken primitives keep producing output that looks correct, so nothing fails while the protection is
+    already gone. Data encrypted today is often kept for years, which means an algorithm that is merely
+    weak now will be readable later.
+  fix: |
+    Use the algorithms the platform recommends today — authenticated encryption, a modern hash, a key
+    size at or above the current guidance — and keep the choice in one place so it can be raised.
+
+- key: QG-TF-SEC-0026
+  name: IAM policies should not be granted more access than it needs
+  languages: [tf]
+  category: SEC
+  severity: critical
+  effort: 15min
+  tags: [permissions, generated]
+  generated: true
+  status: planned
+  message: This grants wider access than the operation needs.
+  summary: A resource is created or shared with permissions wider than the task requires.
+  why: |
+    Every account that can reach the resource can also change it, so a single compromised process is
+    enough to alter data or code the application later trusts. Wide permissions are also invisible at the
+    call site: nothing in the reading code says who else can write.
+  fix: |
+    Grant the narrowest right that works, to the specific identity that needs it, and rely on inherited
+    permissions from a properly secured parent instead of widening the resource itself.
+
+- key: QG-TF-SEC-0027
+  name: OpenSearch domains should use current cryptographic parameters
+  languages: [tf]
+  category: SEC
+  severity: critical
+  effort: 15min
+  tags: [crypto, generated]
+  generated: true
+  status: planned
+  message: This cryptographic choice no longer provides the protection it suggests.
+  summary: A cryptographic primitive, mode or key size that is no longer considered safe is used.
+  why: |
+    Broken primitives keep producing output that looks correct, so nothing fails while the protection is
+    already gone. Data encrypted today is often kept for years, which means an algorithm that is merely
+    weak now will be readable later.
+  fix: |
+    Use the algorithms the platform recommends today — authenticated encryption, a modern hash, a key
+    size at or above the current guidance — and keep the choice in one place so it can be raised.
+
+- key: QG-TF-SEC-0028
+  name: AWS IAM policies should not be granted more access than it needs
+  languages: [tf]
+  category: SEC
+  severity: critical
+  effort: 15min
+  tags: [permissions, generated]
+  generated: true
+  status: planned
+  message: This grants wider access than the operation needs.
+  summary: A resource is created or shared with permissions wider than the task requires.
+  why: |
+    Every account that can reach the resource can also change it, so a single compromised process is
+    enough to alter data or code the application later trusts. Wide permissions are also invisible at the
+    call site: nothing in the reading code says who else can write.
+  fix: |
+    Grant the narrowest right that works, to the specific identity that needs it, and rely on inherited
+    permissions from a properly secured parent instead of widening the resource itself.
+
+- key: QG-TF-SEC-0029
+  name: SageMaker notebook instances should use current cryptographic parameters
+  languages: [tf]
+  category: SEC
+  severity: critical
+  effort: 15min
+  tags: [crypto, generated]
+  generated: true
+  status: planned
+  message: This cryptographic choice no longer provides the protection it suggests.
+  summary: A cryptographic primitive, mode or key size that is no longer considered safe is used.
+  why: |
+    Broken primitives keep producing output that looks correct, so nothing fails while the protection is
+    already gone. Data encrypted today is often kept for years, which means an algorithm that is merely
+    weak now will be readable later.
+  fix: |
+    Use the algorithms the platform recommends today — authenticated encryption, a modern hash, a key
+    size at or above the current guidance — and keep the choice in one place so it can be raised.
+
+- key: QG-TF-SEC-0030
+  name: Administration services access should not be granted more access than it needs
+  languages: [tf]
+  category: SEC
+  severity: critical
+  effort: 15min
+  tags: [permissions, generated]
+  generated: true
+  status: planned
+  message: This grants wider access than the operation needs.
+  summary: A resource is created or shared with permissions wider than the task requires.
+  why: |
+    Every account that can reach the resource can also change it, so a single compromised process is
+    enough to alter data or code the application later trusts. Wide permissions are also invisible at the
+    call site: nothing in the reading code says who else can write.
+  fix: |
+    Grant the narrowest right that works, to the specific identity that needs it, and rely on inherited
+    permissions from a properly secured parent instead of widening the resource itself.
+
+- key: QG-TF-SEC-0031
+  name: Amazon SNS topics should use current cryptographic parameters
+  languages: [tf]
+  category: SEC
+  severity: critical
+  effort: 15min
+  tags: [crypto, generated]
+  generated: true
+  status: planned
+  message: This cryptographic choice no longer provides the protection it suggests.
+  summary: A cryptographic primitive, mode or key size that is no longer considered safe is used.
+  why: |
+    Broken primitives keep producing output that looks correct, so nothing fails while the protection is
+    already gone. Data encrypted today is often kept for years, which means an algorithm that is merely
+    weak now will be readable later.
+  fix: |
+    Use the algorithms the platform recommends today — authenticated encryption, a modern hash, a key
+    size at or above the current guidance — and keep the choice in one place so it can be raised.
+
+- key: QG-TF-SEC-0032
+  name: Public network access to cloud resources should not be granted more access than it needs
+  languages: [tf]
+  category: SEC
+  severity: critical
+  effort: 15min
+  tags: [permissions, generated]
+  generated: true
+  status: planned
+  message: This grants wider access than the operation needs.
+  summary: A resource is created or shared with permissions wider than the task requires.
+  why: |
+    Every account that can reach the resource can also change it, so a single compromised process is
+    enough to alter data or code the application later trusts. Wide permissions are also invisible at the
+    call site: nothing in the reading code says who else can write.
+  fix: |
+    Grant the narrowest right that works, to the specific identity that needs it, and rely on inherited
+    permissions from a properly secured parent instead of widening the resource itself.
+
+- key: QG-TF-SEC-0033
+  name: SQS queues should use current cryptographic parameters
+  languages: [tf]
+  category: SEC
+  severity: critical
+  effort: 15min
+  tags: [crypto, generated]
+  generated: true
+  status: planned
+  message: This cryptographic choice no longer provides the protection it suggests.
+  summary: A cryptographic primitive, mode or key size that is no longer considered safe is used.
+  why: |
+    Broken primitives keep producing output that looks correct, so nothing fails while the protection is
+    already gone. Data encrypted today is often kept for years, which means an algorithm that is merely
+    weak now will be readable later.
+  fix: |
+    Use the algorithms the platform recommends today — authenticated encryption, a modern hash, a key
+    size at or above the current guidance — and keep the choice in one place so it can be raised.
+
+- key: QG-TF-SEC-0034
+  name: Amazon EFS file systems should use current cryptographic parameters
+  languages: [tf]
+  category: SEC
+  severity: critical
+  effort: 15min
+  tags: [crypto, generated]
+  generated: true
+  status: planned
+  message: This cryptographic choice no longer provides the protection it suggests.
+  summary: A cryptographic primitive, mode or key size that is no longer considered safe is used.
+  why: |
+    Broken primitives keep producing output that looks correct, so nothing fails while the protection is
+    already gone. Data encrypted today is often kept for years, which means an algorithm that is merely
+    weak now will be readable later.
+  fix: |
+    Use the algorithms the platform recommends today — authenticated encryption, a modern hash, a key
+    size at or above the current guidance — and keep the choice in one place so it can be raised.
+
+- key: QG-TF-SEC-0035
+  name: AWS API Gateway should not weaken the security of the application
+  languages: [tf]
+  category: SEC
+  severity: critical
+  effort: 15min
+  tags: [sec, generated]
+  generated: true
+  status: planned
+  message: This construct weakens the security of the application.
+  summary: A construct that attackers routinely target is used without the guard it needs.
+  why: |
+    The pattern either trusts data the program does not control, or relies on a mechanism that no longer
+    offers the protection it appears to offer. Both keep working normally, which is why they survive
+    until someone looks for them.
+  fix: |
+    Validate the incoming value against an allowed set, pass it as data rather than as code or command,
+    and replace weakened mechanisms with the current recommended one.
+
+- key: QG-TF-SEC-0036
+  name: Backup retention period should not weaken the security of the application
+  languages: [tf]
+  category: SEC
+  severity: critical
+  effort: 15min
+  tags: [sec, generated]
+  generated: true
+  status: planned
+  message: This construct weakens the security of the application.
+  summary: A construct that attackers routinely target is used without the guard it needs.
+  why: |
+    The pattern either trusts data the program does not control, or relies on a mechanism that no longer
+    offers the protection it appears to offer. Both keep working normally, which is why they survive
+    until someone looks for them.
+  fix: |
+    Validate the incoming value against an allowed set, pass it as data rather than as code or command,
+    and replace weakened mechanisms with the current recommended one.
+
+- key: QG-TF-SEC-0037
+  name: High-privilege Microsoft Entra ID built-in roles should not be granted more access than it needs
+  languages: [tf]
+  category: SEC
+  severity: critical
+  effort: 15min
+  tags: [permissions, generated]
+  generated: true
+  status: planned
+  message: This grants wider access than the operation needs.
+  summary: A resource is created or shared with permissions wider than the task requires.
+  why: |
+    Every account that can reach the resource can also change it, so a single compromised process is
+    enough to alter data or code the application later trusts. Wide permissions are also invisible at the
+    call site: nothing in the reading code says who else can write.
+  fix: |
+    Grant the narrowest right that works, to the specific identity that needs it, and rely on inherited
+    permissions from a properly secured parent instead of widening the resource itself.
+
+- key: QG-TF-SEC-0038
+  name: Managed Identities should be replaced by the recommended alternative
+  languages: [tf]
+  category: SEC
+  severity: critical
+  effort: 15min
+  tags: [prefer_api, generated]
+  generated: true
+  status: planned
+  message: The platform offers a clearer or safer construct for this.
+  summary: A construct is used where the platform offers one that is clearer or safer.
+  why: |
+    The alternative exists because it removes a class of mistake — a conversion, an allocation, an edge
+    case — that the current form leaves to the caller. Using the older form means every reader has to
+    check that the edge case was handled.
+  fix: |
+    Switch to the recommended construct; the behaviour is the same in the normal case and defined in the
+    cases the old form got wrong.
+
+- key: QG-TF-SEC-0039
+  name: Azure resource-specific admin accounts should not weaken the security of the application
+  languages: [tf]
+  category: SEC
+  severity: critical
+  effort: 15min
+  tags: [sec, generated]
+  generated: true
+  status: planned
+  message: This construct weakens the security of the application.
+  summary: A construct that attackers routinely target is used without the guard it needs.
+  why: |
+    The pattern either trusts data the program does not control, or relies on a mechanism that no longer
+    offers the protection it appears to offer. Both keep working normally, which is why they survive
+    until someone looks for them.
+  fix: |
+    Validate the incoming value against an allowed set, pass it as data rather than as code or command,
+    and replace weakened mechanisms with the current recommended one.
+
+- key: QG-TF-SEC-0040
+  name: Azure resources should not be granted more access than it needs
+  languages: [tf]
+  category: SEC
+  severity: critical
+  effort: 15min
+  tags: [permissions, generated]
+  generated: true
+  status: planned
+  message: This grants wider access than the operation needs.
+  summary: A resource is created or shared with permissions wider than the task requires.
+  why: |
+    Every account that can reach the resource can also change it, so a single compromised process is
+    enough to alter data or code the application later trusts. Wide permissions are also invisible at the
+    call site: nothing in the reading code says who else can write.
+  fix: |
+    Grant the narrowest right that works, to the specific identity that needs it, and rely on inherited
+    permissions from a properly secured parent instead of widening the resource itself.
+
+- key: QG-TF-SEC-0041
+  name: High-privilege Azure built-in roles should not be granted more access than it needs
+  languages: [tf]
+  category: SEC
+  severity: critical
+  effort: 15min
+  tags: [permissions, generated]
+  generated: true
+  status: planned
+  message: This grants wider access than the operation needs.
+  summary: A resource is created or shared with permissions wider than the task requires.
+  why: |
+    Every account that can reach the resource can also change it, so a single compromised process is
+    enough to alter data or code the application later trusts. Wide permissions are also invisible at the
+    call site: nothing in the reading code says who else can write.
+  fix: |
+    Grant the narrowest right that works, to the specific identity that needs it, and rely on inherited
+    permissions from a properly secured parent instead of widening the resource itself.
+
+- key: QG-TF-SEC-0042
+  name: The protection around Client certificate authentication should stay enabled
+  languages: [tf]
+  category: SEC
+  severity: critical
+  effort: 15min
+  tags: [protection_off, generated]
+  generated: true
+  status: planned
+  message: A protection provided by the platform is switched off here.
+  summary: A safety mechanism the platform provides is switched off.
+  why: |
+    The setting exists because the default behaviour blocks a known class of attack. Turning it off is
+    usually done to make one case work and then applies everywhere, so the whole application loses the
+    protection while nothing in the code says so.
+  fix: |
+    Restore the default and solve the original problem in a narrower way — scope the exception to the
+    single endpoint or value that needs it, and document why it is safe there.
+
+- key: QG-TF-SEC-0043
+  name: The protection around Azure Role-Based Access Control should stay enabled
+  languages: [tf]
+  category: SEC
+  severity: critical
+  effort: 15min
+  tags: [protection_off, generated]
+  generated: true
+  status: planned
+  message: A protection provided by the platform is switched off here.
+  summary: A safety mechanism the platform provides is switched off.
+  why: |
+    The setting exists because the default behaviour blocks a known class of attack. Turning it off is
+    usually done to make one case work and then applies everywhere, so the whole application loses the
+    protection while nothing in the code says so.
+  fix: |
+    Restore the default and solve the original problem in a narrower way — scope the exception to the
+    single endpoint or value that needs it, and document why it is safe there.
+
+- key: QG-TF-SEC-0044
+  name: Azure custom roles should not weaken the security of the application
+  languages: [tf]
+  category: SEC
+  severity: critical
+  effort: 15min
+  tags: [sec, generated]
+  generated: true
+  status: planned
+  message: This construct weakens the security of the application.
+  summary: A construct that attackers routinely target is used without the guard it needs.
+  why: |
+    The pattern either trusts data the program does not control, or relies on a mechanism that no longer
+    offers the protection it appears to offer. Both keep working normally, which is why they survive
+    until someone looks for them.
+  fix: |
+    Validate the incoming value against an allowed set, pass it as data rather than as code or command,
+    and replace weakened mechanisms with the current recommended one.
+
+- key: QG-TF-SEC-0045
+  name: Azure role assignments should not weaken the security of the application
+  languages: [tf]
+  category: SEC
+  severity: critical
+  effort: 15min
+  tags: [sec, generated]
+  generated: true
+  status: planned
+  message: This construct weakens the security of the application.
+  summary: A construct that attackers routinely target is used without the guard it needs.
+  why: |
+    The pattern either trusts data the program does not control, or relies on a mechanism that no longer
+    offers the protection it appears to offer. Both keep working normally, which is why they survive
+    until someone looks for them.
+  fix: |
+    Validate the incoming value against an allowed set, pass it as data rather than as code or command,
+    and replace weakened mechanisms with the current recommended one.
+
+- key: QG-TF-SEC-0046
+  name: The protection around Cloud storage encryption should stay enabled
+  languages: [tf]
+  category: SEC
+  severity: critical
+  effort: 15min
+  tags: [protection_off, generated]
+  generated: true
+  status: planned
+  message: A protection provided by the platform is switched off here.
+  summary: A safety mechanism the platform provides is switched off.
+  why: |
+    The setting exists because the default behaviour blocks a known class of attack. Turning it off is
+    usually done to make one case work and then applies everywhere, so the whole application loses the
+    protection while nothing in the code says so.
+  fix: |
+    Restore the default and solve the original problem in a narrower way — scope the exception to the
+    single endpoint or value that needs it, and document why it is safe there.
+
+- key: QG-TF-SEC-0047
+  name: GCP IAM policies should not be granted more access than it needs
+  languages: [tf]
+  category: SEC
+  severity: critical
+  effort: 15min
+  tags: [permissions, generated]
+  generated: true
+  status: planned
+  message: This grants wider access than the operation needs.
+  summary: A resource is created or shared with permissions wider than the task requires.
+  why: |
+    Every account that can reach the resource can also change it, so a single compromised process is
+    enough to alter data or code the application later trusts. Wide permissions are also invisible at the
+    call site: nothing in the reading code says who else can write.
+  fix: |
+    Grant the narrowest right that works, to the specific identity that needs it, and rely on inherited
+    permissions from a properly secured parent instead of widening the resource itself.
+
+- key: QG-TF-SEC-0048
+  name: GCP KMS symmetric keys should not weaken the security of the application
+  languages: [tf]
+  category: SEC
+  severity: critical
+  effort: 15min
+  tags: [sec, generated]
+  generated: true
+  status: planned
+  message: This construct weakens the security of the application.
+  summary: A construct that attackers routinely target is used without the guard it needs.
+  why: |
+    The pattern either trusts data the program does not control, or relies on a mechanism that no longer
+    offers the protection it appears to offer. Both keep working normally, which is why they survive
+    until someone looks for them.
+  fix: |
+    Validate the incoming value against an allowed set, pass it as data rather than as code or command,
+    and replace weakened mechanisms with the current recommended one.
+
+- key: QG-TF-SEC-0049
+  name: GCP DNS zones should not weaken the security of the application
+  languages: [tf]
+  category: SEC
+  severity: critical
+  effort: 15min
+  tags: [sec, generated]
+  generated: true
+  status: planned
+  message: This construct weakens the security of the application.
+  summary: A construct that attackers routinely target is used without the guard it needs.
+  why: |
+    The pattern either trusts data the program does not control, or relies on a mechanism that no longer
+    offers the protection it appears to offer. Both keep working normally, which is why they survive
+    until someone looks for them.
+  fix: |
+    Validate the incoming value against an allowed set, pass it as data rather than as code or command,
+    and replace weakened mechanisms with the current recommended one.
+
+- key: QG-TF-SEC-0050
+  name: GCP SQL instances should use current cryptographic parameters
+  languages: [tf]
+  category: SEC
+  severity: critical
+  effort: 15min
+  tags: [crypto, generated]
+  generated: true
+  status: planned
+  message: This cryptographic choice no longer provides the protection it suggests.
+  summary: A cryptographic primitive, mode or key size that is no longer considered safe is used.
+  why: |
+    Broken primitives keep producing output that looks correct, so nothing fails while the protection is
+    already gone. Data encrypted today is often kept for years, which means an algorithm that is merely
+    weak now will be readable later.
+  fix: |
+    Use the algorithms the platform recommends today — authenticated encryption, a modern hash, a key
+    size at or above the current guidance — and keep the choice in one place so it can be raised.
+
+- key: QG-TF-SEC-0051
+  name: GCP resources should not be granted more access than it needs
+  languages: [tf]
+  category: SEC
+  severity: critical
+  effort: 15min
+  tags: [permissions, generated]
+  generated: true
+  status: planned
+  message: This grants wider access than the operation needs.
+  summary: A resource is created or shared with permissions wider than the task requires.
+  why: |
+    Every account that can reach the resource can also change it, so a single compromised process is
+    enough to alter data or code the application later trusts. Wide permissions are also invisible at the
+    call site: nothing in the reading code says who else can write.
+  fix: |
+    Grant the narrowest right that works, to the specific identity that needs it, and rely on inherited
+    permissions from a properly secured parent instead of widening the resource itself.
+
+- key: QG-TF-SEC-0052
+  name: Project-wide SSH keys should not be granted more access than it needs
+  languages: [tf]
+  category: SEC
+  severity: critical
+  effort: 15min
+  tags: [permissions, generated]
+  generated: true
+  status: planned
+  message: This grants wider access than the operation needs.
+  summary: A resource is created or shared with permissions wider than the task requires.
+  why: |
+    Every account that can reach the resource can also change it, so a single compromised process is
+    enough to alter data or code the application later trusts. Wide permissions are also invisible at the
+    call site: nothing in the reading code says who else can write.
+  fix: |
+    Grant the narrowest right that works, to the specific identity that needs it, and rely on inherited
+    permissions from a properly secured parent instead of widening the resource itself.
+
+- key: QG-TF-SEC-0053
+  name: GCP IAM custom roles should not be granted more access than it needs
+  languages: [tf]
+  category: SEC
+  severity: critical
+  effort: 15min
+  tags: [permissions, generated]
+  generated: true
+  status: planned
+  message: This grants wider access than the operation needs.
+  summary: A resource is created or shared with permissions wider than the task requires.
+  why: |
+    Every account that can reach the resource can also change it, so a single compromised process is
+    enough to alter data or code the application later trusts. Wide permissions are also invisible at the
+    call site: nothing in the reading code says who else can write.
+  fix: |
+    Grant the narrowest right that works, to the specific identity that needs it, and rely on inherited
+    permissions from a properly secured parent instead of widening the resource itself.
+
+- key: QG-TF-SEC-0054
+  name: GCP App Engine handlers should use current cryptographic parameters
+  languages: [tf]
+  category: SEC
+  severity: critical
+  effort: 15min
+  tags: [crypto, generated]
+  generated: true
+  status: planned
+  message: This cryptographic choice no longer provides the protection it suggests.
+  summary: A cryptographic primitive, mode or key size that is no longer considered safe is used.
+  why: |
+    Broken primitives keep producing output that looks correct, so nothing fails while the protection is
+    already gone. Data encrypted today is often kept for years, which means an algorithm that is merely
+    weak now will be readable later.
+  fix: |
+    Use the algorithms the platform recommends today — authenticated encryption, a modern hash, a key
+    size at or above the current guidance — and keep the choice in one place so it can be raised.
+
+- key: QG-TF-SEC-0055
+  name: GCP IAM custom roles should not be granted more access than it needs
+  languages: [tf]
+  category: SEC
+  severity: critical
+  effort: 15min
+  tags: [permissions, generated]
+  generated: true
+  status: planned
+  message: This grants wider access than the operation needs.
+  summary: A resource is created or shared with permissions wider than the task requires.
+  why: |
+    Every account that can reach the resource can also change it, so a single compromised process is
+    enough to alter data or code the application later trusts. Wide permissions are also invisible at the
+    call site: nothing in the reading code says who else can write.
+  fix: |
+    Grant the narrowest right that works, to the specific identity that needs it, and rely on inherited
+    permissions from a properly secured parent instead of widening the resource itself.
+
+- key: QG-TF-SEC-0056
+  name: Legacy Attribute-Based Access Control should not be granted more access than it needs
+  languages: [tf]
+  category: SEC
+  severity: critical
+  effort: 15min
+  tags: [permissions, generated]
+  generated: true
+  status: planned
+  message: This grants wider access than the operation needs.
+  summary: A resource is created or shared with permissions wider than the task requires.
+  why: |
+    Every account that can reach the resource can also change it, so a single compromised process is
+    enough to alter data or code the application later trusts. Wide permissions are also invisible at the
+    call site: nothing in the reading code says who else can write.
+  fix: |
+    Grant the narrowest right that works, to the specific identity that needs it, and rely on inherited
+    permissions from a properly secured parent instead of widening the resource itself.
+
+- key: QG-TF-SEC-0057
+  name: Google Cloud load balancers SSL policies should use current cryptographic parameters
+  languages: [tf]
+  category: SEC
+  severity: critical
+  effort: 15min
+  tags: [crypto, generated]
+  generated: true
+  status: planned
+  message: This cryptographic choice no longer provides the protection it suggests.
+  summary: A cryptographic primitive, mode or key size that is no longer considered safe is used.
+  why: |
+    Broken primitives keep producing output that looks correct, so nothing fails while the protection is
+    already gone. Data encrypted today is often kept for years, which means an algorithm that is merely
+    weak now will be readable later.
+  fix: |
+    Use the algorithms the platform recommends today — authenticated encryption, a modern hash, a key
+    size at or above the current guidance — and keep the choice in one place so it can be raised.
+
+- key: QG-TF-SEC-0058
+  name: GCP Cloud Storage buckets should not weaken the security of the application
+  languages: [tf]
+  category: SEC
+  severity: critical
+  effort: 15min
+  tags: [sec, generated]
+  generated: true
+  status: planned
+  message: This construct weakens the security of the application.
+  summary: A construct that attackers routinely target is used without the guard it needs.
+  why: |
+    The pattern either trusts data the program does not control, or relies on a mechanism that no longer
+    offers the protection it appears to offer. Both keep working normally, which is why they survive
+    until someone looks for them.
+  fix: |
+    Validate the incoming value against an allowed set, pass it as data rather than as code or command,
+    and replace weakened mechanisms with the current recommended one.
+
+- key: QG-TF-SEC-0059
+  name: Log retention period should not weaken the security of the application
+  languages: [tf]
+  category: SEC
+  severity: critical
+  effort: 15min
+  tags: [sec, generated]
+  generated: true
+  status: planned
+  message: This construct weakens the security of the application.
+  summary: A construct that attackers routinely target is used without the guard it needs.
+  why: |
+    The pattern either trusts data the program does not control, or relies on a mechanism that no longer
+    offers the protection it appears to offer. Both keep working normally, which is why they survive
+    until someone looks for them.
+  fix: |
+    Validate the incoming value against an allowed set, pass it as data rather than as code or command,
+    and replace weakened mechanisms with the current recommended one.
+
+- key: QG-TF-SEC-0060
+  name: GCP Cloud Audit Logs exemptions should not weaken the security of the application
+  languages: [tf]
+  category: SEC
+  severity: critical
+  effort: 15min
+  tags: [sec, generated]
+  generated: true
+  status: planned
+  message: This construct weakens the security of the application.
+  summary: A construct that attackers routinely target is used without the guard it needs.
+  why: |
+    The pattern either trusts data the program does not control, or relies on a mechanism that no longer
+    offers the protection it appears to offer. Both keep working normally, which is why they survive
+    until someone looks for them.
+  fix: |
+    Validate the incoming value against an allowed set, pass it as data rather than as code or command,
+    and replace weakened mechanisms with the current recommended one.
+
+- key: QG-TF-SML-0004
+  name: AWS resource tags should be simplified
+  languages: [tf]
+  category: SML
+  severity: minor
+  effort: 15min
+  tags: [sml, generated]
+  generated: true
+  status: planned
+  message: This code is harder to read or change than the behaviour requires.
+  summary: The code works but is harder to read or change than the behaviour requires.
+  why: |
+    The intent is buried, duplicated, or spread across places that must stay in sync, so every future
+    change costs more than it should and carries a risk that has nothing to do with the change itself.
+  fix: |
+    Remove what is not used, name what is unclear, and keep one piece of behaviour in one place so the
+    next change touches a single spot.
+
+- key: QG-TF-SEC-0061
+  name: Azure Key Vaults should not weaken the security of the application
+  languages: [tf]
+  category: SEC
+  severity: critical
+  effort: 15min
+  tags: [sec, generated]
+  generated: true
+  status: planned
+  message: This construct weakens the security of the application.
+  summary: A construct that attackers routinely target is used without the guard it needs.
+  why: |
+    The pattern either trusts data the program does not control, or relies on a mechanism that no longer
+    offers the protection it appears to offer. Both keep working normally, which is why they survive
+    until someone looks for them.
+  fix: |
+    Validate the incoming value against an allowed set, pass it as data rather than as code or command,
+    and replace weakened mechanisms with the current recommended one.
+
+- key: QG-TF-SEC-0062
+  name: GCP Cloud Storage buckets should not be granted more access than it needs
+  languages: [tf]
+  category: SEC
+  severity: critical
+  effort: 15min
+  tags: [permissions, generated]
+  generated: true
+  status: planned
+  message: This grants wider access than the operation needs.
+  summary: A resource is created or shared with permissions wider than the task requires.
+  why: |
+    Every account that can reach the resource can also change it, so a single compromised process is
+    enough to alter data or code the application later trusts. Wide permissions are also invisible at the
+    call site: nothing in the reading code says who else can write.
+  fix: |
+    Grant the narrowest right that works, to the specific identity that needs it, and rely on inherited
+    permissions from a properly secured parent instead of widening the resource itself.

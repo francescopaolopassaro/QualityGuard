@@ -1,0 +1,474 @@
+# Generated catalog entries for cf. Texts come from the family templates in
+# tools/generate_rules.py and are refined by hand as each family is reviewed.
+
+- key: QG-CF-SML-0002
+  name: CloudFormation parsing failure should be simplified
+  languages: [cf]
+  category: SML
+  severity: minor
+  effort: 15min
+  tags: [sml, generated]
+  generated: true
+  status: planned
+  message: This code is harder to read or change than the behaviour requires.
+  summary: The code works but is harder to read or change than the behaviour requires.
+  why: |
+    The intent is buried, duplicated, or spread across places that must stay in sync, so every future
+    change costs more than it should and carries a risk that has nothing to do with the change itself.
+  fix: |
+    Remove what is not used, name what is unclear, and keep one piece of behaviour in one place so the
+    next change touches a single spot.
+
+- key: QG-CF-SEC-0012
+  name: The Clear-text protocols API should not be used
+  languages: [cf]
+  category: SEC
+  severity: critical
+  effort: 15min
+  tags: [avoid_api, generated]
+  generated: true
+  status: planned
+  message: This API should be replaced by the current alternative.
+  summary: Code calls an API that is unsafe, obsolete or superseded by a better alternative.
+  why: |
+    The API stays available for compatibility, so nothing fails at build time, but it carries behaviour
+    the platform now considers a defect — unchecked input, a weak guarantee, or a cost the replacement
+    avoids. Its presence also spreads: new code copies what it finds nearby.
+  fix: |
+    Replace the call with the current API, and keep the old one only behind a compatibility layer that is
+    documented and dated.
+
+- key: QG-CF-SEC-0013
+  name: S3 buckets should not be granted more access than it needs
+  languages: [cf]
+  category: SEC
+  severity: critical
+  effort: 15min
+  tags: [permissions, generated]
+  generated: true
+  status: planned
+  message: This grants wider access than the operation needs.
+  summary: A resource is created or shared with permissions wider than the task requires.
+  why: |
+    Every account that can reach the resource can also change it, so a single compromised process is
+    enough to alter data or code the application later trusts. Wide permissions are also invisible at the
+    call site: nothing in the reading code says who else can write.
+  fix: |
+    Grant the narrowest right that works, to the specific identity that needs it, and rely on inherited
+    permissions from a properly secured parent instead of widening the resource itself.
+
+- key: QG-CF-SEC-0014
+  name: Amazon S3 buckets should not weaken the security of the application
+  languages: [cf]
+  category: SEC
+  severity: critical
+  effort: 15min
+  tags: [sec, generated]
+  generated: true
+  status: planned
+  message: This construct weakens the security of the application.
+  summary: A construct that attackers routinely target is used without the guard it needs.
+  why: |
+    The pattern either trusts data the program does not control, or relies on a mechanism that no longer
+    offers the protection it appears to offer. Both keep working normally, which is why they survive
+    until someone looks for them.
+  fix: |
+    Validate the incoming value against an allowed set, pass it as data rather than as code or command,
+    and replace weakened mechanisms with the current recommended one.
+
+- key: QG-CF-SEC-0015
+  name: The protection around Cloud resources logging should stay enabled
+  languages: [cf]
+  category: SEC
+  severity: critical
+  effort: 15min
+  tags: [protection_off, generated]
+  generated: true
+  status: planned
+  message: A protection provided by the platform is switched off here.
+  summary: A safety mechanism the platform provides is switched off.
+  why: |
+    The setting exists because the default behaviour blocks a known class of attack. Turning it off is
+    usually done to make one case work and then applies everywhere, so the whole application loses the
+    protection while nothing in the code says so.
+  fix: |
+    Restore the default and solve the original problem in a narrower way — scope the exception to the
+    single endpoint or value that needs it, and document why it is safe there.
+
+- key: QG-CF-SEC-0016
+  name: S3 buckets should not be granted more access than it needs
+  languages: [cf]
+  category: SEC
+  severity: critical
+  effort: 15min
+  tags: [permissions, generated]
+  generated: true
+  status: planned
+  message: This grants wider access than the operation needs.
+  summary: A resource is created or shared with permissions wider than the task requires.
+  why: |
+    Every account that can reach the resource can also change it, so a single compromised process is
+    enough to alter data or code the application later trusts. Wide permissions are also invisible at the
+    call site: nothing in the reading code says who else can write.
+  fix: |
+    Grant the narrowest right that works, to the specific identity that needs it, and rely on inherited
+    permissions from a properly secured parent instead of widening the resource itself.
+
+- key: QG-CF-SEC-0017
+  name: AWS resource-based policies should not be granted more access than it needs
+  languages: [cf]
+  category: SEC
+  severity: critical
+  effort: 15min
+  tags: [permissions, generated]
+  generated: true
+  status: planned
+  message: This grants wider access than the operation needs.
+  summary: A resource is created or shared with permissions wider than the task requires.
+  why: |
+    Every account that can reach the resource can also change it, so a single compromised process is
+    enough to alter data or code the application later trusts. Wide permissions are also invisible at the
+    call site: nothing in the reading code says who else can write.
+  fix: |
+    Grant the narrowest right that works, to the specific identity that needs it, and rely on inherited
+    permissions from a properly secured parent instead of widening the resource itself.
+
+- key: QG-CF-SEC-0018
+  name: EBS volumes should use current cryptographic parameters
+  languages: [cf]
+  category: SEC
+  severity: critical
+  effort: 15min
+  tags: [crypto, generated]
+  generated: true
+  status: planned
+  message: This cryptographic choice no longer provides the protection it suggests.
+  summary: A cryptographic primitive, mode or key size that is no longer considered safe is used.
+  why: |
+    Broken primitives keep producing output that looks correct, so nothing fails while the protection is
+    already gone. Data encrypted today is often kept for years, which means an algorithm that is merely
+    weak now will be readable later.
+  fix: |
+    Use the algorithms the platform recommends today — authenticated encryption, a modern hash, a key
+    size at or above the current guidance — and keep the choice in one place so it can be raised.
+
+- key: QG-CF-SEC-0019
+  name: Amazon S3 bucket public access should not be granted more access than it needs
+  languages: [cf]
+  category: SEC
+  severity: critical
+  effort: 15min
+  tags: [permissions, generated]
+  generated: true
+  status: planned
+  message: This grants wider access than the operation needs.
+  summary: A resource is created or shared with permissions wider than the task requires.
+  why: |
+    Every account that can reach the resource can also change it, so a single compromised process is
+    enough to alter data or code the application later trusts. Wide permissions are also invisible at the
+    call site: nothing in the reading code says who else can write.
+  fix: |
+    Grant the narrowest right that works, to the specific identity that needs it, and rely on inherited
+    permissions from a properly secured parent instead of widening the resource itself.
+
+- key: QG-CF-SML-0003
+  name: Log Groups should be declared the way the language intends
+  languages: [cf]
+  category: SML
+  severity: minor
+  effort: 15min
+  tags: [declaration, generated]
+  generated: true
+  status: planned
+  message: This declaration exposes more than it should.
+  summary: A declaration uses modifiers, order or visibility that do not match its purpose.
+  why: |
+    Declarations are the contract other code relies on. A wider visibility than needed makes an internal
+    detail part of the public surface, and unusual modifier combinations hide the intent from readers and
+    tools alike.
+  fix: |
+    Declare the narrowest visibility that works, in the conventional modifier order, and mark as final or
+    read-only whatever is not meant to change.
+
+- key: QG-CF-SML-0004
+  name: Log Groups should be simplified
+  languages: [cf]
+  category: SML
+  severity: minor
+  effort: 15min
+  tags: [sml, generated]
+  generated: true
+  status: planned
+  message: This code is harder to read or change than the behaviour requires.
+  summary: The code works but is harder to read or change than the behaviour requires.
+  why: |
+    The intent is buried, duplicated, or spread across places that must stay in sync, so every future
+    change costs more than it should and carries a risk that has nothing to do with the change itself.
+  fix: |
+    Remove what is not used, name what is unclear, and keep one piece of behaviour in one place so the
+    next change touches a single spot.
+
+- key: QG-CF-SEC-0020
+  name: Policies should not be granted more access than it needs
+  languages: [cf]
+  category: SEC
+  severity: critical
+  effort: 15min
+  tags: [permissions, generated]
+  generated: true
+  status: planned
+  message: This grants wider access than the operation needs.
+  summary: A resource is created or shared with permissions wider than the task requires.
+  why: |
+    Every account that can reach the resource can also change it, so a single compromised process is
+    enough to alter data or code the application later trusts. Wide permissions are also invisible at the
+    call site: nothing in the reading code says who else can write.
+  fix: |
+    Grant the narrowest right that works, to the specific identity that needs it, and rely on inherited
+    permissions from a properly secured parent instead of widening the resource itself.
+
+- key: QG-CF-SEC-0021
+  name: Amazon RDS resources should use current cryptographic parameters
+  languages: [cf]
+  category: SEC
+  severity: critical
+  effort: 15min
+  tags: [crypto, generated]
+  generated: true
+  status: planned
+  message: This cryptographic choice no longer provides the protection it suggests.
+  summary: A cryptographic primitive, mode or key size that is no longer considered safe is used.
+  why: |
+    Broken primitives keep producing output that looks correct, so nothing fails while the protection is
+    already gone. Data encrypted today is often kept for years, which means an algorithm that is merely
+    weak now will be readable later.
+  fix: |
+    Use the algorithms the platform recommends today — authenticated encryption, a modern hash, a key
+    size at or above the current guidance — and keep the choice in one place so it can be raised.
+
+- key: QG-CF-SEC-0022
+  name: IAM policies should not be granted more access than it needs
+  languages: [cf]
+  category: SEC
+  severity: critical
+  effort: 15min
+  tags: [permissions, generated]
+  generated: true
+  status: planned
+  message: This grants wider access than the operation needs.
+  summary: A resource is created or shared with permissions wider than the task requires.
+  why: |
+    Every account that can reach the resource can also change it, so a single compromised process is
+    enough to alter data or code the application later trusts. Wide permissions are also invisible at the
+    call site: nothing in the reading code says who else can write.
+  fix: |
+    Grant the narrowest right that works, to the specific identity that needs it, and rely on inherited
+    permissions from a properly secured parent instead of widening the resource itself.
+
+- key: QG-CF-SEC-0023
+  name: OpenSearch domains should use current cryptographic parameters
+  languages: [cf]
+  category: SEC
+  severity: critical
+  effort: 15min
+  tags: [crypto, generated]
+  generated: true
+  status: planned
+  message: This cryptographic choice no longer provides the protection it suggests.
+  summary: A cryptographic primitive, mode or key size that is no longer considered safe is used.
+  why: |
+    Broken primitives keep producing output that looks correct, so nothing fails while the protection is
+    already gone. Data encrypted today is often kept for years, which means an algorithm that is merely
+    weak now will be readable later.
+  fix: |
+    Use the algorithms the platform recommends today — authenticated encryption, a modern hash, a key
+    size at or above the current guidance — and keep the choice in one place so it can be raised.
+
+- key: QG-CF-SEC-0024
+  name: AWS IAM policies should not be granted more access than it needs
+  languages: [cf]
+  category: SEC
+  severity: critical
+  effort: 15min
+  tags: [permissions, generated]
+  generated: true
+  status: planned
+  message: This grants wider access than the operation needs.
+  summary: A resource is created or shared with permissions wider than the task requires.
+  why: |
+    Every account that can reach the resource can also change it, so a single compromised process is
+    enough to alter data or code the application later trusts. Wide permissions are also invisible at the
+    call site: nothing in the reading code says who else can write.
+  fix: |
+    Grant the narrowest right that works, to the specific identity that needs it, and rely on inherited
+    permissions from a properly secured parent instead of widening the resource itself.
+
+- key: QG-CF-SEC-0025
+  name: SageMaker notebook instances should use current cryptographic parameters
+  languages: [cf]
+  category: SEC
+  severity: critical
+  effort: 15min
+  tags: [crypto, generated]
+  generated: true
+  status: planned
+  message: This cryptographic choice no longer provides the protection it suggests.
+  summary: A cryptographic primitive, mode or key size that is no longer considered safe is used.
+  why: |
+    Broken primitives keep producing output that looks correct, so nothing fails while the protection is
+    already gone. Data encrypted today is often kept for years, which means an algorithm that is merely
+    weak now will be readable later.
+  fix: |
+    Use the algorithms the platform recommends today — authenticated encryption, a modern hash, a key
+    size at or above the current guidance — and keep the choice in one place so it can be raised.
+
+- key: QG-CF-SEC-0026
+  name: Administration services access should not be granted more access than it needs
+  languages: [cf]
+  category: SEC
+  severity: critical
+  effort: 15min
+  tags: [permissions, generated]
+  generated: true
+  status: planned
+  message: This grants wider access than the operation needs.
+  summary: A resource is created or shared with permissions wider than the task requires.
+  why: |
+    Every account that can reach the resource can also change it, so a single compromised process is
+    enough to alter data or code the application later trusts. Wide permissions are also invisible at the
+    call site: nothing in the reading code says who else can write.
+  fix: |
+    Grant the narrowest right that works, to the specific identity that needs it, and rely on inherited
+    permissions from a properly secured parent instead of widening the resource itself.
+
+- key: QG-CF-SEC-0027
+  name: Amazon SNS topics should use current cryptographic parameters
+  languages: [cf]
+  category: SEC
+  severity: critical
+  effort: 15min
+  tags: [crypto, generated]
+  generated: true
+  status: planned
+  message: This cryptographic choice no longer provides the protection it suggests.
+  summary: A cryptographic primitive, mode or key size that is no longer considered safe is used.
+  why: |
+    Broken primitives keep producing output that looks correct, so nothing fails while the protection is
+    already gone. Data encrypted today is often kept for years, which means an algorithm that is merely
+    weak now will be readable later.
+  fix: |
+    Use the algorithms the platform recommends today — authenticated encryption, a modern hash, a key
+    size at or above the current guidance — and keep the choice in one place so it can be raised.
+
+- key: QG-CF-SEC-0028
+  name: Public network access to cloud resources should not be granted more access than it needs
+  languages: [cf]
+  category: SEC
+  severity: critical
+  effort: 15min
+  tags: [permissions, generated]
+  generated: true
+  status: planned
+  message: This grants wider access than the operation needs.
+  summary: A resource is created or shared with permissions wider than the task requires.
+  why: |
+    Every account that can reach the resource can also change it, so a single compromised process is
+    enough to alter data or code the application later trusts. Wide permissions are also invisible at the
+    call site: nothing in the reading code says who else can write.
+  fix: |
+    Grant the narrowest right that works, to the specific identity that needs it, and rely on inherited
+    permissions from a properly secured parent instead of widening the resource itself.
+
+- key: QG-CF-SEC-0029
+  name: SQS queues should use current cryptographic parameters
+  languages: [cf]
+  category: SEC
+  severity: critical
+  effort: 15min
+  tags: [crypto, generated]
+  generated: true
+  status: planned
+  message: This cryptographic choice no longer provides the protection it suggests.
+  summary: A cryptographic primitive, mode or key size that is no longer considered safe is used.
+  why: |
+    Broken primitives keep producing output that looks correct, so nothing fails while the protection is
+    already gone. Data encrypted today is often kept for years, which means an algorithm that is merely
+    weak now will be readable later.
+  fix: |
+    Use the algorithms the platform recommends today — authenticated encryption, a modern hash, a key
+    size at or above the current guidance — and keep the choice in one place so it can be raised.
+
+- key: QG-CF-SEC-0030
+  name: Amazon EFS file systems should use current cryptographic parameters
+  languages: [cf]
+  category: SEC
+  severity: critical
+  effort: 15min
+  tags: [crypto, generated]
+  generated: true
+  status: planned
+  message: This cryptographic choice no longer provides the protection it suggests.
+  summary: A cryptographic primitive, mode or key size that is no longer considered safe is used.
+  why: |
+    Broken primitives keep producing output that looks correct, so nothing fails while the protection is
+    already gone. Data encrypted today is often kept for years, which means an algorithm that is merely
+    weak now will be readable later.
+  fix: |
+    Use the algorithms the platform recommends today — authenticated encryption, a modern hash, a key
+    size at or above the current guidance — and keep the choice in one place so it can be raised.
+
+- key: QG-CF-SEC-0031
+  name: AWS API Gateway should not weaken the security of the application
+  languages: [cf]
+  category: SEC
+  severity: critical
+  effort: 15min
+  tags: [sec, generated]
+  generated: true
+  status: planned
+  message: This construct weakens the security of the application.
+  summary: A construct that attackers routinely target is used without the guard it needs.
+  why: |
+    The pattern either trusts data the program does not control, or relies on a mechanism that no longer
+    offers the protection it appears to offer. Both keep working normally, which is why they survive
+    until someone looks for them.
+  fix: |
+    Validate the incoming value against an allowed set, pass it as data rather than as code or command,
+    and replace weakened mechanisms with the current recommended one.
+
+- key: QG-CF-SEC-0032
+  name: Backup retention period should not weaken the security of the application
+  languages: [cf]
+  category: SEC
+  severity: critical
+  effort: 15min
+  tags: [sec, generated]
+  generated: true
+  status: planned
+  message: This construct weakens the security of the application.
+  summary: A construct that attackers routinely target is used without the guard it needs.
+  why: |
+    The pattern either trusts data the program does not control, or relies on a mechanism that no longer
+    offers the protection it appears to offer. Both keep working normally, which is why they survive
+    until someone looks for them.
+  fix: |
+    Validate the incoming value against an allowed set, pass it as data rather than as code or command,
+    and replace weakened mechanisms with the current recommended one.
+
+- key: QG-CF-SML-0005
+  name: AWS resource tags should be simplified
+  languages: [cf]
+  category: SML
+  severity: minor
+  effort: 15min
+  tags: [sml, generated]
+  generated: true
+  status: planned
+  message: This code is harder to read or change than the behaviour requires.
+  summary: The code works but is harder to read or change than the behaviour requires.
+  why: |
+    The intent is buried, duplicated, or spread across places that must stay in sync, so every future
+    change costs more than it should and carries a risk that has nothing to do with the change itself.
+  fix: |
+    Remove what is not used, name what is unclear, and keep one piece of behaviour in one place so the
+    next change touches a single spot.

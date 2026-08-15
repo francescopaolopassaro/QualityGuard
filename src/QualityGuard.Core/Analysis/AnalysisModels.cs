@@ -25,6 +25,9 @@ public sealed class FileAnalysis
     public required Syntax.SyntaxTree Tree { get; init; }
     public required Semantics.SemanticModel Semantics { get; init; }
     public TaintResult? Taint { get; init; }
+
+    /// <summary>Set once every file has been parsed, so rules can look across the code base.</summary>
+    public ProjectIndex? Project { get; internal set; }
     public Dictionary<string, double> Metrics { get; } = new();
     public List<Issue> Issues { get; } = [];
     public List<DuplicateBlock> Duplicates { get; } = [];

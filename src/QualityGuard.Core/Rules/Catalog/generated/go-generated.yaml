@@ -1,0 +1,150 @@
+# Generated catalog entries for go. Texts come from the family templates in
+# tools/generate_rules.py and are refined by hand as each family is reviewed.
+
+- key: QG-GO-SML-0011
+  name: Switch case clauses should stay within a size that can be reviewed
+  languages: [go]
+  category: SML
+  severity: minor
+  effort: 15min
+  tags: [threshold, generated]
+  generated: true
+  status: planned
+  message: This construct is larger or more complex than the limit allows.
+  summary: A construct exceeds the size or complexity a reader can follow at once.
+  why: |
+    Past a certain size, understanding one line means reconstructing everything around it, and testing
+    the interesting case means going through the whole entry point. Growth is gradual, so the limit is
+    the only thing that keeps the cost visible.
+  fix: |
+    Split along the responsibilities the code has accumulated: extract the sections that already have a
+    name, and keep the original as the sequence of those steps.
+
+- key: QG-GO-SML-0012
+  name: The Octal values API should not be used
+  languages: [go]
+  category: SML
+  severity: minor
+  effort: 15min
+  tags: [avoid_api, generated]
+  generated: true
+  status: planned
+  message: This API should be replaced by the current alternative.
+  summary: Code calls an API that is unsafe, obsolete or superseded by a better alternative.
+  why: |
+    The API stays available for compatibility, so nothing fails at build time, but it carries behaviour
+    the platform now considers a defect — unchecked input, a weak guarantee, or a cost the replacement
+    avoids. Its presence also spreads: new code copies what it finds nearby.
+  fix: |
+    Replace the call with the current API, and keep the old one only behind a compatibility layer that is
+    documented and dated.
+
+- key: QG-GO-SML-0013
+  name: Uses of Lack of copyright and license headers should be reviewed
+  languages: [go]
+  category: SML
+  severity: minor
+  effort: 15min
+  tags: [marker, generated]
+  generated: true
+  status: planned
+  message: This marker records work that was left open.
+  summary: A marker in the source records work or a decision that was left open.
+  why: |
+    Markers are written for a future reader who never comes back to them. Nobody can tell whether the
+    note is still relevant, who owns it, or whether the missing work has since become a defect.
+  fix: |
+    Do the work, or move it to the issue tracker and reference the ticket in the marker so the deadline
+    lives somewhere that gets reviewed.
+
+- key: QG-GO-SML-0014
+  name: Switch statements should stay within a size that can be reviewed
+  languages: [go]
+  category: SML
+  severity: minor
+  effort: 15min
+  tags: [threshold, generated]
+  generated: true
+  status: planned
+  message: This construct is larger or more complex than the limit allows.
+  summary: A construct exceeds the size or complexity a reader can follow at once.
+  why: |
+    Past a certain size, understanding one line means reconstructing everything around it, and testing
+    the interesting case means going through the whole entry point. Growth is gradual, so the limit is
+    the only thing that keeps the cost visible.
+  fix: |
+    Split along the responsibilities the code has accumulated: extract the sections that already have a
+    name, and keep the original as the sequence of those steps.
+
+- key: QG-GO-SML-0015
+  name: Boolean checks should be simplified
+  languages: [go]
+  category: SML
+  severity: minor
+  effort: 15min
+  tags: [sml, generated]
+  generated: true
+  status: planned
+  message: This code is harder to read or change than the behaviour requires.
+  summary: The code works but is harder to read or change than the behaviour requires.
+  why: |
+    The intent is buried, duplicated, or spread across places that must stay in sync, so every future
+    change costs more than it should and carries a risk that has nothing to do with the change itself.
+  fix: |
+    Remove what is not used, name what is unclear, and keep one piece of behaviour in one place so the
+    next change touches a single spot.
+
+- key: QG-GO-SML-0016
+  name: Go parser failure should be simplified
+  languages: [go]
+  category: SML
+  severity: minor
+  effort: 15min
+  tags: [sml, generated]
+  generated: true
+  status: planned
+  message: This code is harder to read or change than the behaviour requires.
+  summary: The code works but is harder to read or change than the behaviour requires.
+  why: |
+    The intent is buried, duplicated, or spread across places that must stay in sync, so every future
+    change costs more than it should and carries a risk that has nothing to do with the change itself.
+  fix: |
+    Remove what is not used, name what is unclear, and keep one piece of behaviour in one place so the
+    next change touches a single spot.
+
+- key: QG-GO-SML-0017
+  name: Functions should not be duplicated
+  languages: [go]
+  category: SML
+  severity: minor
+  effort: 15min
+  tags: [duplication, generated]
+  generated: true
+  status: planned
+  message: This code or value is duplicated.
+  summary: The same code or value appears more than once.
+  why: |
+    Copies drift apart the first time one of them is fixed, and nothing links them, so the bug is fixed
+    in one place and stays in the other. Readers also cannot tell which copy is authoritative.
+  fix: |
+    Keep one definition and reference it from the other places, or extract the shared part into a named
+    function or constant.
+
+- key: QG-GO-SML-0018
+  name: Multi-line comments should not be left empty
+  languages: [go]
+  category: SML
+  severity: minor
+  effort: 15min
+  tags: [empty, generated]
+  generated: true
+  status: planned
+  message: This construct is empty, so it does nothing.
+  summary: A construct is declared with no content.
+  why: |
+    An empty body reads as if the case is handled while nothing happens, which is exactly how ignored
+    errors and unimplemented branches survive review. It is also indistinguishable from an accidental
+    deletion.
+  fix: |
+    Implement the behaviour, or remove the construct. When doing nothing is deliberate, say so in a
+    comment so the next reader does not treat it as a gap.

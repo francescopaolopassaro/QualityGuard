@@ -35,6 +35,12 @@ public sealed class AnalysisEngine
 
             context.Results.Add(analysis);
         }
+
+        // the index needs every file, so it is attached once the whole scan is parsed
+        var index = ProjectIndex.Build(context.Results);
+        foreach (var analysis in context.Results)
+            analysis.Project = index;
+
         return context.Results;
     }
 }

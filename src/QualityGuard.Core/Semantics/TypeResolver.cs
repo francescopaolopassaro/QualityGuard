@@ -1,0 +1,126 @@
+using QualityGuard.Core.Analysis;
+using QualityGuard.Core.Syntax;
+
+namespace QualityGuard.Core.Semantics;
+
+/// <summary>
+/// Best-effort type of an expression. It combines what the file knows (declarations, literals, object
+/// creations) with what the project index knows (member and return types of the types declared in the
+/// scanned code). Unknown stays unknown: rules must treat <c>null</c> as "cannot tell" and stay silent
+/// rather than guess.
+/// </summary>
+public sealed class TypeResolver
+{
+    private readonly SemanticModel _semantics;
+    private readonly ProjectIndex _project;
+
+    public TypeResolver(SemanticModel semantics, ProjectIndex project)
+    {
+        _semantics = semantics;
+        _project = project;
+    }
+
+    public string? TypeOf(SyntaxNode? expression, int depth = 0)
+    {
+        if (expression == null || depth > 8)
+            return null;
+
+        switch (expression.Kind)
+        {
+            case NodeKind.StringLiteral:
+            case NodeKind.InterpolatedString:
+                return "string";
+            case NodeKind.NumberLiteral:
+                return expression.Text.Contains('.') ? "double" : "int";
+            case NodeKind.BooleanLiteral:
+                return "bool";
+            case NodeKind.NullLiteral:
+                return null;
+            case NodeKind.ObjectCreation:
+            case NodeKind.ArrayCreation:
+                return Normalize(expression.Text);
+            case NodeKind.Cast:
+                return Normalize(expression.Text);
+            case NodeKind.Parenthesized:
+                return TypeOf(expression.ChildAt(0), depth + 1);
+            case NodeKind.Identifier:
+                return TypeOfIdentifier(expression);
+            case NodeKind.MemberSelect:
+                return TypeOfMember(expression, depth);
+            case NodeKind.Invocation:
+                return TypeOfInvocation(expression, depth);
+            case NodeKind.Binary when expression.Text is "+" :
+                return TypeOf(expression.ChildAt(0), depth + 1) ?? TypeOf(expression.ChildAt(1), depth + 1);
+            case NodeKind.Binary:
+                return expression.Text is "==" or "!=" or "<" or ">" or "<=" or ">=" or "&&" or "||"
+                    ? "bool"
+                    : TypeOf(expression.ChildAt(0), depth + 1);
+            default:
+                return null;
+        }
+    }
+
+    private string? TypeOfIdentifier(SyntaxNode identifier)
+    {
+        var symbol = _semantics.Resolve(identifier);
+        if (symbol?.DeclaredType is { Length: > 0 } declared)
+            return Normalize(declared);
+        // a bare name may also be a type used statically
+        return _project.FindType(identifier.Text) != null ? Normalize(identifier.Text) : null;
+    }
+
+    private string? TypeOfMember(SyntaxNode member, int depth)
+    {
+        var owner = TypeOf(member.ChildAt(0), depth + 1);
+        var name = member.ChildAt(1)?.Text;
+        if (owner == null || string.IsNullOrEmpty(name))
+            return null;
+        return _project.MemberType(owner, name) is { Length: > 0 } type ? Normalize(type) : null;
+    }
+
+    private string? TypeOfInvocation(SyntaxNode invocation, int depth)
+    {
+        var callee = invocation.ChildAt(0);
+        if (callee is { Kind: NodeKind.MemberSelect })
+        {
+            var owner = TypeOf(callee.ChildAt(0), depth + 1);
+            var name = callee.ChildAt(1)?.Text;
+            if (owner != null && !string.IsNullOrEmpty(name)
+                && _project.MemberType(owner, name) is { Length: > 0 } type)
+                return Normalize(type);
+        }
+
+        var simple = SyntaxQuery.InvokedName(invocation);
+        return _project.ReturnType(simple) is { Length: > 0 } returned ? Normalize(returned) : null;
+    }
+
+    /// <summary>Strips the decorations that do not change which type is being talked about.</summary>
+    public static string Normalize(string type)
+    {
+        var text = type.Trim();
+        var generic = text.IndexOf('<');
+        if (generic > 0)
+            text = text[..generic];
+        text = text.TrimEnd('?', '*', '[', ']', ' ');
+        var dot = text.LastIndexOf('.');
+        return dot >= 0 && dot < text.Length - 1 ? text[(dot + 1)..] : text;
+    }
+
+    /// <summary>True when the type, or one of its ancestors in the scanned code, has that name.</summary>
+    public bool IsOrDerivesFrom(string? type, params string[] names)
+    {
+        if (type == null)
+            return false;
+        if (names.Contains(type, StringComparer.Ordinal))
+            return true;
+        var info = _project.FindType(type);
+        var guard = 0;
+        while (info != null && guard++ < 10)
+        {
+            if (info.BaseNames.Any(b => names.Contains(Normalize(b), StringComparer.Ordinal)))
+                return true;
+            info = info.BaseNames.Select(b => _project.FindType(Normalize(b))).FirstOrDefault(t => t != null);
+        }
+        return false;
+    }
+}

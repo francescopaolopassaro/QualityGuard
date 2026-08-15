@@ -94,7 +94,7 @@ public class RuleRegistryTests
     public void Catalog_documentation_reaches_the_rules_it_targets()
     {
         var orphans = RuleCatalog.Entries
-            .Where(e => e.IsDocumentationOnly && RuleRepository.Find(e.Key) == null)
+            .Where(e => e.IsDocumentationOnly && !e.IsPlanned && RuleRepository.Find(e.Key) == null)
             .Select(e => e.Key)
             .ToList();
         Assert.Empty(orphans);

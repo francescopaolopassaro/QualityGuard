@@ -1,0 +1,657 @@
+# Generated catalog entries for css. Texts come from the family templates in
+# tools/generate_rules.py and are refined by hand as each family is reviewed.
+
+- key: QG-CSS-SML-0009
+  name: The Deprecated CSS features API should not be used
+  languages: [css]
+  category: SML
+  severity: minor
+  effort: 15min
+  tags: [avoid_api, generated]
+  generated: true
+  status: planned
+  message: This API should be replaced by the current alternative.
+  summary: Code calls an API that is unsafe, obsolete or superseded by a better alternative.
+  why: |
+    The API stays available for compatibility, so nothing fails at build time, but it carries behaviour
+    the platform now considers a defect — unchecked input, a weak guarantee, or a cost the replacement
+    avoids. Its presence also spreads: new code copies what it finds nearby.
+  fix: |
+    Replace the call with the current API, and keep the old one only behind a compatibility layer that is
+    documented and dated.
+
+- key: QG-CSS-SML-0010
+  name: CSS parser failure should be simplified
+  languages: [css]
+  category: SML
+  severity: minor
+  effort: 15min
+  tags: [sml, generated]
+  generated: true
+  status: planned
+  message: This code is harder to read or change than the behaviour requires.
+  summary: The code works but is harder to read or change than the behaviour requires.
+  why: |
+    The intent is buried, duplicated, or spread across places that must stay in sync, so every future
+    change costs more than it should and carries a risk that has nothing to do with the change itself.
+  fix: |
+    Remove what is not used, name what is unclear, and keep one piece of behaviour in one place so the
+    next change touches a single spot.
+
+- key: QG-CSS-BUG-0002
+  name: Color definitions should behave the way it reads
+  languages: [css]
+  category: BUG
+  severity: major
+  effort: 15min
+  tags: [bug, generated]
+  generated: true
+  status: planned
+  message: This code does not behave the way it reads.
+  summary: The code does not do what its shape suggests, or fails on ordinary input.
+  why: |
+    Written this way the code works by accident or breaks on values that are perfectly normal, and the
+    mistake is easy to miss in review because the intent reads correctly.
+  fix: |
+    Make the intended behaviour explicit — fix the condition, the operator or the order of operations —
+    and cover the case that used to fail with a test.
+
+- key: QG-CSS-BUG-0003
+  name: Font declarations should behave the way it reads
+  languages: [css]
+  category: BUG
+  severity: major
+  effort: 15min
+  tags: [bug, generated]
+  generated: true
+  status: planned
+  message: This code does not behave the way it reads.
+  summary: The code does not do what its shape suggests, or fails on ordinary input.
+  why: |
+    Written this way the code works by accident or breaks on values that are perfectly normal, and the
+    mistake is easy to miss in review because the intent reads correctly.
+  fix: |
+    Make the intended behaviour explicit — fix the condition, the operator or the order of operations —
+    and cover the case that used to fail with a test.
+
+- key: QG-CSS-BUG-0004
+  name: Calc operands should behave the way it reads
+  languages: [css]
+  category: BUG
+  severity: major
+  effort: 15min
+  tags: [bug, generated]
+  generated: true
+  status: planned
+  message: This code does not behave the way it reads.
+  summary: The code does not do what its shape suggests, or fails on ordinary input.
+  why: |
+    Written this way the code works by accident or breaks on values that are perfectly normal, and the
+    mistake is easy to miss in review because the intent reads correctly.
+  fix: |
+    Make the intended behaviour explicit — fix the condition, the operator or the order of operations —
+    and cover the case that used to fail with a test.
+
+- key: QG-CSS-BUG-0005
+  name: Linear-gradient directions should behave the way it reads
+  languages: [css]
+  category: BUG
+  severity: major
+  effort: 15min
+  tags: [bug, generated]
+  generated: true
+  status: planned
+  message: This code does not behave the way it reads.
+  summary: The code does not do what its shape suggests, or fails on ordinary input.
+  why: |
+    Written this way the code works by accident or breaks on values that are perfectly normal, and the
+    mistake is easy to miss in review because the intent reads correctly.
+  fix: |
+    Make the intended behaviour explicit — fix the condition, the operator or the order of operations —
+    and cover the case that used to fail with a test.
+
+- key: QG-CSS-SML-0012
+  name: Strings should be simplified
+  languages: [css]
+  category: SML
+  severity: minor
+  effort: 15min
+  tags: [sml, generated]
+  generated: true
+  status: planned
+  message: This code is harder to read or change than the behaviour requires.
+  summary: The code works but is harder to read or change than the behaviour requires.
+  why: |
+    The intent is buried, duplicated, or spread across places that must stay in sync, so every future
+    change costs more than it should and carries a risk that has nothing to do with the change itself.
+  fix: |
+    Remove what is not used, name what is unclear, and keep one piece of behaviour in one place so the
+    next change touches a single spot.
+
+- key: QG-CSS-BUG-0006
+  name: Units should behave the way it reads
+  languages: [css]
+  category: BUG
+  severity: major
+  effort: 15min
+  tags: [bug, generated]
+  generated: true
+  status: planned
+  message: This code does not behave the way it reads.
+  summary: The code does not do what its shape suggests, or fails on ordinary input.
+  why: |
+    Written this way the code works by accident or breaks on values that are perfectly normal, and the
+    mistake is easy to miss in review because the intent reads correctly.
+  fix: |
+    Make the intended behaviour explicit — fix the condition, the operator or the order of operations —
+    and cover the case that used to fail with a test.
+
+- key: QG-CSS-BUG-0007
+  name: CSS properties should behave the way it reads
+  languages: [css]
+  category: BUG
+  severity: major
+  effort: 15min
+  tags: [bug, generated]
+  generated: true
+  status: planned
+  message: This code does not behave the way it reads.
+  summary: The code does not do what its shape suggests, or fails on ordinary input.
+  why: |
+    Written this way the code works by accident or breaks on values that are perfectly normal, and the
+    mistake is easy to miss in review because the intent reads correctly.
+  fix: |
+    Make the intended behaviour explicit — fix the condition, the operator or the order of operations —
+    and cover the case that used to fail with a test.
+
+- key: QG-CSS-BUG-0008
+  name: The !important API should not be used
+  languages: [css]
+  category: BUG
+  severity: major
+  effort: 15min
+  tags: [avoid_api, generated]
+  generated: true
+  status: ready
+  message: This API should be replaced by the current alternative.
+  summary: Code calls an API that is unsafe, obsolete or superseded by a better alternative.
+  why: |
+    The API stays available for compatibility, so nothing fails at build time, but it carries behaviour
+    the platform now considers a defect — unchecked input, a weak guarantee, or a cost the replacement
+    avoids. Its presence also spreads: new code copies what it finds nearby.
+  fix: |
+    Replace the call with the current API, and keep the old one only behind a compatibility layer that is
+    documented and dated.
+  detect:
+    - invocation: [keyframes]
+
+- key: QG-CSS-BUG-0009
+  name: Properties should not be duplicated
+  languages: [css]
+  category: BUG
+  severity: major
+  effort: 15min
+  tags: [duplication, generated]
+  generated: true
+  status: planned
+  message: This code or value is duplicated.
+  summary: The same code or value appears more than once.
+  why: |
+    Copies drift apart the first time one of them is fixed, and nothing links them, so the bug is fixed
+    in one place and stays in the other. Readers also cannot tell which copy is authoritative.
+  fix: |
+    Keep one definition and reference it from the other places, or extract the shared part into a named
+    function or constant.
+
+- key: QG-CSS-BUG-0010
+  name: Shorthand properties that override related longhand properties should behave the way it reads
+  languages: [css]
+  category: BUG
+  severity: major
+  effort: 15min
+  tags: [bug, generated]
+  generated: true
+  status: planned
+  message: This code does not behave the way it reads.
+  summary: The code does not do what its shape suggests, or fails on ordinary input.
+  why: |
+    Written this way the code works by accident or breaks on values that are perfectly normal, and the
+    mistake is easy to miss in review because the intent reads correctly.
+  fix: |
+    Make the intended behaviour explicit — fix the condition, the operator or the order of operations —
+    and cover the case that used to fail with a test.
+
+- key: QG-CSS-BUG-0011
+  name: Pseudo-class selectors should behave the way it reads
+  languages: [css]
+  category: BUG
+  severity: major
+  effort: 15min
+  tags: [bug, generated]
+  generated: true
+  status: planned
+  message: This code does not behave the way it reads.
+  summary: The code does not do what its shape suggests, or fails on ordinary input.
+  why: |
+    Written this way the code works by accident or breaks on values that are perfectly normal, and the
+    mistake is easy to miss in review because the intent reads correctly.
+  fix: |
+    Make the intended behaviour explicit — fix the condition, the operator or the order of operations —
+    and cover the case that used to fail with a test.
+
+- key: QG-CSS-BUG-0012
+  name: Pseudo-element selectors should behave the way it reads
+  languages: [css]
+  category: BUG
+  severity: major
+  effort: 15min
+  tags: [bug, generated]
+  generated: true
+  status: planned
+  message: This code does not behave the way it reads.
+  summary: The code does not do what its shape suggests, or fails on ordinary input.
+  why: |
+    Written this way the code works by accident or breaks on values that are perfectly normal, and the
+    mistake is easy to miss in review because the intent reads correctly.
+  fix: |
+    Make the intended behaviour explicit — fix the condition, the operator or the order of operations —
+    and cover the case that used to fail with a test.
+
+- key: QG-CSS-BUG-0013
+  name: Media features should behave the way it reads
+  languages: [css]
+  category: BUG
+  severity: major
+  effort: 15min
+  tags: [bug, generated]
+  generated: true
+  status: planned
+  message: This code does not behave the way it reads.
+  summary: The code does not do what its shape suggests, or fails on ordinary input.
+  why: |
+    Written this way the code works by accident or breaks on values that are perfectly normal, and the
+    mistake is easy to miss in review because the intent reads correctly.
+  fix: |
+    Make the intended behaviour explicit — fix the condition, the operator or the order of operations —
+    and cover the case that used to fail with a test.
+
+- key: QG-CSS-BUG-0014
+  name: At-rules should behave the way it reads
+  languages: [css]
+  category: BUG
+  severity: major
+  effort: 15min
+  tags: [bug, generated]
+  generated: true
+  status: planned
+  message: This code does not behave the way it reads.
+  summary: The code does not do what its shape suggests, or fails on ordinary input.
+  why: |
+    Written this way the code works by accident or breaks on values that are perfectly normal, and the
+    mistake is easy to miss in review because the intent reads correctly.
+  fix: |
+    Make the intended behaviour explicit — fix the condition, the operator or the order of operations —
+    and cover the case that used to fail with a test.
+
+- key: QG-CSS-SML-0013
+  name: Multi-line comments should not be left empty
+  languages: [css]
+  category: SML
+  severity: minor
+  effort: 15min
+  tags: [empty, generated]
+  generated: true
+  status: planned
+  message: This construct is empty, so it does nothing.
+  summary: A construct is declared with no content.
+  why: |
+    An empty body reads as if the case is handled while nothing happens, which is exactly how ignored
+    errors and unimplemented branches survive review. It is also indistinguishable from an accidental
+    deletion.
+  fix: |
+    Implement the behaviour, or remove the construct. When doing nothing is deliberate, say so in a
+    comment so the next reader does not treat it as a gap.
+
+- key: QG-CSS-SML-0014
+  name: Selectors of lower specificity should be simplified
+  languages: [css]
+  category: SML
+  severity: minor
+  effort: 15min
+  tags: [sml, generated]
+  generated: true
+  status: planned
+  message: This code is harder to read or change than the behaviour requires.
+  summary: The code works but is harder to read or change than the behaviour requires.
+  why: |
+    The intent is buried, duplicated, or spread across places that must stay in sync, so every future
+    change costs more than it should and carries a risk that has nothing to do with the change itself.
+  fix: |
+    Remove what is not used, name what is unclear, and keep one piece of behaviour in one place so the
+    next change touches a single spot.
+
+- key: QG-CSS-SML-0015
+  name: Selectors should not be duplicated
+  languages: [css]
+  category: SML
+  severity: minor
+  effort: 15min
+  tags: [duplication, generated]
+  generated: true
+  status: planned
+  message: This code or value is duplicated.
+  summary: The same code or value appears more than once.
+  why: |
+    Copies drift apart the first time one of them is fixed, and nothing links them, so the bug is fixed
+    in one place and stays in the other. Readers also cannot tell which copy is authoritative.
+  fix: |
+    Keep one definition and reference it from the other places, or extract the shared part into a named
+    function or constant.
+
+- key: QG-CSS-SML-0016
+  name: CSS files should not be left empty
+  languages: [css]
+  category: SML
+  severity: minor
+  effort: 15min
+  tags: [empty, generated]
+  generated: true
+  status: planned
+  message: This construct is empty, so it does nothing.
+  summary: A construct is declared with no content.
+  why: |
+    An empty body reads as if the case is handled while nothing happens, which is exactly how ignored
+    errors and unimplemented branches survive review. It is also indistinguishable from an accidental
+    deletion.
+  fix: |
+    Implement the behaviour, or remove the construct. When doing nothing is deliberate, say so in a
+    comment so the next reader does not treat it as a gap.
+
+- key: QG-CSS-BUG-0015
+  name: The Single line comment syntax API should not be used
+  languages: [css]
+  category: BUG
+  severity: major
+  effort: 15min
+  tags: [avoid_api, generated]
+  generated: true
+  status: planned
+  message: This API should be replaced by the current alternative.
+  summary: Code calls an API that is unsafe, obsolete or superseded by a better alternative.
+  why: |
+    The API stays available for compatibility, so nothing fails at build time, but it carries behaviour
+    the platform now considers a defect — unchecked input, a weak guarantee, or a cost the replacement
+    avoids. Its presence also spreads: new code copies what it finds nearby.
+  fix: |
+    Replace the call with the current API, and keep the old one only behind a compatibility layer that is
+    documented and dated.
+
+- key: QG-CSS-BUG-0016
+  name: Selectors should behave the way it reads
+  languages: [css]
+  category: BUG
+  severity: major
+  effort: 15min
+  tags: [bug, generated]
+  generated: true
+  status: planned
+  message: This code does not behave the way it reads.
+  summary: The code does not do what its shape suggests, or fails on ordinary input.
+  why: |
+    Written this way the code works by accident or breaks on values that are perfectly normal, and the
+    mistake is easy to miss in review because the intent reads correctly.
+  fix: |
+    Make the intended behaviour explicit — fix the condition, the operator or the order of operations —
+    and cover the case that used to fail with a test.
+
+- key: QG-CSS-BUG-0017
+  name: Expressions within calc should behave the way it reads
+  languages: [css]
+  category: BUG
+  severity: major
+  effort: 15min
+  tags: [bug, generated]
+  generated: true
+  status: planned
+  message: This code does not behave the way it reads.
+  summary: The code does not do what its shape suggests, or fails on ordinary input.
+  why: |
+    Written this way the code works by accident or breaks on values that are perfectly normal, and the
+    mistake is easy to miss in review because the intent reads correctly.
+  fix: |
+    Make the intended behaviour explicit — fix the condition, the operator or the order of operations —
+    and cover the case that used to fail with a test.
+
+- key: QG-CSS-SML-0017
+  name: CSS should be simplified
+  languages: [css]
+  category: SML
+  severity: minor
+  effort: 15min
+  tags: [sml, generated]
+  generated: true
+  status: planned
+  message: This code is harder to read or change than the behaviour requires.
+  summary: The code works but is harder to read or change than the behaviour requires.
+  why: |
+    The intent is buried, duplicated, or spread across places that must stay in sync, so every future
+    change costs more than it should and carries a risk that has nothing to do with the change itself.
+  fix: |
+    Remove what is not used, name what is unclear, and keep one piece of behaviour in one place so the
+    next change touches a single spot.
+
+- key: QG-CSS-SML-0018
+  name: Text and background colors should be simplified
+  languages: [css]
+  category: SML
+  severity: minor
+  effort: 15min
+  tags: [sml, generated]
+  generated: true
+  status: planned
+  message: This code is harder to read or change than the behaviour requires.
+  summary: The code works but is harder to read or change than the behaviour requires.
+  why: |
+    The intent is buried, duplicated, or spread across places that must stay in sync, so every future
+    change costs more than it should and carries a risk that has nothing to do with the change itself.
+  fix: |
+    Remove what is not used, name what is unclear, and keep one piece of behaviour in one place so the
+    next change touches a single spot.
+
+- key: QG-CSS-SML-0019
+  name: Text spacing properties should be simplified
+  languages: [css]
+  category: SML
+  severity: minor
+  effort: 15min
+  tags: [sml, generated]
+  generated: true
+  status: planned
+  message: This code is harder to read or change than the behaviour requires.
+  summary: The code works but is harder to read or change than the behaviour requires.
+  why: |
+    The intent is buried, duplicated, or spread across places that must stay in sync, so every future
+    change costs more than it should and carries a risk that has nothing to do with the change itself.
+  fix: |
+    Remove what is not used, name what is unclear, and keep one piece of behaviour in one place so the
+    next change touches a single spot.
+
+- key: QG-CSS-BUG-0018
+  name: CSS annotations should behave the way it reads
+  languages: [css]
+  category: BUG
+  severity: major
+  effort: 15min
+  tags: [bug, generated]
+  generated: true
+  status: planned
+  message: This code does not behave the way it reads.
+  summary: The code does not do what its shape suggests, or fails on ordinary input.
+  why: |
+    Written this way the code works by accident or breaks on values that are perfectly normal, and the
+    mistake is easy to miss in review because the intent reads correctly.
+  fix: |
+    Make the intended behaviour explicit — fix the condition, the operator or the order of operations —
+    and cover the case that used to fail with a test.
+
+- key: QG-CSS-SML-0020
+  name: At-rules should be simplified
+  languages: [css]
+  category: SML
+  severity: minor
+  effort: 15min
+  tags: [sml, generated]
+  generated: true
+  status: planned
+  message: This code is harder to read or change than the behaviour requires.
+  summary: The code works but is harder to read or change than the behaviour requires.
+  why: |
+    The intent is buried, duplicated, or spread across places that must stay in sync, so every future
+    change costs more than it should and carries a risk that has nothing to do with the change itself.
+  fix: |
+    Remove what is not used, name what is unclear, and keep one piece of behaviour in one place so the
+    next change touches a single spot.
+
+- key: QG-CSS-BUG-0019
+  name: Custom properties should behave the way it reads
+  languages: [css]
+  category: BUG
+  severity: major
+  effort: 15min
+  tags: [bug, generated]
+  generated: true
+  status: planned
+  message: This code does not behave the way it reads.
+  summary: The code does not do what its shape suggests, or fails on ordinary input.
+  why: |
+    Written this way the code works by accident or breaks on values that are perfectly normal, and the
+    mistake is easy to miss in review because the intent reads correctly.
+  fix: |
+    Make the intended behaviour explicit — fix the condition, the operator or the order of operations —
+    and cover the case that used to fail with a test.
+
+- key: QG-CSS-BUG-0020
+  name: CSS declarations should behave the way it reads
+  languages: [css]
+  category: BUG
+  severity: major
+  effort: 15min
+  tags: [bug, generated]
+  generated: true
+  status: planned
+  message: This code does not behave the way it reads.
+  summary: The code does not do what its shape suggests, or fails on ordinary input.
+  why: |
+    Written this way the code works by accident or breaks on values that are perfectly normal, and the
+    mistake is easy to miss in review because the intent reads correctly.
+  fix: |
+    Make the intended behaviour explicit — fix the condition, the operator or the order of operations —
+    and cover the case that used to fail with a test.
+
+- key: QG-CSS-BUG-0021
+  name: Descriptors within at-rules should behave the way it reads
+  languages: [css]
+  category: BUG
+  severity: major
+  effort: 15min
+  tags: [bug, generated]
+  generated: true
+  status: planned
+  message: This code does not behave the way it reads.
+  summary: The code does not do what its shape suggests, or fails on ordinary input.
+  why: |
+    Written this way the code works by accident or breaks on values that are perfectly normal, and the
+    mistake is easy to miss in review because the intent reads correctly.
+  fix: |
+    Make the intended behaviour explicit — fix the condition, the operator or the order of operations —
+    and cover the case that used to fail with a test.
+
+- key: QG-CSS-BUG-0022
+  name: Keyframe selectors should not be duplicated
+  languages: [css]
+  category: BUG
+  severity: major
+  effort: 15min
+  tags: [duplication, generated]
+  generated: true
+  status: planned
+  message: This code or value is duplicated.
+  summary: The same code or value appears more than once.
+  why: |
+    Copies drift apart the first time one of them is fixed, and nothing links them, so the bug is fixed
+    in one place and stays in the other. Readers also cannot tell which copy is authoritative.
+  fix: |
+    Keep one definition and reference it from the other places, or extract the shared part into a named
+    function or constant.
+
+- key: QG-CSS-BUG-0023
+  name: An+B selectors should behave the way it reads
+  languages: [css]
+  category: BUG
+  severity: major
+  effort: 15min
+  tags: [bug, generated]
+  generated: true
+  status: planned
+  message: This code does not behave the way it reads.
+  summary: The code does not do what its shape suggests, or fails on ordinary input.
+  why: |
+    Written this way the code works by accident or breaks on values that are perfectly normal, and the
+    mistake is easy to miss in review because the intent reads correctly.
+  fix: |
+    Make the intended behaviour explicit — fix the condition, the operator or the order of operations —
+    and cover the case that used to fail with a test.
+
+- key: QG-CSS-BUG-0024
+  name: At-rule descriptor values should behave the way it reads
+  languages: [css]
+  category: BUG
+  severity: major
+  effort: 15min
+  tags: [bug, generated]
+  generated: true
+  status: planned
+  message: This code does not behave the way it reads.
+  summary: The code does not do what its shape suggests, or fails on ordinary input.
+  why: |
+    Written this way the code works by accident or breaks on values that are perfectly normal, and the
+    mistake is easy to miss in review because the intent reads correctly.
+  fix: |
+    Make the intended behaviour explicit — fix the condition, the operator or the order of operations —
+    and cover the case that used to fail with a test.
+
+- key: QG-CSS-BUG-0025
+  name: At-rule preludes should behave the way it reads
+  languages: [css]
+  category: BUG
+  severity: major
+  effort: 15min
+  tags: [bug, generated]
+  generated: true
+  status: planned
+  message: This code does not behave the way it reads.
+  summary: The code does not do what its shape suggests, or fails on ordinary input.
+  why: |
+    Written this way the code works by accident or breaks on values that are perfectly normal, and the
+    mistake is easy to miss in review because the intent reads correctly.
+  fix: |
+    Make the intended behaviour explicit — fix the condition, the operator or the order of operations —
+    and cover the case that used to fail with a test.
+
+- key: QG-CSS-BUG-0026
+  name: @import rules should behave the way it reads
+  languages: [css]
+  category: BUG
+  severity: major
+  effort: 15min
+  tags: [bug, generated]
+  generated: true
+  status: planned
+  message: This code does not behave the way it reads.
+  summary: The code does not do what its shape suggests, or fails on ordinary input.
+  why: |
+    Written this way the code works by accident or breaks on values that are perfectly normal, and the
+    mistake is easy to miss in review because the intent reads correctly.
+  fix: |
+    Make the intended behaviour explicit — fix the condition, the operator or the order of operations —
+    and cover the case that used to fail with a test.

@@ -39,7 +39,29 @@ public static class StructuralRuleSet
         new ComplexConditionRule(),
         new NestedMatchRule(),
         new MissingBracesRule(),
-        new TooManyReturnsRule()
+        new TooManyReturnsRule(),
+        new EmptyCatchRule(),
+        new BooleanLiteralComparisonRule(),
+        new MagicNumberRule(),
+        new NestedTernaryRule(),
+        new TooManyMembersRule(),
+        new TestWithoutAssertionRule(),
+        new GenericExceptionCaughtRule(),
+        new GenericExceptionThrownRule(),
+        new RethrowLosingStackRule(),
+        new JumpInFinallyRule(),
+        new LockOnSharedObjectRule(),
+        new IgnoredTestRule(),
+        new UnusedPrivateFunctionRule(),
+        new RedundantJumpRule(),
+        new CommentedOutCodeRule(),
+        new DeepInheritanceRule(),
+        new HiddenBaseMemberRule(),
+        new UnusedInternalMemberRule(),
+        new DuplicateTypeNameRule(),
+        new EqualityContractRule(),
+        new OverrideOnlyCallsBaseRule(),
+        new EmptyTypeRule()
     ];
 
     internal static string Normalized(SyntaxNode node)
@@ -806,4 +828,708 @@ public sealed class TooManyReturnsRule : StructuralRuleBase
                                          + "compute one result and return it once.");
         }
     }
+}
+
+public sealed class EmptyCatchRule : StructuralRuleBase
+{
+    public override string Key => "QG-ALL-SML-0020";
+    public override string Name => "Caught exceptions should not be ignored";
+    public override Severity Severity => Severity.Major;
+    public override IssueKind Kind => IssueKind.CodeSmell;
+    public override string RemediationEffort => "10min";
+
+    public override void Execute(IRuleContext context)
+    {
+        if (!HasPreciseTree(context))
+            return;
+
+        foreach (var handler in context.Root.OfKind(NodeKind.Catch))
+        {
+            var body = handler.FirstChild(NodeKind.Block);
+            if (body is not { Children.Count: 0 })
+                continue;
+            // a comment inside the block is an explicit decision, and the tokenizer keeps it
+            var hasComment = context.Tokens.Any(t => t.Kind == Tokenization.TokenKind.Comment
+                                                     && t.Line >= handler.Line && t.Line <= handler.EndLine);
+            if (hasComment)
+                continue;
+            context.Report(handler, "This handler discards the failure without recording it; "
+                                    + "log it with context or let it propagate.");
+        }
+    }
+}
+
+public sealed class BooleanLiteralComparisonRule : StructuralRuleBase
+{
+    public override string Key => "QG-ALL-SML-0021";
+    public override string Name => "Boolean values should not be compared with literals";
+    public override Severity Severity => Severity.Minor;
+    public override IssueKind Kind => IssueKind.CodeSmell;
+    public override string RemediationEffort => "5min";
+
+    public override void Execute(IRuleContext context)
+    {
+        if (!HasPreciseTree(context))
+            return;
+
+        foreach (var comparison in context.Root.OfKind(NodeKind.Binary))
+        {
+            if (comparison.Text is not ("==" or "!=" or "===" or "!=="))
+                continue;
+            if (!comparison.Children.Any(c => c.Kind == NodeKind.BooleanLiteral))
+                continue;
+            context.Report(comparison, "Comparing with a boolean literal restates the value; "
+                                       + "use the expression itself, negated when needed.");
+        }
+    }
+}
+
+public sealed class MagicNumberRule : StructuralRuleBase
+{
+    private static readonly string[] Accepted = ["0", "1", "2", "-1", "100", "1000"];
+
+    public override string Key => "QG-ALL-SML-0022";
+    public override string Name => "Numbers should be named when their meaning is not obvious";
+    public override Severity Severity => Severity.Minor;
+    public override IssueKind Kind => IssueKind.CodeSmell;
+    public override string RemediationEffort => "10min";
+
+    public override void Execute(IRuleContext context)
+    {
+        if (!HasPreciseTree(context))
+            return;
+
+        foreach (var number in context.Root.OfKind(NodeKind.NumberLiteral))
+        {
+            var text = number.Text.TrimEnd('L', 'l', 'f', 'F', 'd', 'D', 'm', 'M', 'u', 'U');
+            if (Accepted.Contains(text, StringComparer.Ordinal) || text.Length < 2)
+                continue;
+            // a literal that initialises a constant is already named
+            if (number.Ancestor(NodeKind.FieldDeclaration, NodeKind.EnumMember) != null)
+                continue;
+            if (number.Ancestor(NodeKind.Invocation, NodeKind.If, NodeKind.Loop, NodeKind.Binary) == null)
+                continue;
+            context.Report(number, $"The meaning of {number.Text} is not visible here; "
+                                   + "give it a name through a constant.");
+            break; // one reminder per file is enough
+        }
+    }
+}
+
+public sealed class NestedTernaryRule : StructuralRuleBase
+{
+    public override string Key => "QG-ALL-SML-0023";
+    public override string Name => "Conditional expressions should not be nested";
+    public override Severity Severity => Severity.Major;
+    public override IssueKind Kind => IssueKind.CodeSmell;
+    public override string RemediationEffort => "15min";
+
+    public override void Execute(IRuleContext context)
+    {
+        if (!HasPreciseTree(context))
+            return;
+
+        foreach (var conditional in context.Root.OfKind(NodeKind.Conditional))
+        {
+            if (conditional.Ancestor(NodeKind.Conditional) == null)
+                continue;
+            context.Report(conditional, "A conditional inside another one hides which case applies; "
+                                        + "use a statement form or extract a named helper.");
+        }
+    }
+}
+
+public sealed class TooManyMembersRule : StructuralRuleBase
+{
+    private const int MaxMethods = 25;
+    private const int MaxFields = 20;
+
+    public override string Key => "QG-ALL-SML-0024";
+    public override string Name => "Types should not accumulate too many members";
+    public override Severity Severity => Severity.Major;
+    public override IssueKind Kind => IssueKind.CodeSmell;
+    public override string RemediationEffort => "45min";
+
+    public override void Execute(IRuleContext context)
+    {
+        if (!HasPreciseTree(context))
+            return;
+
+        foreach (var type in context.Root.OfKind(NodeKind.ClassDeclaration))
+        {
+            var methods = type.OfKind(NodeKind.FunctionDeclaration)
+                .Count(m => m.Ancestor(NodeKind.ClassDeclaration) == type);
+            var fields = type.OfKind(NodeKind.FieldDeclaration, NodeKind.PropertyDeclaration)
+                .Count(f => f.Ancestor(NodeKind.ClassDeclaration) == type);
+            if (methods <= MaxMethods && fields <= MaxFields)
+                continue;
+            context.Report(type, $"'{type.Text}' declares {methods} methods and {fields} fields; "
+                                 + "split the responsibilities it has accumulated.");
+        }
+    }
+}
+
+public sealed class TestWithoutAssertionRule : StructuralRuleBase
+{
+    private static readonly string[] AssertionNames =
+    [
+        "assert", "assertthat", "assertequals", "asserttrue", "assertfalse", "assertnull",
+        "assertnotnull", "expect", "should", "verify", "check", "mustbe", "throws", "assertion"
+    ];
+
+    public override string Key => "QG-ALL-BUG-0008";
+    public override string Name => "Tests should verify something";
+    public override Severity Severity => Severity.Major;
+    public override IssueKind Kind => IssueKind.Bug;
+    public override string RemediationEffort => "15min";
+
+    public override void Execute(IRuleContext context)
+    {
+        if (!HasPreciseTree(context) || !LooksLikeTestFile(context))
+            return;
+
+        foreach (var function in SyntaxQuery.Functions(context.Root))
+        {
+            var body = SyntaxQuery.Body(function);
+            if (body is null or { Children.Count: 0 })
+                continue;
+            if (!IsTestName(function))
+                continue;
+            var asserts = function.OfKind(NodeKind.Invocation)
+                .Any(call => AssertionNames.Any(name =>
+                    SyntaxQuery.InvokedName(call).ToLowerInvariant().Contains(name)));
+            if (asserts)
+                continue;
+            context.Report(function, $"'{function.Text}' runs code but asserts nothing, "
+                                     + "so it passes whatever the behaviour does.");
+        }
+    }
+
+    private static bool LooksLikeTestFile(IRuleContext context)
+    {
+        var name = context.File.FileName.ToLowerInvariant();
+        return name.Contains("test") || name.Contains("spec");
+    }
+
+    private static bool IsTestName(SyntaxNode function)
+    {
+        var name = function.Text.ToLowerInvariant();
+        if (name.StartsWith("test", StringComparison.Ordinal) || name.EndsWith("test", StringComparison.Ordinal))
+            return true;
+        return function.ChildrenOf(NodeKind.Attribute)
+            .Any(a => a.Text.Contains("Test", StringComparison.OrdinalIgnoreCase)
+                      || a.Text.Contains("Fact", StringComparison.OrdinalIgnoreCase)
+                      || a.Text.Contains("Theory", StringComparison.OrdinalIgnoreCase));
+    }
+}
+
+public sealed class GenericExceptionCaughtRule : StructuralRuleBase
+{
+    private static readonly string[] BaseTypes =
+        ["Exception", "SystemException", "Throwable", "Error", "BaseException", "RuntimeException"];
+
+    public override string Key => "QG-ALL-SML-0025";
+    public override string Name => "Catch clauses should name the failures they handle";
+    public override Severity Severity => Severity.Major;
+    public override IssueKind Kind => IssueKind.CodeSmell;
+    public override string RemediationEffort => "15min";
+
+    public override void Execute(IRuleContext context)
+    {
+        if (!HasPreciseTree(context))
+            return;
+
+        foreach (var handler in context.Root.OfKind(NodeKind.Catch))
+        {
+            var type = handler.FirstChild(NodeKind.TypeReference)?.Text
+                       ?? handler.FirstChild(NodeKind.Pattern)?.Text;
+            if (type == null || !BaseTypes.Contains(type, StringComparer.Ordinal))
+                continue;
+            if (handler.Ancestor(NodeKind.FunctionDeclaration) is { Text: "Main" or "main" })
+                continue; // the process boundary may legitimately catch everything
+            context.Report(handler, $"Catching '{type}' also swallows the failures this code cannot "
+                                    + "handle; catch the specific ones and let the rest reach the boundary.");
+        }
+    }
+}
+
+public sealed class GenericExceptionThrownRule : StructuralRuleBase
+{
+    private static readonly string[] BaseTypes =
+        ["Exception", "SystemException", "Throwable", "Error", "RuntimeException", "BaseException"];
+
+    public override string Key => "QG-ALL-SML-0026";
+    public override string Name => "Thrown exceptions should say what went wrong";
+    public override Severity Severity => Severity.Major;
+    public override IssueKind Kind => IssueKind.CodeSmell;
+    public override string RemediationEffort => "15min";
+
+    public override void Execute(IRuleContext context)
+    {
+        if (!HasPreciseTree(context))
+            return;
+
+        foreach (var jump in context.Root.OfKind(NodeKind.Jump))
+        {
+            if (jump.Text is not ("throw" or "raise"))
+                continue;
+            var created = jump.OfKind(NodeKind.ObjectCreation).FirstOrDefault()
+                          ?? jump.OfKind(NodeKind.Invocation).FirstOrDefault();
+            var type = created?.Text ?? string.Empty;
+            if (!BaseTypes.Contains(type, StringComparer.Ordinal))
+                continue;
+            context.Report(jump, $"'{type}' tells the caller nothing about the failure; "
+                                 + "throw a specific type it can act on.");
+        }
+    }
+}
+
+public sealed class RethrowLosingStackRule : StructuralRuleBase
+{
+    public override string Key => "QG-ALL-BUG-0009";
+    public override string Name => "Rethrowing should preserve the original trace";
+    public override Severity Severity => Severity.Major;
+    public override IssueKind Kind => IssueKind.Bug;
+    public override string RemediationEffort => "10min";
+
+    public override void Execute(IRuleContext context)
+    {
+        if (!HasPreciseTree(context) || context.Language.LanguageKey is not ("cs" or "vb"))
+            return;
+
+        foreach (var handler in context.Root.OfKind(NodeKind.Catch))
+        {
+            var caught = handler.FirstChild(NodeKind.VariableDeclaration)?.Text;
+            if (string.IsNullOrEmpty(caught))
+                continue;
+            foreach (var jump in handler.OfKind(NodeKind.Jump).Where(j => j.Text == "throw"))
+            {
+                var thrown = SyntaxQuery.DottedName(jump.ChildAt(0));
+                if (thrown != caught)
+                    continue;
+                context.Report(jump, $"Throwing '{caught}' again restarts the stack trace here; "
+                                     + "use a bare throw, or wrap it as the inner exception.");
+            }
+        }
+    }
+}
+
+public sealed class JumpInFinallyRule : StructuralRuleBase
+{
+    public override string Key => "QG-ALL-BUG-0010";
+    public override string Name => "Cleanup blocks should not change the control flow";
+    public override Severity Severity => Severity.Blocker;
+    public override IssueKind Kind => IssueKind.Bug;
+    public override string RemediationEffort => "20min";
+
+    public override void Execute(IRuleContext context)
+    {
+        if (!HasPreciseTree(context))
+            return;
+
+        foreach (var cleanup in context.Root.OfKind(NodeKind.Finally))
+        {
+            foreach (var jump in cleanup.OfKind(NodeKind.Jump))
+            {
+                if (jump.Text is not ("return" or "break" or "continue" or "throw" or "raise"))
+                    continue;
+                if (jump.Ancestor(NodeKind.Lambda, NodeKind.FunctionDeclaration) is { } inner
+                    && inner.Ancestor(NodeKind.Finally) == null)
+                    continue; // belongs to a nested function, not to the cleanup itself
+                context.Report(jump, $"'{jump.Text}' inside cleanup discards whatever was in flight, "
+                                     + "including an exception on its way to the caller.");
+                break;
+            }
+        }
+    }
+}
+
+public sealed class LockOnSharedObjectRule : StructuralRuleBase
+{
+    public override string Key => "QG-ALL-BUG-0011";
+    public override string Name => "Locks should be taken on a private object";
+    public override Severity Severity => Severity.Critical;
+    public override IssueKind Kind => IssueKind.Bug;
+    public override string RemediationEffort => "20min";
+
+    public override void Execute(IRuleContext context)
+    {
+        if (!HasPreciseTree(context))
+            return;
+
+        foreach (var lockStatement in context.Root.OfKind(NodeKind.Lock))
+        {
+            var subject = lockStatement.Children.FirstOrDefault(c => c.Kind is not NodeKind.Block);
+            if (subject == null)
+                continue;
+            var text = SyntaxQuery.DottedName(subject);
+            var isShared = subject.Kind == NodeKind.StringLiteral
+                           || text is "this" or "self"
+                           || text.StartsWith("typeof", StringComparison.Ordinal)
+                           || subject.OfKind(NodeKind.Invocation).Any(i =>
+                               SyntaxQuery.InvokedName(i) is "getClass" or "typeof" or "GetType");
+            if (!isShared)
+                continue;
+            context.Report(lockStatement, "Anything reachable from outside can lock this monitor too, "
+                                          + "so unrelated code can block or deadlock this section; "
+                                          + "use a private object dedicated to the state it protects.");
+        }
+    }
+}
+
+public sealed class IgnoredTestRule : StructuralRuleBase
+{
+    private static readonly string[] Markers =
+        ["Ignore", "Skip", "Skipped", "Disabled", "Pending", "Xfail", "Todo"];
+
+    public override string Key => "QG-ALL-SML-0027";
+    public override string Name => "Disabled tests should not stay in the suite";
+    public override Severity Severity => Severity.Major;
+    public override IssueKind Kind => IssueKind.CodeSmell;
+    public override string RemediationEffort => "15min";
+
+    public override void Execute(IRuleContext context)
+    {
+        if (!HasPreciseTree(context))
+            return;
+
+        foreach (var function in SyntaxQuery.Functions(context.Root))
+        {
+            var marker = function.ChildrenOf(NodeKind.Attribute)
+                .FirstOrDefault(a => Markers.Any(m => a.Text.Contains(m, StringComparison.OrdinalIgnoreCase)));
+            if (marker == null)
+                continue;
+            context.Report(function, $"'{function.Text}' is disabled, so the behaviour it covers is "
+                                     + "unverified while the suite still reports green.");
+        }
+    }
+}
+
+public sealed class UnusedPrivateFunctionRule : StructuralRuleBase
+{
+    public override string Key => "QG-ALL-SML-0028";
+    public override string Name => "Private functions should be called";
+    public override Severity Severity => Severity.Minor;
+    public override IssueKind Kind => IssueKind.CodeSmell;
+    public override string RemediationEffort => "10min";
+
+    public override void Execute(IRuleContext context)
+    {
+        if (!HasPreciseTree(context))
+            return;
+
+        var called = context.Root.OfKind(NodeKind.Invocation)
+            .Select(SyntaxQuery.InvokedName)
+            .ToHashSet(StringComparer.Ordinal);
+
+        foreach (var function in SyntaxQuery.Functions(context.Root))
+        {
+            var isPrivate = function.ChildrenOf(NodeKind.Modifier).Any(m => m.Text == "private")
+                            || (context.Language.LanguageKey == "py" && function.Text.StartsWith('_')
+                                && !function.Text.StartsWith("__", StringComparison.Ordinal));
+            if (!isPrivate || function.Text.Length == 0 || called.Contains(function.Text))
+                continue;
+            // a member referenced without a call, for instance as a delegate, still counts as used
+            var referenced = context.Root.OfKind(NodeKind.Identifier)
+                .Count(i => i.Text == function.Text) > 0;
+            if (referenced)
+                continue;
+            context.Report(function, $"Nothing in this file calls '{function.Text}'; "
+                                     + "remove it or make the caller explicit.");
+        }
+    }
+}
+
+public sealed class RedundantJumpRule : StructuralRuleBase
+{
+    public override string Key => "QG-ALL-SML-0029";
+    public override string Name => "Jumps that change nothing should be removed";
+    public override Severity Severity => Severity.Minor;
+    public override IssueKind Kind => IssueKind.CodeSmell;
+    public override string RemediationEffort => "5min";
+
+    public override void Execute(IRuleContext context)
+    {
+        if (!HasPreciseTree(context))
+            return;
+
+        foreach (var block in Blocks(context))
+        {
+            if (block.Children.Count == 0)
+                continue;
+            var last = block.Children[^1];
+            if (last.Kind != NodeKind.Jump || last.Children.Count > 0)
+                continue;
+
+            var owner = block.Parent;
+            var redundant = last.Text switch
+            {
+                "return" => owner?.Kind == NodeKind.FunctionDeclaration,
+                "continue" => owner?.Kind == NodeKind.Loop,
+                _ => false
+            };
+            if (!redundant)
+                continue;
+            context.Report(last, $"Control leaves the block here anyway, so this '{last.Text}' "
+                                 + "only adds a line to read.");
+        }
+    }
+}
+
+public sealed class CommentedOutCodeRule : StructuralRuleBase
+{
+    public override string Key => "QG-ALL-SML-0030";
+    public override string Name => "Commented-out code should be deleted";
+    public override Severity Severity => Severity.Major;
+    public override IssueKind Kind => IssueKind.CodeSmell;
+    public override string RemediationEffort => "5min";
+
+    public override void Execute(IRuleContext context)
+    {
+        foreach (var comment in context.Tokens.Where(t => t.Kind == Tokenization.TokenKind.Comment))
+        {
+            var text = comment.Text.TrimStart('/', '*', '#', '-', ' ', '\t');
+            if (text.Length < 12 || text.Length > 200)
+                continue;
+            var looksLikeCode = (text.EndsWith(';') || text.EndsWith('{') || text.EndsWith('}'))
+                                && (text.Contains('=') || text.Contains('(') || text.Contains("return"));
+            if (!looksLikeCode)
+                continue;
+            context.Report("This comment holds code that no longer runs; delete it — "
+                           + "version control already keeps the history.", comment.Line);
+        }
+    }
+}
+
+public sealed class DeepInheritanceRule : StructuralRuleBase
+{
+    private const int MaxDepth = 4;
+
+    public override string Key => "QG-ALL-SML-0031";
+    public override string Name => "Inheritance chains should stay shallow";
+    public override Severity Severity => Severity.Major;
+    public override IssueKind Kind => IssueKind.CodeSmell;
+    public override string RemediationEffort => "45min";
+
+    public override void Execute(IRuleContext context)
+    {
+        if (!HasPreciseTree(context))
+            return;
+
+        foreach (var type in context.Root.OfKind(NodeKind.ClassDeclaration))
+        {
+            var info = context.Project.FindTypes(type.Text).FirstOrDefault(t => t.Node == type);
+            if (info == null)
+                continue;
+            var depth = context.Project.InheritanceDepth(info);
+            if (depth <= MaxDepth)
+                continue;
+            context.Report(type, $"'{type.Text}' sits {depth} levels down its hierarchy; "
+                                 + "understanding one method means opening every ancestor.");
+        }
+    }
+}
+
+public sealed class HiddenBaseMemberRule : StructuralRuleBase
+{
+    private static readonly string[] IntentionalMarkers = ["override", "new", "virtual", "abstract", "partial"];
+
+    public override string Key => "QG-ALL-BUG-0012";
+    public override string Name => "Members should not hide a base member by accident";
+    public override Severity Severity => Severity.Major;
+    public override IssueKind Kind => IssueKind.Bug;
+    public override string RemediationEffort => "20min";
+
+    public override void Execute(IRuleContext context)
+    {
+        if (!HasPreciseTree(context) || context.Language.LanguageKey is not ("cs" or "java" or "kt" or "vb"))
+            return;
+
+        foreach (var type in context.Root.OfKind(NodeKind.ClassDeclaration))
+        {
+            var info = context.Project.FindTypes(type.Text).FirstOrDefault(t => t.Node == type);
+            if (info == null || info.BaseNames.Count == 0)
+                continue;
+            var inherited = context.Project.InheritedMembers(info);
+            if (inherited.Count == 0)
+                continue;
+
+            foreach (var member in type.OfKind(NodeKind.FunctionDeclaration, NodeKind.PropertyDeclaration))
+            {
+                if (member.Ancestor(NodeKind.ClassDeclaration) != type || member.Text.Length == 0)
+                    continue;
+                if (!inherited.Contains(member.Text))
+                    continue;
+                var modifiers = member.ChildrenOf(NodeKind.Modifier).Select(m => m.Text).ToArray();
+                if (modifiers.Any(m => IntentionalMarkers.Contains(m, StringComparer.Ordinal)))
+                    continue;
+                if (member.ChildrenOf(NodeKind.Attribute).Any(a => a.Text.Contains("Override", StringComparison.OrdinalIgnoreCase)))
+                    continue;
+                context.Report(member, $"'{member.Text}' already exists in a base type; "
+                                       + "mark the intent with override, or rename it so the two do not clash.");
+            }
+        }
+    }
+}
+
+public sealed class UnusedInternalMemberRule : StructuralRuleBase
+{
+    public override string Key => "QG-ALL-SML-0032";
+    public override string Name => "Non-public members should be reachable";
+    public override Severity Severity => Severity.Minor;
+    public override IssueKind Kind => IssueKind.CodeSmell;
+    public override string RemediationEffort => "10min";
+
+    public override void Execute(IRuleContext context)
+    {
+        if (!HasPreciseTree(context) || context.Project.Types.Count == 0)
+            return;
+
+        foreach (var member in context.Root.OfKind(NodeKind.FunctionDeclaration))
+        {
+            var modifiers = member.ChildrenOf(NodeKind.Modifier).Select(m => m.Text).ToArray();
+            if (!modifiers.Contains("internal") && !modifiers.Contains("private"))
+                continue;
+            if (member.Text.Length == 0 || context.Project.IsCalledAnywhere(member.Text))
+                continue;
+            // one occurrence is the declaration; anything more means it is referenced somewhere
+            if (context.Project.ReferenceCount(member.Text) > 1)
+                continue;
+            context.Report(member, $"Nothing in the scanned code reaches '{member.Text}'; "
+                                   + "remove it or make the caller explicit.");
+        }
+    }
+}
+
+public sealed class DuplicateTypeNameRule : StructuralRuleBase
+{
+    public override string Key => "QG-ALL-SML-0033";
+    public override string Name => "Type names should be unique across the code base";
+    public override Severity Severity => Severity.Minor;
+    public override IssueKind Kind => IssueKind.CodeSmell;
+    public override string RemediationEffort => "20min";
+
+    public override void Execute(IRuleContext context)
+    {
+        if (!HasPreciseTree(context))
+            return;
+
+        foreach (var type in context.Root.OfKind(NodeKind.ClassDeclaration))
+        {
+            if (type.Text.Length == 0 || !context.Project.IsDeclaredMoreThanOnce(type.Text))
+                continue;
+            var others = context.Project.FindTypes(type.Text)
+                .Where(t => t.File != context.File.Path)
+                .Select(t => System.IO.Path.GetFileName(t.File))
+                .Distinct()
+                .ToArray();
+            if (others.Length == 0)
+                continue;
+            context.Report(type, $"'{type.Text}' is also declared in {string.Join(", ", others)}; "
+                                 + "a reader cannot tell which one an import refers to.");
+        }
+    }
+}
+
+public sealed class EqualityContractRule : StructuralRuleBase
+{
+    public override string Key => "QG-ALL-BUG-0013";
+    public override string Name => "Equality and hashing should be overridden together";
+    public override Severity Severity => Severity.Critical;
+    public override IssueKind Kind => IssueKind.Bug;
+    public override string RemediationEffort => "15min";
+
+    public override void Execute(IRuleContext context)
+    {
+        if (!HasPreciseTree(context))
+            return;
+
+        foreach (var type in context.Root.OfKind(NodeKind.ClassDeclaration))
+        {
+            var members = type.OfKind(NodeKind.FunctionDeclaration)
+                .Where(m => m.Ancestor(NodeKind.ClassDeclaration) == type)
+                .Select(m => m.Text)
+                .ToArray();
+            var hasEquals = members.Any(m => m is "Equals" or "equals" or "__eq__");
+            var hasHash = members.Any(m => m is "GetHashCode" or "hashCode" or "__hash__");
+            if (hasEquals == hasHash)
+                continue;
+            var present = hasEquals ? "equality" : "hashing";
+            var missing = hasEquals ? "hashing" : "equality";
+            context.Report(type, $"'{type.Text}' overrides {present} but not {missing}; "
+                                 + "hash-based collections then fail to find items that compare equal.");
+        }
+    }
+}
+
+public sealed class OverrideOnlyCallsBaseRule : StructuralRuleBase
+{
+    public override string Key => "QG-ALL-SML-0034";
+    public override string Name => "Overrides should add something";
+    public override Severity Severity => Severity.Minor;
+    public override IssueKind Kind => IssueKind.CodeSmell;
+    public override string RemediationEffort => "10min";
+
+    public override void Execute(IRuleContext context)
+    {
+        if (!HasPreciseTree(context))
+            return;
+
+        foreach (var member in context.Root.OfKind(NodeKind.FunctionDeclaration))
+        {
+            var isOverride = member.ChildrenOf(NodeKind.Modifier).Any(m => m.Text == "override")
+                             || member.ChildrenOf(NodeKind.Attribute).Any(a => a.Text == "Override");
+            if (!isOverride)
+                continue;
+            var body = SyntaxQuery.Body(member);
+            if (body is not { Children.Count: 1 })
+                continue;
+
+            var only = body.Children[0];
+            var call = only.OfKind(NodeKind.Invocation).FirstOrDefault();
+            if (call == null)
+                continue;
+            var callee = SyntaxQuery.InvokedDottedName(call);
+            if (!callee.StartsWith("base.", StringComparison.Ordinal)
+                && !callee.StartsWith("super.", StringComparison.Ordinal))
+                continue;
+            if (SyntaxQuery.SimpleName(call.ChildAt(0)) != member.Text)
+                continue;
+            context.Report(member, $"'{member.Text}' only forwards to the base implementation, "
+                                   + "so removing it changes nothing.");
+        }
+    }
+}
+
+public sealed class EmptyTypeRule : StructuralRuleBase
+{
+    public override string Key => "QG-ALL-SML-0035";
+    public override string Name => "Types should declare something";
+    public override Severity Severity => Severity.Minor;
+    public override IssueKind Kind => IssueKind.CodeSmell;
+    public override string RemediationEffort => "15min";
+
+    public override void Execute(IRuleContext context)
+    {
+        if (!HasPreciseTree(context))
+            return;
+
+        foreach (var type in context.Root.OfKind(NodeKind.ClassDeclaration))
+        {
+            var body = type.FirstChild(NodeKind.Block);
+            if (body is not { Children.Count: 0 })
+                continue;
+            if (type.BaseCount(context) > 0)
+                continue; // an empty subclass can be a deliberate marker or a specialised exception
+            context.Report(type, $"'{type.Text}' declares no members; "
+                                 + "give it behaviour or remove it.");
+        }
+    }
+}
+
+internal static class TypeNodeExtensions
+{
+    /// <summary>Number of base types the declaration names, as seen by the project index.</summary>
+    public static int BaseCount(this SyntaxNode type, IRuleContext context)
+        => context.Project.FindTypes(type.Text).FirstOrDefault(t => t.Node == type)?.BaseNames.Count ?? 0;
 }

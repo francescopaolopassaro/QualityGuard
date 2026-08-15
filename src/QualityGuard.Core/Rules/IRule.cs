@@ -50,6 +50,12 @@ public interface IRuleContext
     /// <summary>Scopes, symbols and resolved values.</summary>
     SemanticModel Semantics { get; }
 
+    /// <summary>
+    /// Cross-file view of the code being analysed: declared types, their hierarchy and the names used
+    /// anywhere. Empty when a single file is analysed on its own.
+    /// </summary>
+    ProjectIndex Project { get; }
+
     TaintResult? Taint { get; }
 
     bool IsTainted(string identifier);
@@ -75,6 +81,7 @@ internal sealed class RuleContext(SourceFile file, FileAnalysis analysis) : IRul
     public SyntaxTree Tree => _analysis.Tree;
     public SyntaxNode Root => _analysis.Tree.Root;
     public SemanticModel Semantics => _analysis.Semantics;
+    public ProjectIndex Project => _analysis.Project ?? ProjectIndex.Empty;
     public TaintResult? Taint => _analysis.Taint;
 
     public IRule CurrentRule { get; set; } = null!;

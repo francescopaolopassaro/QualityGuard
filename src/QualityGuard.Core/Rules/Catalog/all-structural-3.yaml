@@ -1,0 +1,338 @@
+# Documentation for the third wave of language-agnostic AST rules.
+
+- key: QG-ALL-SML-0020
+  name: Caught exceptions should not be ignored
+  languages: []
+  category: SML
+  severity: major
+  effort: 10min
+  tags: [exception]
+  summary: A catch block has no statements and no comment explaining the decision.
+  why: |
+    Swallowing a failure leaves the program running in a state nobody planned for, with no record that
+    anything went wrong. The symptom appears later somewhere unrelated, and the log gives no clue where
+    to start looking.
+  fix: |
+    Handle the case, or log it with enough context to identify the operation and rethrow. When the
+    failure really is expected and harmless, keep the empty block but write down the reason.
+
+- key: QG-ALL-SML-0021
+  name: Boolean values should not be compared with literals
+  languages: []
+  category: SML
+  severity: minor
+  effort: 5min
+  tags: [readability]
+  summary: A boolean expression is compared with true or false.
+  why: |
+    The comparison restates what the value already says, so the reader spends a moment checking whether
+    it is an equality or an inequality. It is also one keystroke away from an assignment, which would
+    change the meaning without changing the shape.
+  fix: |
+    Use the expression directly, negating it when the false case is the interesting one.
+  bad: |
+    if (isReady == true) { ... }
+  good: |
+    if (isReady) { ... }
+
+- key: QG-ALL-SML-0022
+  name: Numbers should be named when their meaning is not obvious
+  languages: []
+  category: SML
+  severity: minor
+  effort: 10min
+  tags: [readability]
+  summary: A numeric literal other than the trivial ones is used inside an expression.
+  why: |
+    The number carries a meaning that lives only in the head of whoever wrote it — a limit, a timeout, a
+    protocol constant. The next reader has to infer it, and the same value repeated elsewhere has to be
+    changed in every place at once.
+  fix: |
+    Give the value a named constant that states what it means, and reference the constant from every
+    place that needs it.
+
+- key: QG-ALL-SML-0023
+  name: Conditional expressions should not be nested
+  languages: []
+  category: SML
+  severity: major
+  effort: 15min
+  tags: [readability, complexity]
+  summary: A conditional expression contains another conditional expression.
+  why: |
+    Which branch produces which value stops being visible: the association depends on precedence rather
+    than on layout, and reviewers routinely read the cases in the wrong order. Adding one more case means
+    rebuilding the whole expression.
+  fix: |
+    Use the statement form, a switch expression, or a lookup, so each case sits on its own line with its
+    own condition.
+
+- key: QG-ALL-SML-0024
+  name: Types should not accumulate too many members
+  languages: []
+  category: SML
+  severity: major
+  effort: 45min
+  tags: [design]
+  summary: A type declares more methods and fields than one responsibility needs.
+  why: |
+    A type this size is doing several jobs, so every change touches it and every reader has to work out
+    which part is relevant. Its tests grow in the same way, which makes them slow and fragile.
+  fix: |
+    Split along the responsibilities the type has accumulated — the fields that always travel together
+    usually indicate where the seam is — and let the original delegate to the new types.
+
+- key: QG-ALL-BUG-0008
+  name: Tests should verify something
+  languages: []
+  category: BUG
+  severity: major
+  effort: 15min
+  tags: [tests]
+  summary: A test method runs code but makes no assertion.
+  why: |
+    A test that cannot fail reports success forever while covering nothing, and its presence removes the
+    incentive to write the real one. The suite stays green while the behaviour it claims to protect is
+    free to change.
+  fix: |
+    Assert the outcome the test exists for, and confirm the assertion fails when the behaviour is broken
+    before trusting it again.
+
+- key: QG-ALL-SML-0025
+  name: Catch clauses should name the failures they handle
+  languages: []
+  category: SML
+  severity: major
+  effort: 15min
+  tags: [exception]
+  summary: A handler catches the base exception type instead of the failures the code can recover from.
+  why: |
+    The handler receives everything, including the programming errors that should surface loudly during
+    testing. They get logged as if they were expected conditions, and the program keeps running in a
+    state nobody designed for.
+  fix: |
+    Catch the specific exceptions the operation produces. Keep one broad handler at the process boundary
+    that logs and rethrows, so nothing is absorbed silently deeper in the call stack.
+
+- key: QG-ALL-SML-0026
+  name: Thrown exceptions should say what went wrong
+  languages: []
+  category: SML
+  severity: major
+  effort: 15min
+  tags: [exception]
+  summary: Code throws a base exception type rather than one that names the failure.
+  why: |
+    A caller cannot tell this failure from any other, so the only way to handle it is a broad catch that
+    also swallows unrelated problems. The type carries no information for logs or for recovery.
+  fix: |
+    Throw a specific standard exception, or a small custom type that names the condition and carries the
+    context the caller needs.
+
+- key: QG-ALL-SML-0027
+  name: Disabled tests should not stay in the suite
+  languages: []
+  category: SML
+  severity: major
+  effort: 15min
+  tags: [tests]
+  summary: A test is marked as ignored, skipped or pending.
+  why: |
+    A disabled test reports as green while checking nothing, and the longer it stays off the less anyone
+    remembers why. The code it protected then changes freely.
+  fix: |
+    Fix the test and re-enable it, or delete it if the behaviour no longer exists. When it must stay off,
+    reference the ticket that will bring it back.
+
+- key: QG-ALL-SML-0028
+  name: Private functions should be called
+  languages: []
+  category: SML
+  severity: minor
+  effort: 10min
+  tags: [dead-code]
+  summary: A private function is declared but nothing in the file calls or references it.
+  why: |
+    The function still has to be read, compiled and maintained while contributing nothing, and it often
+    survives from a path that was removed, which makes the file describe behaviour that no longer
+    exists.
+  fix: |
+    Delete it, or wire the call that was supposed to use it. Version control keeps the history.
+
+- key: QG-ALL-SML-0029
+  name: Jumps that change nothing should be removed
+  languages: []
+  category: SML
+  severity: minor
+  effort: 5min
+  tags: [readability]
+  summary: A return ends a function, or a continue ends a loop body, where control leaves anyway.
+  why: |
+    The statement suggests something is being skipped when nothing is, so a reader stops to work out
+    which case it handles and finds none.
+  fix: |
+    Delete the statement, and keep jumps only where they exit early from the middle of a block.
+
+- key: QG-ALL-SML-0030
+  name: Commented-out code should be deleted
+  languages: []
+  category: SML
+  severity: major
+  effort: 5min
+  tags: [dead-code]
+  summary: A comment contains code rather than an explanation.
+  why: |
+    Nobody can tell whether the code is a reminder, a rollback or a leftover, so it stays forever and
+    slowly drifts away from the surrounding logic. It also hides the comments that do explain something.
+  fix: |
+    Delete it. Version control already keeps every previous version, and a branch is a better place for
+    an experiment.
+
+- key: QG-ALL-SML-0031
+  name: Inheritance chains should stay shallow
+  languages: []
+  category: SML
+  severity: major
+  effort: 45min
+  tags: [design]
+  summary: A type sits deeper in its hierarchy than the configured limit.
+  why: |
+    Understanding one method means opening every ancestor, and a change in the middle of the chain
+    alters behaviour in classes nobody looked at. Testing a leaf type also means constructing everything
+    above it.
+  fix: |
+    Prefer composition: hold the collaborator instead of inheriting from it, and keep inheritance for a
+    genuine specialisation of one concept.
+
+- key: QG-ALL-SML-0032
+  name: Non-public members should be reachable
+  languages: []
+  category: SML
+  severity: minor
+  effort: 10min
+  tags: [dead-code]
+  summary: A private or internal function is never called anywhere in the scanned code.
+  why: |
+    Because the visibility keeps it inside the code base, nothing outside can call it either, so it is
+    dead weight that still has to be maintained and still shows up in searches.
+  fix: |
+    Remove it, or restore the call that used to reach it. If it exists only for tests, make that explicit.
+
+- key: QG-ALL-SML-0033
+  name: Type names should be unique across the code base
+  languages: []
+  category: SML
+  severity: minor
+  effort: 20min
+  tags: [naming]
+  summary: Two files declare a type with the same name.
+  why: |
+    Imports and stack traces stop being unambiguous: a reader has to check which one is meant, and an
+    accidental import of the wrong one compiles until the shapes diverge.
+  fix: |
+    Rename one of them after what makes it different, or merge them if they represent the same concept.
+
+- key: QG-ALL-SML-0034
+  name: Overrides should add something
+  languages: []
+  category: SML
+  severity: minor
+  effort: 10min
+  tags: [design]
+  summary: An override only forwards to the base implementation.
+  why: |
+    The member changes nothing while suggesting that it does, so every reader has to check the body to
+    find out. It also blocks the base class from changing its own behaviour for this type.
+  fix: |
+    Remove the override, or give it the behaviour it was added for.
+
+- key: QG-ALL-SML-0035
+  name: Types should declare something
+  languages: []
+  category: SML
+  severity: minor
+  effort: 15min
+  tags: [design]
+  summary: A type is declared with an empty body and no base type.
+  why: |
+    An empty type carries no behaviour and no data, so it is either a placeholder that was never filled
+    or a leftover. Either way it appears in imports and documentation as if it meant something.
+  fix: |
+    Give it members, or delete it. A marker type is legitimate: say so with a comment when it is one.
+
+- key: QG-ALL-BUG-0009
+  name: Rethrowing should preserve the original trace
+  languages: []
+  category: BUG
+  severity: major
+  effort: 10min
+  tags: [exception, diagnostics]
+  summary: A catch block throws the caught exception object again.
+  why: |
+    Throwing the variable restarts the trace at that line, so the frames showing where the failure
+    actually happened are gone. The log then points at the handler instead of the cause.
+  fix: |
+    Use a bare throw to keep the original trace, or wrap the exception in a new one passing it as the
+    inner exception when context has to be added.
+
+- key: QG-ALL-BUG-0010
+  name: Cleanup blocks should not change the control flow
+  languages: []
+  category: BUG
+  severity: blocker
+  effort: 20min
+  tags: [exception]
+  summary: A finally block contains a return, break, continue or throw.
+  why: |
+    The jump replaces whatever was in flight, including an exception on its way to the caller. The
+    failure disappears and the method reports success, which is the hardest kind of defect to trace.
+  fix: |
+    Keep cleanup blocks for cleanup. Move the value or the decision into the protected block, or rethrow
+    after the cleanup has run.
+
+- key: QG-ALL-BUG-0011
+  name: Locks should be taken on a private object
+  languages: []
+  category: BUG
+  severity: critical
+  effort: 20min
+  tags: [concurrency]
+  summary: A lock is taken on the instance itself, on a type, or on a string.
+  why: |
+    Anything reachable from outside can be locked by other code, so two components that know nothing
+    about each other end up serialising, or deadlocking. Interned strings and type objects are shared
+    for the whole process, which makes it worse.
+  fix: |
+    Lock a private object created for that purpose, keep the critical section short, and never call out
+    to unknown code while holding it.
+
+- key: QG-ALL-BUG-0012
+  name: Members should not hide a base member by accident
+  languages: []
+  category: BUG
+  severity: major
+  effort: 20min
+  tags: [inheritance]
+  summary: A member reuses the name of one declared by a base type, without saying it is intentional.
+  why: |
+    Which implementation runs then depends on the static type of the reference, so the same object
+    behaves differently through a base-typed variable. Nothing in the code says the two are related.
+  fix: |
+    Mark the member as an override when it replaces the base behaviour, or rename it when it is a
+    different operation that happens to share a word.
+
+- key: QG-ALL-BUG-0013
+  name: Equality and hashing should be overridden together
+  languages: []
+  category: BUG
+  severity: critical
+  effort: 15min
+  tags: [equality]
+  summary: A type overrides one half of the equality contract only.
+  why: |
+    Hash-based collections locate an item by hash first and compare it afterwards. When the two
+    definitions disagree, two objects that are equal land in different buckets and a lookup fails for an
+    item that is demonstrably in the collection.
+  fix: |
+    Override both from the same fields, and keep those fields immutable so the hash cannot change while
+    the object is stored.
