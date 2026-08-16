@@ -26,8 +26,13 @@ public sealed class TaintResult
     {
         if (expression == null)
             return false;
+        // an expression of unbounded size is walked once per rule; past a few hundred nodes the
+        // answer stops being worth the quadratic cost, and "unknown" keeps the rules silent
+        var budget = 512;
         foreach (var node in expression.DescendantsAndSelf())
         {
+            if (--budget <= 0)
+                return false;
             if (TaintEngine.IsSource(node, Context))
                 return true;
             if (node.Kind == NodeKind.Identifier && node.Symbol is { IsTainted: true })

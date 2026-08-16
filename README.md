@@ -34,8 +34,8 @@ Then across the whole scan:
 project index → type resolution → interprocedural taint → rules → quality gate
 ```
 
-* **Syntax tree** — recursive-descent parsers for C#, Java, Go, JavaScript and TypeScript (one
-  C-family parser with dialects) and an indentation-driven parser for Python. Other languages fall
+* **Syntax tree** — recursive-descent parsers for C#, Java, Go, JavaScript, TypeScript, PHP and Dart
+  (one C-family parser with a dialect each) and an indentation-driven parser for Python. Other languages fall
   back to a generic structural parser; `SyntaxTree.HasDedicatedParser` tells a rule whether the tree
   is exact enough to reason about statements.
 * **Semantic model** — scopes, symbols and usages. Declarations, assignments and reads are linked, so
@@ -85,7 +85,7 @@ produced it. The CLI prints them after each run:
 | Bugs / vulnerabilities / hotspots / code smells | counted by kind, broken down by severity |
 | **Reliability rating** | from the **worst** bug: A = none, B = minor, C = major, D = critical, E = blocker |
 | **Security rating** | same scale, over the vulnerabilities |
-| **Technical debt** | sum of the remediation effort of the code smells (`5min`, `1h30min`, `2d`; a day is 8 hours) |
+| **Technical debt** | sum of the remediation effort of the code smells (`5min`, `1h30min`, `2d`; a day is 8 hours). A rule that never stated a duration contributes a fixed amount for its severity, so the total never depends on which words a rule happened to use |
 | **Debt ratio** | debt divided by the estimated cost of writing the code (30 minutes per line) |
 | **Maintainability rating** | from the ratio: A ≤ 5 %, B ≤ 10 %, C ≤ 20 %, D ≤ 50 %, E above |
 | **Duplicated lines density** | duplicated lines over total ncloc |
@@ -117,8 +117,10 @@ thousand.
 QG-<LANG>-<CAT>-<NNNN>
 ```
 
-* **`<LANG>`** — `ALL` (multi-language), `CS` (C# and VB.NET), `JV`, `JS`, `TS`, `PY`, `PP` (PHP),
-  `GO`, `RB`, `KT`, `RS` (Rust), `CC` (C/C++), `SH`, `TF`, `DK`, `K8`, `CF`, `CSS`, `SQL`, `HTML`,
+* **`<LANG>`** — `ALL` (multi-language), `SEC` (secrets, every language), `CS` (C# and VB.NET),
+  `JV`, `JS`, `TS`, `PY`, `PP` (PHP), `GO`, `RB`, `KT`, `SW` (Swift), `RS` (Rust),
+  `DART` (Dart and Flutter),
+  `CC` (C/C++), `SH`, `TF`, `DK`, `K8`, `CF`, `CSS` (CSS, SCSS, Sass, Less), `SQL`, `HTML`, `JSON`,
   `XML`, `RAZ` (Razor), `XAML`.
 * **`<CAT>`** — `BUG` (correctness), `SEC` (security), `SML` (maintainability), `PRF` (performance),
   `CNV` (naming and formatting).
@@ -132,7 +134,7 @@ Severity and issue kind follow the category: `SEC` → vulnerability (major or a
 
 ## 5. Rules
 
-**1077 rules are loaded and executable**, backed by **2466 catalog entries** (a catalog entry either
+**1162 rules are loaded and executable**, backed by **2638 catalog entries** (a catalog entry either
 carries its own detection or documents a rule implemented in code).
 
 | Area | Code | Rules |
@@ -140,10 +142,16 @@ carries its own detection or documents a rule implemented in code).
 | C# / VB.NET | `CS` | 234 |
 | Java | `JV` | 151 |
 | Python | `PY` | 136 |
-| JavaScript | `JS` | 96 |
+| JavaScript | `JS` | 109 |
 | Kotlin | `KT` | 83 |
+| Swift | `SW` | 14 |
 | Multi-language | `ALL` | 94 |
 | Dockerfile | `DK` | 21 |
+| CSS / SCSS / Sass / Less | `CSS` | 19 |
+| HTML | `HTML` | 41 |
+| Dart / Flutter | `DART` | 7 |
+| Secrets (every language) | `SEC` | 5 |
+| JSON | `JSON` | 3 |
 | PHP | `PP` | 58 |
 | Rust | `RS` | 37 |
 | Go | `GO` | 28 |
@@ -153,8 +161,6 @@ carries its own detection or documents a rule implemented in code).
 | Kubernetes | `K8` | 14 |
 | Shell | `SH` | 13 |
 | TypeScript-specific | `TS` | 10 |
-| CSS | `CSS` | 10 |
-| HTML | `HTML` | 9 |
 | SQL | `SQL` | 9 |
 | Razor / XAML / XML | `RAZ`, `XAML`, `XML` | 11 |
 
@@ -188,6 +194,53 @@ accesses, identifiers, string literals, assignments, declared and parameter type
 plus filters such as `argTainted`, `argDynamic`, `resultUnused`, `withoutArgs`, `requires`, `absent`.
 Anything that needs real reasoning over the tree is written in C# instead, against `SyntaxQuery`, the
 semantic model and the taint result.
+
+### Web front ends
+
+Stylesheets and markup are parsed, not matched line by line, because their defects are relationships:
+
+* **CSS, SCSS, Sass, Less** — a property set twice in one block, a shorthand that cancels the longhand
+  above it, an empty block, systematic `!important`, a duplicated selector, a font stack without a
+  generic family, an `@import` after the first rule (which the browser silently ignores), nesting too
+  deep to follow, a `z-index` outside any scale.
+* **HTML** — the page as a whole (a missing doctype, a missing title, a viewport that forbids
+  zooming, skipped heading levels), the element that only works when a second one is present (a
+  fieldset and its legend, a video and its captions, a list item and its list, an object and its
+  fallback), the relationship that carries the meaning (an image and its alternative text, a control
+  and the label that names it, a `srcset` candidate and its descriptor, a table and its header
+  cells), and the attribute that quietly takes something away from the user (`aria-hidden` on
+  something focusable, a positive `tabindex`, an `accesskey`, a mouse handler with no keyboard
+  equivalent, a link that leads nowhere). On the security side: a remote script with no integrity
+  hash, a URL that carries code, `target="_blank"` without `rel="noopener"`, behaviour written into
+  the markup. Template syntax (`{{ }}`, `${ }`, `<% %>`) is treated as dynamic and never judged, and
+  an element driven by a component library — a `data-` hook, a directive, an explicit `role` — is
+  read as a control, not as a mistake.
+* **JSON** — duplicated keys, credentials committed in configuration, dependencies left open to any
+  future version.
+
+### Mobile: Dart and Flutter
+
+Dart is parsed with the C-family parser, so it gets the full syntax tree and every shared structural
+rule, plus the mistakes that belong to the framework: `setState` called during `build`, a mutable
+field on a `StatelessWidget`, a controller or subscription never released in `dispose`, an `async`
+function that never awaits, and a `BuildContext` used after an `await` without checking `mounted` —
+the crash that only reaches users who tap quickly.
+
+### Mobile: Swift
+
+Swift is tokenized and read with the structural parser, which is enough for the defects that matter
+on a phone: the operators the compiler lets through on purpose (`try!`, `as!`), the call that
+deadlocks the main queue, an error caught and dropped, a secret written to `UserDefaults` instead of
+the keychain, a query built by interpolation, plain HTTP, a broken hash. There is no reference
+catalog behind these — they are written from the language — and no Swift corpus on the build machine,
+so each one is pinned by a test that also states the shape it must stay silent on.
+
+### Secrets, in every language
+
+Credentials are found by shape, not by context: AWS, Google and Azure keys, Stripe keys, GitHub,
+GitLab and npm tokens, private key blocks, connection strings carrying their password, Slack, Discord
+and Telegram webhooks. Each pattern is anchored on the provider's own prefix, and test fixtures,
+examples and documentation are skipped, so the rule stays believable.
 
 ### Infrastructure as code
 

@@ -197,7 +197,7 @@ public sealed class SwiftMainQueueSyncRule : SwiftRuleBase
 
 public sealed class SwiftBooleanLiteralComparisonRule : SwiftRuleBase
 {
-    public override string Key => "QG-SW-BUG-0006";
+    public override string Key => "QG-SW-SML-0004";
     public override string Name => "A boolean should not be compared to a boolean literal";
     public override Severity Severity => Severity.Minor;
     public override string RemediationEffort => "5min";

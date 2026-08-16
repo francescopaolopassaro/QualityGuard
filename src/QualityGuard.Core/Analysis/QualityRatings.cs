@@ -50,12 +50,14 @@ public static class QualityRatings
     }
 
     /// <summary>
-    /// Remediation effort in minutes. Rules state it as "5min", "1h30min" or "2d"; anything that
-    /// cannot be read is counted as zero rather than guessed, so the debt is never inflated.
+    /// Remediation effort in minutes. Rules state it as "5min", "1h30min" or "2d". Anything that is
+    /// not a duration reads as zero instead of being guessed at, and the reading is deliberately
+    /// strict: a rule that describes its fix in a sentence used to contribute whatever number and
+    /// letter happened to appear in it, which put minutes into the debt that nobody had estimated.
     /// </summary>
     public static int EffortMinutes(string? effort)
     {
-        if (string.IsNullOrWhiteSpace(effort))
+        if (string.IsNullOrWhiteSpace(effort) || !IsDuration(effort))
             return 0;
 
         var total = 0;
@@ -90,8 +92,48 @@ public static class QualityRatings
         return total;
     }
 
+    /// <summary>A duration and nothing else: digits, then d, h or min, repeated.</summary>
+    private static bool IsDuration(string effort)
+    {
+        var i = 0;
+        var parts = 0;
+        while (i < effort.Length)
+        {
+            var start = i;
+            while (i < effort.Length && char.IsAsciiDigit(effort[i]))
+                i++;
+            if (i == start)
+                return false;
+
+            var unit = i;
+            while (i < effort.Length && char.IsAsciiLetter(effort[i]))
+                i++;
+            var suffix = effort[unit..i];
+            if (suffix is not ("d" or "h" or "min" or "m"))
+                return false;
+            parts++;
+        }
+        return parts > 0;
+    }
+
+    /// <summary>
+    /// What a finding is worth in debt when its rule never stated a duration. Guessing from the
+    /// severity is not precise, but it is the same guess for every rule, so the ratio stays
+    /// comparable between scans instead of depending on which rules happen to fire.
+    /// </summary>
+    public static int DefaultEffortMinutes(Severity severity) => severity switch
+    {
+        Severity.Blocker => 60,
+        Severity.Critical => 30,
+        Severity.Major => 15,
+        Severity.Minor => 10,
+        _ => 5
+    };
+
     public static int TotalDebtMinutes(IEnumerable<Issue> issues)
-        => issues.Sum(issue => EffortMinutes(issue.RemediationEffort));
+        => issues.Sum(issue => EffortMinutes(issue.RemediationEffort) is var minutes && minutes > 0
+            ? minutes
+            : DefaultEffortMinutes(issue.Severity));
 
     /// <summary>
     /// Debt as a share of what the code cost to write. The thresholds are the usual ones: up to 5 %

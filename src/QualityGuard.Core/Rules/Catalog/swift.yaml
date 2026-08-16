@@ -75,10 +75,10 @@
   fix: |
     Use async, or call the work directly when the code is already on the main queue.
 
-- key: QG-SW-BUG-0006
+- key: QG-SW-SML-0004
   name: A boolean should not be compared to a boolean literal
   languages: [swift]
-  category: BUG
+  category: SML
   severity: minor
   effort: 5min
   tags: [readability]

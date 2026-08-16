@@ -73,23 +73,24 @@ public sealed class DuplicationDetector
         {
             if (positions.Count < 2)
                 continue;
-            for (var i = 0; i < positions.Count; i++)
+            // Only consecutive occurrences are compared. Comparing every pair is quadratic in the
+            // number of occurrences, and a file that repeats one short sequence hundreds of times —
+            // a long chain of concatenations, a generated table — then costs more than the whole
+            // rest of the analysis. The regions found are the same: an occurrence that matches a
+            // distant one also matches the one in between, and maximal extension merges them.
+            for (var i = 0; i + 1 < positions.Count; i++)
             {
-                for (var j = i + 1; j < positions.Count; j++)
-                {
-                    var p1 = positions[i];
-                    var p2 = positions[j];
-                    if (p2 - p1 < WindowSize)
-                        continue;
-                    var len = ExtendMatch(normalized, p1, p2, WindowSize);
-                    if (len >= MinTokens)
-                    {
-                        for (var k = p1; k < p1 + len; k++)
-                            duplicatedPositions.Add(k);
-                        for (var k = p2; k < p2 + len; k++)
-                            duplicatedPositions.Add(k);
-                    }
-                }
+                var p1 = positions[i];
+                var p2 = positions[i + 1];
+                if (p2 - p1 < WindowSize)
+                    continue;
+                var len = ExtendMatch(normalized, p1, p2, WindowSize);
+                if (len < MinTokens)
+                    continue;
+                for (var k = p1; k < p1 + len; k++)
+                    duplicatedPositions.Add(k);
+                for (var k = p2; k < p2 + len; k++)
+                    duplicatedPositions.Add(k);
             }
         }
 

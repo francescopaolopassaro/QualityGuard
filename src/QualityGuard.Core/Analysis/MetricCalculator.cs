@@ -112,40 +112,52 @@ public static class MetricCalculator
     public static int CognitiveComplexity(SyntaxNode node, int nesting)
     {
         var score = 0;
-        foreach (var child in node.Children)
+        var pending = new Stack<(SyntaxNode Node, int Nesting)>();
+        PushChildren(pending, node, nesting);
+
+        while (pending.Count > 0)
         {
+            var (child, level) = pending.Pop();
             var increment = 0;
-            var nested = nesting;
+            var nested = level;
             switch (child.Kind)
             {
                 case NodeKind.If:
                 case NodeKind.Loop:
                 case NodeKind.Match:
                 case NodeKind.Catch:
-                    increment = 1 + nesting;
-                    nested = nesting + 1;
+                    increment = 1 + level;
+                    nested = level + 1;
                     break;
                 case NodeKind.Else when IsElseIf(child):
                     // an else-if is one decision, not a nested branch
                     break;
                 case NodeKind.Else:
                     increment = 1;
-                    nested = nesting + 1;
+                    nested = level + 1;
                     break;
                 case NodeKind.Lambda:
                 case NodeKind.FunctionDeclaration:
-                    nested = nesting + 1;
+                    nested = level + 1;
                     break;
                 case NodeKind.Binary when child.Text is "&&" or "||" or "and" or "or":
                     increment = 1;
                     break;
-                case NodeKind.Jump when child.Text is "goto" or "break" or "continue" && nesting > 0:
+                case NodeKind.Jump when child.Text is "goto" or "break" or "continue" && level > 0:
                     increment = 1;
                     break;
             }
-            score += increment + CognitiveComplexity(child, nested);
+            score += increment;
+            PushChildren(pending, child, nested);
         }
         return score;
+    }
+
+    private static void PushChildren(Stack<(SyntaxNode, int)> pending, SyntaxNode node, int nesting)
+    {
+        var children = node.Children;
+        for (var i = children.Count - 1; i >= 0; i--)
+            pending.Push((children[i], nesting));
     }
 
     private static bool IsElseIf(SyntaxNode elseNode)
