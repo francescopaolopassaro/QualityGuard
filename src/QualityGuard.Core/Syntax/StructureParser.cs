@@ -180,6 +180,16 @@ public static class StructureParser
                 return NodeKind.Finally;
         }
 
+        // A block keyword the switch above did not name still opens a body: VB writes With, Using,
+        // SyncLock, Property and Namespace this way, and each of them is closed by an 'End <word>'.
+        // Without this the closer popped a scope that was never pushed — the enclosing function's —
+        // and every declaration after it nested inside the one before.
+        if (profile.IsBlockKeyword(first))
+        {
+            name = words.Length > 1 ? words[1].Text : string.Empty;
+            return NodeKind.Using;
+        }
+
         if (DeclaresVariable(slice, profile) || IsTypedDeclaration(slice, profile))
         {
             name = DeclaredName(slice, profile) ?? string.Empty;
@@ -389,7 +399,7 @@ public static class StructureParser
         protected static bool OpensBody(SyntaxNode node)
             => node.Kind is NodeKind.FunctionDeclaration or NodeKind.ClassDeclaration or NodeKind.If
                 or NodeKind.Else or NodeKind.Loop or NodeKind.Match or NodeKind.MatchCase or NodeKind.Try
-                or NodeKind.Catch or NodeKind.Finally;
+                or NodeKind.Catch or NodeKind.Finally or NodeKind.Using or NodeKind.Lock;
     }
 
     internal sealed class BraceParser(IReadOnlyList<Token> tokens, SyntaxProfile profile)
@@ -673,11 +683,27 @@ public static class StructureParser
             "interface", "operator", "event", "region"
         ];
 
+        /// <summary>
+        /// Words that close a block. VB does not close everything with "End": a For ends with
+        /// Next, a Do with Loop and a While with Wend. Missing them left the loop open, so each
+        /// later End closed the wrong scope and the whole file drifted one level deeper.
+        /// </summary>
+        private static readonly string[] BasicClosers = ["end", "next", "wend", "loop"];
+
         private bool IsEnd(Token token)
-            => token.Kind is TokenKind.Identifier or TokenKind.Keyword
-               && (Profile.CaseInsensitive
-                   ? token.Text.Equals("end", StringComparison.OrdinalIgnoreCase)
-                   : token.Text == "end");
+        {
+            if (token.Kind is not (TokenKind.Identifier or TokenKind.Keyword))
+                return false;
+            if (!Profile.CaseInsensitive)
+                return token.Text == "end";
+            if (token.Text.Equals("end", StringComparison.OrdinalIgnoreCase))
+                return true;
+            // the other closers only count when they open the statement: 'Loop' ends a Do, but the
+            // word also appears inside 'Exit Do' and in ordinary names
+            var startsStatement = Buffer.Count == 0 || token.Line > Buffer[^1].Line;
+            return startsStatement
+                   && BasicClosers.Contains(token.Text, StringComparer.OrdinalIgnoreCase);
+        }
     }
 
     internal sealed class FlatParser(IReadOnlyList<Token> tokens, SyntaxProfile profile)
