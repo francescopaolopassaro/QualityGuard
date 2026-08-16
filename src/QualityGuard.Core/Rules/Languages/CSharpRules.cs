@@ -219,17 +219,15 @@ public sealed class CsHardcodedCredentialsRule : PatternRuleBase
         for (var i = 0; i < tokens.Count; i++)
         {
             if (!CSharpRuleSet.IsCredentialName(tokens[i])) continue;
-            for (var j = i + 1; j < tokens.Count && j < i + 6; j++)
-            {
-                if (tokens[j].Text == "=")
-                {
-                    if (j + 1 < tokens.Count && tokens[j + 1].Kind == TokenKind.String)
-                        context.Report("Hardcoded credentials must not be committed.", tokens[i].Line);
-                    break;
-                }
-                if (tokens[j].Text is ";" or "(" or ")" or "{" or "}")
-                    break;
-            }
+            // The assignment has to be to this name. Scanning ahead for the next '=' crossed the
+            // comma of an object initializer, so '.password = config.Password, .grant_type =
+            // "password"' reported the grant type as a committed credential.
+            if (i + 2 >= tokens.Count || tokens[i + 1].Text != "=")
+                continue;
+            if (tokens[i + 2].Kind != TokenKind.String || tokens[i + 2].Text.Length == 0)
+                continue;
+
+            context.Report("Hardcoded credentials must not be committed.", tokens[i].Line);
         }
         foreach (var s in RuleMatchers.StringsContaining(context.Tokens, "password=")
                      .Concat(RuleMatchers.StringsContaining(context.Tokens, "pwd=")))

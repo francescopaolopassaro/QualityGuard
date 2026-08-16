@@ -183,24 +183,6 @@
   detect:
     - line: "\\bis\\s+(not\\s+)?[\"'0-9]"
 
-- key: QG-PY-BUG-0011
-  name: Exception handlers should be ordered from specific to general
-  languages: [py]
-  category: BUG
-  severity: major
-  effort: 15min
-  tags: [exception]
-  message: A handler for a base class before a more specific one makes the later clause unreachable.
-  summary: A broad except clause precedes a narrower one in the same try statement.
-  why: |
-    Handlers are matched in order, so the first one that fits wins. Placing Exception first makes every
-    following clause dead code, which means the specific recovery logic written below never runs.
-  fix: |
-    Order the clauses from the most specific exception to the most general, and keep the broad one last.
-  detect:
-    - line: "^\\s*except\\s+(Exception|BaseException)\\s*(as\\s+\\w+)?\\s*:"
-      requires: ["except "]
-
 - key: QG-PY-BUG-0012
   name: Loop variables should not be captured by reference in closures
   languages: [py]

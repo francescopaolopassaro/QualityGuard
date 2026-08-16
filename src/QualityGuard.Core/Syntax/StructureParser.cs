@@ -670,11 +670,29 @@ public static class StructureParser
             var statement = FlushBuffer(scopes.Peek());
             if (statement == null || !OpensBody(statement))
                 return;
-            if (IsSingleLineModifier(statement))
+            if (IsSingleLineModifier(statement) || IsSingleLineIf(statement))
                 return;
             var block = new SyntaxNode(NodeKind.Block, "", statement.Range, statement.Tokens);
             statement.Add(block);
             scopes.Push(block);
+        }
+
+        /// <summary>
+        /// VB writes a one-line branch as <c>If cond Then statement</c>, with no End If to close it.
+        /// Opening a block for it left that block open for the rest of the file, and every
+        /// declaration after it nested one level deeper.
+        /// </summary>
+        private bool IsSingleLineIf(SyntaxNode statement)
+        {
+            if (!Profile.CaseInsensitive || statement.Kind != NodeKind.If)
+                return false;
+            var tokens = statement.Tokens;
+            for (var i = 0; i < tokens.Count - 1; i++)
+            {
+                if (tokens[i].Text.Equals("then", StringComparison.OrdinalIgnoreCase))
+                    return tokens[i + 1].Line == tokens[i].Line;
+            }
+            return false;
         }
 
         /// <summary>Trailing modifiers such as <c>do_it if ready</c> do not open a block.</summary>

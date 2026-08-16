@@ -180,7 +180,10 @@ public static class BuiltInLanguages
             "Xor"],
         ["If", "ElseIf", "For", "ForEach", "While", "Do", "Case", "Catch", "AndAlso", "OrElse", "When"],
         "'", null, null,
-        [new("\"", "\""), new("\"\"", "\"\"")],
+        // VB has one string form. The doubled quote inside it is an escape, handled by the
+        // tokenizer; declaring '""' as a second delimiter made an empty literal open a string that
+        // ran to the next '""' in the file — usually several lines of code later.
+        [new("\"", "\"")],
         HashComments: true, NestingBlockComments: false);
 
     public static readonly LanguageInfo Dart = new(

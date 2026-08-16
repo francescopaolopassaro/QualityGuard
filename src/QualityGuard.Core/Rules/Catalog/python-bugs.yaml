@@ -38,27 +38,6 @@
   detect:
     - line: "^\\s*except\\s+(str|int|dict|list|tuple|set|float|bool)\\s*[:,]"
 
-- key: QG-PY-BUG-0015
-  name: Initialisers should not return a value
-  languages: [py]
-  category: BUG
-  severity: critical
-  effort: 10min
-  tags: [suspicious, protocol]
-  message: Returning a value from the initialiser raises at run time.
-  summary: The __init__ method returns something other than None.
-  why: |
-    The interpreter calls the initialiser after the instance exists and rejects any value it returns,
-    raising a TypeError on construction. The mistake usually comes from turning a factory function into
-    a constructor.
-  fix: |
-    Assign to the instance instead of returning, and expose a class method as a factory when a different
-    object has to be produced.
-  detect:
-    - line: "def\\s+__init__\\s*\\([^)]*\\)[^:]*:\\s*$"
-      requires: ["return "]
-      absent: ["return\n", "return None"]
-
 - key: QG-PY-BUG-0016
   name: Iterator protocol methods should return an iterator
   languages: [py]
@@ -100,25 +79,6 @@
     def __exit__(self, exc_type, exc_value, traceback):
   detect:
     - line: "def\\s+__exit__\\s*\\(\\s*self\\s*\\)"
-
-- key: QG-PY-BUG-0018
-  name: Generators should not return a value with return
-  languages: [py]
-  category: BUG
-  severity: major
-  effort: 10min
-  tags: [generators]
-  message: In a generator this ends the iteration instead of producing a value.
-  summary: A function that yields also returns a value.
-  why: |
-    The returned object is attached to the StopIteration that ends the generator, so a caller iterating
-    normally never sees it. Code written expecting a normal return value silently gets nothing.
-  fix: |
-    Yield the value, or split the function into a generator and a regular function that computes the
-    final result.
-  detect:
-    - line: "^\\s*return\\s+\\S"
-      requires: ["yield "]
 
 - key: QG-PY-BUG-0019
   name: Identity comparisons need compatible types

@@ -51,6 +51,13 @@ internal static class LanguageRuleSupport
     internal static bool IsTestFile(string path, string fileName)
     {
         var normalized = path.Replace('\\', '/');
+        // A file under test resources is data the tests read, not a test. An analyzer corpus keeps
+        // its deliberately defective samples in src/test/resources, and reading those as tests made
+        // every one of them "a test that verifies nothing".
+        if (normalized.Contains("/resources/", StringComparison.OrdinalIgnoreCase)
+            || normalized.Contains("/fixtures/", StringComparison.OrdinalIgnoreCase)
+            || normalized.Contains("/testdata/", StringComparison.OrdinalIgnoreCase))
+            return false;
         if (normalized.Contains("/test/", StringComparison.OrdinalIgnoreCase)
             || normalized.Contains("/tests/", StringComparison.OrdinalIgnoreCase)
             || normalized.Contains("/spec/", StringComparison.OrdinalIgnoreCase)

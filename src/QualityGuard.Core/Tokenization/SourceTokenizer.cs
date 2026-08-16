@@ -189,6 +189,15 @@ public sealed class SourceTokenizer
         return i;
     }
 
+    /// <summary>
+    /// Letters that may stand in front of a quote and still leave a string: r for raw, f for a
+    /// formatted one, b for bytes, u for unicode, and the pairs of those. Reading the letter as an
+    /// identifier and the quote as a separate string made every r"..." pattern look like an
+    /// expression, so a rule asking "is this argument a literal?" answered no.
+    /// </summary>
+    private static readonly string[] StringPrefixes =
+        ["rb", "br", "rf", "fr", "r", "f", "b", "u", "R", "F", "B", "U", "Rb", "bR"];
+
     private bool TryMatchString(string src, int i, out StringDelimiter delim)
     {
         // strings are tried with the longest start first
@@ -200,9 +209,35 @@ public sealed class SourceTokenizer
                 return true;
             }
         }
+
+        if (AllowsStringPrefix)
+        {
+            foreach (var prefix in StringPrefixes)
+            {
+                if (i + prefix.Length >= src.Length
+                    || !src.AsSpan(i).StartsWith(prefix, StringComparison.Ordinal))
+                    continue;
+                // the letters must open the literal, not end an identifier
+                if (i > 0 && (char.IsLetterOrDigit(src[i - 1]) || src[i - 1] == '_'))
+                    break;
+                foreach (var d in _language.StringDelimiters.OrderByDescending(d => d.Start.Length))
+                {
+                    if (i + prefix.Length + d.Start.Length > src.Length
+                        || src.Substring(i + prefix.Length, d.Start.Length) != d.Start)
+                        continue;
+                    delim = d with { Start = prefix + d.Start };
+                    return true;
+                }
+            }
+        }
+
         delim = null!;
         return false;
     }
+
+    /// <summary>Languages that write a prefix in front of a string literal.</summary>
+    private bool AllowsStringPrefix
+        => _language.LanguageKey is LanguageKeys.Python or LanguageKeys.Rust;
 
     /// <summary>
     /// Whether the slash at this position opens a regular expression rather than a division. Only
@@ -287,6 +322,21 @@ public sealed class SourceTokenizer
         {
             if (i + delim.End.Length <= _source.Length && _source.Substring(i, delim.End.Length) == delim.End)
             {
+                // VB, SQL and Pascal escape the delimiter by doubling it: "URL=([^""]+)" holds one
+                // quote, not the end of the string. Reading it as the end cut the literal in half and
+                // left the rest of the line as code, so a regular expression came out unbalanced and
+                // was reported as a pattern that cannot compile. An empty literal is written the same
+                // way, so the escape only applies once the string has content.
+                var doubled = i + delim.End.Length * 2 <= _source.Length
+                              && _source.Substring(i + delim.End.Length, delim.End.Length) == delim.End;
+                if (doubled && sb.Length > 0 && !delim.IsVerbatim && delim.Start == delim.End)
+                {
+                    sb.Append(delim.End);
+                    i += delim.End.Length * 2;
+                    column += delim.End.Length * 2;
+                    continue;
+                }
+
                 i += delim.End.Length;
                 column += delim.End.Length;
                 value = sb.ToString();

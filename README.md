@@ -483,12 +483,54 @@ dotnet test                       # parser, semantics, taint, scanner, rule prec
 ./tools/RuleCatalog.ps1 -Validate # catalog shape, identifiers, English descriptions
 ```
 
+### Measured against the reference engine's own expectations
+
+Analyzer projects ship test corpora whose defective lines are annotated — a comment on each line that
+must be reported. That is a ground truth written by someone else, for a different engine, without
+any knowledge of this one, which makes it a usable instrument:
+
+```bash
+python tools/compare_expectations.py --path <corpus> --language py
+```
+
+It reports **recall** (how many expected lines QualityGuard finds), **precision** (how many of its
+findings land on an expected line), and the findings on unannotated lines — meant to be read rather
+than counted, since the two catalogues do not coincide and a file written to exercise one check
+usually contains other defects nobody annotated.
+
+| Corpus | Annotated files | Expected lines | Recall | Rules ported |
+| --- | --- | --- | --- | --- |
+| Python | 590 | 6,427 | **51.6%** | 181/447 (41%) |
+| Java | 748 | 8,202 | **47.9%** | 307/723 (42%) |
+
+Recall sits above the share of rules ported in both languages. It is the number each new wave has to
+move, and the honest answer to "how much is still missing".
+
 ### What the measurements found
 
 Four languages were audited by running the engine over production codebases and reading every
 finding it produced. The pattern was the same each time: the noise did not come from rules that were
 wrong in principle, but from rules that judged a name without knowing what it stood for, or a shape
 without knowing what surrounded it. Nothing below removed a rule from the catalogue.
+
+### Precision on VB.NET
+
+A real VB codebase surfaced the worst defect found so far, and it was in the language definition
+rather than in a rule: VB declared **two** string delimiters, `"` and `""`. The second does not exist
+in the language — it was an attempt to model the doubled-quote escape — and since delimiters are
+tried longest-first, every **empty string literal** opened a string that ran to the next `""` in the
+file. The code in between was never analysed at all.
+
+The block structure was wrong in five more ways, all because the end-keyword parser was written for
+Ruby, where `end` stands alone: `End If` and `End Function` left their second word to start a new
+construct, `Next`/`Loop`/`Wend` were not recognised as closers, a second `Catch` opened a block
+inside the first, a one-line `If x Then y` opened a block nothing closed, and `With`/`Using`/
+`SyncLock`/`Property`/`Namespace` opened no block at all, so their `End …` closed the enclosing
+function's.
+
+Each file collapsed into a single nesting chain: a twelve-line function with one `If` scored 75 on
+cognitive complexity. On the codebase that found it, code smells went 1,789 → 601 and reported
+complexity 3,925 → 1,717.
 
 ### Precision on Kotlin
 
