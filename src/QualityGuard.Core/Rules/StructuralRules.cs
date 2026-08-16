@@ -107,6 +107,10 @@ public sealed class UnreachableCodeAfterJumpRule : StructuralRuleBase
                 var next = children[i + 1];
                 if (next.Kind is NodeKind.MatchCase or NodeKind.Else or NodeKind.Catch or NodeKind.Finally)
                     continue;
+                // A block opening on the same line as the jump is its argument, not code stranded
+                // behind it: 'return withSession { ... }' in Kotlin, and every trailing lambda.
+                if (next.Kind == NodeKind.Block && next.Range.StartLine == children[i].Range.StartLine)
+                    continue;
                 context.Report(next, $"This code is unreachable: '{children[i].Text}' on line "
                                      + $"{children[i].Line} always leaves the block first.");
                 break;
@@ -228,12 +232,38 @@ public sealed class SelfAssignmentRule : StructuralRuleBase
         {
             if (assignment.Text != "=")
                 continue;
-            var left = SyntaxQuery.DottedName(assignment.ChildAt(0));
-            var right = SyntaxQuery.DottedName(assignment.ChildAt(1));
+            // a declaration is not a self-assignment, whatever its initializer is called
+            if (assignment.Parent is { Kind: NodeKind.VariableDeclaration or NodeKind.FieldDeclaration })
+                continue;
+
+            var left = PlainName(assignment.ChildAt(0));
+            var right = PlainName(assignment.ChildAt(1));
             if (left.Length > 0 && left == right)
                 context.Report(assignment, $"Assigning '{left}' to itself has no effect; "
                                            + "the intended target or source is probably a different name.");
         }
+    }
+
+    /// <summary>
+    /// The dotted name of a node when it is nothing but identifiers joined by dots. A call, a cast
+    /// or an index gives an empty answer: 'boolean isSubscribed = isSubscribed(tree)' names the same
+    /// thing on both sides and is not an assignment to itself.
+    /// </summary>
+    private static string PlainName(SyntaxNode? node)
+    {
+        if (node == null)
+            return string.Empty;
+        if (node.Kind == NodeKind.Identifier)
+            return node.Text;
+        if (node.Kind != NodeKind.MemberSelect)
+            return string.Empty;
+
+        foreach (var part in node.DescendantsAndSelf())
+        {
+            if (part.Kind is not (NodeKind.MemberSelect or NodeKind.Identifier))
+                return string.Empty;
+        }
+        return SyntaxQuery.DottedName(node);
     }
 }
 
@@ -669,9 +699,15 @@ public sealed class UnusedParameterRule : StructuralRuleBase
             var declaration = symbol.Usages.First(u => u.Kind == UsageKind.Parameter);
             // an override cannot change the signature it implements, so an unused parameter there is
             // imposed by the base type and not a decision the author can revisit
-            if (SyntaxQuery.EnclosingFunction(declaration.Identifier) is { } owner
+            var owner = SyntaxQuery.EnclosingFunction(declaration.Identifier);
+            if (owner != null
                 && owner.ChildrenOf(NodeKind.Attribute).Concat(owner.ChildrenOf(NodeKind.Modifier))
                     .Any(m => m.Text is "override" or "Override"))
+                continue;
+            // A method with no body — abstract, native, an interface member — declares a contract:
+            // its parameters cannot be used because there is nothing to use them in. A method with
+            // an empty body is the same idea written as a default hook.
+            if (owner != null && SyntaxQuery.Body(owner) is not { Children.Count: > 0 })
                 continue;
             context.Report(declaration.Identifier, $"'{symbol.Name}' is never used in the body; "
                                                    + "remove it or use the value the caller passes.");

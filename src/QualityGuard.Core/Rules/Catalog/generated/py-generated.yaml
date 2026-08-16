@@ -412,25 +412,6 @@
     Do the work, or move it to the issue tracker and reference the ticket in the marker so the deadline
     lives somewhere that gets reviewed.
 
-- key: QG-PY-BUG-0027
-  name: Break and continue should not be used
-  languages: [py]
-  category: BUG
-  severity: major
-  effort: 15min
-  tags: [avoid_api, generated]
-  generated: true
-  status: planned
-  message: This API should be replaced by the current alternative.
-  summary: Code calls an API that is unsafe, obsolete or superseded by a better alternative.
-  why: |
-    The API stays available for compatibility, so nothing fails at build time, but it carries behaviour
-    the platform now considers a defect — unchecked input, a weak guarantee, or a cost the replacement
-    avoids. Its presence also spreads: new code copies what it finds nearby.
-  fix: |
-    Replace the call with the current API, and keep the old one only behind a compatibility layer that is
-    documented and dated.
-
 - key: QG-PY-BUG-0028
   name: \ should match the behaviour the code describes
   languages: [py]
@@ -467,25 +448,6 @@
   fix: |
     Declare the narrowest visibility that works, in the conventional modifier order, and mark as final or
     read-only whatever is not meant to change.
-
-- key: QG-PY-SML-0046
-  name: Parentheses should not be used
-  languages: [py]
-  category: SML
-  severity: minor
-  effort: 15min
-  tags: [avoid_api, generated]
-  generated: true
-  status: planned
-  message: This API should be replaced by the current alternative.
-  summary: Code calls an API that is unsafe, obsolete or superseded by a better alternative.
-  why: |
-    The API stays available for compatibility, so nothing fails at build time, but it carries behaviour
-    the platform now considers a defect — unchecked input, a weak guarantee, or a cost the replacement
-    avoids. Its presence also spreads: new code copies what it finds nearby.
-  fix: |
-    Replace the call with the current API, and keep the old one only behind a compatibility layer that is
-    documented and dated.
 
 - key: QG-PY-SML-0047
   name: New-style classes should be replaced by the recommended alternative
@@ -692,24 +654,6 @@
     Remove what is not used, name what is unclear, and keep one piece of behaviour in one place so the
     next change touches a single spot.
 
-- key: QG-PY-SML-0055
-  name: First argument to class methods should follow the naming convention of the codebase
-  languages: [py]
-  category: SML
-  severity: minor
-  effort: 15min
-  tags: [naming, generated]
-  generated: true
-  status: planned
-  message: This identifier does not follow the naming convention of the codebase.
-  summary: An identifier does not follow the convention used by the rest of the code.
-  why: |
-    Conventions let a reader infer the kind of an identifier from its shape alone. A deviation costs a
-    lookup every time, and makes automated searches and refactorings less reliable.
-  fix: |
-    Rename the identifier to match the convention, and let the editor propagate the change so callers
-    stay in sync.
-
 - key: QG-PY-BUG-0034
   name: Yield and return should not be used
   languages: [py]
@@ -731,61 +675,6 @@
   detect:
     - invocation: [yield]
 
-- key: QG-PY-BUG-0035
-  name: Return with a value should not be used
-  languages: [py]
-  category: BUG
-  severity: major
-  effort: 15min
-  tags: [avoid_api, generated]
-  generated: true
-  status: planned
-  message: This API should be replaced by the current alternative.
-  summary: Code calls an API that is unsafe, obsolete or superseded by a better alternative.
-  why: |
-    The API stays available for compatibility, so nothing fails at build time, but it carries behaviour
-    the platform now considers a defect — unchecked input, a weak guarantee, or a cost the replacement
-    avoids. Its presence also spreads: new code copies what it finds nearby.
-  fix: |
-    Replace the call with the current API, and keep the old one only behind a compatibility layer that is
-    documented and dated.
-
-- key: QG-PY-BUG-0036
-  name: __init__ should match the behaviour the code describes
-  languages: [py]
-  category: BUG
-  severity: major
-  effort: 15min
-  tags: [bug, generated]
-  generated: true
-  status: planned
-  message: This code does not behave the way it reads.
-  summary: The code does not do what its shape suggests, or fails on ordinary input.
-  why: |
-    Written this way the code works by accident or breaks on values that are perfectly normal, and the
-    mistake is easy to miss in review because the intent reads correctly.
-  fix: |
-    Make the intended behaviour explicit — fix the condition, the operator or the order of operations —
-    and cover the case that used to fail with a test.
-
-- key: QG-PY-SML-0056
-  name: Except clauses should be simplified
-  languages: [py]
-  category: SML
-  severity: minor
-  effort: 15min
-  tags: [sml, generated]
-  generated: true
-  status: planned
-  message: This code is harder to read or change than the behaviour requires.
-  summary: The code works but is harder to read or change than the behaviour requires.
-  why: |
-    The intent is buried, duplicated, or spread across places that must stay in sync, so every future
-    change costs more than it should and carries a risk that has nothing to do with the change itself.
-  fix: |
-    Remove what is not used, name what is unclear, and keep one piece of behaviour in one place so the
-    next change touches a single spot.
-
 - key: QG-PY-SML-0057
   name: Pass should not be used
   languages: [py]
@@ -806,42 +695,6 @@
     documented and dated.
   detect:
     - invocation: [pass]
-
-- key: QG-PY-BUG-0037
-  name: Only strings should match the behaviour the code describes
-  languages: [py]
-  category: BUG
-  severity: major
-  effort: 15min
-  tags: [bug, generated]
-  generated: true
-  status: planned
-  message: This code does not behave the way it reads.
-  summary: The code does not do what its shape suggests, or fails on ordinary input.
-  why: |
-    Written this way the code works by accident or breaks on values that are perfectly normal, and the
-    mistake is easy to miss in review because the intent reads correctly.
-  fix: |
-    Make the intended behaviour explicit — fix the condition, the operator or the order of operations —
-    and cover the case that used to fail with a test.
-
-- key: QG-PY-SML-0058
-  name: Loops without break should be simplified
-  languages: [py]
-  category: SML
-  severity: minor
-  effort: 15min
-  tags: [sml, generated]
-  generated: true
-  status: planned
-  message: This code is harder to read or change than the behaviour requires.
-  summary: The code works but is harder to read or change than the behaviour requires.
-  why: |
-    The intent is buried, duplicated, or spread across places that must stay in sync, so every future
-    change costs more than it should and carries a risk that has nothing to do with the change itself.
-  fix: |
-    Remove what is not used, name what is unclear, and keep one piece of behaviour in one place so the
-    next change touches a single spot.
 
 - key: QG-PY-BUG-0038
   name: __iter__ should match the behaviour the code describes
@@ -900,24 +753,6 @@
     and replace weakened mechanisms with the current recommended one.
   detect:
     - creation: [HttpOnly]
-
-- key: QG-PY-SML-0059
-  name: Conditional expressions should not be nested inside another one
-  languages: [py]
-  category: SML
-  severity: minor
-  effort: 15min
-  tags: [nesting, generated]
-  generated: true
-  status: planned
-  message: This construct is nested inside another of the same kind.
-  summary: A construct is nested inside another of the same kind.
-  why: |
-    The number of paths a reader has to consider becomes the product of the two, and the inner construct
-    is easy to miss when scanning the outer one. Changes then land in the wrong level.
-  fix: |
-    Extract the inner construct into a function named after the decision it makes, and call it from the
-    outer one.
 
 - key: QG-PY-SML-0060
   name: Tests should assert something
@@ -1125,24 +960,6 @@
     - member: [AES.MODE_ECB]
     - member: [modes.ECB]
 
-- key: QG-PY-BUG-0045
-  name: Function arguments should match the behaviour the code describes
-  languages: [py]
-  category: BUG
-  severity: major
-  effort: 15min
-  tags: [bug, generated]
-  generated: true
-  status: planned
-  message: This code does not behave the way it reads.
-  summary: The code does not do what its shape suggests, or fails on ordinary input.
-  why: |
-    Written this way the code works by accident or breaks on values that are perfectly normal, and the
-    mistake is easy to miss in review because the intent reads correctly.
-  fix: |
-    Make the intended behaviour explicit — fix the condition, the operator or the order of operations —
-    and cover the case that used to fail with a test.
-
 - key: QG-PY-BUG-0046
   name: Operators should be replaced by the recommended alternative
   languages: [py]
@@ -1161,25 +978,6 @@
   fix: |
     Switch to the recommended construct; the behaviour is the same in the normal case and defined in the
     cases the old form got wrong.
-
-- key: QG-PY-BUG-0047
-  name: Failure paths should make failure handling explicit
-  languages: [py]
-  category: BUG
-  severity: major
-  effort: 15min
-  tags: [exception, generated]
-  generated: true
-  status: planned
-  message: This handling hides the failure instead of dealing with it.
-  summary: An exception is thrown, caught or propagated in a way that hides the failure.
-  why: |
-    Handlers that are too broad, empty, or that replace the original error remove the information needed
-    to diagnose the incident, and let the program continue in a state nobody designed for. The symptom
-    then appears far from the cause.
-  fix: |
-    Catch the specific failures this code can recover from, keep the original exception as the cause when
-    wrapping, and let everything else reach the boundary handler.
 
 - key: QG-PY-BUG-0048
   name: In and not in operators should be replaced by the recommended alternative
@@ -1294,49 +1092,11 @@
   detect:
     - invocation: [raise]
 
-- key: QG-PY-SML-0074
-  name: Special method __exit__ should make failure handling explicit
-  languages: [py]
-  category: SML
-  severity: minor
-  effort: 15min
-  tags: [exception, generated]
-  generated: true
-  status: planned
-  message: This handling hides the failure instead of dealing with it.
-  summary: An exception is thrown, caught or propagated in a way that hides the failure.
-  why: |
-    Handlers that are too broad, empty, or that replace the original error remove the information needed
-    to diagnose the incident, and let the program continue in a state nobody designed for. The symptom
-    then appears far from the cause.
-  fix: |
-    Catch the specific failures this code can recover from, keep the original exception as the cause when
-    wrapping, and let everything else reach the boundary handler.
-
 - key: QG-PY-BUG-0050
   name: Exceptions __cause__ should make failure handling explicit
   languages: [py]
   category: BUG
   severity: major
-  effort: 15min
-  tags: [exception, generated]
-  generated: true
-  status: planned
-  message: This handling hides the failure instead of dealing with it.
-  summary: An exception is thrown, caught or propagated in a way that hides the failure.
-  why: |
-    Handlers that are too broad, empty, or that replace the original error remove the information needed
-    to diagnose the incident, and let the program continue in a state nobody designed for. The symptom
-    then appears far from the cause.
-  fix: |
-    Catch the specific failures this code can recover from, keep the original exception as the cause when
-    wrapping, and let everything else reach the boundary handler.
-
-- key: QG-PY-SML-0075
-  name: Custom Exception classes should make failure handling explicit
-  languages: [py]
-  category: SML
-  severity: minor
   effort: 15min
   tags: [exception, generated]
   generated: true
@@ -1373,24 +1133,6 @@
     - creation: [NotImplemented]
     - creation: [NotImplementedError]
 
-- key: QG-PY-SML-0077
-  name: Subclass should be simplified
-  languages: [py]
-  category: SML
-  severity: minor
-  effort: 15min
-  tags: [sml, generated]
-  generated: true
-  status: planned
-  message: This code is harder to read or change than the behaviour requires.
-  summary: The code works but is harder to read or change than the behaviour requires.
-  why: |
-    The intent is buried, duplicated, or spread across places that must stay in sync, so every future
-    change costs more than it should and carries a risk that has nothing to do with the change itself.
-  fix: |
-    Remove what is not used, name what is unclear, and keep one piece of behaviour in one place so the
-    next change touches a single spot.
-
 - key: QG-PY-BUG-0051
   name: Boolean expressions of exceptions should not be used
   languages: [py]
@@ -1411,60 +1153,6 @@
     documented and dated.
   detect:
     - invocation: [except]
-
-- key: QG-PY-SML-0078
-  name: Function parameters default values should be simplified
-  languages: [py]
-  category: SML
-  severity: minor
-  effort: 15min
-  tags: [sml, generated]
-  generated: true
-  status: planned
-  message: This code is harder to read or change than the behaviour requires.
-  summary: The code works but is harder to read or change than the behaviour requires.
-  why: |
-    The intent is buried, duplicated, or spread across places that must stay in sync, so every future
-    change costs more than it should and carries a risk that has nothing to do with the change itself.
-  fix: |
-    Remove what is not used, name what is unclear, and keep one piece of behaviour in one place so the
-    next change touches a single spot.
-
-- key: QG-PY-BUG-0052
-  name: Instance and class methods should match the behaviour the code describes
-  languages: [py]
-  category: BUG
-  severity: major
-  effort: 15min
-  tags: [bug, generated]
-  generated: true
-  status: planned
-  message: This code does not behave the way it reads.
-  summary: The code does not do what its shape suggests, or fails on ordinary input.
-  why: |
-    Written this way the code works by accident or breaks on values that are perfectly normal, and the
-    mistake is easy to miss in review because the intent reads correctly.
-  fix: |
-    Make the intended behaviour explicit — fix the condition, the operator or the order of operations —
-    and cover the case that used to fail with a test.
-
-- key: QG-PY-SML-0079
-  name: Self should be simplified
-  languages: [py]
-  category: SML
-  severity: minor
-  effort: 15min
-  tags: [sml, generated]
-  generated: true
-  status: planned
-  message: This code is harder to read or change than the behaviour requires.
-  summary: The code works but is harder to read or change than the behaviour requires.
-  why: |
-    The intent is buried, duplicated, or spread across places that must stay in sync, so every future
-    change costs more than it should and carries a risk that has nothing to do with the change itself.
-  fix: |
-    Remove what is not used, name what is unclear, and keep one piece of behaviour in one place so the
-    next change touches a single spot.
 
 - key: QG-PY-SML-0080
   name: Comparison to None should be simplified
@@ -1577,61 +1265,6 @@
     Assert the behaviour the test exists for, re-enable it, and make sure it fails when the behaviour is
     broken before trusting it again.
 
-- key: QG-PY-SML-0084
-  name: Expressions creating dictionaries should not be duplicated
-  languages: [py]
-  category: SML
-  severity: minor
-  effort: 15min
-  tags: [duplication, generated]
-  generated: true
-  status: planned
-  message: This code or value is duplicated.
-  summary: The same code or value appears more than once.
-  why: |
-    Copies drift apart the first time one of them is fixed, and nothing links them, so the bug is fixed
-    in one place and stays in the other. Readers also cannot tell which copy is authoritative.
-  fix: |
-    Keep one definition and reference it from the other places, or extract the shared part into a named
-    function or constant.
-
-- key: QG-PY-SML-0085
-  name: Expressions creating sets should not be duplicated
-  languages: [py]
-  category: SML
-  severity: minor
-  effort: 15min
-  tags: [duplication, generated]
-  generated: true
-  status: planned
-  message: This code or value is duplicated.
-  summary: The same code or value appears more than once.
-  why: |
-    Copies drift apart the first time one of them is fixed, and nothing links them, so the bug is fixed
-    in one place and stays in the other. Readers also cannot tell which copy is authoritative.
-  fix: |
-    Keep one definition and reference it from the other places, or extract the shared part into a named
-    function or constant.
-
-- key: QG-PY-SML-0086
-  name: Constants should not be used
-  languages: [py]
-  category: SML
-  severity: minor
-  effort: 15min
-  tags: [avoid_api, generated]
-  generated: true
-  status: planned
-  message: This API should be replaced by the current alternative.
-  summary: Code calls an API that is unsafe, obsolete or superseded by a better alternative.
-  why: |
-    The API stays available for compatibility, so nothing fails at build time, but it carries behaviour
-    the platform now considers a defect — unchecked input, a weak guarantee, or a cost the replacement
-    avoids. Its presence also spreads: new code copies what it finds nearby.
-  fix: |
-    Replace the call with the current API, and keep the old one only behind a compatibility layer that is
-    documented and dated.
-
 - key: QG-PY-SML-0087
   name: Implicit string and byte concatenations should be simplified
   languages: [py]
@@ -1650,44 +1283,8 @@
     Remove what is not used, name what is unclear, and keep one piece of behaviour in one place so the
     next change touches a single spot.
 
-- key: QG-PY-SML-0088
-  name: Builtins should be simplified
-  languages: [py]
-  category: SML
-  severity: minor
-  effort: 15min
-  tags: [sml, generated]
-  generated: true
-  status: planned
-  message: This code is harder to read or change than the behaviour requires.
-  summary: The code works but is harder to read or change than the behaviour requires.
-  why: |
-    The intent is buried, duplicated, or spread across places that must stay in sync, so every future
-    change costs more than it should and carries a risk that has nothing to do with the change itself.
-  fix: |
-    Remove what is not used, name what is unclear, and keep one piece of behaviour in one place so the
-    next change touches a single spot.
-
 - key: QG-PY-BUG-0055
   name: Only defined names should match the behaviour the code describes
-  languages: [py]
-  category: BUG
-  severity: major
-  effort: 15min
-  tags: [bug, generated]
-  generated: true
-  status: planned
-  message: This code does not behave the way it reads.
-  summary: The code does not do what its shape suggests, or fails on ordinary input.
-  why: |
-    Written this way the code works by accident or breaks on values that are perfectly normal, and the
-    mistake is easy to miss in review because the intent reads correctly.
-  fix: |
-    Make the intended behaviour explicit — fix the condition, the operator or the order of operations —
-    and cover the case that used to fail with a test.
-
-- key: QG-PY-BUG-0056
-  name: Open builtin function should match the behaviour the code describes
   languages: [py]
   category: BUG
   severity: major
@@ -1889,25 +1486,6 @@
   fix: |
     Assert the behaviour the test exists for, re-enable it, and make sure it fails when the behaviour is
     broken before trusting it again.
-
-- key: QG-PY-BUG-0063
-  name: Assert should not be used
-  languages: [py]
-  category: BUG
-  severity: major
-  effort: 15min
-  tags: [avoid_api, generated]
-  generated: true
-  status: planned
-  message: This API should be replaced by the current alternative.
-  summary: Code calls an API that is unsafe, obsolete or superseded by a better alternative.
-  why: |
-    The API stays available for compatibility, so nothing fails at build time, but it carries behaviour
-    the platform now considers a defect — unchecked input, a weak guarantee, or a cost the replacement
-    avoids. Its presence also spreads: new code copies what it finds nearby.
-  fix: |
-    Replace the call with the current API, and keep the old one only behind a compatibility layer that is
-    documented and dated.
 
 - key: QG-PY-SML-0097
   name: Most specific unittest assertion should be replaced by the recommended alternative
@@ -2869,79 +2447,6 @@
     Make the intended behaviour explicit — fix the condition, the operator or the order of operations —
     and cover the case that used to fail with a test.
 
-- key: QG-PY-SML-0123
-  name: Startswith or endswith methods should be replaced by the recommended alternative
-  languages: [py]
-  category: SML
-  severity: minor
-  effort: 15min
-  tags: [prefer_api, generated]
-  generated: true
-  status: planned
-  message: The platform offers a clearer or safer construct for this.
-  summary: A construct is used where the platform offers one that is clearer or safer.
-  why: |
-    The alternative exists because it removes a class of mistake — a conversion, an allocation, an edge
-    case — that the current form leaves to the caller. Using the older form means every reader has to
-    check that the edge case was handled.
-  fix: |
-    Switch to the recommended construct; the behaviour is the same in the normal case and defined in the
-    cases the old form got wrong.
-
-- key: QG-PY-SML-0124
-  name: Isinstance() should be replaced by the recommended alternative
-  languages: [py]
-  category: SML
-  severity: minor
-  effort: 15min
-  tags: [prefer_api, generated]
-  generated: true
-  status: planned
-  message: The platform offers a clearer or safer construct for this.
-  summary: A construct is used where the platform offers one that is clearer or safer.
-  why: |
-    The alternative exists because it removes a class of mistake — a conversion, an allocation, an edge
-    case — that the current form leaves to the caller. Using the older form means every reader has to
-    check that the edge case was handled.
-  fix: |
-    Switch to the recommended construct; the behaviour is the same in the normal case and defined in the
-    cases the old form got wrong.
-- key: QG-PY-SML-0125
-  name: Assignments of lambdas to variables should be simplified
-  languages: [py]
-  category: SML
-  severity: minor
-  effort: 15min
-  tags: [sml, generated]
-  generated: true
-  status: planned
-  message: This code is harder to read or change than the behaviour requires.
-  summary: The code works but is harder to read or change than the behaviour requires.
-  why: |
-    The intent is buried, duplicated, or spread across places that must stay in sync, so every future
-    change costs more than it should and carries a risk that has nothing to do with the change itself.
-  fix: |
-    Remove what is not used, name what is unclear, and keep one piece of behaviour in one place so the
-    next change touches a single spot.
-
-- key: QG-PY-BUG-0075
-  name: Set members and dictionary keys should match the behaviour the code describes
-  languages: [py]
-  category: BUG
-  severity: major
-  effort: 15min
-  tags: [bug, generated]
-  generated: true
-  status: planned
-  message: This code does not behave the way it reads.
-  summary: The code does not do what its shape suggests, or fails on ordinary input.
-  why: |
-    Written this way the code works by accident or breaks on values that are perfectly normal, and the
-    mistake is easy to miss in review because the intent reads correctly.
-  fix: |
-    Make the intended behaviour explicit — fix the condition, the operator or the order of operations —
-    and cover the case that used to fail with a test.
-
 - key: QG-PY-BUG-0076
   name: Suspicious code should match the behaviour the code describes
   languages: [py]
@@ -3015,24 +2520,6 @@
   fix: |
     Switch to the recommended construct; the behaviour is the same in the normal case and defined in the
     cases the old form got wrong.
-
-- key: QG-PY-BUG-0077
-  name: Equality checks should match the behaviour the code describes
-  languages: [py]
-  category: BUG
-  severity: major
-  effort: 15min
-  tags: [bug, generated]
-  generated: true
-  status: planned
-  message: This code does not behave the way it reads.
-  summary: The code does not do what its shape suggests, or fails on ordinary input.
-  why: |
-    Written this way the code works by accident or breaks on values that are perfectly normal, and the
-    mistake is easy to miss in review because the intent reads correctly.
-  fix: |
-    Make the intended behaviour explicit — fix the condition, the operator or the order of operations —
-    and cover the case that used to fail with a test.
 
 - key: QG-PY-BUG-0078
   name: Abs_tol parameter should match the behaviour the code describes

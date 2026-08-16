@@ -1,0 +1,272 @@
+# Descriptions for the C# rules implemented in Rules/Languages/CSharpApiRules.cs. The detection
+# reads the syntax tree; this file carries the reasoning and the fix shown in the report.
+
+- key: QG-CS-BUG-0141
+  name: A remainder should not be compared to a positive value
+  languages: [cs, vb]
+  category: BUG
+  severity: major
+  effort: 10min
+  tags: [suspicious]
+  summary: The result of % is compared for equality against a positive number.
+  why: |
+    A remainder keeps the sign of its left operand, so -3 % 2 is -1, not 1. The comparison is false
+    for every negative input — and the negative input is exactly the one nobody tested.
+  fix: |
+    Compare against zero, or take the absolute value before the comparison.
+
+- key: QG-CS-BUG-0142
+  name: A search result should be tested against zero
+  languages: [cs, vb]
+  category: BUG
+  severity: major
+  effort: 10min
+  tags: [suspicious]
+  summary: The result of IndexOf is compared with > 0 or <= 0.
+  why: |
+    The method answers 0 when the match sits at the very beginning, and this comparison reads that as
+    "not found". The first element of the collection is silently excluded.
+  fix: |
+    Compare with >= 0 for found and < 0 for not found, or use Contains when only presence matters.
+
+- key: QG-CS-BUG-0143
+  name: A property getter should not throw
+  languages: [cs, vb]
+  category: BUG
+  severity: major
+  effort: 20min
+  tags: [suspicious]
+  summary: A get accessor throws an exception other than the ones a getter may.
+  why: |
+    Reading a property looks like reading a value, so nobody wraps it in a try — not the debugger
+    that shows it, not the serializer that walks the object, not the binding that displays it. All of
+    them break on an exception from here.
+  fix: |
+    Return a value, or turn the member into a method, where a caller expects to handle failure.
+
+- key: QG-CS-BUG-0144
+  name: A sealed class should not declare protected members
+  languages: [cs, vb]
+  category: BUG
+  severity: minor
+  effort: 5min
+  tags: [suspicious]
+  summary: A member of a sealed class is declared protected.
+  why: |
+    Nothing can inherit from the class, so protected means private — written with a keyword that
+    promises an extension point which cannot exist.
+  fix: |
+    Say private, or unseal the class if it really is meant to be extended.
+
+- key: QG-CS-BUG-0145
+  name: A new Guid is always the empty one
+  languages: [cs, vb]
+  category: BUG
+  severity: critical
+  effort: 5min
+  tags: [suspicious]
+  summary: A Guid is created with its parameterless constructor.
+  why: |
+    It produces the all-zero value, the same one every time. Code that reads as "make me an
+    identifier" hands out a constant, and every row it creates collides with the last.
+  fix: |
+    Use Guid.NewGuid() to generate one, or Guid.Empty when the empty value is what you mean.
+
+- key: QG-CS-BUG-0146
+  name: Some members should never throw
+  languages: [cs, vb]
+  category: BUG
+  severity: major
+  effort: 20min
+  tags: [suspicious, error-handling]
+  summary: ToString, Equals, GetHashCode or Dispose throws.
+  why: |
+    These are called by the runtime and by every tool that inspects an object: a debugger window, a
+    log line, a dictionary lookup, the end of a using block. None of them expects an exception, and
+    Dispose throwing while an exception is already unwinding replaces the original failure with this
+    one.
+  fix: |
+    Return a value that says the object is in a bad state, and keep the exceptions for the methods
+    where a caller is prepared for them.
+
+- key: QG-CS-SML-0464
+  name: A field should not be part of the public surface
+  languages: [cs, vb]
+  category: SML
+  severity: major
+  effort: 10min
+  tags: [encapsulation]
+  summary: A field is declared public or protected without being const, readonly or static.
+  why: |
+    It can be written from anywhere with nothing in between: no validation, no notification, and no
+    way to make the value computed later without breaking every caller.
+  fix: |
+    Expose a property instead; an auto-implemented one costs a single line.
+
+- key: QG-CS-SML-0465
+  name: A class of static members should not be instantiable
+  languages: [cs, vb]
+  category: SML
+  severity: minor
+  effort: 10min
+  tags: [design]
+  summary: Every member of a class is static but the class can still be constructed.
+  why: |
+    An instance of it can do nothing at all, and the constructor invites one — usually from someone
+    who has not noticed that everything is static.
+  fix: |
+    Mark the class static, or make the constructor private.
+
+- key: QG-CS-SML-0466
+  name: A thrown exception should say what went wrong
+  languages: [cs, vb]
+  category: SML
+  severity: major
+  effort: 15min
+  tags: [error-handling]
+  summary: Exception, SystemException or a runtime-reserved exception type is thrown.
+  why: |
+    The type tells a caller nothing, so the only way to handle it is to catch everything — which also
+    catches the failures nobody planned for and hides them.
+  fix: |
+    Throw the exception that names the problem, or one of your own.
+
+- key: QG-CS-SML-0467
+  name: An obsolete member should say what to use instead
+  languages: [cs, vb]
+  category: SML
+  severity: minor
+  effort: 5min
+  tags: [api]
+  summary: An Obsolete attribute carries no message.
+  why: |
+    The warning tells a caller to stop and nothing more, so every one of them has to find the
+    replacement on their own — and some will simply suppress the warning.
+  fix: |
+    Pass the message that names the alternative.
+
+- key: QG-CS-SML-0468
+  name: ToString should not be called on a string
+  languages: [cs, vb]
+  category: SML
+  severity: minor
+  effort: 5min
+  tags: [readability]
+  summary: ToString is called on a value that is already a string.
+  why: |
+    The call returns the same object and only makes the reader look for a conversion that is not
+    happening.
+  fix: |
+    Remove the call.
+
+- key: QG-CS-SML-0469
+  name: A property that only wraps a field should be auto-implemented
+  languages: [cs, vb]
+  category: SML
+  severity: minor
+  effort: 10min
+  tags: [readability]
+  summary: Both accessors of a property do nothing but read and write one field.
+  why: |
+    Six lines and a field exist to say what one line says. The field is then reachable from inside
+    the class, so half the code goes through the property and half around it.
+  fix: |
+    Use an auto-implemented property and delete the backing field.
+
+- key: QG-CS-SML-0471
+  name: A property should not be write-only
+  languages: [cs, vb]
+  category: SML
+  severity: major
+  effort: 10min
+  tags: [design]
+  summary: A property declares a setter and no getter.
+  why: |
+    The caller can set the value and never check what it did or restore it later. A property that
+    only goes one way is a method wearing the wrong syntax.
+  fix: |
+    Add the getter, or replace the property with a method named for the effect it has.
+
+- key: QG-CS-SML-0472
+  name: An empty public constructor should be removed
+  languages: [cs, vb]
+  category: SML
+  severity: minor
+  effort: 5min
+  tags: [readability]
+  summary: A class declares the parameterless constructor the compiler would generate.
+  why: |
+    It adds a line to read and a place for someone to put behaviour nobody expects to find in a
+    class that appears to have none.
+  fix: |
+    Delete it. A constructor with a base or this initializer is doing something and stays.
+
+- key: QG-CS-SML-0473
+  name: A method that always returns the same value should be a constant
+  languages: [cs, vb]
+  category: SML
+  severity: minor
+  effort: 10min
+  tags: [readability]
+  summary: A parameterless, non-virtual method returns a literal and nothing else.
+  why: |
+    A method suggests the answer depends on something. A constant says plainly that it does not, and
+    the compiler can then use it where a constant is required.
+  fix: |
+    Expose a constant or a static readonly field.
+
+- key: QG-CS-SML-0474
+  name: An empty finalizer should be removed
+  languages: [cs, vb]
+  category: SML
+  severity: major
+  effort: 5min
+  tags: [performance]
+  summary: A class declares a finalizer with an empty body.
+  why: |
+    It does nothing except put every instance of the class on the finalization queue: each one
+    survives an extra collection and is then processed by another thread, for no result.
+  fix: |
+    Delete it.
+
+- key: QG-CS-SML-0475
+  name: A type should live in a namespace
+  languages: [cs, vb]
+  category: SML
+  severity: minor
+  effort: 10min
+  tags: [design]
+  summary: A type is declared in the global namespace.
+  why: |
+    Its name has to stay unique across every assembly the project will ever reference, and nothing
+    in the name says which part of the system it belongs to.
+  fix: |
+    Put the type in a namespace that matches its folder.
+
+- key: QG-CS-SML-0476
+  name: A comparison should not be negated
+  languages: [cs, vb]
+  category: SML
+  severity: minor
+  effort: 5min
+  tags: [readability]
+  summary: A relational or equality comparison is wrapped in a negation.
+  why: |
+    Every one of these operators has an opposite, and using it says the same thing without asking
+    the reader to invert a condition in their head.
+  fix: |
+    Use the opposite operator.
+
+- key: QG-CS-CNV-0009
+  name: A parameter should not repeat the name of its method
+  languages: [cs, vb]
+  category: CNV
+  severity: minor
+  effort: 5min
+  tags: [convention]
+  summary: A parameter has the same name as the method that declares it.
+  why: |
+    Inside the body a reader cannot tell which of the two a mention refers to without going back to
+    the signature.
+  fix: |
+    Name the parameter for the value it carries.

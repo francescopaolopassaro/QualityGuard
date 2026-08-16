@@ -1,0 +1,217 @@
+# Descriptions for the JavaScript and TypeScript rules implemented in
+# Rules/Languages/JsTsUsageRules.cs. The detection reads the syntax tree; this file carries the
+# reasoning and the fix shown in the report.
+
+- key: QG-JS-BUG-0135
+  name: The result of a string operation should be used
+  languages: [js, ts]
+  category: BUG
+  severity: major
+  effort: 10min
+  tags: [suspicious]
+  summary: A string method that returns a new string is called as a statement.
+  why: |
+    Strings do not change: trim, replace and their neighbours answer with a new one and leave the
+    original exactly as it was. A statement that throws the answer away does nothing at all, and
+    reads like it does something.
+  fix: |
+    Assign the result, or pass it on.
+
+- key: QG-JS-BUG-0137
+  name: typeof should be compared to a type it can return
+  languages: [js, ts]
+  category: BUG
+  severity: critical
+  effort: 10min
+  tags: [suspicious]
+  summary: The result of typeof is compared against a word it never produces.
+  why: |
+    The comparison is false every time, so the branch behind it never runs — and it is usually a
+    misspelling of one that would have worked.
+  fix: |
+    Compare against undefined, object, boolean, number, bigint, string, symbol or function; use
+    Array.isArray for an array.
+
+- key: QG-JS-BUG-0138
+  name: An array should not be walked with for-in
+  languages: [js, ts]
+  category: BUG
+  severity: major
+  effort: 10min
+  tags: [suspicious]
+  summary: A for-in loop iterates something that is visibly an array.
+  why: |
+    for-in walks the keys of an object, so over an array it hands back the indexes as strings — and
+    everything a library added to Array.prototype along with them.
+  fix: |
+    Use for-of for the values, entries() when the index is needed too.
+
+- key: QG-JS-BUG-0139
+  name: An array literal should not have a hole in it
+  languages: [js, ts]
+  category: BUG
+  severity: major
+  effort: 5min
+  tags: [suspicious]
+  summary: Two commas in a row leave an empty slot in an array literal.
+  why: |
+    The array has an element there that does not exist. It reads as undefined, but forEach, map and
+    filter skip it — so half the code sees it and half does not.
+  fix: |
+    Write the value, or remove the extra comma.
+
+- key: QG-JS-BUG-0140
+  name: A value should not be assigned to itself
+  languages: [js, ts]
+  category: BUG
+  severity: major
+  effort: 5min
+  tags: [suspicious]
+  summary: The two sides of an assignment are the same name.
+  why: |
+    The statement does nothing, so one of the two names is almost certainly meant to be a different
+    one — and the value that should have been written never is.
+  fix: |
+    Write the name that was intended, or remove the line.
+
+- key: QG-JS-BUG-0141
+  name: A name should be declared once in its scope
+  languages: [js, ts]
+  category: BUG
+  severity: major
+  effort: 10min
+  tags: [suspicious]
+  summary: let or const declares the same name twice in one block.
+  why: |
+    A module refuses to load at all, so the error arrives before any of the code runs — including
+    the code that has nothing to do with this line.
+  fix: |
+    Rename one of the two, or assign to the first instead of declaring again.
+
+- key: QG-JS-BUG-0142
+  name: A union should not list the same type twice
+  languages: [ts]
+  category: BUG
+  severity: minor
+  effort: 5min
+  tags: [suspicious]
+  summary: A union type repeats one of its members.
+  why: |
+    Listing a type twice says nothing more than listing it once, so one of the two was meant to be a
+    different type — and the case it stood for is now unhandled and unchecked.
+  fix: |
+    Replace the repeated member with the type that is missing.
+
+- key: QG-JS-SEC-0079
+  name: Code should not be built from a string
+  languages: [js, ts]
+  category: SEC
+  severity: critical
+  effort: 30min
+  tags: [injection]
+  summary: The Function constructor is used.
+  why: |
+    It compiles its argument, so whatever ends up in that string becomes code with the privileges of
+    the page. It also runs in the global scope, ignores every local the reader can see, and is
+    blocked by any content security policy worth having.
+  fix: |
+    Write the function, or use a lookup keyed on the cases you actually support.
+
+- key: QG-JS-SML-0365
+  name: A property with the same name as its value should use shorthand
+  languages: [js, ts]
+  category: SML
+  severity: minor
+  effort: 5min
+  tags: [readability]
+  summary: An object literal writes name: name.
+  why: |
+    It says the same thing twice, and the repetition hides the properties around it that are doing
+    something.
+  fix: |
+    Write the name once.
+
+- key: QG-JS-SML-0366
+  name: A message built from parts should be a template literal
+  languages: [js, ts]
+  category: SML
+  severity: minor
+  effort: 10min
+  tags: [readability]
+  summary: A string is assembled from four or more pieces with +.
+  why: |
+    The reader has to rebuild the sentence from the operators, and the spaces at the edges of each
+    literal are impossible to see.
+  fix: |
+    Use a template literal, which shows the message as it will read.
+
+- key: QG-JS-SML-0367
+  name: Rest parameters should replace the arguments object
+  languages: [js, ts]
+  category: SML
+  severity: major
+  effort: 10min
+  tags: [readability]
+  summary: The arguments object is used.
+  why: |
+    It is array-like and not an array, so it has no map, no filter and no forEach. Inside an arrow
+    function it does not exist at all and silently refers to the enclosing function instead.
+  fix: |
+    Declare a rest parameter, which is a real array and appears in the signature.
+
+- key: QG-JS-SML-0368
+  name: A template literal should not be nested in another
+  languages: [js, ts]
+  category: SML
+  severity: minor
+  effort: 10min
+  tags: [readability]
+  summary: A template literal appears inside a placeholder of another one.
+  why: |
+    Two levels of escaping end up on one line and the reader has to work out which backtick closes
+    which.
+  fix: |
+    Compute the inner text into a name first.
+
+- key: QG-JS-SML-0369
+  name: The any type gives up the type system
+  languages: [ts]
+  category: SML
+  severity: minor
+  effort: 20min
+  tags: [types]
+  summary: A value is typed as any.
+  why: |
+    Every property access on it, every call, every argument built from it goes unchecked — and the
+    hole spreads to everything the value touches, silently, for as long as it lives.
+  fix: |
+    Use unknown when the type is genuinely not known, and narrow it before use.
+
+- key: QG-JS-SML-0370
+  name: Imports from one module should be written once
+  languages: [js, ts]
+  category: SML
+  severity: minor
+  effort: 5min
+  tags: [readability]
+  summary: Two import statements name the same module.
+  why: |
+    A reader has to look in two places to know what this file takes from that module, and a third
+    import is then just as easy to add. A type-only import is a separate statement on purpose and
+    is left alone.
+  fix: |
+    Merge the two statements.
+
+- key: QG-JS-SML-0371
+  name: A setter without a getter should not exist
+  languages: [js, ts]
+  category: SML
+  severity: major
+  effort: 10min
+  tags: [design]
+  summary: A class declares a set accessor and no get accessor for the same name.
+  why: |
+    The value can be written and never read, so a caller cannot check what the assignment did or put
+    the old value back.
+  fix: |
+    Add the getter, or expose a method named for the effect the assignment has.

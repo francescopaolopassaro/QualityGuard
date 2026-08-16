@@ -39,6 +39,15 @@ public sealed class SourceTokenizer
                 continue;
             }
 
+            if (c == '/' && StartsRegexLiteral(i))
+            {
+                var startLine = line;
+                var startColumn = column;
+                i = ReadRegexLiteral(i, ref line, ref column, out var pattern);
+                _tokens.Add(DirectToken(TokenKind.String, pattern, startLine, startColumn));
+                continue;
+            }
+
             if (TryMatchString(_source, i, out var delim))
             {
                 var startLine = line;
@@ -193,6 +202,82 @@ public sealed class SourceTokenizer
         }
         delim = null!;
         return false;
+    }
+
+    /// <summary>
+    /// Whether the slash at this position opens a regular expression rather than a division. Only
+    /// JavaScript and its relatives have the literal, and only the previous token can tell the two
+    /// apart: a value can be divided, an operator or a keyword cannot. Getting this wrong is not a
+    /// detail — a pattern such as /"([^"]+)"/ contains quotes, and reading it as division leaves the
+    /// tokenizer inside a string for the rest of the file.
+    /// </summary>
+    private bool StartsRegexLiteral(int i)
+    {
+        if (_language.LanguageKey is not (LanguageKeys.JavaScript or LanguageKeys.TypeScript))
+            return false;
+        if (i + 1 >= _source.Length || _source[i + 1] is '/' or '*' or '=')
+            return false;
+
+        for (var back = _tokens.Count - 1; back >= 0; back--)
+        {
+            var previous = _tokens[back];
+            if (previous.Kind == TokenKind.Comment)
+                continue;
+            if (previous.Kind is TokenKind.Identifier or TokenKind.Number or TokenKind.String)
+                return false;
+            if (previous.Kind == TokenKind.Keyword)
+                return previous.Text is not ("this" or "super" or "true" or "false" or "null");
+            return previous.Text is not (")" or "]" or "++" or "--");
+        }
+        return true;
+    }
+
+    /// <summary>Reads a regular expression literal and returns its pattern, without the delimiters.</summary>
+    private int ReadRegexLiteral(int i, ref int line, ref int column, out string pattern)
+    {
+        var sb = new System.Text.StringBuilder();
+        i++;
+        column++;
+        var inClass = false;
+
+        while (i < _source.Length)
+        {
+            var c = _source[i];
+            if (c == '\n')
+                break; // a literal never spans lines: whatever this is, it is not one
+
+            if (c == '\\' && i + 1 < _source.Length)
+            {
+                sb.Append(c).Append(_source[i + 1]);
+                i += 2;
+                column += 2;
+                continue;
+            }
+            if (c == '[')
+                inClass = true;
+            else if (c == ']')
+                inClass = false;
+            else if (c == '/' && !inClass)
+            {
+                i++;
+                column++;
+                break;
+            }
+
+            sb.Append(c);
+            i++;
+            column++;
+        }
+
+        // the flags belong to the literal, not to the code that follows it
+        while (i < _source.Length && char.IsAsciiLetter(_source[i]))
+        {
+            i++;
+            column++;
+        }
+
+        pattern = sb.ToString();
+        return i;
     }
 
     private int ReadString(int i, StringDelimiter delim, ref int line, ref int column, out string value)

@@ -1,4 +1,5 @@
 using QualityGuard.Core.Models;
+using QualityGuard.Core.Syntax;
 using QualityGuard.Core.Tokenization;
 
 namespace QualityGuard.Core.Rules.Languages;
@@ -16,6 +17,7 @@ public static class GoRuleSet
         new GoInsecureSkipVerifyRule(),
         new GoShCRule(),
         new GoPanicRule(),
+        new GoDeferInLoopRule(),
         new GoUnsafePackageRule(),
         new GoDebugPrintRule(),
         new GoGotoRule(),
@@ -229,20 +231,87 @@ public sealed class GoShCRule : PatternRuleBase
 public sealed class GoPanicRule : PatternRuleBase
 {
     public override string Key => "QG-GO-BUG-0001";
-    public override string Name => "Panic used for error handling";
+    public override string Name => "A function that returns an error should not panic";
     public override Severity Severity => Severity.Major;
     public override IssueKind Kind => IssueKind.Bug;
-    public override string RemediationEffort => "Return errors to the caller instead of panicking.";
+    public override string RemediationEffort => "20min";
     public override string[] Languages => ["go"];
 
     public override void Execute(IRuleContext context)
     {
-        var tokens = context.Tokens;
-        for (var i = 0; i < tokens.Count - 1; i++)
+        // Panic is not wrong in Go: main, init and a code generator use it for a failure nobody can
+        // recover from. It is wrong in a function that already promises to return an error, because
+        // there the caller has asked to handle failure and this bypasses the answer it expects.
+        foreach (var function in context.Root.OfKind(NodeKind.FunctionDeclaration))
         {
-            if (RuleMatchers.IsName(tokens[i], "panic") && tokens[i + 1].Text == "(")
-                context.Report("Do not use panic for error handling.", tokens[i].Line);
+            if (!ReturnsError(context, function))
+                continue;
+            var body = SyntaxQuery.Body(function);
+            if (body == null)
+                continue;
+
+            foreach (var call in SyntaxQuery.InvocationsNamed(body, "panic"))
+            {
+                if (SyntaxQuery.EnclosingFunction(call) != function)
+                    continue;
+
+                context.Report($"'{function.Text}' returns an error, so its caller is already prepared "
+                               + "to handle a failure — and a panic goes past that answer, unwinds the "
+                               + "stack and ends the process unless something recovers. Return the "
+                               + "error.", call.Range.StartLine);
+            }
         }
+    }
+
+    /// <summary>Whether the signature promises an error among its results.</summary>
+    private static bool ReturnsError(IRuleContext context, SyntaxNode function)
+    {
+        var lines = LanguageRuleSupport.Lines(context);
+        var line = function.Range.StartLine - 1 < lines.Length && function.Range.StartLine > 0
+            ? lines[function.Range.StartLine - 1]
+            : string.Empty;
+        // What follows the parameter list, not what follows the last parenthesis on the line: the
+        // results of a Go function are themselves parenthesised — '(path string) ([]byte, error)'.
+        var open = line.IndexOf('(');
+        if (open < 0)
+            return false;
+        var depth = 0;
+        for (var i = open; i < line.Length; i++)
+        {
+            if (line[i] == '(')
+                depth++;
+            else if (line[i] == ')')
+            {
+                depth--;
+                if (depth != 0)
+                    continue;
+                // a method declares its receiver first, so the results come after the next list
+                var rest = line[(i + 1)..];
+                var next = rest.IndexOf('(');
+                if (next >= 0 && rest[..next].Trim().Length > 0)
+                    return ReturnsErrorAfter(rest);
+                return LanguageRuleSupport.ContainsWord(rest, "error");
+            }
+        }
+        return false;
+    }
+
+    private static bool ReturnsErrorAfter(string rest)
+    {
+        var open = rest.IndexOf('(');
+        var depth = 0;
+        for (var i = open; i >= 0 && i < rest.Length; i++)
+        {
+            if (rest[i] == '(')
+                depth++;
+            else if (rest[i] == ')')
+            {
+                depth--;
+                if (depth == 0)
+                    return LanguageRuleSupport.ContainsWord(rest[(i + 1)..], "error");
+            }
+        }
+        return false;
     }
 }
 
@@ -418,6 +487,49 @@ public sealed class GoElseAfterReturnRule : PatternRuleBase
             if (last.Kind != QualityGuard.Core.Syntax.NodeKind.Jump || last.Text is not ("return" or "continue" or "break"))
                 continue;
             context.Report(otherwise, "The branch above always leaves the function, so this else only adds nesting.");
+        }
+    }
+}
+
+/// <summary>
+/// A deferred call inside a loop. This used to be a line pattern that asked only whether the file
+/// contained a loop anywhere, so every defer in a file that had one was reported. Containment is a
+/// question about the tree, and it is asked here.
+/// </summary>
+public sealed class GoDeferInLoopRule : RuleBase
+{
+    public override string Key => "QG-GO-BUG-0004";
+    public override string Name => "Deferred calls should not be made inside loops";
+    public override Severity Severity => Severity.Major;
+    public override IssueKind Kind => IssueKind.Bug;
+    public override string RemediationEffort => "15min";
+    public override string[] Languages => ["go"];
+
+    public override void Execute(IRuleContext context)
+    {
+        if (!context.Tree.HasDedicatedParser)
+            return;
+
+        foreach (var loop in context.Root.OfKind(NodeKind.Loop))
+        {
+            foreach (var statement in loop.Descendants())
+            {
+                // the parser keeps a defer as an expression statement whose text is the keyword
+                if (statement.Kind is not (NodeKind.Jump or NodeKind.ExpressionStatement)
+                    || statement.Text != "defer")
+                    continue;
+                // a defer inside a function literal runs when that literal returns, which is the
+                // per-iteration behaviour the fix asks for
+                var owner = statement.Ancestors().FirstOrDefault(
+                    a => a.Kind is NodeKind.Loop or NodeKind.Lambda or NodeKind.FunctionDeclaration);
+                if (owner != loop)
+                    continue;
+
+                context.Report("Deferred calls run when the function returns, not at the end of the "
+                               + "iteration, so every pass adds another one and the files or "
+                               + "connections stay open until the whole function finishes.",
+                    statement.Range.StartLine);
+            }
         }
     }
 }

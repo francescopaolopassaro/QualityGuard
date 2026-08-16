@@ -134,15 +134,15 @@ Severity and issue kind follow the category: `SEC` → vulnerability (major or a
 
 ## 5. Rules
 
-**1162 rules are loaded and executable**, backed by **2638 catalog entries** (a catalog entry either
+**1295 rules are loaded and executable**, backed by **2628 catalog entries** (a catalog entry either
 carries its own detection or documents a rule implemented in code).
 
 | Area | Code | Rules |
 | --- | --- | --- |
-| C# / VB.NET | `CS` | 234 |
-| Java | `JV` | 151 |
-| Python | `PY` | 136 |
-| JavaScript | `JS` | 109 |
+| C# / VB.NET | `CS` | 253 |
+| Java | `JV` | 188 |
+| Python | `PY` | 164 |
+| JavaScript | `JS` | 140 |
 | Kotlin | `KT` | 83 |
 | Swift | `SW` | 14 |
 | Multi-language | `ALL` | 94 |
@@ -152,7 +152,7 @@ carries its own detection or documents a rule implemented in code).
 | Dart / Flutter | `DART` | 7 |
 | Secrets (every language) | `SEC` | 5 |
 | JSON | `JSON` | 3 |
-| PHP | `PP` | 58 |
+| PHP | `PP` | 76 |
 | Rust | `RS` | 37 |
 | Go | `GO` | 28 |
 | Ruby | `RB` | 26 |
@@ -194,6 +194,82 @@ accesses, identifiers, string literals, assignments, declared and parameter type
 plus filters such as `argTainted`, `argDynamic`, `resultUnused`, `withoutArgs`, `requires`, `absent`.
 Anything that needs real reasoning over the tree is written in C# instead, against `SyntaxQuery`, the
 semantic model and the taint result.
+
+### Java and Python on the tree
+
+Both have a real parser here, so their rules read declarations, catches, switches and calls instead
+of lines — which is what lets them stay quiet on the shapes that only resemble the defect.
+
+* **Java** — the contracts the platform expects a type to honour: an iterator whose `next` never
+  throws `NoSuchElementException`, a `wait` outside its loop (a thread can wake with nothing having
+  changed), a `Boolean` method returning `null` (which every `if` unboxes into a null pointer), a
+  thread started from a constructor, `iterator()` returning `this`, a JDBC accessor given index 0, a
+  date pattern written with upper-case `Y` (the week year — wrong for the last days of December),
+  `compareTo` overloaded. Then the declarations that say one thing and do another: a class of static
+  members that can still be constructed, a field set to the value it already has, an interface member
+  repeating `public`, double brace initialization, an override of `clone`, an instance method writing
+  to a static field, an empty statement. Plus an override of `finalize`, a class extending `Error`, a jump label sitting among the
+  cases of a switch, a method one letter away from `toString` or `equals`, a method named after its
+  own class, a mutable `public static` field, a `hasNext` that advances the iterator, a `BigDecimal`
+  built from a `double`, a catch that drops the cause or sorts exceptions with `instanceof`, an
+  import from an internal JDK package, `main` declaring `throws`, and the small readability ones
+  (`String.valueOf` inside a concatenation, `toString` on a string, a negated comparison, a lambda
+  wrapping one expression in a block).
+* **Python** — the code that imports cleanly and fails the first time it runs: a mutable default
+  argument (created once and shared by every call that omits it), a raised literal, a keyword
+  argument given twice, `__exit__` re-raising what it was handed, an `except` clause a wider one
+  already covers, a constant used as a condition, an invalid `open` mode, an unhashable dictionary
+  key, a comparison against `nan` (equal to nothing, itself included), a value returned from a
+  generator (which every `for` loop discards), an exception class with no base. Plus `break` outside
+  a loop, `__init__` returning a value, a non-name in `__all__`, a loop
+  `else` with no `break`, a repeated key in a dictionary or element in a set, an `assert` given a
+  tuple (which can never fail), an exact type comparison instead of `isinstance`, a slice compared
+  against a literal instead of `startswith`, a lambda bound to a name, nested conditional
+  expressions, a lone handler that only re-raises, and the receiver conventions for instance and
+  class methods.
+
+These were measured on real code before being kept: a full Java analyzer codebase (2700 files,
+249k ncloc) and the CPython standard library (542 files, 213k ncloc). They are quiet on clean code
+and loud on defective code — the duplicated dictionary keys they report in the standard library are
+real, and so are the `for`/`else` blocks with no `break`.
+
+### PHP on the tree
+
+PHP is parsed as a dialect of the C-family parser, so these rules read declarations, catches and
+calls: a variable whose name is computed, a PHP 4 constructor (an ordinary method since PHP 8, so
+the object is now built without it), `$this` in a static method, a catch clause an earlier one
+already covers, the same variable passed twice to one call, a thrown literal, a `foreach` reference
+that is never `unset` — the surprise where the last element of the array silently becomes a copy of
+the one before it — a constant defined twice, an error hidden by the `@` operator, and the
+declaration habits (`var`, several properties per statement, a method with no visibility, a default
+argument that can never be used, `exit` inside a function, an alias such as `sizeof`).
+
+### C# and JavaScript on the tree
+
+* **C#** — the shape of a type and the contract it offers: a public field, a class of static members
+  that can still be constructed, a general exception thrown, an `[Obsolete]` with no message, a
+  property that only wraps a field or that can only be written, an empty constructor or finalizer, a
+  type outside any namespace, a method that always returns the same literal. Plus the expressions
+  that compile cleanly and mean something else: `x % 2 == 1` (false for every negative number),
+  `IndexOf(...) > 0` (which excludes the first element), `new Guid()` (always the empty one), a
+  getter that throws, a `protected` member in a sealed class, and `ToString`, `Equals`, `GetHashCode`
+  or `Dispose` throwing — all four are called by the runtime, and `Dispose` throwing during
+  unwinding replaces the original failure.
+* **JavaScript and TypeScript** — what the code does with the values it has: a string method whose
+  result is thrown away (strings do not change), a `typeof` compared to a word it never returns, a
+  `for-in` over an array, a hole left by a double comma, a self-assignment, a name declared twice in
+  one block, a union that lists the same type twice, `new Function`, `name: name`, the `arguments`
+  object, a nested template literal, `any`, two imports of one module, a setter with no getter. Plus
+  a jump label among the cases of a switch, `&` where `&&` was
+  meant, an assignment to `undefined` or `arguments`, a built-in prototype extended, a setter that
+  returns a value, `indexOf(...) > 0`, `sort()` with no comparator (which compares numbers as text),
+  a generator that never yields, a thrown string, `${...}` inside a quoted string, an empty
+  destructuring pattern, `!a in b`, `new Symbol()`, `=== true`, `new Object()`, and `this` copied
+  into a variable.
+
+Measured on real code before being kept: the reference C# analyzer suite (1405 files, 92k ncloc) and
+a TypeScript codebase of 2588 files and 200k ncloc, plus this repository. On that TypeScript corpus
+the sixteen JavaScript rules together produce fifteen findings.
 
 ### Web front ends
 
@@ -366,6 +442,55 @@ src/QualityGuard.Core/Semantics                3     416     1     0     21
 ```
 
 ---
+
+### Precision on Java and C#
+
+The same measurement, applied to the two languages with the most rules. One parser gap: the body of
+an **anonymous class** (`new X() { ... }`) was read as an object initializer, so every method it
+overrode became a call — and `public void addUnique(String t) { }` was reported as a void call used
+as a value. Four shared rules were then narrowed to shapes these languages use every day: an
+expression lambda over a void call (which is how every `Consumer` is written), a local initialised
+from a method of the same name (`boolean isSubscribed = isSubscribed(tree)`), a parameter of an
+abstract method or an empty hook (there is no body to use it in), and a constructor forwarding with
+`: this(...) { }`.
+
+Two C# rules were rewritten because they could not be defended: commented-out code, which needed
+only a semicolon anywhere in a comment and reported every licence header; and null dereference,
+which marked a name for the whole file and never noticed the check three lines later — now limited
+to the one honest form without flow analysis, a value that comes back from an `...OrDefault()` and is
+dereferenced in the very next statement.
+
+Result: Java 105 → 66 bugs, C# 368 → 282 bugs, and this repository 88 → 42.
+
+### Precision on Go
+
+Go has a dedicated parser and still reported 42 bugs in 3,179 lines of well-written production code.
+Three rules, three different mistakes: `panic` flagged everywhere (it is how `main` and a code
+generator stop, and a defect only in a function that already promises to return an `error`); `0755`
+read as an accidental octal, when a permission mask is written in octal on purpose; and `defer`
+inside a loop, expressed as a line pattern that only asked whether the file contained a loop
+*somewhere*, so every `defer` in a file with a `for` was reported. That last one is now a rule on the
+tree — containment is a question the declarative matcher cannot express.
+
+Result: 42 → 12 bugs, with no rule removed.
+
+### Precision on Kotlin
+
+Kotlin exercised the engine on a language read by the generic structural parser, and the answer was
+a report nobody would open: on 16k lines of production Kotlin, 103 bugs, 70 vulnerabilities and 638
+smells. Adding rules to that would have made it worse, so the noise came out first.
+
+Two of the fixes were in the shared statement classifier and help every brace language: a
+declaration keyword is now recognised behind its modifiers (`private const val x` used to parse as a
+nameless expression), and it is only looked for in the header of a statement — `Foo::class.java` used
+to be read as a class named `java`.
+
+The rest were shapes Kotlin uses constantly: an extension function (`fun Context.report()`, whose
+name is what follows the dot, not the receiver type), a `@Composable` function (upper camel case by
+Android's own convention), a trailing lambda after `return`, and the word "token" in a parser, which
+is a piece of syntax and not a credential. That last one was reported as a **vulnerability**.
+
+The result, with no rule removed: 103 → 60 bugs, 70 → 24 vulnerabilities, 638 → 447 smells.
 
 ## 8. Quality bar
 

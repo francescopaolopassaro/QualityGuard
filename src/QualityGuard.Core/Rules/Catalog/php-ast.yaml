@@ -1,0 +1,257 @@
+# Descriptions for the PHP rules implemented in Rules/Languages/PhpAstRules.cs. The detection reads
+# the syntax tree; this file carries the reasoning and the fix shown in the report.
+
+- key: QG-PP-BUG-0039
+  name: A variable name should not be computed
+  languages: [php]
+  category: BUG
+  severity: critical
+  effort: 30min
+  tags: [suspicious]
+  summary: A variable variable is used.
+  why: |
+    The name is decided while the program runs, so nothing before that point knows what is being read
+    or written: no editor, no search, no reader. When the name comes from a request it is also a way
+    into every other variable in scope.
+  fix: |
+    Use an array keyed on the name.
+
+- key: QG-PP-BUG-0040
+  name: A variable removed from the language should not be used
+  languages: [php]
+  category: BUG
+  severity: critical
+  effort: 15min
+  tags: [obsolete]
+  summary: One of the HTTP_*_VARS variables or php_errormsg is used.
+  why: |
+    These were removed from PHP years ago, so the name now reads as an undefined variable: the code
+    takes an empty value and carries on as if the data had been there.
+  fix: |
+    Use the superglobal that replaced it.
+
+- key: QG-PP-BUG-0041
+  name: A constructor should be named __construct
+  languages: [php]
+  category: BUG
+  severity: critical
+  effort: 15min
+  tags: [obsolete]
+  summary: A method has the same name as its class.
+  why: |
+    That used to make it the constructor. Since PHP 8 it is an ordinary method, so the object is now
+    built without running any of it — silently, with every field left unset.
+  fix: |
+    Rename the method to __construct.
+
+- key: QG-PP-BUG-0042
+  name: A static method has no instance
+  languages: [php]
+  category: BUG
+  severity: blocker
+  effort: 15min
+  tags: [suspicious]
+  summary: $this is used inside a static method.
+  why: |
+    A static method runs without an instance, so $this does not exist inside it and the call throws
+    as soon as the line is reached.
+  fix: |
+    Use self:: or static:: for the class, or drop the static modifier.
+
+- key: QG-PP-BUG-0043
+  name: A catch clause should be reachable
+  languages: [php]
+  category: BUG
+  severity: major
+  effort: 15min
+  tags: [error-handling]
+  summary: A catch clause names a type an earlier clause already covers.
+  why: |
+    Clauses are tried in order, so the wider one wins and nothing ever reaches this handler. What it
+    does for that case does not happen, and nothing reports it.
+  fix: |
+    Put the specific exception first.
+
+- key: QG-PP-BUG-0044
+  name: A condition should be able to go both ways
+  languages: [php]
+  category: BUG
+  severity: major
+  effort: 10min
+  tags: [suspicious]
+  summary: An if is given a constant.
+  why: |
+    The branch is decided before the program runs, so one side of it is code nothing will ever
+    execute.
+  fix: |
+    Write the condition that was intended, or remove the branch.
+
+- key: QG-PP-BUG-0045
+  name: The same value should not be passed twice to one call
+  languages: [php]
+  category: BUG
+  severity: major
+  effort: 10min
+  tags: [suspicious]
+  summary: One variable appears twice in the argument list of a call.
+  why: |
+    Either one of the two is meant to be a different value — and the value that should have been
+    passed never is — or the function takes fewer arguments than the call appears to give it.
+  fix: |
+    Pass the value that is missing.
+
+- key: QG-PP-BUG-0046
+  name: A condition should not assign
+  languages: [php]
+  category: BUG
+  severity: major
+  effort: 10min
+  tags: [suspicious]
+  summary: The condition of an if is an assignment.
+  why: |
+    It writes a value and then tests it, which is one character away from a comparison and reads like
+    one. Even when it is deliberate, the next reader has to stop and decide whether it was.
+  fix: |
+    Assign on its own line and test the result, or use a comparison.
+
+- key: QG-PP-BUG-0047
+  name: Only a throwable should be thrown
+  languages: [php]
+  category: BUG
+  severity: blocker
+  effort: 10min
+  tags: [error-handling]
+  summary: A literal is thrown.
+  why: |
+    Only an object implementing Throwable can be thrown: this raises a fatal error instead, and the
+    failure the code was reporting is replaced by one about the reporting.
+  fix: |
+    Throw an exception class with the message as its argument.
+
+- key: QG-PP-BUG-0048
+  name: A reference taken by foreach should be released
+  languages: [php]
+  category: BUG
+  severity: critical
+  effort: 15min
+  tags: [suspicious]
+  summary: A foreach loop binds by reference and the variable is never unset.
+  why: |
+    The variable still points at the last element when the loop ends, so the next loop that reuses
+    the name writes into that element instead of its own — the surprise where the last item of the
+    array silently becomes a copy of the second to last.
+  fix: |
+    Call unset on the variable straight after the loop.
+
+- key: QG-PP-BUG-0049
+  name: A constant should be defined once
+  languages: [php]
+  category: BUG
+  severity: major
+  effort: 10min
+  tags: [suspicious]
+  summary: define is called twice with the same name.
+  why: |
+    The second call does nothing except raise a warning, so the constant keeps the first value —
+    which is rarely the one the later line intended.
+  fix: |
+    Remove the duplicate, or give the second constant its own name.
+
+- key: QG-PP-SEC-0066
+  name: An error should not be silenced
+  languages: [php]
+  category: SEC
+  severity: major
+  effort: 20min
+  tags: [error-handling]
+  summary: The error control operator is applied to an expression.
+  why: |
+    It hides every warning and error the expression produces, including the ones nobody anticipated.
+    The code then continues with a value it never checked, and the log has nothing in it to explain
+    what followed.
+  fix: |
+    Handle the failure, or check the condition before the call.
+
+- key: QG-PP-SML-0111
+  name: A property should declare its visibility
+  languages: [php]
+  category: SML
+  severity: minor
+  effort: 5min
+  tags: [obsolete]
+  summary: A property is declared with the var keyword.
+  why: |
+    var is the PHP 4 spelling of public. Saying which visibility is meant tells the reader whether it
+    was a decision or a habit.
+  fix: |
+    Write public, private or protected.
+
+- key: QG-PP-SML-0112
+  name: One statement should declare one property
+  languages: [php]
+  category: SML
+  severity: minor
+  effort: 5min
+  tags: [readability]
+  summary: Several properties are declared in a single statement.
+  why: |
+    A type, a default or a comment added to one of them has to be untangled from the others first,
+    and a diff on one line touches all of them.
+  fix: |
+    Give each property its own statement.
+
+- key: QG-PP-SML-0113
+  name: A method should declare its visibility
+  languages: [php]
+  category: SML
+  severity: minor
+  effort: 5min
+  tags: [encapsulation]
+  summary: A method declares no visibility.
+  why: |
+    It is public, and that is a decision about the surface of the class taken by omission — nothing
+    says whether the method was meant to be callable from outside.
+  fix: |
+    Say public, private or protected.
+
+- key: QG-PP-SML-0114
+  name: Parameters with a default should come last
+  languages: [php]
+  category: SML
+  severity: major
+  effort: 10min
+  tags: [readability]
+  summary: A parameter with a default is followed by one without.
+  why: |
+    The default can never be used: every caller has to pass it explicitly to reach the parameter that
+    follows. The signature promises an option that does not exist.
+  fix: |
+    Move the parameters with defaults to the end.
+
+- key: QG-PP-SML-0115
+  name: A library should not end the process
+  languages: [php]
+  category: SML
+  severity: major
+  effort: 30min
+  tags: [design]
+  summary: exit or die is called from inside a function or a class.
+  why: |
+    It stops everything: no response is finished, no destructor runs, and no test that reaches the
+    line can report what happened.
+  fix: |
+    Throw an exception and let the entry point decide how to end.
+
+- key: QG-PP-SML-0116
+  name: The canonical name of a function should be used
+  languages: [php]
+  category: SML
+  severity: minor
+  effort: 5min
+  tags: [readability]
+  summary: An alias such as sizeof or join is called.
+  why: |
+    Two names for one function split every search across the codebase, and only one of the two
+    appears in the documentation.
+  fix: |
+    Use the canonical name.

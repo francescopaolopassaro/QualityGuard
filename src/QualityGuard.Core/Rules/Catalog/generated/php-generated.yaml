@@ -38,24 +38,6 @@
     Move the value to configuration, read it at start-up, and fail with a clear message when it is
     missing so a misconfigured deployment stops before it does anything.
 
-- key: QG-PP-SML-0017
-  name: Assignments should be simplified
-  languages: [php]
-  category: SML
-  severity: minor
-  effort: 15min
-  tags: [sml, generated]
-  generated: true
-  status: planned
-  message: This code is harder to read or change than the behaviour requires.
-  summary: The code works but is harder to read or change than the behaviour requires.
-  why: |
-    The intent is buried, duplicated, or spread across places that must stay in sync, so every future
-    change costs more than it should and carries a risk that has nothing to do with the change itself.
-  fix: |
-    Remove what is not used, name what is unclear, and keep one piece of behaviour in one place so the
-    next change touches a single spot.
-
 - key: QG-PP-SML-0018
   name: Modifiers should be declared the way the language intends
   languages: [php]
@@ -334,63 +316,6 @@
     Split along the responsibilities the code has accumulated: extract the sections that already have a
     name, and keep the original as the sequence of those steps.
 
-- key: QG-PP-SML-0037
-  name: Variable variables should not be used
-  languages: [php]
-  category: SML
-  severity: minor
-  effort: 15min
-  tags: [avoid_api, generated]
-  generated: true
-  status: planned
-  message: This API should be replaced by the current alternative.
-  summary: Code calls an API that is unsafe, obsolete or superseded by a better alternative.
-  why: |
-    The API stays available for compatibility, so nothing fails at build time, but it carries behaviour
-    the platform now considers a defect — unchecked input, a weak guarantee, or a cost the replacement
-    avoids. Its presence also spreads: new code copies what it finds nearby.
-  fix: |
-    Replace the call with the current API, and keep the old one only behind a compatibility layer that is
-    documented and dated.
-
-- key: QG-PP-SML-0038
-  name: Deprecated predefined variables should not be used
-  languages: [php]
-  category: SML
-  severity: minor
-  effort: 15min
-  tags: [avoid_api, generated]
-  generated: true
-  status: planned
-  message: This API should be replaced by the current alternative.
-  summary: Code calls an API that is unsafe, obsolete or superseded by a better alternative.
-  why: |
-    The API stays available for compatibility, so nothing fails at build time, but it carries behaviour
-    the platform now considers a defect — unchecked input, a weak guarantee, or a cost the replacement
-    avoids. Its presence also spreads: new code copies what it finds nearby.
-  fix: |
-    Replace the call with the current API, and keep the old one only behind a compatibility layer that is
-    documented and dated.
-
-- key: QG-PP-SML-0039
-  name: Deprecated constructor declarations should not be used
-  languages: [php]
-  category: SML
-  severity: minor
-  effort: 15min
-  tags: [avoid_api, generated]
-  generated: true
-  status: planned
-  message: This API should be replaced by the current alternative.
-  summary: Code calls an API that is unsafe, obsolete or superseded by a better alternative.
-  why: |
-    The API stays available for compatibility, so nothing fails at build time, but it carries behaviour
-    the platform now considers a defect — unchecked input, a weak guarantee, or a cost the replacement
-    avoids. Its presence also spreads: new code copies what it finds nearby.
-  fix: |
-    Replace the call with the current API, and keep the old one only behind a compatibility layer that is
-    documented and dated.
-
 - key: QG-PP-SML-0040
   name: __construct functions should be simplified
   languages: [php]
@@ -465,43 +390,6 @@
     Switch to the recommended construct; the behaviour is the same in the normal case and defined in the
     cases the old form got wrong.
 
-- key: QG-PP-SML-0043
-  name: Var keyword should not be used
-  languages: [php]
-  category: SML
-  severity: minor
-  effort: 15min
-  tags: [avoid_api, generated]
-  generated: true
-  status: planned
-  message: This API should be replaced by the current alternative.
-  summary: Code calls an API that is unsafe, obsolete or superseded by a better alternative.
-  why: |
-    The API stays available for compatibility, so nothing fails at build time, but it carries behaviour
-    the platform now considers a defect — unchecked input, a weak guarantee, or a cost the replacement
-    avoids. Its presence also spreads: new code copies what it finds nearby.
-  fix: |
-    Replace the call with the current API, and keep the old one only behind a compatibility layer that is
-    documented and dated.
-
-- key: QG-PP-SML-0044
-  name: More than one property should be simplified
-  languages: [php]
-  category: SML
-  severity: minor
-  effort: 15min
-  tags: [sml, generated]
-  generated: true
-  status: planned
-  message: This code is harder to read or change than the behaviour requires.
-  summary: The code works but is harder to read or change than the behaviour requires.
-  why: |
-    The intent is buried, duplicated, or spread across places that must stay in sync, so every future
-    change costs more than it should and carries a risk that has nothing to do with the change itself.
-  fix: |
-    Remove what is not used, name what is unclear, and keep one piece of behaviour in one place so the
-    next change touches a single spot.
-
 - key: QG-PP-SML-0045
   name: Only LF character (Unix-like) should be replaced by the recommended alternative
   languages: [php]
@@ -557,42 +445,6 @@
     Check the value where it enters the program, model absence in the type where the language allows it,
     and provide the default or the error at that point instead of deeper down.
 
-- key: QG-PP-BUG-0007
-  name: Method visibility should match the behaviour the code describes
-  languages: [php]
-  category: BUG
-  severity: major
-  effort: 15min
-  tags: [bug, generated]
-  generated: true
-  status: planned
-  message: This code does not behave the way it reads.
-  summary: The code does not do what its shape suggests, or fails on ordinary input.
-  why: |
-    Written this way the code works by accident or breaks on values that are perfectly normal, and the
-    mistake is easy to miss in review because the intent reads correctly.
-  fix: |
-    Make the intended behaviour explicit — fix the condition, the operator or the order of operations —
-    and cover the case that used to fail with a test.
-
-- key: QG-PP-SML-0048
-  name: Method arguments with default values should be simplified
-  languages: [php]
-  category: SML
-  severity: minor
-  effort: 15min
-  tags: [sml, generated]
-  generated: true
-  status: planned
-  message: This code is harder to read or change than the behaviour requires.
-  summary: The code works but is harder to read or change than the behaviour requires.
-  why: |
-    The intent is buried, duplicated, or spread across places that must stay in sync, so every future
-    change costs more than it should and carries a risk that has nothing to do with the change itself.
-  fix: |
-    Remove what is not used, name what is unclear, and keep one piece of behaviour in one place so the
-    next change touches a single spot.
-
 - key: QG-PP-SML-0049
   name: Elseif keyword should be replaced by the recommended alternative
   languages: [php]
@@ -613,25 +465,6 @@
     cases the old form got wrong.
   detect:
     - invocation: [elseif]
-
-- key: QG-PP-BUG-0008
-  name: Exit(...) and die(...) statements should not be used
-  languages: [php]
-  category: BUG
-  severity: major
-  effort: 15min
-  tags: [avoid_api, generated]
-  generated: true
-  status: planned
-  message: This API should be replaced by the current alternative.
-  summary: Code calls an API that is unsafe, obsolete or superseded by a better alternative.
-  why: |
-    The API stays available for compatibility, so nothing fails at build time, but it carries behaviour
-    the platform now considers a defect — unchecked input, a weak guarantee, or a cost the replacement
-    avoids. Its presence also spreads: new code copies what it finds nearby.
-  fix: |
-    Replace the call with the current API, and keep the old one only behind a compatibility layer that is
-    documented and dated.
 
 - key: QG-PP-SML-0050
   name: Source code should follow the naming convention of the codebase
@@ -779,24 +612,6 @@
     Replace the call with the current API, and keep the old one only behind a compatibility layer that is
     documented and dated.
 
-- key: QG-PP-BUG-0010
-  name: Errors should match the behaviour the code describes
-  languages: [php]
-  category: BUG
-  severity: major
-  effort: 15min
-  tags: [bug, generated]
-  generated: true
-  status: planned
-  message: This code does not behave the way it reads.
-  summary: The code does not do what its shape suggests, or fails on ordinary input.
-  why: |
-    Written this way the code works by accident or breaks on values that are perfectly normal, and the
-    mistake is easy to miss in review because the intent reads correctly.
-  fix: |
-    Make the intended behaviour explicit — fix the condition, the operator or the order of operations —
-    and cover the case that used to fail with a test.
-
 - key: QG-PP-BUG-0011
   name: Require_once and include_once should be replaced by the recommended alternative
   languages: [php]
@@ -895,25 +710,6 @@
     documented and dated.
   detect:
     - invocation: [global]
-
-- key: QG-PP-BUG-0012
-  name: $this should not be used
-  languages: [php]
-  category: BUG
-  severity: major
-  effort: 15min
-  tags: [avoid_api, generated]
-  generated: true
-  status: planned
-  message: This API should be replaced by the current alternative.
-  summary: Code calls an API that is unsafe, obsolete or superseded by a better alternative.
-  why: |
-    The API stays available for compatibility, so nothing fails at build time, but it carries behaviour
-    the platform now considers a defect — unchecked input, a weak guarantee, or a cost the replacement
-    avoids. Its presence also spreads: new code copies what it finds nearby.
-  fix: |
-    Replace the call with the current API, and keep the old one only behind a compatibility layer that is
-    documented and dated.
 
 - key: QG-PP-BUG-0013
   name: Suspicious code should match the behaviour the code describes
@@ -1066,25 +862,6 @@
   fix: |
     Remove what is not used, name what is unclear, and keep one piece of behaviour in one place so the
     next change touches a single spot.
-
-- key: QG-PP-SML-0068
-  name: Alias functions should not be used
-  languages: [php]
-  category: SML
-  severity: minor
-  effort: 15min
-  tags: [avoid_api, generated]
-  generated: true
-  status: planned
-  message: This API should be replaced by the current alternative.
-  summary: Code calls an API that is unsafe, obsolete or superseded by a better alternative.
-  why: |
-    The API stays available for compatibility, so nothing fails at build time, but it carries behaviour
-    the platform now considers a defect — unchecked input, a weak guarantee, or a cost the replacement
-    avoids. Its presence also spreads: new code copies what it finds nearby.
-  fix: |
-    Replace the call with the current API, and keep the old one only behind a compatibility layer that is
-    documented and dated.
 
 - key: QG-PP-SEC-0034
   name: Password hashing functions should use current cryptographic parameters
@@ -1578,24 +1355,6 @@
     Make the intended behaviour explicit — fix the condition, the operator or the order of operations —
     and cover the case that used to fail with a test.
 
-- key: QG-PP-SML-0083
-  name: Repeated code should not be duplicated
-  languages: [php]
-  category: SML
-  severity: minor
-  effort: 15min
-  tags: [duplication, generated]
-  generated: true
-  status: planned
-  message: This code or value is duplicated.
-  summary: The same code or value appears more than once.
-  why: |
-    Copies drift apart the first time one of them is fixed, and nothing links them, so the bug is fixed
-    in one place and stays in the other. Readers also cannot tell which copy is authoritative.
-  fix: |
-    Keep one definition and reference it from the other places, or extract the shared part into a named
-    function or constant.
-
 - key: QG-PP-BUG-0021
   name: Array values should match the behaviour the code describes
   languages: [php]
@@ -1707,24 +1466,6 @@
   fix: |
     Validate the incoming value against an allowed set, pass it as data rather than as code or command,
     and replace weakened mechanisms with the current recommended one.
-
-- key: QG-PP-BUG-0022
-  name: References used in foreach loops should match the behaviour the code describes
-  languages: [php]
-  category: BUG
-  severity: major
-  effort: 15min
-  tags: [bug, generated]
-  generated: true
-  status: planned
-  message: This code does not behave the way it reads.
-  summary: The code does not do what its shape suggests, or fails on ordinary input.
-  why: |
-    Written this way the code works by accident or breaks on values that are perfectly normal, and the
-    mistake is easy to miss in review because the intent reads correctly.
-  fix: |
-    Make the intended behaviour explicit — fix the condition, the operator or the order of operations —
-    and cover the case that used to fail with a test.
 
 - key: QG-PP-SML-0085
   name: OS process signal parameters should be verified before use
@@ -1907,25 +1648,6 @@
     - invocation: [openssl_encrypt]
       argLiterals: [-ecb]
 
-- key: QG-PP-BUG-0023
-  name: Failure paths should make failure handling explicit
-  languages: [php]
-  category: BUG
-  severity: major
-  effort: 15min
-  tags: [exception, generated]
-  generated: true
-  status: planned
-  message: This handling hides the failure instead of dealing with it.
-  summary: An exception is thrown, caught or propagated in a way that hides the failure.
-  why: |
-    Handlers that are too broad, empty, or that replace the original error remove the information needed
-    to diagnose the incident, and let the program continue in a state nobody designed for. The symptom
-    then appears far from the cause.
-  fix: |
-    Catch the specific failures this code can recover from, keep the original exception as the cause when
-    wrapping, and let everything else reach the boundary handler.
-
 - key: QG-PP-SEC-0057
   name: HTTP request content length should not weaken the security of the application
   languages: [php]
@@ -1945,25 +1667,6 @@
     Validate the incoming value against an allowed set, pass it as data rather than as code or command,
     and replace weakened mechanisms with the current recommended one.
 
-- key: QG-PP-SML-0089
-  name: Subclass should make failure handling explicit
-  languages: [php]
-  category: SML
-  severity: minor
-  effort: 15min
-  tags: [exception, generated]
-  generated: true
-  status: planned
-  message: This handling hides the failure instead of dealing with it.
-  summary: An exception is thrown, caught or propagated in a way that hides the failure.
-  why: |
-    Handlers that are too broad, empty, or that replace the original error remove the information needed
-    to diagnose the incident, and let the program continue in a state nobody designed for. The symptom
-    then appears far from the cause.
-  fix: |
-    Catch the specific failures this code can recover from, keep the original exception as the cause when
-    wrapping, and let everything else reach the boundary handler.
-
 - key: QG-PP-BUG-0024
   name: Tests should assert something
   languages: [php]
@@ -1981,25 +1684,6 @@
   fix: |
     Assert the behaviour the test exists for, re-enable it, and make sure it fails when the behaviour is
     broken before trusting it again.
-
-- key: QG-PP-SML-0091
-  name: Constants should not be used
-  languages: [php]
-  category: SML
-  severity: minor
-  effort: 15min
-  tags: [avoid_api, generated]
-  generated: true
-  status: planned
-  message: This API should be replaced by the current alternative.
-  summary: Code calls an API that is unsafe, obsolete or superseded by a better alternative.
-  why: |
-    The API stays available for compatibility, so nothing fails at build time, but it carries behaviour
-    the platform now considers a defect — unchecked input, a weak guarantee, or a cost the replacement
-    avoids. Its presence also spreads: new code copies what it finds nearby.
-  fix: |
-    Replace the call with the current API, and keep the old one only behind a compatibility layer that is
-    documented and dated.
 
 - key: QG-PP-SEC-0058
   name: Authorizations should not weaken the security of the application
@@ -2397,24 +2081,6 @@
   fix: |
     Restore the default and solve the original problem in a narrower way — scope the exception to the
     single endpoint or value that needs it, and document why it is safe there.
-
-- key: QG-PP-SML-0102
-  name: Constants should be simplified
-  languages: [php]
-  category: SML
-  severity: minor
-  effort: 15min
-  tags: [sml, generated]
-  generated: true
-  status: planned
-  message: This code is harder to read or change than the behaviour requires.
-  summary: The code works but is harder to read or change than the behaviour requires.
-  why: |
-    The intent is buried, duplicated, or spread across places that must stay in sync, so every future
-    change costs more than it should and carries a risk that has nothing to do with the change itself.
-  fix: |
-    Remove what is not used, name what is unclear, and keep one piece of behaviour in one place so the
-    next change touches a single spot.
 
 - key: QG-PP-SEC-0063
   name: External requests should not weaken the security of the application

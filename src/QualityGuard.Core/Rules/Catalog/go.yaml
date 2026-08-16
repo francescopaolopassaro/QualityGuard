@@ -107,9 +107,6 @@
   fix: |
     Move the body into its own function so the deferred call runs per iteration, or close the resource
     explicitly at the end of the iteration.
-  detect:
-    - line: "^\\s*defer\\s+"
-      requires: ["for "]
 
 - key: QG-GO-BUG-0005
   name: Errors should be compared with the errors helpers

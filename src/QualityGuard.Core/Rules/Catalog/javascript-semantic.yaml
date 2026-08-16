@@ -1,0 +1,230 @@
+# Descriptions for the JavaScript and TypeScript rules implemented in
+# Rules/Languages/JsTsSemanticRules.cs. The detection reads the syntax tree; this file carries the
+# reasoning and the fix shown in the report.
+
+- key: QG-JS-BUG-0122
+  name: A switch should not contain a label of its own
+  languages: [js, ts]
+  category: BUG
+  severity: critical
+  effort: 10min
+  tags: [suspicious]
+  summary: A jump label appears among the cases of a switch.
+  why: |
+    It reads exactly like a case but is a jump target, so the statements under it belong to the
+    section before it and never run on their own. A misspelled "default" leaves precisely this, and
+    nothing complains.
+  fix: |
+    Write the case keyword, or remove the label.
+
+- key: QG-JS-BUG-0123
+  name: A condition should not use a bitwise operator
+  languages: [js, ts]
+  category: BUG
+  severity: major
+  effort: 10min
+  tags: [suspicious]
+  summary: A single & or | is used as the condition of a branch or a loop.
+  why: |
+    The operator combines the two values bit by bit and produces a number, so the branch is taken
+    whenever that number is not zero. It is one keystroke away from the logical operator and behaves
+    differently for almost every input.
+  fix: |
+    Write && or ||.
+
+- key: QG-JS-BUG-0124
+  name: A name owned by the runtime should not be assigned
+  languages: [js, ts]
+  category: BUG
+  severity: critical
+  effort: 15min
+  tags: [suspicious]
+  summary: undefined, NaN, Infinity, eval or arguments is assigned to.
+  why: |
+    In strict mode and inside a module the assignment throws. Anywhere else it is quietly ignored, so
+    the code that follows works with a value it never received.
+  fix: |
+    Use a name of your own.
+
+- key: QG-JS-BUG-0125
+  name: A built-in should not be replaced or extended
+  languages: [js, ts]
+  category: BUG
+  severity: critical
+  effort: 30min
+  tags: [suspicious]
+  summary: A standard object or its prototype is assigned to.
+  why: |
+    The change applies to every library on the page, including the ones that assume the standard
+    behaviour. A property added to a prototype also turns up in every for-in loop over an object of
+    that type — including loops written years earlier in code you do not own.
+  fix: |
+    Put the helper in a module of your own, or use a subclass.
+
+- key: QG-JS-BUG-0126
+  name: A setter should not return a value
+  languages: [js, ts]
+  category: BUG
+  severity: major
+  effort: 10min
+  tags: [suspicious]
+  summary: A set accessor returns a value.
+  why: |
+    The value of an assignment is always the value assigned, whatever the setter returns. Anyone
+    reading this expects the returned value to reach the caller, and it never does.
+  fix: |
+    Return nothing, and expose a method when the operation has a result.
+
+- key: QG-JS-BUG-0127
+  name: A search result should be tested against zero
+  languages: [js, ts]
+  category: BUG
+  severity: major
+  effort: 10min
+  tags: [suspicious]
+  summary: The result of indexOf is compared with > 0 or <= 0.
+  why: |
+    The search answers 0 when the match is at the very beginning, and the comparison reads that as
+    "not found". The first element is silently excluded.
+  fix: |
+    Use >= 0, or includes() when only presence matters.
+
+- key: QG-JS-BUG-0128
+  name: sort should be given a comparison function
+  languages: [js, ts]
+  category: BUG
+  severity: major
+  effort: 10min
+  tags: [suspicious]
+  summary: sort or toSorted is called on an array without a comparator.
+  why: |
+    Without one the elements are converted to strings and compared as text, so 10 sorts before 9 and
+    every list of numbers comes back in an order nobody asked for.
+  fix: |
+    Pass (a, b) => a - b, or the comparison the data needs.
+
+- key: QG-JS-BUG-0129
+  name: A generator should yield
+  languages: [js, ts]
+  category: BUG
+  severity: major
+  effort: 15min
+  tags: [suspicious]
+  summary: A function declared with * never yields.
+  why: |
+    Calling it returns an iterator that finishes immediately, so every caller written as a loop over
+    it does nothing — without an error, without a warning, without an empty check failing.
+  fix: |
+    Yield the values, or drop the star and return them.
+
+- key: QG-JS-BUG-0130
+  name: A literal should not be thrown
+  languages: [js, ts]
+  category: BUG
+  severity: major
+  effort: 10min
+  tags: [error-handling]
+  summary: A string or a number is thrown.
+  why: |
+    What arrives at the catch is a bare value: no message, no stack, nothing that says where it came
+    from. Every handler that reads error.message gets undefined.
+  fix: |
+    Throw an Error, which records the line that threw it.
+
+- key: QG-JS-BUG-0131
+  name: A placeholder needs a template literal
+  languages: [js, ts]
+  category: BUG
+  severity: major
+  effort: 5min
+  tags: [suspicious]
+  summary: A quoted string contains ${...}.
+  why: |
+    The placeholder is never replaced: the text keeps the dollar and the braces exactly as written,
+    and reaches the user that way.
+  fix: |
+    Use backticks.
+
+- key: QG-JS-BUG-0132
+  name: A destructuring pattern should bind something
+  languages: [js, ts]
+  category: BUG
+  severity: major
+  effort: 5min
+  tags: [suspicious]
+  summary: A destructuring declaration has an empty pattern.
+  why: |
+    The declaration introduces no name at all. The only thing it still does is throw when the value
+    on the right is null or undefined, which is unlikely to be what it was written for.
+  fix: |
+    Name what you meant to take out, or remove the declaration.
+
+- key: QG-JS-BUG-0133
+  name: Negating in or instanceof needs parentheses
+  languages: [js, ts]
+  category: BUG
+  severity: critical
+  effort: 5min
+  tags: [suspicious]
+  summary: A negation is applied to the left operand of in or instanceof.
+  why: |
+    The negation binds tighter than the operator, so the test asks whether the boolean "!value" is in
+    the right-hand side — which is never the question.
+  fix: |
+    Put the whole test in parentheses: !(value in target).
+
+- key: QG-JS-BUG-0134
+  name: Symbol and BigInt should not be called with new
+  languages: [js, ts]
+  category: BUG
+  severity: critical
+  effort: 5min
+  tags: [suspicious]
+  summary: new Symbol() or new BigInt() is used.
+  why: |
+    Neither is a constructor: calling it with new throws a TypeError on the spot.
+  fix: |
+    Call the function without new.
+
+- key: QG-JS-SML-0361
+  name: A boolean should not be compared to a boolean literal
+  languages: [js, ts]
+  category: SML
+  severity: minor
+  effort: 5min
+  tags: [readability]
+  summary: A plain name is compared against true or false with === or !==.
+  why: |
+    The comparison adds a step that changes nothing.
+  fix: |
+    Use the expression itself, or its negation. Comparing a value that may be undefined against true
+    is a different thing — it narrows the type — and stays.
+
+- key: QG-JS-SML-0363
+  name: An object or array should be built with a literal
+  languages: [js, ts]
+  category: SML
+  severity: minor
+  effort: 5min
+  tags: [readability]
+  summary: new Object() or new Array() is used with no arguments.
+  why: |
+    It goes through a constructor to produce what {} and [] produce directly — and the constructor
+    can be replaced at run time, which the literal cannot.
+  fix: |
+    Write the literal.
+
+- key: QG-JS-SML-0364
+  name: this should not be copied into a variable
+  languages: [js, ts]
+  category: SML
+  severity: major
+  effort: 15min
+  tags: [readability]
+  summary: this is assigned to a variable named self, that or similar.
+  why: |
+    The alias exists to carry this into a nested function, which an arrow function does by itself: it
+    keeps the this of the place it was written. The variable then lives on as a second name for the
+    same object, and the two drift apart as the code changes.
+  fix: |
+    Use an arrow function, or bind the method.

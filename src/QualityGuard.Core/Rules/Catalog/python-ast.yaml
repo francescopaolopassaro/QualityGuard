@@ -1,0 +1,217 @@
+# Descriptions for the Python rules implemented in Rules/Languages/PythonAstRules.cs. The detection
+# reads the syntax tree; this file carries the reasoning and the fix shown in the report.
+
+- key: QG-PY-BUG-0132
+  name: break and continue belong inside a loop
+  languages: [py]
+  category: BUG
+  severity: blocker
+  effort: 10min
+  tags: [suspicious]
+  summary: A break or continue appears outside any loop.
+  why: |
+    The interpreter refuses the module outright, so the file does not even import. Whatever else the
+    module contains stops working the moment this line is reached by the compiler.
+  fix: |
+    Remove the statement, or move it into the loop it was written for.
+
+- key: QG-PY-BUG-0133
+  name: __init__ should not return a value
+  languages: [py]
+  category: BUG
+  severity: critical
+  effort: 10min
+  tags: [suspicious]
+  summary: __init__ returns something other than None.
+  why: |
+    __init__ prepares the object; the object itself comes from __new__. Returning anything else
+    raises TypeError at construction, so the class cannot be instantiated at all.
+  fix: |
+    Return nothing, and move the value to a factory method or a property.
+
+- key: QG-PY-BUG-0134
+  name: __all__ should list only names
+  languages: [py]
+  category: BUG
+  severity: critical
+  effort: 10min
+  tags: [suspicious]
+  summary: An entry of __all__ is not a name written as a string.
+  why: |
+    __all__ is what a star import reads, and every entry has to be the name of something the module
+    defines, spelled as a string. Anything else raises TypeError the moment someone writes
+    "from this import *".
+  fix: |
+    Write the exported names as strings.
+
+- key: QG-PY-BUG-0135
+  name: A loop else needs a break to be worth writing
+  languages: [py]
+  category: BUG
+  severity: major
+  effort: 10min
+  tags: [suspicious, readability]
+  summary: A for or while has an else clause and no break.
+  why: |
+    A loop else runs when the loop finishes without breaking out of it. With no break anywhere, it
+    always runs — and every reader takes it for the else of an if, which is the one thing it is not.
+  fix: |
+    Move the statements after the loop, or add the break the else was waiting for.
+
+- key: QG-PY-BUG-0136
+  name: A dictionary should not repeat a key
+  languages: [py]
+  category: BUG
+  severity: critical
+  effort: 10min
+  tags: [suspicious]
+  summary: A dictionary literal gives the same literal key twice.
+  why: |
+    The literal keeps the last value and drops the earlier one without a word, so one of the two
+    entries does nothing at all — usually the one a reader finds first.
+  fix: |
+    Give the second entry the key it was meant to have, or remove it.
+
+- key: QG-PY-BUG-0137
+  name: A set should not repeat an element
+  languages: [py]
+  category: BUG
+  severity: major
+  effort: 10min
+  tags: [suspicious]
+  summary: A set literal contains the same literal twice.
+  why: |
+    The duplicate disappears silently, so the set has fewer elements than the code appears to build —
+    and if the repetition was a typo, the element that was meant to be there is missing.
+  fix: |
+    Remove the duplicate, or correct it to the value that is missing.
+
+- key: QG-PY-BUG-0138
+  name: assert should not be given a tuple
+  languages: [py]
+  category: BUG
+  severity: blocker
+  effort: 5min
+  tags: [suspicious, tests]
+  summary: An assert is called on a parenthesised pair.
+  why: |
+    A non-empty tuple is always true, so the assertion can never fail. The check is gone and nothing
+    in the output says so — the test passes for the wrong reason.
+  fix: |
+    Write assert condition, "message" — the message goes after the condition, without parentheses.
+
+- key: QG-PY-SML-0243
+  name: A prefix operator should not be repeated
+  languages: [py]
+  category: SML
+  severity: minor
+  effort: 5min
+  tags: [readability]
+  summary: not not or ~~ is applied to a value.
+  why: |
+    The two cancel out. If the intent was to force a boolean, nothing says so; if it was not, one of
+    the two is a typo that reverses the condition.
+  fix: |
+    Use bool(...) when a conversion is meant, and a single operator otherwise.
+
+- key: QG-PY-SML-0244
+  name: A type should be checked with isinstance
+  languages: [py]
+  category: SML
+  severity: major
+  effort: 5min
+  tags: [suspicious]
+  summary: type(x) is compared against a type with == or !=.
+  why: |
+    Comparing the exact type rejects every subclass, so the check fails for values that would work
+    perfectly — and passing a subclass is the ordinary way to extend code in Python.
+  fix: |
+    Use isinstance, which accepts the subclasses as well.
+
+- key: QG-PY-SML-0245
+  name: A prefix or suffix should be tested with startswith or endswith
+  languages: [py]
+  category: SML
+  severity: minor
+  effort: 5min
+  tags: [readability]
+  summary: A slice is compared against a string literal.
+  why: |
+    The length comes from the code and the text from somewhere else, so the two go out of step the
+    first time the literal changes — silently, because a slice of the wrong length simply never
+    matches.
+  fix: |
+    Use startswith or endswith, which take the length from the text itself.
+
+- key: QG-PY-SML-0246
+  name: A named function should be defined with def
+  languages: [py]
+  category: SML
+  severity: minor
+  effort: 10min
+  tags: [readability]
+  summary: A lambda is assigned to a name.
+  why: |
+    It is a function with a name, written in the one form that does not record it: a traceback
+    through the call shows "<lambda>", and the body can never grow past a single expression.
+  fix: |
+    Define it with def.
+
+- key: QG-PY-SML-0247
+  name: Conditional expressions should not be nested
+  languages: [py]
+  category: SML
+  severity: major
+  effort: 15min
+  tags: [readability]
+  summary: A conditional expression contains another one.
+  why: |
+    Python writes the value before the test, so a nested conditional puts the branches in an order
+    nobody reads correctly the first time.
+  fix: |
+    Use an if statement, or a lookup keyed on the cases.
+
+- key: QG-PY-SML-0248
+  name: A handler that only re-raises should be removed
+  languages: [py]
+  category: SML
+  severity: major
+  effort: 10min
+  tags: [error-handling]
+  summary: The only handler of a try catches an exception and immediately re-raises it.
+  why: |
+    Exactly the same thing would happen without the try. It costs a frame in the traceback and sends
+    the reader looking for handling that is not there.
+  fix: |
+    Remove the try, or handle the exception. A bare re-raise in front of a wider handler is a
+    different thing and stays.
+
+- key: QG-PY-CNV-0005
+  name: An instance method should take self first
+  languages: [py]
+  category: CNV
+  severity: major
+  effort: 10min
+  tags: [convention]
+  summary: A method in a class has no positional parameter, or names the first one something else.
+  why: |
+    Python passes the instance into the first parameter whatever it is called, and calling a method
+    that has none raises TypeError. Naming it anything but self makes every method in the class look
+    as if it takes one more argument than it does.
+  fix: |
+    Name the first parameter self, or mark the method with @staticmethod.
+
+- key: QG-PY-CNV-0006
+  name: A class method should take cls first
+  languages: [py]
+  category: CNV
+  severity: minor
+  effort: 5min
+  tags: [convention]
+  summary: A method decorated with @classmethod names its first parameter something other than cls.
+  why: |
+    A class method receives the class, not an instance. Calling that parameter self tells the reader
+    the opposite of what is true, and a method with no parameter at all raises TypeError on every
+    call.
+  fix: |
+    Name the first parameter cls.

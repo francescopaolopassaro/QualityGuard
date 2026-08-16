@@ -74,79 +74,6 @@
     Move the value to configuration, read it at start-up, and fail with a clear message when it is
     missing so a misconfigured deployment stops before it does anything.
 
-- key: QG-CS-SML-0082
-  name: Fields should be simplified
-  languages: [cs]
-  category: SML
-  severity: minor
-  effort: 15min
-  tags: [sml, generated]
-  generated: true
-  status: planned
-  message: This code is harder to read or change than the behaviour requires.
-  summary: The code works but is harder to read or change than the behaviour requires.
-  why: |
-    The intent is buried, duplicated, or spread across places that must stay in sync, so every future
-    change costs more than it should and carries a risk that has nothing to do with the change itself.
-  fix: |
-    Remove what is not used, name what is unclear, and keep one piece of behaviour in one place so the
-    next change touches a single spot.
-
-- key: QG-CS-SML-0084
-  name: Utility classes should be simplified
-  languages: [cs]
-  category: SML
-  severity: minor
-  effort: 15min
-  tags: [sml, generated]
-  generated: true
-  status: planned
-  message: This code is harder to read or change than the behaviour requires.
-  summary: The code works but is harder to read or change than the behaviour requires.
-  why: |
-    The intent is buried, duplicated, or spread across places that must stay in sync, so every future
-    change costs more than it should and carries a risk that has nothing to do with the change itself.
-  fix: |
-    Remove what is not used, name what is unclear, and keep one piece of behaviour in one place so the
-    next change touches a single spot.
-
-- key: QG-CS-SML-0085
-  name: General or reserved exceptions should make failure handling explicit
-  languages: [cs]
-  category: SML
-  severity: minor
-  effort: 15min
-  tags: [exception, generated]
-  generated: true
-  status: planned
-  message: This handling hides the failure instead of dealing with it.
-  summary: An exception is thrown, caught or propagated in a way that hides the failure.
-  why: |
-    Handlers that are too broad, empty, or that replace the original error remove the information needed
-    to diagnose the incident, and let the program continue in a state nobody designed for. The symptom
-    then appears far from the cause.
-  fix: |
-    Catch the specific failures this code can recover from, keep the original exception as the cause when
-    wrapping, and let everything else reach the boundary handler.
-
-- key: QG-CS-SML-0087
-  name: Obsolete attributes should be simplified
-  languages: [cs]
-  category: SML
-  severity: minor
-  effort: 15min
-  tags: [sml, generated]
-  generated: true
-  status: planned
-  message: This code is harder to read or change than the behaviour requires.
-  summary: The code works but is harder to read or change than the behaviour requires.
-  why: |
-    The intent is buried, duplicated, or spread across places that must stay in sync, so every future
-    change costs more than it should and carries a risk that has nothing to do with the change itself.
-  fix: |
-    Remove what is not used, name what is unclear, and keep one piece of behaviour in one place so the
-    next change touches a single spot.
-
 - key: QG-CS-SML-0088
   name: Unnecessary using should be removed once nothing uses it
   languages: [cs]
@@ -503,24 +430,6 @@
     Remove what is not used, name what is unclear, and keep one piece of behaviour in one place so the
     next change touches a single spot.
 
-- key: QG-CS-SML-0117
-  name: ToString() calls should be simplified
-  languages: [cs]
-  category: SML
-  severity: minor
-  effort: 15min
-  tags: [sml, generated]
-  generated: true
-  status: planned
-  message: This code is harder to read or change than the behaviour requires.
-  summary: The code works but is harder to read or change than the behaviour requires.
-  why: |
-    The intent is buried, duplicated, or spread across places that must stay in sync, so every future
-    change costs more than it should and carries a risk that has nothing to do with the change itself.
-  fix: |
-    Remove what is not used, name what is unclear, and keep one piece of behaviour in one place so the
-    next change touches a single spot.
-
 - key: QG-CS-SML-0118
   name: Redundant casts should not be used
   languages: [cs]
@@ -542,24 +451,6 @@
 
 - key: QG-CS-SML-0119
   name: Inheritance list should be simplified
-  languages: [cs]
-  category: SML
-  severity: minor
-  effort: 15min
-  tags: [sml, generated]
-  generated: true
-  status: planned
-  message: This code is harder to read or change than the behaviour requires.
-  summary: The code works but is harder to read or change than the behaviour requires.
-  why: |
-    The intent is buried, duplicated, or spread across places that must stay in sync, so every future
-    change costs more than it should and carries a risk that has nothing to do with the change itself.
-  fix: |
-    Remove what is not used, name what is unclear, and keep one piece of behaviour in one place so the
-    next change touches a single spot.
-
-- key: QG-CS-SML-0120
-  name: Boolean checks should be simplified
   languages: [cs]
   category: SML
   severity: minor
@@ -689,42 +580,6 @@
   fix: |
     Switch to the recommended construct; the behaviour is the same in the normal case and defined in the
     cases the old form got wrong.
-
-- key: QG-CS-SML-0125
-  name: Sealed classes should be simplified
-  languages: [cs]
-  category: SML
-  severity: minor
-  effort: 15min
-  tags: [sml, generated]
-  generated: true
-  status: planned
-  message: This code is harder to read or change than the behaviour requires.
-  summary: The code works but is harder to read or change than the behaviour requires.
-  why: |
-    The intent is buried, duplicated, or spread across places that must stay in sync, so every future
-    change costs more than it should and carries a risk that has nothing to do with the change itself.
-  fix: |
-    Remove what is not used, name what is unclear, and keep one piece of behaviour in one place so the
-    next change touches a single spot.
-
-- key: QG-CS-SML-0128
-  name: Modulus results should be simplified
-  languages: [cs]
-  category: SML
-  severity: minor
-  effort: 15min
-  tags: [sml, generated]
-  generated: true
-  status: planned
-  message: This code is harder to read or change than the behaviour requires.
-  summary: The code works but is harder to read or change than the behaviour requires.
-  why: |
-    The intent is buried, duplicated, or spread across places that must stay in sync, so every future
-    change costs more than it should and carries a risk that has nothing to do with the change itself.
-  fix: |
-    Remove what is not used, name what is unclear, and keep one piece of behaviour in one place so the
-    next change touches a single spot.
 
 - key: QG-CS-SML-0129
   name: Unnecessary mathematical comparisons should be simplified
@@ -875,24 +730,6 @@
     - member: [Enumerable.Sum]
     - invocation: [Sum]
       receiver: [Enumerable]
-
-- key: QG-CS-SML-0136
-  name: Trivial properties should be simplified
-  languages: [cs]
-  category: SML
-  severity: minor
-  effort: 15min
-  tags: [sml, generated]
-  generated: true
-  status: planned
-  message: This code is harder to read or change than the behaviour requires.
-  summary: The code works but is harder to read or change than the behaviour requires.
-  why: |
-    The intent is buried, duplicated, or spread across places that must stay in sync, so every future
-    change costs more than it should and carries a risk that has nothing to do with the change itself.
-  fix: |
-    Remove what is not used, name what is unclear, and keep one piece of behaviour in one place so the
-    next change touches a single spot.
 
 - key: QG-CS-SML-0137
   name: Nameof should be replaced by the recommended alternative
@@ -1103,44 +940,6 @@
     Remove what is not used, name what is unclear, and keep one piece of behaviour in one place so the
     next change touches a single spot.
 
-- key: QG-CS-SML-0151
-  name: Exceptions should make failure handling explicit
-  languages: [cs]
-  category: SML
-  severity: minor
-  effort: 15min
-  tags: [exception, generated]
-  generated: true
-  status: planned
-  message: This handling hides the failure instead of dealing with it.
-  summary: An exception is thrown, caught or propagated in a way that hides the failure.
-  why: |
-    Handlers that are too broad, empty, or that replace the original error remove the information needed
-    to diagnose the incident, and let the program continue in a state nobody designed for. The symptom
-    then appears far from the cause.
-  fix: |
-    Catch the specific failures this code can recover from, keep the original exception as the cause when
-    wrapping, and let everything else reach the boundary handler.
-
-- key: QG-CS-SML-0152
-  name: Write-only properties should not be used
-  languages: [cs]
-  category: SML
-  severity: minor
-  effort: 15min
-  tags: [avoid_api, generated]
-  generated: true
-  status: planned
-  message: This API should be replaced by the current alternative.
-  summary: Code calls an API that is unsafe, obsolete or superseded by a better alternative.
-  why: |
-    The API stays available for compatibility, so nothing fails at build time, but it carries behaviour
-    the platform now considers a defect — unchecked input, a weak guarantee, or a cost the replacement
-    avoids. Its presence also spreads: new code copies what it finds nearby.
-  fix: |
-    Replace the call with the current API, and keep the old one only behind a compatibility layer that is
-    documented and dated.
-
 - key: QG-CS-SML-0155
   name: Unnecessary bit operations should be simplified
   languages: [cs]
@@ -1197,24 +996,6 @@
     documented and dated.
   detect:
     - creation: [NaN]
-
-- key: QG-CS-SML-0157
-  name: IndexOf checks should be simplified
-  languages: [cs]
-  category: SML
-  severity: minor
-  effort: 15min
-  tags: [sml, generated]
-  generated: true
-  status: planned
-  message: This code is harder to read or change than the behaviour requires.
-  summary: The code works but is harder to read or change than the behaviour requires.
-  why: |
-    The intent is buried, duplicated, or spread across places that must stay in sync, so every future
-    change costs more than it should and carries a risk that has nothing to do with the change itself.
-  fix: |
-    Remove what is not used, name what is unclear, and keep one piece of behaviour in one place so the
-    next change touches a single spot.
 
 - key: QG-CS-SML-0158
   name: Instance members should be simplified
@@ -1772,24 +1553,6 @@
     Remove what is not used, name what is unclear, and keep one piece of behaviour in one place so the
     next change touches a single spot.
 
-- key: QG-CS-SML-0186
-  name: Constructor and destructor declarations should be simplified
-  languages: [cs]
-  category: SML
-  severity: minor
-  effort: 15min
-  tags: [sml, generated]
-  generated: true
-  status: planned
-  message: This code is harder to read or change than the behaviour requires.
-  summary: The code works but is harder to read or change than the behaviour requires.
-  why: |
-    The intent is buried, duplicated, or spread across places that must stay in sync, so every future
-    change costs more than it should and carries a risk that has nothing to do with the change itself.
-  fix: |
-    Remove what is not used, name what is unclear, and keep one piece of behaviour in one place so the
-    next change touches a single spot.
-
 - key: QG-CS-SML-0187
   name: Default parameter values should be simplified
   languages: [cs]
@@ -2136,24 +1899,6 @@
 
 - key: QG-CS-SML-0199
   name: Hard-to-read code should be simplified
-  languages: [cs]
-  category: SML
-  severity: minor
-  effort: 15min
-  tags: [sml, generated]
-  generated: true
-  status: planned
-  message: This code is harder to read or change than the behaviour requires.
-  summary: The code works but is harder to read or change than the behaviour requires.
-  why: |
-    The intent is buried, duplicated, or spread across places that must stay in sync, so every future
-    change costs more than it should and carries a risk that has nothing to do with the change itself.
-  fix: |
-    Remove what is not used, name what is unclear, and keep one piece of behaviour in one place so the
-    next change touches a single spot.
-
-- key: QG-CS-SML-0200
-  name: Methods should be simplified
   languages: [cs]
   category: SML
   severity: minor
@@ -2719,24 +2464,6 @@
     Catch the specific failures this code can recover from, keep the original exception as the cause when
     wrapping, and let everything else reach the boundary handler.
 
-- key: QG-CS-SML-0224
-  name: Parameter names should not be duplicated
-  languages: [cs]
-  category: SML
-  severity: minor
-  effort: 15min
-  tags: [duplication, generated]
-  generated: true
-  status: planned
-  message: This code or value is duplicated.
-  summary: The same code or value appears more than once.
-  why: |
-    Copies drift apart the first time one of them is fixed, and nothing links them, so the bug is fixed
-    in one place and stays in the other. Readers also cannot tell which copy is authoritative.
-  fix: |
-    Keep one definition and reference it from the other places, or extract the shared part into a named
-    function or constant.
-
 - key: QG-CS-SML-0225
   name: Out and ref parameters should not be used
   languages: [cs]
@@ -2796,25 +2523,6 @@
     Switch to the recommended construct; the behaviour is the same in the normal case and defined in the
     cases the old form got wrong.
 
-- key: QG-CS-SML-0228
-  name: Exceptions should make failure handling explicit
-  languages: [cs]
-  category: SML
-  severity: minor
-  effort: 15min
-  tags: [exception, generated]
-  generated: true
-  status: planned
-  message: This handling hides the failure instead of dealing with it.
-  summary: An exception is thrown, caught or propagated in a way that hides the failure.
-  why: |
-    Handlers that are too broad, empty, or that replace the original error remove the information needed
-    to diagnose the incident, and let the program continue in a state nobody designed for. The symptom
-    then appears far from the cause.
-  fix: |
-    Catch the specific failures this code can recover from, keep the original exception as the cause when
-    wrapping, and let everything else reach the boundary handler.
-
 - key: QG-CS-SML-0229
   name: Arrays should be simplified
   languages: [cs]
@@ -2832,25 +2540,6 @@
   fix: |
     Remove what is not used, name what is unclear, and keep one piece of behaviour in one place so the
     next change touches a single spot.
-
-- key: QG-CS-SML-0230
-  name: Finalizers should not be left empty
-  languages: [cs]
-  category: SML
-  severity: minor
-  effort: 15min
-  tags: [empty, generated]
-  generated: true
-  status: planned
-  message: This construct is empty, so it does nothing.
-  summary: A construct is declared with no content.
-  why: |
-    An empty body reads as if the case is handled while nothing happens, which is exactly how ignored
-    errors and unimplemented branches survive review. It is also indistinguishable from an accidental
-    deletion.
-  fix: |
-    Implement the behaviour, or remove the construct. When doing nothing is deliberate, say so in a
-    comment so the next reader does not treat it as a gap.
 
 - key: QG-CS-SEC-0073
   name: CoSetProxyBlanket and CoInitializeSecurity should not be used
@@ -2974,25 +2663,6 @@
     - member: [Assembly.GetExecutingAssembly]
     - invocation: [GetExecutingAssembly]
       receiver: [Assembly]
-
-- key: QG-CS-BUG-0080
-  name: Types should be declared the way the language intends
-  languages: [cs]
-  category: BUG
-  severity: major
-  effort: 15min
-  tags: [declaration, generated]
-  generated: true
-  status: planned
-  message: This declaration exposes more than it should.
-  summary: A declaration uses modifiers, order or visibility that do not match its purpose.
-  why: |
-    Declarations are the contract other code relies on. A wider visibility than needed makes an internal
-    detail part of the public surface, and unusual modifier combinations hide the intent from readers and
-    tools alike.
-  fix: |
-    Declare the narrowest visibility that works, in the conventional modifier order, and mark as final or
-    read-only whatever is not meant to change.
 
 - key: QG-CS-SML-0237
   name: Assemblies should be simplified
@@ -4345,25 +4015,6 @@
   fix: |
     Remove what is not used, name what is unclear, and keep one piece of behaviour in one place so the
     next change touches a single spot.
-
-- key: QG-CS-SML-0303
-  name: New Guid() should not be used
-  languages: [cs]
-  category: SML
-  severity: minor
-  effort: 15min
-  tags: [avoid_api, generated]
-  generated: true
-  status: planned
-  message: This API should be replaced by the current alternative.
-  summary: Code calls an API that is unsafe, obsolete or superseded by a better alternative.
-  why: |
-    The API stays available for compatibility, so nothing fails at build time, but it carries behaviour
-    the platform now considers a defect — unchecked input, a weak guarantee, or a cost the replacement
-    avoids. Its presence also spreads: new code copies what it finds nearby.
-  fix: |
-    Replace the call with the current API, and keep the old one only behind a compatibility layer that is
-    documented and dated.
 
 - key: QG-CS-BUG-0092
   name: Calls to delegates method BeginInvoke should match the behaviour the code describes

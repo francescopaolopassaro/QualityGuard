@@ -1274,9 +1274,38 @@ public sealed class CsCommentedOutCodeRule : PatternRuleBase
     {
         foreach (var token in context.Tokens.Where(t => t.Kind == TokenKind.Comment))
         {
-            if (token.Text.Contains(';') || token.Text.Contains("=>") || token.Text.Contains("= new") || token.Text.Contains("return ") || token.Text.Contains("if (") || token.Text.Contains("for ("))
+            // a licence header is prose, and it contains a semicolon as often as any other prose
+            if (token.Text.Contains("Copyright", StringComparison.OrdinalIgnoreCase)
+                || token.Text.Contains("License", StringComparison.OrdinalIgnoreCase)
+                || token.Text.Contains("Licence", StringComparison.OrdinalIgnoreCase))
+                continue;
+
+            foreach (var line in token.Text.Split('\n'))
+            {
+                if (!LooksLikeStatement(line))
+                    continue;
                 context.Report("Remove commented-out code.", token.Line);
+                break;
+            }
         }
+    }
+
+    /// <summary>
+    /// Whether a commented line is a statement rather than a sentence. A single semicolon anywhere
+    /// is not enough — prose has them too — so the line has to end the way code ends and carry at
+    /// least one of the marks that only code uses.
+    /// </summary>
+    private static bool LooksLikeStatement(string line)
+    {
+        var text = line.Trim().TrimStart('/', '*', ' ', '	').TrimEnd();
+        if (text.Length < 4)
+            return false;
+        if (text[^1] is not (';' or '{' or '}'))
+            return false;
+        if (text.Contains("http", StringComparison.OrdinalIgnoreCase))
+            return false;
+        // a sentence that happens to end in a semicolon has spaces and no code punctuation
+        return text.Contains('(') || text.Contains('=') || text.Contains('.') || text.EndsWith('{');
     }
 }
 
@@ -1289,26 +1318,90 @@ public sealed class CsNullReferenceRule : PatternRuleBase
     public override string RemediationEffort => "Check for null before dereferencing the value.";
     public override string[] Languages => ["cs", "vb"];
 
+    /// <summary>Calls that answer with null when they find nothing.</summary>
+    private static readonly string[] MayReturnNull =
+    [
+        "FirstOrDefault", "SingleOrDefault", "LastOrDefault", "GetValueOrDefault",
+        "FirstOrDefaultAsync", "SingleOrDefaultAsync", "Find"
+    ];
+
     public override void Execute(IRuleContext context)
     {
+        // The rule used to mark a name nullable anywhere in the file and then report every later
+        // dereference of it, with no flow and no scope: '??=' three lines above did not help, and a
+        // reassignment did not either. Without a null analysis the only honest form is the local
+        // one — the value comes back possibly null and is dereferenced immediately, with nothing in
+        // between that could have checked it.
         var tokens = context.Tokens;
-        var nullable = new HashSet<string>();
-        for (var i = 0; i < tokens.Count - 2; i++)
+        for (var i = 0; i + 3 < tokens.Count; i++)
         {
-            if (tokens[i + 1].Text != "=" || tokens[i].Kind != TokenKind.Identifier) continue;
-            if (tokens[i + 2].Text == "null") { nullable.Add(tokens[i].Text); continue; }
-            if (tokens[i + 2].Kind != TokenKind.Identifier) continue;
-            if (CSharpRuleSet.IsWord(tokens[i + 2], ["FirstOrDefault", "SingleOrDefault", "GetValueOrDefault", "FirstOrDefaultAsync", "SingleOrDefaultAsync"]))
-                nullable.Add(tokens[i].Text);
+            if (tokens[i].Kind != TokenKind.Identifier || tokens[i + 1].Text != "=")
+                continue;
+            if (tokens[i + 1].Text is "==" or "=>" || tokens[i - 1 < 0 ? 0 : i - 1].Text is "?" or "!" or "<" or ">")
+                continue;
+
+            var source = FindNullableCall(tokens, i + 2);
+            if (source < 0)
+                continue;
+
+            var name = tokens[i].Text;
+            var statementEnd = EndOfStatement(tokens, source);
+            var use = FindImmediateDereference(tokens, statementEnd, name);
+            if (use < 0)
+                continue;
+
+            context.Report($"'{name}' is null when nothing is found, and this line reads a member of "
+                           + "it without checking. Test it first, or use the null-conditional "
+                           + "operator.", tokens[use].Line);
         }
-        for (var i = 1; i < tokens.Count - 1; i++)
+    }
+
+    /// <summary>The index of a call that may answer null, within the statement starting here.</summary>
+    private static int FindNullableCall(IReadOnlyList<Token> tokens, int from)
+    {
+        for (var i = from; i < tokens.Count && i - from < 48; i++)
         {
-            if (tokens[i].Kind != TokenKind.Identifier || !nullable.Contains(tokens[i].Text)) continue;
-            if (tokens[i + 1].Text != ".") continue;
-            if (tokens[i - 1].Text == "?") continue;
-            if (tokens[i + 2].Kind is TokenKind.Identifier or TokenKind.Keyword or TokenKind.String or TokenKind.Number)
-                context.Report("This value may be null before it is dereferenced.", tokens[i].Line);
+            if (tokens[i].Text == ";")
+                return -1;
+            if (tokens[i].Kind == TokenKind.Identifier && MayReturnNull.Contains(tokens[i].Text))
+                return i;
         }
+        return -1;
+    }
+
+    private static int EndOfStatement(IReadOnlyList<Token> tokens, int from)
+    {
+        for (var i = from; i < tokens.Count && i - from < 96; i++)
+        {
+            if (tokens[i].Text == ";")
+                return i;
+        }
+        return -1;
+    }
+
+    /// <summary>
+    /// A dereference of the name in the statement that follows, with nothing between that could
+    /// have checked it — no if, no null-conditional, no coalescing assignment.
+    /// </summary>
+    private static int FindImmediateDereference(IReadOnlyList<Token> tokens, int statementEnd, string name)
+    {
+        if (statementEnd < 0)
+            return -1;
+
+        for (var i = statementEnd + 1; i < tokens.Count && i - statementEnd < 64; i++)
+        {
+            var text = tokens[i].Text;
+            // only something that could have checked the value stops the search; 'return' does not
+            if (text is "if" or "?" or "??" or "??=" or "while" or "}" or "{")
+                return -1;
+            if (text == ";")
+                return -1;
+            if (tokens[i].Kind != TokenKind.Identifier || tokens[i].Text != name)
+                continue;
+            if (i + 1 < tokens.Count && tokens[i + 1].Text == ".")
+                return i;
+        }
+        return -1;
     }
 }
 

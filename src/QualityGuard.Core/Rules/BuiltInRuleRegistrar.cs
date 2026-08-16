@@ -15,14 +15,22 @@ public static class BuiltInRuleRegistrar
         ..Languages.JavaRuleSet.All,
         ..Languages.KotlinRuleSet.All,
         ..Languages.SwiftRuleSet.All,
+        ..Languages.JavaAstRuleSet.All,
+        ..Languages.JavaContractRuleSet.All,
         ..Languages.JsTsRuleSet.All,
         ..Languages.JsTsAstRuleSet.All,
+        ..Languages.JsTsSemanticRuleSet.All,
+        ..Languages.JsTsUsageRuleSet.All,
         ..Languages.PythonRuleSet.All,
+        ..Languages.PythonAstRuleSet.All,
+        ..Languages.PythonRuntimeRuleSet.All,
         ..Languages.RubyRuleSet.All,
         ..Languages.GoRuleSet.All,
         ..Languages.PhpRuleSet.All,
+        ..Languages.PhpAstRuleSet.All,
         ..Languages.CSharpRuleSet.All,
         ..Languages.CSharpAstRuleSet.All,
+        ..Languages.CSharpApiRuleSet.All,
         ..Languages.TerraformRuleSet.All,
         ..Languages.DockerRuleSet.All,
         ..Languages.KubernetesRuleSet.All,
@@ -114,20 +122,58 @@ public sealed class EmptyBlockRule : TextualRuleBase
         "cs", "java", "js", "ts", "py", "rb", "kt", "php", "c", "cpp", "rs"
     ];
 
+    /// <summary>Keywords whose block is nested inside a body rather than being one.</summary>
+    private static readonly string[] NestingKeywords =
+    [
+        "if", "else", "for", "foreach", "while", "do", "switch", "try", "catch", "finally",
+        "using", "lock", "synchronized", "unless", "elsif", "elif"
+    ];
+
     public override void Execute(IRuleContext context)
     {
         var tokens = context.Tokens;
-        for (var i = 0; i < tokens.Count - 1; i++)
+        for (var i = 1; i < tokens.Count - 1; i++)
         {
-            if (tokens[i].Text == "{" && tokens[i + 1].Text == "}")
+            if (tokens[i].Text != "{" || tokens[i + 1].Text != "}")
+                continue;
+            // exclude an object literal or an initializer
+            if (tokens[i - 1].Text is "=" or ":" or "return" or "(" or ",")
+                continue;
+            // The rule is about a block nested inside a body, and only a control keyword opens one.
+            // The body of a method or a constructor is a different question, answered on the tree by
+            // the empty-body rule — and 'ReportingContext(...) : this(...) { }' is how C# forwards a
+            // constructor, which is neither.
+            if (!OpensNestedBlock(tokens, i))
+                continue;
+
+            context.Report("Either remove or fill this block of code.", tokens[i].Line);
+        }
+    }
+
+    private static bool OpensNestedBlock(IReadOnlyList<Token> tokens, int brace)
+    {
+        var previous = tokens[brace - 1];
+        if (NestingKeywords.Contains(previous.Text, StringComparer.OrdinalIgnoreCase))
+            return true;
+        if (previous.Text != ")")
+            return false;
+
+        // walk back to the parenthesis this one closes and look at the word in front of it
+        var depth = 0;
+        for (var i = brace - 1; i >= 0 && brace - i < 512; i--)
+        {
+            var text = tokens[i].Text;
+            if (text == ")")
+                depth++;
+            else if (text == "(")
             {
-                // exclude object literal / initializer
-                var prev = i == 0 ? tokens[i] : tokens[i - 1];
-                if (prev.Text is "=" or ":" or "return" or "(" or ",")
+                depth--;
+                if (depth != 0)
                     continue;
-                context.Report("Either remove or fill this block of code.", tokens[i].Line);
+                return i > 0 && NestingKeywords.Contains(tokens[i - 1].Text, StringComparer.OrdinalIgnoreCase);
             }
         }
+        return false;
     }
 }
 

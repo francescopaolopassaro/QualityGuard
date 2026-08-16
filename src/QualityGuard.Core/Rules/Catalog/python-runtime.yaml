@@ -1,0 +1,183 @@
+# Descriptions for the Python rules implemented in Rules/Languages/PythonRuntimeRules.cs. The
+# detection reads the syntax tree; this file carries the reasoning and the fix shown in the report.
+
+- key: QG-PY-BUG-0139
+  name: A default argument should not be mutable
+  languages: [py]
+  category: BUG
+  severity: critical
+  effort: 15min
+  tags: [suspicious]
+  summary: A parameter defaults to a list, a dictionary or a set.
+  why: |
+    The default is created once, when the function is defined, and every call that does not pass an
+    argument shares that one object. Whatever the first call appends to it is still there for the
+    second — a function that looks stateless and is not.
+  fix: |
+    Default to None and build the value inside the function.
+
+- key: QG-PY-BUG-0140
+  name: Only an exception should be raised
+  languages: [py]
+  category: BUG
+  severity: blocker
+  effort: 10min
+  tags: [error-handling]
+  summary: A literal is raised.
+  why: |
+    Only something derived from BaseException can be raised, so this throws TypeError instead. The
+    failure the code was trying to report is replaced by one about the reporting.
+  fix: |
+    Raise an exception class, with the message as its argument.
+
+- key: QG-PY-BUG-0141
+  name: An argument should be given once
+  languages: [py]
+  category: BUG
+  severity: blocker
+  effort: 5min
+  tags: [suspicious]
+  summary: The same keyword argument appears twice in one call.
+  why: |
+    Python refuses the call with a TypeError before the function starts, so this line never worked.
+  fix: |
+    Remove the repeated argument, or correct the name of the one that was meant.
+
+- key: QG-PY-BUG-0142
+  name: __exit__ should not re-raise what it was given
+  languages: [py]
+  category: BUG
+  severity: major
+  effort: 15min
+  tags: [error-handling]
+  summary: __exit__ raises the exception it received.
+  why: |
+    That exception is already on its way out of the with block, whatever this method does. Raising it
+    again adds a frame and chains the exception to itself in the traceback.
+  fix: |
+    Return a falsy value to let it through, and return True only when it is really handled.
+
+- key: QG-PY-BUG-0143
+  name: A handler should be reachable
+  languages: [py]
+  category: BUG
+  severity: major
+  effort: 15min
+  tags: [error-handling]
+  summary: An except clause catches a type an earlier clause already covers.
+  why: |
+    Handlers are tried in order, so the wider one wins and nothing ever reaches this clause. Whatever
+    it does for that case does not happen, and nothing reports it.
+  fix: |
+    Put the specific exception first.
+
+- key: QG-PY-BUG-0144
+  name: A condition should be able to go both ways
+  languages: [py]
+  category: BUG
+  severity: major
+  effort: 10min
+  tags: [suspicious]
+  summary: An if is given a constant.
+  why: |
+    The branch is decided before the program runs, so one side of it is code nothing will ever
+    execute. When the condition was meant to be a call, the parentheses are simply missing — and
+    that reads exactly the same.
+  fix: |
+    Write the condition that was intended, or remove the branch.
+
+- key: QG-PY-BUG-0145
+  name: open should be given a mode it understands
+  languages: [py]
+  category: BUG
+  severity: critical
+  effort: 5min
+  tags: [suspicious]
+  summary: The mode passed to open is not a valid one.
+  why: |
+    It raises ValueError before the file is touched, so the call never worked at all.
+  fix: |
+    Use one of r, w, x or a, followed at most by b or t and by a plus.
+
+- key: QG-PY-BUG-0146
+  name: A key should be hashable
+  languages: [py]
+  category: BUG
+  severity: blocker
+  effort: 10min
+  tags: [suspicious]
+  summary: A list or a dictionary is used as a dictionary key.
+  why: |
+    Neither can be hashed, so building the literal raises TypeError on the spot.
+  fix: |
+    Use a tuple, or a frozenset when the key has no order.
+
+- key: QG-PY-BUG-0147
+  name: Not a number is not equal to itself
+  languages: [py]
+  category: BUG
+  severity: critical
+  effort: 10min
+  tags: [suspicious]
+  summary: A value is compared against nan with == or !=.
+  why: |
+    Not a number compares equal to nothing at all, itself included, so the test gives the same answer
+    whatever the value is — and the branch that was written for the nan case never runs.
+  fix: |
+    Use math.isnan or numpy.isnan.
+
+- key: QG-PY-BUG-0148
+  name: A value returned from a generator is not yielded
+  languages: [py]
+  category: BUG
+  severity: major
+  effort: 15min
+  tags: [suspicious]
+  summary: A function that yields also returns a value.
+  why: |
+    In a generator the returned value does not reach the caller: it becomes the value attached to
+    StopIteration, which every for loop discards without a word.
+  fix: |
+    Yield the value, or move the result into a separate function.
+
+- key: QG-PY-SML-0249
+  name: A custom exception should derive from Exception
+  languages: [py]
+  category: SML
+  severity: major
+  effort: 10min
+  tags: [error-handling]
+  summary: A class named like an exception has no base class.
+  why: |
+    It derives from object, so it cannot be raised at all: the raise fails with a TypeError about the
+    class rather than about the problem it was written to describe.
+  fix: |
+    Derive from Exception, or from the closest exception that already fits.
+
+- key: QG-PY-SML-0250
+  name: A builtin name should not be reused
+  languages: [py]
+  category: SML
+  severity: minor
+  effort: 10min
+  tags: [suspicious]
+  summary: A local variable shadows a builtin the same function also calls.
+  why: |
+    The name refers to the variable for the whole function, so the call further down reaches the
+    variable instead of the builtin and fails with an error naming a type nobody wrote.
+  fix: |
+    Rename the variable.
+
+- key: QG-PY-CNV-0007
+  name: A keyword is not a function
+  languages: [py]
+  category: CNV
+  severity: minor
+  effort: 5min
+  tags: [readability]
+  summary: A parenthesis opens immediately after not, del, assert or a similar keyword.
+  why: |
+    It makes an operator look like a call, and the parentheses stop covering what a reader expects as
+    soon as a second operand appears — "not(a) and b" does not mean what it seems to.
+  fix: |
+    Put a space after the keyword, and parenthesise the whole expression when grouping is needed.

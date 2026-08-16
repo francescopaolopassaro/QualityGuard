@@ -1063,7 +1063,7 @@ public sealed class KotlinTimingAttackRule : PatternRuleBase
         var tokens = context.Tokens;
         for (var i = 0; i < tokens.Count; i++)
         {
-            if (!RuleMatchers.IsIdentifier(tokens[i]) || !LanguageRuleSupport.IsCredentialName(tokens[i].Text))
+            if (!RuleMatchers.IsIdentifier(tokens[i]) || !IsSecretName(tokens[i].Text))
                 continue;
             var limit = Math.Min(i + 6, tokens.Count);
             for (var j = i + 1; j < limit; j++)
@@ -1077,6 +1077,27 @@ public sealed class KotlinTimingAttackRule : PatternRuleBase
             }
         }
     }
+
+    /// <summary>
+    /// Whether a name really denotes a secret. The bare word "token" is deliberately absent: in a
+    /// compiler, a parser or a lexer — which is most of the code that has one — a token is a piece
+    /// of syntax, and 'operationToken == PLUS' is not a credential comparison.
+    /// </summary>
+    private static bool IsSecretName(string name)
+    {
+        var lower = name.ToLowerInvariant();
+        foreach (var word in new[]
+                 {
+                     "password", "passwd", "secret", "credential", "apikey", "api_key",
+                     "privatekey", "accesstoken", "refreshtoken", "authtoken", "sessiontoken"
+                 })
+        {
+            if (lower.Contains(word, StringComparison.Ordinal))
+                return true;
+        }
+        return false;
+    }
+
 }
 
 public sealed class KotlinSharedPreferencesSecretRule : PatternRuleBase
@@ -1766,12 +1787,42 @@ public sealed class KotlinFunctionNameConventionRule : PatternRuleBase
                     name++;
                 name++;
             }
+
+            // An extension function writes its receiver first: 'fun KotlinFileContext.reportIssue'.
+            // The name is what follows the dot, and the receiver is a type, so it is upper case on
+            // purpose — reading it as the name reports every extension function in the file.
+            while (name + 1 < tokens.Count && tokens[name + 1].Text == "."
+                   && RuleMatchers.IsIdentifier(tokens[name]))
+                name += 2;
+
             if (name >= tokens.Count || !RuleMatchers.IsIdentifier(tokens[name]))
                 continue;
             var value = tokens[name].Text;
-            if (value.Length > 0 && (char.IsUpper(value[0]) || value.Contains('_')))
-                context.Report("Rename this function to follow the lowerCamelCase convention.", tokens[name].Line);
+            if (value.Length == 0 || (!char.IsUpper(value[0]) && !value.Contains('_')))
+                continue;
+            // a name in backticks is a sentence, which is how Kotlin tests are named
+            if (value.Contains(' ') || IsComposable(tokens, i))
+                continue;
+
+            context.Report("Rename this function to follow the lowerCamelCase convention.", tokens[name].Line);
         }
+    }
+
+    /// <summary>
+    /// Whether the function carries the Compose annotation. A composable is named in upper camel
+    /// case by the framework's own convention — it is a component, not a procedure — so reporting
+    /// one is reporting the Android standard.
+    /// </summary>
+    private static bool IsComposable(IReadOnlyList<Token> tokens, int functionKeyword)
+    {
+        for (var i = functionKeyword - 1; i >= 0 && functionKeyword - i < 24; i--)
+        {
+            if (tokens[i].Text is "}" or ";")
+                return false;
+            if (tokens[i].Text is "Composable" or "Preview")
+                return true;
+        }
+        return false;
     }
 }
 

@@ -110,25 +110,6 @@
     Replace the call with the current API, and keep the old one only behind a compatibility layer that is
     documented and dated.
 
-- key: QG-JS-SML-0026
-  name: Boolean literals should not be used
-  languages: [js, ts]
-  category: SML
-  severity: minor
-  effort: 15min
-  tags: [avoid_api, generated]
-  generated: true
-  status: planned
-  message: This API should be replaced by the current alternative.
-  summary: Code calls an API that is unsafe, obsolete or superseded by a better alternative.
-  why: |
-    The API stays available for compatibility, so nothing fails at build time, but it carries behaviour
-    the platform now considers a defect — unchecked input, a weak guarantee, or a cost the replacement
-    avoids. Its presence also spreads: new code copies what it finds nearby.
-  fix: |
-    Replace the call with the current API, and keep the old one only behind a compatibility layer that is
-    documented and dated.
-
 - key: QG-JS-SML-0029
   name: Files should be simplified
   languages: [js, ts]
@@ -149,42 +130,6 @@
 
 - key: QG-JS-SML-0030
   name: Lines should be simplified
-  languages: [js, ts]
-  category: SML
-  severity: minor
-  effort: 15min
-  tags: [sml, generated]
-  generated: true
-  status: planned
-  message: This code is harder to read or change than the behaviour requires.
-  summary: The code works but is harder to read or change than the behaviour requires.
-  why: |
-    The intent is buried, duplicated, or spread across places that must stay in sync, so every future
-    change costs more than it should and carries a risk that has nothing to do with the change itself.
-  fix: |
-    Remove what is not used, name what is unclear, and keep one piece of behaviour in one place so the
-    next change touches a single spot.
-
-- key: QG-JS-BUG-0015
-  name: Results of operations on strings should match the behaviour the code describes
-  languages: [js, ts]
-  category: BUG
-  severity: major
-  effort: 15min
-  tags: [bug, generated]
-  generated: true
-  status: planned
-  message: This code does not behave the way it reads.
-  summary: The code does not do what its shape suggests, or fails on ordinary input.
-  why: |
-    Written this way the code works by accident or breaks on values that are perfectly normal, and the
-    mistake is easy to miss in review because the intent reads correctly.
-  fix: |
-    Make the intended behaviour explicit — fix the condition, the operator or the order of operations —
-    and cover the case that used to fail with a test.
-
-- key: QG-JS-SML-0032
-  name: Switch statements should be simplified
   languages: [js, ts]
   category: SML
   severity: minor
@@ -497,25 +442,6 @@
     Replace the call with the current API, and keep the old one only behind a compatibility layer that is
     documented and dated.
 
-- key: QG-JS-BUG-0017
-  name: Bitwise operators should not be used
-  languages: [js, ts]
-  category: BUG
-  severity: major
-  effort: 15min
-  tags: [avoid_api, generated]
-  generated: true
-  status: planned
-  message: This API should be replaced by the current alternative.
-  summary: Code calls an API that is unsafe, obsolete or superseded by a better alternative.
-  why: |
-    The API stays available for compatibility, so nothing fails at build time, but it carries behaviour
-    the platform now considers a defect — unchecked input, a weak guarantee, or a cost the replacement
-    avoids. Its presence also spreads: new code copies what it finds nearby.
-  fix: |
-    Replace the call with the current API, and keep the old one only behind a compatibility layer that is
-    documented and dated.
-
 - key: QG-JS-BUG-0018
   name: Function declarations should be accessed in a thread-safe way
   languages: [js, ts]
@@ -687,24 +613,6 @@
   detect:
     - invocation: [secure]
 
-- key: QG-JS-BUG-0024
-  name: Special identifiers should match the behaviour the code describes
-  languages: [js, ts]
-  category: BUG
-  severity: major
-  effort: 15min
-  tags: [bug, generated]
-  generated: true
-  status: planned
-  message: This code does not behave the way it reads.
-  summary: The code does not do what its shape suggests, or fails on ordinary input.
-  why: |
-    Written this way the code works by accident or breaks on values that are perfectly normal, and the
-    mistake is easy to miss in review because the intent reads correctly.
-  fix: |
-    Make the intended behaviour explicit — fix the condition, the operator or the order of operations —
-    and cover the case that used to fail with a test.
-
 - key: QG-JS-SML-0066
   name: Undefined should be simplified
   languages: [js, ts]
@@ -833,24 +741,6 @@
     Remove what is not used, name what is unclear, and keep one piece of behaviour in one place so the
     next change touches a single spot.
 
-- key: QG-JS-SML-0072
-  name: Property getters and setters should be simplified
-  languages: [js, ts]
-  category: SML
-  severity: minor
-  effort: 15min
-  tags: [sml, generated]
-  generated: true
-  status: planned
-  message: This code is harder to read or change than the behaviour requires.
-  summary: The code works but is harder to read or change than the behaviour requires.
-  why: |
-    The intent is buried, duplicated, or spread across places that must stay in sync, so every future
-    change costs more than it should and carries a risk that has nothing to do with the change itself.
-  fix: |
-    Remove what is not used, name what is unclear, and keep one piece of behaviour in one place so the
-    next change touches a single spot.
-
 - key: QG-JS-SML-0073
   name: Variables should be replaced by the recommended alternative
   languages: [js, ts]
@@ -869,61 +759,6 @@
   fix: |
     Switch to the recommended construct; the behaviour is the same in the normal case and defined in the
     cases the old form got wrong.
-
-- key: QG-JS-BUG-0029
-  name: Built-in objects should match the behaviour the code describes
-  languages: [js, ts]
-  category: BUG
-  severity: major
-  effort: 15min
-  tags: [bug, generated]
-  generated: true
-  status: planned
-  message: This code does not behave the way it reads.
-  summary: The code does not do what its shape suggests, or fails on ordinary input.
-  why: |
-    Written this way the code works by accident or breaks on values that are perfectly normal, and the
-    mistake is easy to miss in review because the intent reads correctly.
-  fix: |
-    Make the intended behaviour explicit — fix the condition, the operator or the order of operations —
-    and cover the case that used to fail with a test.
-
-- key: QG-JS-SML-0074
-  name: Object literal syntax should be replaced by the recommended alternative
-  languages: [js, ts]
-  category: SML
-  severity: minor
-  effort: 15min
-  tags: [prefer_api, generated]
-  generated: true
-  status: planned
-  message: The platform offers a clearer or safer construct for this.
-  summary: A construct is used where the platform offers one that is clearer or safer.
-  why: |
-    The alternative exists because it removes a class of mistake — a conversion, an allocation, an edge
-    case — that the current form leaves to the caller. Using the older form means every reader has to
-    check that the edge case was handled.
-  fix: |
-    Switch to the recommended construct; the behaviour is the same in the normal case and defined in the
-    cases the old form got wrong.
-
-- key: QG-JS-BUG-0031
-  name: Setters should match the behaviour the code describes
-  languages: [js, ts]
-  category: BUG
-  severity: major
-  effort: 15min
-  tags: [bug, generated]
-  generated: true
-  status: planned
-  message: This code does not behave the way it reads.
-  summary: The code does not do what its shape suggests, or fails on ordinary input.
-  why: |
-    Written this way the code works by accident or breaks on values that are perfectly normal, and the
-    mistake is easy to miss in review because the intent reads correctly.
-  fix: |
-    Make the intended behaviour explicit — fix the condition, the operator or the order of operations —
-    and cover the case that used to fail with a test.
 
 - key: QG-JS-SEC-0037
   name: File uploads should not weaken the security of the application
@@ -1010,24 +845,6 @@
   detect:
     - creation: [NaN]
 
-- key: QG-JS-SML-0076
-  name: IndexOf checks should be simplified
-  languages: [js, ts]
-  category: SML
-  severity: minor
-  effort: 15min
-  tags: [sml, generated]
-  generated: true
-  status: planned
-  message: This code is harder to read or change than the behaviour requires.
-  summary: The code works but is harder to read or change than the behaviour requires.
-  why: |
-    The intent is buried, duplicated, or spread across places that must stay in sync, so every future
-    change costs more than it should and carries a risk that has nothing to do with the change itself.
-  fix: |
-    Remove what is not used, name what is unclear, and keep one piece of behaviour in one place so the
-    next change touches a single spot.
-
 - key: QG-JS-SML-0077
   name: Variables should be declared the way the language intends
   languages: [js, ts]
@@ -1047,24 +864,6 @@
     Declare the narrowest visibility that works, in the conventional modifier order, and mark as final or
     read-only whatever is not meant to change.
 
-- key: QG-JS-SML-0079
-  name: Variables and functions should be simplified
-  languages: [js, ts]
-  category: SML
-  severity: minor
-  effort: 15min
-  tags: [sml, generated]
-  generated: true
-  status: planned
-  message: This code is harder to read or change than the behaviour requires.
-  summary: The code works but is harder to read or change than the behaviour requires.
-  why: |
-    The intent is buried, duplicated, or spread across places that must stay in sync, so every future
-    change costs more than it should and carries a risk that has nothing to do with the change itself.
-  fix: |
-    Remove what is not used, name what is unclear, and keep one piece of behaviour in one place so the
-    next change touches a single spot.
-
 - key: QG-JS-SEC-0038
   name: Web SQL databases should not be used
   languages: [js, ts]
@@ -1083,24 +882,6 @@
   fix: |
     Replace the call with the current API, and keep the old one only behind a compatibility layer that is
     documented and dated.
-
-- key: QG-JS-BUG-0034
-  name: Array.prototype.sort() and Array.prototype.toSorted() should match the behaviour the code describes
-  languages: [js, ts]
-  category: BUG
-  severity: major
-  effort: 15min
-  tags: [bug, generated]
-  generated: true
-  status: planned
-  message: This code does not behave the way it reads.
-  summary: The code does not do what its shape suggests, or fails on ordinary input.
-  why: |
-    Written this way the code works by accident or breaks on values that are perfectly normal, and the
-    mistake is easy to miss in review because the intent reads correctly.
-  fix: |
-    Make the intended behaviour explicit — fix the condition, the operator or the order of operations —
-    and cover the case that used to fail with a test.
 
 - key: QG-JS-SML-0081
   name: Fixed waits should not be used
@@ -1270,25 +1051,6 @@
     Remove what is not used, name what is unclear, and keep one piece of behaviour in one place so the
     next change touches a single spot.
 
-- key: QG-JS-SML-0090
-  name: Object literal shorthand syntax should be replaced by the recommended alternative
-  languages: [js, ts]
-  category: SML
-  severity: minor
-  effort: 15min
-  tags: [prefer_api, generated]
-  generated: true
-  status: planned
-  message: The platform offers a clearer or safer construct for this.
-  summary: A construct is used where the platform offers one that is clearer or safer.
-  why: |
-    The alternative exists because it removes a class of mistake — a conversion, an allocation, an edge
-    case — that the current form leaves to the caller. Using the older form means every reader has to
-    check that the edge case was handled.
-  fix: |
-    Switch to the recommended construct; the behaviour is the same in the normal case and defined in the
-    cases the old form got wrong.
-
 - key: QG-JS-SML-0091
   name: Shorthand object properties should be simplified
   languages: [js, ts]
@@ -1324,43 +1086,6 @@
   fix: |
     Make the intended behaviour explicit — fix the condition, the operator or the order of operations —
     and cover the case that used to fail with a test.
-
-- key: QG-JS-SML-0092
-  name: Template strings should be replaced by the recommended alternative
-  languages: [js, ts]
-  category: SML
-  severity: minor
-  effort: 15min
-  tags: [prefer_api, generated]
-  generated: true
-  status: planned
-  message: The platform offers a clearer or safer construct for this.
-  summary: A construct is used where the platform offers one that is clearer or safer.
-  why: |
-    The alternative exists because it removes a class of mistake — a conversion, an allocation, an edge
-    case — that the current form leaves to the caller. Using the older form means every reader has to
-    check that the edge case was handled.
-  fix: |
-    Switch to the recommended construct; the behaviour is the same in the normal case and defined in the
-    cases the old form got wrong.
-
-- key: QG-JS-SML-0093
-  name: Arguments should be simplified
-  languages: [js, ts]
-  category: SML
-  severity: minor
-  effort: 15min
-  tags: [sml, generated]
-  generated: true
-  status: planned
-  message: This code is harder to read or change than the behaviour requires.
-  summary: The code works but is harder to read or change than the behaviour requires.
-  why: |
-    The intent is buried, duplicated, or spread across places that must stay in sync, so every future
-    change costs more than it should and carries a risk that has nothing to do with the change itself.
-  fix: |
-    Remove what is not used, name what is unclear, and keep one piece of behaviour in one place so the
-    next change touches a single spot.
 
 - key: QG-JS-SML-0094
   name: Destructuring syntax should be replaced by the recommended alternative
@@ -1398,25 +1123,6 @@
   fix: |
     Remove what is not used, name what is unclear, and keep one piece of behaviour in one place so the
     next change touches a single spot.
-
-- key: QG-JS-SML-0096
-  name: Function constructors should not be used
-  languages: [js, ts]
-  category: SML
-  severity: minor
-  effort: 15min
-  tags: [avoid_api, generated]
-  generated: true
-  status: planned
-  message: This API should be replaced by the current alternative.
-  summary: Code calls an API that is unsafe, obsolete or superseded by a better alternative.
-  why: |
-    The API stays available for compatibility, so nothing fails at build time, but it carries behaviour
-    the platform now considers a defect — unchecked input, a weak guarantee, or a cost the replacement
-    avoids. Its presence also spreads: new code copies what it finds nearby.
-  fix: |
-    Replace the call with the current API, and keep the old one only behind a compatibility layer that is
-    documented and dated.
 
 - key: QG-JS-SML-0097
   name: Braces and parentheses should be replaced by the recommended alternative
@@ -1457,24 +1163,6 @@
     cases the old form got wrong.
   detect:
     - invocation: [prototype]
-
-- key: QG-JS-BUG-0039
-  name: Generators should match the behaviour the code describes
-  languages: [js, ts]
-  category: BUG
-  severity: major
-  effort: 15min
-  tags: [bug, generated]
-  generated: true
-  status: planned
-  message: This code does not behave the way it reads.
-  summary: The code does not do what its shape suggests, or fails on ordinary input.
-  why: |
-    Written this way the code works by accident or breaks on values that are perfectly normal, and the
-    mistake is easy to miss in review because the intent reads correctly.
-  fix: |
-    Make the intended behaviour explicit — fix the condition, the operator or the order of operations —
-    and cover the case that used to fail with a test.
 
 - key: QG-JS-SML-0099
   name: Import should be replaced by the recommended alternative
@@ -1551,25 +1239,6 @@
   fix: |
     Remove what is not used, name what is unclear, and keep one piece of behaviour in one place so the
     next change touches a single spot.
-
-- key: QG-JS-SML-0103
-  name: Literals should make failure handling explicit
-  languages: [js, ts]
-  category: SML
-  severity: minor
-  effort: 15min
-  tags: [exception, generated]
-  generated: true
-  status: planned
-  message: This handling hides the failure instead of dealing with it.
-  summary: An exception is thrown, caught or propagated in a way that hides the failure.
-  why: |
-    Handlers that are too broad, empty, or that replace the original error remove the information needed
-    to diagnose the incident, and let the program continue in a state nobody designed for. The symptom
-    then appears far from the cause.
-  fix: |
-    Catch the specific failures this code can recover from, keep the original exception as the cause when
-    wrapping, and let everything else reach the boundary handler.
 
 - key: QG-JS-BUG-0041
   name: Return value of void functions should not be used
@@ -1702,25 +1371,6 @@
     Replace the call with the current API, and keep the old one only behind a compatibility layer that is
     documented and dated.
 
-- key: QG-JS-BUG-0043
-  name: Template literal placeholder syntax should not be used
-  languages: [js, ts]
-  category: BUG
-  severity: major
-  effort: 15min
-  tags: [avoid_api, generated]
-  generated: true
-  status: planned
-  message: This API should be replaced by the current alternative.
-  summary: Code calls an API that is unsafe, obsolete or superseded by a better alternative.
-  why: |
-    The API stays available for compatibility, so nothing fails at build time, but it carries behaviour
-    the platform now considers a defect — unchecked input, a weak guarantee, or a cost the replacement
-    avoids. Its presence also spreads: new code copies what it finds nearby.
-  fix: |
-    Replace the call with the current API, and keep the old one only behind a compatibility layer that is
-    documented and dated.
-
 - key: QG-JS-SML-0110
   name: Variables and functions should be simplified
   languages: [js, ts]
@@ -1738,25 +1388,6 @@
   fix: |
     Remove what is not used, name what is unclear, and keep one piece of behaviour in one place so the
     next change touches a single spot.
-
-- key: QG-JS-BUG-0044
-  name: Destructuring patterns should not be left empty
-  languages: [js, ts]
-  category: BUG
-  severity: major
-  effort: 15min
-  tags: [empty, generated]
-  generated: true
-  status: planned
-  message: This construct is empty, so it does nothing.
-  summary: A construct is declared with no content.
-  why: |
-    An empty body reads as if the case is handled while nothing happens, which is exactly how ignored
-    errors and unimplemented branches survive review. It is also indistinguishable from an accidental
-    deletion.
-  fix: |
-    Implement the behaviour, or remove the construct. When doing nothing is deliberate, say so in a
-    comment so the next reader does not treat it as a gap.
 
 - key: QG-JS-SML-0111
   name: Functions should be simplified
@@ -1794,25 +1425,6 @@
     Remove what is not used, name what is unclear, and keep one piece of behaviour in one place so the
     next change touches a single spot.
 
-- key: QG-JS-BUG-0045
-  name: Parentheses should be replaced by the recommended alternative
-  languages: [js, ts]
-  category: BUG
-  severity: major
-  effort: 15min
-  tags: [prefer_api, generated]
-  generated: true
-  status: planned
-  message: The platform offers a clearer or safer construct for this.
-  summary: A construct is used where the platform offers one that is clearer or safer.
-  why: |
-    The alternative exists because it removes a class of mistake — a conversion, an allocation, an edge
-    case — that the current form leaves to the caller. Using the older form means every reader has to
-    check that the edge case was handled.
-  fix: |
-    Switch to the recommended construct; the behaviour is the same in the normal case and defined in the
-    cases the old form got wrong.
-
 - key: QG-JS-BUG-0046
   name: Variables should be declared the way the language intends
   languages: [js, ts]
@@ -1832,25 +1444,6 @@
     Declare the narrowest visibility that works, in the conventional modifier order, and mark as final or
     read-only whatever is not meant to change.
 
-- key: QG-JS-BUG-0047
-  name: New operator should not be used
-  languages: [js, ts]
-  category: BUG
-  severity: major
-  effort: 15min
-  tags: [avoid_api, generated]
-  generated: true
-  status: planned
-  message: This API should be replaced by the current alternative.
-  summary: Code calls an API that is unsafe, obsolete or superseded by a better alternative.
-  why: |
-    The API stays available for compatibility, so nothing fails at build time, but it carries behaviour
-    the platform now considers a defect — unchecked input, a weak guarantee, or a cost the replacement
-    avoids. Its presence also spreads: new code copies what it finds nearby.
-  fix: |
-    Replace the call with the current API, and keep the old one only behind a compatibility layer that is
-    documented and dated.
-
 - key: QG-JS-BUG-0048
   name: Super() should match the behaviour the code describes
   languages: [js, ts]
@@ -1868,24 +1461,6 @@
   fix: |
     Make the intended behaviour explicit — fix the condition, the operator or the order of operations —
     and cover the case that used to fail with a test.
-
-- key: QG-JS-SML-0113
-  name: Imports from the same module should be simplified
-  languages: [js, ts]
-  category: SML
-  severity: minor
-  effort: 15min
-  tags: [sml, generated]
-  generated: true
-  status: planned
-  message: This code is harder to read or change than the behaviour requires.
-  summary: The code works but is harder to read or change than the behaviour requires.
-  why: |
-    The intent is buried, duplicated, or spread across places that must stay in sync, so every future
-    change costs more than it should and carries a risk that has nothing to do with the change itself.
-  fix: |
-    Remove what is not used, name what is unclear, and keep one piece of behaviour in one place so the
-    next change touches a single spot.
 
 - key: QG-JS-SML-0114
   name: Conditionals should be simplified
@@ -1997,24 +1572,6 @@
     Make the intended behaviour explicit — fix the condition, the operator or the order of operations —
     and cover the case that used to fail with a test.
 
-- key: QG-JS-BUG-0051
-  name: Typeof expressions should match the behaviour the code describes
-  languages: [js, ts]
-  category: BUG
-  severity: major
-  effort: 15min
-  tags: [bug, generated]
-  generated: true
-  status: planned
-  message: This code does not behave the way it reads.
-  summary: The code does not do what its shape suggests, or fails on ordinary input.
-  why: |
-    Written this way the code works by accident or breaks on values that are perfectly normal, and the
-    mistake is easy to miss in review because the intent reads correctly.
-  fix: |
-    Make the intended behaviour explicit — fix the condition, the operator or the order of operations —
-    and cover the case that used to fail with a test.
-
 - key: QG-JS-SML-0121
   name: Method overloads should be simplified
   languages: [js, ts]
@@ -2069,43 +1626,6 @@
   fix: |
     Switch to the recommended construct; the behaviour is the same in the normal case and defined in the
     cases the old form got wrong.
-
-- key: QG-JS-SML-0124
-  name: For in should not be used
-  languages: [js, ts]
-  category: SML
-  severity: minor
-  effort: 15min
-  tags: [avoid_api, generated]
-  generated: true
-  status: planned
-  message: This API should be replaced by the current alternative.
-  summary: Code calls an API that is unsafe, obsolete or superseded by a better alternative.
-  why: |
-    The API stays available for compatibility, so nothing fails at build time, but it carries behaviour
-    the platform now considers a defect — unchecked input, a weak guarantee, or a cost the replacement
-    avoids. Its presence also spreads: new code copies what it finds nearby.
-  fix: |
-    Replace the call with the current API, and keep the old one only behind a compatibility layer that is
-    documented and dated.
-
-- key: QG-JS-SML-0125
-  name: Sparse arrays should be simplified
-  languages: [js, ts]
-  category: SML
-  severity: minor
-  effort: 15min
-  tags: [sml, generated]
-  generated: true
-  status: planned
-  message: This code is harder to read or change than the behaviour requires.
-  summary: The code works but is harder to read or change than the behaviour requires.
-  why: |
-    The intent is buried, duplicated, or spread across places that must stay in sync, so every future
-    change costs more than it should and carries a risk that has nothing to do with the change itself.
-  fix: |
-    Remove what is not used, name what is unclear, and keep one piece of behaviour in one place so the
-    next change touches a single spot.
 
 - key: QG-JS-BUG-0052
   name: Collection elements should match the behaviour the code describes
@@ -2200,43 +1720,6 @@
   fix: |
     Implement the behaviour, or remove the construct. When doing nothing is deliberate, say so in a
     comment so the next reader does not treat it as a gap.
-
-- key: QG-JS-SML-0129
-  name: Assignments should be simplified
-  languages: [js, ts]
-  category: SML
-  severity: minor
-  effort: 15min
-  tags: [sml, generated]
-  generated: true
-  status: planned
-  message: This code is harder to read or change than the behaviour requires.
-  summary: The code works but is harder to read or change than the behaviour requires.
-  why: |
-    The intent is buried, duplicated, or spread across places that must stay in sync, so every future
-    change costs more than it should and carries a risk that has nothing to do with the change itself.
-  fix: |
-    Remove what is not used, name what is unclear, and keep one piece of behaviour in one place so the
-    next change touches a single spot.
-
-- key: QG-JS-SML-0130
-  name: Any type should not be used
-  languages: [js, ts]
-  category: SML
-  severity: minor
-  effort: 15min
-  tags: [avoid_api, generated]
-  generated: true
-  status: planned
-  message: This API should be replaced by the current alternative.
-  summary: Code calls an API that is unsafe, obsolete or superseded by a better alternative.
-  why: |
-    The API stays available for compatibility, so nothing fails at build time, but it carries behaviour
-    the platform now considers a defect — unchecked input, a weak guarantee, or a cost the replacement
-    avoids. Its presence also spreads: new code copies what it finds nearby.
-  fix: |
-    Replace the call with the current API, and keep the old one only behind a compatibility layer that is
-    documented and dated.
 
 - key: QG-JS-BUG-0054
   name: Getters and setters should match the behaviour the code describes
@@ -2334,24 +1817,6 @@
   detect:
     - invocation: [await]
 
-- key: QG-JS-SML-0135
-  name: This should be simplified
-  languages: [js, ts]
-  category: SML
-  severity: minor
-  effort: 15min
-  tags: [sml, generated]
-  generated: true
-  status: planned
-  message: This code is harder to read or change than the behaviour requires.
-  summary: The code works but is harder to read or change than the behaviour requires.
-  why: |
-    The intent is buried, duplicated, or spread across places that must stay in sync, so every future
-    change costs more than it should and carries a risk that has nothing to do with the change itself.
-  fix: |
-    Remove what is not used, name what is unclear, and keep one piece of behaviour in one place so the
-    next change touches a single spot.
-
 - key: QG-JS-SML-0136
   name: Dependencies should be simplified
   languages: [js, ts]
@@ -2426,43 +1891,6 @@
     Restore the default and solve the original problem in a narrower way — scope the exception to the
     single endpoint or value that needs it, and document why it is safe there.
 
-- key: QG-JS-SML-0137
-  name: In should not be used
-  languages: [js, ts]
-  category: SML
-  severity: minor
-  effort: 15min
-  tags: [avoid_api, generated]
-  generated: true
-  status: planned
-  message: This API should be replaced by the current alternative.
-  summary: Code calls an API that is unsafe, obsolete or superseded by a better alternative.
-  why: |
-    The API stays available for compatibility, so nothing fails at build time, but it carries behaviour
-    the platform now considers a defect — unchecked input, a weak guarantee, or a cost the replacement
-    avoids. Its presence also spreads: new code copies what it finds nearby.
-  fix: |
-    Replace the call with the current API, and keep the old one only behind a compatibility layer that is
-    documented and dated.
-
-- key: QG-JS-SML-0138
-  name: Union and intersection types should not be duplicated
-  languages: [js, ts]
-  category: SML
-  severity: minor
-  effort: 15min
-  tags: [duplication, generated]
-  generated: true
-  status: planned
-  message: This code or value is duplicated.
-  summary: The same code or value appears more than once.
-  why: |
-    Copies drift apart the first time one of them is fixed, and nothing links them, so the bug is fixed
-    in one place and stays in the other. Readers also cannot tell which copy is authoritative.
-  fix: |
-    Keep one definition and reference it from the other places, or extract the shared part into a named
-    function or constant.
-
 - key: QG-JS-SML-0139
   name: Union types should stay within a size that can be reviewed
   languages: [js, ts]
@@ -2499,24 +1927,6 @@
   fix: |
     Remove what is not used, name what is unclear, and keep one piece of behaviour in one place so the
     next change touches a single spot.
-
-- key: QG-JS-SML-0141
-  name: Template literals should not be nested inside another one
-  languages: [js, ts]
-  category: SML
-  severity: minor
-  effort: 15min
-  tags: [nesting, generated]
-  generated: true
-  status: planned
-  message: This construct is nested inside another of the same kind.
-  summary: A construct is nested inside another of the same kind.
-  why: |
-    The number of paths a reader has to consider becomes the product of the two, and the inner construct
-    is easy to miss when scanning the outer one. Changes then land in the wrong level.
-  fix: |
-    Extract the inner construct into a function named after the decision it makes, and call it from the
-    outer one.
 
 - key: QG-JS-SML-0143
   name: Optional property declarations should be simplified

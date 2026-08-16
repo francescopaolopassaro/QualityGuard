@@ -1,0 +1,273 @@
+# Descriptions for the Java rules implemented in Rules/Languages/JavaContractRules.cs. The detection
+# reads the syntax tree; this file carries the reasoning and the fix shown in the report.
+
+- key: QG-JV-BUG-0188
+  name: next should refuse to run past the end
+  languages: [java]
+  category: BUG
+  severity: major
+  effort: 20min
+  tags: [suspicious]
+  summary: An iterator's next never throws NoSuchElementException.
+  why: |
+    Every caller is entitled to assume that next throws once the elements run out — that is what the
+    interface promises. A next that does something else hands back a null, an index error or
+    silence, and the loop that read one element too many carries on.
+  fix: |
+    Throw NoSuchElementException when hasNext would answer false.
+
+- key: QG-JV-BUG-0189
+  name: wait should be called in a loop
+  languages: [java]
+  category: BUG
+  severity: critical
+  effort: 30min
+  tags: [concurrency]
+  summary: wait or await is called outside a loop.
+  why: |
+    A thread can return from wait without anyone having signalled it — the specification allows it,
+    and it happens. Without a loop the code then proceeds as if the condition held, on a state that
+    has not changed.
+  fix: |
+    Write while (!condition) { wait(); }.
+
+- key: QG-JV-BUG-0190
+  name: A Boolean method should not return null
+  languages: [java]
+  category: BUG
+  severity: critical
+  effort: 20min
+  tags: [suspicious]
+  summary: A method declared to return Boolean returns null.
+  why: |
+    Every caller that writes if (method()) unboxes the result and gets a NullPointerException on a
+    line with no visible dereference — the hardest kind to read in a stack trace.
+  fix: |
+    Return false, or use a type that makes the third answer explicit.
+
+- key: QG-JV-BUG-0191
+  name: A search result should be tested against zero
+  languages: [java]
+  category: BUG
+  severity: major
+  effort: 10min
+  tags: [suspicious]
+  summary: The result of indexOf is compared with > 0 or <= 0.
+  why: |
+    The search answers 0 when the match sits at the very beginning, and the comparison reads that as
+    "not found". The first element is silently excluded.
+  fix: |
+    Compare with >= 0, or use contains.
+
+- key: QG-JV-BUG-0192
+  name: A thread should not be started from a constructor
+  languages: [java]
+  category: BUG
+  severity: critical
+  effort: 30min
+  tags: [concurrency]
+  summary: start is called on a thread inside a constructor.
+  why: |
+    The object is not finished being built: a subclass constructor has not run, and its final fields
+    are not guaranteed to be visible to another thread. The new thread can see the object half
+    initialised — and only sometimes, which is the worst way to find out.
+  fix: |
+    Start the thread from a method the caller invokes once construction is complete.
+
+- key: QG-JV-BUG-0193
+  name: iterator should not return the collection itself
+  languages: [java]
+  category: BUG
+  severity: major
+  effort: 30min
+  tags: [suspicious]
+  summary: An iterator method returns this.
+  why: |
+    Every caller then shares one iterator, so a second loop over the collection starts where the
+    first one stopped and two nested loops consume each other's elements.
+  fix: |
+    Return a new iterator on every call.
+
+- key: QG-JV-BUG-0194
+  name: JDBC parameters are numbered from one
+  languages: [java]
+  category: BUG
+  severity: critical
+  effort: 10min
+  tags: [suspicious]
+  summary: A PreparedStatement or ResultSet accessor is given index 0.
+  why: |
+    These APIs count their columns from one. Index 0 throws SQLException at run time, on the first
+    query that reaches the line.
+  fix: |
+    Start at 1, or use the column name.
+
+- key: QG-JV-BUG-0195
+  name: A bit operation should change something
+  languages: [java]
+  category: BUG
+  severity: major
+  effort: 10min
+  tags: [suspicious]
+  summary: A bitwise operation with a constant returns its left operand unchanged.
+  why: |
+    "| 0", "^ 0" and "& -1" all give back what they were given, so the operation does nothing. Either
+    the constant is wrong or the line can go — and the first is far more likely.
+  fix: |
+    Use the constant that was meant, or remove the operation.
+
+- key: QG-JV-BUG-0196
+  name: A date format should use the calendar year
+  languages: [java]
+  category: BUG
+  severity: critical
+  effort: 10min
+  tags: [suspicious]
+  summary: A date pattern uses upper-case Y.
+  why: |
+    Upper-case Y is the week year: in the last days of December it already reports the year about to
+    start. The bug appears once a year, in production, on dates nobody tested.
+  fix: |
+    Use lower-case y.
+
+- key: QG-JV-BUG-0197
+  name: compareTo should not be overloaded
+  languages: [java]
+  category: BUG
+  severity: major
+  effort: 20min
+  tags: [suspicious]
+  summary: A class declares compareTo more than once.
+  why: |
+    Which one runs depends on the static type at the call site. A sorted collection holds its
+    elements as Comparable and calls the general one — not the specific one the class was written
+    around.
+  fix: |
+    Keep one compareTo and give the other method a name of its own.
+
+- key: QG-JV-SML-0444
+  name: A class of static members should not be instantiable
+  languages: [java]
+  category: SML
+  severity: minor
+  effort: 10min
+  tags: [design]
+  summary: Every member of a class is static but the class can still be constructed.
+  why: |
+    An instance of it can do nothing at all, and the implicit public constructor invites one.
+  fix: |
+    Declare a private constructor.
+
+- key: QG-JV-SML-0445
+  name: A field should not be set to the value it already has
+  languages: [java]
+  category: SML
+  severity: minor
+  effort: 5min
+  tags: [readability]
+  summary: A field is initialized to the default value of its type.
+  why: |
+    The language already guarantees it, so the initializer repeats what happens anyway and adds a
+    write the constructor has to perform.
+  fix: |
+    Remove the initializer.
+
+- key: QG-JV-SML-0446
+  name: A modifier that is already implied should be dropped
+  languages: [java]
+  category: SML
+  severity: minor
+  effort: 5min
+  tags: [readability]
+  summary: An interface member declares public, abstract, static or final.
+  why: |
+    Everything an interface declares already has those properties. The keyword adds nothing and
+    suggests that the members written without it are somehow different.
+  fix: |
+    Remove the modifier.
+
+- key: QG-JV-SML-0447
+  name: A collection should not be filled with double brace initialization
+  languages: [java]
+  category: SML
+  severity: major
+  effort: 15min
+  tags: [performance]
+  summary: A collection is created with an anonymous subclass and an instance initializer.
+  why: |
+    The braces create a subclass, which keeps a reference to the object that built it — so the
+    enclosing instance stays alive as long as the collection does. The collection also stops being
+    serializable, and a new class is generated for every occurrence.
+  fix: |
+    Use List.of and Map.of, or fill the collection after constructing it.
+
+- key: QG-JV-SML-0448
+  name: clone should not be overridden
+  languages: [java]
+  category: SML
+  severity: major
+  effort: 30min
+  tags: [design]
+  summary: A class overrides Object.clone.
+  why: |
+    Cloneable does not declare clone, the copy it produces is shallow, and no constructor runs — so
+    a final field cannot be given the right value in the copy.
+  fix: |
+    Provide a copy constructor or a static factory, which say what they copy and can be tested.
+
+- key: QG-JV-SML-0449
+  name: A nested enum is already static
+  languages: [java]
+  category: SML
+  severity: minor
+  effort: 5min
+  tags: [readability]
+  summary: A nested enum is declared static.
+  why: |
+    Its constants exist before any instance of the enclosing class does, so the enum is static
+    whether it says so or not. The keyword only makes a reader wonder about the enums without it.
+  fix: |
+    Remove the modifier.
+
+- key: QG-JV-SML-0450
+  name: A method that always returns the same value should be a constant
+  languages: [java]
+  category: SML
+  severity: minor
+  effort: 10min
+  tags: [readability]
+  summary: A parameterless method that is not an override returns a literal and nothing else.
+  why: |
+    A method suggests the answer depends on something. A constant says plainly that it does not.
+  fix: |
+    Expose a constant. A method that overrides one stays: answering with a constant is the point of
+    the override.
+
+- key: QG-JV-SML-0451
+  name: An instance method should not write to a static field
+  languages: [java]
+  category: SML
+  severity: major
+  effort: 30min
+  tags: [concurrency, design]
+  summary: A non-static method assigns to a mutable static field.
+  why: |
+    The field is shared by every instance and every thread, so two objects that look independent are
+    not — and nothing in the signature says so.
+  fix: |
+    Make the field an instance field, or move the write to a static method where the sharing is
+    visible.
+
+- key: QG-JV-CNV-0002
+  name: A statement should not be empty
+  languages: [java]
+  category: CNV
+  severity: minor
+  effort: 2min
+  tags: [suspicious]
+  summary: A semicolon closes nothing.
+  why: |
+    Placed after an if or a loop it silently becomes the whole body, which is how a loop ends up
+    doing nothing at all while looking like it does.
+  fix: |
+    Remove the semicolon.

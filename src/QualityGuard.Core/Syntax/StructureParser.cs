@@ -75,14 +75,48 @@ public static class StructureParser
         return node;
     }
 
+    /// <summary>
+    /// Words that may stand in front of a declaration keyword. Kotlin, Swift and Rust write
+    /// 'private const val x', so looking only at the first token of the statement misses the
+    /// declaration entirely and leaves it as a nameless expression.
+    /// </summary>
+    private static readonly string[] LeadingModifiers =
+    [
+        "public", "private", "protected", "internal", "fileprivate", "open", "final", "sealed",
+        "abstract", "static", "const", "lateinit", "override", "expect", "actual", "external",
+        "inline", "noinline", "crossinline", "suspend", "operator", "infix", "tailrec", "data",
+        "annotation", "companion", "readonly", "weak", "unowned", "lazy", "mutating", "nonmutating",
+        "pub", "export", "global", "shared", "class"
+    ];
+
+    private static bool DeclaresVariable(IReadOnlyList<Token> slice, SyntaxProfile profile)
+    {
+        for (var i = 0; i < slice.Count && i < 6; i++)
+        {
+            var token = slice[i];
+            if (token.Kind is not (TokenKind.Identifier or TokenKind.Keyword))
+                return false;
+            if (profile.IsVariableKeyword(token.Text))
+                return true;
+            if (!LeadingModifiers.Contains(token.Text, StringComparer.OrdinalIgnoreCase))
+                return false;
+        }
+        return false;
+    }
+
     private static NodeKind ClassifyStatement(IReadOnlyList<Token> slice, SyntaxProfile profile, out string name)
     {
         name = string.Empty;
         var words = slice.Where(t => t.Kind is TokenKind.Identifier or TokenKind.Keyword).ToArray();
         var first = slice[0].Text;
 
+        // A declaration keyword lives in the header of the statement, before the first parenthesis,
+        // brace or equals sign. Searching the whole slice reads 'Foo::class.java' as a class called
+        // java, and a 'when' branch that mentions fun as a function.
         foreach (var token in slice)
         {
+            if (token.Kind == TokenKind.Symbol && token.Text is "=" or "(" or "{")
+                break;
             if (profile.IsFunctionKeyword(token.Text) && token.Kind is TokenKind.Identifier or TokenKind.Keyword)
             {
                 name = NameAfter(slice, token) ?? string.Empty;
@@ -123,7 +157,7 @@ public static class StructureParser
                 return NodeKind.Finally;
         }
 
-        if (profile.IsVariableKeyword(first) || IsTypedDeclaration(slice, profile))
+        if (DeclaresVariable(slice, profile) || IsTypedDeclaration(slice, profile))
         {
             name = DeclaredName(slice, profile) ?? string.Empty;
             return NodeKind.VariableDeclaration;

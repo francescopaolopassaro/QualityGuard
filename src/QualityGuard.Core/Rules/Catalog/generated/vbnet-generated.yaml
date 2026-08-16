@@ -20,43 +20,6 @@
     Move the value to configuration, read it at start-up, and fail with a clear message when it is
     missing so a misconfigured deployment stops before it does anything.
 
-- key: QG-CS-SML-0365
-  name: General or reserved exceptions should make failure handling explicit
-  languages: [vb]
-  category: SML
-  severity: minor
-  effort: 15min
-  tags: [exception, generated]
-  generated: true
-  status: planned
-  message: This handling hides the failure instead of dealing with it.
-  summary: An exception is thrown, caught or propagated in a way that hides the failure.
-  why: |
-    Handlers that are too broad, empty, or that replace the original error remove the information needed
-    to diagnose the incident, and let the program continue in a state nobody designed for. The symptom
-    then appears far from the cause.
-  fix: |
-    Catch the specific failures this code can recover from, keep the original exception as the cause when
-    wrapping, and let everything else reach the boundary handler.
-
-- key: QG-CS-SML-0366
-  name: Obsolete attributes should be simplified
-  languages: [vb]
-  category: SML
-  severity: minor
-  effort: 15min
-  tags: [sml, generated]
-  generated: true
-  status: planned
-  message: This code is harder to read or change than the behaviour requires.
-  summary: The code works but is harder to read or change than the behaviour requires.
-  why: |
-    The intent is buried, duplicated, or spread across places that must stay in sync, so every future
-    change costs more than it should and carries a risk that has nothing to do with the change itself.
-  fix: |
-    Remove what is not used, name what is unclear, and keep one piece of behaviour in one place so the
-    next change touches a single spot.
-
 - key: QG-CS-SML-0368
   name: End statements should not be used
   languages: [vb]
@@ -223,24 +186,6 @@
   fix: |
     Extract the inner construct into a function named after the decision it makes, and call it from the
     outer one.
-
-- key: QG-CS-SML-0381
-  name: Boolean checks should be simplified
-  languages: [vb]
-  category: SML
-  severity: minor
-  effort: 15min
-  tags: [sml, generated]
-  generated: true
-  status: planned
-  message: This code is harder to read or change than the behaviour requires.
-  summary: The code works but is harder to read or change than the behaviour requires.
-  why: |
-    The intent is buried, duplicated, or spread across places that must stay in sync, so every future
-    change costs more than it should and carries a risk that has nothing to do with the change itself.
-  fix: |
-    Remove what is not used, name what is unclear, and keep one piece of behaviour in one place so the
-    next change touches a single spot.
 
 - key: QG-CS-SML-0382
   name: Invalid casts should be simplified
@@ -634,25 +579,6 @@
     Rename the identifier to match the convention, and let the editor propagate the change so callers
     stay in sync.
 
-- key: QG-CS-SML-0402
-  name: Exceptions should make failure handling explicit
-  languages: [vb]
-  category: SML
-  severity: minor
-  effort: 15min
-  tags: [exception, generated]
-  generated: true
-  status: planned
-  message: This handling hides the failure instead of dealing with it.
-  summary: An exception is thrown, caught or propagated in a way that hides the failure.
-  why: |
-    Handlers that are too broad, empty, or that replace the original error remove the information needed
-    to diagnose the incident, and let the program continue in a state nobody designed for. The symptom
-    then appears far from the cause.
-  fix: |
-    Catch the specific failures this code can recover from, keep the original exception as the cause when
-    wrapping, and let everything else reach the boundary handler.
-
 - key: QG-CS-SML-0403
   name: Signed types should be replaced by the recommended alternative
   languages: [vb]
@@ -691,25 +617,6 @@
     Switch to the recommended construct; the behaviour is the same in the normal case and defined in the
     cases the old form got wrong.
 
-- key: QG-CS-SML-0405
-  name: Write-only properties should not be used
-  languages: [vb]
-  category: SML
-  severity: minor
-  effort: 15min
-  tags: [avoid_api, generated]
-  generated: true
-  status: planned
-  message: This API should be replaced by the current alternative.
-  summary: Code calls an API that is unsafe, obsolete or superseded by a better alternative.
-  why: |
-    The API stays available for compatibility, so nothing fails at build time, but it carries behaviour
-    the platform now considers a defect — unchecked input, a weak guarantee, or a cost the replacement
-    avoids. Its presence also spreads: new code copies what it finds nearby.
-  fix: |
-    Replace the call with the current API, and keep the old one only behind a compatibility layer that is
-    documented and dated.
-
 - key: QG-CS-SML-0407
   name: Arrays should be simplified
   languages: [vb]
@@ -730,24 +637,6 @@
 
 - key: QG-CS-SML-0408
   name: Unnecessary bit operations should be simplified
-  languages: [vb]
-  category: SML
-  severity: minor
-  effort: 15min
-  tags: [sml, generated]
-  generated: true
-  status: planned
-  message: This code is harder to read or change than the behaviour requires.
-  summary: The code works but is harder to read or change than the behaviour requires.
-  why: |
-    The intent is buried, duplicated, or spread across places that must stay in sync, so every future
-    change costs more than it should and carries a risk that has nothing to do with the change itself.
-  fix: |
-    Remove what is not used, name what is unclear, and keep one piece of behaviour in one place so the
-    next change touches a single spot.
-
-- key: QG-CS-SML-0409
-  name: IndexOf checks should be simplified
   languages: [vb]
   category: SML
   severity: minor
@@ -1248,25 +1137,6 @@
     Perform the check with the platform API — signature, certificate chain, hostname or token validation
     — and reject the value when it fails, instead of logging and continuing.
 
-- key: QG-CS-BUG-0125
-  name: Types should be declared the way the language intends
-  languages: [vb]
-  category: BUG
-  severity: major
-  effort: 15min
-  tags: [declaration, generated]
-  generated: true
-  status: planned
-  message: This declaration exposes more than it should.
-  summary: A declaration uses modifiers, order or visibility that do not match its purpose.
-  why: |
-    Declarations are the contract other code relies on. A wider visibility than needed makes an internal
-    detail part of the public surface, and unusual modifier combinations hide the intent from readers and
-    tools alike.
-  fix: |
-    Declare the narrowest visibility that works, in the conventional modifier order, and mark as final or
-    read-only whatever is not meant to change.
-
 - key: QG-CS-SML-0424
   name: Assemblies should be simplified
   languages: [vb]
@@ -1668,25 +1538,6 @@
   fix: |
     Remove what is not used, name what is unclear, and keep one piece of behaviour in one place so the
     next change touches a single spot.
-
-- key: QG-CS-SML-0435
-  name: New Guid() should not be used
-  languages: [vb]
-  category: SML
-  severity: minor
-  effort: 15min
-  tags: [avoid_api, generated]
-  generated: true
-  status: planned
-  message: This API should be replaced by the current alternative.
-  summary: Code calls an API that is unsafe, obsolete or superseded by a better alternative.
-  why: |
-    The API stays available for compatibility, so nothing fails at build time, but it carries behaviour
-    the platform now considers a defect — unchecked input, a weak guarantee, or a cost the replacement
-    avoids. Its presence also spreads: new code copies what it finds nearby.
-  fix: |
-    Replace the call with the current API, and keep the old one only behind a compatibility layer that is
-    documented and dated.
 
 - key: QG-CS-BUG-0137
   name: Calls to delegates method BeginInvoke should match the behaviour the code describes

@@ -330,9 +330,10 @@ public sealed class CSharpParser
             var annotationStart = Mark();
             _index++;
             var annotation = ParseQualifiedName();
+            var node = Node(NodeKind.Attribute, annotationStart, annotation);
             if (Is("("))
-                SkipBalanced("(", ")");
-            attributes.Add(Node(NodeKind.Attribute, annotationStart, annotation));
+                node.Add(ParseArgumentList());
+            attributes.Add(node);
         }
 
         while (Is("[") && LooksLikeAttribute())
@@ -345,9 +346,12 @@ public sealed class CSharpParser
                 {
                     var nameStart = Mark();
                     var name = ParseQualifiedName();
+                    // the arguments belong to the attribute: several rules ask what it was given,
+                    // and skipping them made [Obsolete("use X")] indistinguishable from [Obsolete]
+                    var node = Node(NodeKind.Attribute, nameStart, name);
                     if (Is("("))
-                        SkipBalanced("(", ")");
-                    attributes.Add(Node(NodeKind.Attribute, nameStart, name));
+                        node.Add(ParseArgumentList());
+                    attributes.Add(node);
                 }
                 else
                 {
@@ -919,11 +923,17 @@ public sealed class CSharpParser
             ctor.Add(ParseParameterList());
             if (Accept(":"))
             {
-                // base or this initializer
-                if (IsName)
-                    _index++;
+                // The base or this initializer runs another constructor with arguments the reader
+                // has to see: skipping it made an empty-bodied constructor look like it did nothing.
+                var initializerStart = Mark();
+                var target = IsName ? Take().Text : string.Empty;
                 if (Is("("))
-                    SkipBalanced("(", ")");
+                {
+                    var initializer = Node(NodeKind.Invocation, initializerStart, target);
+                    initializer.Add(Node(NodeKind.Identifier, initializerStart, target));
+                    initializer.Add(ParseArgumentList());
+                    ctor.Add(initializer);
+                }
             }
             AddBody(ctor);
             return ctor;
@@ -2402,8 +2412,10 @@ public sealed class CSharpParser
             return node;
         }
 
+        // a new expression is a primary like any other: what follows it — a call, a member, an
+        // index — belongs to the object it just built, so it goes through the postfix chain
         if (Is("new") && !IsJs)
-            return ParseObjectCreation(start);
+            return ParsePostfix(ParseObjectCreation(start));
 
         if (Is("(") && !IsJs && !IsGo && LooksLikeCast())
         {
@@ -2478,10 +2490,33 @@ public sealed class CSharpParser
                 node.Add(size);
         }
         if (Is("{"))
-            node.Add(ParseInitializer());
+            node.Add(LooksLikeAnonymousClassBody() ? ParseTypeBody(false) : ParseInitializer());
         node.Tokens = SliceFrom(start);
         node.Range = TextRange.Of(node.Tokens);
         return node;
+    }
+
+    /// <summary>
+    /// Whether the braces after a new expression open an anonymous class rather than an object
+    /// initializer. The two look alike and mean opposite things: an initializer sets properties, an
+    /// anonymous class declares members — and reading the second as the first turns every method it
+    /// overrides into a call, which is how a void declaration ends up reported as a void expression.
+    /// </summary>
+    private bool LooksLikeAnonymousClassBody()
+    {
+        if (IsJs || IsGo)
+            return false;
+
+        var first = Peek();
+        if (first == null)
+            return false;
+        // an annotation or a modifier can only introduce a member
+        if (first.Text == "@" || ModifierWords.Contains(first.Text))
+            return true;
+        // a type followed by a name is a declaration; a name followed by = or : is an initializer
+        var second = Peek(2);
+        return first.Kind is TokenKind.Identifier or TokenKind.Keyword
+               && second is { Kind: TokenKind.Identifier or TokenKind.Keyword };
     }
 
     private SyntaxNode ParseInitializer()

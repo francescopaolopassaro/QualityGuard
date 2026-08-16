@@ -68,12 +68,25 @@ public sealed class OctalLiteralRule : ApiRuleBase
                 continue;
             if (text.Skip(1).Any(c => c is '8' or '9'))
                 continue; // not a valid octal number: the compiler rejects it, no rule needed
+            // A Unix permission mask is written in octal on purpose, in every language that has a
+            // file API: 0755 means rwxr-xr-x to the reader, and 493 means nothing to anyone.
+            if (IsPermissionMask(text))
+                continue;
 
             context.Report(number, $"'{text}' starts with a zero, so the compiler reads it in base 8: "
                                    + $"its value is {Convert.ToInt64(text, 8)}, not {text.TrimStart('0')}. "
                                    + "Drop the leading zero, or write the octal prefix the language "
                                    + "provides so the intent is visible.");
         }
+    }
+
+    /// <summary>Whether the literal is a Unix permission mask, which is meant to be read in octal.</summary>
+    private static bool IsPermissionMask(string text)
+    {
+        var digits = text[1..];
+        if (digits.Length is < 3 or > 4)
+            return false;
+        return digits.All(c => c is >= '0' and <= '7');
     }
 }
 
@@ -252,6 +265,10 @@ public sealed class ResultOfVoidCallUsedRule : ApiRuleBase
         {
             var parent = call.Parent;
             if (parent == null || parent.Kind is NodeKind.ExpressionStatement or NodeKind.Block)
+                continue;
+            // an expression-bodied lambda over a void call is a statement lambda, which is what
+            // every Consumer and Runnable in the language is written as
+            if (parent.Kind is NodeKind.Lambda)
                 continue;
             var name = SyntaxQuery.InvokedName(call);
             if (name.Length == 0)
