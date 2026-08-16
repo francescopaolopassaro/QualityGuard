@@ -767,5 +767,5 @@
     <html>
   good: |
     <html lang="en">
-  detect:
-    - line: "<html(?![^>]*\\blang\\s*=)[^>]*>"
+  # Detection moved to DocumentWithoutLanguageRule, which reads the document as a tree: the line
+  # pattern missed an attribute written across two lines and matched the tag inside a comment.

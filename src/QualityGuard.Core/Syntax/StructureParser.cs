@@ -8,6 +8,15 @@ namespace QualityGuard.Core.Syntax;
 /// </summary>
 public static class StructureParser
 {
+    /// <summary>
+    /// Longest slice still worth parsing as an expression. A statement written by a person never
+    /// comes close; what does is a file with no statement terminator the parser recognises — a page
+    /// of markup, a minified bundle — where the whole file arrives as one slice and the operator
+    /// chain built from it is as deep as the file is long. Past this point the statement keeps its
+    /// tokens and gives up on its shape, which is what every rule needs anyway.
+    /// </summary>
+    private const int MaxExpressionTokens = 512;
+
     public static SyntaxNode Parse(IReadOnlyList<Token> tokens, SyntaxProfile profile)
     {
         var code = tokens.Where(t => t.Kind != TokenKind.Comment).ToArray();
@@ -54,7 +63,8 @@ public static class StructureParser
                 break;
             default:
                 var expressionTokens = StripLeadingKeywords(slice, profile, kind);
-                if (ExpressionParser.Parse(expressionTokens) is { } expression)
+                if (expressionTokens.Count <= MaxExpressionTokens
+                    && ExpressionParser.Parse(expressionTokens) is { } expression)
                     node.Add(expression);
                 break;
         }

@@ -44,6 +44,36 @@ internal static class LanguageRuleSupport
 {
     internal static string[] Lines(IRuleContext context) => context.File.Content.Split('\n');
 
+    /// <summary>
+    /// True when the file is a test. Kept here rather than in one rule family because several of
+    /// them need it, and a second copy of this judgement would drift from the first.
+    /// </summary>
+    internal static bool IsTestFile(string path, string fileName)
+    {
+        var normalized = path.Replace('\\', '/');
+        if (normalized.Contains("/test/", StringComparison.OrdinalIgnoreCase)
+            || normalized.Contains("/tests/", StringComparison.OrdinalIgnoreCase)
+            || normalized.Contains("/spec/", StringComparison.OrdinalIgnoreCase)
+            || normalized.Contains("/__tests__/", StringComparison.OrdinalIgnoreCase))
+            return true;
+
+        // the word has to stand at one end of the name: "Latest" and "Contest" contain "test" and
+        // have nothing to do with testing, so the camel-case suffixes are matched exactly
+        var stem = System.IO.Path.GetFileNameWithoutExtension(fileName);
+        foreach (var suffix in new[] { "Test", "Tests", "Spec", "Specs" })
+        {
+            if (stem.EndsWith(suffix, StringComparison.Ordinal))
+                return true;
+        }
+        foreach (var suffix in new[] { "_test", "_tests", "_spec", ".test", ".spec" })
+        {
+            if (stem.EndsWith(suffix, StringComparison.OrdinalIgnoreCase))
+                return true;
+        }
+        return stem.StartsWith("Test", StringComparison.Ordinal)
+               || stem.StartsWith("test_", StringComparison.OrdinalIgnoreCase);
+    }
+
     internal static bool IsCredentialName(string name)
     {
         var lower = name.ToLowerInvariant();

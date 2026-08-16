@@ -1,0 +1,204 @@
+# Descriptions for the Swift rules implemented in Rules/Languages/SwiftRules.cs. Swift has no
+# reference catalog to map against, so these are written from the language itself: the operators the
+# compiler lets through on purpose, and the habits that leak data off the phone.
+
+- key: QG-SW-BUG-0001
+  name: A throwing call should not be forced
+  languages: [swift]
+  category: BUG
+  severity: critical
+  effort: 15min
+  tags: [suspicious, error-handling]
+  summary: try! is used instead of handling the error.
+  why: |
+    The compiler asked for a decision about what happens when the call fails, and try! answers "it
+    cannot". That holds until the file is missing, the disk is full or the response is not the shape
+    the decoder expected — and then the application stops, on the user's device, with no message.
+  fix: |
+    Use try inside a do/catch, or try? when nil is a usable answer.
+
+- key: QG-SW-BUG-0002
+  name: A cast should not be forced
+  languages: [swift]
+  category: BUG
+  severity: major
+  effort: 10min
+  tags: [suspicious]
+  summary: as! is used to change the type of a value.
+  why: |
+    The cast crashes when the value is not of that type, and the value comes from somewhere this code
+    does not control: a decoded payload, a nib, a collection of Any. The crash arrives with the first
+    input nobody thought of.
+  fix: |
+    Use as? and handle the case where the value is something else, or make the type precise enough
+    that the cast is unnecessary.
+
+- key: QG-SW-BUG-0003
+  name: Floating point values should not be compared for equality
+  languages: [swift]
+  category: BUG
+  severity: major
+  effort: 10min
+  tags: [suspicious]
+  summary: A Double or Float is compared to a decimal literal with == or !=.
+  why: |
+    A decimal such as 0.1 has no exact binary representation, so the comparison is true only when both
+    sides came out of exactly the same operations in exactly the same order.
+  fix: |
+    Compare the distance between the values against a tolerance the domain justifies.
+
+- key: QG-SW-BUG-0004
+  name: An error should not be caught and dropped
+  languages: [swift]
+  category: BUG
+  severity: major
+  effort: 15min
+  tags: [error-handling]
+  summary: A catch block is empty.
+  why: |
+    The failure leaves no trace anywhere: the user sees an empty screen, the logs say the operation
+    succeeded, and whoever investigates starts from nothing.
+  fix: |
+    Handle the error, or log it and tell the interface that the operation did not happen.
+
+- key: QG-SW-BUG-0005
+  name: The main queue should not be waited on synchronously
+  languages: [swift]
+  category: BUG
+  severity: critical
+  effort: 20min
+  tags: [concurrency]
+  summary: DispatchQueue.main.sync is called.
+  why: |
+    If this ever runs on the main queue it deadlocks instantly: the queue cannot start the block
+    because it is blocked waiting for it to finish. The application freezes and the system kills it.
+  fix: |
+    Use async, or call the work directly when the code is already on the main queue.
+
+- key: QG-SW-BUG-0006
+  name: A boolean should not be compared to a boolean literal
+  languages: [swift]
+  category: BUG
+  severity: minor
+  effort: 5min
+  tags: [readability]
+  summary: An expression is compared against true or false.
+  why: |
+    The comparison adds a step that changes nothing, and the negated form reads backwards to everyone
+    who meets it.
+  fix: |
+    Use the expression itself, or its negation.
+
+- key: QG-SW-SML-0001
+  name: A condition that is already a boolean should be returned directly
+  languages: [swift]
+  category: SML
+  severity: major
+  effort: 5min
+  tags: [readability]
+  summary: One branch returns true and the other returns false.
+  why: |
+    Six lines repeat what the condition already said, and the next change has to keep both branches
+    in step.
+  fix: |
+    Return the condition itself, negated if the branches are the other way round.
+
+- key: QG-SW-SML-0002
+  name: Diagnostics should go through a logger
+  languages: [swift]
+  category: SML
+  severity: minor
+  effort: 10min
+  tags: [observability]
+  summary: print, NSLog, debugPrint or dump is called outside a test.
+  why: |
+    The output goes to the device console, where nobody reads it once the application ships. It
+    cannot be filtered by level or category, and its arguments are still evaluated in release builds —
+    including the ones that describe a user.
+  fix: |
+    Use Logger from OSLog with the level and the category the message deserves.
+
+- key: QG-SW-SML-0003
+  name: A function should not have an empty body
+  languages: [swift]
+  category: SML
+  severity: minor
+  effort: 10min
+  tags: [suspicious]
+  summary: A function declares nothing in its body.
+  why: |
+    Every caller believes something happened when nothing did, and nothing in the code says whether
+    the body is missing or deliberately empty.
+  fix: |
+    Give the function a body, or state in a comment that the hook is empty on purpose.
+
+- key: QG-SW-SEC-0001
+  name: Traffic should not travel in cleartext
+  languages: [swift]
+  category: SEC
+  severity: major
+  effort: 20min
+  tags: [transport]
+  summary: A plain http:// address is used outside the loopback.
+  why: |
+    Everything the application sends and receives over it — tokens included — travels readable across
+    whatever network the phone happens to be on, and anyone on that network can change the answer
+    before it arrives.
+  fix: |
+    Use https, and keep App Transport Security on.
+
+- key: QG-SW-SEC-0002
+  name: A broken hash should not protect anything
+  languages: [swift]
+  category: SEC
+  severity: critical
+  effort: 30min
+  tags: [cryptography]
+  summary: MD5 or SHA-1 is used through CryptoKit or CommonCrypto.
+  why: |
+    Two different inputs with the same digest can be produced on a laptop, so the digest no longer
+    proves anything about what was hashed — which is the only reason to compute one.
+  fix: |
+    Use SHA-256 or better; for a password use a key derivation function such as PBKDF2 or Argon2.
+
+- key: QG-SW-SEC-0003
+  name: A secret should be kept in the keychain
+  languages: [swift]
+  category: SEC
+  severity: critical
+  effort: 45min
+  tags: [storage]
+  summary: A password, token or key is written to UserDefaults.
+  why: |
+    UserDefaults is a property list inside the application container: not encrypted, included in
+    backups, and readable outright on a jailbroken device.
+  fix: |
+    Store the secret in the keychain, which the system protects with the device passcode.
+
+- key: QG-SW-SEC-0004
+  name: A query should not be built by interpolation
+  languages: [swift]
+  category: SEC
+  severity: critical
+  effort: 30min
+  tags: [injection]
+  summary: A SQL statement is assembled with string interpolation.
+  why: |
+    Whatever the interpolated value contains becomes part of the statement. A quote in a user's name
+    is enough to change what the query does, and a deliberate one is enough to read the whole table.
+  fix: |
+    Bind the values as parameters.
+
+- key: QG-SW-CNV-0001
+  name: A type should be named in upper camel case
+  languages: [swift]
+  category: CNV
+  severity: minor
+  effort: 5min
+  tags: [convention]
+  summary: A type name starts with a lower-case letter.
+  why: |
+    Every type in the standard library and in every framework starts in upper case, so a lower-case
+    one makes the reader stop to work out whether the name is a type or a value.
+  fix: |
+    Rename the type in upper camel case.

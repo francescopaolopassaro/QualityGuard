@@ -145,6 +145,21 @@ public static class BuiltInLanguages
         [new("\"\"\"", "\"\"\""), new("\"", "\""), new("'", "'")],
         HashComments: false, NestingBlockComments: true);
 
+    public static readonly LanguageInfo Swift = new(
+        "swift", [".swift"],
+        ["as", "associatedtype", "async", "await", "break", "case", "catch", "class", "continue",
+            "default", "defer", "deinit", "do", "else", "enum", "extension", "fallthrough", "false",
+            "fileprivate", "for", "func", "guard", "if", "import", "in", "init", "inout", "internal",
+            "is", "let", "nil", "open", "operator", "private", "protocol", "public", "repeat",
+            "required", "rethrows", "return", "self", "static", "struct", "subscript", "super",
+            "switch", "throw", "throws", "true", "try", "typealias", "var", "where", "while",
+            "lazy", "mutating", "nonmutating", "override", "weak", "unowned", "final", "some", "any",
+            "convenience", "indirect", "actor", "nonisolated", "willSet", "didSet", "get", "set"],
+        ["if", "else", "for", "while", "repeat", "switch", "guard", "catch", "&&", "||", "??", "?"],
+        "//", "/*", "*/",
+        [new("\"\"\"", "\"\"\""), new("\"", "\"")],
+        HashComments: false, NestingBlockComments: true);
+
     public static readonly LanguageInfo Basic = new(
         "vb", [".vb"],
         ["AddHandler", "AddressOf", "Alias", "And", "AndAlso", "As", "Boolean", "ByRef", "Byte", "ByVal", "Call",
@@ -326,6 +341,7 @@ public static class BuiltInLanguages
         Go,
         Ruby,
         Kotlin,
+        Swift,
         Basic,
         Dart,
         Css,

@@ -33,6 +33,19 @@ public abstract class MarkupRuleBase : RuleBase
 
     protected static HtmlElement Document(IRuleContext context) => HtmlDocument.Parse(context.File.Content);
 
+    /// <summary>
+    /// True when the attribute is how a component library or a framework binds behaviour to the
+    /// element — a data hook, an event binding, a directive. The element then does something, even
+    /// though the markup alone does not show what.
+    /// </summary>
+    protected static bool IsComponentHook(string attribute)
+        => attribute.StartsWith("data-", StringComparison.OrdinalIgnoreCase)
+           || attribute.StartsWith("ng-", StringComparison.Ordinal)
+           || attribute.StartsWith("v-", StringComparison.Ordinal)
+           || attribute.StartsWith('@')
+           || attribute.StartsWith('(')
+           || attribute.StartsWith("on", StringComparison.OrdinalIgnoreCase);
+
     /// <summary>True when the value is written by a template and cannot be judged here.</summary>
     protected static bool IsDynamic(string? value)
         => value != null && (value.Contains("{{", StringComparison.Ordinal)

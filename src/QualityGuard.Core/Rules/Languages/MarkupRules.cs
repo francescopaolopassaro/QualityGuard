@@ -40,21 +40,46 @@ internal static class MarkupHelper
     }
 }
 
-public sealed class HtmlJavascriptUrlRule : PatternRuleBase
+/// <summary>
+/// A URL that runs code instead of naming a destination. Read from the element tree rather than
+/// from the lines: the text "javascript:" appears in scripts, in comments and in the placeholder
+/// javascript:void(0), none of which executes anything, and reporting those buries the one case
+/// that does — an attribute whose value is code.
+/// </summary>
+public sealed class HtmlJavascriptUrlRule : MarkupRuleBase
 {
+    private static readonly string[] UrlAttributes =
+        ["href", "src", "action", "formaction", "data", "cite", "poster", "background"];
+
     public override string Key => "QG-HTML-SEC-0002";
-    public override string Name => "Avoid javascript: URLs";
+    public override string Name => "A URL should not carry code";
     public override Severity Severity => Severity.Major;
     public override IssueKind Kind => IssueKind.Vulnerability;
-    public override string RemediationEffort => "Replace javascript: URLs with real navigation or event listeners.";
-    public override string[] Languages => ["html"];
+    public override string RemediationEffort => "20min";
 
     public override void Execute(IRuleContext context)
     {
-        var lines = context.File.Content.Split('\n');
-        for (var i = 0; i < lines.Length; i++)
-            if (RuleMatchers.LineContains(lines[i], "javascript:"))
-                context.Report("javascript: URLs are a vector for XSS.", i + 1);
+        foreach (var element in Document(context).Descendants())
+        {
+            foreach (var attribute in UrlAttributes)
+            {
+                var value = element.Attribute(attribute)?.TrimStart();
+                if (value == null || !value.StartsWith("javascript:", StringComparison.OrdinalIgnoreCase))
+                    continue;
+
+                var code = value["javascript:".Length..].Trim().TrimEnd(';');
+                // the two placeholders that do nothing: they are a style choice, not an injection point
+                if (code.Length == 0 || code.Replace(" ", string.Empty)
+                        .StartsWith("void(", StringComparison.OrdinalIgnoreCase))
+                    continue;
+
+                context.Report($"The {attribute} of this <{element.Name}> runs code instead of pointing "
+                               + "somewhere. Whatever the page later writes into that URL becomes script "
+                               + "with the privileges of the page, and no content security policy can "
+                               + "tell it apart from the code you wrote. Bind a listener from a script "
+                               + "file and let the attribute name a destination.", element.Line);
+            }
+        }
     }
 }
 

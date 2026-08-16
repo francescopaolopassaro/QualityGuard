@@ -135,13 +135,27 @@ public sealed class SyntaxNode
             Range = Range with { EndLine = child.Range.EndLine, EndColumn = child.Range.EndColumn };
     }
 
+    /// <summary>
+    /// The nodes below this one, in the order they are written. Walked with an explicit stack rather
+    /// than by recursion: a generated file, a minified script or a page of markup read by the generic
+    /// parser can nest thousands of levels deep, and a nested iterator would both overflow the stack
+    /// and pay for the depth again at every element.
+    /// </summary>
     public IEnumerable<SyntaxNode> Descendants()
     {
-        foreach (var child in _children)
+        if (_children.Count == 0)
+            yield break;
+
+        var pending = new Stack<SyntaxNode>();
+        for (var i = _children.Count - 1; i >= 0; i--)
+            pending.Push(_children[i]);
+
+        while (pending.Count > 0)
         {
-            yield return child;
-            foreach (var nested in child.Descendants())
-                yield return nested;
+            var node = pending.Pop();
+            yield return node;
+            for (var i = node._children.Count - 1; i >= 0; i--)
+                pending.Push(node._children[i]);
         }
     }
 

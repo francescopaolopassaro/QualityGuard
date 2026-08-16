@@ -18,6 +18,7 @@ public static class LanguageKeys
     public const string Go = "go";
     public const string Ruby = "rb";
     public const string Kotlin = "kt";
+    public const string Swift = "swift";
     public const string Basic = "vb";
     public const string Dart = "dart";
     public const string Css = "css";

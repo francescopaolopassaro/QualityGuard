@@ -49,31 +49,7 @@ public abstract class TestRuleBase : RuleBase
 
     /// <summary>True when the file is a test: rules here have nothing to say about production code.</summary>
     protected static bool IsTestCode(IRuleContext context)
-    {
-        var path = context.File.Path.Replace('\\', '/');
-        if (path.Contains("/test/", StringComparison.OrdinalIgnoreCase)
-            || path.Contains("/tests/", StringComparison.OrdinalIgnoreCase)
-            || path.Contains("/spec/", StringComparison.OrdinalIgnoreCase)
-            || path.Contains("/__tests__/", StringComparison.OrdinalIgnoreCase))
-            return true;
-
-        // the word has to stand at one end of the name: "Latest" and "Contest" contain "test" and
-        // have nothing to do with testing
-        var stem = System.IO.Path.GetFileNameWithoutExtension(context.File.FileName);
-        // camel-case suffixes are matched exactly, so "Latest" is not read as "La" + "test"
-        foreach (var suffix in new[] { "Test", "Tests", "Spec", "Specs" })
-        {
-            if (stem.EndsWith(suffix, StringComparison.Ordinal))
-                return true;
-        }
-        foreach (var suffix in new[] { "_test", "_tests", "_spec", ".test", ".spec" })
-        {
-            if (stem.EndsWith(suffix, StringComparison.OrdinalIgnoreCase))
-                return true;
-        }
-        return stem.StartsWith("Test", StringComparison.Ordinal)
-               || stem.StartsWith("test_", StringComparison.OrdinalIgnoreCase);
-    }
+        => Rules.Languages.LanguageRuleSupport.IsTestFile(context.File.Path, context.File.FileName);
 
     protected static bool IsTestFunction(SyntaxNode function)
         => function.ChildrenOf(NodeKind.Attribute).Any(a => TestAnnotations.Any(

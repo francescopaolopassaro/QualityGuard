@@ -60,10 +60,19 @@ public sealed class SemanticModel
         // assignments already accounted for by their enclosing declaration
         private readonly HashSet<SyntaxNode> _consumed = [];
 
-        public void Walk(SyntaxNode node, Scope scope)
+        /// <summary>
+        /// Builds the symbol table in reading order. The traversal keeps its own stack because a
+        /// deeply nested file — generated code, a minified script, a page read by the generic parser —
+        /// is exactly the input that would overflow a recursive walk.
+        /// </summary>
+        public void Walk(SyntaxNode root, Scope rootScope)
         {
-            foreach (var child in node.Children)
+            var pending = new Stack<(SyntaxNode Node, Scope Scope)>();
+            Push(pending, root, rootScope);
+
+            while (pending.Count > 0)
             {
+                var (child, scope) = pending.Pop();
                 var childScope = scope;
                 switch (child.Kind)
                 {
@@ -75,7 +84,7 @@ public sealed class SemanticModel
                         DeclareParameters(child, childScope);
                         break;
                     // a function body shares the scope that holds its parameters
-                    case NodeKind.Block when node.Kind != NodeKind.FunctionDeclaration:
+                    case NodeKind.Block when child.Parent?.Kind != NodeKind.FunctionDeclaration:
                         childScope = OpenScope(ScopeKind.Block, child, scope);
                         break;
                     case NodeKind.VariableDeclaration:
@@ -88,8 +97,15 @@ public sealed class SemanticModel
                         RecordReference(child, scope);
                         break;
                 }
-                Walk(child, childScope);
+                Push(pending, child, childScope);
             }
+        }
+
+        private static void Push(Stack<(SyntaxNode, Scope)> pending, SyntaxNode node, Scope scope)
+        {
+            var children = node.Children;
+            for (var i = children.Count - 1; i >= 0; i--)
+                pending.Push((children[i], scope));
         }
 
         private Scope OpenScope(ScopeKind kind, SyntaxNode node, Scope parent)

@@ -1,0 +1,396 @@
+# Descriptions for the markup rules implemented in Rules/Languages/MarkupAccessibilityRules.cs.
+# The detection reads the element tree; this file carries the reasoning and the fix shown in the
+# report.
+
+- key: QG-HTML-SML-0076
+  name: A page should declare its doctype first
+  languages: [html]
+  category: SML
+  severity: minor
+  effort: 5min
+  tags: [standards]
+  summary: The html element is not preceded by a doctype declaration.
+  why: |
+    Without the declaration browsers switch to quirks mode and lay the page out with rules kept alive
+    for documents written twenty years ago. Box widths, margins and line heights stop matching what
+    the stylesheet asks for, and the difference between browsers grows.
+  fix: |
+    Put <!DOCTYPE html> on the first line of the document.
+
+- key: QG-HTML-SML-0077
+  name: A page should have a title
+  languages: [html]
+  category: SML
+  severity: major
+  effort: 5min
+  tags: [accessibility, seo]
+  summary: The head of the document contains no title element.
+  why: |
+    The title is what the browser tab shows, what a bookmark is saved under, what a search result
+    displays and what a screen reader announces when the page opens. Without it every one of those
+    falls back to the address.
+  fix: |
+    Add a title element that names this page, not the site.
+
+- key: QG-HTML-SML-0078
+  name: Presentation should live in a stylesheet
+  languages: [html]
+  category: SML
+  severity: minor
+  effort: 10min
+  tags: [maintainability]
+  summary: An element carries a style attribute.
+  why: |
+    An inline style beats every selector in the stylesheet, so a theme or a dark mode cannot change
+    it, and the same declarations get repeated on every element that needs them. A content security
+    policy that forbids inline styles drops it entirely.
+  fix: |
+    Move the declarations into a class and put the class on the element.
+
+- key: QG-HTML-SML-0079
+  name: A page should not refresh or redirect itself with a meta tag
+  languages: [html]
+  category: SML
+  severity: major
+  effort: 10min
+  tags: [accessibility]
+  summary: A meta http-equiv="refresh" is declared.
+  why: |
+    The page moves without warning and with no way to stop it: someone reading slowly loses their
+    place mid-sentence, and the back button lands on a page that immediately leaves again.
+  fix: |
+    Redirect from the server with a 3xx response, or refresh the content from a script the user
+    controls.
+
+- key: QG-HTML-SML-0080
+  name: A link should lead somewhere
+  languages: [html]
+  category: SML
+  severity: major
+  effort: 10min
+  tags: [accessibility]
+  summary: An anchor points at "#" or at javascript:void(0).
+  why: |
+    The element is a button wearing the clothes of a link. The browser still offers "open in a new
+    tab", which lands back on the same page, and assistive technology announces a link that goes
+    nowhere.
+  fix: |
+    Use a button element when the click runs a script, and keep anchors for navigation.
+
+- key: QG-HTML-SML-0081
+  name: A fieldset should be introduced by a legend
+  languages: [html]
+  category: SML
+  severity: major
+  effort: 10min
+  tags: [accessibility]
+  summary: A fieldset has no legend and no accessible name.
+  why: |
+    The legend is what names the group. Without it a screen reader reads each control on its own, so
+    "yes" and "no" arrive with no trace of the question they answer.
+  fix: |
+    Add a legend as the first child, or name the group with aria-label.
+
+- key: QG-HTML-SML-0082
+  name: A legend should be the first child of its fieldset
+  languages: [html]
+  category: SML
+  severity: minor
+  effort: 5min
+  tags: [accessibility]
+  summary: A legend element sits outside a fieldset or an optgroup.
+  why: |
+    Only a fieldset or an optgroup turns a legend into the label of a group. Anywhere else it is
+    styled text that names nothing.
+  fix: |
+    Move the legend into the element it is meant to introduce.
+
+- key: QG-HTML-SML-0083
+  name: A list item should be inside a list
+  languages: [html]
+  category: SML
+  severity: major
+  effort: 10min
+  tags: [accessibility, standards]
+  summary: An li, dt or dd is not inside its container element.
+  why: |
+    The browser renders the item as loose text, and a screen reader never announces how many items
+    there are or which one the user is on — the two things that make a list useful without sight.
+  fix: |
+    Wrap the items in ul, ol or dl.
+
+- key: QG-HTML-SML-0084
+  name: Heading levels should not be skipped
+  languages: [html]
+  category: SML
+  severity: minor
+  effort: 10min
+  tags: [accessibility]
+  summary: A heading is more than one level below the heading before it.
+  why: |
+    Readers who move through a page by headings use the levels as an outline. A jump opens a section
+    inside a level that was never started, so the structure they hear does not exist.
+  fix: |
+    Use the next level down and set the visual size from the stylesheet.
+
+- key: QG-HTML-SML-0085
+  name: A heading should have text
+  languages: [html]
+  category: SML
+  severity: major
+  effort: 5min
+  tags: [accessibility]
+  summary: A heading element contains nothing to announce.
+  why: |
+    The heading still appears in the list assistive technology builds from the page, with nothing to
+    read out — a landmark that leads nowhere.
+  fix: |
+    Give the heading the text of its section, or remove it and set the spacing in CSS.
+
+- key: QG-HTML-SML-0086
+  name: A link should have text
+  languages: [html]
+  category: SML
+  severity: major
+  effort: 5min
+  tags: [accessibility]
+  summary: An anchor with an href contains no readable content.
+  why: |
+    A link built out of an icon or an empty element has nothing to announce, so a screen reader
+    falls back to reading the address out loud, character by character.
+  fix: |
+    Put the text inside the link, or name it with aria-label when the label must stay visual.
+
+- key: QG-HTML-SML-0087
+  name: A tab index should be 0 or -1
+  languages: [html]
+  category: SML
+  severity: major
+  effort: 10min
+  tags: [accessibility]
+  summary: An element declares a positive tabindex.
+  why: |
+    A positive index pulls the element in front of everything that has none, so the focus order
+    stops following the page. Keeping it correct then means renumbering every other element that is
+    ever added.
+  fix: |
+    Use 0 to keep the natural order, -1 to take the element out of the tab sequence, and order the
+    markup the way it should be read.
+
+- key: QG-HTML-SML-0088
+  name: The accesskey attribute should not be used
+  languages: [html]
+  category: SML
+  severity: minor
+  effort: 10min
+  tags: [accessibility]
+  summary: An element declares an accesskey.
+  why: |
+    The shortcut silently overrides one the browser or the screen reader already uses, and the
+    combination that triggers it differs on every platform. The user cannot discover it and cannot
+    change it.
+  fix: |
+    Offer the shortcut from a script, documented and switchable.
+
+- key: QG-HTML-BUG-0027
+  name: A focusable element should not be hidden from assistive technology
+  languages: [html]
+  category: BUG
+  severity: critical
+  effort: 10min
+  tags: [accessibility]
+  summary: aria-hidden="true" sits on an element that still takes focus.
+  why: |
+    The keyboard stops on something a screen reader refuses to announce. The user hears silence, has
+    no idea where the focus went, and cannot get back to it.
+  fix: |
+    Remove aria-hidden, or take the element out of the tab order as well with tabindex="-1" and the
+    disabled attribute where it applies.
+
+- key: QG-HTML-BUG-0028
+  name: The role attribute should be spelled role
+  languages: [html]
+  category: BUG
+  severity: major
+  effort: 2min
+  tags: [accessibility]
+  summary: An element uses aria-role instead of role.
+  why: |
+    There is no aria-role attribute. Browsers ignore it, so the element keeps whatever role it had
+    and the change intended here never takes effect — silently, because nothing reports an unknown
+    attribute.
+  fix: |
+    Rename the attribute to role.
+
+- key: QG-HTML-SML-0089
+  name: A form should state its method
+  languages: [html]
+  category: SML
+  severity: minor
+  effort: 5min
+  tags: [suspicious]
+  summary: A form has no method, or a method a browser does not understand.
+  why: |
+    A form with no method submits with GET and puts every field in the address bar, where proxies
+    log it and the history keeps it. An unknown method falls back to GET as well, so the request
+    arrives in a shape the server does not expect.
+  fix: |
+    Declare method="post" for a form that changes something, method="get" for a search.
+
+- key: QG-HTML-BUG-0029
+  name: Every candidate in a srcset should carry a descriptor
+  languages: [html]
+  category: BUG
+  severity: major
+  effort: 10min
+  tags: [suspicious]
+  summary: Some entries of a srcset have a width or density descriptor and others do not.
+  why: |
+    A candidate written without a descriptor counts as 1x. As soon as another candidate says 1x, two
+    entries describe the same case and the browser has no way to choose between them.
+  fix: |
+    Give every candidate a w or an x descriptor, and keep the whole list in one unit.
+
+- key: QG-HTML-SML-0090
+  name: The viewport should let the user zoom
+  languages: [html]
+  category: SML
+  severity: major
+  effort: 5min
+  tags: [accessibility]
+  summary: The viewport meta tag forbids scaling.
+  why: |
+    Anyone who cannot read text at the size the design chose is left with no way to enlarge it, and
+    on a phone zooming is the only way. It is the single setting that turns a readable page into an
+    unusable one.
+  fix: |
+    Drop user-scalable=no and let maximum-scale reach at least 5.
+
+- key: QG-HTML-SML-0091
+  name: Media should not start playing on its own
+  languages: [html]
+  category: SML
+  severity: major
+  effort: 5min
+  tags: [accessibility]
+  summary: An audio or video element declares autoplay without being muted.
+  why: |
+    Sound arriving unasked covers whatever a screen reader is saying and leaves the user hunting for
+    the control that stops it. Browsers block it more often than not, so the behaviour is not even
+    dependable.
+  fix: |
+    Let the user press play, or mute the media when it is decoration.
+
+- key: QG-HTML-SML-0092
+  name: A video should offer captions
+  languages: [html]
+  category: SML
+  severity: minor
+  effort: 30min
+  tags: [accessibility]
+  summary: A video element has no captions track.
+  why: |
+    Everything the video says is lost to anyone who cannot hear it — and to everyone watching with
+    the sound off, which is most people on a phone.
+  fix: |
+    Add a track element with kind="captions" and a caption file.
+
+- key: QG-HTML-SML-0093
+  name: A mouse handler should have a keyboard equivalent
+  languages: [html]
+  category: SML
+  severity: major
+  effort: 15min
+  tags: [accessibility]
+  summary: A pointer event handler has no matching keyboard handler.
+  why: |
+    Whatever the handler does happens only for a pointer. Someone moving through the page with the
+    keyboard, with a screen reader or on a touch screen never reaches it.
+  fix: |
+    Pair onmouseover with onfocus, onmouseout with onblur, and the press handlers with their key
+    equivalents.
+
+- key: QG-HTML-SML-0094
+  name: An embedded object should provide alternative content
+  languages: [html]
+  category: SML
+  severity: minor
+  effort: 10min
+  tags: [accessibility]
+  summary: An object or embed element is empty and unnamed.
+  why: |
+    A browser that cannot render the object shows an empty box, and a screen reader announces
+    nothing. What the object was showing simply disappears.
+  fix: |
+    Put a description, an image or a link to the content inside the element.
+
+- key: QG-HTML-SML-0095
+  name: An image should declare its size
+  languages: [html]
+  category: SML
+  severity: minor
+  effort: 5min
+  tags: [performance, user-experience]
+  summary: An image element declares neither width nor height.
+  why: |
+    The browser cannot reserve room for the image, so the page reflows when it arrives and the text
+    the user was reading jumps away — the layout shift that makes a page feel broken on a slow
+    connection.
+  fix: |
+    Declare the intrinsic width and height; the stylesheet can still scale the image.
+
+- key: QG-HTML-SML-0096
+  name: An attribute removed from the standard should be replaced
+  languages: [html]
+  category: SML
+  severity: minor
+  effort: 5min
+  tags: [standards]
+  summary: A presentational attribute dropped from HTML5 is used.
+  why: |
+    It renders today only because browsers keep old pages working. It cannot be overridden from a
+    theme, it does not respond to a media query, and nothing guarantees the next browser keeps it.
+  fix: |
+    Set the equivalent property in the stylesheet.
+
+- key: QG-HTML-SML-0097
+  name: A server-side image map should not be used
+  languages: [html]
+  category: SML
+  severity: major
+  effort: 30min
+  tags: [accessibility]
+  summary: An image declares ismap without a client-side map.
+  why: |
+    The clickable regions exist only on the server, which receives a pixel coordinate. They cannot
+    be reached with the keyboard and a screen reader has nothing to announce for any of them.
+  fix: |
+    Use a client-side map with area elements, each with its own alt text.
+
+- key: QG-HTML-BUG-0030
+  name: A script element should not contain another one
+  languages: [html]
+  category: BUG
+  severity: critical
+  effort: 10min
+  tags: [suspicious]
+  summary: A script element is nested inside another script element.
+  why: |
+    The parser closes a script at the first closing tag it reads, wherever it appears. The outer
+    script ends early and the rest of its code is rendered on the page as text.
+  fix: |
+    Split the string that contains the closing tag, or move the code into a file.
+
+- key: QG-HTML-SEC-0010
+  name: A remote script should be checked against a hash
+  languages: [html]
+  category: SEC
+  severity: major
+  effort: 15min
+  tags: [supply-chain]
+  summary: A script or stylesheet is loaded from another host without an integrity hash.
+  why: |
+    Nothing checks what actually arrives. Whoever controls that host — or anyone who takes it over
+    for an afternoon — runs code inside your page, with your origin and your cookies.
+  fix: |
+    Add an integrity hash and crossorigin to the tag, or serve the file from your own site.

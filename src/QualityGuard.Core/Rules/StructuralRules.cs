@@ -662,7 +662,17 @@ public sealed class UnusedParameterRule : StructuralRuleBase
                 continue;
             if (symbol.Usages.Any(u => u.Kind is UsageKind.Reference or UsageKind.Assignment))
                 continue;
+            // an initialising formal (this.x, super.x) is consumed by the constructor itself
+            if (symbol.Name.StartsWith("this.", StringComparison.Ordinal)
+                || symbol.Name.StartsWith("super.", StringComparison.Ordinal))
+                continue;
             var declaration = symbol.Usages.First(u => u.Kind == UsageKind.Parameter);
+            // an override cannot change the signature it implements, so an unused parameter there is
+            // imposed by the base type and not a decision the author can revisit
+            if (SyntaxQuery.EnclosingFunction(declaration.Identifier) is { } owner
+                && owner.ChildrenOf(NodeKind.Attribute).Concat(owner.ChildrenOf(NodeKind.Modifier))
+                    .Any(m => m.Text is "override" or "Override"))
+                continue;
             context.Report(declaration.Identifier, $"'{symbol.Name}' is never used in the body; "
                                                    + "remove it or use the value the caller passes.");
         }
