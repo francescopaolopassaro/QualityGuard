@@ -649,8 +649,24 @@ public static class StructureParser
             CloseOrOpen(scopes);
         }
 
+        /// <summary>Words that continue a construct: they end the previous branch and start the next.</summary>
+        private static readonly string[] BranchContinuations =
+            ["else", "elseif", "elsif", "catch", "rescue", "finally", "ensure", "case", "when"];
+
         private void CloseOrOpen(Stack<SyntaxNode> scopes)
         {
+            // A second Catch ends the first one. Without this it opened a block inside it, so the
+            // Try never closed and everything after it nested one level deeper — with three catch
+            // clauses the drift was three levels.
+            if (Buffer.Count > 0 && scopes.Count > 1
+                && BranchContinuations.Contains(Buffer[0].Text, StringComparer.OrdinalIgnoreCase)
+                && scopes.Peek().Parent is { Kind: NodeKind.Else or NodeKind.Catch or NodeKind.Finally
+                    or NodeKind.MatchCase })
+            {
+                var previous = scopes.Pop();
+                previous.Range = previous.Range with { EndLine = Buffer[0].Line, EndColumn = Buffer[0].Column };
+            }
+
             var statement = FlushBuffer(scopes.Peek());
             if (statement == null || !OpensBody(statement))
                 return;
