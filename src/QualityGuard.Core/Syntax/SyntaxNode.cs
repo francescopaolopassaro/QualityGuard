@@ -181,7 +181,18 @@ public sealed class SyntaxNode
         => Descendants().Where(n => kinds.Contains(n.Kind));
 
     /// <summary>Source text of the node rebuilt from its tokens (single line, normalized spacing).</summary>
-    public string SourceText() => string.Join(' ', Tokens.Select(t => t.Text));
+    /// <summary>
+    /// The source of the node, capped: rules use it to compare two expressions or to quote one in a
+    /// message, and neither needs more than a few lines. Without the cap a generated expression of
+    /// thousands of tokens is rebuilt as a string by every rule that looks at it.
+    /// </summary>
+    public string SourceText()
+    {
+        const int maxTokens = 200;
+        return Tokens.Count <= maxTokens
+            ? string.Join(' ', Tokens.Select(t => t.Text))
+            : string.Join(' ', Tokens.Take(maxTokens).Select(t => t.Text)) + " …";
+    }
 
     public override string ToString() => $"{Kind}('{Text}') @{Range}";
 }

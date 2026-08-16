@@ -1,0 +1,1666 @@
+# Generated catalog entries for html. Texts come from the family templates in
+# tools/generate_rules.py and are refined by hand as each family is reviewed.
+
+- key: QG-HTML-SML-0009
+  name: HTML comments should be removed once nothing uses it
+  languages: [html]
+  category: SML
+  severity: minor
+  effort: 15min
+  tags: [dead_code, generated]
+  generated: true
+  status: planned
+  message: Nothing references this; remove it.
+  summary: Code that nothing references is kept in the file.
+  why: |
+    Unused code still has to be read, compiled and maintained, and it misleads: a reader assumes it runs.
+    It is also where stale assumptions survive, so reviving it later reintroduces behaviour that no
+    longer matches the rest of the program.
+  fix: |
+    Delete it. Version control keeps the history, so nothing is lost, and the file becomes an accurate
+    description of what the program does.
+
+- key: QG-HTML-BUG-0002
+  name: <strong> and <em> tags should be replaced by the recommended alternative
+  languages: [html]
+  category: BUG
+  severity: major
+  effort: 15min
+  tags: [prefer_api, generated]
+  generated: true
+  status: planned
+  message: The platform offers a clearer or safer construct for this.
+  summary: A construct is used where the platform offers one that is clearer or safer.
+  why: |
+    The alternative exists because it removes a class of mistake — a conversion, an allocation, an edge
+    case — that the current form leaves to the caller. Using the older form means every reader has to
+    check that the edge case was handled.
+  fix: |
+    Switch to the recommended construct; the behaviour is the same in the normal case and defined in the
+    cases the old form got wrong.
+
+- key: QG-HTML-SML-0010
+  name: Disallowed child elements should be resolved rather than left in the code
+  languages: [html]
+  category: SML
+  severity: minor
+  effort: 15min
+  tags: [marker, generated]
+  generated: true
+  status: planned
+  message: This marker records work that was left open.
+  summary: A marker in the source records work or a decision that was left open.
+  why: |
+    Markers are written for a future reader who never comes back to them. Nobody can tell whether the
+    note is still relevant, who owns it, or whether the missing work has since become a defect.
+  fix: |
+    Do the work, or move it to the issue tracker and reference the ticket in the marker so the deadline
+    lives somewhere that gets reviewed.
+
+- key: QG-HTML-SML-0011
+  name: Required child elements should be resolved rather than left in the code
+  languages: [html]
+  category: SML
+  severity: minor
+  effort: 15min
+  tags: [marker, generated]
+  generated: true
+  status: planned
+  message: This marker records work that was left open.
+  summary: A marker in the source records work or a decision that was left open.
+  why: |
+    Markers are written for a future reader who never comes back to them. Nobody can tell whether the
+    note is still relevant, who owns it, or whether the missing work has since become a defect.
+  fix: |
+    Do the work, or move it to the issue tracker and reference the ticket in the marker so the deadline
+    lives somewhere that gets reviewed.
+
+- key: QG-HTML-SML-0012
+  name: Files should stay within a size that can be reviewed
+  languages: [html]
+  category: SML
+  severity: minor
+  effort: 15min
+  tags: [threshold, generated]
+  generated: true
+  status: planned
+  message: This construct is larger or more complex than the limit allows.
+  summary: A construct exceeds the size or complexity a reader can follow at once.
+  why: |
+    Past a certain size, understanding one line means reconstructing everything around it, and testing
+    the interesting case means going through the whole entry point. Growth is gradual, so the limit is
+    the only thing that keeps the cost visible.
+  fix: |
+    Split along the responsibilities the code has accumulated: extract the sections that already have a
+    name, and keep the original as the sequence of those steps.
+
+- key: QG-HTML-BUG-0003
+  name: <!DOCTYPE> declarations should match the behaviour the code describes
+  languages: [html]
+  category: BUG
+  severity: major
+  effort: 15min
+  tags: [bug, generated]
+  generated: true
+  status: planned
+  message: This code does not behave the way it reads.
+  summary: The code does not do what its shape suggests, or fails on ordinary input.
+  why: |
+    Written this way the code works by accident or breaks on values that are perfectly normal, and the
+    mistake is easy to miss in review because the intent reads correctly.
+  fix: |
+    Make the intended behaviour explicit — fix the condition, the operator or the order of operations —
+    and cover the case that used to fail with a test.
+
+- key: QG-HTML-SML-0013
+  name: Attributes should be simplified
+  languages: [html]
+  category: SML
+  severity: minor
+  effort: 15min
+  tags: [sml, generated]
+  generated: true
+  status: planned
+  message: This code is harder to read or change than the behaviour requires.
+  summary: The code works but is harder to read or change than the behaviour requires.
+  why: |
+    The intent is buried, duplicated, or spread across places that must stay in sync, so every future
+    change costs more than it should and carries a risk that has nothing to do with the change itself.
+  fix: |
+    Remove what is not used, name what is unclear, and keep one piece of behaviour in one place so the
+    next change touches a single spot.
+
+- key: QG-HTML-SML-0014
+  name: Dynamic includes should not be used
+  languages: [html]
+  category: SML
+  severity: minor
+  effort: 15min
+  tags: [avoid_api, generated]
+  generated: true
+  status: planned
+  message: This API should be replaced by the current alternative.
+  summary: Code calls an API that is unsafe, obsolete or superseded by a better alternative.
+  why: |
+    The API stays available for compatibility, so nothing fails at build time, but it carries behaviour
+    the platform now considers a defect — unchecked input, a weak guarantee, or a cost the replacement
+    avoids. Its presence also spreads: new code copies what it finds nearby.
+  fix: |
+    Replace the call with the current API, and keep the old one only behind a compatibility layer that is
+    documented and dated.
+
+- key: QG-HTML-BUG-0004
+  name: <fieldset> tags should match the behaviour the code describes
+  languages: [html]
+  category: BUG
+  severity: major
+  effort: 15min
+  tags: [bug, generated]
+  generated: true
+  status: planned
+  message: This code does not behave the way it reads.
+  summary: The code does not do what its shape suggests, or fails on ordinary input.
+  why: |
+    Written this way the code works by accident or breaks on values that are perfectly normal, and the
+    mistake is easy to miss in review because the intent reads correctly.
+  fix: |
+    Make the intended behaviour explicit — fix the condition, the operator or the order of operations —
+    and cover the case that used to fail with a test.
+
+- key: QG-HTML-SML-0015
+  name: Files should stay within a size that can be reviewed
+  languages: [html]
+  category: SML
+  severity: minor
+  effort: 15min
+  tags: [threshold, generated]
+  generated: true
+  status: planned
+  message: This construct is larger or more complex than the limit allows.
+  summary: A construct exceeds the size or complexity a reader can follow at once.
+  why: |
+    Past a certain size, understanding one line means reconstructing everything around it, and testing
+    the interesting case means going through the whole entry point. Growth is gradual, so the limit is
+    the only thing that keeps the cost visible.
+  fix: |
+    Split along the responsibilities the code has accumulated: extract the sections that already have a
+    name, and keep the original as the sequence of those steps.
+
+- key: QG-HTML-BUG-0005
+  name: Flash animations should match the behaviour the code describes
+  languages: [html]
+  category: BUG
+  severity: major
+  effort: 15min
+  tags: [bug, generated]
+  generated: true
+  status: planned
+  message: This code does not behave the way it reads.
+  summary: The code does not do what its shape suggests, or fails on ordinary input.
+  why: |
+    Written this way the code works by accident or breaks on values that are perfectly normal, and the
+    mistake is easy to miss in review because the intent reads correctly.
+  fix: |
+    Make the intended behaviour explicit — fix the condition, the operator or the order of operations —
+    and cover the case that used to fail with a test.
+
+- key: QG-HTML-SML-0016
+  name: Copyright and license headers should be resolved rather than left in the code
+  languages: [html]
+  category: SML
+  severity: minor
+  effort: 15min
+  tags: [marker, generated]
+  generated: true
+  status: planned
+  message: This marker records work that was left open.
+  summary: A marker in the source records work or a decision that was left open.
+  why: |
+    Markers are written for a future reader who never comes back to them. Nobody can tell whether the
+    note is still relevant, who owns it, or whether the missing work has since become a defect.
+  fix: |
+    Do the work, or move it to the issue tracker and reference the ticket in the marker so the deadline
+    lives somewhere that gets reviewed.
+
+- key: QG-HTML-SML-0017
+  name: Disallowed attributes should be resolved rather than left in the code
+  languages: [html]
+  category: SML
+  severity: minor
+  effort: 15min
+  tags: [marker, generated]
+  generated: true
+  status: planned
+  message: This marker records work that was left open.
+  summary: A marker in the source records work or a decision that was left open.
+  why: |
+    Markers are written for a future reader who never comes back to them. Nobody can tell whether the
+    note is still relevant, who owns it, or whether the missing work has since become a defect.
+  fix: |
+    Do the work, or move it to the issue tracker and reference the ticket in the marker so the deadline
+    lives somewhere that gets reviewed.
+
+- key: QG-HTML-SML-0018
+  name: Disallowed elements should be resolved rather than left in the code
+  languages: [html]
+  category: SML
+  severity: minor
+  effort: 15min
+  tags: [marker, generated]
+  generated: true
+  status: planned
+  message: This marker records work that was left open.
+  summary: A marker in the source records work or a decision that was left open.
+  why: |
+    Markers are written for a future reader who never comes back to them. Nobody can tell whether the
+    note is still relevant, who owns it, or whether the missing work has since become a defect.
+  fix: |
+    Do the work, or move it to the issue tracker and reference the ticket in the marker so the deadline
+    lives somewhere that gets reviewed.
+
+- key: QG-HTML-SML-0019
+  name: Disallowed namespaces in XHTML documents should be resolved rather than left in the code
+  languages: [html]
+  category: SML
+  severity: minor
+  effort: 15min
+  tags: [marker, generated]
+  generated: true
+  status: planned
+  message: This marker records work that was left open.
+  summary: A marker in the source records work or a decision that was left open.
+  why: |
+    Markers are written for a future reader who never comes back to them. Nobody can tell whether the
+    note is still relevant, who owns it, or whether the missing work has since become a defect.
+  fix: |
+    Do the work, or move it to the issue tracker and reference the ticket in the marker so the deadline
+    lives somewhere that gets reviewed.
+
+- key: QG-HTML-SML-0020
+  name: Tabulation characters should not be used
+  languages: [html]
+  category: SML
+  severity: minor
+  effort: 15min
+  tags: [avoid_api, generated]
+  generated: true
+  status: planned
+  message: This API should be replaced by the current alternative.
+  summary: Code calls an API that is unsafe, obsolete or superseded by a better alternative.
+  why: |
+    The API stays available for compatibility, so nothing fails at build time, but it carries behaviour
+    the platform now considers a defect — unchecked input, a weak guarantee, or a cost the replacement
+    avoids. Its presence also spreads: new code copies what it finds nearby.
+  fix: |
+    Replace the call with the current API, and keep the old one only behind a compatibility layer that is
+    documented and dated.
+
+- key: QG-HTML-SML-0021
+  name: Disallowed taglibs should not be used
+  languages: [html]
+  category: SML
+  severity: minor
+  effort: 15min
+  tags: [avoid_api, generated]
+  generated: true
+  status: planned
+  message: This API should be replaced by the current alternative.
+  summary: Code calls an API that is unsafe, obsolete or superseded by a better alternative.
+  why: |
+    The API stays available for compatibility, so nothing fails at build time, but it carries behaviour
+    the platform now considers a defect — unchecked input, a weak guarantee, or a cost the replacement
+    avoids. Its presence also spreads: new code copies what it finds nearby.
+  fix: |
+    Replace the call with the current API, and keep the old one only behind a compatibility layer that is
+    documented and dated.
+
+- key: QG-HTML-SML-0022
+  name: Hard-to-read code should be simplified
+  languages: [html]
+  category: SML
+  severity: minor
+  effort: 15min
+  tags: [sml, generated]
+  generated: true
+  status: planned
+  message: This code is harder to read or change than the behaviour requires.
+  summary: The code works but is harder to read or change than the behaviour requires.
+  why: |
+    The intent is buried, duplicated, or spread across places that must stay in sync, so every future
+    change costs more than it should and carries a risk that has nothing to do with the change itself.
+  fix: |
+    Remove what is not used, name what is unclear, and keep one piece of behaviour in one place so the
+    next change touches a single spot.
+
+- key: QG-HTML-BUG-0007
+  name: Image tags should match the behaviour the code describes
+  languages: [html]
+  category: BUG
+  severity: major
+  effort: 15min
+  tags: [bug, generated]
+  generated: true
+  status: planned
+  message: This code does not behave the way it reads.
+  summary: The code does not do what its shape suggests, or fails on ordinary input.
+  why: |
+    Written this way the code works by accident or breaks on values that are perfectly normal, and the
+    mistake is easy to miss in review because the intent reads correctly.
+  fix: |
+    Make the intended behaviour explicit — fix the condition, the operator or the order of operations —
+    and cover the case that used to fail with a test.
+
+- key: QG-HTML-SML-0023
+  name: Style attribute should not be used
+  languages: [html]
+  category: SML
+  severity: minor
+  effort: 15min
+  tags: [avoid_api, generated]
+  generated: true
+  status: planned
+  message: This API should be replaced by the current alternative.
+  summary: Code calls an API that is unsafe, obsolete or superseded by a better alternative.
+  why: |
+    The API stays available for compatibility, so nothing fails at build time, but it carries behaviour
+    the platform now considers a defect — unchecked input, a weak guarantee, or a cost the replacement
+    avoids. Its presence also spreads: new code copies what it finds nearby.
+  fix: |
+    Replace the call with the current API, and keep the old one only behind a compatibility layer that is
+    documented and dated.
+
+- key: QG-HTML-BUG-0008
+  name: Input, select and textarea tags should match the behaviour the code describes
+  languages: [html]
+  category: BUG
+  severity: major
+  effort: 15min
+  tags: [bug, generated]
+  generated: true
+  status: planned
+  message: This code does not behave the way it reads.
+  summary: The code does not do what its shape suggests, or fails on ordinary input.
+  why: |
+    Written this way the code works by accident or breaks on values that are perfectly normal, and the
+    mistake is easy to miss in review because the intent reads correctly.
+  fix: |
+    Make the intended behaviour explicit — fix the condition, the operator or the order of operations —
+    and cover the case that used to fail with a test.
+
+- key: QG-HTML-BUG-0009
+  name: Labels should be declared the way the language intends
+  languages: [html]
+  category: BUG
+  severity: major
+  effort: 15min
+  tags: [declaration, generated]
+  generated: true
+  status: planned
+  message: This declaration exposes more than it should.
+  summary: A declaration uses modifiers, order or visibility that do not match its purpose.
+  why: |
+    Declarations are the contract other code relies on. A wider visibility than needed makes an internal
+    detail part of the public surface, and unusual modifier combinations hide the intent from readers and
+    tools alike.
+  fix: |
+    Declare the narrowest visibility that works, in the conventional modifier order, and mark as final or
+    read-only whatever is not meant to change.
+
+- key: QG-HTML-BUG-0010
+  name: <li> and <dt> item tags should match the behaviour the code describes
+  languages: [html]
+  category: BUG
+  severity: major
+  effort: 15min
+  tags: [bug, generated]
+  generated: true
+  status: planned
+  message: This code does not behave the way it reads.
+  summary: The code does not do what its shape suggests, or fails on ordinary input.
+  why: |
+    Written this way the code works by accident or breaks on values that are perfectly normal, and the
+    mistake is easy to miss in review because the intent reads correctly.
+  fix: |
+    Make the intended behaviour explicit — fix the condition, the operator or the order of operations —
+    and cover the case that used to fail with a test.
+
+- key: QG-HTML-SML-0024
+  name: JSP expressions should not be used
+  languages: [html]
+  category: SML
+  severity: minor
+  effort: 15min
+  tags: [avoid_api, generated]
+  generated: true
+  status: planned
+  message: This API should be replaced by the current alternative.
+  summary: Code calls an API that is unsafe, obsolete or superseded by a better alternative.
+  why: |
+    The API stays available for compatibility, so nothing fails at build time, but it carries behaviour
+    the platform now considers a defect — unchecked input, a weak guarantee, or a cost the replacement
+    avoids. Its presence also spreads: new code copies what it finds nearby.
+  fix: |
+    Replace the call with the current API, and keep the old one only behind a compatibility layer that is
+    documented and dated.
+
+- key: QG-HTML-SML-0025
+  name: Some Java packages or classes should not be used
+  languages: [html]
+  category: SML
+  severity: minor
+  effort: 15min
+  tags: [avoid_api, generated]
+  generated: true
+  status: planned
+  message: This API should be replaced by the current alternative.
+  summary: Code calls an API that is unsafe, obsolete or superseded by a better alternative.
+  why: |
+    The API stays available for compatibility, so nothing fails at build time, but it carries behaviour
+    the platform now considers a defect — unchecked input, a weak guarantee, or a cost the replacement
+    avoids. Its presence also spreads: new code copies what it finds nearby.
+  fix: |
+    Replace the call with the current API, and keep the old one only behind a compatibility layer that is
+    documented and dated.
+
+- key: QG-HTML-SML-0026
+  name: Links with identical texts should not be duplicated
+  languages: [html]
+  category: SML
+  severity: minor
+  effort: 15min
+  tags: [duplication, generated]
+  generated: true
+  status: planned
+  message: This code or value is duplicated.
+  summary: The same code or value appears more than once.
+  why: |
+    Copies drift apart the first time one of them is fixed, and nothing links them, so the bug is fixed
+    in one place and stays in the other. Readers also cannot tell which copy is authoritative.
+  fix: |
+    Keep one definition and reference it from the other places, or extract the shared part into a named
+    function or constant.
+
+- key: QG-HTML-SML-0027
+  name: Links should be simplified
+  languages: [html]
+  category: SML
+  severity: minor
+  effort: 15min
+  tags: [sml, generated]
+  generated: true
+  status: planned
+  message: This code is harder to read or change than the behaviour requires.
+  summary: The code works but is harder to read or change than the behaviour requires.
+  why: |
+    The intent is buried, duplicated, or spread across places that must stay in sync, so every future
+    change costs more than it should and carries a risk that has nothing to do with the change itself.
+  fix: |
+    Remove what is not used, name what is unclear, and keep one piece of behaviour in one place so the
+    next change touches a single spot.
+
+- key: QG-HTML-SML-0028
+  name: Links should be simplified
+  languages: [html]
+  category: SML
+  severity: minor
+  effort: 15min
+  tags: [sml, generated]
+  generated: true
+  status: planned
+  message: This code is harder to read or change than the behaviour requires.
+  summary: The code works but is harder to read or change than the behaviour requires.
+  why: |
+    The intent is buried, duplicated, or spread across places that must stay in sync, so every future
+    change costs more than it should and carries a risk that has nothing to do with the change itself.
+  fix: |
+    Remove what is not used, name what is unclear, and keep one piece of behaviour in one place so the
+    next change touches a single spot.
+
+- key: QG-HTML-SML-0029
+  name: JavaScript scriptlets should stay within a size that can be reviewed
+  languages: [html]
+  category: SML
+  severity: minor
+  effort: 15min
+  tags: [threshold, generated]
+  generated: true
+  status: planned
+  message: This construct is larger or more complex than the limit allows.
+  summary: A construct exceeds the size or complexity a reader can follow at once.
+  why: |
+    Past a certain size, understanding one line means reconstructing everything around it, and testing
+    the interesting case means going through the whole entry point. Growth is gradual, so the limit is
+    the only thing that keeps the cost visible.
+  fix: |
+    Split along the responsibilities the code has accumulated: extract the sections that already have a
+    name, and keep the original as the sequence of those steps.
+
+- key: QG-HTML-SML-0030
+  name: Meta tags should not be used
+  languages: [html]
+  category: SML
+  severity: minor
+  effort: 15min
+  tags: [avoid_api, generated]
+  generated: true
+  status: planned
+  message: This API should be replaced by the current alternative.
+  summary: Code calls an API that is unsafe, obsolete or superseded by a better alternative.
+  why: |
+    The API stays available for compatibility, so nothing fails at build time, but it carries behaviour
+    the platform now considers a defect — unchecked input, a weak guarantee, or a cost the replacement
+    avoids. Its presence also spreads: new code copies what it finds nearby.
+  fix: |
+    Replace the call with the current API, and keep the old one only behind a compatibility layer that is
+    documented and dated.
+
+- key: QG-HTML-BUG-0011
+  name: Mouse events should match the behaviour the code describes
+  languages: [html]
+  category: BUG
+  severity: major
+  effort: 15min
+  tags: [bug, generated]
+  generated: true
+  status: planned
+  message: This code does not behave the way it reads.
+  summary: The code does not do what its shape suggests, or fails on ordinary input.
+  why: |
+    Written this way the code works by accident or breaks on values that are perfectly normal, and the
+    mistake is easy to miss in review because the intent reads correctly.
+  fix: |
+    Make the intended behaviour explicit — fix the condition, the operator or the order of operations —
+    and cover the case that used to fail with a test.
+
+- key: QG-HTML-SML-0031
+  name: Multiple page directives should not be used
+  languages: [html]
+  category: SML
+  severity: minor
+  effort: 15min
+  tags: [avoid_api, generated]
+  generated: true
+  status: planned
+  message: This API should be replaced by the current alternative.
+  summary: Code calls an API that is unsafe, obsolete or superseded by a better alternative.
+  why: |
+    The API stays available for compatibility, so nothing fails at build time, but it carries behaviour
+    the platform now considers a defect — unchecked input, a weak guarantee, or a cost the replacement
+    avoids. Its presence also spreads: new code copies what it finds nearby.
+  fix: |
+    Replace the call with the current API, and keep the old one only behind a compatibility layer that is
+    documented and dated.
+
+- key: QG-HTML-SML-0032
+  name: Heading tags should be replaced by the recommended alternative
+  languages: [html]
+  category: SML
+  severity: minor
+  effort: 15min
+  tags: [prefer_api, generated]
+  generated: true
+  status: planned
+  message: The platform offers a clearer or safer construct for this.
+  summary: A construct is used where the platform offers one that is clearer or safer.
+  why: |
+    The alternative exists because it removes a class of mistake — a conversion, an allocation, an edge
+    case — that the current form leaves to the caller. Using the older form means every reader has to
+    check that the edge case was handled.
+  fix: |
+    Switch to the recommended construct; the behaviour is the same in the normal case and defined in the
+    cases the old form got wrong.
+
+- key: QG-HTML-SML-0033
+  name: Favicons should be replaced by the recommended alternative
+  languages: [html]
+  category: SML
+  severity: minor
+  effort: 15min
+  tags: [prefer_api, generated]
+  generated: true
+  status: planned
+  message: The platform offers a clearer or safer construct for this.
+  summary: A construct is used where the platform offers one that is clearer or safer.
+  why: |
+    The alternative exists because it removes a class of mistake — a conversion, an allocation, an edge
+    case — that the current form leaves to the caller. Using the older form means every reader has to
+    check that the edge case was handled.
+  fix: |
+    Switch to the recommended construct; the behaviour is the same in the normal case and defined in the
+    cases the old form got wrong.
+
+- key: QG-HTML-BUG-0012
+  name: <title> should match the behaviour the code describes
+  languages: [html]
+  category: BUG
+  severity: major
+  effort: 15min
+  tags: [bug, generated]
+  generated: true
+  status: planned
+  message: This code does not behave the way it reads.
+  summary: The code does not do what its shape suggests, or fails on ordinary input.
+  why: |
+    Written this way the code works by accident or breaks on values that are perfectly normal, and the
+    mistake is easy to miss in review because the intent reads correctly.
+  fix: |
+    Make the intended behaviour explicit — fix the condition, the operator or the order of operations —
+    and cover the case that used to fail with a test.
+
+- key: QG-HTML-SML-0034
+  name: Presence of forbidden parent element should be resolved rather than left in the code
+  languages: [html]
+  category: SML
+  severity: minor
+  effort: 15min
+  tags: [marker, generated]
+  generated: true
+  status: planned
+  message: This marker records work that was left open.
+  summary: A marker in the source records work or a decision that was left open.
+  why: |
+    Markers are written for a future reader who never comes back to them. Nobody can tell whether the
+    note is still relevant, who owns it, or whether the missing work has since become a defect.
+  fix: |
+    Do the work, or move it to the issue tracker and reference the ticket in the marker so the deadline
+    lives somewhere that gets reviewed.
+
+- key: QG-HTML-SML-0035
+  name: Required parent elements should be resolved rather than left in the code
+  languages: [html]
+  category: SML
+  severity: minor
+  effort: 15min
+  tags: [marker, generated]
+  generated: true
+  status: planned
+  message: This marker records work that was left open.
+  summary: A marker in the source records work or a decision that was left open.
+  why: |
+    Markers are written for a future reader who never comes back to them. Nobody can tell whether the
+    note is still relevant, who owns it, or whether the missing work has since become a defect.
+  fix: |
+    Do the work, or move it to the issue tracker and reference the ticket in the marker so the deadline
+    lives somewhere that gets reviewed.
+
+- key: QG-HTML-SML-0036
+  name: Required attributes should be resolved rather than left in the code
+  languages: [html]
+  category: SML
+  severity: minor
+  effort: 15min
+  tags: [marker, generated]
+  generated: true
+  status: planned
+  message: This marker records work that was left open.
+  summary: A marker in the source records work or a decision that was left open.
+  why: |
+    Markers are written for a future reader who never comes back to them. Nobody can tell whether the
+    note is still relevant, who owns it, or whether the missing work has since become a defect.
+  fix: |
+    Do the work, or move it to the issue tracker and reference the ticket in the marker so the deadline
+    lives somewhere that gets reviewed.
+
+- key: QG-HTML-SML-0037
+  name: Breaches of an XPath rule should be resolved rather than left in the code
+  languages: [html]
+  category: SML
+  severity: minor
+  effort: 15min
+  tags: [marker, generated]
+  generated: true
+  status: planned
+  message: This marker records work that was left open.
+  summary: A marker in the source records work or a decision that was left open.
+  why: |
+    Markers are written for a future reader who never comes back to them. Nobody can tell whether the
+    note is still relevant, who owns it, or whether the missing work has since become a defect.
+  fix: |
+    Do the work, or move it to the issue tracker and reference the ticket in the marker so the deadline
+    lives somewhere that gets reviewed.
+
+- key: QG-HTML-SML-0038
+  name: Markers left in the code should be resolved rather than left in the code
+  languages: [html]
+  category: SML
+  severity: minor
+  effort: 15min
+  tags: [marker, generated]
+  generated: true
+  status: planned
+  message: This marker records work that was left open.
+  summary: A marker in the source records work or a decision that was left open.
+  why: |
+    Markers are written for a future reader who never comes back to them. Nobody can tell whether the
+    note is still relevant, who owns it, or whether the missing work has since become a defect.
+  fix: |
+    Do the work, or move it to the issue tracker and reference the ticket in the marker so the deadline
+    lives somewhere that gets reviewed.
+
+- key: QG-HTML-SML-0039
+  name: Attributes deprecated in HTML5 should not be used
+  languages: [html]
+  category: SML
+  severity: minor
+  effort: 15min
+  tags: [avoid_api, generated]
+  generated: true
+  status: planned
+  message: This API should be replaced by the current alternative.
+  summary: Code calls an API that is unsafe, obsolete or superseded by a better alternative.
+  why: |
+    The API stays available for compatibility, so nothing fails at build time, but it carries behaviour
+    the platform now considers a defect — unchecked input, a weak guarantee, or a cost the replacement
+    avoids. Its presence also spreads: new code copies what it finds nearby.
+  fix: |
+    Replace the call with the current API, and keep the old one only behind a compatibility layer that is
+    documented and dated.
+
+- key: QG-HTML-SML-0040
+  name: Web pages should be simplified
+  languages: [html]
+  category: SML
+  severity: minor
+  effort: 15min
+  tags: [sml, generated]
+  generated: true
+  status: planned
+  message: This code is harder to read or change than the behaviour requires.
+  summary: The code works but is harder to read or change than the behaviour requires.
+  why: |
+    The intent is buried, duplicated, or spread across places that must stay in sync, so every future
+    change costs more than it should and carries a risk that has nothing to do with the change itself.
+  fix: |
+    Remove what is not used, name what is unclear, and keep one piece of behaviour in one place so the
+    next change touches a single spot.
+
+- key: QG-HTML-SML-0041
+  name: Videos should be simplified
+  languages: [html]
+  category: SML
+  severity: minor
+  effort: 15min
+  tags: [sml, generated]
+  generated: true
+  status: planned
+  message: This code is harder to read or change than the behaviour requires.
+  summary: The code works but is harder to read or change than the behaviour requires.
+  why: |
+    The intent is buried, duplicated, or spread across places that must stay in sync, so every future
+    change costs more than it should and carries a risk that has nothing to do with the change itself.
+  fix: |
+    Remove what is not used, name what is unclear, and keep one piece of behaviour in one place so the
+    next change touches a single spot.
+
+- key: QG-HTML-BUG-0013
+  name: <script>...</script> elements should not be nested inside another one
+  languages: [html]
+  category: BUG
+  severity: major
+  effort: 15min
+  tags: [nesting, generated]
+  generated: true
+  status: planned
+  message: This construct is nested inside another of the same kind.
+  summary: A construct is nested inside another of the same kind.
+  why: |
+    The number of paths a reader has to consider becomes the product of the two, and the inner construct
+    is easy to miss when scanning the outer one. Changes then land in the wrong level.
+  fix: |
+    Extract the inner construct into a function named after the decision it makes, and call it from the
+    outer one.
+
+- key: QG-HTML-BUG-0014
+  name: <html> or <body> element should match the behaviour the code describes
+  languages: [html]
+  category: BUG
+  severity: major
+  effort: 15min
+  tags: [bug, generated]
+  generated: true
+  status: planned
+  message: This code does not behave the way it reads.
+  summary: The code does not do what its shape suggests, or fails on ordinary input.
+  why: |
+    Written this way the code works by accident or breaks on values that are perfectly normal, and the
+    mistake is easy to miss in review because the intent reads correctly.
+  fix: |
+    Make the intended behaviour explicit — fix the condition, the operator or the order of operations —
+    and cover the case that used to fail with a test.
+
+- key: QG-HTML-SML-0042
+  name: Aria-label or aria-labelledby attributes should be replaced by the recommended alternative
+  languages: [html]
+  category: SML
+  severity: minor
+  effort: 15min
+  tags: [prefer_api, generated]
+  generated: true
+  status: planned
+  message: The platform offers a clearer or safer construct for this.
+  summary: A construct is used where the platform offers one that is clearer or safer.
+  why: |
+    The alternative exists because it removes a class of mistake — a conversion, an allocation, an edge
+    case — that the current form leaves to the caller. Using the older form means every reader has to
+    check that the edge case was handled.
+  fix: |
+    Switch to the recommended construct; the behaviour is the same in the normal case and defined in the
+    cases the old form got wrong.
+
+- key: QG-HTML-SML-0043
+  name: HTML <table> should not be used
+  languages: [html]
+  category: SML
+  severity: minor
+  effort: 15min
+  tags: [avoid_api, generated]
+  generated: true
+  status: planned
+  message: This API should be replaced by the current alternative.
+  summary: Code calls an API that is unsafe, obsolete or superseded by a better alternative.
+  why: |
+    The API stays available for compatibility, so nothing fails at build time, but it carries behaviour
+    the platform now considers a defect — unchecked input, a weak guarantee, or a cost the replacement
+    avoids. Its presence also spreads: new code copies what it finds nearby.
+  fix: |
+    Replace the call with the current API, and keep the old one only behind a compatibility layer that is
+    documented and dated.
+
+- key: QG-HTML-BUG-0016
+  name: Tables used for layout should match the behaviour the code describes
+  languages: [html]
+  category: BUG
+  severity: major
+  effort: 15min
+  tags: [bug, generated]
+  generated: true
+  status: planned
+  message: This code does not behave the way it reads.
+  summary: The code does not do what its shape suggests, or fails on ordinary input.
+  why: |
+    Written this way the code works by accident or breaks on values that are perfectly normal, and the
+    mistake is easy to miss in review because the intent reads correctly.
+  fix: |
+    Make the intended behaviour explicit — fix the condition, the operator or the order of operations —
+    and cover the case that used to fail with a test.
+
+- key: QG-HTML-BUG-0017
+  name: Table cells should match the behaviour the code describes
+  languages: [html]
+  category: BUG
+  severity: major
+  effort: 15min
+  tags: [bug, generated]
+  generated: true
+  status: planned
+  message: This code does not behave the way it reads.
+  summary: The code does not do what its shape suggests, or fails on ordinary input.
+  why: |
+    Written this way the code works by accident or breaks on values that are perfectly normal, and the
+    mistake is easy to miss in review because the intent reads correctly.
+  fix: |
+    Make the intended behaviour explicit — fix the condition, the operator or the order of operations —
+    and cover the case that used to fail with a test.
+
+- key: QG-HTML-SML-0044
+  name: <object> tags should be simplified
+  languages: [html]
+  category: SML
+  severity: minor
+  effort: 15min
+  tags: [sml, generated]
+  generated: true
+  status: planned
+  message: This code is harder to read or change than the behaviour requires.
+  summary: The code works but is harder to read or change than the behaviour requires.
+  why: |
+    The intent is buried, duplicated, or spread across places that must stay in sync, so every future
+    change costs more than it should and carries a risk that has nothing to do with the change itself.
+  fix: |
+    Remove what is not used, name what is unclear, and keep one piece of behaviour in one place so the
+    next change touches a single spot.
+
+- key: QG-HTML-SEC-0007
+  name: Remote artifacts should not be used
+  languages: [html]
+  category: SEC
+  severity: critical
+  effort: 15min
+  tags: [avoid_api, generated]
+  generated: true
+  status: planned
+  message: This API should be replaced by the current alternative.
+  summary: Code calls an API that is unsafe, obsolete or superseded by a better alternative.
+  why: |
+    The API stays available for compatibility, so nothing fails at build time, but it carries behaviour
+    the platform now considers a defect — unchecked input, a weak guarantee, or a cost the replacement
+    avoids. Its presence also spreads: new code copies what it finds nearby.
+  fix: |
+    Replace the call with the current API, and keep the old one only behind a compatibility layer that is
+    documented and dated.
+
+- key: QG-HTML-SML-0045
+  name: ARIA properties in DOM elements should be simplified
+  languages: [html]
+  category: SML
+  severity: minor
+  effort: 15min
+  tags: [sml, generated]
+  generated: true
+  status: planned
+  message: This code is harder to read or change than the behaviour requires.
+  summary: The code works but is harder to read or change than the behaviour requires.
+  why: |
+    The intent is buried, duplicated, or spread across places that must stay in sync, so every future
+    change costs more than it should and carries a risk that has nothing to do with the change itself.
+  fix: |
+    Remove what is not used, name what is unclear, and keep one piece of behaviour in one place so the
+    next change touches a single spot.
+
+- key: QG-HTML-SML-0046
+  name: DOM elements with ARIA roles should be simplified
+  languages: [html]
+  category: SML
+  severity: minor
+  effort: 15min
+  tags: [sml, generated]
+  generated: true
+  status: planned
+  message: This code is harder to read or change than the behaviour requires.
+  summary: The code works but is harder to read or change than the behaviour requires.
+  why: |
+    The intent is buried, duplicated, or spread across places that must stay in sync, so every future
+    change costs more than it should and carries a risk that has nothing to do with the change itself.
+  fix: |
+    Remove what is not used, name what is unclear, and keep one piece of behaviour in one place so the
+    next change touches a single spot.
+
+- key: QG-HTML-SML-0047
+  name: DOM elements with ARIA role should be simplified
+  languages: [html]
+  category: SML
+  severity: minor
+  effort: 15min
+  tags: [sml, generated]
+  generated: true
+  status: planned
+  message: This code is harder to read or change than the behaviour requires.
+  summary: The code works but is harder to read or change than the behaviour requires.
+  why: |
+    The intent is buried, duplicated, or spread across places that must stay in sync, so every future
+    change costs more than it should and carries a risk that has nothing to do with the change itself.
+  fix: |
+    Remove what is not used, name what is unclear, and keep one piece of behaviour in one place so the
+    next change touches a single spot.
+
+- key: QG-HTML-SML-0048
+  name: Tag over ARIA role should be simplified
+  languages: [html]
+  category: SML
+  severity: minor
+  effort: 15min
+  tags: [sml, generated]
+  generated: true
+  status: planned
+  message: This code is harder to read or change than the behaviour requires.
+  summary: The code works but is harder to read or change than the behaviour requires.
+  why: |
+    The intent is buried, duplicated, or spread across places that must stay in sync, so every future
+    change costs more than it should and carries a risk that has nothing to do with the change itself.
+  fix: |
+    Remove what is not used, name what is unclear, and keep one piece of behaviour in one place so the
+    next change touches a single spot.
+
+- key: QG-HTML-SML-0049
+  name: DOM elements with ARIA roles should be simplified
+  languages: [html]
+  category: SML
+  severity: minor
+  effort: 15min
+  tags: [sml, generated]
+  generated: true
+  status: planned
+  message: This code is harder to read or change than the behaviour requires.
+  summary: The code works but is harder to read or change than the behaviour requires.
+  why: |
+    The intent is buried, duplicated, or spread across places that must stay in sync, so every future
+    change costs more than it should and carries a risk that has nothing to do with the change itself.
+  fix: |
+    Remove what is not used, name what is unclear, and keep one piece of behaviour in one place so the
+    next change touches a single spot.
+
+- key: QG-HTML-SML-0050
+  name: No redundant ARIA role should be simplified
+  languages: [html]
+  category: SML
+  severity: minor
+  effort: 15min
+  tags: [sml, generated]
+  generated: true
+  status: planned
+  message: This code is harder to read or change than the behaviour requires.
+  summary: The code works but is harder to read or change than the behaviour requires.
+  why: |
+    The intent is buried, duplicated, or spread across places that must stay in sync, so every future
+    change costs more than it should and carries a risk that has nothing to do with the change itself.
+  fix: |
+    Remove what is not used, name what is unclear, and keep one piece of behaviour in one place so the
+    next change touches a single spot.
+
+- key: QG-HTML-SML-0051
+  name: DOM elements with the `aria-activedescendant` property should be simplified
+  languages: [html]
+  category: SML
+  severity: minor
+  effort: 15min
+  tags: [sml, generated]
+  generated: true
+  status: planned
+  message: This code is harder to read or change than the behaviour requires.
+  summary: The code works but is harder to read or change than the behaviour requires.
+  why: |
+    The intent is buried, duplicated, or spread across places that must stay in sync, so every future
+    change costs more than it should and carries a risk that has nothing to do with the change itself.
+  fix: |
+    Remove what is not used, name what is unclear, and keep one piece of behaviour in one place so the
+    next change touches a single spot.
+
+- key: QG-HTML-SML-0052
+  name: Hard-to-read code should be simplified
+  languages: [html]
+  category: SML
+  severity: minor
+  effort: 15min
+  tags: [sml, generated]
+  generated: true
+  status: planned
+  message: This code is harder to read or change than the behaviour requires.
+  summary: The code works but is harder to read or change than the behaviour requires.
+  why: |
+    The intent is buried, duplicated, or spread across places that must stay in sync, so every future
+    change costs more than it should and carries a risk that has nothing to do with the change itself.
+  fix: |
+    Remove what is not used, name what is unclear, and keep one piece of behaviour in one place so the
+    next change touches a single spot.
+
+- key: QG-HTML-SML-0053
+  name: Focusable elements should be simplified
+  languages: [html]
+  category: SML
+  severity: minor
+  effort: 15min
+  tags: [sml, generated]
+  generated: true
+  status: planned
+  message: This code is harder to read or change than the behaviour requires.
+  summary: The code works but is harder to read or change than the behaviour requires.
+  why: |
+    The intent is buried, duplicated, or spread across places that must stay in sync, so every future
+    change costs more than it should and carries a risk that has nothing to do with the change itself.
+  fix: |
+    Remove what is not used, name what is unclear, and keep one piece of behaviour in one place so the
+    next change touches a single spot.
+
+- key: QG-HTML-SML-0054
+  name: Anchors should be simplified
+  languages: [html]
+  category: SML
+  severity: minor
+  effort: 15min
+  tags: [sml, generated]
+  generated: true
+  status: planned
+  message: This code is harder to read or change than the behaviour requires.
+  summary: The code works but is harder to read or change than the behaviour requires.
+  why: |
+    The intent is buried, duplicated, or spread across places that must stay in sync, so every future
+    change costs more than it should and carries a risk that has nothing to do with the change itself.
+  fix: |
+    Remove what is not used, name what is unclear, and keep one piece of behaviour in one place so the
+    next change touches a single spot.
+
+- key: QG-HTML-SML-0055
+  name: DOM elements should be simplified
+  languages: [html]
+  category: SML
+  severity: minor
+  effort: 15min
+  tags: [sml, generated]
+  generated: true
+  status: planned
+  message: This code is harder to read or change than the behaviour requires.
+  summary: The code works but is harder to read or change than the behaviour requires.
+  why: |
+    The intent is buried, duplicated, or spread across places that must stay in sync, so every future
+    change costs more than it should and carries a risk that has nothing to do with the change itself.
+  fix: |
+    Remove what is not used, name what is unclear, and keep one piece of behaviour in one place so the
+    next change touches a single spot.
+
+- key: QG-HTML-SML-0056
+  name: TabIndex values should be simplified
+  languages: [html]
+  category: SML
+  severity: minor
+  effort: 15min
+  tags: [sml, generated]
+  generated: true
+  status: planned
+  message: This code is harder to read or change than the behaviour requires.
+  summary: The code works but is harder to read or change than the behaviour requires.
+  why: |
+    The intent is buried, duplicated, or spread across places that must stay in sync, so every future
+    change costs more than it should and carries a risk that has nothing to do with the change itself.
+  fix: |
+    Remove what is not used, name what is unclear, and keep one piece of behaviour in one place so the
+    next change touches a single spot.
+
+- key: QG-HTML-SML-0057
+  name: Non-interactive DOM elements should be simplified
+  languages: [html]
+  category: SML
+  severity: minor
+  effort: 15min
+  tags: [sml, generated]
+  generated: true
+  status: planned
+  message: This code is harder to read or change than the behaviour requires.
+  summary: The code works but is harder to read or change than the behaviour requires.
+  why: |
+    The intent is buried, duplicated, or spread across places that must stay in sync, so every future
+    change costs more than it should and carries a risk that has nothing to do with the change itself.
+  fix: |
+    Remove what is not used, name what is unclear, and keep one piece of behaviour in one place so the
+    next change touches a single spot.
+
+- key: QG-HTML-SML-0058
+  name: Interactive DOM elements should be simplified
+  languages: [html]
+  category: SML
+  severity: minor
+  effort: 15min
+  tags: [sml, generated]
+  generated: true
+  status: planned
+  message: This code is harder to read or change than the behaviour requires.
+  summary: The code works but is harder to read or change than the behaviour requires.
+  why: |
+    The intent is buried, duplicated, or spread across places that must stay in sync, so every future
+    change costs more than it should and carries a risk that has nothing to do with the change itself.
+  fix: |
+    Remove what is not used, name what is unclear, and keep one piece of behaviour in one place so the
+    next change touches a single spot.
+
+- key: QG-HTML-SML-0059
+  name: Anchor tags should not be used
+  languages: [html]
+  category: SML
+  severity: minor
+  effort: 15min
+  tags: [avoid_api, generated]
+  generated: true
+  status: planned
+  message: This API should be replaced by the current alternative.
+  summary: Code calls an API that is unsafe, obsolete or superseded by a better alternative.
+  why: |
+    The API stays available for compatibility, so nothing fails at build time, but it carries behaviour
+    the platform now considers a defect — unchecked input, a weak guarantee, or a cost the replacement
+    avoids. Its presence also spreads: new code copies what it finds nearby.
+  fix: |
+    Replace the call with the current API, and keep the old one only behind a compatibility layer that is
+    documented and dated.
+
+- key: QG-HTML-SML-0060
+  name: Non-interactive DOM elements should be simplified
+  languages: [html]
+  category: SML
+  severity: minor
+  effort: 15min
+  tags: [sml, generated]
+  generated: true
+  status: planned
+  message: This code is harder to read or change than the behaviour requires.
+  summary: The code works but is harder to read or change than the behaviour requires.
+  why: |
+    The intent is buried, duplicated, or spread across places that must stay in sync, so every future
+    change costs more than it should and carries a risk that has nothing to do with the change itself.
+  fix: |
+    Remove what is not used, name what is unclear, and keep one piece of behaviour in one place so the
+    next change touches a single spot.
+
+- key: QG-HTML-SML-0061
+  name: DOM elements should be simplified
+  languages: [html]
+  category: SML
+  severity: minor
+  effort: 15min
+  tags: [sml, generated]
+  generated: true
+  status: planned
+  message: This code is harder to read or change than the behaviour requires.
+  summary: The code works but is harder to read or change than the behaviour requires.
+  why: |
+    The intent is buried, duplicated, or spread across places that must stay in sync, so every future
+    change costs more than it should and carries a risk that has nothing to do with the change itself.
+  fix: |
+    Remove what is not used, name what is unclear, and keep one piece of behaviour in one place so the
+    next change touches a single spot.
+
+- key: QG-HTML-SML-0062
+  name: Non-interactive elements shouldnt have event handlers should be simplified
+  languages: [html]
+  category: SML
+  severity: minor
+  effort: 15min
+  tags: [sml, generated]
+  generated: true
+  status: planned
+  message: This code is harder to read or change than the behaviour requires.
+  summary: The code works but is harder to read or change than the behaviour requires.
+  why: |
+    The intent is buried, duplicated, or spread across places that must stay in sync, so every future
+    change costs more than it should and carries a risk that has nothing to do with the change itself.
+  fix: |
+    Remove what is not used, name what is unclear, and keep one piece of behaviour in one place so the
+    next change touches a single spot.
+
+- key: QG-HTML-SML-0063
+  name: Non-interactive DOM elements should be simplified
+  languages: [html]
+  category: SML
+  severity: minor
+  effort: 15min
+  tags: [sml, generated]
+  generated: true
+  status: planned
+  message: This code is harder to read or change than the behaviour requires.
+  summary: The code works but is harder to read or change than the behaviour requires.
+  why: |
+    The intent is buried, duplicated, or spread across places that must stay in sync, so every future
+    change costs more than it should and carries a risk that has nothing to do with the change itself.
+  fix: |
+    Remove what is not used, name what is unclear, and keep one piece of behaviour in one place so the
+    next change touches a single spot.
+
+- key: QG-HTML-SML-0064
+  name: Heading elements should be simplified
+  languages: [html]
+  category: SML
+  severity: minor
+  effort: 15min
+  tags: [sml, generated]
+  generated: true
+  status: planned
+  message: This code is harder to read or change than the behaviour requires.
+  summary: The code works but is harder to read or change than the behaviour requires.
+  why: |
+    The intent is buried, duplicated, or spread across places that must stay in sync, so every future
+    change costs more than it should and carries a risk that has nothing to do with the change itself.
+  fix: |
+    Remove what is not used, name what is unclear, and keep one piece of behaviour in one place so the
+    next change touches a single spot.
+
+- key: QG-HTML-SML-0066
+  name: Elements with an interactive role should be simplified
+  languages: [html]
+  category: SML
+  severity: minor
+  effort: 15min
+  tags: [sml, generated]
+  generated: true
+  status: planned
+  message: This code is harder to read or change than the behaviour requires.
+  summary: The code works but is harder to read or change than the behaviour requires.
+  why: |
+    The intent is buried, duplicated, or spread across places that must stay in sync, so every future
+    change costs more than it should and carries a risk that has nothing to do with the change itself.
+  fix: |
+    Remove what is not used, name what is unclear, and keep one piece of behaviour in one place so the
+    next change touches a single spot.
+
+- key: QG-HTML-SEC-0008
+  name: Sandboxing should keep the platform protection enabled
+  languages: [html]
+  category: SEC
+  severity: critical
+  effort: 15min
+  tags: [protection_off, generated]
+  generated: true
+  status: planned
+  message: A protection provided by the platform is switched off here.
+  summary: A safety mechanism the platform provides is switched off.
+  why: |
+    The setting exists because the default behaviour blocks a known class of attack. Turning it off is
+    usually done to make one case work and then applies everywhere, so the whole application loses the
+    protection while nothing in the code says so.
+  fix: |
+    Restore the default and solve the original problem in a narrower way — scope the exception to the
+    single endpoint or value that needs it, and document why it is safe there.
+
+- key: QG-HTML-SEC-0009
+  name: WebSecurity should keep the platform protection enabled
+  languages: [html]
+  category: SEC
+  severity: critical
+  effort: 15min
+  tags: [protection_off, generated]
+  generated: true
+  status: planned
+  message: A protection provided by the platform is switched off here.
+  summary: A safety mechanism the platform provides is switched off.
+  why: |
+    The setting exists because the default behaviour blocks a known class of attack. Turning it off is
+    usually done to make one case work and then applies everywhere, so the whole application loses the
+    protection while nothing in the code says so.
+  fix: |
+    Restore the default and solve the original problem in a narrower way — scope the exception to the
+    single endpoint or value that needs it, and document why it is safe there.
+
+- key: QG-HTML-SML-0067
+  name: Meta viewport tags should be simplified
+  languages: [html]
+  category: SML
+  severity: minor
+  effort: 15min
+  tags: [sml, generated]
+  generated: true
+  status: planned
+  message: This code is harder to read or change than the behaviour requires.
+  summary: The code works but is harder to read or change than the behaviour requires.
+  why: |
+    The intent is buried, duplicated, or spread across places that must stay in sync, so every future
+    change costs more than it should and carries a risk that has nothing to do with the change itself.
+  fix: |
+    Remove what is not used, name what is unclear, and keep one piece of behaviour in one place so the
+    next change touches a single spot.
+
+- key: QG-HTML-SML-0068
+  name: Visible label text should be simplified
+  languages: [html]
+  category: SML
+  severity: minor
+  effort: 15min
+  tags: [sml, generated]
+  generated: true
+  status: planned
+  message: This code is harder to read or change than the behaviour requires.
+  summary: The code works but is harder to read or change than the behaviour requires.
+  why: |
+    The intent is buried, duplicated, or spread across places that must stay in sync, so every future
+    change costs more than it should and carries a risk that has nothing to do with the change itself.
+  fix: |
+    Remove what is not used, name what is unclear, and keep one piece of behaviour in one place so the
+    next change touches a single spot.
+
+- key: QG-HTML-SML-0069
+  name: Audio and video elements should be simplified
+  languages: [html]
+  category: SML
+  severity: minor
+  effort: 15min
+  tags: [sml, generated]
+  generated: true
+  status: planned
+  message: This code is harder to read or change than the behaviour requires.
+  summary: The code works but is harder to read or change than the behaviour requires.
+  why: |
+    The intent is buried, duplicated, or spread across places that must stay in sync, so every future
+    change costs more than it should and carries a risk that has nothing to do with the change itself.
+  fix: |
+    Remove what is not used, name what is unclear, and keep one piece of behaviour in one place so the
+    next change touches a single spot.
+
+- key: QG-HTML-BUG-0018
+  name: HTML elements should match the behaviour the code describes
+  languages: [html]
+  category: BUG
+  severity: major
+  effort: 15min
+  tags: [bug, generated]
+  generated: true
+  status: planned
+  message: This code does not behave the way it reads.
+  summary: The code does not do what its shape suggests, or fails on ordinary input.
+  why: |
+    Written this way the code works by accident or breaks on values that are perfectly normal, and the
+    mistake is easy to miss in review because the intent reads correctly.
+  fix: |
+    Make the intended behaviour explicit — fix the condition, the operator or the order of operations —
+    and cover the case that used to fail with a test.
+
+- key: QG-HTML-SML-0070
+  name: Required attributes should be resolved rather than left in the code
+  languages: [html]
+  category: SML
+  severity: minor
+  effort: 15min
+  tags: [marker, generated]
+  generated: true
+  status: planned
+  message: This marker records work that was left open.
+  summary: A marker in the source records work or a decision that was left open.
+  why: |
+    Markers are written for a future reader who never comes back to them. Nobody can tell whether the
+    note is still relevant, who owns it, or whether the missing work has since become a defect.
+  fix: |
+    Do the work, or move it to the issue tracker and reference the ticket in the marker so the deadline
+    lives somewhere that gets reviewed.
+
+- key: QG-HTML-SML-0071
+  name: Disallowed elements should be resolved rather than left in the code
+  languages: [html]
+  category: SML
+  severity: minor
+  effort: 15min
+  tags: [marker, generated]
+  generated: true
+  status: planned
+  message: This marker records work that was left open.
+  summary: A marker in the source records work or a decision that was left open.
+  why: |
+    Markers are written for a future reader who never comes back to them. Nobody can tell whether the
+    note is still relevant, who owns it, or whether the missing work has since become a defect.
+  fix: |
+    Do the work, or move it to the issue tracker and reference the ticket in the marker so the deadline
+    lives somewhere that gets reviewed.
+
+- key: QG-HTML-SML-0072
+  name: Hard-to-read code should be simplified
+  languages: [html]
+  category: SML
+  severity: minor
+  effort: 15min
+  tags: [sml, generated]
+  generated: true
+  status: planned
+  message: This code is harder to read or change than the behaviour requires.
+  summary: The code works but is harder to read or change than the behaviour requires.
+  why: |
+    The intent is buried, duplicated, or spread across places that must stay in sync, so every future
+    change costs more than it should and carries a risk that has nothing to do with the change itself.
+  fix: |
+    Remove what is not used, name what is unclear, and keep one piece of behaviour in one place so the
+    next change touches a single spot.
+
+- key: QG-HTML-SML-0073
+  name: Srcset entries should be simplified
+  languages: [html]
+  category: SML
+  severity: minor
+  effort: 15min
+  tags: [sml, generated]
+  generated: true
+  status: planned
+  message: This code is harder to read or change than the behaviour requires.
+  summary: The code works but is harder to read or change than the behaviour requires.
+  why: |
+    The intent is buried, duplicated, or spread across places that must stay in sync, so every future
+    change costs more than it should and carries a risk that has nothing to do with the change itself.
+  fix: |
+    Remove what is not used, name what is unclear, and keep one piece of behaviour in one place so the
+    next change touches a single spot.
+
+- key: QG-HTML-SML-0074
+  name: <form> tags should be simplified
+  languages: [html]
+  category: SML
+  severity: minor
+  effort: 15min
+  tags: [sml, generated]
+  generated: true
+  status: planned
+  message: This code is harder to read or change than the behaviour requires.
+  summary: The code works but is harder to read or change than the behaviour requires.
+  why: |
+    The intent is buried, duplicated, or spread across places that must stay in sync, so every future
+    change costs more than it should and carries a risk that has nothing to do with the change itself.
+  fix: |
+    Remove what is not used, name what is unclear, and keep one piece of behaviour in one place so the
+    next change touches a single spot.
+
+- key: QG-HTML-BUG-0019
+  name: Role attribute should be replaced by the recommended alternative
+  languages: [html]
+  category: BUG
+  severity: major
+  effort: 15min
+  tags: [prefer_api, generated]
+  generated: true
+  status: planned
+  message: The platform offers a clearer or safer construct for this.
+  summary: A construct is used where the platform offers one that is clearer or safer.
+  why: |
+    The alternative exists because it removes a class of mistake — a conversion, an allocation, an edge
+    case — that the current form leaves to the caller. Using the older form means every reader has to
+    check that the edge case was handled.
+  fix: |
+    Switch to the recommended construct; the behaviour is the same in the normal case and defined in the
+    cases the old form got wrong.
+
+- key: QG-HTML-BUG-0020
+  name: <legend> tags should match the behaviour the code describes
+  languages: [html]
+  category: BUG
+  severity: major
+  effort: 15min
+  tags: [bug, generated]
+  generated: true
+  status: planned
+  message: This code does not behave the way it reads.
+  summary: The code does not do what its shape suggests, or fails on ordinary input.
+  why: |
+    Written this way the code works by accident or breaks on values that are perfectly normal, and the
+    mistake is easy to miss in review because the intent reads correctly.
+  fix: |
+    Make the intended behaviour explicit — fix the condition, the operator or the order of operations —
+    and cover the case that used to fail with a test.
+
+- key: QG-HTML-BUG-0021
+  name: Server-side image maps (ismap attribute) should not be used
+  languages: [html]
+  category: BUG
+  severity: major
+  effort: 15min
+  tags: [avoid_api, generated]
+  generated: true
+  status: planned
+  message: This API should be replaced by the current alternative.
+  summary: Code calls an API that is unsafe, obsolete or superseded by a better alternative.
+  why: |
+    The API stays available for compatibility, so nothing fails at build time, but it carries behaviour
+    the platform now considers a defect — unchecked input, a weak guarantee, or a cost the replacement
+    avoids. Its presence also spreads: new code copies what it finds nearby.
+  fix: |
+    Replace the call with the current API, and keep the old one only behind a compatibility layer that is
+    documented and dated.
+
+- key: QG-HTML-BUG-0022
+  name: <th> tags should match the behaviour the code describes
+  languages: [html]
+  category: BUG
+  severity: major
+  effort: 15min
+  tags: [bug, generated]
+  generated: true
+  status: planned
+  message: This code does not behave the way it reads.
+  summary: The code does not do what its shape suggests, or fails on ordinary input.
+  why: |
+    Written this way the code works by accident or breaks on values that are perfectly normal, and the
+    mistake is easy to miss in review because the intent reads correctly.
+  fix: |
+    Make the intended behaviour explicit — fix the condition, the operator or the order of operations —
+    and cover the case that used to fail with a test.
+
+- key: QG-HTML-BUG-0023
+  name: <table> tags should match the behaviour the code describes
+  languages: [html]
+  category: BUG
+  severity: major
+  effort: 15min
+  tags: [bug, generated]
+  generated: true
+  status: planned
+  message: This code does not behave the way it reads.
+  summary: The code does not do what its shape suggests, or fails on ordinary input.
+  why: |
+    Written this way the code works by accident or breaks on values that are perfectly normal, and the
+    mistake is easy to miss in review because the intent reads correctly.
+  fix: |
+    Make the intended behaviour explicit — fix the condition, the operator or the order of operations —
+    and cover the case that used to fail with a test.
+
+- key: QG-HTML-BUG-0024
+  name: All HTML tags should match the behaviour the code describes
+  languages: [html]
+  category: BUG
+  severity: major
+  effort: 15min
+  tags: [bug, generated]
+  generated: true
+  status: planned
+  message: This code does not behave the way it reads.
+  summary: The code does not do what its shape suggests, or fails on ordinary input.
+  why: |
+    Written this way the code works by accident or breaks on values that are perfectly normal, and the
+    mistake is easy to miss in review because the intent reads correctly.
+  fix: |
+    Make the intended behaviour explicit — fix the condition, the operator or the order of operations —
+    and cover the case that used to fail with a test.
+
+- key: QG-HTML-SML-0075
+  name: White space should be replaced by the recommended alternative
+  languages: [html]
+  category: SML
+  severity: minor
+  effort: 15min
+  tags: [prefer_api, generated]
+  generated: true
+  status: planned
+  message: The platform offers a clearer or safer construct for this.
+  summary: A construct is used where the platform offers one that is clearer or safer.
+  why: |
+    The alternative exists because it removes a class of mistake — a conversion, an allocation, an edge
+    case — that the current form leaves to the caller. Using the older form means every reader has to
+    check that the edge case was handled.
+  fix: |
+    Switch to the recommended construct; the behaviour is the same in the normal case and defined in the
+    cases the old form got wrong.
+
+- key: QG-HTML-BUG-0026
+  name: Flash animations should match the behaviour the code describes
+  languages: [html]
+  category: BUG
+  severity: major
+  effort: 15min
+  tags: [bug, generated]
+  generated: true
+  status: planned
+  message: This code does not behave the way it reads.
+  summary: The code does not do what its shape suggests, or fails on ordinary input.
+  why: |
+    Written this way the code works by accident or breaks on values that are perfectly normal, and the
+    mistake is easy to miss in review because the intent reads correctly.
+  fix: |
+    Make the intended behaviour explicit — fix the condition, the operator or the order of operations —
+    and cover the case that used to fail with a test.

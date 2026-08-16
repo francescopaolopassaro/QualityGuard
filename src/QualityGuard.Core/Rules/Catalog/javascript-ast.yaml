@@ -1,0 +1,194 @@
+# Descriptions for the JavaScript and TypeScript rules implemented in
+# Rules/Languages/JsTsAstRules.cs. The detection reads the syntax tree; this file carries the
+# reasoning and the fix shown in the report.
+
+- key: QG-JS-SML-0358
+  name: A condition that is already a boolean should be returned directly
+  languages: [js, ts]
+  category: SML
+  severity: major
+  effort: 5min
+  tags: [readability]
+  summary: A branch returns true and the other returns false.
+  why: |
+    Six lines say what the condition already said. The reader has to reconstruct the rule from the
+    control flow, and the next change has to keep both branches in step.
+  fix: |
+    Return the condition itself, negated if the branches are the other way round.
+
+- key: QG-JS-BUG-0112
+  name: The with statement should not be used
+  languages: [js, ts]
+  category: BUG
+  severity: critical
+  effort: 30min
+  tags: [suspicious]
+  summary: A with block is used to shorten property access.
+  why: |
+    Inside the block a name may come from the object or from the enclosing scope, and which one wins
+    is decided at run time. Reading the code no longer tells you what it does, engines cannot optimise
+    it, and strict mode rejects it outright.
+  fix: |
+    Assign the object to a variable and write the accesses through it.
+
+- key: QG-JS-BUG-0113
+  name: A debugger statement should not be shipped
+  languages: [js, ts]
+  category: BUG
+  severity: critical
+  effort: 2min
+  tags: [suspicious]
+  summary: A debugger statement is left in the code.
+  why: |
+    The application stops whenever a browser has its developer tools open. For the user the page
+    simply freezes, with nothing in the interface to explain it.
+  fix: |
+    Remove the statement; use a breakpoint from the tools instead.
+
+- key: QG-JS-SML-0359
+  name: A blocking dialog should not be used
+  languages: [js, ts]
+  category: SML
+  severity: minor
+  effort: 20min
+  tags: [user-experience]
+  summary: alert, confirm or prompt is called.
+  why: |
+    These dialogs freeze the page until the user answers, cannot be styled or translated, cannot be
+    tested, and are blocked outright inside frames and during unload.
+  fix: |
+    Use the dialog component of the application, which the team controls and the tests can drive.
+
+- key: QG-JS-BUG-0114
+  name: Comparisons should not coerce their operands
+  languages: [js, ts]
+  category: BUG
+  severity: major
+  effort: 5min
+  tags: [suspicious]
+  summary: The loose equality operator is used with operands that are not null.
+  why: |
+    The operator converts before comparing, so '0' equals 0, an empty array equals false, and null
+    equals undefined. The rules are not the ones anyone remembers, and the surprise arrives with the
+    first unexpected input.
+  fix: |
+    Use the strict operator and convert explicitly where a conversion is really intended. The
+    comparison against null is the one accepted exception, because it covers undefined as well.
+
+- key: QG-JS-BUG-0115
+  name: An array should be built with a literal
+  languages: [js, ts]
+  category: BUG
+  severity: major
+  effort: 5min
+  tags: [suspicious]
+  summary: The Array constructor is called with a single argument.
+  why: |
+    With one argument it creates that many empty slots; with two or more it creates an array holding
+    them. The meaning of the call changes with the number of arguments, which makes it a trap when the
+    arguments are computed.
+  fix: |
+    Write a literal, or Array.from({ length: n }) when a length is really what you need.
+
+- key: QG-JS-BUG-0116
+  name: A primitive should not be wrapped in an object
+  languages: [js, ts]
+  category: BUG
+  severity: major
+  effort: 5min
+  tags: [suspicious]
+  summary: new Number, new String or new Boolean is used.
+  why: |
+    The result is an object: it is always truthy — including new Boolean(false) — it fails a strict
+    comparison against the value it holds, and typeof answers "object".
+  fix: |
+    Call the function without new to convert, or use the literal form.
+
+- key: QG-JS-BUG-0117
+  name: A class or object literal should not declare a member twice
+  languages: [js, ts]
+  category: BUG
+  severity: critical
+  effort: 10min
+  tags: [suspicious]
+  summary: The same member name appears twice in one class or object literal.
+  why: |
+    The later definition replaces the earlier one silently. The code reads as if both exist, and the
+    one a reader finds first is the one that does nothing.
+  fix: |
+    Give the second member the name it was meant to have, or remove it.
+
+- key: QG-JS-BUG-0118
+  name: A function should not declare the same parameter twice
+  languages: [js, ts]
+  category: BUG
+  severity: critical
+  effort: 10min
+  tags: [suspicious]
+  summary: A parameter name is repeated in the signature.
+  why: |
+    Only the last one is reachable, so the argument passed for the first is lost. In strict mode and
+    in modules the function is rejected outright.
+  fix: |
+    Rename one of the two to the name it should have.
+
+- key: QG-JS-BUG-0119
+  name: A function declared in a loop should not capture the loop variable
+  languages: [js, ts]
+  category: BUG
+  severity: major
+  effort: 20min
+  tags: [suspicious, closures]
+  summary: A function created inside a loop reads a variable declared with var.
+  why: |
+    var shares one binding across every iteration, so by the time the function runs the variable holds
+    the value it had at the end of the loop. Every callback then sees the same value — the classic
+    defect where a list of handlers all act on the last element.
+  fix: |
+    Declare the loop variable with let, which gives each iteration its own binding, or pass the value
+    into the function as an argument.
+
+- key: QG-JS-BUG-0120
+  name: A for-in loop should filter inherited properties
+  languages: [js, ts]
+  category: BUG
+  severity: major
+  effort: 10min
+  tags: [suspicious]
+  summary: A for-in loop uses every key it receives.
+  why: |
+    for-in walks the prototype chain, so anything a library or a polyfill added to Object.prototype
+    appears in the loop. The defect shows up only once that library is present, which is usually in
+    production.
+  fix: |
+    Use Object.keys or Object.entries, or guard the body with hasOwnProperty.
+
+- key: QG-JS-SML-0360
+  name: Parameters with a default value should come last
+  languages: [js, ts]
+  category: SML
+  severity: major
+  effort: 10min
+  tags: [readability]
+  summary: A required parameter follows one that has a default.
+  why: |
+    The default can never be used: every caller has to pass it explicitly to reach the parameter that
+    comes after. The signature promises an option that does not exist.
+  fix: |
+    Move the parameters with defaults to the end, or take an options object when the list is long.
+
+- key: QG-JS-BUG-0121
+  name: A switch case should end with a jump
+  languages: [js, ts]
+  category: BUG
+  severity: major
+  effort: 10min
+  tags: [suspicious, control-flow]
+  summary: A case with statements runs into the next one.
+  why: |
+    Execution continues into the following case, so its code runs as well. Sometimes that is
+    deliberate, but nothing in the code says so, and the next reader treats it as a missing break —
+    then adds one, changing the behaviour.
+  fix: |
+    End the case with break, return or throw. When the fallthrough is intended, say so in a comment
+    so the next change keeps it.

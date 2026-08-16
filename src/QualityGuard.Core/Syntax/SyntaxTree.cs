@@ -15,6 +15,35 @@ public sealed class SyntaxTree
     public bool HasDedicatedParser { get; init; }
 
     /// <summary>
+    /// Removes the <c>&lt;?php</c> and <c>?&gt;</c> markers. They delimit code inside a template and
+    /// carry no structure, but read as an unfinished conditional and swallow the declaration after
+    /// them.
+    /// </summary>
+    private static IReadOnlyList<Tokenization.Token> WithoutPhpMarkers(IReadOnlyList<Tokenization.Token> tokens)
+    {
+        var kept = new List<Tokenization.Token>(tokens.Count);
+        for (var i = 0; i < tokens.Count; i++)
+        {
+            if (tokens[i].Text == "<" && i + 1 < tokens.Count && tokens[i + 1].Text is "?" or "?php")
+            {
+                // <, ?, php  or  <, ?php  or  <, ?, =
+                i += tokens[i + 1].Text == "?php" ? 1 : 2;
+                if (i < tokens.Count && tokens[i].Text is "php" or "=")
+                    continue;
+                i--;
+                continue;
+            }
+            if (tokens[i].Text == "?" && i + 1 < tokens.Count && tokens[i + 1].Text == ">")
+            {
+                i++;
+                continue;
+            }
+            kept.Add(tokens[i]);
+        }
+        return kept;
+    }
+
+    /// <summary>
     /// Builds the tree with the dedicated parser of the language when there is one, and with the generic
     /// structural parser otherwise. Dedicated parsers give a real grammar-driven AST.
     /// </summary>
@@ -23,7 +52,7 @@ public sealed class SyntaxTree
         var profile = SyntaxProfile.For(language.LanguageKey);
         var dedicated = language.LanguageKey is LanguageKeys.CSharp or LanguageKeys.Java
             or LanguageKeys.Go or LanguageKeys.JavaScript or LanguageKeys.TypeScript
-            or LanguageKeys.Python;
+            or LanguageKeys.Python or LanguageKeys.Dart or LanguageKeys.Php;
         var root = language.LanguageKey switch
         {
             LanguageKeys.CSharp => CSharp.CSharpParser.Parse(tokens, language),
@@ -32,6 +61,11 @@ public sealed class SyntaxTree
             LanguageKeys.JavaScript => CSharp.CSharpParser.Parse(tokens, language, CSharp.CFamilyDialect.JavaScript),
             LanguageKeys.TypeScript => CSharp.CSharpParser.Parse(tokens, language, CSharp.CFamilyDialect.TypeScript),
             LanguageKeys.Python => Python.PythonParser.Parse(tokens, language),
+            // Dart declares types and members the way the C family does, so the Java dialect reads
+            // it correctly: classes, methods, annotations and blocks all land where rules expect them
+            LanguageKeys.Dart => CSharp.CSharpParser.Parse(tokens, language, CSharp.CFamilyDialect.Java),
+            LanguageKeys.Php => CSharp.CSharpParser.Parse(WithoutPhpMarkers(tokens), language,
+                CSharp.CFamilyDialect.Php),
             _ => StructureParser.Parse(tokens, profile)
         };
         return new SyntaxTree

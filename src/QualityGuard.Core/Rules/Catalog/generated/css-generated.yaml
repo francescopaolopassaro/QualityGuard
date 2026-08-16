@@ -203,24 +203,6 @@
     Keep one definition and reference it from the other places, or extract the shared part into a named
     function or constant.
 
-- key: QG-CSS-BUG-0010
-  name: Suspicious code should match the behaviour the code describes
-  languages: [css]
-  category: BUG
-  severity: major
-  effort: 15min
-  tags: [bug, generated]
-  generated: true
-  status: planned
-  message: This code does not behave the way it reads.
-  summary: The code does not do what its shape suggests, or fails on ordinary input.
-  why: |
-    Written this way the code works by accident or breaks on values that are perfectly normal, and the
-    mistake is easy to miss in review because the intent reads correctly.
-  fix: |
-    Make the intended behaviour explicit — fix the condition, the operator or the order of operations —
-    and cover the case that used to fail with a test.
-
 - key: QG-CSS-BUG-0011
   name: Pseudo-class selectors should match the behaviour the code describes
   languages: [css]

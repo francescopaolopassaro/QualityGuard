@@ -9,7 +9,8 @@ public enum CFamilyDialect
     Java,
     Go,
     JavaScript,
-    TypeScript
+    TypeScript,
+    Php
 }
 
 /// <summary>
@@ -92,6 +93,8 @@ public sealed class CSharpParser
     private bool IsJs => _dialect is CFamilyDialect.JavaScript or CFamilyDialect.TypeScript;
 
     private bool IsTs => _dialect == CFamilyDialect.TypeScript;
+
+    private bool IsPhp => _dialect == CFamilyDialect.Php;
 
     private string[] ModifierWords => _dialect switch
     {
@@ -890,6 +893,9 @@ public sealed class CSharpParser
         if (IsAny(TypeWords))
             return ParseTypeDeclaration(start, attributes, modifiers);
 
+        if (IsPhp && ParsePhpMember(start, attributes, modifiers) is { } phpMember)
+            return phpMember;
+
         if (Is("~") && Peek() is { Kind: TokenKind.Identifier })
         {
             _index++;
@@ -964,6 +970,14 @@ public sealed class CSharpParser
             AddDecorations(method, attributes, modifiers);
             method.Add(type);
             method.Add(ParseParameterList());
+            // Dart writes the asynchrony marker after the parameter list; leaving it as a statement
+            // detached the body from its method, which made every rule about the method blind
+            while (IsAny("async", "sync"))
+            {
+                _index++;
+                if (Is("*"))
+                    _index++;
+            }
             while (Is("where") || Is("throws"))
             {
                 while (!AtEnd && !Is("{") && !Is(";") && !Is("=>"))
@@ -1043,6 +1057,65 @@ public sealed class CSharpParser
         }
         assignment.Tokens = SliceFrom(start);
         return assignment;
+    }
+
+    /// <summary>
+    /// The two shapes PHP writes differently from the rest of the family: a method introduced by the
+    /// <c>function</c> keyword rather than by its return type, and a property that is just a variable
+    /// with visibility in front of it. Everything else — classes, statements, expressions — already
+    /// reads the same way.
+    /// </summary>
+    private SyntaxNode? ParsePhpMember(int start, List<SyntaxNode> attributes, List<string> modifiers)
+    {
+        if (Is("const"))
+        {
+            _index++;
+            var constantName = IsName ? Take().Text : string.Empty;
+            var constant = Node(NodeKind.FieldDeclaration, start, constantName);
+            AddDecorations(constant, attributes, modifiers);
+            while (!AtEnd && !Is(";"))
+                _index++;
+            Accept(";");
+            return constant;
+        }
+
+        if (Is("function"))
+        {
+            _index++;
+            Accept("&");
+            var name = IsName ? Take().Text : string.Empty;
+            var method = Node(name == "__construct" ? NodeKind.ConstructorDeclaration
+                : NodeKind.FunctionDeclaration, start, name);
+            AddDecorations(method, attributes, modifiers);
+            method.Add(ParseParameterList());
+            if (Accept(":"))
+                method.Add(ParseType());
+            if (Is(";"))
+            {
+                // an abstract or interface method has no body
+                _index++;
+                return method;
+            }
+            AddBody(method);
+            return method;
+        }
+
+        // typed or untyped property: `private ?Repo $repo = null;`
+        var save = _index;
+        if (IsName && !Text.StartsWith('$') && !Is("use"))
+            ParseType();
+        if (IsName && Text.StartsWith('$'))
+        {
+            var fieldName = Take().Text;
+            var field = Node(NodeKind.FieldDeclaration, start, fieldName);
+            AddDecorations(field, attributes, modifiers);
+            while (!AtEnd && !Is(";"))
+                _index++;
+            Accept(";");
+            return field;
+        }
+        _index = save;
+        return null;
     }
 
     private SyntaxNode ParseEvent(int start, List<SyntaxNode> attributes, List<string> modifiers)
@@ -1164,6 +1237,9 @@ public sealed class CSharpParser
             return ParseGoType(start);
         if (IsJs)
             return ParseJsType(start);
+        // PHP writes the nullable marker in front of the type
+        if (IsPhp)
+            Accept("?");
 
         var name = ParseQualifiedName();
         while (true)
@@ -1493,6 +1569,30 @@ public sealed class CSharpParser
         return block;
     }
 
+    /// <summary>
+    /// The PHP statements that are a keyword followed by a name or a path. Left to the expression
+    /// parser they break into several nodes on one line, which reads as several statements and made
+    /// every file with an import look badly formatted.
+    /// </summary>
+    private SyntaxNode? ParsePhpStatement(int start)
+    {
+        var keyword = Text;
+        var isImport = keyword is "use" or "require" or "require_once" or "include" or "include_once";
+        if (!isImport && keyword is not ("declare" or "global" or "echo" or "print" or "goto"))
+            return null;
+        // `use` also introduces a trait inside a class and a closure binding: both end at ; or {
+        _index++;
+
+        var target = new System.Text.StringBuilder();
+        while (!AtEnd && !Is(";") && !Is("{"))
+            target.Append(Take().Text);
+        Accept(";");
+
+        return isImport
+            ? Node(NodeKind.ImportDeclaration, start, target.ToString())
+            : Node(NodeKind.ExpressionStatement, start, keyword);
+    }
+
     private SyntaxNode? ParseStatement()
     {
         if (AtEnd)
@@ -1500,6 +1600,9 @@ public sealed class CSharpParser
 
         var start = Mark();
         ParseAttributes();
+
+        if (IsPhp && ParsePhpStatement(start) is { } phpStatement)
+            return phpStatement;
 
         switch (Text)
         {
@@ -1840,10 +1943,44 @@ public sealed class CSharpParser
         return node;
     }
 
+    private SyntaxNode ParsePhpForEach(int start, SyntaxNode node)
+    {
+        if (!Accept("("))
+            return node;
+
+        if (ParseExpression() is { } source)
+            node.Add(source);
+        if (Accept("as"))
+        {
+            var names = new List<string>();
+            while (!AtEnd && !Is(")"))
+            {
+                if (IsName)
+                    names.Add(Take().Text);
+                else
+                    _index++;
+            }
+            // the last name is the value; an earlier one is the key
+            var name = names.LastOrDefault() ?? string.Empty;
+            var variable = Node(NodeKind.VariableDeclaration, start, name);
+            foreach (var extra in names)
+                variable.Add(Node(NodeKind.Identifier, start, extra));
+            node.Add(variable);
+        }
+        Accept(")");
+        AddEmbeddedStatement(node);
+        return node;
+    }
+
     private SyntaxNode ParseForEach(int start)
     {
         Expect("foreach");
         var node = Node(NodeKind.Loop, start, "foreach");
+
+        // PHP names the collection first: foreach ($items as $key => $value)
+        if (IsPhp)
+            return ParsePhpForEach(start, node);
+
         if (Accept("("))
         {
             var type = ParseType();
@@ -2129,6 +2266,10 @@ public sealed class CSharpParser
 
     private SyntaxNode? ParseBinary(int minimum)
     {
+        // the tokens of the whole expression are a slice of the source, not a new array per operator:
+        // building them by concatenation makes a chain of n operators cost n² — and files that
+        // concatenate thousands of literals in one statement exist in the wild
+        var expressionStart = Mark();
         var left = ParseUnary();
         if (left == null)
             return null;
@@ -2156,7 +2297,7 @@ public sealed class CSharpParser
                 node.Add(right);
                 node.Range = new TextRange(left.Range.StartLine, left.Range.StartColumn,
                     right.Range.EndLine, right.Range.EndColumn);
-                node.Tokens = left.Tokens.Concat(right.Tokens).ToArray();
+                node.Tokens = SliceFrom(expressionStart);
             }
             left = node;
         }
@@ -2460,7 +2601,8 @@ public sealed class CSharpParser
                 continue;
             }
 
-            if (Is(".") || Is("?.") || Is("->"))
+            // PHP reaches a static member with ::, which is the same access for a rule
+            if (Is(".") || Is("?.") || Is("->") || (IsPhp && Is("::")))
             {
                 _index++;
                 var privateMember = IsJs && Accept("#");
@@ -2583,12 +2725,30 @@ public sealed class CSharpParser
         return result;
     }
 
+    private SyntaxNode ParseJsFunctionExpression(int start)
+    {
+        Expect("function");
+        Accept("*");
+        var name = IsName ? Take().Text : string.Empty;
+        var node = Node(NodeKind.Lambda, start, name);
+        if (Is("("))
+            node.Add(ParseParameterList());
+        if (Is("{"))
+            node.Add(ParseBlock());
+        return node;
+    }
+
     private SyntaxNode? ParsePrimary()
     {
         if (AtEnd)
             return null;
         var start = Mark();
         var token = Current!;
+
+        // a function expression is a value in JavaScript — a callback, an argument, an assignment —
+        // and reading it as a call named "function" scattered its body into the argument list
+        if (IsJs && token.Text == "function")
+            return ParseJsFunctionExpression(start);
 
         switch (token.Kind)
         {

@@ -7,13 +7,10 @@ public static class MarkupRuleSet
 {
     public static IReadOnlyList<IRule> All { get; } =
     [
-        new HtmlInlineEventHandlerRule(),
         new HtmlJavascriptUrlRule(),
         new HtmlIframeSandboxRule(),
-        new HtmlBlankTargetNoopenerRule(),
         new HtmlCleartextSourceRule(),
         new HtmlMissingMetaCharsetRule(),
-        new HtmlImgMissingAltRule(),
         new XmlExternalEntityRule(),
         new XmlExternalDtdRule(),
         new XmlMissingEncodingRule(),
@@ -40,24 +37,6 @@ internal static class MarkupHelper
                 return true;
         }
         return false;
-    }
-}
-
-public sealed class HtmlInlineEventHandlerRule : PatternRuleBase
-{
-    public override string Key => "QG-HTML-SEC-0001";
-    public override string Name => "Avoid inline event handlers";
-    public override Severity Severity => Severity.Major;
-    public override IssueKind Kind => IssueKind.Vulnerability;
-    public override string RemediationEffort => "Attach event listeners from script instead of inline on* attributes.";
-    public override string[] Languages => ["html"];
-
-    public override void Execute(IRuleContext context)
-    {
-        var lines = context.File.Content.Split('\n');
-        for (var i = 0; i < lines.Length; i++)
-            if (MarkupHelper.HasInlineEventHandler(lines[i]))
-                context.Report("Inline event handlers are a vector for XSS; use addEventListener.", i + 1);
     }
 }
 
@@ -100,30 +79,6 @@ public sealed class HtmlIframeSandboxRule : PatternRuleBase
     }
 }
 
-public sealed class HtmlBlankTargetNoopenerRule : PatternRuleBase
-{
-    public override string Key => "QG-HTML-SEC-0004";
-    public override string Name => "target=_blank without rel=noopener";
-    public override Severity Severity => Severity.Major;
-    public override IssueKind Kind => IssueKind.Vulnerability;
-    public override string RemediationEffort => "Add rel=\"noopener noreferrer\" to links opening in a new tab.";
-    public override string[] Languages => ["html"];
-
-    public override void Execute(IRuleContext context)
-    {
-        var lines = context.File.Content.Split('\n');
-        var hasNoopener = lines.Any(l => RuleMatchers.LineContains(l, "noopener"));
-        if (hasNoopener)
-            return;
-        for (var i = 0; i < lines.Length; i++)
-        {
-            var line = lines[i];
-            if (RuleMatchers.LineContains(line, "target") && RuleMatchers.LineContains(line, "_blank"))
-                context.Report("Add rel=\"noopener\" when opening links in a new tab.", i + 1);
-        }
-    }
-}
-
 public sealed class HtmlCleartextSourceRule : PatternRuleBase
 {
     public override string Key => "QG-HTML-SEC-0005";
@@ -161,27 +116,6 @@ public sealed class HtmlMissingMetaCharsetRule : PatternRuleBase
         var hasCharset = lines.Any(l => RuleMatchers.LineContains(l, "<meta charset"));
         if (!hasCharset)
             context.Report("Declare the document character encoding with <meta charset>.", 1);
-    }
-}
-
-public sealed class HtmlImgMissingAltRule : PatternRuleBase
-{
-    public override string Key => "QG-HTML-CNV-0001";
-    public override string Name => "Image without alt text";
-    public override Severity Severity => Severity.Minor;
-    public override IssueKind Kind => IssueKind.CodeSmell;
-    public override string RemediationEffort => "Provide an alt attribute describing the image content.";
-    public override string[] Languages => ["html"];
-
-    public override void Execute(IRuleContext context)
-    {
-        var lines = context.File.Content.Split('\n');
-        for (var i = 0; i < lines.Length; i++)
-        {
-            var line = lines[i];
-            if (RuleMatchers.LineContains(line, "<img") && !RuleMatchers.LineContains(line, "alt"))
-                context.Report("Add an alt attribute to the image.", i + 1);
-        }
     }
 }
 

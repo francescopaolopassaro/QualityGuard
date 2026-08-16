@@ -1,0 +1,319 @@
+# Descriptions for the stylesheet, markup and Flutter rules implemented in
+# Rules/Languages/StyleSheetRules.cs, MarkupDocumentRules.cs and DartRules.cs.
+
+# --------------------------------------------------------------------------- stylesheets
+
+- key: QG-CSS-BUG-0027
+  name: A block should not set the same property twice
+  languages: [css]
+  category: BUG
+  severity: major
+  effort: 5min
+  tags: [style, suspicious]
+  summary: One declaration block sets the same property more than once.
+  why: |
+    The last declaration wins, so the first one is dead. When the two values differ it is usually a
+    merge that kept both sides, and the rendered result is whichever line survived the conflict.
+  fix: |
+    Keep the declaration you mean. If both are needed under different conditions, move one into the
+    rule — a media query, a state class — that should apply it.
+
+- key: QG-CSS-BUG-0028
+  name: A shorthand should not cancel the longhand written before it
+  languages: [css]
+  category: BUG
+  severity: major
+  effort: 5min
+  tags: [style, suspicious]
+  summary: A shorthand property follows a longhand that it resets.
+  why: |
+    A shorthand sets every value it covers, including the ones it does not mention, so the longhand
+    above it is silently reset to its default. The declaration looks like an addition and behaves like
+    a deletion.
+  fix: |
+    Write the shorthand first and the exception after it, which is the order the cascade reads.
+
+- key: QG-CSS-SML-0021
+  name: A style block should declare something
+  languages: [css]
+  category: SML
+  severity: minor
+  effort: 2min
+  tags: [style]
+  summary: A rule set contains no declarations.
+  why: |
+    The selector still has to be understood and maintained, and it suggests that styling exists where
+    there is none. It is normally what a cleanup left behind.
+  fix: |
+    Remove the block, or write the declarations it was waiting for.
+
+- key: QG-CSS-SML-0022
+  name: A stylesheet should not rely on !important
+  languages: [css]
+  category: SML
+  severity: major
+  effort: 30min
+  tags: [style, maintainability]
+  summary: The sheet forces many declarations with !important.
+  why: |
+    Each one wins against every rule that comes after it, so the next change has to escalate as well.
+    After a few rounds the cascade no longer explains what the page looks like, and the only way to
+    change anything is to add another exception.
+  fix: |
+    Give the rules that must win a more specific selector, and keep !important for the few places that
+    override a third-party sheet you do not control.
+
+- key: QG-CSS-SML-0023
+  name: A selector should be defined once
+  languages: [css]
+  category: SML
+  severity: minor
+  effort: 10min
+  tags: [style]
+  summary: Two blocks in the same sheet declare the same selector.
+  why: |
+    A reader has to find both to know what applies, and the order between them decides the result. The
+    second block is usually added by someone who did not find the first.
+  fix: |
+    Merge the declarations into one block, or make the selectors say what distinguishes them.
+
+- key: QG-CSS-BUG-0029
+  name: A font family should end with a generic family
+  languages: [css]
+  category: BUG
+  severity: minor
+  effort: 5min
+  tags: [style]
+  summary: A font-family list has no generic family at the end.
+  why: |
+    When none of the named fonts is available the browser falls back to its default, which is often a
+    serif face in a design built for sans — on exactly the devices you did not test.
+  fix: |
+    End the list with sans-serif, serif, monospace or another generic family.
+
+- key: QG-CSS-BUG-0030
+  name: An import should come before the rules
+  languages: [css]
+  category: BUG
+  severity: major
+  effort: 5min
+  tags: [style, suspicious]
+  summary: An @import appears after the first rule of the sheet.
+  why: |
+    The browser ignores it, so the imported sheet is never loaded and the styles it carries are simply
+    missing. Nothing fails: the page renders without them.
+  fix: |
+    Move every @import to the top of the file, after @charset only.
+
+- key: QG-CSS-SML-0024
+  name: Nested style blocks should stay shallow
+  languages: [css]
+  category: SML
+  severity: major
+  effort: 20min
+  tags: [style, maintainability]
+  summary: A preprocessor block is nested more deeply than a reader can follow.
+  why: |
+    Every level adds to the generated selector, so the result is long, highly specific and hard to
+    override — and nobody can tell what it matches without reading each level above it.
+  fix: |
+    Flatten the structure: name the component and style it directly, instead of describing where it
+    happens to sit today.
+
+- key: QG-CSS-SML-0025
+  name: A stacking order should stay in a range people can reason about
+  languages: [css]
+  category: SML
+  severity: minor
+  effort: 15min
+  tags: [style]
+  summary: A z-index is far outside the range the rest of the sheet uses.
+  why: |
+    A large value is an escalation rather than a position: the next element that has to sit on top
+    picks a bigger number, and after a few rounds the stacking order carries no information at all.
+  fix: |
+    Define a small scale — a handful of named levels — and use it everywhere.
+
+# --------------------------------------------------------------------------- markup
+
+- key: QG-HTML-BUG-0001
+  name: An id should identify one element
+  languages: [html]
+  category: BUG
+  severity: major
+  effort: 10min
+  tags: [markup, suspicious]
+  summary: The same id is used on more than one element.
+  why: |
+    Every lookup by that id finds the first element only, so a script, a label or an anchor that points
+    there reaches the wrong one — and which one is "first" changes when the markup is reordered.
+  fix: |
+    Give each element its own id, or use a class when the value describes a group.
+
+- key: QG-HTML-SML-0005
+  name: A form control should be named by a label
+  languages: [html]
+  category: SML
+  severity: major
+  effort: 10min
+  tags: [markup, accessibility]
+  summary: An input, select or textarea has nothing that names it.
+  why: |
+    A screen reader announces only the type of the control, so the user is asked to fill in a field
+    without being told what it is for. A click on the surrounding text does not focus it either, which
+    makes the form harder to use for everyone.
+  fix: |
+    Point a label at the control with for, wrap the control in the label, or give it an aria-label when
+    no visible text exists.
+
+- key: QG-HTML-SML-0006
+  name: An embedded frame should say what it contains
+  languages: [html]
+  category: SML
+  severity: minor
+  effort: 5min
+  tags: [markup, accessibility]
+  summary: An iframe, frame or object has no title.
+  why: |
+    Assistive technology lists frames as regions of the page. Without a title the region is announced
+    as unnamed, and the reader has to enter it to find out whether it matters.
+  fix: |
+    Add a title that says what the frame holds.
+
+- key: QG-HTML-SML-0007
+  name: A deprecated element should be replaced
+  languages: [html]
+  category: SML
+  severity: minor
+  effort: 10min
+  tags: [markup]
+  summary: The document uses an element that was removed from the standard.
+  why: |
+    Browsers still render these elements out of habit, and nothing guarantees the next version will.
+    They also mix presentation into the markup, which is the problem stylesheets exist to solve.
+  fix: |
+    Use the element or the CSS property that replaced it.
+
+- key: QG-HTML-SML-0008
+  name: A data table should have header cells
+  languages: [html]
+  category: SML
+  severity: minor
+  effort: 10min
+  tags: [markup, accessibility]
+  summary: A table with several rows declares no header cells.
+  why: |
+    A screen reader reads the values without saying which column they belong to, so a table of numbers
+    becomes a list of numbers. Sighted readers get the same information from the visual layout, which
+    is why the gap goes unnoticed.
+  fix: |
+    Mark the heading row with th and scope, or set role="presentation" when the table only arranges
+    the layout.
+
+# --------------------------------------------------------------------------- Flutter
+
+- key: QG-DART-SML-0001
+  name: Diagnostics should not be printed to the console
+  languages: [dart]
+  category: SML
+  severity: minor
+  effort: 5min
+  tags: [flutter, logging]
+  summary: print writes straight to the device console.
+  why: |
+    The call stays in the release build, where nobody reads it, and it formats whatever it is given —
+    including values that should not leave the device. It also has no level, so it cannot be filtered.
+  fix: |
+    Use debugPrint while developing, and a logger with levels for anything that has to survive into
+    production.
+
+- key: QG-DART-BUG-0001
+  name: A widget should not schedule a rebuild while it is building
+  languages: [dart]
+  category: BUG
+  severity: critical
+  effort: 20min
+  tags: [flutter, suspicious]
+  summary: setState is called from inside build.
+  why: |
+    The framework is asked to rebuild the widget it is currently building. In debug it throws; in
+    release it can loop, redrawing the same frame until the device gives up.
+  fix: |
+    Change the state where the event happens — in a callback, in initState, or in
+    didChangeDependencies — and let build only describe what to draw.
+
+- key: QG-DART-BUG-0002
+  name: A stateless widget should hold only final fields
+  languages: [dart]
+  category: BUG
+  severity: major
+  effort: 15min
+  tags: [flutter]
+  summary: A StatelessWidget declares a field that can be reassigned.
+  why: |
+    The framework may keep, reuse or rebuild the widget whenever it likes, so a value written after
+    construction is not the value that gets rendered. The bug shows up as a screen that "sometimes"
+    does not update.
+  fix: |
+    Make the field final, and move anything that really changes into a State or into a state holder
+    the widget listens to.
+
+- key: QG-DART-BUG-0003
+  name: A controller held by a state should be disposed
+  languages: [dart]
+  category: BUG
+  severity: critical
+  effort: 15min
+  tags: [flutter, resources]
+  summary: A controller, subscription or timer is created and never released.
+  why: |
+    It keeps listening after the screen is gone, keeps a reference to the state that owns it, and with
+    it the whole widget tree. The memory is never returned, and callbacks keep firing against a widget
+    that is no longer mounted.
+  fix: |
+    Release it in dispose() — dispose, cancel or close — and check that every field created in the
+    state has a matching line there.
+
+- key: QG-DART-SML-0002
+  name: An async function should await something
+  languages: [dart]
+  category: SML
+  severity: minor
+  effort: 5min
+  tags: [flutter]
+  summary: A function is declared async but never waits.
+  why: |
+    It returns a future that is already complete, so callers pay for the wrapping and for the extra
+    turn of the event loop, while the signature promises work that does not happen.
+  fix: |
+    Drop async, or await the operation the function should really be waiting for.
+
+- key: QG-DART-CNV-0001
+  name: The new keyword is not needed
+  languages: [dart]
+  category: CNV
+  severity: minor
+  effort: 2min
+  tags: [flutter, readability]
+  summary: A constructor is called with the new keyword.
+  why: |
+    Dart made it optional, and the extra word distracts from the const that would let the framework
+    reuse the widget instead of rebuilding it.
+  fix: |
+    Remove new, and use const wherever the constructor allows it.
+
+- key: QG-DART-BUG-0004
+  name: A build context should not be used after an await
+  languages: [dart]
+  category: BUG
+  severity: critical
+  effort: 20min
+  tags: [flutter, suspicious]
+  summary: The context of a widget is used after an asynchronous gap.
+  why: |
+    While the function was waiting, the user may have left the screen and the widget may have been
+    removed. Using its context afterwards throws, or navigates a page that no longer exists — a crash
+    that only happens to users who tap quickly.
+  fix: |
+    Check 'mounted' after the await before touching the context, or capture what you need from the
+    context before starting the asynchronous work.

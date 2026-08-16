@@ -77,14 +77,35 @@ public static class SyntaxQuery
         => node is { Kind: NodeKind.StringLiteral or NodeKind.NumberLiteral or NodeKind.BooleanLiteral or NodeKind.NullLiteral };
 
     /// <summary>True when the expression is built at run time (concatenation, interpolation, formatting).</summary>
+    /// <summary>
+    /// How many nodes one expression is walked for before the answer is given up. A single expression
+    /// larger than this is generated or pathological — a file in the wild concatenates six thousand
+    /// literals in one statement — and walking it once per rule turns the scan quadratic. Stopping is
+    /// honest: the rules that ask this question stay silent when the answer is unknown.
+    /// </summary>
+    private const int TraversalBudget = 512;
+
     public static bool IsDynamicallyBuilt(SyntaxNode? node)
     {
-        if (node == null)
+        var budget = TraversalBudget;
+        return IsDynamicallyBuilt(node, ref budget);
+    }
+
+    private static bool IsDynamicallyBuilt(SyntaxNode? node, ref int budget)
+    {
+        if (node == null || --budget <= 0)
             return false;
         switch (node.Kind)
         {
             case NodeKind.Binary when node.Text is "+" or "%" or "&" or "." or "+=":
-                return node.Children.Any(c => !IsLiteral(c)) || node.Children.Any(IsDynamicallyBuilt);
+                if (node.Children.Any(c => !IsLiteral(c)))
+                    return true;
+                foreach (var child in node.Children)
+                {
+                    if (IsDynamicallyBuilt(child, ref budget))
+                        return true;
+                }
+                return false;
             case NodeKind.Invocation:
                 var name = InvokedName(node);
                 if (name is "format" or "Format" or "sprintf" or "printf" or "Sprintf" or "concat" or "join"
@@ -94,7 +115,12 @@ public static class SyntaxQuery
             case NodeKind.StringLiteral:
                 return HasInterpolationHole(node.Text) && node.Tokens.Count > 0 && IsInterpolated(node.Tokens[0]);
         }
-        return node.Children.Any(IsDynamicallyBuilt);
+        foreach (var child in node.Children)
+        {
+            if (IsDynamicallyBuilt(child, ref budget))
+                return true;
+        }
+        return false;
     }
 
     private static bool IsInterpolated(Token token) => true;
