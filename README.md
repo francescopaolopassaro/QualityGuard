@@ -8,6 +8,11 @@ a configurable Quality Gate and exits with `PASSED` or `FAILED` — no server, n
 dotnet run --project src/QualityGuard.Cli -- --path ./src --by-folder
 ```
 
+**1295 rules** across 26 languages, on a real syntax tree with a semantic model, a project index and
+interprocedural taint analysis. The bar the engine is held to is precision: every rule is measured on
+a production codebase in its own language before it is kept, and a rule that produces noise is
+rewritten or removed — see [§8](#8-quality-bar).
+
 ---
 
 ## 1. Packages
@@ -35,9 +40,11 @@ project index → type resolution → interprocedural taint → rules → qualit
 ```
 
 * **Syntax tree** — recursive-descent parsers for C#, Java, Go, JavaScript, TypeScript, PHP and Dart
-  (one C-family parser with a dialect each) and an indentation-driven parser for Python. Other languages fall
-  back to a generic structural parser; `SyntaxTree.HasDedicatedParser` tells a rule whether the tree
-  is exact enough to reason about statements.
+  (one C-family parser with a dialect each) and an indentation-driven parser for Python. Everything
+  else — Kotlin, Swift, Ruby, Rust, C/C++, VB.NET, shell, SQL — falls back to a generic structural
+  parser that still recognises declarations, blocks and control flow;
+  `SyntaxTree.HasDedicatedParser` tells a rule whether the tree is exact enough to reason about
+  statements, and a rule that needs more stays silent rather than guessing.
 * **Semantic model** — scopes, symbols and usages. Declarations, assignments and reads are linked, so
   a rule works on "this symbol" rather than "this name".
 * **Project index** — types, base types, members, return types and reference counts across every
@@ -136,6 +143,10 @@ Severity and issue kind follow the category: `SEC` → vulnerability (major or a
 
 **1295 rules are loaded and executable**, backed by **2628 catalog entries** (a catalog entry either
 carries its own detection or documents a rule implemented in code).
+
+Coverage is tracked honestly in `rules-tracker.tsv`: **3256 catalogued rules are mapped, 1488 of them
+executable**. The rest are documented and deliberately silent — a rule counts as implemented only
+when it detects something and has been measured on real code.
 
 | Area | Code | Rules |
 | --- | --- | --- |
@@ -311,6 +322,18 @@ the keychain, a query built by interpolation, plain HTTP, a broken hash. There i
 catalog behind these — they are written from the language — and no Swift corpus on the build machine,
 so each one is pinned by a test that also states the shape it must stay silent on.
 
+### Mobile: Kotlin
+
+Kotlin is read with the structural parser and carries 83 rules — coroutines and dispatchers, Android
+intents and broadcast receivers, WebView settings, the not-null assertion operator, `SharedPreferences`
+holding a secret. The work that mattered here was precision rather than count: an extension function,
+a `@Composable`, a trailing lambda and the word "token" in a parser were all being reported, and
+Jetpack Compose alone accounted for hundreds of findings. See [§8](#precision-on-kotlin).
+
+A Kotlin dialect for the C-family parser is the next step: it would unlock the ~90 shared structural
+rules that stay silent today because the tree is not exact enough. It belongs on the TypeScript
+branch, not the Java one — `fun f(a: Int): String` puts the type after the name, as TypeScript does.
+
 ### Secrets, in every language
 
 Credentials are found by shape, not by context: AWS, Google and Azure keys, Stripe keys, GitHub,
@@ -427,40 +450,61 @@ QUALITY GATE: Passed
       flow  line 7: 'ReadRequestedFile' returns data that enters the program in RequestReader.cs
       flow  line 10: tainted value reaches this sink
 
-SUMMARY  107 files, 68434 ncloc, 16082 complexity, 4.8% duplicated
-  Bugs                76   reliability C   major 75, minor 1
-  Vulnerabilities     50   security    D   critical 9, major 41
+SUMMARY  153 files, 78940 ncloc, 18556 complexity, 1.9% duplicated
+  Bugs                42   reliability C   major 41, minor 1
+  Vulnerabilities     56   security    D   critical 13, major 43
   Security hotspots    0   reviewed    100%
-  Code smells        953   maintainability A   critical 147, major 308, minor 498
-  Technical debt   22.0d   ratio 0.51%
+  Code smells       1301   maintainability A   critical 220, major 293, minor 788
+  Technical debt   38.4d   ratio 0.78%
   Most frequent rules:
-    QG-ALL-SML-0005   146  'FindDuplicates' scores 44 on nesting-aware complexity (limit is 15)
+    QG-ALL-SML-0005   219  'ParseBraces' scores 21 on nesting-aware complexity (limit is 15)
 
-FOLDER                                     FILES   NCLOC  BUGS  VULN SMELLS
-src/QualityGuard.Core/Analysis                10    1042     5     3     66
-src/QualityGuard.Core/Semantics                3     416     1     0     21
+FOLDER                                             FILES   NCLOC  BUGS  VULN SMELLS
+src/QualityGuard.Core/Analysis                        13    1715     7     3    125
+src/QualityGuard.Core/Rules/Languages                 38   19496    13    44    511
+src/QualityGuard.Core/Semantics                        3     425     1     0     21
 ```
 
 ---
 
-### Precision on Java and C#
+## 8. Quality bar
 
-The same measurement, applied to the two languages with the most rules. One parser gap: the body of
-an **anonymous class** (`new X() { ... }`) was read as an object initializer, so every method it
-overrode became a call — and `public void addUnique(String t) { }` was reported as a void call used
-as a value. Four shared rules were then narrowed to shapes these languages use every day: an
-expression lambda over a void call (which is how every `Consumer` is written), a local initialised
-from a method of the same name (`boolean isSubscribed = isSubscribed(tree)`), a parameter of an
-abstract method or an empty hook (there is no body to use it in), and a constructor forwarding with
-`: this(...) { }`.
+The engine is measured on real code, not only on fixtures: every new rule is run against this
+repository and against a real project in the rule's own language before it is considered finished. A
+rule that produces noise is rewritten on the syntax tree or removed, and every false positive that
+was fixed is pinned by a regression test — written next to the shape the rule must still report — so
+the precision cannot be lost again silently.
 
-Two C# rules were rewritten because they could not be defended: commented-out code, which needed
-only a semicolon anywhere in a comment and reported every licence header; and null dereference,
-which marked a name for the whole file and never noticed the check three lines later — now limited
-to the one honest form without flow analysis, a value that comes back from an `...OrDefault()` and is
-dereferenced in the very next statement.
+**419 tests** cover the parsers, the semantic model, taint, the scanner and rule precision.
 
-Result: Java 105 → 66 bugs, C# 368 → 282 bugs, and this repository 88 → 42.
+```bash
+dotnet build QualityGuard.sln
+dotnet test                       # parser, semantics, taint, scanner, rule precision
+./tools/RuleCatalog.ps1 -Validate # catalog shape, identifiers, English descriptions
+```
+
+### What the measurements found
+
+Four languages were audited by running the engine over production codebases and reading every
+finding it produced. The pattern was the same each time: the noise did not come from rules that were
+wrong in principle, but from rules that judged a name without knowing what it stood for, or a shape
+without knowing what surrounded it. Nothing below removed a rule from the catalogue.
+
+### Precision on Kotlin
+
+Kotlin exercised the engine on a language read by the generic structural parser, and the answer was a
+report nobody would open: on 16k lines of production Kotlin, 103 bugs, 70 vulnerabilities and 638
+smells. Adding rules to that would have made it worse, so the noise came out first.
+
+Two of the fixes were in the shared statement classifier and help every brace language: a declaration
+keyword is now recognised behind its modifiers (`private const val x` used to parse as a nameless
+expression), and it is only looked for in the header of a statement — `Foo::class.java` used to be
+read as a class named `java`.
+
+The rest were shapes Kotlin uses constantly: an extension function (`fun Context.report()`, whose
+name is what follows the dot, not the receiver type), a `@Composable` function (upper camel case by
+Android's own convention), a trailing lambda after `return`, and the word "token" in a parser, which
+is a piece of syntax and not a credential. That last one was reported as a **vulnerability**.
 
 ### Precision on Go
 
@@ -469,43 +513,40 @@ Three rules, three different mistakes: `panic` flagged everywhere (it is how `ma
 generator stop, and a defect only in a function that already promises to return an `error`); `0755`
 read as an accidental octal, when a permission mask is written in octal on purpose; and `defer`
 inside a loop, expressed as a line pattern that only asked whether the file contained a loop
-*somewhere*, so every `defer` in a file with a `for` was reported. That last one is now a rule on the
-tree — containment is a question the declarative matcher cannot express.
+*somewhere*, so every `defer` in a file with a `for` was reported.
 
-Result: 42 → 12 bugs, with no rule removed.
+That last one is now a rule on the tree, and it marks a limit of the declarative catalogue:
+**containment is a question the matcher cannot express**. A rule that depends on "inside X" is
+written in C#.
 
-### Precision on Kotlin
+### Precision on Java and C#
 
-Kotlin exercised the engine on a language read by the generic structural parser, and the answer was
-a report nobody would open: on 16k lines of production Kotlin, 103 bugs, 70 vulnerabilities and 638
-smells. Adding rules to that would have made it worse, so the noise came out first.
+The two languages with the most rules, and one parser gap behind several findings: the body of an
+**anonymous class** (`new X() { ... }`) was read as an object initializer, so every method it
+overrode became a call — and `public void addUnique(String t) { }` was reported as a void call used
+as a value.
 
-Two of the fixes were in the shared statement classifier and help every brace language: a
-declaration keyword is now recognised behind its modifiers (`private const val x` used to parse as a
-nameless expression), and it is only looked for in the header of a statement — `Foo::class.java` used
-to be read as a class named `java`.
+Four shared rules were then narrowed to shapes these languages use every day: an expression lambda
+over a void call (which is how every `Consumer` is written), a local initialised from a method of the
+same name (`boolean isSubscribed = isSubscribed(tree)`), a parameter of an abstract method or an
+empty hook (there is no body to use it in), and a constructor forwarding with `: this(...) { }`.
 
-The rest were shapes Kotlin uses constantly: an extension function (`fun Context.report()`, whose
-name is what follows the dot, not the receiver type), a `@Composable` function (upper camel case by
-Android's own convention), a trailing lambda after `return`, and the word "token" in a parser, which
-is a piece of syntax and not a credential. That last one was reported as a **vulnerability**.
+Two C# rules were rewritten because they could not be defended. **Commented-out code** needed only a
+semicolon anywhere in a comment, so it reported every licence header — the first comment of every
+file. **Null dereference** marked a name for the whole file and then flagged every later member
+access, without flow, without scope, and without noticing the `??=` three lines above; it is now
+limited to the one honest form available without flow analysis — a value that comes back from an
+`...OrDefault()` and is dereferenced in the very next statement.
 
-The result, with no rule removed: 103 → 60 bugs, 70 → 24 vulnerabilities, 638 → 447 smells.
+### The numbers
 
-## 8. Quality bar
-
-The engine is measured on real code, not only on fixtures: every new rule is run against this
-repository and against a real project in the rule's own language before it is considered finished. A
-rule that produces noise is rewritten on the syntax tree or removed, and the false positives that were
-fixed are pinned by regression tests so the precision cannot be lost again silently.
-
-Automated checks:
-
-```bash
-dotnet build QualityGuard.sln
-dotnet test                       # parser, semantics, taint, scanner, rule precision
-./tools/RuleCatalog.ps1 -Validate # catalog shape, identifiers, English descriptions
-```
+| Corpus | Bugs | Vulnerabilities | Code smells |
+| --- | --- | --- | --- |
+| Kotlin, 16k ncloc | 103 → **60** | 70 → **24** | 638 → **447** |
+| Go, 3.2k ncloc | 42 → **12** | 4 | 84 |
+| Java, 32k ncloc | 105 → **66** | 11 | 614 → **442** |
+| C#, 92k ncloc | 368 → **282** | 52 | 5626 → **3127** |
+| This repository, 79k ncloc | 88 → **42** | 56 | 1436 → **1301** |
 
 ---
 
