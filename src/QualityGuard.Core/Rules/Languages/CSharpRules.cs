@@ -321,17 +321,59 @@ public sealed class CsAssemblyLoadRule : PatternRuleBase
 
 public sealed class CsCleartextHttpRule : PatternRuleBase
 {
+    /// <summary>
+    /// Hosts that only ever appear as identifiers. An XML namespace is a name, not an address:
+    /// nothing is fetched from it, and changing it to https breaks every document that matches the
+    /// schema.
+    /// </summary>
+    private static readonly string[] IdentifierHosts =
+    [
+        "schemas.xmlsoap.org", "www.w3.org", "schemas.microsoft.com", "tempuri.org",
+        "schemas.datacontract.org", "docs.oasis-open.org", "www.opengis.net", "java.sun.com",
+        "xmlns.oracle.com", "purl.org", "namespace"
+    ];
+
+    /// <summary>Attribute arguments that name an XML or SOAP namespace rather than an endpoint.</summary>
+    private static readonly string[] NamespaceMarkers =
+    [
+        "Namespace", "RequestNamespace", "ResponseNamespace", "XmlType", "XmlRoot", "XmlElement",
+        "XmlAttribute", "SoapDocumentMethod", "SoapRpcMethod", "WebServiceBinding", "ServiceContract",
+        "OperationContract", "DataContract", "DataMember", "XmlSerializerFormat", "xmlns"
+    ];
+
     public override string Key => "QG-CS-SEC-0009";
     public override string Name => "Cleartext HTTP";
     public override Severity Severity => Severity.Major;
     public override IssueKind Kind => IssueKind.Vulnerability;
-    public override string RemediationEffort => "Use HTTPS instead of cleartext HTTP.";
+    public override string RemediationEffort => "20min";
     public override string[] Languages => ["cs", "vb"];
 
     public override void Execute(IRuleContext context)
     {
+        var lines = LanguageRuleSupport.Lines(context);
         foreach (var token in RuleMatchers.StringsContaining(context.Tokens, "http://"))
-            context.Report("Use HTTPS instead of cleartext HTTP.", token.Line);
+        {
+            var text = token.Text;
+            if (IdentifierHosts.Any(h => text.Contains(h, StringComparison.OrdinalIgnoreCase)))
+                continue;
+            // the loopback and an obvious placeholder never leave the machine
+            if (text.Contains("localhost", StringComparison.OrdinalIgnoreCase)
+                || text.Contains("127.0.0.1", StringComparison.Ordinal)
+                || text.Contains("://test", StringComparison.OrdinalIgnoreCase)
+                || text.Contains("example.", StringComparison.OrdinalIgnoreCase))
+                continue;
+
+            // A namespace declared on a serialization or web-service attribute is an identifier that
+            // has to match the contract character for character. A generated SOAP proxy is full of
+            // them, and every one of them was being reported as a transport problem.
+            var line = token.Line - 1 < lines.Length && token.Line > 0 ? lines[token.Line - 1] : string.Empty;
+            if (NamespaceMarkers.Any(m => line.Contains(m, StringComparison.Ordinal)))
+                continue;
+
+            context.Report("This address is plain HTTP, so everything sent over it — credentials "
+                           + "included — travels readable, and anyone on the path can change the "
+                           + "answer. Use https.", token.Line);
+        }
     }
 }
 

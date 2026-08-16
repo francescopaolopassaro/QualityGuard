@@ -17,9 +17,32 @@ public static class StructureParser
     /// </summary>
     private const int MaxExpressionTokens = 512;
 
+    /// <summary>
+    /// Drops preprocessor directives. They are not statements, and the block parsers cannot tell
+    /// '#If DEBUG Then' from a real If: on a VB file with conditional compilation the directive
+    /// opened a block that '#End If' never closed, so every construct after it nested inside and the
+    /// whole file collapsed into one chain — one 12-line function scored 75 on cognitive complexity.
+    /// In a language where # starts a comment the tokenizer has already removed these.
+    /// </summary>
+    private static IEnumerable<Token> WithoutDirectives(IEnumerable<Token> tokens)
+    {
+        var skipLine = -1;
+        foreach (var token in tokens)
+        {
+            if (token.Line == skipLine)
+                continue;
+            if (token.Kind == TokenKind.Symbol && token.Text == "#")
+            {
+                skipLine = token.Line;
+                continue;
+            }
+            yield return token;
+        }
+    }
+
     public static SyntaxNode Parse(IReadOnlyList<Token> tokens, SyntaxProfile profile)
     {
-        var code = tokens.Where(t => t.Kind != TokenKind.Comment).ToArray();
+        var code = WithoutDirectives(tokens.Where(t => t.Kind != TokenKind.Comment)).ToArray();
         var root = new SyntaxNode(NodeKind.TopLevel, "", TextRange.Of(tokens), tokens);
         if (code.Length == 0)
             return root;
@@ -589,7 +612,22 @@ public static class StructureParser
                     {
                         var closed = scopes.Pop();
                         closed.Range = closed.Range with { EndLine = token.Line, EndColumn = token.Column };
+                        // One 'End If' closes both the Else branch and the If that owns it, and the
+                        // same holds for Catch and Finally inside a Try. Closing only the inner one
+                        // left the outer block open, so everything after it nested inside.
+                        if (closed.Parent is { Kind: NodeKind.Else or NodeKind.Catch or NodeKind.Finally }
+                            && scopes.Count > 1)
+                        {
+                            var owner = scopes.Pop();
+                            owner.Range = owner.Range with { EndLine = token.Line, EndColumn = token.Column };
+                        }
                     }
+                    // VB closes with two words — 'End If', 'End Function'. Leaving the second one in
+                    // the buffer makes it the start of a new statement, so 'End If' opened another
+                    // If and 'End Function' declared a nameless function that swallowed the rest of
+                    // the file. One VB source collapsed into a single nesting chain that way.
+                    if (i + 1 < Tokens.Count && Tokens[i + 1].Line == token.Line && ClosesWithKeyword(Tokens[i + 1]))
+                        i++;
                     continue;
                 }
 
@@ -620,6 +658,20 @@ public static class StructureParser
                && statement.Tokens[0].Kind == TokenKind.Identifier
                && statement.Text.Length == 0
                && statement.Tokens[0].Text is not ("if" or "unless" or "while" or "until");
+
+        /// <summary>The word that may follow "end" and belongs to the same closer.</summary>
+        private bool ClosesWithKeyword(Token token)
+            => token.Kind is TokenKind.Identifier or TokenKind.Keyword
+               && (Profile.IsBlockKeyword(token.Text) || Profile.IsClassKeyword(token.Text)
+                   || Profile.IsFunctionKeyword(token.Text)
+                   || VbBlockEnders.Contains(token.Text, StringComparer.OrdinalIgnoreCase));
+
+        private static readonly string[] VbBlockEnders =
+        [
+            "if", "function", "sub", "class", "while", "for", "select", "try", "with", "module",
+            "structure", "enum", "property", "namespace", "using", "synclock", "get", "set",
+            "interface", "operator", "event", "region"
+        ];
 
         private bool IsEnd(Token token)
             => token.Kind is TokenKind.Identifier or TokenKind.Keyword
