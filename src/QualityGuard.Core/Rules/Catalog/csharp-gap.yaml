@@ -85,3 +85,102 @@
     other — which is how two overloads of the same operation come to behave differently.
   fix: |
     Move the overloads next to each other.
+
+- key: QG-CS-SML-0483
+  name: The host should be run asynchronously
+  languages: [cs]
+  category: SML
+  severity: major
+  effort: 5min
+  tags: [async]
+  summary: The application host is started with a blocking call.
+  why: |
+    The thread that started the application waits there until shutdown instead of being handed back.
+    Every host offers the awaitable form, and the entry point can await it.
+  fix: |
+    Await the asynchronous form.
+
+- key: QG-CS-SML-0484
+  name: An action should state the type it returns
+  languages: [cs]
+  category: SML
+  severity: minor
+  effort: 15min
+  tags: [aspnet, api]
+  summary: A routed action returns an untyped result while answering with a value.
+  why: |
+    Nothing states what the endpoint produces — not the compiler, not the generated documentation,
+    not the client. A change to the shape of the answer then breaks callers silently.
+  fix: |
+    Return ActionResult<T> with the type the action really produces.
+
+- key: QG-CS-SML-0485
+  name: A field used in one method should be a local
+  languages: [cs]
+  category: SML
+  severity: minor
+  effort: 10min
+  tags: [design]
+  summary: A private field is written before it is read, inside a single method.
+  why: |
+    Nothing outside that method needs the value, and because it is a field the next call starts with
+    whatever the previous one left. A local says the lifetime out loud and cannot be seen elsewhere.
+  fix: |
+    Declare it where it is used.
+
+- key: QG-CS-SML-0486
+  name: A private member nothing reads should be removed
+  languages: [cs]
+  category: SML
+  severity: major
+  effort: 10min
+  tags: [dead-code]
+  summary: A private field or property is never read anywhere in its type.
+  why: |
+    It is private, so nothing outside can read it either. The declaration and whatever fills it are
+    work the program does for nothing, and a reader has to decide what it was for.
+  fix: |
+    Remove it, or use it.
+
+- key: QG-CS-SML-0487
+  name: A loop that only selects should say so
+  languages: [cs]
+  category: SML
+  severity: minor
+  effort: 10min
+  tags: [linq, readability]
+  summary: The whole body of a foreach is a single condition.
+  why: |
+    What the loop says is "the ones that match", written as a walk plus a test. A filter says it in a
+    line, and the reader does not have to hold the iteration in mind to see the intent.
+  fix: |
+    Use a filter, and iterate the result if something still has to happen for each element.
+
+- key: QG-CS-SML-0488
+  name: A disposable type should follow the pattern
+  languages: [cs]
+  category: SML
+  severity: major
+  effort: 20min
+  tags: [design, resources]
+  summary: A type that can be derived from releases resources without offering the pattern.
+  why: |
+    A derived type has nowhere to release what it adds: the base decides when disposal happens and
+    gives it no way to take part. The resource then survives the object that owned it.
+  fix: |
+    Seal the type if nothing should derive from it, or add the protected virtual Dispose(bool) that
+    a derived type can override.
+
+- key: QG-CS-SML-0489
+  name: A branch that returns what it was given changes nothing
+  languages: [cs]
+  category: SML
+  severity: minor
+  effort: 10min
+  tags: [suspicious]
+  summary: Every arm of a multi-way expression produces the value it is switching on.
+  why: |
+    The whole expression is the value it started with, so the branches decide nothing. Usually one of
+    them was meant to produce something else and the change was never finished.
+  fix: |
+    Give the branch the value it was written for, or remove the switch.

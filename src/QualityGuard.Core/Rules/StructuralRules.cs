@@ -568,6 +568,21 @@ public sealed class DeadStoreRule : StructuralRuleBase
                 .OrderBy(u => u.Line)
                 .ToList();
 
+            // a value written and never read again before the name goes out of scope is dead too,
+            // and that is the commoner shape: the assignment is left over from a change
+            var last = usages.Count > 0 ? usages[^1] : null;
+            if (last is { Kind: UsageKind.Assignment }
+                && !InsideInitializer(last.Identifier) && !SetsAMember(last.Identifier)
+                && usages.Any(u => u.Kind == UsageKind.Reference)
+                && last.Value is { } written
+                && !written.DescendantsAndSelf().Any(n => n.Kind == NodeKind.Identifier && n.Text == symbol.Name))
+            {
+                context.Report(last.Identifier, $"'{symbol.Name}' is given a value here that nothing "
+                                                + "reads afterwards. Either the assignment is left "
+                                                + "over, or the code that was meant to use it is.");
+                continue;
+            }
+
             for (var i = 0; i < usages.Count - 1; i++)
             {
                 var write = usages[i];
@@ -1582,10 +1597,28 @@ public sealed class CommentedOutCodeRule : StructuralRuleBase
         foreach (var comment in context.Tokens.Where(t => t.Kind == Tokenization.TokenKind.Comment))
         {
             var text = comment.Text.TrimStart('/', '*', '#', '-', ' ', '\t');
-            if (text.Length < 12 || text.Length > 200)
+            if (text.Length > 200)
                 continue;
-            var looksLikeCode = (text.EndsWith(';') || text.EndsWith('{') || text.EndsWith('}'))
-                                && (text.Contains('=') || text.Contains('(') || text.Contains("return"));
+            if (text.Length < 12 && text.Trim() is not ("{" or "}" or "});" or "};"))
+                continue;
+            // A brace on its own is code: prose does not open blocks. So is a line that ends in a
+            // terminator and carries a call, an assignment or a keyword that only code uses.
+            var trimmed = text.Trim();
+            // a comment that opens a control structure is code whatever it ends with
+            var opensCode = trimmed.StartsWith("if (", StringComparison.Ordinal)
+                            || trimmed.StartsWith("for (", StringComparison.Ordinal)
+                            || trimmed.StartsWith("while (", StringComparison.Ordinal)
+                            || trimmed.StartsWith("foreach (", StringComparison.Ordinal)
+                            || trimmed.StartsWith("switch (", StringComparison.Ordinal)
+                            || trimmed.StartsWith("else if (", StringComparison.Ordinal)
+                            || trimmed.StartsWith("await ", StringComparison.Ordinal)
+                            || trimmed.StartsWith("return ", StringComparison.Ordinal);
+            var looksLikeCode = opensCode
+                                || trimmed is "{" or "}" or "});" or "};"
+                                || ((text.EndsWith(';') || text.EndsWith('{') || text.EndsWith('}'))
+                                    && (text.Contains('=') || text.Contains('(')
+                                        || text.Contains("return") || text.Contains("await ")
+                                        || text.Contains("var ") || text.Contains("new ")));
             if (!looksLikeCode)
                 continue;
             context.Report("This comment holds code that no longer runs; delete it — "

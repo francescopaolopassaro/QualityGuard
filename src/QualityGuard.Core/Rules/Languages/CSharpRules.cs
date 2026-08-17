@@ -51,7 +51,6 @@ public static class CSharpRuleSet
         new CsDivisionByZeroRule(),
         new CsMissingDisposalRule(),
         new CsDeadStoreRule(),
-        new CsCommentedOutCodeRule(),
         new CsNullReferenceRule(),
         new CsFloatEqualityRule(),
         new CsCollectionModifiedRule(),
@@ -1237,7 +1236,9 @@ public sealed class CsCountInsteadOfAnyRule : PatternRuleBase
             var line = lines[i];
             // '.Count' is a property: a list knows its own size, and comparing it costs nothing.
             // The call form is the one that walks the sequence to find out.
-            if (!CSharpRuleSet.HasAny(line, [".Count()", "CountAsync()", ".Count ()"])) continue;
+            // 'Count(predicate) > 0' walks the whole sequence to answer a question Any settles at
+            // the first match, and it is the commoner form of the mistake
+            if (!CSharpRuleSet.HasAny(line, [".Count()", "CountAsync()", ".Count ()", ".Count("])) continue;
             if (!(CSharpRuleSet.HasAny(line, ["> 0", "== 0", "!= 0", "> 0)", "== 0)"]))) continue;
             context.Report("Counting the whole sequence to find out whether it holds anything reads "
                            + "every element. 'Any()' stops at the first one.", i + 1);
@@ -1326,55 +1327,6 @@ public sealed class CsDeadStoreRule : PatternRuleBase
             if (occurrences == 1)
                 context.Report("This local variable is assigned but never used.", tokens[i].Line);
         }
-    }
-}
-
-public sealed class CsCommentedOutCodeRule : PatternRuleBase
-{
-    public override string Key => "QG-CS-SML-0023";
-    public override string Name => "Commented-out code";
-    public override Severity Severity => Severity.Minor;
-    public override IssueKind Kind => IssueKind.CodeSmell;
-    public override string RemediationEffort => "10min";
-    public override string FixAdvice => "Remove commented-out code instead of leaving it in the source.";
-    public override string[] Languages => ["cs", "vb"];
-
-    public override void Execute(IRuleContext context)
-    {
-        foreach (var token in context.Tokens.Where(t => t.Kind == TokenKind.Comment))
-        {
-            // a licence header is prose, and it contains a semicolon as often as any other prose
-            if (token.Text.Contains("Copyright", StringComparison.OrdinalIgnoreCase)
-                || token.Text.Contains("License", StringComparison.OrdinalIgnoreCase)
-                || token.Text.Contains("Licence", StringComparison.OrdinalIgnoreCase))
-                continue;
-
-            foreach (var line in token.Text.Split('\n'))
-            {
-                if (!LooksLikeStatement(line))
-                    continue;
-                context.Report("Remove commented-out code.", token.Line);
-                break;
-            }
-        }
-    }
-
-    /// <summary>
-    /// Whether a commented line is a statement rather than a sentence. A single semicolon anywhere
-    /// is not enough — prose has them too — so the line has to end the way code ends and carry at
-    /// least one of the marks that only code uses.
-    /// </summary>
-    private static bool LooksLikeStatement(string line)
-    {
-        var text = line.Trim().TrimStart('/', '*', ' ', '	').TrimEnd();
-        if (text.Length < 4)
-            return false;
-        if (text[^1] is not (';' or '{' or '}'))
-            return false;
-        if (text.Contains("http", StringComparison.OrdinalIgnoreCase))
-            return false;
-        // a sentence that happens to end in a semicolon has spaces and no code punctuation
-        return text.Contains('(') || text.Contains('=') || text.Contains('.') || text.EndsWith('{');
     }
 }
 

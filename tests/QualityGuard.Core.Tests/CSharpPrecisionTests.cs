@@ -30,14 +30,15 @@ public class CSharpPrecisionTests
                 private int _a;
             }
             """;
-        Assert.Empty(Lines(header, "QG-CS-SML-0023"));
+        // QG-CS-SML-0023 was retired: the shared analyzer answers the same question
+        Assert.Empty(Lines(header, "QG-ALL-SML-0030"));
     }
 
     [Fact]
     public void A_commented_statement_is_still_reported()
         => Assert.NotEmpty(Lines("namespace Demo;\npublic class A\n{\n"
                                  + "    // var total = items.Count();\n    private int _a;\n}\n",
-            "QG-CS-SML-0023"));
+            "QG-ALL-SML-0030"));
 
     [Fact]
     public void A_constructor_forwarding_with_an_empty_body_is_left_alone()

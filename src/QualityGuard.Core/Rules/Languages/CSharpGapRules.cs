@@ -16,7 +16,14 @@ public static class CSharpGapRuleSet
         new CsPrivateTypeSealedRule(),
         new CsEmptyDerivedTypeRule(),
         new CsIndexInsteadOfFirstRule(),
-        new CsOverloadsTogetherRule()
+        new CsOverloadsTogetherRule(),
+        new CsBlockingHostRunRule(),
+        new CsUntypedActionResultRule(),
+        new CsFieldUsedInOneMethodRule(),
+        new CsUnusedPrivateMemberRule(),
+        new CsLoopThatOnlyFiltersRule(),
+        new CsDisposePatternRule(),
+        new CsBranchesReturningTheSubjectRule()
     ];
 }
 
@@ -67,18 +74,22 @@ public sealed class CsTypeNameCasingRule : CSharpGapRuleBase
         if (name.Contains('_'))
             return "separates its words with underscores";
 
+        // A run of capitals in the middle of a name hides where the next word begins:
+        // 'DocDocumentiWKFModelliFasi' has to be read twice. A run at the end does not — 'OrderDTO'
+        // and 'ReportPDF' read cleanly, and naming the suffix that way is a decision a codebase
+        // makes once. So only an interior run is reported.
         var run = 0;
-        foreach (var c in name)
+        for (var i = 0; i < name.Length; i++)
         {
-            if (char.IsUpper(c))
-            {
-                if (++run > 2)
-                    return "runs three capitals together";
-            }
-            else
+            if (!char.IsUpper(name[i]))
             {
                 run = 0;
+                continue;
             }
+            run++;
+            var atEnd = i == name.Length - 1;
+            if (run > 2 && !atEnd)
+                return "runs three capitals together in the middle";
         }
         return null;
     }
@@ -254,12 +265,339 @@ public sealed class CsOverloadsTogetherRule : CSharpGapRuleBase
                     continue;
                 }
 
-                context.Report(methods[i], $"'{name}' has another overload {i - previous} members "
-                                           + "further up. A reader comparing them has to scroll "
-                                           + "between the two, and a change to one is easy to miss "
-                                           + "on the other. Put them next to each other.");
+                // the finding belongs where the group starts: that is where a reader is when they
+                // first meet the name, and where the second one should have been written
+                context.Report(methods[previous], $"'{name}' has another overload {i - previous} "
+                                                  + "members further down. A reader comparing them "
+                                                  + "has to scroll between the two, and a change made "
+                                                  + "to one is easy to miss on the other. Put them "
+                                                  + "next to each other.");
                 seen[name] = i;
             }
         }
+    }
+}
+
+public sealed class CsBlockingHostRunRule : CSharpGapRuleBase
+{
+    private static readonly string[] Blocking = ["Run", "Start", "StopAsync", "WaitForShutdown"];
+
+    public override string Key => "QG-CS-SML-0483";
+    public override string Name => "The host should be run asynchronously";
+    public override Severity Severity => Severity.Major;
+    public override string RemediationEffort => "5min";
+
+    public override void Execute(IRuleContext context)
+    {
+        if (!HasTree(context))
+            return;
+
+        foreach (var call in SyntaxQuery.Invocations(context.Root))
+        {
+            var name = SyntaxQuery.InvokedName(call);
+            if (name is not ("Run" or "WaitForShutdown"))
+                continue;
+            var receiver = SyntaxQuery.Receiver(call);
+            if (receiver is not ("app" or "host" or "builder"))
+                continue;
+            if (SyntaxQuery.Arguments(call).Count > 0)
+                continue;
+
+            context.Report(call, $"'{receiver}.{name}()' blocks the thread that started the "
+                                 + "application until it shuts down. The asynchronous form frees it, "
+                                 + $"and every host offers one: await {receiver}.{name}Async().");
+            _ = Blocking;
+        }
+    }
+}
+
+public sealed class CsUntypedActionResultRule : CSharpGapRuleBase
+{
+    private static readonly string[] Verbs =
+        ["HttpGet", "HttpPost", "HttpPut", "HttpPatch", "HttpDelete", "HttpHead", "Route"];
+
+    public override string Key => "QG-CS-SML-0484";
+    public override string Name => "An action should state the type it returns";
+    public override string RemediationEffort => "15min";
+
+    public override void Execute(IRuleContext context)
+    {
+        if (!HasTree(context))
+            return;
+
+        foreach (var method in context.Root.OfKind(NodeKind.FunctionDeclaration))
+        {
+            var routed = method.ChildrenOf(NodeKind.Attribute)
+                .Any(a => Verbs.Contains(a.Text, StringComparer.Ordinal));
+            if (!routed)
+                continue;
+
+            var returned = method.FirstChild(NodeKind.TypeReference)?.Text;
+            if (returned is not ("IActionResult" or "Task<IActionResult>"
+                or "ValueTask<IActionResult>" or "ActionResult"))
+                continue;
+            // an action that only ever answers with a status says nothing worth typing
+            var body = SyntaxQuery.Body(method);
+            if (body == null || !body.OfKind(NodeKind.Invocation)
+                    .Any(c => SyntaxQuery.InvokedName(c) is "Ok" or "Created" or "CreatedAtAction"
+                        && SyntaxQuery.Arguments(c).Count > 0))
+                continue;
+
+            context.Report(method, $"'{method.Text}' answers with a value but declares only "
+                                   + $"'{returned}', so nothing states what that value is — not the "
+                                   + "compiler, not the generated documentation, not the client. "
+                                   + "Return ActionResult<T> with the type it really produces.");
+        }
+    }
+}
+
+public sealed class CsFieldUsedInOneMethodRule : CSharpGapRuleBase
+{
+    public override string Key => "QG-CS-SML-0485";
+    public override string Name => "A field used in one method should be a local";
+    public override string RemediationEffort => "10min";
+
+    public override void Execute(IRuleContext context)
+    {
+        if (!HasTree(context))
+            return;
+
+        foreach (var type in context.Root.OfKind(NodeKind.ClassDeclaration))
+        {
+            var body = type.FirstChild(NodeKind.Block);
+            if (body == null)
+                continue;
+
+            var methods = body.Children
+                .Where(c => c.Kind is NodeKind.FunctionDeclaration or NodeKind.ConstructorDeclaration
+                    or NodeKind.PropertyDeclaration)
+                .ToList();
+            if (methods.Count < 2)
+                continue;
+
+            foreach (var field in body.ChildrenOf(NodeKind.FieldDeclaration))
+            {
+                var modifiers = field.ChildrenOf(NodeKind.Modifier).Select(m => m.Text).ToArray();
+                // 'readonly' is not the question: a field assigned once in the constructor and read
+                // by one method is still state the type carries for nobody else
+                if (!modifiers.Contains("private") || modifiers.Contains("static")
+                    || modifiers.Contains("const"))
+                    continue;
+                var name = field.Text;
+                if (name.Length == 0)
+                    continue;
+
+                var users = methods
+                    .Where(m => m.Kind != NodeKind.ConstructorDeclaration
+                                && m.OfKind(NodeKind.Identifier).Any(i => i.Text == name))
+                    .ToList();
+                if (users.Count != 1)
+                    continue;
+                // A field read before it is written carries state from the previous call — that is
+                // what '_disposed' and '_initialized' are for, and they belong to the object. Only a
+                // field written first is really a local that escaped its method.
+                if (!modifiers.Contains("readonly") && !WrittenBeforeRead(users[0], name))
+                    continue;
+                // a template beside this file can bind the name, and the markup is not a method
+                var inFile = type.OfKind(NodeKind.Identifier).Count(i => i.Text == name);
+                if (context.Project.ReferenceCount(name) > inFile)
+                    continue;
+
+
+                context.Report(field, $"'{name}' is read and written inside one method only, so it "
+                                      + "holds state between calls that nothing else uses — and a "
+                                      + "second call sees what the first one left. Make it a local.");
+            }
+        }
+    }
+
+    /// <summary>
+    /// Whether the first thing the method does with the name is write it. Reading first means the
+    /// value came from somewhere else, which for a field means the call before this one.
+    /// </summary>
+    private static bool WrittenBeforeRead(SyntaxNode method, string name)
+    {
+        foreach (var node in method.DescendantsAndSelf())
+        {
+            if (node.Kind == NodeKind.Assignment
+                && SyntaxQuery.SimpleName(node.ChildAt(0)) == name)
+                return true;
+            if (node.Kind == NodeKind.Identifier && node.Text == name)
+                return false;
+        }
+        return false;
+    }
+}
+
+public sealed class CsUnusedPrivateMemberRule : CSharpGapRuleBase
+{
+    public override string Key => "QG-CS-SML-0486";
+    public override string Name => "A private member nothing reads should be removed";
+    public override Severity Severity => Severity.Major;
+    public override string RemediationEffort => "10min";
+
+    public override void Execute(IRuleContext context)
+    {
+        if (!HasTree(context))
+            return;
+
+        foreach (var type in context.Root.OfKind(NodeKind.ClassDeclaration))
+        {
+            var body = type.FirstChild(NodeKind.Block);
+            if (body == null)
+                continue;
+
+            foreach (var member in body.Children
+                         .Where(c => c.Kind is NodeKind.FieldDeclaration or NodeKind.PropertyDeclaration))
+            {
+                var modifiers = member.ChildrenOf(NodeKind.Modifier).Select(m => m.Text).ToArray();
+                // a member of a private nested type is out of reach from outside whatever it says
+                var typeIsPrivate = type.ChildrenOf(NodeKind.Modifier).Any(m => m.Text == "private");
+                if (!modifiers.Contains("private") && !typeIsPrivate)
+                    continue;
+                if (member.ChildrenOf(NodeKind.Attribute).Any())
+                    continue; // a framework can reach it by name
+                var name = member.Text;
+                if (name.Length == 0)
+                    continue;
+
+                // an assignment is not a read: a field the constructor fills and nobody looks at is
+                // still a field nobody looks at
+                var reads = body.OfKind(NodeKind.Identifier)
+                    .Count(i => i.Text == name && !IsAssignmentTarget(i));
+                var own = member.OfKind(NodeKind.Identifier).Count(i => i.Text == name);
+                if (reads > own)
+                    continue;
+                // the same name may be bound from a template, which no method contains
+                if (context.Project.ReferenceCount(name) > reads)
+                    continue;
+
+                context.Report(member, $"Nothing in '{type.Text}' reads '{name}'. It is private, so "
+                                       + "nothing outside can either: the declaration and whatever "
+                                       + "fills it are work that changes nothing.");
+            }
+        }
+    }
+
+    /// <summary>Whether this appearance of the name is the left-hand side of an assignment.</summary>
+    private static bool IsAssignmentTarget(SyntaxNode identifier)
+    {
+        var parent = identifier.Parent;
+        if (parent is { Kind: NodeKind.MemberSelect })
+            parent = parent.Parent;
+        return parent is { Kind: NodeKind.Assignment } && parent.Children.FirstOrDefault() is { } left
+               && left.DescendantsAndSelf().Contains(identifier);
+    }
+}
+
+public sealed class CsLoopThatOnlyFiltersRule : CSharpGapRuleBase
+{
+    public override string Key => "QG-CS-SML-0487";
+    public override string Name => "A loop that only selects should say so";
+    public override string RemediationEffort => "10min";
+
+    public override void Execute(IRuleContext context)
+    {
+        if (!HasTree(context))
+            return;
+
+        foreach (var loop in context.Root.OfKind(NodeKind.Loop))
+        {
+            if (loop.Text != "foreach")
+                continue;
+            var body = loop.FirstChild(NodeKind.Block);
+            // the whole body is one condition, with nothing after it
+            var only = body is { Children.Count: 1 } ? body.Children[0] : null;
+            if (only is not { Kind: NodeKind.If })
+                continue;
+            if (only.FirstChild(NodeKind.Else) != null)
+                continue;
+
+            context.Report(loop, "The loop walks everything and the body is one condition, so what it "
+                                 + "really says is 'the ones that match'. A filter says that in a "
+                                 + "line, and the reader does not have to hold the loop in mind to "
+                                 + "see it.");
+        }
+    }
+}
+
+public sealed class CsDisposePatternRule : CSharpGapRuleBase
+{
+    public override string Key => "QG-CS-SML-0488";
+    public override string Name => "A disposable type should follow the pattern";
+    public override Severity Severity => Severity.Major;
+    public override string RemediationEffort => "20min";
+
+    public override void Execute(IRuleContext context)
+    {
+        if (!HasTree(context))
+            return;
+
+        foreach (var type in context.Root.OfKind(NodeKind.ClassDeclaration))
+        {
+            var info = context.Project.FindTypes(type.Text).FirstOrDefault(t => t.Node == type);
+            if (info is null || !info.BaseNames.Any(b => b is "IDisposable" or "IAsyncDisposable"))
+                continue;
+            var modifiers = type.ChildrenOf(NodeKind.Modifier).Select(m => m.Text).ToArray();
+            if (modifiers.Contains("sealed"))
+                continue; // a sealed type cannot be derived from, so the pattern buys nothing
+
+            var body = type.FirstChild(NodeKind.Block);
+            if (body == null)
+                continue;
+            var methods = body.ChildrenOf(NodeKind.FunctionDeclaration).ToList();
+            var overridable = methods.Any(m => m.Text == "Dispose"
+                                               && SyntaxQuery.Parameters(m).Any()
+                                               && m.ChildrenOf(NodeKind.Modifier)
+                                                   .Any(x => x.Text is "virtual" or "override"));
+            if (overridable || methods.All(m => m.Text != "Dispose"))
+                continue;
+
+            context.Report(type, $"'{type.Text}' can be derived from and holds something to release, "
+                                 + "but offers no way for a derived type to take part: whatever it "
+                                 + "adds is never released. Either seal the type, or add the "
+                                 + "protected virtual Dispose(bool) the pattern is built on.");
+        }
+    }
+}
+
+public sealed class CsBranchesReturningTheSubjectRule : CSharpGapRuleBase
+{
+    public override string Key => "QG-CS-SML-0489";
+    public override string Name => "A branch that returns what it was given changes nothing";
+    public override string RemediationEffort => "10min";
+
+    public override void Execute(IRuleContext context)
+    {
+        if (!HasTree(context))
+            return;
+
+        foreach (var match in context.Root.OfKind(NodeKind.Match))
+        {
+            var subject = SyntaxQuery.DottedName(match.ChildAt(0) ?? match);
+            if (subject.Length == 0)
+                continue;
+
+            var body = match.FirstChild(NodeKind.Block);
+            if (body == null)
+                continue;
+            var sections = body.ChildrenOf(NodeKind.SwitchSection).ToList();
+            if (sections.Count < 2)
+                continue;
+
+            var unchanged = sections.Count(section => Produces(section) == subject);
+            if (unchanged == 0 || unchanged < sections.Count - 1)
+                continue;
+
+            context.Report(match, $"Every branch here hands back '{subject}' unchanged, so the whole "
+                                  + "expression is the value it started with. Either a branch was "
+                                  + "meant to produce something else, or the switch can go.");
+        }
+    }
+
+    private static string Produces(SyntaxNode section)
+    {
+        var value = section.Children.LastOrDefault();
+        return value == null ? string.Empty : SyntaxQuery.DottedName(value);
     }
 }

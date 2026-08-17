@@ -57,10 +57,13 @@ public abstract class OrmRuleBase : RuleBase
         "TagWith", "ExecuteUpdate", "ExecuteDelete"
     ];
 
-    /// <summary>Names a data source answers to.</summary>
+    /// <summary>
+    /// Words that name a data source. They are matched against the root of the chain — the thing the
+    /// call ultimately hangs off — because 'items.Select(...).ToList()' walks a list in memory and
+    /// 'context.Comuni.ToList()' walks a table.
+    /// </summary>
     private static readonly string[] Sources =
-        ["_db", "_context", "dbcontext", "dbset", "repository", "_repository", "Set<", "_uow",
-         "unitofwork", "queryable"];
+        ["db", "context", "repository", "repo", "store", "uow", "unitofwork", "queryable", "set"];
 
     protected static bool HasTree(IRuleContext context) => context.Tree.HasDedicatedParser;
 
@@ -73,8 +76,11 @@ public abstract class OrmRuleBase : RuleBase
         var text = node.Text;
         if (text.Length == 0)
             text = SyntaxQuery.DottedName(node);
-        return Operators.Any(op => text.Contains("." + op, StringComparison.Ordinal))
-               || Sources.Any(source => text.Contains(source, StringComparison.OrdinalIgnoreCase));
+        if (Operators.Any(op => text.Contains("." + op, StringComparison.Ordinal)))
+            return true;
+
+        var root = text.Split('.').FirstOrDefault() ?? string.Empty;
+        return Sources.Any(source => root.Contains(source, StringComparison.OrdinalIgnoreCase));
     }
 }
 
