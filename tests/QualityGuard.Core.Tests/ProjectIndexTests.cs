@@ -72,13 +72,26 @@ public class ProjectIndexTests
     }
 
     [Fact]
-    public void A_type_declared_twice_is_reported()
+    public void A_type_declared_twice_in_one_namespace_is_reported()
     {
+        var analyses = Analyze(
+            ("A.cs", "namespace One; public class Report { public void Go() { } }"),
+            ("B.cs", "namespace One; public class Report { public void Stop() { } }"));
+
+        var findings = analyses.SelectMany(a => a.Issues).Where(i => i.RuleKey == "QG-ALL-SML-0033");
+        Assert.Equal(2, findings.Count());
+    }
+
+    [Fact]
+    public void The_same_name_in_two_namespaces_is_left_alone()
+    {
+        // Settings, Options and Handler exist once per module by design, and the language keeps them
+        // apart: only a clash inside one namespace leaves a reader guessing
         var analyses = Analyze(
             ("A.cs", "namespace One; public class Report { public void Go() { } }"),
             ("B.cs", "namespace Two; public class Report { public void Go() { } }"));
 
         var findings = analyses.SelectMany(a => a.Issues).Where(i => i.RuleKey == "QG-ALL-SML-0033");
-        Assert.Equal(2, findings.Count());
+        Assert.Empty(findings);
     }
 }

@@ -141,10 +141,10 @@ Severity and issue kind follow the category: `SEC` → vulnerability (major or a
 
 ## 5. Rules
 
-**1316 rules are loaded and executable**, backed by **2634 catalog entries** (a catalog entry either
+**1314 rules are loaded and executable**, backed by **2626 catalog entries** (a catalog entry either
 carries its own detection or documents a rule implemented in code).
 
-Coverage is tracked honestly in `rules-tracker.tsv`: **3256 catalogued rules are mapped, 1506 of them
+Coverage is tracked honestly in `rules-tracker.tsv`: **3256 catalogued rules are mapped, 1515 of them
 executable**. The rest are documented and deliberately silent — a rule counts as implemented only
 when it detects something and has been measured on real code.
 
@@ -475,7 +475,7 @@ rule that produces noise is rewritten on the syntax tree or removed, and every f
 was fixed is pinned by a regression test — written next to the shape the rule must still report — so
 the precision cannot be lost again silently.
 
-**481 tests** cover the parsers, the semantic model, taint, the scanner and rule precision.
+**494 tests** cover the parsers, the semantic model, taint, the scanner and rule precision.
 
 ```bash
 dotnet build QualityGuard.sln
@@ -500,26 +500,43 @@ usually contains other defects nobody annotated.
 
 | Corpus | Annotated files | Expected lines | Recall | Precision |
 | --- | --- | --- | --- | --- |
+| C# | 1,079 | 11,238 | **65.8%** | 38.3% |
 | Go | 52 | 234 | **69.2%** | 47.7% |
 | JavaScript | 109 | 921 | **53.2%** | **50.8%** |
-| Python | 611 | 6,451 | **51.8%** | 39.4% |
-| Java | 1,004 | 10,130 | **44.9%** | 36.7% |
+| Python | 611 | 6,451 | **51.4%** | 40.6% |
+| Kotlin | 159 | 2,030 | **47.0%** | **56.5%** |
+| Java | 1,004 | 10,130 | **46.0%** | 36.7% |
+| PHP | 285 | 2,482 | **44.3%** | 47.3% |
+| VB.NET | 254 | 2,392 | **40.4%** | **64.5%** |
 
 Recall sits above the share of rules ported in every language measured. It is the number each new
 wave has to move, and the honest answer to "how much is still missing".
 
 The tool also names the checks it covers least (`--missing`), and the waves are chosen from the top
 of that list rather than from taste. The JavaScript wave took recall from 31.8% to 53.2% and
-precision from 43.7% to 50.8% in the same pass.
+precision from 43.7% to 50.8% in the same pass; the PHP wave took recall from 38.9% to 44.3%.
 
-**Recall borrowed from a noisy rule is not recall.** The Java figure fell from 48.1% to 43.5% in the
-pass that fixed three structural rules, and that is the trade being made on purpose: those rules were
-landing on marked lines by accident, because they reported on nearly everything. The same pass removed
-about 3,900 findings and lost 560 matched lines — seven out of eight of the findings that went away
-were on lines nobody had marked. The engine now says less and is right more often, which is the only
+**Recall borrowed from a noisy rule is not recall.** The Java figure fell once, in the pass that
+fixed three structural rules, and that is the trade being made on purpose: those rules were landing
+on marked lines by accident, because they reported on nearly everything. The same pass removed about
+3,900 findings and lost 560 matched lines — seven out of eight of the findings that went away were on
+lines nobody had marked. The engine now says less and is right more often, which is the only
 direction that matters when the report is read by a person.
 
-### One defect, one finding
+### A whole language was never measured
+
+C# is the largest catalogue in the engine and the figure above is its first: until this pass, running
+the analyzer over that corpus ended with `ERROR: Index was out of range` and no report at all. One
+file — a deliberately malformed source, of the kind any repository being edited contains — sent the
+attribute parser past the end of its token list, and the whole scan died with it.
+
+Two things changed. The parser now checks that an attribute list actually closes before reading one,
+instead of consuming the rest of the file looking for a bracket. And the engine no longer lets one
+file end a run: a source it cannot read is recorded with its reason and the scan carries on, because
+a quality gate that stops at the first surprise is worse than one that reports what it managed to
+read. The corpus that produced nothing now produces 33,273 findings, 65.8% of the expected lines.
+
+### One defect, one finding### One defect, one finding
 
 A reader who is told the same thing three times stops reading. `tools/overlapping_rules.py` runs the
 engine over a corpus and reports the rule pairs whose findings land on the same line:
@@ -528,12 +545,18 @@ engine over a corpus and reports the rule pairs whose findings land on the same 
 python tools/overlapping_rules.py --path <corpus> --extension .java
 ```
 
-On the Java corpus it found twenty such pairs, and the largest was four rules for one defect: a call
+On the Java corpus it found twenty such pairs, and on the C# one forty-five, and the largest was four rules for one defect: a call
 to `System.out` was reported by a shared analyzer and by three separate ported entries, 1,076 times
 each. Seven rules were retired in favour of the one that says it best. Retirement is recorded in the
 catalogue rather than hidden: the entry keeps its documentation and takes `status: superseded` with
 `superseded_by`, so the identifier keeps its meaning and is never handed to a different check. The
-validator enforces that pairing, and the count of overlapping pairs is down to nine.
+validator enforces that pairing.
+
+Fifteen rules have been retired this way so far. Three of them said the same thing about
+`System.out`, three about a thrown `Exception`, two about an empty method body. One was a security
+rule that matched any call named `forName`, so `Charset.forName("UTF-8")` was reported as a
+vulnerability; another was about the case of a numeric suffix and ran with case ignored, so it
+reported `0L` and `54U` — the correct form — as mistakes.
 
 Two of the retired rules were worse than redundant. *Unsafe APIs should not be used* and *Invalid
 Date values should not be used* were both written as one-line matches — `new Random()` and

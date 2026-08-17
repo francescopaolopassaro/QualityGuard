@@ -368,7 +368,23 @@ public sealed class CSharpParser
     private bool LooksLikeAttribute()
     {
         var next = Peek();
-        return next is { Kind: TokenKind.Identifier or TokenKind.Keyword };
+        if (next is not { Kind: TokenKind.Identifier or TokenKind.Keyword })
+            return false;
+        // An attribute list closes. A '[' that never does belongs to a source being edited, and
+        // reading it as one consumed the rest of the file — after which every position was past the
+        // end. Look ahead for the bracket, and stop at what an attribute can never contain.
+        var depth = 0;
+        for (var i = _index; i < _tokens.Count && i < _index + 200; i++)
+        {
+            var text = _tokens[i].Text;
+            if (text == "[")
+                depth++;
+            else if (text == "]" && --depth == 0)
+                return true;
+            else if (text is "{" or ";" or ")")
+                return false;
+        }
+        return false;
     }
 
     private List<string> ParseModifiers()

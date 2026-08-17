@@ -130,7 +130,11 @@ public sealed class StandardOutputForLoggingRule : ApiRuleBase
         ["println", "print", "printf", "WriteLine", "Write", "log", "warn", "error", "puts"];
 
     private static readonly string[] ConsoleOwners =
-        ["System.out", "System.err", "Console", "console", "out", "err", "STDOUT", "STDERR"];
+    [
+        "System.out", "System.err", "Console", "console", "out", "err", "STDOUT", "STDERR",
+        // .NET writes its diagnostics through these two, and they reach the same place
+        "Debug", "Trace", "System.Console", "System.Diagnostics.Debug", "System.Diagnostics.Trace"
+    ];
 
     public override string Key => "QG-ALL-SML-0046";
     public override string Name => "Logging should not go straight to the console";

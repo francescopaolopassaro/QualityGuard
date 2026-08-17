@@ -56,13 +56,35 @@ public static class RegexLiterals
     private static readonly string[] StringRegexMethods =
         ["matches", "replaceAll", "replaceFirst", "split"];
 
+    /// <summary>
+    /// PHP writes every pattern as a plain function call, and wraps it in a delimiter of its own
+    /// choosing with the flags after the closing one.
+    /// </summary>
+    private static readonly string[] PhpPatternFunctions =
+    [
+        "preg_match", "preg_match_all", "preg_replace", "preg_replace_callback",
+        "preg_replace_callback_array", "preg_split", "preg_grep"
+    ];
+
     public static IEnumerable<RegexLiteral> In(IRuleContext context)
     {
         var stringMethodsCarryRegex = context.Language.LanguageKey is "java" or "kt";
+        var php = context.Language.LanguageKey == "php";
 
         foreach (var call in SyntaxQuery.Invocations(context.Root))
         {
             var name = SyntaxQuery.InvokedName(call);
+            if (php && PhpPatternFunctions.Contains(name, StringComparer.Ordinal))
+            {
+                // argument zero is the pattern; argument one is the replacement, and reading that
+                // one as a regex reported on the text a match is turned into
+                var written = SyntaxQuery.ArgumentAt(call, 0);
+                if (written != null && SyntaxQuery.IsStringLiteral(written)
+                    && Undelimit(written.Text) is { Length: > 1 } pattern)
+                    yield return new RegexLiteral(written, pattern);
+                continue;
+            }
+
             var certain = AlwaysPatterns.Contains(name, StringComparer.Ordinal)
                           || (stringMethodsCarryRegex
                               && StringRegexMethods.Contains(name, StringComparer.Ordinal));
@@ -86,6 +108,32 @@ public static class RegexLiterals
             if (argument is { Text.Length: > 1 })
                 yield return new RegexLiteral(argument, argument.Text);
         }
+    }
+
+    /// <summary>
+    /// Strips the delimiters PHP wraps a pattern in, and the flags that follow the closing one.
+    /// Returns an empty string when the text is not delimited, because then it is not a pattern.
+    /// </summary>
+    private static string Undelimit(string written)
+    {
+        if (written.Length < 2)
+            return string.Empty;
+        var open = written[0];
+        if (char.IsLetterOrDigit(open) || open == (char)92 || open == ' ')
+            return string.Empty;
+        var close = open switch
+        {
+            '(' => ')', '[' => ']', '{' => '}', '<' => '>',
+            _ => open
+        };
+        var end = written.LastIndexOf(close);
+        if (end <= 0)
+            return string.Empty;
+        // the flags sit after the closing delimiter and change what the pattern means; carrying them
+        // back as an inline group keeps every rule reading one thing
+        var flags = written[(end + 1)..].Trim();
+        var inline = flags.Length > 0 ? "(?" + flags + ")" : string.Empty;
+        return inline + written[1..end];
     }
 }
 

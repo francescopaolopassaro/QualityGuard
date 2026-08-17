@@ -239,6 +239,8 @@ public sealed class JavaConstantMathRule : JavaMeasuredRuleBase
 
 public sealed class JavaWeakKeySizeRule : JavaMeasuredRuleBase
 {
+    // the JVM API is the same one Kotlin calls, and the mistake is written identically
+    public override string[] Languages => ["java", "kt"];
     public override string Key => "QG-JV-SEC-0069";
     public override string Name => "A cryptographic key should be long enough";
     public override IssueKind Kind => IssueKind.Vulnerability;
@@ -247,7 +249,9 @@ public sealed class JavaWeakKeySizeRule : JavaMeasuredRuleBase
 
     public override void Execute(IRuleContext context)
     {
-        if (!HasTree(context))
+        // Kotlin is read by the generic parser, and this rule needs no more than a call with a
+        // number in it, so it runs there too
+        if (context.Root.Children.Count == 0)
             return;
 
         foreach (var call in SyntaxQuery.InvocationsNamed(context.Root, "initialize", "setKeySize", "keySize"))

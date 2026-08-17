@@ -184,6 +184,8 @@ public sealed class SpecRule(CatalogEntry entry) : IRule
             return;
         var regex = _patterns.TryGetValue(pattern, out var cached)
             ? cached
+            // case is ignored by default because most catalogue patterns name an API and do not
+            // care how it was typed; a rule that is about the case itself opens with '(?-i)'
             : _patterns[pattern] = new Regex(pattern, RegexOptions.IgnoreCase | RegexOptions.Compiled);
 
         var lines = context.File.Content.Split('\n');

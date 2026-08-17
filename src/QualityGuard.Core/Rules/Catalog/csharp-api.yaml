@@ -119,6 +119,8 @@
 
 - key: QG-CS-SML-0466
   name: A thrown exception should say what went wrong
+  status: superseded
+  superseded_by: QG-ALL-SML-0026
   languages: [cs, vb]
   category: SML
   severity: major

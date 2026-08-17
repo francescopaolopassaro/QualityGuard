@@ -1543,23 +1543,54 @@ public sealed class DuplicateTypeNameRule : StructuralRuleBase
         {
             if (type.Text.Length < 3 || !context.Project.IsDeclaredMoreThanOnce(type.Text))
                 continue;
-            // The same simple name in two packages is ordinary — Settings, Options, Handler exist
-            // once per module by design, and the language keeps them apart. It only confuses a
-            // reader when the two sit side by side, so the comparison is made within one folder.
-            var folder = System.IO.Path.GetDirectoryName(context.File.Path) ?? string.Empty;
+            // The same simple name in two namespaces is ordinary — Settings, Options and Handler
+            // exist once per module by design, and the language keeps them apart. It only confuses a
+            // reader when the two answer to the same qualified name, so that is what is compared;
+            // where no namespace is declared, the folder stands in for it.
+            // without a declared namespace the language itself cannot tell the two apart, which is
+            // what the rule about declaring types in a namespace is for
+            var here = Container(type, context.File.Path);
+            if (here.Length == 0)
+                continue;
             var others = context.Project.FindTypes(type.Text)
                 .Where(t => t.File != context.File.Path
-                            && string.Equals(System.IO.Path.GetDirectoryName(t.File), folder,
-                                StringComparison.OrdinalIgnoreCase))
+                            && string.Equals(Container(t.Node, t.File), here, StringComparison.OrdinalIgnoreCase))
                 .Select(t => System.IO.Path.GetFileName(t.File))
                 .Distinct()
                 .ToArray();
             if (others.Length == 0)
                 continue;
-            context.Report(type, $"'{type.Text}' is also declared in {string.Join(", ", others)}; "
-                                 + "a reader cannot tell which one an import refers to.");
+            // the message names a few of them: a list of ninety file names is not a message
+            var named = string.Join(", ", others.Take(3));
+            var rest = others.Length > 3 ? $" and {others.Length - 3} more files" : string.Empty;
+            context.Report(type, $"'{type.Text}' is also declared in {named}{rest}, under the same "
+                                 + "namespace; a reader cannot tell which one an import refers to.");
         }
     }
+    /// <summary>
+    /// What a type is qualified by: the namespace or package it is declared in, and the folder when
+    /// the language does not declare one.
+    /// </summary>
+    private static string Container(SyntaxNode type, string path)
+    {
+        for (var node = type.Parent; node != null; node = node.Parent)
+        {
+            if (node.Kind == NodeKind.PackageDeclaration && node.Text.Length > 0)
+                return node.Text;
+        }
+        // a file-scoped namespace is a sibling of the type, not its parent: it covers everything
+        // written after it, so the last one declared before this type is the one it belongs to
+        var root = type;
+        while (root.Parent != null)
+            root = root.Parent;
+        var declared = root.ChildrenOf(NodeKind.PackageDeclaration)
+            .Where(n => n.Range.StartLine <= type.Range.StartLine && n.Text.Length > 0)
+            .Select(n => n.Text)
+            .LastOrDefault();
+        _ = path;
+        return declared ?? string.Empty;
+    }
+
 }
 
 public sealed class EqualityContractRule : StructuralRuleBase

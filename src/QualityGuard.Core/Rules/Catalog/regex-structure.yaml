@@ -1,0 +1,60 @@
+# Descriptions for the regular-expression rules in Rules/RegexStructureRules.cs. They read the shape
+# of a pattern rather than a list of its parts, and they apply to every language whose patterns the
+# engine can find.
+
+- key: QG-ALL-BUG-0039
+  name: A repeated group should not match the empty string
+  languages: []
+  category: BUG
+  severity: major
+  effort: 15min
+  tags: [regex, suspicious]
+  summary: A quantifier is applied to a group that can succeed without reading anything.
+  why: |
+    The repetition can run without consuming input, so it adds nothing to what the pattern matches.
+    Some engines loop on it instead of finishing, and the ones that do not still spend the work.
+    Almost always the group was meant to require something.
+  fix: |
+    Make the group match at least one character, or drop the quantifier.
+  bad: |
+    preg_match('/(x*)*/', $input);
+  good: |
+    preg_match('/(x+)*/', $input);
+
+- key: QG-ALL-BUG-0040
+  name: An anchor should be in a position where it can hold
+  languages: []
+  category: BUG
+  severity: major
+  effort: 15min
+  tags: [regex, suspicious]
+  summary: A start or end anchor has text on the side where the input has already ended.
+  why: |
+    Nothing can come before the start of the input or after its end, so the branch never matches at
+    all. The pattern looks like it works because another branch does the matching, and the case this
+    one was written for is silently never handled.
+  fix: |
+    Move the anchor to the end of the branch it belongs to, or remove it.
+  bad: |
+    preg_match('/$[a-z]/', $input);
+  good: |
+    preg_match('/[a-z]$/', $input);
+
+- key: QG-ALL-SML-0052
+  name: A lazy quantifier before a fixed terminator should be a negated class
+  languages: []
+  category: SML
+  severity: minor
+  effort: 10min
+  tags: [regex, performance]
+  summary: A lazy repetition of a wide atom is followed by the one character that ends it.
+  why: |
+    The engine gives up a character at a time and retries the terminator after each one, which is the
+    slowest way to reach it. On a long line that is quadratic work for a match a single pass would
+    find.
+  fix: |
+    Repeat a class that excludes the terminator, and make it possessive where the flavour allows it.
+  bad: |
+    preg_match('/<.+?>/', $input);
+  good: |
+    preg_match('/<[^>]++>/', $input);

@@ -14,7 +14,6 @@ public static class CSharpApiRuleSet
     [
         new CSharpPublicFieldRule(),
         new CSharpUtilityClassConstructorRule(),
-        new CSharpGeneralExceptionRule(),
         new CSharpObsoleteWithoutReasonRule(),
         new CSharpRedundantToStringRule(),
         new CSharpTrivialPropertyRule(),
@@ -139,43 +138,6 @@ public sealed class CSharpUtilityClassConstructorRule : CSharpApiRuleBase
                                + "nothing at all — and this constructor invites one. Mark the class "
                                + "static, or make the constructor private.", constructor.Range.StartLine);
             }
-        }
-    }
-}
-
-public sealed class CSharpGeneralExceptionRule : CSharpApiRuleBase
-{
-    private static readonly string[] TooGeneral =
-        ["Exception", "SystemException", "ApplicationException", "NullReferenceException",
-         "IndexOutOfRangeException", "StackOverflowException", "OutOfMemoryException",
-         "ExecutionEngineException"];
-
-    public override string Key => "QG-CS-SML-0466";
-    public override string Name => "A thrown exception should say what went wrong";
-    public override string RemediationEffort => "15min";
-
-    public override void Execute(IRuleContext context)
-    {
-        if (!HasTree(context))
-            return;
-
-        foreach (var jump in context.Root.OfKind(NodeKind.Jump))
-        {
-            if (jump.Text != "throw" || jump.Children.Count == 0)
-                continue;
-            var creation = jump.Children[0];
-            if (creation.Kind != NodeKind.ObjectCreation)
-                continue;
-            var type = SyntaxQuery.SimpleName(creation.ChildAt(0)) is { Length: > 0 } named
-                ? named
-                : creation.Text;
-            if (!TooGeneral.Contains(type))
-                continue;
-
-            context.Report($"'{type}' tells a caller nothing, so the only way to handle it is to catch "
-                           + "everything — which catches the failures nobody planned for as well. Throw "
-                           + "the exception that names the problem, or one of your own.",
-                jump.Range.StartLine);
         }
     }
 }

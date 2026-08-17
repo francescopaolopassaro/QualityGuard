@@ -496,7 +496,8 @@
   fix: |
     Write the suffix in upper case, and consider digit separators for long numbers.
   detect:
-    - line: "\\b\\d+[lu]\\b"
+    # (?-i): the rule is about the case of the suffix, and the matcher ignores case by default
+    - line: "(?-i)\\b\\d+[lu]\\b"
 
 - key: QG-CS-CNV-0008
   name: Increments should not be mixed into larger expressions

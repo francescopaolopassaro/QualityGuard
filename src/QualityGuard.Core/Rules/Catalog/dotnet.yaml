@@ -490,6 +490,8 @@
     displaying a value to a user.
 - key: QG-CS-SML-0002
   name: Caught exceptions should not be ignored
+  status: superseded
+  superseded_by: QG-ALL-SML-0020
   languages: [cs]
   category: SML
   severity: major

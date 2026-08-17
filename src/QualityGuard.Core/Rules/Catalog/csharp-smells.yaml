@@ -22,6 +22,8 @@
 
 - key: QG-CS-SML-0027
   name: Catch clauses should name the exceptions they handle
+  status: superseded
+  superseded_by: QG-ALL-SML-0025
   languages: [cs, vb]
   category: SML
   severity: major
@@ -36,8 +38,6 @@
   fix: |
     Catch the specific exceptions the operation can produce. Keep one broad handler at the process
     boundary that logs and rethrows, so nothing is silently absorbed deeper in the call stack.
-  detect:
-    - line: "catch\\s*\\(\\s*(System\\.)?(Exception|SystemException)\\s*[a-zA-Z_)]"
 
 - key: QG-CS-SML-0028
   name: Null reference exceptions should be prevented, not caught

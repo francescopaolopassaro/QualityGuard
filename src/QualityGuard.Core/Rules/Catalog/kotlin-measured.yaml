@@ -1,0 +1,52 @@
+# Descriptions for the Kotlin rules in Rules/Languages/KotlinMeasuredRules.cs, chosen by measuring
+# against an annotated corpus. Two of them are about the phone the code runs on.
+
+- key: QG-KT-SEC-0056
+  name: A device identifier should not be used to recognise a user
+  languages: [kt]
+  category: SEC
+  severity: critical
+  effort: 30min
+  tags: [privacy, mobile]
+  summary: The code reads a hardware or platform identifier of the device.
+  why: |
+    The value identifies the device rather than the account: it survives an uninstall, it is shared by
+    everyone who uses the phone, and the person it describes cannot reset it. Storing it ties data to
+    a human being permanently, which is exactly what the platforms and the privacy rules forbid.
+  fix: |
+    Generate an identifier of your own, keep it in the application's storage, and let a reinstall
+    replace it.
+
+- key: QG-KT-SEC-0057
+  name: A password field should tell the keyboard not to remember it
+  languages: [kt]
+  category: SEC
+  severity: major
+  effort: 20min
+  tags: [privacy, mobile]
+  summary: A field that holds a password does not declare a password input type.
+  why: |
+    The keyboard learns what is typed into an ordinary text field and offers it back later, in every
+    other application on the device. A password put through that path ends up in a dictionary that
+    outlives the session and belongs to no one in particular.
+  fix: |
+    Use one of the password input types, so the keyboard neither learns nor suggests the value.
+
+- key: QG-KT-SML-0085
+  name: An indexed accessor should be used instead of get and set
+  languages: [kt]
+  category: SML
+  severity: minor
+  effort: 5min
+  tags: [readability]
+  summary: An indexed read or write is written as a call to get or set.
+  why: |
+    Kotlin has brackets for exactly this, and every reader of the language expects them. The call form
+    also hides that the operation is an index, which matters when the receiver is later swapped for a
+    type whose get means something else.
+  fix: |
+    Write the brackets.
+  bad: |
+    list.get(1)
+  good: |
+    list[1]

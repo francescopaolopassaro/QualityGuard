@@ -18,11 +18,8 @@ public static class CSharpRuleSet
         new CsCleartextHttpRule(),
         new CsInsecureCookieRule(),
         new CsUnsafeDeserializationRule(),
-        new CsDebugOutputRule(),
-        new CsEmptyCatchRule(),
         new CsSwitchDefaultRule(),
         new CsGotoRule(),
-        new CsGenericExceptionRule(),
         new CsGcCollectRule(),
         new CsUnsafeBlockRule(),
         new CsDateTimeNowRule(),
@@ -44,7 +41,6 @@ public static class CSharpRuleSet
         new CsInsecureTempFileRule(),
         new CsStringConcatInLoopRule(),
         new CsImplicitToStringRule(),
-        new CsEmptyMethodBodyRule(),
         new CsPublicFieldRule(),
         new CsAsyncWithoutAwaitRule(),
         new CsCountInsteadOfAnyRule(),
@@ -422,51 +418,6 @@ public sealed class CsUnsafeDeserializationRule : PatternRuleBase
     }
 }
 
-public sealed class CsDebugOutputRule : PatternRuleBase
-{
-    public override string Key => "QG-CS-SML-0001";
-    public override string Name => "Debug output left in production code";
-    public override Severity Severity => Severity.Major;
-    public override IssueKind Kind => IssueKind.CodeSmell;
-    public override string RemediationEffort => "20min";
-    public override string FixAdvice => "Remove Console and Debug writes before shipping.";
-    public override string[] Languages => ["cs", "vb"];
-
-    public override void Execute(IRuleContext context)
-    {
-        var tokens = context.Tokens;
-        for (var i = 0; i < tokens.Count - 1; i++)
-        {
-            if (tokens[i + 1].Text != "(") continue;
-            if ((CSharpRuleSet.IsMemberAccess(tokens, i, "Console", "WriteLine")
-                 || CSharpRuleSet.IsMemberAccess(tokens, i, "Console", "Write")
-                 || CSharpRuleSet.IsMemberAccess(tokens, i, "Debug", "WriteLine")))
-                context.Report("Remove debug or console output before production.", tokens[i].Line);
-        }
-    }
-}
-
-public sealed class CsEmptyCatchRule : PatternRuleBase
-{
-    public override string Key => "QG-CS-SML-0002";
-    public override string Name => "Empty catch block";
-    public override Severity Severity => Severity.Major;
-    public override IssueKind Kind => IssueKind.CodeSmell;
-    public override string RemediationEffort => "20min";
-    public override string FixAdvice => "Handle or log the exception instead of swallowing it.";
-    public override string[] Languages => ["cs", "vb"];
-
-    public override void Execute(IRuleContext context)
-    {
-        var tokens = context.Tokens;
-        for (var i = 0; i < tokens.Count; i++)
-        {
-            if (CSharpRuleSet.IsWord(tokens[i], "catch") && CSharpRuleSet.IsEmptyCatch(tokens, i))
-                context.Report("Either handle or log the exception.", tokens[i].Line);
-        }
-    }
-}
-
 public sealed class CsSwitchDefaultRule : PatternRuleBase
 {
     public override string Key => "QG-CS-SML-0003";
@@ -524,27 +475,6 @@ public sealed class CsGotoRule : PatternRuleBase
     {
         foreach (var token in context.Tokens.Where(t => CSharpRuleSet.IsWord(t, "goto")))
             context.Report("Refactor to structured control flow.", token.Line);
-    }
-}
-
-public sealed class CsGenericExceptionRule : PatternRuleBase
-{
-    public override string Key => "QG-CS-SML-0005";
-    public override string Name => "Throwing generic Exception";
-    public override Severity Severity => Severity.Major;
-    public override IssueKind Kind => IssueKind.CodeSmell;
-    public override string RemediationEffort => "20min";
-    public override string FixAdvice => "Throw a specific exception type instead of Exception.";
-    public override string[] Languages => ["cs", "vb"];
-
-    public override void Execute(IRuleContext context)
-    {
-        var tokens = context.Tokens;
-        for (var i = 0; i < tokens.Count - 1; i++)
-        {
-            if (CSharpRuleSet.IsWord(tokens[i], "new") && CSharpRuleSet.IsWord(tokens[i + 1], "Exception"))
-                context.Report("Throw a specific exception type instead of Exception.", tokens[i + 1].Line);
-        }
     }
 }
 
@@ -1101,48 +1031,6 @@ public sealed class CsImplicitToStringRule : PatternRuleBase
             }
             if (hasComplex)
                 context.Report("Specify an explicit ToString for the interpolated value.", token.Line);
-        }
-    }
-}
-
-public sealed class CsEmptyMethodBodyRule : PatternRuleBase
-{
-    public override string Key => "QG-CS-SML-0015";
-    public override string Name => "Empty method body";
-    public override Severity Severity => Severity.Minor;
-    public override IssueKind Kind => IssueKind.CodeSmell;
-    public override string RemediationEffort => "10min";
-    public override string FixAdvice => "Implement the method or return Task.CompletedTask.";
-    public override string[] Languages => ["cs", "vb"];
-
-    public override void Execute(IRuleContext context)
-    {
-        var tokens = context.Tokens;
-        for (var i = 1; i < tokens.Count - 1; i++)
-        {
-            if (tokens[i].Text != "{" || tokens[i + 1].Text != "}") continue;
-            if (tokens[i - 1].Text != ")") continue;
-            var k = i - 1;
-            var paren = 0;
-            var name = "";
-            while (k >= 0)
-            {
-                if (tokens[k].Text == ")") paren++;
-                else if (tokens[k].Text == "(")
-                {
-                    paren--;
-                    if (paren == 0 && k > 0)
-                    {
-                        var prev = tokens[k - 1];
-                        if (prev.Kind is TokenKind.Identifier or TokenKind.Keyword) name = prev.Text;
-                    }
-                    if (paren == 0) break;
-                }
-                k--;
-            }
-            if (name.Length == 0) continue;
-            if (CSharpRuleSet.IsWord(name, ["if", "for", "while", "switch", "catch", "using", "lock", "foreach"])) continue;
-            context.Report("Remove or implement the empty method body.", tokens[i].Line);
         }
     }
 }

@@ -138,7 +138,13 @@ static List<FileAnalysis> AnalyzeAndScan(ScanOptions options, bool verbose)
     }
 
     var context = new AnalysisContext(files, new AnalysisOptions());
-    var all = new AnalysisEngine().Run(context).ToList();
+    var engine = new AnalysisEngine();
+    var all = engine.Run(context).ToList();
+
+    // a file the engine could not read is said out loud: a gate that skipped one silently would be
+    // worse than one that admits it
+    foreach (var (path, reason) in engine.Unreadable)
+        Console.WriteLine($"  SKIPPED {path}: {reason}");
 
     var rules = RuleRepository.GetBuiltInRules();
     foreach (var analysis in all)

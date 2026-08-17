@@ -2403,13 +2403,14 @@
 
 - key: QG-CS-SML-0222
   name: NotImplementedException should make failure handling explicit
+  status: superseded
+  superseded_by: QG-CS-SML-0044
   languages: [cs]
   category: SML
   severity: minor
   effort: 15min
   tags: [exception, generated]
   generated: true
-  status: ready
   message: This handling hides the failure instead of dealing with it.
   summary: An exception is thrown, caught or propagated in a way that hides the failure.
   why: |
@@ -2419,8 +2420,6 @@
   fix: |
     Catch the specific failures this code can recover from, keep the original exception as the cause when
     wrapping, and let everything else reach the boundary handler.
-  detect:
-    - creation: [NotImplementedException]
 
 - key: QG-CS-BUG-0079
   name: SafeHandle.DangerousGetHandle should not be used
@@ -4353,13 +4352,14 @@
 
 - key: QG-CS-SML-0318
   name: Use DateTimeOffset instead of DateTime should be replaced by the recommended alternative
+  status: superseded
+  superseded_by: QG-CS-SML-0322
   languages: [cs]
   category: SML
   severity: minor
   effort: 15min
   tags: [prefer_api, generated]
   generated: true
-  status: ready
   message: The platform offers a clearer or safer construct for this.
   summary: A construct is used where the platform offers one that is clearer or safer.
   why: |
@@ -4369,9 +4369,6 @@
   fix: |
     Switch to the recommended construct; the behaviour is the same in the normal case and defined in the
     cases the old form got wrong.
-  detect:
-    - creation: [DateTimeOffset]
-    - creation: [DateTime]
 
 - key: QG-CS-SML-0319
   name: Hard-to-read code should be simplified
