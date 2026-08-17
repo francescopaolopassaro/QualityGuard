@@ -24,6 +24,7 @@ public static class BuiltInRuleRegistrar
         ..Languages.JsTsUsageRuleSet.All,
         ..Languages.JsTsMeasuredRuleSet.All,
         ..Languages.KotlinMeasuredRuleSet.All,
+        ..Languages.OrmRuleSet.All,
         ..Languages.PythonRuleSet.All,
         ..Languages.PythonAstRuleSet.All,
         ..Languages.PythonRuntimeRuleSet.All,
@@ -224,7 +225,8 @@ public sealed class LineTooLongRule : TextualRuleBase
     /// </summary>
     private static readonly string[] NotProse =
         ["json", "csv", "xml", "yaml", "yml", "css", "scss", "sass", "less", "html", "htm", "svg",
-         "sql", "md", "txt", "resx", "config", "props", "targets"];
+         "sql", "md", "txt", "resx", "config", "props", "targets", "razor", "cshtml", "vbhtml",
+         "xaml", "aspx", "ascx", "jsp", "vue"];
 
     public override void Execute(IRuleContext context)
     {

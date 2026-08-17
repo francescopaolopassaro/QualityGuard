@@ -60,6 +60,8 @@
 
 - key: QG-CS-SML-0029
   name: Boolean values should not be compared with literals
+  status: superseded
+  superseded_by: QG-ALL-SML-0021
   languages: [cs, vb]
   category: SML
   severity: minor
@@ -76,8 +78,6 @@
     if (isReady == true) { ... }
   good: |
     if (isReady) { ... }
-  detect:
-    - line: "(==|!=)\\s*(true|false)\\b"
 
 - key: QG-CS-SML-0030
   name: Conditions should not contain assignments

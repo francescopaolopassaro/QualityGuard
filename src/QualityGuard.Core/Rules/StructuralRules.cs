@@ -1007,9 +1007,30 @@ public sealed class BooleanLiteralComparisonRule : StructuralRuleBase
                 continue;
             if (!comparison.Children.Any(c => c.Kind == NodeKind.BooleanLiteral))
                 continue;
+
+            // A nullable boolean has three values, and 'x != true' is the only short way to say
+            // "false or missing". Replacing it with '!x' changes the answer when x is null, so the
+            // comparison is kept wherever the operand can be null.
+            var other = comparison.Children.FirstOrDefault(c => c.Kind != NodeKind.BooleanLiteral);
+            if (other != null && MayBeNull(context, other))
+                continue;
+
             context.Report(comparison, "Comparing with a boolean literal restates the value; "
                                        + "use the expression itself, negated when needed.");
         }
+    }
+
+    /// <summary>
+    /// Whether the compared value can be null, which makes the comparison say something the plain
+    /// expression cannot. The declared type answers it when it is in reach; when it is not, the rule
+    /// stays quiet rather than change what the code means.
+    /// </summary>
+    private static bool MayBeNull(IRuleContext context, SyntaxNode expression)
+    {
+        var type = context.Types.TypeOf(expression);
+        if (type is { Length: > 0 })
+            return type.EndsWith('?') || type.StartsWith("Nullable", StringComparison.Ordinal);
+        return true;
     }
 }
 

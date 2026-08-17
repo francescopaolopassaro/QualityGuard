@@ -1,0 +1,93 @@
+# Descriptions for the rules in Rules/Languages/OrmRules.cs. What they have in common is that the
+# code reads correctly and passes its tests on a table with ten rows: what changes is the number of
+# round trips and the amount of data pulled into memory, and that only shows up in production.
+
+- key: QG-CS-PRF-0003
+  name: A query should not run once per iteration
+  languages: [cs, vb]
+  category: PRF
+  severity: critical
+  effort: 45min
+  tags: [orm, performance, database]
+  summary: A database query is executed inside a loop.
+  why: |
+    The loop turns one question into as many questions as there are items. Each one costs a round trip
+    the network has to carry and the database has to plan, so the time grows with the data rather than
+    with the code — and the test that runs on ten rows never notices.
+  fix: |
+    Fetch what the whole loop needs in a single query before it starts, keyed by the values it will
+    iterate over, and look the results up in memory.
+  bad: |
+    foreach (var id in ids)
+    {
+        var order = await _db.Orders.FirstOrDefaultAsync(o => o.Id == id);
+    }
+  good: |
+    var orders = await _db.Orders.Where(o => ids.Contains(o.Id)).ToDictionaryAsync(o => o.Id);
+    foreach (var id in ids)
+    {
+        var order = orders.GetValueOrDefault(id);
+    }
+
+- key: QG-CS-PRF-0004
+  name: Changes should be saved once, not once per item
+  languages: [cs, vb]
+  category: PRF
+  severity: major
+  effort: 30min
+  tags: [orm, performance, database]
+  summary: Changes are committed inside the loop that produces them.
+  why: |
+    Every iteration opens a transaction, writes one row and commits it. Besides the cost, a failure
+    half way through leaves the data partly written, with no single point at which the operation
+    either happened or did not.
+  fix: |
+    Make the changes in the loop and save them once after it, so the work is one transaction.
+
+- key: QG-CS-PRF-0005
+  name: A query should be filtered before it is read
+  languages: [cs, vb]
+  category: PRF
+  severity: critical
+  effort: 20min
+  tags: [orm, performance, linq]
+  summary: A query is materialised and then filtered in memory.
+  why: |
+    Reading the set first brings every row across the wire and into the process, and the filter then
+    discards most of them. The database can answer the same question using its indexes, transferring
+    only what is asked for.
+  fix: |
+    Put the filter before the call that reads the query.
+  bad: |
+    var active = _db.Orders.ToList().Where(o => o.IsActive);
+  good: |
+    var active = await _db.Orders.Where(o => o.IsActive).ToListAsync();
+
+- key: QG-CS-PRF-0006
+  name: A sequence should not be walked twice
+  languages: [cs, vb]
+  category: PRF
+  severity: major
+  effort: 15min
+  tags: [orm, performance, linq]
+  summary: A local holds an unevaluated query and is used more than once.
+  why: |
+    A query is a description, not a result: every use runs it again. Counting it and then iterating it
+    asks the database the same question twice, and the two answers can differ if the data changed in
+    between.
+  fix: |
+    Read the query once into a list, and work with the list.
+
+- key: QG-CS-BUG-0147
+  name: A projection discards the related data loaded before it
+  languages: [cs, vb]
+  category: BUG
+  severity: major
+  effort: 20min
+  tags: [orm, database]
+  summary: A related-data instruction is applied after the query has been projected.
+  why: |
+    Once the query says which columns it wants, the instruction to load related data has nothing left
+    to attach to and is ignored. The property is null at run time, and nothing warns at compile time.
+  fix: |
+    Ask for the related data inside the projection, or apply the loading instruction before it.

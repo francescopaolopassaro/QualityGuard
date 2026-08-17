@@ -4443,8 +4443,8 @@
     Switch to the recommended construct; the behaviour is the same in the normal case and defined in the
     cases the old form got wrong.
   detect:
+    # 'new DateTime(...)' is ordinary: what is outdated is the epoch constant it replaced
     - creation: [UnixEpoch]
-    - creation: [DateTime]
 
 - key: QG-CS-SML-0323
   name: Find method should be replaced by the recommended alternative
