@@ -1,0 +1,193 @@
+# Descriptions for the JavaScript and TypeScript rules in Rules/Languages/JsTsMeasuredRules.cs.
+# These were chosen by measurement: tools/compare_expectations.py named the checks whose expected
+# lines we covered least on an annotated corpus, and this file closes the top of that list.
+
+- key: QG-JS-BUG-0143
+  name: An assertion should be called
+  languages: [js, ts]
+  category: BUG
+  severity: blocker
+  effort: 10min
+  tags: [tests, suspicious]
+  summary: A test statement reads an assertion instead of calling or finishing it.
+  why: |
+    A chain that ends on a connector — to, be, have — or on a matcher that was never called reads a
+    property and asserts nothing. The test passes whatever the code did, so it protects nothing while
+    still being counted as a passing test.
+  fix: |
+    Call the matcher, or complete the chain with the assertion that was meant.
+  bad: |
+    expect(value).to.throw;
+    expect(result).to;
+  good: |
+    expect(value).to.throw();
+    expect(result).to.equal(3);
+
+- key: QG-JS-BUG-0144
+  name: An assertion should compare two different things
+  languages: [js, ts]
+  category: BUG
+  severity: blocker
+  effort: 10min
+  tags: [tests, suspicious]
+  summary: Two arguments of an assertion are the same expression.
+  why: |
+    The assertion compares a value with itself, so it holds for every run and reports nothing. One of
+    the two arguments was meant to be the expected value.
+  fix: |
+    Replace one of the two with what the result should be.
+  bad: |
+    assert.equal(actual, actual);
+  good: |
+    assert.equal(actual, 3);
+
+- key: QG-JS-SEC-0080
+  name: Traffic should not travel in cleartext
+  languages: [js, ts]
+  category: SEC
+  severity: major
+  effort: 20min
+  tags: [network, privacy]
+  summary: A cleartext protocol is used, or transit encryption is switched off.
+  why: |
+    Everything the connection carries is readable by whoever sits on the path between the two ends,
+    and it can be changed before it arrives. The party that reads it needs no credentials and leaves
+    no trace.
+  fix: |
+    Use the encrypted form of the protocol, and leave transit encryption on.
+
+- key: QG-JS-SEC-0081
+  name: An obsolete TLS version should not be selected
+  languages: [js, ts]
+  category: SEC
+  severity: critical
+  effort: 20min
+  tags: [cryptography, network]
+  summary: A connection asks for TLS 1.1, TLS 1.0 or SSL.
+  why: |
+    These versions have published attacks against them, and a connection that still offers one can be
+    pushed down onto it by whoever controls the path.
+  fix: |
+    Ask for TLS 1.2 at the lowest and let the library negotiate above it.
+
+- key: QG-JS-SEC-0082
+  name: A stored resource should be encrypted
+  languages: [js, ts]
+  category: SEC
+  severity: critical
+  effort: 30min
+  tags: [cloud, privacy]
+  summary: A managed database, volume, queue or bucket is declared without encryption at rest.
+  why: |
+    The data is written to disk in the clear, so a snapshot, a backup or a decommissioned volume
+    carries it readable to whoever ends up holding it — long after the resource itself is gone.
+  fix: |
+    Set the encryption property, with a managed key or one you control.
+
+- key: QG-JS-SEC-0083
+  name: A resource should not be reachable from the whole internet
+  languages: [js, ts]
+  category: SEC
+  severity: critical
+  effort: 30min
+  tags: [cloud, network]
+  summary: A resource is declared publicly accessible, or an ingress rule admits every address.
+  why: |
+    Everything the resource exposes — including the ports meant for administration — is reachable
+    from any machine on the internet, so the only thing left between it and an attacker is a
+    password.
+  fix: |
+    Keep it private and name the ranges that need access.
+
+- key: QG-JS-SEC-0084
+  name: A policy should name what it grants
+  languages: [js, ts]
+  category: SEC
+  severity: critical
+  effort: 30min
+  tags: [cloud, permissions]
+  summary: A policy grants every action, or every resource, with a star.
+  why: |
+    Whoever holds the policy can do far more than the code that uses it needs, and nothing records
+    what that extra is. A credential leak then costs the whole account rather than one bucket.
+  fix: |
+    List the actions and the resources the code actually uses.
+
+- key: QG-JS-SEC-0085
+  name: An executable should be named without a relative path
+  languages: [js, ts]
+  category: SEC
+  severity: major
+  effort: 20min
+  tags: [process]
+  summary: A child process is launched through a path relative to the working directory.
+  why: |
+    Which program runs depends on where the process was started from, and on what someone was able to
+    write there. The same code then executes a different binary on a different machine.
+  fix: |
+    Build an absolute path from a known root, or use the command name and let the system path resolve
+    it.
+
+- key: QG-JS-SML-0372
+  name: A test hook should sit outside the tests it wraps
+  languages: [js, ts]
+  category: SML
+  severity: minor
+  effort: 5min
+  tags: [tests, readability]
+  summary: A setup or teardown hook is written among the test cases it applies to.
+  why: |
+    The order on the page stops matching the order at run time: a hook written after a test still runs
+    before it. A reader has to know the framework to know what happens when, and a test moved above
+    the hook silently changes what it depends on.
+  fix: |
+    Put the setup hooks above the tests and the teardown hooks below them.
+  bad: |
+    describe('service', () => {
+      it('lists users', () => {});
+      beforeEach(() => reset());
+    });
+  good: |
+    describe('service', () => {
+      beforeEach(() => reset());
+      it('lists users', () => {});
+    });
+
+- key: QG-JS-BUG-0145
+  name: A memoised function of several arguments needs a key
+  languages: [js, ts]
+  category: BUG
+  severity: critical
+  effort: 15min
+  tags: [caching, suspicious]
+  summary: A function of more than one parameter is memoised without a key resolver.
+  why: |
+    The cache is keyed on the first argument alone, so two calls that differ only in the later ones
+    are treated as the same call and the second gets the first one's answer. The bug appears as wrong
+    data, far from the call that caused it.
+  fix: |
+    Pass a resolver that builds the key from every argument the result depends on.
+  bad: |
+    const format = memoize((amount, locale) => amount.toLocaleString(locale));
+  good: |
+    const format = memoize(
+      (amount, locale) => amount.toLocaleString(locale),
+      (amount, locale) => `${amount}:${locale}`);
+
+- key: QG-JS-BUG-0146
+  name: An assertion should have one reason to hold
+  languages: [js, ts]
+  category: BUG
+  severity: major
+  effort: 15min
+  tags: [tests, suspicious]
+  summary: A negated matcher holds both for the state it names and for the state where nothing happened.
+  why: |
+    Asserting that a call does not throw a particular error also passes when it throws nothing, or
+    throws something else entirely. The test then reports success in the case it was written to catch.
+  fix: |
+    Assert the one thing that must be true — the value returned, or the error that must be raised.
+  bad: |
+    expect(load).to.not.throw(ReferenceError);
+  good: |
+    expect(load).to.throw(TypeError);

@@ -38,7 +38,8 @@ public sealed class TerraformWideOpenIngressRule : PatternRuleBase
     public override string Name => "Security group opens port to the whole internet";
     public override Severity Severity => Severity.Critical;
     public override IssueKind Kind => IssueKind.Vulnerability;
-    public override string RemediationEffort => "Restrict the source IP range instead of 0.0.0.0/0 or ::/0.";
+    public override string RemediationEffort => "30min";
+    public override string FixAdvice => "Restrict the source IP range instead of 0.0.0.0/0 or ::/0.";
     public override string[] Languages => ["tf"];
 
     public override void Execute(IRuleContext context)
@@ -58,7 +59,8 @@ public sealed class TerraformPublicDatabaseRule : PatternRuleBase
     public override string Name => "Database is publicly accessible";
     public override Severity Severity => Severity.Critical;
     public override IssueKind Kind => IssueKind.Vulnerability;
-    public override string RemediationEffort => "Set publicly_accessible to false and keep the database in a private network.";
+    public override string RemediationEffort => "30min";
+    public override string FixAdvice => "Set publicly_accessible to false and keep the database in a private network.";
     public override string[] Languages => ["tf"];
 
     public override void Execute(IRuleContext context)
@@ -79,7 +81,8 @@ public sealed class TerraformPublicS3AclRule : PatternRuleBase
     public override string Name => "S3 bucket uses a public ACL";
     public override Severity Severity => Severity.Critical;
     public override IssueKind Kind => IssueKind.Vulnerability;
-    public override string RemediationEffort => "Use private ACLs or bucket policies restricted to trusted principals.";
+    public override string RemediationEffort => "30min";
+    public override string FixAdvice => "Use private ACLs or bucket policies restricted to trusted principals.";
     public override string[] Languages => ["tf"];
 
     public override void Execute(IRuleContext context)
@@ -100,7 +103,8 @@ public sealed class TerraformS3WithoutVersioningRule : PatternRuleBase
     public override string Name => "Storage bucket has versioning disabled";
     public override Severity Severity => Severity.Major;
     public override IssueKind Kind => IssueKind.Vulnerability;
-    public override string RemediationEffort => "Enable versioning on the bucket to keep history and recover from data loss.";
+    public override string RemediationEffort => "20min";
+    public override string FixAdvice => "Enable versioning on the bucket to keep history and recover from data loss.";
     public override string[] Languages => ["tf"];
 
     public override void Execute(IRuleContext context)
@@ -127,7 +131,8 @@ public sealed class TerraformOpenManagementPortRule : PatternRuleBase
     public override string Name => "SSH or management port is open to the whole internet";
     public override Severity Severity => Severity.Critical;
     public override IssueKind Kind => IssueKind.Vulnerability;
-    public override string RemediationEffort => "Restrict SSH (22) and RDP (3389) access to trusted networks.";
+    public override string RemediationEffort => "30min";
+    public override string FixAdvice => "Restrict SSH (22) and RDP (3389) access to trusted networks.";
     public override string[] Languages => ["tf"];
 
     public override void Execute(IRuleContext context)
@@ -150,7 +155,8 @@ public sealed class TerraformUnencryptedDatabaseRule : PatternRuleBase
     public override string Name => "Database storage is not encrypted at rest";
     public override Severity Severity => Severity.Critical;
     public override IssueKind Kind => IssueKind.Vulnerability;
-    public override string RemediationEffort => "Set storage_encrypted to true for the database instance.";
+    public override string RemediationEffort => "30min";
+    public override string FixAdvice => "Set storage_encrypted to true for the database instance.";
     public override string[] Languages => ["tf"];
 
     public override void Execute(IRuleContext context)
@@ -178,7 +184,8 @@ public sealed class TerraformUnencryptedS3Rule : PatternRuleBase
     public override string Name => "S3 bucket has server-side encryption disabled";
     public override Severity Severity => Severity.Major;
     public override IssueKind Kind => IssueKind.Vulnerability;
-    public override string RemediationEffort => "Configure server_side_encryption_configuration with a managed or KMS key.";
+    public override string RemediationEffort => "20min";
+    public override string FixAdvice => "Configure server_side_encryption_configuration with a managed or KMS key.";
     public override string[] Languages => ["tf"];
 
     public override void Execute(IRuleContext context)
@@ -205,7 +212,8 @@ public sealed class TerraformIamWildcardRule : PatternRuleBase
     public override string Name => "IAM policy grants wildcard action or resource";
     public override Severity Severity => Severity.Major;
     public override IssueKind Kind => IssueKind.Vulnerability;
-    public override string RemediationEffort => "Scope actions and resources to the minimal set required.";
+    public override string RemediationEffort => "20min";
+    public override string FixAdvice => "Scope actions and resources to the minimal set required.";
     public override string[] Languages => ["tf"];
 
     public override void Execute(IRuleContext context)
@@ -231,7 +239,8 @@ public sealed class TerraformHardcodedSecretRule : PatternRuleBase
     public override string Name => "Secret is hardcoded as a literal value";
     public override Severity Severity => Severity.Critical;
     public override IssueKind Kind => IssueKind.Vulnerability;
-    public override string RemediationEffort => "Reference secrets from a secure store or variable instead of a literal.";
+    public override string RemediationEffort => "30min";
+    public override string FixAdvice => "Reference secrets from a secure store or variable instead of a literal.";
     public override string[] Languages => ["tf"];
 
     private static readonly string[] SecretKeys = ["password", "secret", "token", "api_key"];
@@ -255,7 +264,8 @@ public sealed class TerraformRdsMasterPasswordRule : PatternRuleBase
     public override string Name => "Database admin password is a literal value";
     public override Severity Severity => Severity.Critical;
     public override IssueKind Kind => IssueKind.Vulnerability;
-    public override string RemediationEffort => "Set master_password from a secret reference, not a literal.";
+    public override string RemediationEffort => "30min";
+    public override string FixAdvice => "Set master_password from a secret reference, not a literal.";
     public override string[] Languages => ["tf"];
 
     public override void Execute(IRuleContext context)
@@ -276,7 +286,8 @@ public sealed class TerraformSqlNoSslRule : PatternRuleBase
     public override string Name => "Cloud SQL accepts connections without TLS";
     public override Severity Severity => Severity.Critical;
     public override IssueKind Kind => IssueKind.Vulnerability;
-    public override string RemediationEffort => "Enforce require_ssl to true on the database instance.";
+    public override string RemediationEffort => "30min";
+    public override string FixAdvice => "Enforce require_ssl to true on the database instance.";
     public override string[] Languages => ["tf"];
 
     public override void Execute(IRuleContext context)
@@ -297,7 +308,8 @@ public sealed class TerraformPublicEksEndpointRule : PatternRuleBase
     public override string Name => "Kubernetes cluster endpoint is publicly accessible";
     public override Severity Severity => Severity.Critical;
     public override IssueKind Kind => IssueKind.Vulnerability;
-    public override string RemediationEffort => "Disable endpoint_public_access or restrict it to trusted networks.";
+    public override string RemediationEffort => "30min";
+    public override string FixAdvice => "Disable endpoint_public_access or restrict it to trusted networks.";
     public override string[] Languages => ["tf"];
 
     public override void Execute(IRuleContext context)
@@ -318,7 +330,8 @@ public sealed class TerraformBackendCredentialRule : PatternRuleBase
     public override string Name => "Backend credentials are hardcoded";
     public override Severity Severity => Severity.Critical;
     public override IssueKind Kind => IssueKind.Vulnerability;
-    public override string RemediationEffort => "Use environment variables or non-interactive credential providers for the backend.";
+    public override string RemediationEffort => "30min";
+    public override string FixAdvice => "Use environment variables or non-interactive credential providers for the backend.";
     public override string[] Languages => ["tf"];
 
     public override void Execute(IRuleContext context)
@@ -343,7 +356,8 @@ public sealed class TerraformUserDataPipeRule : PatternRuleBase
     public override string Name => "User data pipes remote script into a shell";
     public override Severity Severity => Severity.Critical;
     public override IssueKind Kind => IssueKind.Vulnerability;
-    public override string RemediationEffort => "Bootstrap instances from a pinned, signed artifact instead of piping remote scripts to sh.";
+    public override string RemediationEffort => "30min";
+    public override string FixAdvice => "Bootstrap instances from a pinned, signed artifact instead of piping remote scripts to sh.";
     public override string[] Languages => ["tf"];
 
     public override void Execute(IRuleContext context)
@@ -367,7 +381,8 @@ public sealed class TerraformMissingRequiredVersionRule : PatternRuleBase
     public override string Name => "Terraform block does not pin provider versions";
     public override Severity Severity => Severity.Minor;
     public override IssueKind Kind => IssueKind.CodeSmell;
-    public override string RemediationEffort => "Declare required_version and required_providers in the terraform block.";
+    public override string RemediationEffort => "10min";
+    public override string FixAdvice => "Declare required_version and required_providers in the terraform block.";
     public override string[] Languages => ["tf"];
 
     public override void Execute(IRuleContext context)
@@ -395,7 +410,8 @@ public sealed class TerraformVariableWithoutTypeRule : PatternRuleBase
     public override string Name => "Variable has no explicit type";
     public override Severity Severity => Severity.Minor;
     public override IssueKind Kind => IssueKind.CodeSmell;
-    public override string RemediationEffort => "Declare the type of every variable.";
+    public override string RemediationEffort => "10min";
+    public override string FixAdvice => "Declare the type of every variable.";
     public override string[] Languages => ["tf"];
 
     public override void Execute(IRuleContext context)

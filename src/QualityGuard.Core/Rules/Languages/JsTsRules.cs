@@ -79,7 +79,8 @@ public sealed class JsEvalRule : PatternRuleBase
     public override string Name => "Arbitrary code execution via eval";
     public override Severity Severity => Severity.Critical;
     public override IssueKind Kind => IssueKind.Vulnerability;
-    public override string RemediationEffort => "Avoid eval(); use a JSON parser or a safe evaluator.";
+    public override string RemediationEffort => "30min";
+    public override string FixAdvice => "Avoid eval(); use a JSON parser or a safe evaluator.";
     public override string[] Languages => ["js", "ts"];
 
     public override void Execute(IRuleContext context)
@@ -101,7 +102,8 @@ public sealed class JsCommandExecutionRule : PatternRuleBase
     public override string Name => "Command execution with a dynamic argument";
     public override Severity Severity => Severity.Critical;
     public override IssueKind Kind => IssueKind.Vulnerability;
-    public override string RemediationEffort => "Use a fixed command line and pass arguments through spawn's options instead of shell concatenation.";
+    public override string RemediationEffort => "30min";
+    public override string FixAdvice => "Use a fixed command line and pass arguments through spawn's options instead of shell concatenation.";
     public override string[] Languages => ["js", "ts"];
 
     private static readonly string[] Names = ["exec", "execSync", "execFile", "execFileSync", "spawn", "spawnSync", "fork"];
@@ -130,7 +132,8 @@ public sealed class JsTemplateInjectionRule : PatternRuleBase
     public override string Name => "Command injection through string template";
     public override Severity Severity => Severity.Critical;
     public override IssueKind Kind => IssueKind.Vulnerability;
-    public override string RemediationEffort => "Do not interpolate untrusted data into shell commands; use spawn with an argument array.";
+    public override string RemediationEffort => "30min";
+    public override string FixAdvice => "Do not interpolate untrusted data into shell commands; use spawn with an argument array.";
     public override string[] Languages => ["js", "ts"];
 
     private static readonly string[] Names = ["exec", "execSync", "execFile", "spawn", "spawnSync", "fork"];
@@ -154,7 +157,8 @@ public sealed class JsSqlInjectionRule : PatternRuleBase
     public override string Name => "SQL query built by string concatenation";
     public override Severity Severity => Severity.Critical;
     public override IssueKind Kind => IssueKind.Vulnerability;
-    public override string RemediationEffort => "Use parameterized queries or an ORM that binds user input as parameters.";
+    public override string RemediationEffort => "30min";
+    public override string FixAdvice => "Use parameterized queries or an ORM that binds user input as parameters.";
     public override string[] Languages => ["js", "ts"];
 
     private static readonly string[] SqlKeywords = ["select", "insert", "update", "delete", "drop", "alter", "create", "truncate"];
@@ -186,7 +190,8 @@ public sealed class JsHardcodedCredentialsRule : PatternRuleBase
     public override string Name => "Hardcoded credential";
     public override Severity Severity => Severity.Critical;
     public override IssueKind Kind => IssueKind.Vulnerability;
-    public override string RemediationEffort => "Store secrets in a vault or environment variables and load them at runtime.";
+    public override string RemediationEffort => "30min";
+    public override string FixAdvice => "Store secrets in a vault or environment variables and load them at runtime.";
     public override string[] Languages => ["js", "ts"];
 
     private static readonly string[] CredentialNames =
@@ -217,7 +222,8 @@ public sealed class JsStorageRule : PatternRuleBase
     public override string Name => "Sensitive data stored in web storage";
     public override Severity Severity => Severity.Major;
     public override IssueKind Kind => IssueKind.Vulnerability;
-    public override string RemediationEffort => "Do not store sensitive data in localStorage or sessionStorage; use a safe server-side session.";
+    public override string RemediationEffort => "20min";
+    public override string FixAdvice => "Do not store sensitive data in localStorage or sessionStorage; use a safe server-side session.";
     public override string[] Languages => ["js", "ts"];
 
     public override void Execute(IRuleContext context)
@@ -239,7 +245,8 @@ public sealed class JsInsecureCookieRule : PatternRuleBase
     public override string Name => "Cookie written without Secure and HttpOnly flags";
     public override Severity Severity => Severity.Major;
     public override IssueKind Kind => IssueKind.Vulnerability;
-    public override string RemediationEffort => "Set cookies with the Secure and HttpOnly flags unless the cookie is intentionally client-accessible.";
+    public override string RemediationEffort => "20min";
+    public override string FixAdvice => "Set cookies with the Secure and HttpOnly flags unless the cookie is intentionally client-accessible.";
     public override string[] Languages => ["js", "ts"];
 
     public override void Execute(IRuleContext context)
@@ -264,7 +271,8 @@ public sealed class JsWeakCryptoRule : PatternRuleBase
     public override string Name => "Use of a weak hashing algorithm";
     public override Severity Severity => Severity.Major;
     public override IssueKind Kind => IssueKind.Vulnerability;
-    public override string RemediationEffort => "Use a strong, modern algorithm such as SHA-256 or a dedicated password hashing function.";
+    public override string RemediationEffort => "20min";
+    public override string FixAdvice => "Use a strong, modern algorithm such as SHA-256 or a dedicated password hashing function.";
     public override string[] Languages => ["js", "ts"];
 
     private static readonly string[] WeakAlgorithms = ["md5", "sha1", "sha-1"];
@@ -289,7 +297,8 @@ public sealed class JsMathRandomRule : PatternRuleBase
     public override string Name => "Insecure random number generator";
     public override Severity Severity => Severity.Major;
     public override IssueKind Kind => IssueKind.Vulnerability;
-    public override string RemediationEffort => "Use a cryptographically secure generator such as crypto.getRandomValues.";
+    public override string RemediationEffort => "20min";
+    public override string FixAdvice => "Use a cryptographically secure generator such as crypto.getRandomValues.";
     public override string[] Languages => ["js", "ts"];
 
     public override void Execute(IRuleContext context)
@@ -310,7 +319,8 @@ public sealed class JsCleartextHttpRule : PatternRuleBase
     public override string Name => "Cleartext HTTP usage";
     public override Severity Severity => Severity.Major;
     public override IssueKind Kind => IssueKind.Vulnerability;
-    public override string RemediationEffort => "Communicate only over HTTPS endpoints.";
+    public override string RemediationEffort => "20min";
+    public override string FixAdvice => "Communicate only over HTTPS endpoints.";
     public override string[] Languages => ["js", "ts"];
 
     public override void Execute(IRuleContext context)
@@ -326,7 +336,8 @@ public sealed class JsOpenRedirectRule : PatternRuleBase
     public override string Name => "Open redirect via location assignment";
     public override Severity Severity => Severity.Major;
     public override IssueKind Kind => IssueKind.Vulnerability;
-    public override string RemediationEffort => "Validate and whitelist the redirect target before assigning location.";
+    public override string RemediationEffort => "20min";
+    public override string FixAdvice => "Validate and whitelist the redirect target before assigning location.";
     public override string[] Languages => ["js", "ts"];
 
     public override void Execute(IRuleContext context)
@@ -353,7 +364,8 @@ public sealed class JsPrototypePollutionRule : PatternRuleBase
     public override string Name => "Prototype pollution vector";
     public override Severity Severity => Severity.Major;
     public override IssueKind Kind => IssueKind.Vulnerability;
-    public override string RemediationEffort => "Never merge untrusted objects into prototypes; reject keys named __proto__ or constructor.prototype.";
+    public override string RemediationEffort => "20min";
+    public override string FixAdvice => "Never merge untrusted objects into prototypes; reject keys named __proto__ or constructor.prototype.";
     public override string[] Languages => ["js", "ts"];
 
     public override void Execute(IRuleContext context)
@@ -369,7 +381,8 @@ public sealed class JsXssSinkRule : PatternRuleBase
     public override string Name => "Cross-site scripting sink";
     public override Severity Severity => Severity.Critical;
     public override IssueKind Kind => IssueKind.Vulnerability;
-    public override string RemediationEffort => "Never write untrusted data to HTML sinks; use textContent or a sanitization library.";
+    public override string RemediationEffort => "30min";
+    public override string FixAdvice => "Never write untrusted data to HTML sinks; use textContent or a sanitization library.";
     public override string[] Languages => ["js", "ts"];
 
     public override void Execute(IRuleContext context)
@@ -395,7 +408,8 @@ public sealed class JsPostMessageRule : PatternRuleBase
     public override string Name => "postMessage to a wildcard target origin";
     public override Severity Severity => Severity.Major;
     public override IssueKind Kind => IssueKind.Vulnerability;
-    public override string RemediationEffort => "Pass a specific target origin instead of '*' to avoid leaking messages.";
+    public override string RemediationEffort => "20min";
+    public override string FixAdvice => "Pass a specific target origin instead of '*' to avoid leaking messages.";
     public override string[] Languages => ["js", "ts"];
 
     public override void Execute(IRuleContext context)
@@ -417,7 +431,8 @@ public sealed class TsEnvSecretsRule : PatternRuleBase
     public override string Name => "Secret read from environment";
     public override Severity Severity => Severity.Major;
     public override IssueKind Kind => IssueKind.Vulnerability;
-    public override string RemediationEffort => "Do not place secrets in code or logs; load them from a secure secret store.";
+    public override string RemediationEffort => "20min";
+    public override string FixAdvice => "Do not place secrets in code or logs; load them from a secure secret store.";
     public override string[] Languages => ["ts"];
 
     private static readonly string[] SecretNames =
@@ -447,7 +462,8 @@ public sealed class TsTlsVerificationRule : PatternRuleBase
     public override string Name => "Disabling TLS certificate verification";
     public override Severity Severity => Severity.Critical;
     public override IssueKind Kind => IssueKind.Vulnerability;
-    public override string RemediationEffort => "Keep TLS certificate validation enabled; fix the certificate issue instead of disabling checks.";
+    public override string RemediationEffort => "30min";
+    public override string FixAdvice => "Keep TLS certificate validation enabled; fix the certificate issue instead of disabling checks.";
     public override string[] Languages => ["ts"];
 
     public override void Execute(IRuleContext context)
@@ -470,7 +486,8 @@ public sealed class TsDynamicModuleRule : PatternRuleBase
     public override string Name => "Dynamic module loading";
     public override Severity Severity => Severity.Major;
     public override IssueKind Kind => IssueKind.Vulnerability;
-    public override string RemediationEffort => "Use static imports or validate that the resolved path is under an allowed directory.";
+    public override string RemediationEffort => "20min";
+    public override string FixAdvice => "Use static imports or validate that the resolved path is under an allowed directory.";
     public override string[] Languages => ["ts"];
 
     public override void Execute(IRuleContext context)
@@ -495,7 +512,8 @@ public sealed class JsConsoleLogRule : PatternRuleBase
     public override string Name => "Logging statements left in production code";
     public override Severity Severity => Severity.Minor;
     public override IssueKind Kind => IssueKind.CodeSmell;
-    public override string RemediationEffort => "Remove or gate debugging statements behind a logging configuration.";
+    public override string RemediationEffort => "10min";
+    public override string FixAdvice => "Remove or gate debugging statements behind a logging configuration.";
     public override string[] Languages => ["js", "ts"];
 
     public override void Execute(IRuleContext context)
@@ -516,7 +534,8 @@ public sealed class JsDebuggerRule : PatternRuleBase
     public override string Name => "Debugger statement left in production code";
     public override Severity Severity => Severity.Minor;
     public override IssueKind Kind => IssueKind.CodeSmell;
-    public override string RemediationEffort => "Remove the debugger statement before shipping.";
+    public override string RemediationEffort => "10min";
+    public override string FixAdvice => "Remove the debugger statement before shipping.";
     public override string[] Languages => ["js", "ts"];
 
     public override void Execute(IRuleContext context)
@@ -532,7 +551,8 @@ public sealed class JsBlockingDialogsRule : PatternRuleBase
     public override string Name => "Blocking dialog in production code";
     public override Severity Severity => Severity.Minor;
     public override IssueKind Kind => IssueKind.CodeSmell;
-    public override string RemediationEffort => "Replace blocking dialogs with non-blocking UI elements.";
+    public override string RemediationEffort => "10min";
+    public override string FixAdvice => "Replace blocking dialogs with non-blocking UI elements.";
     public override string[] Languages => ["js", "ts"];
 
     public override void Execute(IRuleContext context)
@@ -552,7 +572,8 @@ public sealed class JsEmptyCatchRule : PatternRuleBase
     public override string Name => "Empty catch block swallows errors";
     public override Severity Severity => Severity.Major;
     public override IssueKind Kind => IssueKind.CodeSmell;
-    public override string RemediationEffort => "Handle or at least log the exception inside the catch block.";
+    public override string RemediationEffort => "20min";
+    public override string FixAdvice => "Handle or at least log the exception inside the catch block.";
     public override string[] Languages => ["js", "ts"];
 
     public override void Execute(IRuleContext context)
@@ -581,7 +602,8 @@ public sealed class JsSwitchDefaultRule : PatternRuleBase
     public override string Name => "Switch without a default clause";
     public override Severity Severity => Severity.Minor;
     public override IssueKind Kind => IssueKind.CodeSmell;
-    public override string RemediationEffort => "Add a default clause to handle the unexpected values explicitly.";
+    public override string RemediationEffort => "10min";
+    public override string FixAdvice => "Add a default clause to handle the unexpected values explicitly.";
     public override string[] Languages => ["js", "ts"];
 
     public override void Execute(IRuleContext context)
@@ -603,7 +625,8 @@ public sealed class JsInfiniteLoopRule : PatternRuleBase
     public override string Name => "Infinite loop with a literal true condition";
     public override Severity Severity => Severity.Major;
     public override IssueKind Kind => IssueKind.CodeSmell;
-    public override string RemediationEffort => "Guarantee a break condition or use an exit flag for the loop.";
+    public override string RemediationEffort => "20min";
+    public override string FixAdvice => "Guarantee a break condition or use an exit flag for the loop.";
     public override string[] Languages => ["js", "ts"];
 
     public override void Execute(IRuleContext context)
@@ -623,7 +646,8 @@ public sealed class JsVarRule : PatternRuleBase
     public override string Name => "Use of var instead of const or let";
     public override Severity Severity => Severity.Minor;
     public override IssueKind Kind => IssueKind.CodeSmell;
-    public override string RemediationEffort => "Use const for never-reassigned bindings and let otherwise.";
+    public override string RemediationEffort => "10min";
+    public override string FixAdvice => "Use const for never-reassigned bindings and let otherwise.";
     public override string[] Languages => ["js", "ts"];
 
     public override void Execute(IRuleContext context)
@@ -639,7 +663,8 @@ public sealed class JsStrictEqualityRule : PatternRuleBase
     public override string Name => "Loose equality operators";
     public override Severity Severity => Severity.Major;
     public override IssueKind Kind => IssueKind.Bug;
-    public override string RemediationEffort => "Use === and !== to avoid implicit type coercion.";
+    public override string RemediationEffort => "20min";
+    public override string FixAdvice => "Use === and !== to avoid implicit type coercion.";
     public override string[] Languages => ["js", "ts"];
 
     public override void Execute(IRuleContext context)
@@ -665,7 +690,8 @@ public sealed class TsSuppressionRule : PatternRuleBase
     public override string Name => "Type checking suppressed";
     public override Severity Severity => Severity.Major;
     public override IssueKind Kind => IssueKind.CodeSmell;
-    public override string RemediationEffort => "Resolve the underlying type error instead of suppressing the compiler.";
+    public override string RemediationEffort => "20min";
+    public override string FixAdvice => "Resolve the underlying type error instead of suppressing the compiler.";
     public override string[] Languages => ["ts"];
 
     public override void Execute(IRuleContext context)
@@ -687,7 +713,8 @@ public sealed class JsSsrRule : PatternRuleBase
     public override string Name => "Server-side request forgery";
     public override Severity Severity => Severity.Critical;
     public override IssueKind Kind => IssueKind.Vulnerability;
-    public override string RemediationEffort => "Validate and whitelist the request target; never forward user input to internal services.";
+    public override string RemediationEffort => "30min";
+    public override string FixAdvice => "Validate and whitelist the request target; never forward user input to internal services.";
     public override string[] Languages => ["js", "ts"];
 
     public override void Execute(IRuleContext context)
@@ -725,7 +752,8 @@ public sealed class JsPathTraversalRule : PatternRuleBase
     public override string Name => "Path traversal in file access";
     public override Severity Severity => Severity.Critical;
     public override IssueKind Kind => IssueKind.Vulnerability;
-    public override string RemediationEffort => "Resolve and validate the path stays inside an allowed directory; reject traversal sequences.";
+    public override string RemediationEffort => "30min";
+    public override string FixAdvice => "Resolve and validate the path stays inside an allowed directory; reject traversal sequences.";
     public override string[] Languages => ["js", "ts"];
 
     private static readonly string[] FileMethods = ["readFile", "readFileSync", "writeFile", "writeFileSync", "createReadStream"];
@@ -752,7 +780,8 @@ public sealed class JsSstiRule : PatternRuleBase
     public override string Name => "Server-side template injection";
     public override Severity Severity => Severity.Critical;
     public override IssueKind Kind => IssueKind.Vulnerability;
-    public override string RemediationEffort => "Never pass user input into a template renderer; pass it as structured data after escaping.";
+    public override string RemediationEffort => "30min";
+    public override string FixAdvice => "Never pass user input into a template renderer; pass it as structured data after escaping.";
     public override string[] Languages => ["js", "ts"];
 
     public override void Execute(IRuleContext context)
@@ -782,7 +811,8 @@ public sealed class JsHeaderInjectionRule : PatternRuleBase
     public override string Name => "HTTP response header injection";
     public override Severity Severity => Severity.Major;
     public override IssueKind Kind => IssueKind.Vulnerability;
-    public override string RemediationEffort => "Never write user input directly into response headers; validate and encode values.";
+    public override string RemediationEffort => "20min";
+    public override string FixAdvice => "Never write user input directly into response headers; validate and encode values.";
     public override string[] Languages => ["js", "ts"];
 
     public override void Execute(IRuleContext context)
@@ -806,7 +836,8 @@ public sealed class JsZipSlipRule : PatternRuleBase
     public override string Name => "Unsafe archive extraction destination";
     public override Severity Severity => Severity.Major;
     public override IssueKind Kind => IssueKind.Vulnerability;
-    public override string RemediationEffort => "Validate entry names and ensure extracted files stay inside the target directory.";
+    public override string RemediationEffort => "20min";
+    public override string FixAdvice => "Validate entry names and ensure extracted files stay inside the target directory.";
     public override string[] Languages => ["js", "ts"];
 
     public override void Execute(IRuleContext context)
@@ -833,7 +864,8 @@ public sealed class JsParseIntRadixRule : PatternRuleBase
     public override string Name => "parseInt called without a radix";
     public override Severity Severity => Severity.Major;
     public override IssueKind Kind => IssueKind.CodeSmell;
-    public override string RemediationEffort => "Pass the radix as the second argument to parseInt to avoid ambiguity across environments.";
+    public override string RemediationEffort => "20min";
+    public override string FixAdvice => "Pass the radix as the second argument to parseInt to avoid ambiguity across environments.";
     public override string[] Languages => ["js", "ts"];
 
     public override void Execute(IRuleContext context)
@@ -856,7 +888,8 @@ public sealed class JsSetTimeoutStringRule : PatternRuleBase
     public override string Name => "setTimeout or setInterval with a string callback";
     public override Severity Severity => Severity.Major;
     public override IssueKind Kind => IssueKind.Bug;
-    public override string RemediationEffort => "Pass a function reference instead of a string; string callbacks execute in global scope.";
+    public override string RemediationEffort => "20min";
+    public override string FixAdvice => "Pass a function reference instead of a string; string callbacks execute in global scope.";
     public override string[] Languages => ["js", "ts"];
 
     public override void Execute(IRuleContext context)
@@ -880,7 +913,8 @@ public sealed class TsCorsWildcardRule : PatternRuleBase
     public override string Name => "CORS header set to a wildcard origin";
     public override Severity Severity => Severity.Major;
     public override IssueKind Kind => IssueKind.Vulnerability;
-    public override string RemediationEffort => "Restrict Access-Control-Allow-Origin to trusted origins instead of '*'.";
+    public override string RemediationEffort => "20min";
+    public override string FixAdvice => "Restrict Access-Control-Allow-Origin to trusted origins instead of '*'.";
     public override string[] Languages => ["ts"];
 
     public override void Execute(IRuleContext context)
@@ -901,7 +935,8 @@ public sealed class TsAnyAssertionRule : PatternRuleBase
     public override string Name => "Type assertion to any";
     public override Severity Severity => Severity.Minor;
     public override IssueKind Kind => IssueKind.CodeSmell;
-    public override string RemediationEffort => "Avoid 'as any'; narrow the type explicitly instead of erasing type safety.";
+    public override string RemediationEffort => "10min";
+    public override string FixAdvice => "Avoid 'as any'; narrow the type explicitly instead of erasing type safety.";
     public override string[] Languages => ["ts"];
 
     public override void Execute(IRuleContext context)

@@ -1,0 +1,172 @@
+# Descriptions for the Python rules in Rules/Languages/PythonMeasuredRules.cs. These were chosen by
+# measurement: tools/compare_expectations.py named the checks whose expected lines we covered least
+# on an annotated reference corpus, and this file closes the top of that list.
+
+- key: QG-PY-BUG-0149
+  name: A statement should do something
+  languages: [py]
+  category: BUG
+  severity: major
+  effort: 10min
+  tags: [suspicious]
+  summary: An expression statement computes a value and discards it.
+  why: |
+    The line changes nothing. Either an assignment is missing, or a call lost its parentheses and now
+    only names the function instead of running it — both read as working code.
+  fix: |
+    Assign the result, or call the function.
+
+- key: QG-PY-BUG-0150
+  name: A special method should return the type the language expects
+  languages: [py]
+  category: BUG
+  severity: critical
+  effort: 15min
+  tags: [suspicious]
+  summary: __bool__, __len__, __str__ or a neighbour returns a literal of the wrong type.
+  why: |
+    The interpreter calls these itself and raises TypeError on anything else — at the moment the
+    object is used, not where the method was written, so the traceback points somewhere else
+    entirely.
+  fix: |
+    Return the type the protocol requires: bool for __bool__, int for __len__, str for __str__.
+
+- key: QG-PY-BUG-0151
+  name: An assertion should be able to fail
+  languages: [py]
+  category: BUG
+  severity: blocker
+  effort: 10min
+  tags: [tests]
+  summary: assertTrue or a neighbour is given a constant.
+  why: |
+    The assertion passes whatever the code under test does, so the test reports success and checks
+    nothing. It is worse than no test, because it looks like coverage.
+  fix: |
+    Assert the value the code produced.
+
+- key: QG-PY-BUG-0152
+  name: A constant should not decide a condition
+  languages: [py]
+  category: BUG
+  severity: major
+  effort: 10min
+  tags: [suspicious]
+  summary: True or False appears as an operand of and / or.
+  why: |
+    One side of the branch behind it can never run. A constant left in a condition is usually a
+    debugging change that stayed.
+  fix: |
+    Remove the constant, or the branch it disabled.
+
+- key: QG-PY-SML-0251
+  name: The assertion that names the check should be used
+  languages: [py]
+  category: SML
+  severity: major
+  effort: 5min
+  tags: [tests]
+  summary: assertTrue or assertFalse is given a comparison.
+  why: |
+    When it fails the report says only "False is not True". The dedicated assertion prints both
+    values, which is the difference between a test that tells you what broke and one that does not.
+  fix: |
+    Use assertEqual, assertIs, assertIn and their negatives.
+
+- key: QG-PY-CNV-0008
+  name: Parentheses should not be doubled
+  languages: [py]
+  category: CNV
+  severity: minor
+  effort: 5min
+  tags: [readability]
+  summary: A pair of parentheses encloses nothing but another pair.
+  why: |
+    The inner pair groups what the outer pair already groups, so the reader checks twice for a
+    precedence that is not there.
+  fix: |
+    Keep one pair.
+
+- key: QG-PY-CNV-0009
+  name: A type variable should carry its own name
+  languages: [py]
+  category: CNV
+  severity: major
+  effort: 5min
+  tags: [readability]
+  summary: TypeVar, ParamSpec or NewType is given a name different from the variable holding it.
+  why: |
+    Every error message and every traceback shows the name passed to the factory, and nothing in the
+    file connects it to the variable the code actually uses.
+  fix: |
+    Pass the same name as the variable.
+
+- key: QG-PY-SEC-0085
+  name: An obsolete TLS version should not be selected
+  languages: [py]
+  category: SEC
+  severity: critical
+  effort: 20min
+  tags: [transport]
+  summary: A protocol constant naming SSL or TLS 1.0/1.1 is used.
+  why: |
+    These versions have published attacks against them, and a client that still offers one can be
+    pushed down onto it by whoever sits on the connection.
+  fix: |
+    Ask for PROTOCOL_TLS_CLIENT and let the library negotiate the best version both ends support.
+
+- key: QG-PY-SEC-0086
+  name: A salt should be unpredictable
+  languages: [py]
+  category: SEC
+  severity: critical
+  effort: 20min
+  tags: [cryptography]
+  summary: A password hashing call is given a literal salt.
+  why: |
+    Every password is hashed with the same salt, so a table computed once breaks all of them
+    together — which is exactly what a salt exists to prevent.
+  fix: |
+    Generate a fresh salt per password with os.urandom and store it next to the hash.
+
+- key: QG-PY-SEC-0087
+  name: A token should be verified before it is trusted
+  languages: [py]
+  category: SEC
+  severity: critical
+  effort: 20min
+  tags: [authentication]
+  summary: A JWT is decoded with verification switched off, or read without it.
+  why: |
+    Anything the caller sends is believed, including a token the caller wrote themselves. The claims
+    inside it then decide who they are and what they may do.
+  fix: |
+    Verify the signature against the key that issued the token, and check the algorithm.
+
+- key: QG-PY-SEC-0088
+  name: Cross-origin access should name the origins it allows
+  languages: [py]
+  category: SEC
+  severity: critical
+  effort: 30min
+  tags: [browser]
+  summary: The allowed origin is a wildcard, or all origins are enabled.
+  why: |
+    Any site can read this service's responses from a visitor's browser, with whatever that visitor
+    is authorised to see.
+  fix: |
+    List the origins that are allowed.
+
+- key: QG-PY-SEC-0089
+  name: A password needs a slow hash
+  languages: [py]
+  category: SEC
+  severity: critical
+  effort: 45min
+  tags: [cryptography]
+  summary: A password is hashed with a general-purpose digest.
+  why: |
+    Those functions are built to be fast, which is the opposite of what a password needs: a graphics
+    card tries billions of candidates a second against one.
+  fix: |
+    Use argon2, bcrypt or scrypt, with a per-password salt.

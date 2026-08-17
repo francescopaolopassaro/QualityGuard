@@ -47,7 +47,8 @@ public sealed class DockerUserRootRule : PatternRuleBase
     public override string Name => "Container runs as root";
     public override Severity Severity => Severity.Major;
     public override IssueKind Kind => IssueKind.Vulnerability;
-    public override string RemediationEffort => "Run the container as a non-root user (USER 1000 or a dedicated user).";
+    public override string RemediationEffort => "20min";
+    public override string FixAdvice => "Run the container as a non-root user (USER 1000 or a dedicated user).";
     public override string[] Languages => ["dk"];
 
     public override void Execute(IRuleContext context)
@@ -76,7 +77,8 @@ public sealed class DockerCurlPipeShellRule : PatternRuleBase
     public override string Name => "Remote script piped directly into a shell";
     public override Severity Severity => Severity.Critical;
     public override IssueKind Kind => IssueKind.Vulnerability;
-    public override string RemediationEffort => "Download the script, verify its checksum and signature, then execute it.";
+    public override string RemediationEffort => "30min";
+    public override string FixAdvice => "Download the script, verify its checksum and signature, then execute it.";
     public override string[] Languages => ["dk"];
 
     public override void Execute(IRuleContext context)
@@ -99,7 +101,8 @@ public sealed class DockerCleartextDownloadRule : PatternRuleBase
     public override string Name => "Download over cleartext HTTP";
     public override Severity Severity => Severity.Major;
     public override IssueKind Kind => IssueKind.Vulnerability;
-    public override string RemediationEffort => "Use HTTPS to prevent man-in-the-middle tampering of downloads.";
+    public override string RemediationEffort => "20min";
+    public override string FixAdvice => "Use HTTPS to prevent man-in-the-middle tampering of downloads.";
     public override string[] Languages => ["dk"];
 
     public override void Execute(IRuleContext context)
@@ -120,7 +123,8 @@ public sealed class DockerRemoteAddRule : PatternRuleBase
     public override string Name => "ADD copies a remote URL into the image";
     public override Severity Severity => Severity.Major;
     public override IssueKind Kind => IssueKind.Vulnerability;
-    public override string RemediationEffort => "Use COPY or a RUN download (with checksum verification) instead of ADD for remote URLs.";
+    public override string RemediationEffort => "20min";
+    public override string FixAdvice => "Use COPY or a RUN download (with checksum verification) instead of ADD for remote URLs.";
     public override string[] Languages => ["dk"];
 
     public override void Execute(IRuleContext context)
@@ -142,7 +146,8 @@ public sealed class DockerEnvSecretRule : PatternRuleBase
     public override string Name => "Secret stored in an ENV instruction";
     public override Severity Severity => Severity.Critical;
     public override IssueKind Kind => IssueKind.Vulnerability;
-    public override string RemediationEffort => "Inject secrets at runtime instead of baking them into the image.";
+    public override string RemediationEffort => "30min";
+    public override string FixAdvice => "Inject secrets at runtime instead of baking them into the image.";
     public override string[] Languages => ["dk"];
 
     public override void Execute(IRuleContext context)
@@ -166,7 +171,8 @@ public sealed class DockerExposedSshPortRule : PatternRuleBase
     public override string Name => "Container exposes an SSH or management port";
     public override Severity Severity => Severity.Critical;
     public override IssueKind Kind => IssueKind.Vulnerability;
-    public override string RemediationEffort => "Do not expose SSH (22) or RDP (3389) ports from the container.";
+    public override string RemediationEffort => "30min";
+    public override string FixAdvice => "Do not expose SSH (22) or RDP (3389) ports from the container.";
     public override string[] Languages => ["dk"];
 
     public override void Execute(IRuleContext context)
@@ -189,7 +195,8 @@ public sealed class DockerWorldWritableRule : PatternRuleBase
     public override string Name => "Files are made world-writable";
     public override Severity Severity => Severity.Major;
     public override IssueKind Kind => IssueKind.Vulnerability;
-    public override string RemediationEffort => "Use restrictive permissions and chown files to a non-root user.";
+    public override string RemediationEffort => "20min";
+    public override string FixAdvice => "Use restrictive permissions and chown files to a non-root user.";
     public override string[] Languages => ["dk"];
 
     public override void Execute(IRuleContext context)
@@ -210,7 +217,8 @@ public sealed class DockerSkipCertValidationRule : PatternRuleBase
     public override string Name => "TLS certificate validation is disabled";
     public override Severity Severity => Severity.Major;
     public override IssueKind Kind => IssueKind.Vulnerability;
-    public override string RemediationEffort => "Keep certificate validation enabled for all downloads.";
+    public override string RemediationEffort => "20min";
+    public override string FixAdvice => "Keep certificate validation enabled for all downloads.";
     public override string[] Languages => ["dk"];
 
     public override void Execute(IRuleContext context)
@@ -234,7 +242,8 @@ public sealed class DockerInstallMissingFlagsRule : PatternRuleBase
     public override string Name => "Package installation may run interactively";
     public override Severity Severity => Severity.Minor;
     public override IssueKind Kind => IssueKind.CodeSmell;
-    public override string RemediationEffort => "Use -y and --no-install-recommends for deterministic, minimal package installation.";
+    public override string RemediationEffort => "10min";
+    public override string FixAdvice => "Use -y and --no-install-recommends for deterministic, minimal package installation.";
     public override string[] Languages => ["dk"];
 
     public override void Execute(IRuleContext context)
@@ -259,7 +268,8 @@ public sealed class DockerUnpinnedFromRule : PatternRuleBase
     public override string Name => "Base image is not pinned";
     public override Severity Severity => Severity.Minor;
     public override IssueKind Kind => IssueKind.CodeSmell;
-    public override string RemediationEffort => "Pin the base image to a fixed tag or digest.";
+    public override string RemediationEffort => "10min";
+    public override string FixAdvice => "Pin the base image to a fixed tag or digest.";
     public override string[] Languages => ["dk"];
 
     public override void Execute(IRuleContext context)
@@ -290,7 +300,8 @@ public sealed class DockerMissingHealthcheckRule : PatternRuleBase
     public override string Name => "Container image has no HEALTHCHECK";
     public override Severity Severity => Severity.Minor;
     public override IssueKind Kind => IssueKind.CodeSmell;
-    public override string RemediationEffort => "Define a HEALTHCHECK so the runtime can detect a failing process.";
+    public override string RemediationEffort => "10min";
+    public override string FixAdvice => "Define a HEALTHCHECK so the runtime can detect a failing process.";
     public override string[] Languages => ["dk"];
 
     public override void Execute(IRuleContext context)
@@ -316,7 +327,8 @@ public sealed class DockerDeprecatedMaintainerRule : PatternRuleBase
     public override string Name => "MAINTAINER is deprecated";
     public override Severity Severity => Severity.Minor;
     public override IssueKind Kind => IssueKind.CodeSmell;
-    public override string RemediationEffort => "Use the LABEL maintainer instruction instead of MAINTAINER.";
+    public override string RemediationEffort => "10min";
+    public override string FixAdvice => "Use the LABEL maintainer instruction instead of MAINTAINER.";
     public override string[] Languages => ["dk"];
 
     public override void Execute(IRuleContext context)
@@ -336,7 +348,8 @@ public sealed class DockerMissingWorkdirRule : PatternRuleBase
     public override string Name => "Container image has no WORKDIR";
     public override Severity Severity => Severity.Minor;
     public override IssueKind Kind => IssueKind.CodeSmell;
-    public override string RemediationEffort => "Set a WORKDIR for the container.";
+    public override string RemediationEffort => "10min";
+    public override string FixAdvice => "Set a WORKDIR for the container.";
     public override string[] Languages => ["dk"];
 
     public override void Execute(IRuleContext context)
@@ -362,7 +375,8 @@ public sealed class DockerShellFormCommandRule : PatternRuleBase
     public override string Name => "CMD or ENTRYPOINT uses shell form";
     public override Severity Severity => Severity.Minor;
     public override IssueKind Kind => IssueKind.CodeSmell;
-    public override string RemediationEffort => "Use the exec form (JSON array) for CMD and ENTRYPOINT.";
+    public override string RemediationEffort => "10min";
+    public override string FixAdvice => "Use the exec form (JSON array) for CMD and ENTRYPOINT.";
     public override string[] Languages => ["dk"];
 
     public override void Execute(IRuleContext context)

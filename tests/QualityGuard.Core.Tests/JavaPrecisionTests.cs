@@ -108,4 +108,76 @@ public class JavaPrecisionTests
                               + "  public void go(Tree tree) {\n    log(\"x\");\n  }\n}\n",
             "QG-ALL-SML-0012"));
     }
+    [Fact]
+    public void Only_a_private_method_is_asked_to_become_static()
+    {
+        // an override or an interface implementation is somebody's contract, not a local choice
+        var contract = """
+            package demo;
+
+            class A {
+              @Override
+              public String toString() {
+                return "a";
+              }
+
+              protected void hook() {
+                helper();
+              }
+
+              static void helper() {}
+            }
+            """;
+        Assert.Empty(Lines(contract, "QG-ALL-SML-0037"));
+
+        var local = """
+            package demo;
+
+            class A {
+              private int twice(int n) {
+                return n * 2;
+              }
+            }
+            """;
+        Assert.NotEmpty(Lines(local, "QG-ALL-SML-0037"));
+    }
+
+    [Fact]
+    public void An_empty_body_that_explains_itself_is_left_alone()
+    {
+        var documented = """
+            package demo;
+
+            class A {
+              void onEvent() {
+                // nothing to do: the framework only needs the hook to exist
+              }
+            }
+            """;
+        Assert.Empty(Lines(documented, "QG-ALL-SML-0010"));
+
+        var silent = """
+            package demo;
+
+            class A {
+              void onEvent() {
+              }
+            }
+            """;
+        Assert.NotEmpty(Lines(silent, "QG-ALL-SML-0010"));
+    }
+
+    [Fact]
+    public void An_empty_constructor_is_not_a_finding()
+    {
+        var code = """
+            package demo;
+
+            class A {
+              A() {}
+            }
+            """;
+        Assert.Empty(Lines(code, "QG-ALL-SML-0010"));
+    }
+
 }

@@ -23,7 +23,6 @@ public static class JavaAstRuleSet
         new JavaSwitchWithNonCaseLabelRule(),
         new JavaMisspelledObjectMethodRule(),
         new JavaMethodNamedLikeTypeRule(),
-        new JavaMutableStaticFieldRule(),
         new JavaToStringOnStringRule(),
         new JavaIteratorHasNextCallsNextRule(),
         new JavaInvertedBooleanCheckRule(),
@@ -446,32 +445,6 @@ public sealed class JavaMethodNamedLikeTypeRule : JavaAstRuleBase
                                + $"'new {type.Text}()' runs the real constructor and this code never "
                                + "executes.", method.Range.StartLine);
             }
-        }
-    }
-}
-
-public sealed class JavaMutableStaticFieldRule : JavaAstRuleBase
-{
-    public override string Key => "QG-JV-BUG-0185";
-    public override string Name => "A public static field should be final";
-    public override IssueKind Kind => IssueKind.Bug;
-    public override string RemediationEffort => "15min";
-
-    public override void Execute(IRuleContext context)
-    {
-        if (!HasTree(context))
-            return;
-
-        foreach (var field in context.Root.OfKind(NodeKind.FieldDeclaration))
-        {
-            var modifiers = Modifiers(field);
-            if (!modifiers.Contains("public") || !modifiers.Contains("static") || modifiers.Contains("final"))
-                continue;
-
-            context.Report($"'{field.Text}' can be replaced by any code in the process, at any moment, "
-                           + "from any thread — and every reader of it sees the change. That is a global "
-                           + "variable with a class name in front. Make it final, or hide it behind "
-                           + "accessors that control the change.", field.Range.StartLine);
         }
     }
 }

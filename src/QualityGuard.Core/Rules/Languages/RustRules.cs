@@ -89,7 +89,8 @@ public sealed class RustCommandExecutionRule : PatternRuleBase
     public override string Name => "OS command executed with dynamic arguments";
     public override Severity Severity => Severity.Critical;
     public override IssueKind Kind => IssueKind.Vulnerability;
-    public override string RemediationEffort => "Do not pass dynamic input to Command; execute a fixed program with a static argument list.";
+    public override string RemediationEffort => "30min";
+    public override string FixAdvice => "Do not pass dynamic input to Command; execute a fixed program with a static argument list.";
     public override string[] Languages => ["rs"];
 
     public override void Execute(IRuleContext context)
@@ -113,7 +114,8 @@ public sealed class RustSqlInjectionRule : PatternRuleBase
     public override string Name => "SQL query built by string interpolation";
     public override Severity Severity => Severity.Critical;
     public override IssueKind Kind => IssueKind.Vulnerability;
-    public override string RemediationEffort => "Use parameterized queries (rusqlite params!, sqlx bind) instead of interpolating input into SQL.";
+    public override string RemediationEffort => "30min";
+    public override string FixAdvice => "Use parameterized queries (rusqlite params!, sqlx bind) instead of interpolating input into SQL.";
     public override string[] Languages => ["rs"];
 
     public override void Execute(IRuleContext context)
@@ -141,7 +143,8 @@ public sealed class RustWeakCryptoRule : PatternRuleBase
     public override string Name => "Weak cryptographic algorithm is used";
     public override Severity Severity => Severity.Major;
     public override IssueKind Kind => IssueKind.Vulnerability;
-    public override string RemediationEffort => "Replace MD5/SHA-1/DES/RC4 and AES-ECB with strong algorithms such as AES-GCM or SHA-256.";
+    public override string RemediationEffort => "20min";
+    public override string FixAdvice => "Replace MD5/SHA-1/DES/RC4 and AES-ECB with strong algorithms such as AES-GCM or SHA-256.";
     public override string[] Languages => ["rs"];
 
     public override void Execute(IRuleContext context)
@@ -167,7 +170,8 @@ public sealed class RustHardcodedCredentialsRule : PatternRuleBase
     public override string Name => "Hard-coded credentials";
     public override Severity Severity => Severity.Blocker;
     public override IssueKind Kind => IssueKind.Vulnerability;
-    public override string RemediationEffort => "Read secrets from environment variables or a secret manager instead of source code.";
+    public override string RemediationEffort => "30min";
+    public override string FixAdvice => "Read secrets from environment variables or a secret manager instead of source code.";
     public override string[] Languages => ["rs"];
 
     public override void Execute(IRuleContext context)
@@ -189,7 +193,8 @@ public sealed class RustInsecureRandomRule : PatternRuleBase
     public override string Name => "Pseudo-random number generator used for security";
     public override Severity Severity => Severity.Major;
     public override IssueKind Kind => IssueKind.Vulnerability;
-    public override string RemediationEffort => "Use a cryptographically secure source (getrandom, OsRng) for security-sensitive values.";
+    public override string RemediationEffort => "20min";
+    public override string FixAdvice => "Use a cryptographically secure source (getrandom, OsRng) for security-sensitive values.";
     public override string[] Languages => ["rs"];
 
     public override void Execute(IRuleContext context)
@@ -212,7 +217,8 @@ public sealed class RustUnsafeDeserializationRule : PatternRuleBase
     public override string Name => "Unsafe deserialization of untrusted input";
     public override Severity Severity => Severity.Major;
     public override IssueKind Kind => IssueKind.Vulnerability;
-    public override string RemediationEffort => "Validate and authenticate input before deserializing with bincode/rmp_serde/serde_json.";
+    public override string RemediationEffort => "20min";
+    public override string FixAdvice => "Validate and authenticate input before deserializing with bincode/rmp_serde/serde_json.";
     public override string[] Languages => ["rs"];
 
     public override void Execute(IRuleContext context)
@@ -237,7 +243,8 @@ public sealed class RustCleartextHttpRule : PatternRuleBase
     public override string Name => "Cleartext HTTP communication";
     public override Severity Severity => Severity.Major;
     public override IssueKind Kind => IssueKind.Vulnerability;
-    public override string RemediationEffort => "Use HTTPS to encrypt data in transit.";
+    public override string RemediationEffort => "20min";
+    public override string FixAdvice => "Use HTTPS to encrypt data in transit.";
     public override string[] Languages => ["rs"];
 
     public override void Execute(IRuleContext context)
@@ -253,7 +260,8 @@ public sealed class RustPathTraversalRule : PatternRuleBase
     public override string Name => "Path traversal via user-controlled file path";
     public override Severity Severity => Severity.Major;
     public override IssueKind Kind => IssueKind.Vulnerability;
-    public override string RemediationEffort => "Validate and sanitize file paths against a base directory allow list.";
+    public override string RemediationEffort => "20min";
+    public override string FixAdvice => "Validate and sanitize file paths against a base directory allow list.";
     public override string[] Languages => ["rs"];
 
     public override void Execute(IRuleContext context)
@@ -280,7 +288,8 @@ public sealed class RustSsrfRule : PatternRuleBase
     public override string Name => "Server-Side Request Forgery via HTTP client";
     public override Severity Severity => Severity.Major;
     public override IssueKind Kind => IssueKind.Vulnerability;
-    public override string RemediationEffort => "Validate and allow list destination URLs and prevent access to internal hosts.";
+    public override string RemediationEffort => "20min";
+    public override string FixAdvice => "Validate and allow list destination URLs and prevent access to internal hosts.";
     public override string[] Languages => ["rs"];
 
     public override void Execute(IRuleContext context)
@@ -311,7 +320,8 @@ public sealed class RustUnsafePointerOpsRule : PatternRuleBase
     public override string Name => "Unsafe pointer operations used";
     public override Severity Severity => Severity.Major;
     public override IssueKind Kind => IssueKind.Vulnerability;
-    public override string RemediationEffort => "Avoid transmute, mem::uninitialized, from_raw_parts and set_len unless invariants are guaranteed.";
+    public override string RemediationEffort => "20min";
+    public override string FixAdvice => "Avoid transmute, mem::uninitialized, from_raw_parts and set_len unless invariants are guaranteed.";
     public override string[] Languages => ["rs"];
 
     public override void Execute(IRuleContext context)
@@ -334,7 +344,8 @@ public sealed class RustInsecureTlsRule : PatternRuleBase
     public override string Name => "TLS certificate verification disabled";
     public override Severity Severity => Severity.Critical;
     public override IssueKind Kind => IssueKind.Vulnerability;
-    public override string RemediationEffort => "Keep certificate and hostname verification enabled to protect against MITM attacks.";
+    public override string RemediationEffort => "30min";
+    public override string FixAdvice => "Keep certificate and hostname verification enabled to protect against MITM attacks.";
     public override string[] Languages => ["rs"];
 
     public override void Execute(IRuleContext context)
@@ -356,7 +367,8 @@ public sealed class RustShellCommandRule : PatternRuleBase
     public override string Name => "Shell interpreter invoked via Command";
     public override Severity Severity => Severity.Major;
     public override IssueKind Kind => IssueKind.Vulnerability;
-    public override string RemediationEffort => "Avoid launching sh/bash/cmd; execute the intended program directly with static arguments.";
+    public override string RemediationEffort => "20min";
+    public override string FixAdvice => "Avoid launching sh/bash/cmd; execute the intended program directly with static arguments.";
     public override string[] Languages => ["rs"];
 
     public override void Execute(IRuleContext context)
@@ -385,7 +397,8 @@ public sealed class RustWeakUuidRule : PatternRuleBase
     public override string Name => "Weak randomness used for UUID generation";
     public override Severity Severity => Severity.Major;
     public override IssueKind Kind => IssueKind.Vulnerability;
-    public override string RemediationEffort => "Use a cryptographically secure RNG (getrandom/OsRng) when UUIDs are security-sensitive.";
+    public override string RemediationEffort => "20min";
+    public override string FixAdvice => "Use a cryptographically secure RNG (getrandom/OsRng) when UUIDs are security-sensitive.";
     public override string[] Languages => ["rs"];
 
     public override void Execute(IRuleContext context)
@@ -411,7 +424,8 @@ public sealed class RustSensitiveLoggingRule : PatternRuleBase
     public override string Name => "Sensitive data is logged";
     public override Severity Severity => Severity.Major;
     public override IssueKind Kind => IssueKind.Vulnerability;
-    public override string RemediationEffort => "Do not log credentials or other secrets; redact sensitive values.";
+    public override string RemediationEffort => "20min";
+    public override string FixAdvice => "Do not log credentials or other secrets; redact sensitive values.";
     public override string[] Languages => ["rs"];
 
     public override void Execute(IRuleContext context)
@@ -436,7 +450,8 @@ public sealed class RustWorldWritablePermissionsRule : PatternRuleBase
     public override string Name => "World-writable file permissions";
     public override Severity Severity => Severity.Major;
     public override IssueKind Kind => IssueKind.Vulnerability;
-    public override string RemediationEffort => "Restrict file permissions to the least privilege required.";
+    public override string RemediationEffort => "20min";
+    public override string FixAdvice => "Restrict file permissions to the least privilege required.";
     public override string[] Languages => ["rs"];
 
     public override void Execute(IRuleContext context)
@@ -456,7 +471,8 @@ public sealed class RustUnwrapExpectRule : PatternRuleBase
     public override string Name => "unwrap or expect used on a Result/Option";
     public override Severity Severity => Severity.Major;
     public override IssueKind Kind => IssueKind.CodeSmell;
-    public override string RemediationEffort => "Propagate errors with ? and handle the None/Err cases explicitly.";
+    public override string RemediationEffort => "20min";
+    public override string FixAdvice => "Propagate errors with ? and handle the None/Err cases explicitly.";
     public override string[] Languages => ["rs"];
 
     public override void Execute(IRuleContext context)
@@ -481,7 +497,8 @@ public sealed class RustDebugPrintRule : PatternRuleBase
     public override string Name => "Debug output statements";
     public override Severity Severity => Severity.Minor;
     public override IssueKind Kind => IssueKind.CodeSmell;
-    public override string RemediationEffort => "Remove leftover print/dbg! statements or route them through a logger.";
+    public override string RemediationEffort => "10min";
+    public override string FixAdvice => "Remove leftover print/dbg! statements or route them through a logger.";
     public override string[] Languages => ["rs"];
 
     public override void Execute(IRuleContext context)
@@ -504,7 +521,8 @@ public sealed class RustUndocumentedUnsafeRule : PatternRuleBase
     public override string Name => "Unsafe block without safety documentation";
     public override Severity Severity => Severity.Major;
     public override IssueKind Kind => IssueKind.CodeSmell;
-    public override string RemediationEffort => "Document why this unsafe block is safe with a SAFETY comment or # Safety doc section.";
+    public override string RemediationEffort => "20min";
+    public override string FixAdvice => "Document why this unsafe block is safe with a SAFETY comment or # Safety doc section.";
     public override string[] Languages => ["rs"];
 
     public override void Execute(IRuleContext context)
@@ -535,7 +553,8 @@ public sealed class RustPanicMacroRule : PatternRuleBase
     public override string Name => "todo!/unimplemented!/unreachable! should not be left";
     public override Severity Severity => Severity.Major;
     public override IssueKind Kind => IssueKind.CodeSmell;
-    public override string RemediationEffort => "Replace placeholders with real implementations or handle the unreachable case gracefully.";
+    public override string RemediationEffort => "20min";
+    public override string FixAdvice => "Replace placeholders with real implementations or handle the unreachable case gracefully.";
     public override string[] Languages => ["rs"];
 
     public override void Execute(IRuleContext context)
@@ -558,7 +577,8 @@ public sealed class RustLongFunctionRule : PatternRuleBase
     public override string Name => "Function is too long";
     public override Severity Severity => Severity.Major;
     public override IssueKind Kind => IssueKind.CodeSmell;
-    public override string RemediationEffort => "Split this function into smaller, focused pieces.";
+    public override string RemediationEffort => "20min";
+    public override string FixAdvice => "Split this function into smaller, focused pieces.";
     public override string[] Languages => ["rs"];
     private const int MaxLines = 80;
 
@@ -594,7 +614,8 @@ public sealed class RustVariableShadowingRule : PatternRuleBase
     public override string Name => "Variable should not shadow an earlier binding";
     public override Severity Severity => Severity.Minor;
     public override IssueKind Kind => IssueKind.CodeSmell;
-    public override string RemediationEffort => "Rename the inner variable so it does not shadow the outer one.";
+    public override string RemediationEffort => "10min";
+    public override string FixAdvice => "Rename the inner variable so it does not shadow the outer one.";
     public override string[] Languages => ["rs"];
 
     public override void Execute(IRuleContext context)
@@ -627,7 +648,8 @@ public sealed class RustDuplicatedLiteralsRule : PatternRuleBase
     public override string Name => "String literals should not be duplicated";
     public override Severity Severity => Severity.Minor;
     public override IssueKind Kind => IssueKind.CodeSmell;
-    public override string RemediationEffort => "Define a named constant for this repeated literal.";
+    public override string RemediationEffort => "10min";
+    public override string FixAdvice => "Define a named constant for this repeated literal.";
     public override string[] Languages => ["rs"];
 
     public override void Execute(IRuleContext context)
@@ -649,7 +671,8 @@ public sealed class RustBooleanLiteralComparisonRule : PatternRuleBase
     public override string Name => "Boolean values should not be compared to true or false";
     public override Severity Severity => Severity.Minor;
     public override IssueKind Kind => IssueKind.CodeSmell;
-    public override string RemediationEffort => "Use the boolean directly instead of comparing it to a literal.";
+    public override string RemediationEffort => "10min";
+    public override string FixAdvice => "Use the boolean directly instead of comparing it to a literal.";
     public override string[] Languages => ["rs"];
 
     public override void Execute(IRuleContext context)
@@ -671,7 +694,8 @@ public sealed class RustInfiniteLoopRule : PatternRuleBase
     public override string Name => "Infinite loop without exit condition";
     public override Severity Severity => Severity.Minor;
     public override IssueKind Kind => IssueKind.CodeSmell;
-    public override string RemediationEffort => "Ensure the loop has a guaranteed break/return to avoid hanging the process.";
+    public override string RemediationEffort => "10min";
+    public override string FixAdvice => "Ensure the loop has a guaranteed break/return to avoid hanging the process.";
     public override string[] Languages => ["rs"];
 
     public override void Execute(IRuleContext context)
@@ -701,7 +725,8 @@ public sealed class RustRedundantElseRule : PatternRuleBase
     public override string Name => "Unnecessary else after return/break";
     public override Severity Severity => Severity.Minor;
     public override IssueKind Kind => IssueKind.CodeSmell;
-    public override string RemediationEffort => "Remove the else block and return directly to reduce nesting.";
+    public override string RemediationEffort => "10min";
+    public override string FixAdvice => "Remove the else block and return directly to reduce nesting.";
     public override string[] Languages => ["rs"];
 
     public override void Execute(IRuleContext context)
@@ -734,7 +759,8 @@ public sealed class RustDivisionByZeroRule : PatternRuleBase
     public override string Name => "Division by zero";
     public override Severity Severity => Severity.Critical;
     public override IssueKind Kind => IssueKind.Bug;
-    public override string RemediationEffort => "Guard against zero divisors before performing the division.";
+    public override string RemediationEffort => "30min";
+    public override string FixAdvice => "Guard against zero divisors before performing the division.";
     public override string[] Languages => ["rs"];
 
     public override void Execute(IRuleContext context)
@@ -756,7 +782,8 @@ public sealed class RustFloatEqualityRule : PatternRuleBase
     public override string Name => "Floating point values should not be compared with ==";
     public override Severity Severity => Severity.Major;
     public override IssueKind Kind => IssueKind.Bug;
-    public override string RemediationEffort => "Use an epsilon-based comparison or compare against a tolerance.";
+    public override string RemediationEffort => "20min";
+    public override string FixAdvice => "Use an epsilon-based comparison or compare against a tolerance.";
     public override string[] Languages => ["rs"];
 
     public override void Execute(IRuleContext context)
@@ -778,7 +805,8 @@ public sealed class RustIntegerOverflowRule : PatternRuleBase
     public override string Name => "Integer arithmetic may overflow in release builds";
     public override Severity Severity => Severity.Major;
     public override IssueKind Kind => IssueKind.Bug;
-    public override string RemediationEffort => "Use checked/saturating arithmetic or ensure values stay within bounds.";
+    public override string RemediationEffort => "20min";
+    public override string FixAdvice => "Use checked/saturating arithmetic or ensure values stay within bounds.";
     public override string[] Languages => ["rs"];
 
     public override void Execute(IRuleContext context)
@@ -812,7 +840,8 @@ public sealed class RustMemForgetRule : PatternRuleBase
     public override string Name => "mem::forget used on a resource";
     public override Severity Severity => Severity.Major;
     public override IssueKind Kind => IssueKind.Bug;
-    public override string RemediationEffort => "Avoid mem::forget; leaking resources may exhaust system limits.";
+    public override string RemediationEffort => "20min";
+    public override string FixAdvice => "Avoid mem::forget; leaking resources may exhaust system limits.";
     public override string[] Languages => ["rs"];
 
     public override void Execute(IRuleContext context)
@@ -833,7 +862,8 @@ public sealed class RustRawPointerDerefRule : PatternRuleBase
     public override string Name => "Raw pointer dereferenced without null check";
     public override Severity Severity => Severity.Major;
     public override IssueKind Kind => IssueKind.Bug;
-    public override string RemediationEffort => "Check the pointer for null before dereferencing it in unsafe code.";
+    public override string RemediationEffort => "20min";
+    public override string FixAdvice => "Check the pointer for null before dereferencing it in unsafe code.";
     public override string[] Languages => ["rs"];
 
     public override void Execute(IRuleContext context)
@@ -859,7 +889,8 @@ public sealed class RustAllocationInLoopRule : PatternRuleBase
     public override string Name => "Unnecessary allocation inside a loop";
     public override Severity Severity => Severity.Minor;
     public override IssueKind Kind => IssueKind.Bug;
-    public override string RemediationEffort => "Hoist the allocation outside the loop and reuse the buffer.";
+    public override string RemediationEffort => "10min";
+    public override string FixAdvice => "Hoist the allocation outside the loop and reuse the buffer.";
     public override string[] Languages => ["rs"];
 
     public override void Execute(IRuleContext context)
@@ -900,7 +931,8 @@ public sealed class RustFunctionNamingRule : PatternRuleBase
     public override string Name => "Function names should comply with snake_case";
     public override Severity Severity => Severity.Minor;
     public override IssueKind Kind => IssueKind.CodeSmell;
-    public override string RemediationEffort => "Rename this function to follow the snake_case convention.";
+    public override string RemediationEffort => "10min";
+    public override string FixAdvice => "Rename this function to follow the snake_case convention.";
     public override string[] Languages => ["rs"];
 
     public override void Execute(IRuleContext context)
@@ -925,7 +957,8 @@ public sealed class RustConstNamingRule : PatternRuleBase
     public override string Name => "Const names should comply with UPPER_SNAKE_CASE";
     public override Severity Severity => Severity.Minor;
     public override IssueKind Kind => IssueKind.CodeSmell;
-    public override string RemediationEffort => "Rename this const to follow the UPPER_SNAKE_CASE convention.";
+    public override string RemediationEffort => "10min";
+    public override string FixAdvice => "Rename this const to follow the UPPER_SNAKE_CASE convention.";
     public override string[] Languages => ["rs"];
 
     public override void Execute(IRuleContext context)
@@ -950,7 +983,8 @@ public sealed class RustTypeNamingRule : PatternRuleBase
     public override string Name => "Type names should comply with UpperCamelCase";
     public override Severity Severity => Severity.Minor;
     public override IssueKind Kind => IssueKind.CodeSmell;
-    public override string RemediationEffort => "Rename this type to follow the UpperCamelCase convention.";
+    public override string RemediationEffort => "10min";
+    public override string FixAdvice => "Rename this type to follow the UpperCamelCase convention.";
     public override string[] Languages => ["rs"];
 
     public override void Execute(IRuleContext context)
@@ -975,7 +1009,8 @@ public sealed class RustUnusedMutRule : PatternRuleBase
     public override string Name => "Binding declared mut is never reassigned";
     public override Severity Severity => Severity.Minor;
     public override IssueKind Kind => IssueKind.CodeSmell;
-    public override string RemediationEffort => "Remove the unnecessary mut modifier.";
+    public override string RemediationEffort => "10min";
+    public override string FixAdvice => "Remove the unnecessary mut modifier.";
     public override string[] Languages => ["rs"];
 
     public override void Execute(IRuleContext context)

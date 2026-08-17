@@ -504,25 +504,6 @@
     Remove what is not used, name what is unclear, and keep one piece of behaviour in one place so the
     next change touches a single spot.
 
-- key: QG-PY-SEC-0049
-  name: Password hashing functions should use current cryptographic parameters
-  languages: [py]
-  category: SEC
-  severity: critical
-  effort: 15min
-  tags: [crypto, generated]
-  generated: true
-  status: planned
-  message: This cryptographic choice no longer provides the protection it suggests.
-  summary: A cryptographic primitive, mode or key size that is no longer considered safe is used.
-  why: |
-    Broken primitives keep producing output that looks correct, so nothing fails while the protection is
-    already gone. Data encrypted today is often kept for years, which means an algorithm that is merely
-    weak now will be readable later.
-  fix: |
-    Use the algorithms the platform recommends today — authenticated encryption, a modern hash, a key
-    size at or above the current guidance — and keep the choice in one place so it can be raised.
-
 - key: QG-PY-SEC-0050
   name: Cookies should not weaken the security of the application
   languages: [py]
@@ -1034,25 +1015,6 @@
     Remove what is not used, name what is unclear, and keep one piece of behaviour in one place so the
     next change touches a single spot.
 
-- key: QG-PY-SEC-0056
-  name: JWT should not weaken the security of the application
-  languages: [py]
-  category: SEC
-  severity: critical
-  effort: 15min
-  tags: [sec, generated]
-  generated: true
-  status: planned
-  message: This construct weakens the security of the application.
-  summary: A construct that attackers routinely target is used without the guard it needs.
-  why: |
-    The pattern either trusts data the program does not control, or relies on a mechanism that no longer
-    offers the protection it appears to offer. Both keep working normally, which is why they survive
-    until someone looks for them.
-  fix: |
-    Validate the incoming value against an allowed set, pass it as data rather than as code or command,
-    and replace weakened mechanisms with the current recommended one.
-
 - key: QG-PY-SML-0072
   name: Walrus operator should be simplified
   languages: [py]
@@ -1507,24 +1469,6 @@
     cases the old form got wrong.
   detect:
     - invocation: [unittest]
-
-- key: QG-PY-SML-0098
-  name: Tests should assert something
-  languages: [py]
-  category: SML
-  severity: minor
-  effort: 15min
-  tags: [tests, generated]
-  generated: true
-  status: planned
-  message: This test cannot fail, so it verifies nothing.
-  summary: A test does not assert, is disabled, or cannot fail.
-  why: |
-    A test that cannot fail reports success forever while covering nothing, and the suite keeps its green
-    status. That is worse than having no test at all, because it removes the incentive to write one.
-  fix: |
-    Assert the behaviour the test exists for, re-enable it, and make sure it fails when the behaviour is
-    broken before trusting it again.
 
 - key: QG-PY-BUG-0064
   name: Tests should assert something

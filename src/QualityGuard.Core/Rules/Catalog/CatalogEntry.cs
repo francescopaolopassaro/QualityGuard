@@ -111,14 +111,25 @@ public sealed class CatalogEntry
     /// <summary>
     /// Porting state. <c>ready</c> is the default; <c>planned</c> marks a catalog rule that is mapped and
     /// documented but whose detection needs analysis the engine does not perform yet, so it carries no
-    /// clauses and reports nothing.
+    /// clauses and reports nothing; <c>superseded</c> marks one that was retired because another rule
+    /// reports the same defect, and names it in <see cref="SupersededBy"/>.
     /// </summary>
     public string Status { get; init; } = "ready";
 
     /// <summary>True when the entry was produced by the catalog generator rather than written by hand.</summary>
     public bool Generated { get; init; }
 
+    /// <summary>The rule that took over, for an entry whose status is <c>superseded</c>.</summary>
+    public string? SupersededBy { get; init; }
+
     public bool IsPlanned => string.Equals(Status, "planned", StringComparison.OrdinalIgnoreCase);
+
+    /// <summary>
+    /// True when the entry documents a check the engine no longer runs on its own, because another
+    /// rule reports the same line. The documentation stays so the identifier keeps its meaning, and
+    /// the number is never handed to a different check.
+    /// </summary>
+    public bool IsSuperseded => string.Equals(Status, "superseded", StringComparison.OrdinalIgnoreCase);
 
     /// <summary>Entries without detection clauses only carry documentation for a hand-written rule.</summary>
     public bool IsDocumentationOnly => Detect.Count == 0;
@@ -146,6 +157,7 @@ public sealed class CatalogEntry
             Owasp = map.Strings("owasp"),
             Message = map.Str("message") ?? name,
             Status = map.Str("status") ?? "ready",
+            SupersededBy = map.Str("superseded_by"),
             Generated = map.Flag("generated"),
             Description = new RuleDescription(
                 Summary: map.Str("summary") ?? name,

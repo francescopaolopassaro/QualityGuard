@@ -141,7 +141,8 @@ public sealed class CsProcessExecutionRule : PatternRuleBase
     public override string Name => "Execution of externally-influenced OS commands";
     public override Severity Severity => Severity.Critical;
     public override IssueKind Kind => IssueKind.Vulnerability;
-    public override string RemediationEffort => "Validate and allow list the process file name and arguments.";
+    public override string RemediationEffort => "30min";
+    public override string FixAdvice => "Validate and allow list the process file name and arguments.";
     public override string[] Languages => ["cs", "vb"];
 
     public override void Execute(IRuleContext context)
@@ -166,7 +167,8 @@ public sealed class CsSqlInjectionRule : PatternRuleBase
     public override string Name => "SQL injection via concatenated queries";
     public override Severity Severity => Severity.Critical;
     public override IssueKind Kind => IssueKind.Vulnerability;
-    public override string RemediationEffort => "Use parameterized queries to prevent SQL injection.";
+    public override string RemediationEffort => "30min";
+    public override string FixAdvice => "Use parameterized queries to prevent SQL injection.";
     public override string[] Languages => ["cs", "vb"];
 
     public override void Execute(IRuleContext context)
@@ -192,7 +194,8 @@ public sealed class CsWeakCryptoRule : PatternRuleBase
     public override string Name => "Use of weak cryptographic primitives";
     public override Severity Severity => Severity.Major;
     public override IssueKind Kind => IssueKind.Vulnerability;
-    public override string RemediationEffort => "Replace DES/TripleDES/RC2/MD5/SHA1 and ECB mode with modern algorithms.";
+    public override string RemediationEffort => "20min";
+    public override string FixAdvice => "Replace DES/TripleDES/RC2/MD5/SHA1 and ECB mode with modern algorithms.";
     public override string[] Languages => ["cs", "vb"];
 
     public override void Execute(IRuleContext context)
@@ -210,7 +213,8 @@ public sealed class CsHardcodedCredentialsRule : PatternRuleBase
     public override string Name => "Hardcoded credentials";
     public override Severity Severity => Severity.Critical;
     public override IssueKind Kind => IssueKind.Vulnerability;
-    public override string RemediationEffort => "Load credentials from a secure secret store.";
+    public override string RemediationEffort => "30min";
+    public override string FixAdvice => "Load credentials from a secure secret store.";
     public override string[] Languages => ["cs", "vb"];
 
     public override void Execute(IRuleContext context)
@@ -241,7 +245,8 @@ public sealed class CsWeakRandomRule : PatternRuleBase
     public override string Name => "Use of non-cryptographic random generator";
     public override Severity Severity => Severity.Major;
     public override IssueKind Kind => IssueKind.Vulnerability;
-    public override string RemediationEffort => "Use RandomNumberGenerator for security-sensitive values.";
+    public override string RemediationEffort => "20min";
+    public override string FixAdvice => "Use RandomNumberGenerator for security-sensitive values.";
     public override string[] Languages => ["cs", "vb"];
 
     public override void Execute(IRuleContext context)
@@ -261,7 +266,8 @@ public sealed class CsDynamicTypeResolutionRule : PatternRuleBase
     public override string Name => "Dynamically resolved types";
     public override Severity Severity => Severity.Critical;
     public override IssueKind Kind => IssueKind.Vulnerability;
-    public override string RemediationEffort => "Validate the type string before resolving it.";
+    public override string RemediationEffort => "30min";
+    public override string FixAdvice => "Validate the type string before resolving it.";
     public override string[] Languages => ["cs", "vb"];
 
     public override void Execute(IRuleContext context)
@@ -284,7 +290,8 @@ public sealed class CsXmlParsingRule : PatternRuleBase
     public override string Name => "XML parsing susceptible to XXE";
     public override Severity Severity => Severity.Major;
     public override IssueKind Kind => IssueKind.Vulnerability;
-    public override string RemediationEffort => "Configure XML parsing to disable external entities.";
+    public override string RemediationEffort => "20min";
+    public override string FixAdvice => "Configure XML parsing to disable external entities.";
     public override string[] Languages => ["cs", "vb"];
 
     public override void Execute(IRuleContext context)
@@ -300,7 +307,8 @@ public sealed class CsAssemblyLoadRule : PatternRuleBase
     public override string Name => "Assembly loaded from dynamic path";
     public override Severity Severity => Severity.Critical;
     public override IssueKind Kind => IssueKind.Vulnerability;
-    public override string RemediationEffort => "Validate the assembly path or name.";
+    public override string RemediationEffort => "30min";
+    public override string FixAdvice => "Validate the assembly path or name.";
     public override string[] Languages => ["cs", "vb"];
 
     public override void Execute(IRuleContext context)
@@ -381,7 +389,8 @@ public sealed class CsInsecureCookieRule : PatternRuleBase
     public override string Name => "Insecure cookie configuration";
     public override Severity Severity => Severity.Major;
     public override IssueKind Kind => IssueKind.Vulnerability;
-    public override string RemediationEffort => "Set the Secure and HttpOnly flags on cookies.";
+    public override string RemediationEffort => "20min";
+    public override string FixAdvice => "Set the Secure and HttpOnly flags on cookies.";
     public override string[] Languages => ["cs", "vb"];
 
     public override void Execute(IRuleContext context)
@@ -402,7 +411,8 @@ public sealed class CsUnsafeDeserializationRule : PatternRuleBase
     public override string Name => "Unsafe deserialization";
     public override Severity Severity => Severity.Critical;
     public override IssueKind Kind => IssueKind.Vulnerability;
-    public override string RemediationEffort => "Avoid unsafe deserializers and validate the serialized data.";
+    public override string RemediationEffort => "30min";
+    public override string FixAdvice => "Avoid unsafe deserializers and validate the serialized data.";
     public override string[] Languages => ["cs", "vb"];
 
     public override void Execute(IRuleContext context)
@@ -418,7 +428,8 @@ public sealed class CsDebugOutputRule : PatternRuleBase
     public override string Name => "Debug output left in production code";
     public override Severity Severity => Severity.Major;
     public override IssueKind Kind => IssueKind.CodeSmell;
-    public override string RemediationEffort => "Remove Console and Debug writes before shipping.";
+    public override string RemediationEffort => "20min";
+    public override string FixAdvice => "Remove Console and Debug writes before shipping.";
     public override string[] Languages => ["cs", "vb"];
 
     public override void Execute(IRuleContext context)
@@ -441,7 +452,8 @@ public sealed class CsEmptyCatchRule : PatternRuleBase
     public override string Name => "Empty catch block";
     public override Severity Severity => Severity.Major;
     public override IssueKind Kind => IssueKind.CodeSmell;
-    public override string RemediationEffort => "Handle or log the exception instead of swallowing it.";
+    public override string RemediationEffort => "20min";
+    public override string FixAdvice => "Handle or log the exception instead of swallowing it.";
     public override string[] Languages => ["cs", "vb"];
 
     public override void Execute(IRuleContext context)
@@ -461,7 +473,8 @@ public sealed class CsSwitchDefaultRule : PatternRuleBase
     public override string Name => "Switch statements without a default clause";
     public override Severity Severity => Severity.Minor;
     public override IssueKind Kind => IssueKind.CodeSmell;
-    public override string RemediationEffort => "Add a default clause to handle unexpected values.";
+    public override string RemediationEffort => "10min";
+    public override string FixAdvice => "Add a default clause to handle unexpected values.";
     public override string[] Languages => ["cs", "vb"];
 
     public override void Execute(IRuleContext context)
@@ -503,7 +516,8 @@ public sealed class CsGotoRule : PatternRuleBase
     public override string Name => "Goto statements";
     public override Severity Severity => Severity.Minor;
     public override IssueKind Kind => IssueKind.CodeSmell;
-    public override string RemediationEffort => "Refactor to structured control flow.";
+    public override string RemediationEffort => "10min";
+    public override string FixAdvice => "Refactor to structured control flow.";
     public override string[] Languages => ["cs", "vb"];
 
     public override void Execute(IRuleContext context)
@@ -519,7 +533,8 @@ public sealed class CsGenericExceptionRule : PatternRuleBase
     public override string Name => "Throwing generic Exception";
     public override Severity Severity => Severity.Major;
     public override IssueKind Kind => IssueKind.CodeSmell;
-    public override string RemediationEffort => "Throw a specific exception type instead of Exception.";
+    public override string RemediationEffort => "20min";
+    public override string FixAdvice => "Throw a specific exception type instead of Exception.";
     public override string[] Languages => ["cs", "vb"];
 
     public override void Execute(IRuleContext context)
@@ -539,7 +554,8 @@ public sealed class CsGcCollectRule : PatternRuleBase
     public override string Name => "Explicit garbage collection";
     public override Severity Severity => Severity.Minor;
     public override IssueKind Kind => IssueKind.CodeSmell;
-    public override string RemediationEffort => "Avoid calling GC.Collect explicitly.";
+    public override string RemediationEffort => "10min";
+    public override string FixAdvice => "Avoid calling GC.Collect explicitly.";
     public override string[] Languages => ["cs", "vb"];
 
     public override void Execute(IRuleContext context)
@@ -560,7 +576,8 @@ public sealed class CsUnsafeBlockRule : PatternRuleBase
     public override string Name => "Unsafe code blocks";
     public override Severity Severity => Severity.Minor;
     public override IssueKind Kind => IssueKind.CodeSmell;
-    public override string RemediationEffort => "Replace unsafe blocks with safe memory APIs when possible.";
+    public override string RemediationEffort => "10min";
+    public override string FixAdvice => "Replace unsafe blocks with safe memory APIs when possible.";
     public override string[] Languages => ["cs", "vb"];
 
     public override void Execute(IRuleContext context)
@@ -576,7 +593,8 @@ public sealed class CsDateTimeNowRule : PatternRuleBase
     public override string Name => "Use DateTime.UtcNow instead of DateTime.Now";
     public override Severity Severity => Severity.Minor;
     public override IssueKind Kind => IssueKind.CodeSmell;
-    public override string RemediationEffort => "Use DateTime.UtcNow to avoid timezone-dependent results.";
+    public override string RemediationEffort => "10min";
+    public override string FixAdvice => "Use DateTime.UtcNow to avoid timezone-dependent results.";
     public override string[] Languages => ["cs", "vb"];
 
     public override void Execute(IRuleContext context)
@@ -596,7 +614,8 @@ public sealed class CsAsyncVoidRule : PatternRuleBase
     public override string Name => "Async void methods";
     public override Severity Severity => Severity.Major;
     public override IssueKind Kind => IssueKind.Bug;
-    public override string RemediationEffort => "Return Task from async methods instead of void.";
+    public override string RemediationEffort => "20min";
+    public override string FixAdvice => "Return Task from async methods instead of void.";
     public override string[] Languages => ["cs", "vb"];
 
     public override void Execute(IRuleContext context)
@@ -616,7 +635,8 @@ public sealed class CsSsrRule : PatternRuleBase
     public override string Name => "Server-side request forgery via HTTP client";
     public override Severity Severity => Severity.Critical;
     public override IssueKind Kind => IssueKind.Vulnerability;
-    public override string RemediationEffort => "Validate and allow list the target URL before issuing the request.";
+    public override string RemediationEffort => "30min";
+    public override string FixAdvice => "Validate and allow list the target URL before issuing the request.";
     public override string[] Languages => ["cs", "vb"];
 
     public override void Execute(IRuleContext context)
@@ -639,7 +659,8 @@ public sealed class CsPathTraversalRule : PatternRuleBase
     public override string Name => "Path traversal via file operations";
     public override Severity Severity => Severity.Critical;
     public override IssueKind Kind => IssueKind.Vulnerability;
-    public override string RemediationEffort => "Validate the path and restrict it to an allow listed directory.";
+    public override string RemediationEffort => "30min";
+    public override string FixAdvice => "Validate the path and restrict it to an allow listed directory.";
     public override string[] Languages => ["cs", "vb"];
 
     public override void Execute(IRuleContext context)
@@ -673,7 +694,8 @@ public sealed class CsLdapInjectionRule : PatternRuleBase
     public override string Name => "LDAP injection in directory filters";
     public override Severity Severity => Severity.Critical;
     public override IssueKind Kind => IssueKind.Vulnerability;
-    public override string RemediationEffort => "Escape LDAP special characters or use a safe filter builder.";
+    public override string RemediationEffort => "30min";
+    public override string FixAdvice => "Escape LDAP special characters or use a safe filter builder.";
     public override string[] Languages => ["cs", "vb"];
 
     public override void Execute(IRuleContext context)
@@ -696,7 +718,8 @@ public sealed class CsHeaderInjectionRule : PatternRuleBase
     public override string Name => "HTTP response header injection";
     public override Severity Severity => Severity.Major;
     public override IssueKind Kind => IssueKind.Vulnerability;
-    public override string RemediationEffort => "Validate header names and values and reject control characters.";
+    public override string RemediationEffort => "20min";
+    public override string FixAdvice => "Validate header names and values and reject control characters.";
     public override string[] Languages => ["cs", "vb"];
 
     public override void Execute(IRuleContext context)
@@ -718,7 +741,8 @@ public sealed class CsCorsWildcardRule : PatternRuleBase
     public override string Name => "CORS policy allows any origin";
     public override Severity Severity => Severity.Major;
     public override IssueKind Kind => IssueKind.Vulnerability;
-    public override string RemediationEffort => "Restrict allowed origins to a specific list.";
+    public override string RemediationEffort => "20min";
+    public override string FixAdvice => "Restrict allowed origins to a specific list.";
     public override string[] Languages => ["cs", "vb"];
 
     public override void Execute(IRuleContext context)
@@ -750,7 +774,8 @@ public sealed class CsXmlDeserializationRule : PatternRuleBase
     public override string Name => "Deserialization of untrusted XML";
     public override Severity Severity => Severity.Critical;
     public override IssueKind Kind => IssueKind.Vulnerability;
-    public override string RemediationEffort => "Validate the XML input and restrict allowed types.";
+    public override string RemediationEffort => "30min";
+    public override string FixAdvice => "Validate the XML input and restrict allowed types.";
     public override string[] Languages => ["cs", "vb"];
 
     public override void Execute(IRuleContext context)
@@ -766,7 +791,8 @@ public sealed class CsHardcodedConnectionStringRule : PatternRuleBase
     public override string Name => "Hardcoded database connection string";
     public override Severity Severity => Severity.Critical;
     public override IssueKind Kind => IssueKind.Vulnerability;
-    public override string RemediationEffort => "Load the connection string from a secure configuration store.";
+    public override string RemediationEffort => "30min";
+    public override string FixAdvice => "Load the connection string from a secure configuration store.";
     public override string[] Languages => ["cs", "vb"];
 
     public override void Execute(IRuleContext context)
@@ -791,7 +817,8 @@ public sealed class CsInsecurePasswordValidationRule : PatternRuleBase
     public override string Name => "Insecure password validation policy";
     public override Severity Severity => Severity.Major;
     public override IssueKind Kind => IssueKind.Vulnerability;
-    public override string RemediationEffort => "Enforce a minimum password length of at least 8 characters.";
+    public override string RemediationEffort => "20min";
+    public override string FixAdvice => "Enforce a minimum password length of at least 8 characters.";
     public override string[] Languages => ["cs", "vb"];
 
     public override void Execute(IRuleContext context)
@@ -822,7 +849,8 @@ public sealed class CsWeakKeySizeRule : PatternRuleBase
     public override string Name => "Weak cryptographic key size";
     public override Severity Severity => Severity.Major;
     public override IssueKind Kind => IssueKind.Vulnerability;
-    public override string RemediationEffort => "Use a key size of at least 2048 bits for RSA and 256 bits for ECDsa.";
+    public override string RemediationEffort => "20min";
+    public override string FixAdvice => "Use a key size of at least 2048 bits for RSA and 256 bits for ECDsa.";
     public override string[] Languages => ["cs", "vb"];
 
     public override void Execute(IRuleContext context)
@@ -858,7 +886,8 @@ public sealed class CsInsecureJwtRule : PatternRuleBase
     public override string Name => "Insecure JWT signing configuration";
     public override Severity Severity => Severity.Critical;
     public override IssueKind Kind => IssueKind.Vulnerability;
-    public override string RemediationEffort => "Use a strong asymmetric algorithm and never accept 'none'.";
+    public override string RemediationEffort => "30min";
+    public override string FixAdvice => "Use a strong asymmetric algorithm and never accept 'none'.";
     public override string[] Languages => ["cs", "vb"];
 
     public override void Execute(IRuleContext context)
@@ -880,7 +909,8 @@ public sealed class CsDisabledCertValidationRule : PatternRuleBase
     public override string Name => "Certificate validation disabled";
     public override Severity Severity => Severity.Critical;
     public override IssueKind Kind => IssueKind.Vulnerability;
-    public override string RemediationEffort => "Keep server certificate validation enabled.";
+    public override string RemediationEffort => "30min";
+    public override string FixAdvice => "Keep server certificate validation enabled.";
     public override string[] Languages => ["cs", "vb"];
 
     public override void Execute(IRuleContext context)
@@ -907,7 +937,8 @@ public sealed class CsEntityFrameworkSqlInjectionRule : PatternRuleBase
     public override string Name => "SQL injection via interpolated EF queries";
     public override Severity Severity => Severity.Critical;
     public override IssueKind Kind => IssueKind.Vulnerability;
-    public override string RemediationEffort => "Use parameterized queries and never build SQL from user input.";
+    public override string RemediationEffort => "30min";
+    public override string FixAdvice => "Use parameterized queries and never build SQL from user input.";
     public override string[] Languages => ["cs", "vb"];
 
     public override void Execute(IRuleContext context)
@@ -929,7 +960,8 @@ public sealed class CsOpenRedirectRule : PatternRuleBase
     public override string Name => "Open redirect from unvalidated input";
     public override Severity Severity => Severity.Major;
     public override IssueKind Kind => IssueKind.Vulnerability;
-    public override string RemediationEffort => "Validate that the redirect target is local or allow listed.";
+    public override string RemediationEffort => "20min";
+    public override string FixAdvice => "Validate that the redirect target is local or allow listed.";
     public override string[] Languages => ["cs", "vb"];
 
     public override void Execute(IRuleContext context)
@@ -951,7 +983,8 @@ public sealed class CsExceptionInfoLeakRule : PatternRuleBase
     public override string Name => "Exception details exposed to the client";
     public override Severity Severity => Severity.Major;
     public override IssueKind Kind => IssueKind.Vulnerability;
-    public override string RemediationEffort => "Return a generic error message and log the exception details.";
+    public override string RemediationEffort => "20min";
+    public override string FixAdvice => "Return a generic error message and log the exception details.";
     public override string[] Languages => ["cs", "vb"];
 
     public override void Execute(IRuleContext context)
@@ -978,7 +1011,8 @@ public sealed class CsInsecureTempFileRule : PatternRuleBase
     public override string Name => "Insecure temporary file creation";
     public override Severity Severity => Severity.Major;
     public override IssueKind Kind => IssueKind.Vulnerability;
-    public override string RemediationEffort => "Create temp files in a secure directory with restrictive permissions.";
+    public override string RemediationEffort => "20min";
+    public override string FixAdvice => "Create temp files in a secure directory with restrictive permissions.";
     public override string[] Languages => ["cs", "vb"];
 
     public override void Execute(IRuleContext context)
@@ -1000,7 +1034,8 @@ public sealed class CsStringConcatInLoopRule : PatternRuleBase
     public override string Name => "String concatenation inside a loop";
     public override Severity Severity => Severity.Minor;
     public override IssueKind Kind => IssueKind.CodeSmell;
-    public override string RemediationEffort => "Use a StringBuilder instead of concatenating strings in a loop.";
+    public override string RemediationEffort => "10min";
+    public override string FixAdvice => "Use a StringBuilder instead of concatenating strings in a loop.";
     public override string[] Languages => ["cs", "vb"];
 
     public override void Execute(IRuleContext context)
@@ -1041,7 +1076,8 @@ public sealed class CsImplicitToStringRule : PatternRuleBase
     public override string Name => "Implicit ToString in string interpolation";
     public override Severity Severity => Severity.Minor;
     public override IssueKind Kind => IssueKind.CodeSmell;
-    public override string RemediationEffort => "Call ToString with an explicit culture or format.";
+    public override string RemediationEffort => "10min";
+    public override string FixAdvice => "Call ToString with an explicit culture or format.";
     public override string[] Languages => ["cs", "vb"];
 
     public override void Execute(IRuleContext context)
@@ -1075,7 +1111,8 @@ public sealed class CsEmptyMethodBodyRule : PatternRuleBase
     public override string Name => "Empty method body";
     public override Severity Severity => Severity.Minor;
     public override IssueKind Kind => IssueKind.CodeSmell;
-    public override string RemediationEffort => "Implement the method or return Task.CompletedTask.";
+    public override string RemediationEffort => "10min";
+    public override string FixAdvice => "Implement the method or return Task.CompletedTask.";
     public override string[] Languages => ["cs", "vb"];
 
     public override void Execute(IRuleContext context)
@@ -1116,7 +1153,8 @@ public sealed class CsPublicFieldRule : PatternRuleBase
     public override string Name => "Public field should be a property";
     public override Severity Severity => Severity.Minor;
     public override IssueKind Kind => IssueKind.CodeSmell;
-    public override string RemediationEffort => "Expose the field through a private field and a public property.";
+    public override string RemediationEffort => "10min";
+    public override string FixAdvice => "Expose the field through a private field and a public property.";
     public override string[] Languages => ["cs", "vb"];
 
     public override void Execute(IRuleContext context)
@@ -1140,7 +1178,8 @@ public sealed class CsAsyncWithoutAwaitRule : PatternRuleBase
     public override string Name => "Async method without an await expression";
     public override Severity Severity => Severity.Major;
     public override IssueKind Kind => IssueKind.CodeSmell;
-    public override string RemediationEffort => "Remove async or await an operation inside the method.";
+    public override string RemediationEffort => "20min";
+    public override string FixAdvice => "Remove async or await an operation inside the method.";
     public override string[] Languages => ["cs", "vb"];
 
     public override void Execute(IRuleContext context)
@@ -1177,7 +1216,8 @@ public sealed class CsCountInsteadOfAnyRule : PatternRuleBase
     public override string Name => "Count() used to test for emptiness";
     public override Severity Severity => Severity.Minor;
     public override IssueKind Kind => IssueKind.CodeSmell;
-    public override string RemediationEffort => "Use Any() instead of Count() when testing for emptiness.";
+    public override string RemediationEffort => "10min";
+    public override string FixAdvice => "Use Any() instead of Count() when testing for emptiness.";
     public override string[] Languages => ["cs", "vb"];
 
     public override void Execute(IRuleContext context)
@@ -1199,7 +1239,8 @@ public sealed class CsDivisionByZeroRule : PatternRuleBase
     public override string Name => "Integer division by a literal zero";
     public override Severity Severity => Severity.Major;
     public override IssueKind Kind => IssueKind.CodeSmell;
-    public override string RemediationEffort => "Guard against zero denominators.";
+    public override string RemediationEffort => "20min";
+    public override string FixAdvice => "Guard against zero denominators.";
     public override string[] Languages => ["cs", "vb"];
 
     public override void Execute(IRuleContext context)
@@ -1221,7 +1262,8 @@ public sealed class CsMissingDisposalRule : PatternRuleBase
     public override string Name => "Disposable resource not wrapped in using";
     public override Severity Severity => Severity.Major;
     public override IssueKind Kind => IssueKind.CodeSmell;
-    public override string RemediationEffort => "Wrap the resource in a using statement or call Dispose.";
+    public override string RemediationEffort => "20min";
+    public override string FixAdvice => "Wrap the resource in a using statement or call Dispose.";
     public override string[] Languages => ["cs", "vb"];
 
     public override void Execute(IRuleContext context)
@@ -1245,7 +1287,8 @@ public sealed class CsDeadStoreRule : PatternRuleBase
     public override string Name => "Local variable assigned but never used";
     public override Severity Severity => Severity.Minor;
     public override IssueKind Kind => IssueKind.CodeSmell;
-    public override string RemediationEffort => "Remove the unused local variable.";
+    public override string RemediationEffort => "10min";
+    public override string FixAdvice => "Remove the unused local variable.";
     public override string[] Languages => ["cs", "vb"];
 
     public override void Execute(IRuleContext context)
@@ -1280,7 +1323,8 @@ public sealed class CsMagicNumberRule : PatternRuleBase
     public override string Name => "Magic number used in expressions";
     public override Severity Severity => Severity.Minor;
     public override IssueKind Kind => IssueKind.CodeSmell;
-    public override string RemediationEffort => "Replace the literal with a named constant.";
+    public override string RemediationEffort => "10min";
+    public override string FixAdvice => "Replace the literal with a named constant.";
     public override string[] Languages => ["cs", "vb"];
 
     public override void Execute(IRuleContext context)
@@ -1307,7 +1351,8 @@ public sealed class CsCommentedOutCodeRule : PatternRuleBase
     public override string Name => "Commented-out code";
     public override Severity Severity => Severity.Minor;
     public override IssueKind Kind => IssueKind.CodeSmell;
-    public override string RemediationEffort => "Remove commented-out code instead of leaving it in the source.";
+    public override string RemediationEffort => "10min";
+    public override string FixAdvice => "Remove commented-out code instead of leaving it in the source.";
     public override string[] Languages => ["cs", "vb"];
 
     public override void Execute(IRuleContext context)
@@ -1355,7 +1400,8 @@ public sealed class CsNullReferenceRule : PatternRuleBase
     public override string Name => "Possible null reference dereference";
     public override Severity Severity => Severity.Major;
     public override IssueKind Kind => IssueKind.Bug;
-    public override string RemediationEffort => "Check for null before dereferencing the value.";
+    public override string RemediationEffort => "20min";
+    public override string FixAdvice => "Check for null before dereferencing the value.";
     public override string[] Languages => ["cs", "vb"];
 
     /// <summary>Calls that answer with null when they find nothing.</summary>
@@ -1451,7 +1497,8 @@ public sealed class CsFloatEqualityRule : PatternRuleBase
     public override string Name => "Floating-point values compared with ==";
     public override Severity Severity => Severity.Major;
     public override IssueKind Kind => IssueKind.Bug;
-    public override string RemediationEffort => "Compare floating-point values using a tolerance.";
+    public override string RemediationEffort => "20min";
+    public override string FixAdvice => "Compare floating-point values using a tolerance.";
     public override string[] Languages => ["cs", "vb"];
 
     public override void Execute(IRuleContext context)
@@ -1476,7 +1523,8 @@ public sealed class CsCollectionModifiedRule : PatternRuleBase
     public override string Name => "Collection modified while iterating";
     public override Severity Severity => Severity.Major;
     public override IssueKind Kind => IssueKind.Bug;
-    public override string RemediationEffort => "Collect the changes and apply them after the loop.";
+    public override string RemediationEffort => "20min";
+    public override string FixAdvice => "Collect the changes and apply them after the loop.";
     public override string[] Languages => ["cs", "vb"];
 
     public override void Execute(IRuleContext context)
@@ -1522,7 +1570,8 @@ public sealed class CsTaskBlockingRule : PatternRuleBase
     public override string Name => "Blocking call on a Task";
     public override Severity Severity => Severity.Major;
     public override IssueKind Kind => IssueKind.Bug;
-    public override string RemediationEffort => "Use await instead of Result, Wait or GetAwaiter().GetResult().";
+    public override string RemediationEffort => "20min";
+    public override string FixAdvice => "Use await instead of Result, Wait or GetAwaiter().GetResult().";
     public override string[] Languages => ["cs", "vb"];
 
     public override void Execute(IRuleContext context)
@@ -1551,7 +1600,8 @@ public sealed class CsOffByOneLoopRule : PatternRuleBase
     public override string Name => "IndexOutOfRange risk in loop bound";
     public override Severity Severity => Severity.Minor;
     public override IssueKind Kind => IssueKind.Bug;
-    public override string RemediationEffort => "Use < instead of <= in the loop condition.";
+    public override string RemediationEffort => "10min";
+    public override string FixAdvice => "Use < instead of <= in the loop condition.";
     public override string[] Languages => ["cs", "vb"];
 
     public override void Execute(IRuleContext context)
@@ -1574,7 +1624,8 @@ public sealed class CsPascalCaseMethodRule : PatternRuleBase
     public override string Name => "Method names should use PascalCase";
     public override Severity Severity => Severity.Minor;
     public override IssueKind Kind => IssueKind.CodeSmell;
-    public override string RemediationEffort => "Rename the method to PascalCase.";
+    public override string RemediationEffort => "10min";
+    public override string FixAdvice => "Rename the method to PascalCase.";
     public override string[] Languages => ["cs", "vb"];
 
     public override void Execute(IRuleContext context)
@@ -1603,7 +1654,8 @@ public sealed class CsCamelCaseLocalRule : PatternRuleBase
     public override string Name => "Local variables should use camelCase";
     public override Severity Severity => Severity.Minor;
     public override IssueKind Kind => IssueKind.CodeSmell;
-    public override string RemediationEffort => "Rename the local variable to camelCase.";
+    public override string RemediationEffort => "10min";
+    public override string FixAdvice => "Rename the local variable to camelCase.";
     public override string[] Languages => ["cs", "vb"];
 
     public override void Execute(IRuleContext context)
@@ -1628,7 +1680,8 @@ public sealed class CsInterfacePrefixRule : PatternRuleBase
     public override string Name => "Interface names should start with I";
     public override Severity Severity => Severity.Minor;
     public override IssueKind Kind => IssueKind.CodeSmell;
-    public override string RemediationEffort => "Prefix the interface name with I.";
+    public override string RemediationEffort => "10min";
+    public override string FixAdvice => "Prefix the interface name with I.";
     public override string[] Languages => ["cs", "vb"];
 
     public override void Execute(IRuleContext context)

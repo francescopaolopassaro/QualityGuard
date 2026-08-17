@@ -90,10 +90,23 @@ public class JavaAstRulesTests
             "QG-JV-BUG-0184"));
 
     [Fact]
-    public void A_public_static_field_that_is_not_final_is_reported()
+    public void A_mutable_static_field_is_reported_once()
     {
-        Assert.NotEmpty(Lines("class A {\n  public static int counter = 0;\n}\n", "QG-JV-BUG-0185"));
-        Assert.Empty(Lines("class A {\n  public static final int LIMIT = 10;\n}\n", "QG-JV-BUG-0185"));
+        // QG-JV-BUG-0185 was retired: the shared analyzer reports the same line, and one defect
+        // should produce one finding
+        var mutable = """
+            class A {
+              public static int counter = 0;
+            }
+            """;
+        Assert.NotEmpty(Lines(mutable, "QG-ALL-SML-0038"));
+
+        var constant = """
+            class A {
+              public static final int LIMIT = 10;
+            }
+            """;
+        Assert.Empty(Lines(constant, "QG-ALL-SML-0038"));
     }
 
     [Fact]

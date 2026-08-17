@@ -25,7 +25,8 @@ public sealed class SqlGrantToPublicRule : PatternRuleBase
     public override string Name => "Privileges granted to PUBLIC";
     public override Severity Severity => Severity.Major;
     public override IssueKind Kind => IssueKind.Vulnerability;
-    public override string RemediationEffort => "Grant privileges to specific roles or users instead of PUBLIC.";
+    public override string RemediationEffort => "20min";
+    public override string FixAdvice => "Grant privileges to specific roles or users instead of PUBLIC.";
     public override string[] Languages => ["sql"];
 
     public override void Execute(IRuleContext context)
@@ -47,7 +48,8 @@ public sealed class SqlGrantAllPrivilegesRule : PatternRuleBase
     public override string Name => "Excessive privileges granted";
     public override Severity Severity => Severity.Major;
     public override IssueKind Kind => IssueKind.Vulnerability;
-    public override string RemediationEffort => "Grant only the specific privileges each role or user needs.";
+    public override string RemediationEffort => "20min";
+    public override string FixAdvice => "Grant only the specific privileges each role or user needs.";
     public override string[] Languages => ["sql"];
 
     public override void Execute(IRuleContext context)
@@ -71,7 +73,8 @@ public sealed class SqlHardcodedCredentialRule : PatternRuleBase
     public override string Name => "Hardcoded database credential";
     public override Severity Severity => Severity.Critical;
     public override IssueKind Kind => IssueKind.Vulnerability;
-    public override string RemediationEffort => "Use a secret manager or environment variable instead of embedding the credential.";
+    public override string RemediationEffort => "30min";
+    public override string FixAdvice => "Use a secret manager or environment variable instead of embedding the credential.";
     public override string[] Languages => ["sql"];
 
     public override void Execute(IRuleContext context)
@@ -95,7 +98,8 @@ public sealed class SqlIdentifiedByPasswordRule : PatternRuleBase
     public override string Name => "Weak password hash algorithm";
     public override Severity Severity => Severity.Major;
     public override IssueKind Kind => IssueKind.Vulnerability;
-    public override string RemediationEffort => "Use a strong hash algorithm instead of the PASSWORD() function.";
+    public override string RemediationEffort => "20min";
+    public override string FixAdvice => "Use a strong hash algorithm instead of the PASSWORD() function.";
     public override string[] Languages => ["sql"];
 
     public override void Execute(IRuleContext context)
@@ -113,7 +117,8 @@ public sealed class SqlSetPasswordPlaintextRule : PatternRuleBase
     public override string Name => "Plaintext password in SET PASSWORD";
     public override Severity Severity => Severity.Major;
     public override IssueKind Kind => IssueKind.Vulnerability;
-    public override string RemediationEffort => "Assign the password via a variable or secret instead of a literal.";
+    public override string RemediationEffort => "20min";
+    public override string FixAdvice => "Assign the password via a variable or secret instead of a literal.";
     public override string[] Languages => ["sql"];
 
     public override void Execute(IRuleContext context)
@@ -134,7 +139,8 @@ public sealed class SqlSelectStarRule : PatternRuleBase
     public override string Name => "Avoid SELECT *";
     public override Severity Severity => Severity.Minor;
     public override IssueKind Kind => IssueKind.CodeSmell;
-    public override string RemediationEffort => "List only the columns the query actually needs.";
+    public override string RemediationEffort => "10min";
+    public override string FixAdvice => "List only the columns the query actually needs.";
     public override string[] Languages => ["sql"];
 
     public override void Execute(IRuleContext context)
@@ -152,7 +158,8 @@ public sealed class SqlMissingSemicolonRule : PatternRuleBase
     public override string Name => "Statements should end with a semicolon";
     public override Severity Severity => Severity.Minor;
     public override IssueKind Kind => IssueKind.CodeSmell;
-    public override string RemediationEffort => "Terminate the statement with a semicolon.";
+    public override string RemediationEffort => "10min";
+    public override string FixAdvice => "Terminate the statement with a semicolon.";
     public override string[] Languages => ["sql"];
 
     private static readonly string[] StatementKeywords =
@@ -190,7 +197,8 @@ public sealed class SqlDeleteUpdateWithoutWhereRule : PatternRuleBase
     public override string Name => "DELETE or UPDATE without WHERE";
     public override Severity Severity => Severity.Critical;
     public override IssueKind Kind => IssueKind.Bug;
-    public override string RemediationEffort => "Add a WHERE clause to limit the affected rows.";
+    public override string RemediationEffort => "30min";
+    public override string FixAdvice => "Add a WHERE clause to limit the affected rows.";
     public override string[] Languages => ["sql"];
 
     public override void Execute(IRuleContext context)
@@ -214,7 +222,8 @@ public sealed class SqlLiteralEqualsTrueRule : PatternRuleBase
     public override string Name => "Condition that is always true";
     public override Severity Severity => Severity.Major;
     public override IssueKind Kind => IssueKind.Bug;
-    public override string RemediationEffort => "Remove the tautological condition or rewrite the predicate.";
+    public override string RemediationEffort => "20min";
+    public override string FixAdvice => "Remove the tautological condition or rewrite the predicate.";
     public override string[] Languages => ["sql"];
 
     public override void Execute(IRuleContext context)

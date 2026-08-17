@@ -95,7 +95,8 @@ public sealed class PythonEvalRule : PatternRuleBase
     public override string Name => "Arbitrary code execution via eval";
     public override Severity Severity => Severity.Critical;
     public override IssueKind Kind => IssueKind.Vulnerability;
-    public override string RemediationEffort => "Avoid eval/exec/compile of dynamic code; parse input with a safe library (e.g. ast) instead.";
+    public override string RemediationEffort => "30min";
+    public override string FixAdvice => "Avoid eval/exec/compile of dynamic code; parse input with a safe library (e.g. ast) instead.";
     public override string[] Languages => ["py"];
 
     public override void Execute(IRuleContext context)
@@ -117,7 +118,8 @@ public sealed class PythonSubprocessCommandRule : PatternRuleBase
     public override string Name => "Shell command built from dynamic input";
     public override Severity Severity => Severity.Critical;
     public override IssueKind Kind => IssueKind.Vulnerability;
-    public override string RemediationEffort => "Pass commands as argument lists without a shell and validate input strictly.";
+    public override string RemediationEffort => "30min";
+    public override string FixAdvice => "Pass commands as argument lists without a shell and validate input strictly.";
     public override string[] Languages => ["py"];
 
     public override void Execute(IRuleContext context)
@@ -138,7 +140,8 @@ public sealed class PythonUnsafeDeserializationRule : PatternRuleBase
     public override string Name => "Unsafe deserialization endpoint";
     public override Severity Severity => Severity.Critical;
     public override IssueKind Kind => IssueKind.Vulnerability;
-    public override string RemediationEffort => "Deserialize only trusted data; prefer safe formats (JSON) or restrict pickles/yaml loaders.";
+    public override string RemediationEffort => "30min";
+    public override string FixAdvice => "Deserialize only trusted data; prefer safe formats (JSON) or restrict pickles/yaml loaders.";
     public override string[] Languages => ["py"];
 
     public override void Execute(IRuleContext context)
@@ -161,7 +164,8 @@ public sealed class PythonSqlInjectionRule : PatternRuleBase
     public override string Name => "SQL query built by string concatenation";
     public override Severity Severity => Severity.Critical;
     public override IssueKind Kind => IssueKind.Vulnerability;
-    public override string RemediationEffort => "Use parameterized queries or an ORM and never concatenate values into SQL.";
+    public override string RemediationEffort => "30min";
+    public override string FixAdvice => "Use parameterized queries or an ORM and never concatenate values into SQL.";
     public override string[] Languages => ["py"];
 
     public override void Execute(IRuleContext context)
@@ -187,7 +191,8 @@ public sealed class PythonWeakCryptoRule : PatternRuleBase
     public override string Name => "Weak cryptographic hashing is used";
     public override Severity Severity => Severity.Major;
     public override IssueKind Kind => IssueKind.Vulnerability;
-    public override string RemediationEffort => "Replace MD5/SHA-1 with a strong algorithm such as SHA-256 or higher.";
+    public override string RemediationEffort => "20min";
+    public override string FixAdvice => "Replace MD5/SHA-1 with a strong algorithm such as SHA-256 or higher.";
     public override string[] Languages => ["py"];
 
     public override void Execute(IRuleContext context)
@@ -203,7 +208,8 @@ public sealed class PythonHardcodedCredentialsRule : PatternRuleBase
     public override string Name => "Hard-coded credentials";
     public override Severity Severity => Severity.Blocker;
     public override IssueKind Kind => IssueKind.Vulnerability;
-    public override string RemediationEffort => "Store secrets in environment variables or a secret manager instead of source code.";
+    public override string RemediationEffort => "30min";
+    public override string FixAdvice => "Store secrets in environment variables or a secret manager instead of source code.";
     public override string[] Languages => ["py"];
 
     public override void Execute(IRuleContext context)
@@ -226,7 +232,8 @@ public sealed class PythonInsecureRandomRule : PatternRuleBase
     public override string Name => "Pseudo-random number generator used for security";
     public override Severity Severity => Severity.Major;
     public override IssueKind Kind => IssueKind.Vulnerability;
-    public override string RemediationEffort => "Use secrets.token_bytes or secrets.SystemRandom for security-sensitive randomness.";
+    public override string RemediationEffort => "20min";
+    public override string FixAdvice => "Use secrets.token_bytes or secrets.SystemRandom for security-sensitive randomness.";
     public override string[] Languages => ["py"];
 
     public override void Execute(IRuleContext context)
@@ -242,7 +249,8 @@ public sealed class PythonCleartextHttpRule : PatternRuleBase
     public override string Name => "Cleartext HTTP communication";
     public override Severity Severity => Severity.Major;
     public override IssueKind Kind => IssueKind.Vulnerability;
-    public override string RemediationEffort => "Use HTTPS to encrypt data in transit.";
+    public override string RemediationEffort => "20min";
+    public override string FixAdvice => "Use HTTPS to encrypt data in transit.";
     public override string[] Languages => ["py"];
 
     public override void Execute(IRuleContext context)
@@ -258,7 +266,8 @@ public sealed class PythonShellTrueRule : PatternRuleBase
     public override string Name => "Shell execution with shell=True";
     public override Severity Severity => Severity.Major;
     public override IssueKind Kind => IssueKind.Vulnerability;
-    public override string RemediationEffort => "Avoid shell=True; pass an argument list to the subprocess module.";
+    public override string RemediationEffort => "20min";
+    public override string FixAdvice => "Avoid shell=True; pass an argument list to the subprocess module.";
     public override string[] Languages => ["py"];
 
     public override void Execute(IRuleContext context)
@@ -278,7 +287,8 @@ public sealed class PythonAssertRule : PatternRuleBase
     public override string Name => "Assertions used for input validation";
     public override Severity Severity => Severity.Major;
     public override IssueKind Kind => IssueKind.Vulnerability;
-    public override string RemediationEffort => "Replace assert-based checks with explicit validation that runs under python -O.";
+    public override string RemediationEffort => "20min";
+    public override string FixAdvice => "Replace assert-based checks with explicit validation that runs under python -O.";
     public override string[] Languages => ["py"];
 
     public override void Execute(IRuleContext context)
@@ -322,7 +332,8 @@ public sealed class PythonEnvSecretsRule : PatternRuleBase
     public override string Name => "Secrets read from environment variables";
     public override Severity Severity => Severity.Major;
     public override IssueKind Kind => IssueKind.Vulnerability;
-    public override string RemediationEffort => "Avoid logging or echoing secrets; keep them encrypted at rest.";
+    public override string RemediationEffort => "20min";
+    public override string FixAdvice => "Avoid logging or echoing secrets; keep them encrypted at rest.";
     public override string[] Languages => ["py"];
 
     public override void Execute(IRuleContext context)
@@ -344,7 +355,8 @@ public sealed class PythonXxeRule : PatternRuleBase
     public override string Name => "XML parsing prone to XXE";
     public override Severity Severity => Severity.Major;
     public override IssueKind Kind => IssueKind.Vulnerability;
-    public override string RemediationEffort => "Disable external entities and DTD processing when parsing XML.";
+    public override string RemediationEffort => "20min";
+    public override string FixAdvice => "Disable external entities and DTD processing when parsing XML.";
     public override string[] Languages => ["py"];
 
     public override void Execute(IRuleContext context)
@@ -360,7 +372,8 @@ public sealed class PythonMktempRule : PatternRuleBase
     public override string Name => "Insecure temporary file creation";
     public override Severity Severity => Severity.Major;
     public override IssueKind Kind => IssueKind.Vulnerability;
-    public override string RemediationEffort => "Use tempfile.mkstemp or TemporaryFile which create secure files.";
+    public override string RemediationEffort => "20min";
+    public override string FixAdvice => "Use tempfile.mkstemp or TemporaryFile which create secure files.";
     public override string[] Languages => ["py"];
 
     public override void Execute(IRuleContext context)
@@ -376,7 +389,8 @@ public sealed class PythonVerifyFalseRule : PatternRuleBase
     public override string Name => "TLS certificate verification disabled";
     public override Severity Severity => Severity.Critical;
     public override IssueKind Kind => IssueKind.Vulnerability;
-    public override string RemediationEffort => "Keep certificate verification enabled; verify=False exposes the connection to MITM attacks.";
+    public override string RemediationEffort => "30min";
+    public override string FixAdvice => "Keep certificate verification enabled; verify=False exposes the connection to MITM attacks.";
     public override string[] Languages => ["py"];
 
     public override void Execute(IRuleContext context)
@@ -396,7 +410,8 @@ public sealed class PythonMutableDefaultRule : PatternRuleBase
     public override string Name => "Mutable default arguments";
     public override Severity Severity => Severity.Major;
     public override IssueKind Kind => IssueKind.Bug;
-    public override string RemediationEffort => "Use None as the default and initialize inside the function body.";
+    public override string RemediationEffort => "20min";
+    public override string FixAdvice => "Use None as the default and initialize inside the function body.";
     public override string[] Languages => ["py"];
 
     public override void Execute(IRuleContext context)
@@ -418,7 +433,8 @@ public sealed class PythonPrintRule : PatternRuleBase
     public override string Name => "Debug print statements";
     public override Severity Severity => Severity.Minor;
     public override IssueKind Kind => IssueKind.CodeSmell;
-    public override string RemediationEffort => "Use the logging module and remove leftover print statements.";
+    public override string RemediationEffort => "10min";
+    public override string FixAdvice => "Use the logging module and remove leftover print statements.";
     public override string[] Languages => ["py"];
 
     public override void Execute(IRuleContext context)
@@ -444,7 +460,8 @@ public sealed class PythonBareExceptRule : PatternRuleBase
     public override string Name => "Bare except clause";
     public override Severity Severity => Severity.Major;
     public override IssueKind Kind => IssueKind.CodeSmell;
-    public override string RemediationEffort => "Catch specific exceptions or at least Exception, never a bare except.";
+    public override string RemediationEffort => "20min";
+    public override string FixAdvice => "Catch specific exceptions or at least Exception, never a bare except.";
     public override string[] Languages => ["py"];
 
     public override void Execute(IRuleContext context)
@@ -464,7 +481,8 @@ public sealed class PythonEmptyExceptRule : PatternRuleBase
     public override string Name => "Empty except block";
     public override Severity Severity => Severity.Minor;
     public override IssueKind Kind => IssueKind.CodeSmell;
-    public override string RemediationEffort => "Handle the exception or re-raise it instead of silently passing.";
+    public override string RemediationEffort => "10min";
+    public override string FixAdvice => "Handle the exception or re-raise it instead of silently passing.";
     public override string[] Languages => ["py"];
 
     public override void Execute(IRuleContext context)
@@ -484,7 +502,8 @@ public sealed class PythonWhileTrueRule : PatternRuleBase
     public override string Name => "Infinite loop without exit condition";
     public override Severity Severity => Severity.Minor;
     public override IssueKind Kind => IssueKind.CodeSmell;
-    public override string RemediationEffort => "Ensure the loop has a guaranteed break condition to avoid hanging the process.";
+    public override string RemediationEffort => "10min";
+    public override string FixAdvice => "Ensure the loop has a guaranteed break condition to avoid hanging the process.";
     public override string[] Languages => ["py"];
 
     public override void Execute(IRuleContext context)
@@ -504,7 +523,8 @@ public sealed class PythonWildcardImportRule : PatternRuleBase
     public override string Name => "Wildcard imports should not be used";
     public override Severity Severity => Severity.Minor;
     public override IssueKind Kind => IssueKind.CodeSmell;
-    public override string RemediationEffort => "Import explicit names to avoid polluting the namespace.";
+    public override string RemediationEffort => "10min";
+    public override string FixAdvice => "Import explicit names to avoid polluting the namespace.";
     public override string[] Languages => ["py"];
 
     public override void Execute(IRuleContext context)
@@ -524,7 +544,8 @@ public sealed class PythonSsrfRule : PatternRuleBase
     public override string Name => "Server-side request forgery via dynamic URL";
     public override Severity Severity => Severity.Major;
     public override IssueKind Kind => IssueKind.Vulnerability;
-    public override string RemediationEffort => "Fetch only trusted URLs and restrict the set of allowed outbound targets.";
+    public override string RemediationEffort => "20min";
+    public override string FixAdvice => "Fetch only trusted URLs and restrict the set of allowed outbound targets.";
     public override string[] Languages => ["py"];
 
     public override void Execute(IRuleContext context)
@@ -557,7 +578,8 @@ public sealed class PythonPathTraversalRule : PatternRuleBase
     public override string Name => "File path built from untrusted input";
     public override Severity Severity => Severity.Major;
     public override IssueKind Kind => IssueKind.Vulnerability;
-    public override string RemediationEffort => "Validate and canonicalize file paths and restrict access to a safe base directory.";
+    public override string RemediationEffort => "20min";
+    public override string FixAdvice => "Validate and canonicalize file paths and restrict access to a safe base directory.";
     public override string[] Languages => ["py"];
 
     public override void Execute(IRuleContext context)
@@ -580,7 +602,8 @@ public sealed class PythonTemplateInjectionRule : PatternRuleBase
     public override string Name => "Server-side template injection";
     public override Severity Severity => Severity.Major;
     public override IssueKind Kind => IssueKind.Vulnerability;
-    public override string RemediationEffort => "Never render templates built from user input; use sandboxed engines with static templates.";
+    public override string RemediationEffort => "20min";
+    public override string FixAdvice => "Never render templates built from user input; use sandboxed engines with static templates.";
     public override string[] Languages => ["py"];
 
     public override void Execute(IRuleContext context)
@@ -602,7 +625,8 @@ public sealed class PythonShelveOpenRule : PatternRuleBase
     public override string Name => "Unsafe shelve deserialization";
     public override Severity Severity => Severity.Major;
     public override IssueKind Kind => IssueKind.Vulnerability;
-    public override string RemediationEffort => "shelve relies on pickle; only open shelves from trusted sources or use a safe format.";
+    public override string RemediationEffort => "20min";
+    public override string FixAdvice => "shelve relies on pickle; only open shelves from trusted sources or use a safe format.";
     public override string[] Languages => ["py"];
 
     public override void Execute(IRuleContext context)
@@ -618,7 +642,8 @@ public sealed class PythonRangeLenRule : PatternRuleBase
     public override string Name => "range(len(sequence)) anti-pattern";
     public override Severity Severity => Severity.Minor;
     public override IssueKind Kind => IssueKind.CodeSmell;
-    public override string RemediationEffort => "Iterate directly over the sequence with enumerate() instead of indexing by range(len()).";
+    public override string RemediationEffort => "10min";
+    public override string FixAdvice => "Iterate directly over the sequence with enumerate() instead of indexing by range(len()).";
     public override string[] Languages => ["py"];
 
     public override void Execute(IRuleContext context)
@@ -638,7 +663,8 @@ public sealed class PythonBoolComparisonRule : PatternRuleBase
     public override string Name => "Comparison against True or False";
     public override Severity Severity => Severity.Major;
     public override IssueKind Kind => IssueKind.Bug;
-    public override string RemediationEffort => "Compare the value directly instead of comparing against True or False.";
+    public override string RemediationEffort => "20min";
+    public override string FixAdvice => "Compare the value directly instead of comparing against True or False.";
     public override string[] Languages => ["py"];
 
     public override void Execute(IRuleContext context)
@@ -658,7 +684,8 @@ public sealed class PythonLdapInjectionRule : PatternRuleBase
     public override string Name => "LDAP query built from concatenated input";
     public override Severity Severity => Severity.Major;
     public override IssueKind Kind => IssueKind.Vulnerability;
-    public override string RemediationEffort => "Parameterize LDAP search filters; never concatenate user input into them.";
+    public override string RemediationEffort => "20min";
+    public override string FixAdvice => "Parameterize LDAP search filters; never concatenate user input into them.";
     public override string[] Languages => ["py"];
 
     public override void Execute(IRuleContext context)
@@ -685,7 +712,8 @@ public sealed class PythonHeaderInjectionRule : PatternRuleBase
     public override string Name => "Response headers set with user-controlled values";
     public override Severity Severity => Severity.Major;
     public override IssueKind Kind => IssueKind.Vulnerability;
-    public override string RemediationEffort => "Validate header values and never embed user input directly into response headers.";
+    public override string RemediationEffort => "20min";
+    public override string FixAdvice => "Validate header values and never embed user input directly into response headers.";
     public override string[] Languages => ["py"];
 
     public override void Execute(IRuleContext context)
@@ -712,7 +740,8 @@ public sealed class PythonOpenRedirectRule : PatternRuleBase
     public override string Name => "Open redirect to user-controlled URL";
     public override Severity Severity => Severity.Major;
     public override IssueKind Kind => IssueKind.Vulnerability;
-    public override string RemediationEffort => "Only redirect to whitelisted relative targets, never to arbitrary user input.";
+    public override string RemediationEffort => "20min";
+    public override string FixAdvice => "Only redirect to whitelisted relative targets, never to arbitrary user input.";
     public override string[] Languages => ["py"];
 
     public override void Execute(IRuleContext context)
@@ -735,7 +764,8 @@ public sealed class PythonCrlfInjectionRule : PatternRuleBase
     public override string Name => "CRLF injection into headers or logs";
     public override Severity Severity => Severity.Major;
     public override IssueKind Kind => IssueKind.Vulnerability;
-    public override string RemediationEffort => "Sanitize line break characters from user input before it reaches headers or logs.";
+    public override string RemediationEffort => "20min";
+    public override string FixAdvice => "Sanitize line break characters from user input before it reaches headers or logs.";
     public override string[] Languages => ["py"];
 
     public override void Execute(IRuleContext context)
@@ -766,7 +796,8 @@ public sealed class PythonAesEcbRule : PatternRuleBase
     public override string Name => "ECB mode used for encryption";
     public override Severity Severity => Severity.Major;
     public override IssueKind Kind => IssueKind.Vulnerability;
-    public override string RemediationEffort => "Use an authenticated mode such as GCM or CBC with a random IV instead of ECB.";
+    public override string RemediationEffort => "20min";
+    public override string FixAdvice => "Use an authenticated mode such as GCM or CBC with a random IV instead of ECB.";
     public override string[] Languages => ["py"];
 
     public override void Execute(IRuleContext context)
@@ -787,7 +818,8 @@ public sealed class PythonZipSlipRule : PatternRuleBase
     public override string Name => "Archive extraction without path validation";
     public override Severity Severity => Severity.Major;
     public override IssueKind Kind => IssueKind.Vulnerability;
-    public override string RemediationEffort => "Validate and sanitize archive member paths before extracting to avoid zip slip.";
+    public override string RemediationEffort => "20min";
+    public override string FixAdvice => "Validate and sanitize archive member paths before extracting to avoid zip slip.";
     public override string[] Languages => ["py"];
 
     public override void Execute(IRuleContext context)
@@ -803,7 +835,8 @@ public sealed class PythonDebugModeRule : PatternRuleBase
     public override string Name => "Debug mode enabled in production";
     public override Severity Severity => Severity.Major;
     public override IssueKind Kind => IssueKind.Vulnerability;
-    public override string RemediationEffort => "Disable debug mode outside development; it leaks stack traces and enables remote code execution.";
+    public override string RemediationEffort => "20min";
+    public override string FixAdvice => "Disable debug mode outside development; it leaks stack traces and enables remote code execution.";
     public override string[] Languages => ["py"];
 
     public override void Execute(IRuleContext context)
@@ -823,7 +856,8 @@ public sealed class PythonXssRule : PatternRuleBase
     public override string Name => "Unsafe HTML rendering of user input";
     public override Severity Severity => Severity.Major;
     public override IssueKind Kind => IssueKind.Vulnerability;
-    public override string RemediationEffort => "Never mark user input as safe HTML or render templates built from untrusted input.";
+    public override string RemediationEffort => "20min";
+    public override string FixAdvice => "Never mark user input as safe HTML or render templates built from untrusted input.";
     public override string[] Languages => ["py"];
 
     public override void Execute(IRuleContext context)
@@ -847,7 +881,8 @@ public sealed class PythonHostKeyVerificationRule : PatternRuleBase
     public override string Name => "SSH host key verification disabled";
     public override Severity Severity => Severity.Critical;
     public override IssueKind Kind => IssueKind.Vulnerability;
-    public override string RemediationEffort => "Keep host key verification enabled; auto-accepting unknown host keys enables MITM attacks.";
+    public override string RemediationEffort => "30min";
+    public override string FixAdvice => "Keep host key verification enabled; auto-accepting unknown host keys enables MITM attacks.";
     public override string[] Languages => ["py"];
 
     public override void Execute(IRuleContext context)
@@ -868,7 +903,8 @@ public sealed class PythonInsecureFilePermissionsRule : PatternRuleBase
     public override string Name => "World-writable file permissions";
     public override Severity Severity => Severity.Major;
     public override IssueKind Kind => IssueKind.Vulnerability;
-    public override string RemediationEffort => "Use restrictive file permissions and never chmod 0777.";
+    public override string RemediationEffort => "20min";
+    public override string FixAdvice => "Use restrictive file permissions and never chmod 0777.";
     public override string[] Languages => ["py"];
 
     public override void Execute(IRuleContext context)
@@ -891,7 +927,8 @@ public sealed class PythonSmtpWithoutTlsRule : PatternRuleBase
     public override string Name => "SMTP messages sent without TLS";
     public override Severity Severity => Severity.Major;
     public override IssueKind Kind => IssueKind.Vulnerability;
-    public override string RemediationEffort => "Use SMTP_SSL or call starttls() to protect mail transmission.";
+    public override string RemediationEffort => "20min";
+    public override string FixAdvice => "Use SMTP_SSL or call starttls() to protect mail transmission.";
     public override string[] Languages => ["py"];
 
     public override void Execute(IRuleContext context)
@@ -917,7 +954,8 @@ public sealed class PythonRegexDosRule : PatternRuleBase
     public override string Name => "Regular expression built from user input";
     public override Severity Severity => Severity.Major;
     public override IssueKind Kind => IssueKind.Vulnerability;
-    public override string RemediationEffort => "Never compile regular expressions from untrusted input; use fixed, validated patterns.";
+    public override string RemediationEffort => "20min";
+    public override string FixAdvice => "Never compile regular expressions from untrusted input; use fixed, validated patterns.";
     public override string[] Languages => ["py"];
 
     public override void Execute(IRuleContext context)
@@ -939,7 +977,8 @@ public sealed class PythonDillDeserializationRule : PatternRuleBase
     public override string Name => "Unsafe dill deserialization";
     public override Severity Severity => Severity.Critical;
     public override IssueKind Kind => IssueKind.Vulnerability;
-    public override string RemediationEffort => "Dill can execute arbitrary code; only deserialize data from trusted sources.";
+    public override string RemediationEffort => "30min";
+    public override string FixAdvice => "Dill can execute arbitrary code; only deserialize data from trusted sources.";
     public override string[] Languages => ["py"];
 
     public override void Execute(IRuleContext context)
@@ -955,7 +994,8 @@ public sealed class PythonCleartextFtpRule : PatternRuleBase
     public override string Name => "Cleartext FTP communication";
     public override Severity Severity => Severity.Major;
     public override IssueKind Kind => IssueKind.Vulnerability;
-    public override string RemediationEffort => "Use FTPS or SFTP to protect credentials and data in transit.";
+    public override string RemediationEffort => "20min";
+    public override string FixAdvice => "Use FTPS or SFTP to protect credentials and data in transit.";
     public override string[] Languages => ["py"];
 
     public override void Execute(IRuleContext context)
@@ -981,7 +1021,8 @@ public sealed class PythonUnusedImportRule : PatternRuleBase
     public override string Name => "Unused imports should be removed";
     public override Severity Severity => Severity.Minor;
     public override IssueKind Kind => IssueKind.CodeSmell;
-    public override string RemediationEffort => "Remove imports that are never referenced in the module.";
+    public override string RemediationEffort => "10min";
+    public override string FixAdvice => "Remove imports that are never referenced in the module.";
     public override string[] Languages => ["py"];
 
     public override void Execute(IRuleContext context)
@@ -1044,7 +1085,8 @@ public sealed class PythonIdentityComparisonRule : PatternRuleBase
     public override string Name => "Do not test identity against True or False";
     public override Severity Severity => Severity.Minor;
     public override IssueKind Kind => IssueKind.CodeSmell;
-    public override string RemediationEffort => "Test the value directly; comparisons to True/False are redundant.";
+    public override string RemediationEffort => "10min";
+    public override string FixAdvice => "Test the value directly; comparisons to True/False are redundant.";
     public override string[] Languages => ["py"];
 
     public override void Execute(IRuleContext context)
@@ -1065,7 +1107,8 @@ public sealed class PythonVagueVariableNameRule : PatternRuleBase
     public override string Name => "Variables should have descriptive names";
     public override Severity Severity => Severity.Minor;
     public override IssueKind Kind => IssueKind.CodeSmell;
-    public override string RemediationEffort => "Rename this variable to something that describes its purpose.";
+    public override string RemediationEffort => "10min";
+    public override string FixAdvice => "Rename this variable to something that describes its purpose.";
     public override string[] Languages => ["py"];
 
     public override void Execute(IRuleContext context)
@@ -1088,7 +1131,8 @@ public sealed class PythonPassInExceptRule : PatternRuleBase
     public override string Name => "Pass used to ignore an exception";
     public override Severity Severity => Severity.Minor;
     public override IssueKind Kind => IssueKind.CodeSmell;
-    public override string RemediationEffort => "Handle the exception or re-raise it instead of silently ignoring it.";
+    public override string RemediationEffort => "10min";
+    public override string FixAdvice => "Handle the exception or re-raise it instead of silently ignoring it.";
     public override string[] Languages => ["py"];
 
     public override void Execute(IRuleContext context)
@@ -1115,7 +1159,8 @@ public sealed class PythonEqWithoutHashRule : PatternRuleBase
     public override string Name => "Define __hash__ when overriding __eq__";
     public override Severity Severity => Severity.Major;
     public override IssueKind Kind => IssueKind.CodeSmell;
-    public override string RemediationEffort => "When overriding __eq__, also define __hash__ so instances remain hashable.";
+    public override string RemediationEffort => "20min";
+    public override string FixAdvice => "When overriding __eq__, also define __hash__ so instances remain hashable.";
     public override string[] Languages => ["py"];
 
     public override void Execute(IRuleContext context)
@@ -1137,7 +1182,8 @@ public sealed class PythonGlobalStatementRule : PatternRuleBase
     public override string Name => "Avoid the global statement";
     public override Severity Severity => Severity.Minor;
     public override IssueKind Kind => IssueKind.CodeSmell;
-    public override string RemediationEffort => "Pass values explicitly instead of relying on global state.";
+    public override string RemediationEffort => "10min";
+    public override string FixAdvice => "Pass values explicitly instead of relying on global state.";
     public override string[] Languages => ["py"];
 
     public override void Execute(IRuleContext context)
@@ -1156,7 +1202,8 @@ public sealed class PythonMissingDocstringRule : PatternRuleBase
     public override string Name => "Functions should have docstrings";
     public override Severity Severity => Severity.Info;
     public override IssueKind Kind => IssueKind.CodeSmell;
-    public override string RemediationEffort => "Document the purpose of the function with a docstring.";
+    public override string RemediationEffort => "5min";
+    public override string FixAdvice => "Document the purpose of the function with a docstring.";
     public override string[] Languages => ["py"];
 
     public override void Execute(IRuleContext context)
@@ -1183,7 +1230,8 @@ public sealed class PythonNoneComparisonRule : PatternRuleBase
     public override string Name => "Compare to None with 'is' instead of '=='";
     public override Severity Severity => Severity.Minor;
     public override IssueKind Kind => IssueKind.CodeSmell;
-    public override string RemediationEffort => "Use 'is None' or 'is not None' for identity comparison with None.";
+    public override string RemediationEffort => "10min";
+    public override string FixAdvice => "Use 'is None' or 'is not None' for identity comparison with None.";
     public override string[] Languages => ["py"];
 
     public override void Execute(IRuleContext context)
@@ -1204,7 +1252,8 @@ public sealed class PythonMultipleStatementsRule : PatternRuleBase
     public override string Name => "One statement per line";
     public override Severity Severity => Severity.Minor;
     public override IssueKind Kind => IssueKind.CodeSmell;
-    public override string RemediationEffort => "Split statements onto separate lines for readability.";
+    public override string RemediationEffort => "10min";
+    public override string FixAdvice => "Split statements onto separate lines for readability.";
     public override string[] Languages => ["py"];
 
     public override void Execute(IRuleContext context)
@@ -1227,7 +1276,8 @@ public sealed class PythonDivisionByZeroRule : PatternRuleBase
     public override string Name => "Division by zero";
     public override Severity Severity => Severity.Major;
     public override IssueKind Kind => IssueKind.Bug;
-    public override string RemediationEffort => "Guard the divisor against zero before dividing or computing modulo.";
+    public override string RemediationEffort => "20min";
+    public override string FixAdvice => "Guard the divisor against zero before dividing or computing modulo.";
     public override string[] Languages => ["py"];
 
     public override void Execute(IRuleContext context)
@@ -1258,7 +1308,8 @@ public sealed class PythonBroadExceptRule : PatternRuleBase
     public override string Name => "Broad except clause hides errors";
     public override Severity Severity => Severity.Major;
     public override IssueKind Kind => IssueKind.Bug;
-    public override string RemediationEffort => "Catch specific exceptions so KeyboardInterrupt and SystemExit are not swallowed.";
+    public override string RemediationEffort => "20min";
+    public override string FixAdvice => "Catch specific exceptions so KeyboardInterrupt and SystemExit are not swallowed.";
     public override string[] Languages => ["py"];
 
     public override void Execute(IRuleContext context)
@@ -1283,7 +1334,8 @@ public sealed class PythonFloatComparisonRule : PatternRuleBase
     public override string Name => "Floating point values compared for equality";
     public override Severity Severity => Severity.Major;
     public override IssueKind Kind => IssueKind.Bug;
-    public override string RemediationEffort => "Compare floating point numbers within an epsilon tolerance instead of with '=='.";
+    public override string RemediationEffort => "20min";
+    public override string FixAdvice => "Compare floating point numbers within an epsilon tolerance instead of with '=='.";
     public override string[] Languages => ["py"];
 
     public override void Execute(IRuleContext context)
@@ -1307,7 +1359,8 @@ public sealed class PythonNaiveDateTimeRule : PatternRuleBase
     public override string Name => "Time-zone naive datetime";
     public override Severity Severity => Severity.Major;
     public override IssueKind Kind => IssueKind.Bug;
-    public override string RemediationEffort => "Pass tzinfo (e.g. datetime.timezone.utc) so datetimes are time-zone aware.";
+    public override string RemediationEffort => "20min";
+    public override string FixAdvice => "Pass tzinfo (e.g. datetime.timezone.utc) so datetimes are time-zone aware.";
     public override string[] Languages => ["py"];
 
     public override void Execute(IRuleContext context)
@@ -1330,7 +1383,8 @@ public sealed class PythonRemoveDuringIterationRule : PatternRuleBase
     public override string Name => "Collection modified during iteration";
     public override Severity Severity => Severity.Major;
     public override IssueKind Kind => IssueKind.Bug;
-    public override string RemediationEffort => "Iterate over a copy of the list or collect items first, then remove them.";
+    public override string RemediationEffort => "20min";
+    public override string FixAdvice => "Iterate over a copy of the list or collect items first, then remove them.";
     public override string[] Languages => ["py"];
 
     public override void Execute(IRuleContext context)
@@ -1360,7 +1414,8 @@ public sealed class PythonFunctionNamingRule : PatternRuleBase
     public override string Name => "Function names should use snake_case";
     public override Severity Severity => Severity.Minor;
     public override IssueKind Kind => IssueKind.CodeSmell;
-    public override string RemediationEffort => "Rename the function to snake_case to follow Python conventions.";
+    public override string RemediationEffort => "10min";
+    public override string FixAdvice => "Rename the function to snake_case to follow Python conventions.";
     public override string[] Languages => ["py"];
 
     public override void Execute(IRuleContext context)
@@ -1386,7 +1441,8 @@ public sealed class PythonClassNameConventionRule : PatternRuleBase
     public override string Name => "Class names should use PascalCase";
     public override Severity Severity => Severity.Minor;
     public override IssueKind Kind => IssueKind.CodeSmell;
-    public override string RemediationEffort => "Rename the class to PascalCase to follow Python conventions.";
+    public override string RemediationEffort => "10min";
+    public override string FixAdvice => "Rename the class to PascalCase to follow Python conventions.";
     public override string[] Languages => ["py"];
 
     public override void Execute(IRuleContext context)
@@ -1412,7 +1468,8 @@ public sealed class PythonConstantNamingRule : PatternRuleBase
     public override string Name => "Constants should use UPPER_SNAKE_CASE";
     public override Severity Severity => Severity.Minor;
     public override IssueKind Kind => IssueKind.CodeSmell;
-    public override string RemediationEffort => "Name module-level constants in UPPER_SNAKE_CASE.";
+    public override string RemediationEffort => "10min";
+    public override string FixAdvice => "Name module-level constants in UPPER_SNAKE_CASE.";
     public override string[] Languages => ["py"];
 
     public override void Execute(IRuleContext context)

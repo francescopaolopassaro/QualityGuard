@@ -23,7 +23,8 @@ public sealed class CssImportantRule : PatternRuleBase
     public override string Name => "Avoid the !important annotation";
     public override Severity Severity => Severity.Minor;
     public override IssueKind Kind => IssueKind.CodeSmell;
-    public override string RemediationEffort => "Increase specificity instead of using !important.";
+    public override string RemediationEffort => "10min";
+    public override string FixAdvice => "Increase specificity instead of using !important.";
     public override string[] Languages => ["css"];
 
     public override void Execute(IRuleContext context)
@@ -41,7 +42,8 @@ public sealed class CssImportRule : PatternRuleBase
     public override string Name => "Prefer @use or <link> over @import";
     public override Severity Severity => Severity.Minor;
     public override IssueKind Kind => IssueKind.CodeSmell;
-    public override string RemediationEffort => "Use @use in Sass or a <link> element to load stylesheets.";
+    public override string RemediationEffort => "10min";
+    public override string FixAdvice => "Use @use in Sass or a <link> element to load stylesheets.";
     public override string[] Languages => ["css"];
 
     public override void Execute(IRuleContext context)
@@ -59,7 +61,8 @@ public sealed class CssUniversalSelectorRule : PatternRuleBase
     public override string Name => "Avoid the universal selector";
     public override Severity Severity => Severity.Minor;
     public override IssueKind Kind => IssueKind.CodeSmell;
-    public override string RemediationEffort => "Replace * with a more specific selector or a reset of the elements you target.";
+    public override string RemediationEffort => "10min";
+    public override string FixAdvice => "Replace * with a more specific selector or a reset of the elements you target.";
     public override string[] Languages => ["css"];
 
     public override void Execute(IRuleContext context)
@@ -77,7 +80,8 @@ public sealed class CssEmptyBlockRule : PatternRuleBase
     public override string Name => "Remove empty rule blocks";
     public override Severity Severity => Severity.Minor;
     public override IssueKind Kind => IssueKind.CodeSmell;
-    public override string RemediationEffort => "Delete the empty rule or fill it with declarations.";
+    public override string RemediationEffort => "10min";
+    public override string FixAdvice => "Delete the empty rule or fill it with declarations.";
     public override string[] Languages => ["css"];
 
     public override void Execute(IRuleContext context)
@@ -95,7 +99,8 @@ public sealed class CssZIndexRule : PatternRuleBase
     public override string Name => "z-index requires a positioned element";
     public override Severity Severity => Severity.Major;
     public override IssueKind Kind => IssueKind.Bug;
-    public override string RemediationEffort => "Set a position value (relative, absolute, fixed or sticky) for z-index to apply.";
+    public override string RemediationEffort => "20min";
+    public override string FixAdvice => "Set a position value (relative, absolute, fixed or sticky) for z-index to apply.";
     public override string[] Languages => ["css"];
 
     public override void Execute(IRuleContext context)
@@ -113,7 +118,8 @@ public sealed class CssTransitionAllRule : PatternRuleBase
     public override string Name => "Avoid animating the all keyword";
     public override Severity Severity => Severity.Minor;
     public override IssueKind Kind => IssueKind.CodeSmell;
-    public override string RemediationEffort => "Animate specific properties instead of the all keyword.";
+    public override string RemediationEffort => "10min";
+    public override string FixAdvice => "Animate specific properties instead of the all keyword.";
     public override string[] Languages => ["css"];
 
     public override void Execute(IRuleContext context)
@@ -135,7 +141,8 @@ public sealed class CssZeroUnitRule : PatternRuleBase
     public override string Name => "Omit the unit on zero values";
     public override Severity Severity => Severity.Minor;
     public override IssueKind Kind => IssueKind.CodeSmell;
-    public override string RemediationEffort => "Write 0 instead of 0px; a unit is redundant on zero.";
+    public override string RemediationEffort => "10min";
+    public override string FixAdvice => "Write 0 instead of 0px; a unit is redundant on zero.";
     public override string[] Languages => ["css"];
 
     public override void Execute(IRuleContext context)

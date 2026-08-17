@@ -55,7 +55,8 @@ public sealed class RubyDynamicCommandRule : PatternRuleBase
     public override string Name => "Shell command built from dynamic input";
     public override Severity Severity => Severity.Critical;
     public override IssueKind Kind => IssueKind.Vulnerability;
-    public override string RemediationEffort => "Avoid interpolating untrusted values into commands and never build commands from dynamic input.";
+    public override string RemediationEffort => "30min";
+    public override string FixAdvice => "Avoid interpolating untrusted values into commands and never build commands from dynamic input.";
     public override string[] Languages => ["rb"];
 
     public override void Execute(IRuleContext context)
@@ -93,7 +94,8 @@ public sealed class RubyPopenRule : PatternRuleBase
     public override string Name => "Popen and Open3 shell execution";
     public override Severity Severity => Severity.Major;
     public override IssueKind Kind => IssueKind.Vulnerability;
-    public override string RemediationEffort => "Avoid IO.popen and Open3 command execution or validate input strictly.";
+    public override string RemediationEffort => "20min";
+    public override string FixAdvice => "Avoid IO.popen and Open3 command execution or validate input strictly.";
     public override string[] Languages => ["rb"];
 
     public override void Execute(IRuleContext context)
@@ -110,7 +112,8 @@ public sealed class RubyUnsafeDeserializationRule : PatternRuleBase
     public override string Name => "Unsafe deserialization endpoint";
     public override Severity Severity => Severity.Critical;
     public override IssueKind Kind => IssueKind.Vulnerability;
-    public override string RemediationEffort => "Deserialize only trusted data; use YAML.safe_load and avoid Marshal.load.";
+    public override string RemediationEffort => "30min";
+    public override string FixAdvice => "Deserialize only trusted data; use YAML.safe_load and avoid Marshal.load.";
     public override string[] Languages => ["rb"];
 
     public override void Execute(IRuleContext context)
@@ -127,7 +130,8 @@ public sealed class RubySqlInjectionRule : PatternRuleBase
     public override string Name => "SQL query built by string concatenation";
     public override Severity Severity => Severity.Critical;
     public override IssueKind Kind => IssueKind.Vulnerability;
-    public override string RemediationEffort => "Use parameterized queries or ActiveRecord bind values instead of interpolation.";
+    public override string RemediationEffort => "30min";
+    public override string FixAdvice => "Use parameterized queries or ActiveRecord bind values instead of interpolation.";
     public override string[] Languages => ["rb"];
 
     public override void Execute(IRuleContext context)
@@ -150,7 +154,8 @@ public sealed class RubyWeakCryptoRule : PatternRuleBase
     public override string Name => "Weak cryptographic algorithms";
     public override Severity Severity => Severity.Major;
     public override IssueKind Kind => IssueKind.Vulnerability;
-    public override string RemediationEffort => "Replace MD5/SHA-1/DES/RC4 with strong modern algorithms.";
+    public override string RemediationEffort => "20min";
+    public override string FixAdvice => "Replace MD5/SHA-1/DES/RC4 with strong modern algorithms.";
     public override string[] Languages => ["rb"];
 
     public override void Execute(IRuleContext context)
@@ -174,7 +179,8 @@ public sealed class RubyHardcodedCredentialsRule : PatternRuleBase
     public override string Name => "Hard-coded credentials";
     public override Severity Severity => Severity.Blocker;
     public override IssueKind Kind => IssueKind.Vulnerability;
-    public override string RemediationEffort => "Store secrets in environment variables or a secret manager instead of source code.";
+    public override string RemediationEffort => "30min";
+    public override string FixAdvice => "Store secrets in environment variables or a secret manager instead of source code.";
     public override string[] Languages => ["rb"];
 
     public override void Execute(IRuleContext context)
@@ -197,7 +203,8 @@ public sealed class RubyRandomRule : PatternRuleBase
     public override string Name => "Pseudo-random number generator used for security";
     public override Severity Severity => Severity.Major;
     public override IssueKind Kind => IssueKind.Vulnerability;
-    public override string RemediationEffort => "Use SecureRandom instead of Kernel#rand for security-sensitive values.";
+    public override string RemediationEffort => "20min";
+    public override string FixAdvice => "Use SecureRandom instead of Kernel#rand for security-sensitive values.";
     public override string[] Languages => ["rb"];
 
     public override void Execute(IRuleContext context)
@@ -213,7 +220,8 @@ public sealed class RubyCleartextHttpRule : PatternRuleBase
     public override string Name => "Cleartext HTTP communication";
     public override Severity Severity => Severity.Major;
     public override IssueKind Kind => IssueKind.Vulnerability;
-    public override string RemediationEffort => "Use HTTPS to encrypt data in transit.";
+    public override string RemediationEffort => "20min";
+    public override string FixAdvice => "Use HTTPS to encrypt data in transit.";
     public override string[] Languages => ["rb"];
 
     public override void Execute(IRuleContext context)
@@ -229,7 +237,8 @@ public sealed class RubyDynamicSendRule : PatternRuleBase
     public override string Name => "Dynamic method invocation via send";
     public override Severity Severity => Severity.Major;
     public override IssueKind Kind => IssueKind.Vulnerability;
-    public override string RemediationEffort => "Avoid send with dynamic arguments; dispatch on an allow-list instead.";
+    public override string RemediationEffort => "20min";
+    public override string FixAdvice => "Avoid send with dynamic arguments; dispatch on an allow-list instead.";
     public override string[] Languages => ["rb"];
 
     public override void Execute(IRuleContext context)
@@ -251,7 +260,8 @@ public sealed class RubyPrintRule : PatternRuleBase
     public override string Name => "Debug print statements";
     public override Severity Severity => Severity.Minor;
     public override IssueKind Kind => IssueKind.CodeSmell;
-    public override string RemediationEffort => "Use a logger and remove leftover puts/print statements.";
+    public override string RemediationEffort => "10min";
+    public override string FixAdvice => "Use a logger and remove leftover puts/print statements.";
     public override string[] Languages => ["rb"];
 
     public override void Execute(IRuleContext context)
@@ -267,7 +277,8 @@ public sealed class RubyDebuggerRule : PatternRuleBase
     public override string Name => "Debugger statements left in code";
     public override Severity Severity => Severity.Minor;
     public override IssueKind Kind => IssueKind.CodeSmell;
-    public override string RemediationEffort => "Remove debugging hooks such as binding.pry, byebug and debugger.";
+    public override string RemediationEffort => "10min";
+    public override string FixAdvice => "Remove debugging hooks such as binding.pry, byebug and debugger.";
     public override string[] Languages => ["rb"];
 
     public override void Execute(IRuleContext context)
@@ -289,7 +300,8 @@ public sealed class RubyEmptyRescueRule : PatternRuleBase
     public override string Name => "Empty rescue block";
     public override Severity Severity => Severity.Minor;
     public override IssueKind Kind => IssueKind.CodeSmell;
-    public override string RemediationEffort => "Handle the error or re-raise it instead of silently swallowing it.";
+    public override string RemediationEffort => "10min";
+    public override string FixAdvice => "Handle the error or re-raise it instead of silently swallowing it.";
     public override string[] Languages => ["rb"];
 
     public override void Execute(IRuleContext context)
@@ -311,7 +323,8 @@ public sealed class RubyLoopRule : PatternRuleBase
     public override string Name => "Infinite loop without exit condition";
     public override Severity Severity => Severity.Minor;
     public override IssueKind Kind => IssueKind.CodeSmell;
-    public override string RemediationEffort => "Ensure the loop has a guaranteed break/return to avoid hanging the process.";
+    public override string RemediationEffort => "10min";
+    public override string FixAdvice => "Ensure the loop has a guaranteed break/return to avoid hanging the process.";
     public override string[] Languages => ["rb"];
 
     public override void Execute(IRuleContext context)
@@ -332,7 +345,8 @@ public sealed class RubySsrfRule : PatternRuleBase
     public override string Name => "Server-side request forgery via dynamic URL";
     public override Severity Severity => Severity.Major;
     public override IssueKind Kind => IssueKind.Vulnerability;
-    public override string RemediationEffort => "Fetch only trusted URLs and restrict the set of allowed outbound targets.";
+    public override string RemediationEffort => "20min";
+    public override string FixAdvice => "Fetch only trusted URLs and restrict the set of allowed outbound targets.";
     public override string[] Languages => ["rb"];
 
     public override void Execute(IRuleContext context)
@@ -363,7 +377,8 @@ public sealed class RubyPathTraversalRule : PatternRuleBase
     public override string Name => "File path built from untrusted input";
     public override Severity Severity => Severity.Major;
     public override IssueKind Kind => IssueKind.Vulnerability;
-    public override string RemediationEffort => "Validate and canonicalize file paths and restrict access to a safe base directory.";
+    public override string RemediationEffort => "20min";
+    public override string FixAdvice => "Validate and canonicalize file paths and restrict access to a safe base directory.";
     public override string[] Languages => ["rb"];
 
     public override void Execute(IRuleContext context)
@@ -383,7 +398,8 @@ public sealed class RubyErbInjectionRule : PatternRuleBase
     public override string Name => "Server-side template injection via ERB";
     public override Severity Severity => Severity.Major;
     public override IssueKind Kind => IssueKind.Vulnerability;
-    public override string RemediationEffort => "Never render ERB templates built from user input; use static templates with a sandboxed renderer.";
+    public override string RemediationEffort => "20min";
+    public override string FixAdvice => "Never render ERB templates built from user input; use static templates with a sandboxed renderer.";
     public override string[] Languages => ["rb"];
 
     public override void Execute(IRuleContext context)
@@ -403,7 +419,8 @@ public sealed class RubyNilComparisonRule : PatternRuleBase
     public override string Name => "Comparison against nil";
     public override Severity Severity => Severity.Minor;
     public override IssueKind Kind => IssueKind.CodeSmell;
-    public override string RemediationEffort => "Use the nil? predicate instead of comparing with == nil.";
+    public override string RemediationEffort => "10min";
+    public override string FixAdvice => "Use the nil? predicate instead of comparing with == nil.";
     public override string[] Languages => ["rb"];
 
     public override void Execute(IRuleContext context)
@@ -423,7 +440,8 @@ public sealed class RubyDoubleQuoteRule : PatternRuleBase
     public override string Name => "Double quotes used without interpolation";
     public override Severity Severity => Severity.Minor;
     public override IssueKind Kind => IssueKind.CodeSmell;
-    public override string RemediationEffort => "Use single quotes for strings that contain no interpolation or escape sequences.";
+    public override string RemediationEffort => "10min";
+    public override string FixAdvice => "Use single quotes for strings that contain no interpolation or escape sequences.";
     public override string[] Languages => ["rb"];
 
     public override void Execute(IRuleContext context)

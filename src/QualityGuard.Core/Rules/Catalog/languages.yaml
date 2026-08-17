@@ -167,6 +167,8 @@
 
 - key: QG-JV-SML-0009
   name: Diagnostics should go through the logging framework
+  status: superseded
+  superseded_by: QG-ALL-SML-0046
   languages: [java, kt]
   category: SML
   severity: minor
@@ -181,8 +183,6 @@
   fix: |
     Use the project logger with an appropriate level, and let the configuration decide where the output
     goes and how much of it is kept.
-  detect:
-    - member: [System.out, System.err]
 
 - key: QG-KT-SEC-0031
   name: Web views should not enable JavaScript by default

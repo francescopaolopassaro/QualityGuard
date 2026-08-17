@@ -76,7 +76,8 @@ public sealed class KotlinInsecureRandomRule : PatternRuleBase
     public override string Name => "Use cryptographically strong random numbers";
     public override Severity Severity => Severity.Critical;
     public override IssueKind Kind => IssueKind.Vulnerability;
-    public override string RemediationEffort => "Use java.security.SecureRandom instead of Random for security-sensitive operations.";
+    public override string RemediationEffort => "30min";
+    public override string FixAdvice => "Use java.security.SecureRandom instead of Random for security-sensitive operations.";
     public override string[] Languages => ["kt"];
 
     public override void Execute(IRuleContext context)
@@ -92,7 +93,8 @@ public sealed class KotlinUnsafeCommandExecutionRule : PatternRuleBase
     public override string Name => "Make sure no OS command is executed with untrusted input";
     public override Severity Severity => Severity.Critical;
     public override IssueKind Kind => IssueKind.Vulnerability;
-    public override string RemediationEffort => "Do not concatenate user input into OS commands; keep the executed commands fixed.";
+    public override string RemediationEffort => "30min";
+    public override string FixAdvice => "Do not concatenate user input into OS commands; keep the executed commands fixed.";
     public override string[] Languages => ["kt"];
 
     public override void Execute(IRuleContext context)
@@ -117,7 +119,8 @@ public sealed class KotlinWeakCryptoRule : PatternRuleBase
     public override string Name => "Use of weak cryptographic algorithm";
     public override Severity Severity => Severity.Critical;
     public override IssueKind Kind => IssueKind.Vulnerability;
-    public override string RemediationEffort => "Use a strong, modern algorithm such as AES-GCM or SHA-256.";
+    public override string RemediationEffort => "30min";
+    public override string FixAdvice => "Use a strong, modern algorithm such as AES-GCM or SHA-256.";
     public override string[] Languages => ["kt"];
 
     public override void Execute(IRuleContext context)
@@ -142,7 +145,8 @@ public sealed class KotlinSqlInjectionRule : PatternRuleBase
     public override string Name => "Make sure using this dynamic SQL is safe";
     public override Severity Severity => Severity.Critical;
     public override IssueKind Kind => IssueKind.Vulnerability;
-    public override string RemediationEffort => "Use parameterized queries instead of concatenating input into SQL strings or templates.";
+    public override string RemediationEffort => "30min";
+    public override string FixAdvice => "Use parameterized queries instead of concatenating input into SQL strings or templates.";
     public override string[] Languages => ["kt"];
 
     public override void Execute(IRuleContext context)
@@ -175,7 +179,8 @@ public sealed class KotlinHardcodedCredentialsRule : PatternRuleBase
     public override string Name => "Password or other credentials should not be hardcoded";
     public override Severity Severity => Severity.Critical;
     public override IssueKind Kind => IssueKind.Vulnerability;
-    public override string RemediationEffort => "Store secrets in environment variables or a secure configuration store.";
+    public override string RemediationEffort => "30min";
+    public override string FixAdvice => "Store secrets in environment variables or a secure configuration store.";
     public override string[] Languages => ["kt"];
 
     public override void Execute(IRuleContext context)
@@ -198,7 +203,8 @@ public sealed class KotlinUnsafeDynamicCodeRule : PatternRuleBase
     public override string Name => "Make sure the dynamic code executed is safe";
     public override Severity Severity => Severity.Critical;
     public override IssueKind Kind => IssueKind.Vulnerability;
-    public override string RemediationEffort => "Avoid eval() and scripting engines; validate and restrict the executed code.";
+    public override string RemediationEffort => "30min";
+    public override string FixAdvice => "Avoid eval() and scripting engines; validate and restrict the executed code.";
     public override string[] Languages => ["kt"];
 
     public override void Execute(IRuleContext context)
@@ -214,7 +220,8 @@ public sealed class KotlinInsecureDeserializationRule : PatternRuleBase
     public override string Name => "Make sure deserializing this object is safe";
     public override Severity Severity => Severity.Critical;
     public override IssueKind Kind => IssueKind.Vulnerability;
-    public override string RemediationEffort => "Restrict the deserialized object types, prefer safe formats such as kotlinx.serialization with strict config.";
+    public override string RemediationEffort => "30min";
+    public override string FixAdvice => "Restrict the deserialized object types, prefer safe formats such as kotlinx.serialization with strict config.";
     public override string[] Languages => ["kt"];
 
     public override void Execute(IRuleContext context)
@@ -230,7 +237,8 @@ public sealed class KotlinHttpCleartextRule : PatternRuleBase
     public override string Name => "Using http:// URLs is insecure";
     public override Severity Severity => Severity.Major;
     public override IssueKind Kind => IssueKind.Vulnerability;
-    public override string RemediationEffort => "Use https:// to prevent eavesdropping and man-in-the-middle attacks.";
+    public override string RemediationEffort => "20min";
+    public override string FixAdvice => "Use https:// to prevent eavesdropping and man-in-the-middle attacks.";
     public override string[] Languages => ["kt"];
 
     public override void Execute(IRuleContext context)
@@ -246,7 +254,8 @@ public sealed class KotlinInsecureCookieRule : PatternRuleBase
     public override string Name => "Cookies should be created with the Secure and HttpOnly flags";
     public override Severity Severity => Severity.Major;
     public override IssueKind Kind => IssueKind.Vulnerability;
-    public override string RemediationEffort => "Set the cookie HttpOnly and Secure properties when it is created.";
+    public override string RemediationEffort => "20min";
+    public override string FixAdvice => "Set the cookie HttpOnly and Secure properties when it is created.";
     public override string[] Languages => ["kt"];
 
     public override void Execute(IRuleContext context)
@@ -270,7 +279,8 @@ public sealed class KotlinXmlExternalEntityRule : PatternRuleBase
     public override string Name => "XML parsers should not be vulnerable to XXE attacks";
     public override Severity Severity => Severity.Major;
     public override IssueKind Kind => IssueKind.SecurityHotspot;
-    public override string RemediationEffort => "Configure the factory to disable external entities (setFeature and setExpandEntityReferences).";
+    public override string RemediationEffort => "20min";
+    public override string FixAdvice => "Configure the factory to disable external entities (setFeature and setExpandEntityReferences).";
     public override string[] Languages => ["kt"];
 
     public override void Execute(IRuleContext context)
@@ -287,7 +297,8 @@ public sealed class KotlinWeakTlsRule : PatternRuleBase
     public override string Name => "Old TLS and SSL protocols are insecure";
     public override Severity Severity => Severity.Major;
     public override IssueKind Kind => IssueKind.Vulnerability;
-    public override string RemediationEffort => "Only use TLSv1.2 or TLSv1.3 for the transport layer.";
+    public override string RemediationEffort => "20min";
+    public override string FixAdvice => "Only use TLSv1.2 or TLSv1.3 for the transport layer.";
     public override string[] Languages => ["kt"];
 
     public override void Execute(IRuleContext context)
@@ -316,7 +327,8 @@ public sealed class KotlinSensitiveLoggingRule : PatternRuleBase
     public override string Name => "Sensitive data should not be logged";
     public override Severity Severity => Severity.Major;
     public override IssueKind Kind => IssueKind.Vulnerability;
-    public override string RemediationEffort => "Remove sensitive data from log lines; log references that do not expose the value.";
+    public override string RemediationEffort => "20min";
+    public override string FixAdvice => "Remove sensitive data from log lines; log references that do not expose the value.";
     public override string[] Languages => ["kt"];
 
     public override void Execute(IRuleContext context)
@@ -348,7 +360,8 @@ public sealed class KotlinLocaleIndependentCaseRule : PatternRuleBase
     public override string Name => "String case-shifting methods should be called with an explicit Locale";
     public override Severity Severity => Severity.Major;
     public override IssueKind Kind => IssueKind.Bug;
-    public override string RemediationEffort => "Call toLowerCase() or toUpperCase() with a Locale argument.";
+    public override string RemediationEffort => "20min";
+    public override string FixAdvice => "Call toLowerCase() or toUpperCase() with a Locale argument.";
     public override string[] Languages => ["kt"];
 
     public override void Execute(IRuleContext context)
@@ -364,7 +377,8 @@ public sealed class KotlinPrintlnRule : PatternRuleBase
     public override string Name => "print calls should not remain in production code";
     public override Severity Severity => Severity.Minor;
     public override IssueKind Kind => IssueKind.CodeSmell;
-    public override string RemediationEffort => "Replace println/print calls with a proper logger.";
+    public override string RemediationEffort => "10min";
+    public override string FixAdvice => "Replace println/print calls with a proper logger.";
     public override string[] Languages => ["kt"];
 
     public override void Execute(IRuleContext context)
@@ -380,7 +394,8 @@ public sealed class KotlinNotNullAssertionRule : PatternRuleBase
     public override string Name => "The not-null assertion operator (!!) should not be used";
     public override Severity Severity => Severity.Major;
     public override IssueKind Kind => IssueKind.CodeSmell;
-    public override string RemediationEffort => "Replace !! with safe calls, explicit null checks or the elvis operator.";
+    public override string RemediationEffort => "20min";
+    public override string FixAdvice => "Replace !! with safe calls, explicit null checks or the elvis operator.";
     public override string[] Languages => ["kt"];
 
     public override void Execute(IRuleContext context)
@@ -400,7 +415,8 @@ public sealed class KotlinInfiniteLoopRule : PatternRuleBase
     public override string Name => "while(true) loops should provide a break condition";
     public override Severity Severity => Severity.Minor;
     public override IssueKind Kind => IssueKind.CodeSmell;
-    public override string RemediationEffort => "Use a boolean or counter condition that terminates the loop.";
+    public override string RemediationEffort => "10min";
+    public override string FixAdvice => "Use a boolean or counter condition that terminates the loop.";
     public override string[] Languages => ["kt"];
 
     public override void Execute(IRuleContext context)
@@ -444,7 +460,8 @@ public sealed class KotlinEmptyCatchRule : PatternRuleBase
     public override string Name => "Empty catch blocks should not be left";
     public override Severity Severity => Severity.Major;
     public override IssueKind Kind => IssueKind.CodeSmell;
-    public override string RemediationEffort => "Log the exception or rethrow it; never swallow it silently.";
+    public override string RemediationEffort => "20min";
+    public override string FixAdvice => "Log the exception or rethrow it; never swallow it silently.";
     public override string[] Languages => ["kt"];
 
     public override void Execute(IRuleContext context)
@@ -472,7 +489,8 @@ public sealed class KotlinRunBlockingRule : PatternRuleBase
     public override string Name => "runBlocking should not be used in production code";
     public override Severity Severity => Severity.Minor;
     public override IssueKind Kind => IssueKind.CodeSmell;
-    public override string RemediationEffort => "Prefer suspending functions over blocking the current thread with runBlocking.";
+    public override string RemediationEffort => "10min";
+    public override string FixAdvice => "Prefer suspending functions over blocking the current thread with runBlocking.";
     public override string[] Languages => ["kt"];
 
     public override void Execute(IRuleContext context)
@@ -493,7 +511,8 @@ public sealed class KotlinSystemExitRule : PatternRuleBase
     public override string Name => "System.exit should not be called in application code";
     public override Severity Severity => Severity.Minor;
     public override IssueKind Kind => IssueKind.CodeSmell;
-    public override string RemediationEffort => "Return an error status instead of terminating the whole process.";
+    public override string RemediationEffort => "10min";
+    public override string FixAdvice => "Return an error status instead of terminating the whole process.";
     public override string[] Languages => ["kt"];
 
     public override void Execute(IRuleContext context)
@@ -514,7 +533,8 @@ public sealed class KotlinThreadControlRule : PatternRuleBase
     public override string Name => "Thread.stop/suspend/resume should not be used";
     public override Severity Severity => Severity.Major;
     public override IssueKind Kind => IssueKind.CodeSmell;
-    public override string RemediationEffort => "Use coroutine cancellation or interruption primitives to control threads.";
+    public override string RemediationEffort => "20min";
+    public override string FixAdvice => "Use coroutine cancellation or interruption primitives to control threads.";
     public override string[] Languages => ["kt"];
 
     public override void Execute(IRuleContext context)
@@ -536,7 +556,8 @@ public sealed class KotlinTypeNameConventionRule : PatternRuleBase
     public override string Name => "Type names should comply with a naming convention";
     public override Severity Severity => Severity.Minor;
     public override IssueKind Kind => IssueKind.CodeSmell;
-    public override string RemediationEffort => "Rename this type using UpperCamelCase.";
+    public override string RemediationEffort => "10min";
+    public override string FixAdvice => "Rename this type using UpperCamelCase.";
     public override string[] Languages => ["kt"];
 
     public override void Execute(IRuleContext context)
@@ -561,7 +582,8 @@ public sealed class KotlinDuplicatedLiteralsRule : PatternRuleBase
     public override string Name => "String literals should not be duplicated";
     public override Severity Severity => Severity.Minor;
     public override IssueKind Kind => IssueKind.CodeSmell;
-    public override string RemediationEffort => "Define a named constant for this repeated literal.";
+    public override string RemediationEffort => "10min";
+    public override string FixAdvice => "Define a named constant for this repeated literal.";
     public override string[] Languages => ["kt"];
 
     public override void Execute(IRuleContext context)
@@ -583,7 +605,8 @@ public sealed class KotlinServerSideRequestForgeryRule : PatternRuleBase
     public override string Name => "Server-side requests and file paths should not use user-controlled URLs";
     public override Severity Severity => Severity.Major;
     public override IssueKind Kind => IssueKind.Vulnerability;
-    public override string RemediationEffort => "Validate and whitelist URLs and paths before use in network or file operations.";
+    public override string RemediationEffort => "20min";
+    public override string FixAdvice => "Validate and whitelist URLs and paths before use in network or file operations.";
     public override string[] Languages => ["kt"];
 
     public override void Execute(IRuleContext context)
@@ -616,7 +639,8 @@ public sealed class KotlinQueryInjectionRule : PatternRuleBase
     public override string Name => "Make sure using this query is safe";
     public override Severity Severity => Severity.Critical;
     public override IssueKind Kind => IssueKind.Vulnerability;
-    public override string RemediationEffort => "Use parameterized queries instead of concatenating or templating query strings.";
+    public override string RemediationEffort => "30min";
+    public override string FixAdvice => "Use parameterized queries instead of concatenating or templating query strings.";
     public override string[] Languages => ["kt"];
 
     public override void Execute(IRuleContext context)
@@ -648,7 +672,8 @@ public sealed class KotlinHeaderInjectionRule : PatternRuleBase
     public override string Name => "Response headers should not be set with user-controlled values";
     public override Severity Severity => Severity.Major;
     public override IssueKind Kind => IssueKind.Vulnerability;
-    public override string RemediationEffort => "Validate header values and never embed user input directly into response headers.";
+    public override string RemediationEffort => "20min";
+    public override string FixAdvice => "Validate header values and never embed user input directly into response headers.";
     public override string[] Languages => ["kt"];
 
     public override void Execute(IRuleContext context)
@@ -682,7 +707,8 @@ public sealed class KotlinCorsWildcardRule : PatternRuleBase
     public override string Name => "Wildcard origins should not be allowed in CORS headers";
     public override Severity Severity => Severity.Major;
     public override IssueKind Kind => IssueKind.Vulnerability;
-    public override string RemediationEffort => "Restrict Access-Control-Allow-Origin to a fixed set of trusted origins.";
+    public override string RemediationEffort => "20min";
+    public override string FixAdvice => "Restrict Access-Control-Allow-Origin to a fixed set of trusted origins.";
     public override string[] Languages => ["kt"];
 
     public override void Execute(IRuleContext context)
@@ -705,7 +731,8 @@ public sealed class KotlinSystemGcRule : PatternRuleBase
     public override string Name => "System.gc() calls should not be used";
     public override Severity Severity => Severity.Minor;
     public override IssueKind Kind => IssueKind.CodeSmell;
-    public override string RemediationEffort => "Let the JVM manage garbage collection; avoid calling System.gc().";
+    public override string RemediationEffort => "10min";
+    public override string FixAdvice => "Let the JVM manage garbage collection; avoid calling System.gc().";
     public override string[] Languages => ["kt"];
 
     public override void Execute(IRuleContext context)
@@ -726,7 +753,8 @@ public sealed class KotlinDirectThreadRunRule : PatternRuleBase
     public override string Name => "Thread.run() should not be called directly";
     public override Severity Severity => Severity.Major;
     public override IssueKind Kind => IssueKind.Bug;
-    public override string RemediationEffort => "Call start() instead of run() to execute the thread asynchronously.";
+    public override string RemediationEffort => "20min";
+    public override string FixAdvice => "Call start() instead of run() to execute the thread asynchronously.";
     public override string[] Languages => ["kt"];
 
     public override void Execute(IRuleContext context)
@@ -747,7 +775,8 @@ public sealed class KotlinLdapInjectionRule : PatternRuleBase
     public override string Name => "Make sure using this LDAP filter is safe";
     public override Severity Severity => Severity.Major;
     public override IssueKind Kind => IssueKind.Vulnerability;
-    public override string RemediationEffort => "Sanitize and parameterize LDAP filters; never concatenate user input into them.";
+    public override string RemediationEffort => "20min";
+    public override string FixAdvice => "Sanitize and parameterize LDAP filters; never concatenate user input into them.";
     public override string[] Languages => ["kt"];
 
     public override void Execute(IRuleContext context)
@@ -773,7 +802,8 @@ public sealed class KotlinOpenRedirectRule : PatternRuleBase
     public override string Name => "Open redirects should not be triggered by user input";
     public override Severity Severity => Severity.Major;
     public override IssueKind Kind => IssueKind.Vulnerability;
-    public override string RemediationEffort => "Validate the redirect target against a fixed allowlist of URLs.";
+    public override string RemediationEffort => "20min";
+    public override string FixAdvice => "Validate the redirect target against a fixed allowlist of URLs.";
     public override string[] Languages => ["kt"];
 
     public override void Execute(IRuleContext context)
@@ -822,7 +852,8 @@ public sealed class KotlinTrustAllCertificatesRule : PatternRuleBase
     public override string Name => "SSL/TLS certificate validation should not be disabled";
     public override Severity Severity => Severity.Critical;
     public override IssueKind Kind => IssueKind.Vulnerability;
-    public override string RemediationEffort => "Do not trust every certificate; implement proper hostname verification.";
+    public override string RemediationEffort => "30min";
+    public override string FixAdvice => "Do not trust every certificate; implement proper hostname verification.";
     public override string[] Languages => ["kt"];
 
     public override void Execute(IRuleContext context)
@@ -865,7 +896,8 @@ public sealed class KotlinReflectionInjectionRule : PatternRuleBase
     public override string Name => "Make sure reflection is not used with untrusted input";
     public override Severity Severity => Severity.Major;
     public override IssueKind Kind => IssueKind.Vulnerability;
-    public override string RemediationEffort => "Do not use Class.forName or getMethod with user-controlled names.";
+    public override string RemediationEffort => "20min";
+    public override string FixAdvice => "Do not use Class.forName or getMethod with user-controlled names.";
     public override string[] Languages => ["kt"];
 
     public override void Execute(IRuleContext context)
@@ -891,7 +923,8 @@ public sealed class KotlinUnsafeWebViewRule : PatternRuleBase
     public override string Name => "WebView JavaScript bridges should not expose native objects";
     public override Severity Severity => Severity.Critical;
     public override IssueKind Kind => IssueKind.Vulnerability;
-    public override string RemediationEffort => "Remove addJavascriptInterface or restrict JavaScript to trusted content only.";
+    public override string RemediationEffort => "30min";
+    public override string FixAdvice => "Remove addJavascriptInterface or restrict JavaScript to trusted content only.";
     public override string[] Languages => ["kt"];
 
     public override void Execute(IRuleContext context)
@@ -922,7 +955,8 @@ public sealed class KotlinWebViewFileAccessRule : PatternRuleBase
     public override string Name => "WebView file access should be disabled";
     public override Severity Severity => Severity.Major;
     public override IssueKind Kind => IssueKind.Vulnerability;
-    public override string RemediationEffort => "Keep allowFileAccess and related settings disabled unless strictly required.";
+    public override string RemediationEffort => "20min";
+    public override string FixAdvice => "Keep allowFileAccess and related settings disabled unless strictly required.";
     public override string[] Languages => ["kt"];
 
     public override void Execute(IRuleContext context)
@@ -949,7 +983,8 @@ public sealed class KotlinWorldReadableFileRule : PatternRuleBase
     public override string Name => "World-readable or world-writable files should not be created";
     public override Severity Severity => Severity.Major;
     public override IssueKind Kind => IssueKind.Vulnerability;
-    public override string RemediationEffort => "Use MODE_PRIVATE to restrict file access to the application.";
+    public override string RemediationEffort => "20min";
+    public override string FixAdvice => "Use MODE_PRIVATE to restrict file access to the application.";
     public override string[] Languages => ["kt"];
 
     public override void Execute(IRuleContext context)
@@ -966,7 +1001,8 @@ public sealed class KotlinZipSlipRule : PatternRuleBase
     public override string Name => "Zip entry names should not escape the extraction directory";
     public override Severity Severity => Severity.Major;
     public override IssueKind Kind => IssueKind.Vulnerability;
-    public override string RemediationEffort => "Validate each Zip entry name and reject names containing '..'.";
+    public override string RemediationEffort => "20min";
+    public override string FixAdvice => "Validate each Zip entry name and reject names containing '..'.";
     public override string[] Languages => ["kt"];
 
     public override void Execute(IRuleContext context)
@@ -1001,7 +1037,8 @@ public sealed class KotlinReDosRule : PatternRuleBase
     public override string Name => "Regular expressions should not be built from user input";
     public override Severity Severity => Severity.Major;
     public override IssueKind Kind => IssueKind.Vulnerability;
-    public override string RemediationEffort => "Use fixed regex patterns and avoid nested quantifiers that enable catastrophic backtracking.";
+    public override string RemediationEffort => "20min";
+    public override string FixAdvice => "Use fixed regex patterns and avoid nested quantifiers that enable catastrophic backtracking.";
     public override string[] Languages => ["kt"];
 
     public override void Execute(IRuleContext context)
@@ -1055,7 +1092,8 @@ public sealed class KotlinTimingAttackRule : PatternRuleBase
     public override string Name => "Credentials should not be compared with a regular comparison";
     public override Severity Severity => Severity.Major;
     public override IssueKind Kind => IssueKind.Vulnerability;
-    public override string RemediationEffort => "Compare secrets using a constant-time comparison such as MessageDigest.isEqual.";
+    public override string RemediationEffort => "20min";
+    public override string FixAdvice => "Compare secrets using a constant-time comparison such as MessageDigest.isEqual.";
     public override string[] Languages => ["kt"];
 
     public override void Execute(IRuleContext context)
@@ -1106,7 +1144,8 @@ public sealed class KotlinSharedPreferencesSecretRule : PatternRuleBase
     public override string Name => "Secrets should not be stored in plain SharedPreferences";
     public override Severity Severity => Severity.Major;
     public override IssueKind Kind => IssueKind.Vulnerability;
-    public override string RemediationEffort => "Store sensitive data with EncryptedSharedPreferences instead of plain SharedPreferences.";
+    public override string RemediationEffort => "20min";
+    public override string FixAdvice => "Store sensitive data with EncryptedSharedPreferences instead of plain SharedPreferences.";
     public override string[] Languages => ["kt"];
 
     public override void Execute(IRuleContext context)
@@ -1131,7 +1170,8 @@ public sealed class KotlinLogInjectionRule : PatternRuleBase
     public override string Name => "Log output should not be built from user-controlled data";
     public override Severity Severity => Severity.Major;
     public override IssueKind Kind => IssueKind.Vulnerability;
-    public override string RemediationEffort => "Sanitize user input before writing it to log output.";
+    public override string RemediationEffort => "20min";
+    public override string FixAdvice => "Sanitize user input before writing it to log output.";
     public override string[] Languages => ["kt"];
 
     public override void Execute(IRuleContext context)
@@ -1154,7 +1194,8 @@ public sealed class KotlinMutablePendingIntentRule : PatternRuleBase
     public override string Name => "PendingIntents should be immutable";
     public override Severity Severity => Severity.Major;
     public override IssueKind Kind => IssueKind.Vulnerability;
-    public override string RemediationEffort => "Create PendingIntents with the FLAG_IMMUTABLE flag.";
+    public override string RemediationEffort => "20min";
+    public override string FixAdvice => "Create PendingIntents with the FLAG_IMMUTABLE flag.";
     public override string[] Languages => ["kt"];
 
     public override void Execute(IRuleContext context)
@@ -1182,7 +1223,8 @@ public sealed class KotlinWebViewPasswordSaveRule : PatternRuleBase
     public override string Name => "WebView password saving should be disabled";
     public override Severity Severity => Severity.Minor;
     public override IssueKind Kind => IssueKind.Vulnerability;
-    public override string RemediationEffort => "Do not enable WebView password saving; use a secure credential store.";
+    public override string RemediationEffort => "10min";
+    public override string FixAdvice => "Do not enable WebView password saving; use a secure credential store.";
     public override string[] Languages => ["kt"];
 
     public override void Execute(IRuleContext context)
@@ -1208,7 +1250,8 @@ public sealed class KotlinStringBuilderInLoopRule : PatternRuleBase
     public override string Name => "StringBuilder should not be created inside loops";
     public override Severity Severity => Severity.Minor;
     public override IssueKind Kind => IssueKind.CodeSmell;
-    public override string RemediationEffort => "Hoist the StringBuilder creation outside the loop.";
+    public override string RemediationEffort => "10min";
+    public override string FixAdvice => "Hoist the StringBuilder creation outside the loop.";
     public override string[] Languages => ["kt"];
 
     public override void Execute(IRuleContext context)
@@ -1243,7 +1286,8 @@ public sealed class KotlinExplicitNullCheckRule : PatternRuleBase
     public override string Name => "Prefer safe-call operators over explicit null checks";
     public override Severity Severity => Severity.Minor;
     public override IssueKind Kind => IssueKind.CodeSmell;
-    public override string RemediationEffort => "Use the safe-call operator (?.) or let instead of a manual null check.";
+    public override string RemediationEffort => "10min";
+    public override string FixAdvice => "Use the safe-call operator (?.) or let instead of a manual null check.";
     public override string[] Languages => ["kt"];
 
     public override void Execute(IRuleContext context)
@@ -1295,7 +1339,8 @@ public sealed class KotlinWhenWithoutElseRule : PatternRuleBase
     public override string Name => "when expressions should have an else branch";
     public override Severity Severity => Severity.Minor;
     public override IssueKind Kind => IssueKind.CodeSmell;
-    public override string RemediationEffort => "Add an else branch to make the when exhaustive.";
+    public override string RemediationEffort => "10min";
+    public override string FixAdvice => "Add an else branch to make the when exhaustive.";
     public override string[] Languages => ["kt"];
 
     public override void Execute(IRuleContext context)
@@ -1332,7 +1377,8 @@ public sealed class KotlinCompanionMutableStateRule : PatternRuleBase
     public override string Name => "Companion object state should be immutable";
     public override Severity Severity => Severity.Minor;
     public override IssueKind Kind => IssueKind.CodeSmell;
-    public override string RemediationEffort => "Replace mutable var properties in the companion object with immutable vals.";
+    public override string RemediationEffort => "10min";
+    public override string FixAdvice => "Replace mutable var properties in the companion object with immutable vals.";
     public override string[] Languages => ["kt"];
 
     public override void Execute(IRuleContext context)
@@ -1366,7 +1412,8 @@ public sealed class KotlinDataClassEqualsRule : PatternRuleBase
     public override string Name => "Data classes should not override equals or hashCode";
     public override Severity Severity => Severity.Minor;
     public override IssueKind Kind => IssueKind.CodeSmell;
-    public override string RemediationEffort => "Let the compiler generate equals/hashCode for the data class.";
+    public override string RemediationEffort => "10min";
+    public override string FixAdvice => "Let the compiler generate equals/hashCode for the data class.";
     public override string[] Languages => ["kt"];
 
     public override void Execute(IRuleContext context)
@@ -1400,7 +1447,8 @@ public sealed class KotlinLongFunctionRule : PatternRuleBase
     public override string Name => "Functions should not be too long";
     public override Severity Severity => Severity.Minor;
     public override IssueKind Kind => IssueKind.CodeSmell;
-    public override string RemediationEffort => "Split this function into smaller, focused functions.";
+    public override string RemediationEffort => "10min";
+    public override string FixAdvice => "Split this function into smaller, focused functions.";
     public override string[] Languages => ["kt"];
 
     public override void Execute(IRuleContext context)
@@ -1446,7 +1494,8 @@ public sealed class KotlinNestedStringTemplateRule : PatternRuleBase
     public override string Name => "Nested string templates should be avoided";
     public override Severity Severity => Severity.Minor;
     public override IssueKind Kind => IssueKind.CodeSmell;
-    public override string RemediationEffort => "Extract the inner expression into a variable before interpolating it.";
+    public override string RemediationEffort => "10min";
+    public override string FixAdvice => "Extract the inner expression into a variable before interpolating it.";
     public override string[] Languages => ["kt"];
 
     public override void Execute(IRuleContext context)
@@ -1489,7 +1538,8 @@ public sealed class KotlinSizeEmptyCheckRule : PatternRuleBase
     public override string Name => "isEmpty() and isNotEmpty() should be used instead of size comparisons";
     public override Severity Severity => Severity.Minor;
     public override IssueKind Kind => IssueKind.CodeSmell;
-    public override string RemediationEffort => "Replace the size comparison with isEmpty() or isNotEmpty().";
+    public override string RemediationEffort => "10min";
+    public override string FixAdvice => "Replace the size comparison with isEmpty() or isNotEmpty().";
     public override string[] Languages => ["kt"];
 
     public override void Execute(IRuleContext context)
@@ -1524,7 +1574,8 @@ public sealed class KotlinRangeLoopRule : PatternRuleBase
     public override string Name => "Prefer until over inclusive ranges in for loops";
     public override Severity Severity => Severity.Minor;
     public override IssueKind Kind => IssueKind.CodeSmell;
-    public override string RemediationEffort => "Use the until operator to exclude the upper bound when iterating indices.";
+    public override string RemediationEffort => "10min";
+    public override string FixAdvice => "Use the until operator to exclude the upper bound when iterating indices.";
     public override string[] Languages => ["kt"];
 
     public override void Execute(IRuleContext context)
@@ -1558,7 +1609,8 @@ public sealed class KotlinBooleanComparisonRule : PatternRuleBase
     public override string Name => "Boolean literals should not be compared with operators";
     public override Severity Severity => Severity.Minor;
     public override IssueKind Kind => IssueKind.CodeSmell;
-    public override string RemediationEffort => "Remove the redundant comparison with a boolean literal.";
+    public override string RemediationEffort => "10min";
+    public override string FixAdvice => "Remove the redundant comparison with a boolean literal.";
     public override string[] Languages => ["kt"];
 
     public override void Execute(IRuleContext context)
@@ -1581,7 +1633,8 @@ public sealed class KotlinThreadSleepInCoroutineRule : PatternRuleBase
     public override string Name => "Thread.sleep should not be used inside coroutines";
     public override Severity Severity => Severity.Major;
     public override IssueKind Kind => IssueKind.Bug;
-    public override string RemediationEffort => "Use the suspending delay() function instead of Thread.sleep.";
+    public override string RemediationEffort => "20min";
+    public override string FixAdvice => "Use the suspending delay() function instead of Thread.sleep.";
     public override string[] Languages => ["kt"];
 
     public override void Execute(IRuleContext context)
@@ -1606,7 +1659,8 @@ public sealed class KotlinGlobalScopeRule : PatternRuleBase
     public override string Name => "GlobalScope should not be used for long-running work";
     public override Severity Severity => Severity.Major;
     public override IssueKind Kind => IssueKind.Bug;
-    public override string RemediationEffort => "Use an application-scoped CoroutineScope that can be cancelled.";
+    public override string RemediationEffort => "20min";
+    public override string FixAdvice => "Use an application-scoped CoroutineScope that can be cancelled.";
     public override string[] Languages => ["kt"];
 
     public override void Execute(IRuleContext context)
@@ -1628,7 +1682,8 @@ public sealed class KotlinDoubleComparisonRule : PatternRuleBase
     public override string Name => "Floating-point values should not be compared with ==";
     public override Severity Severity => Severity.Major;
     public override IssueKind Kind => IssueKind.Bug;
-    public override string RemediationEffort => "Compare floating-point values with an epsilon tolerance instead of ==";
+    public override string RemediationEffort => "20min";
+    public override string FixAdvice => "Compare floating-point values with an epsilon tolerance instead of ==";
     public override string[] Languages => ["kt"];
 
     public override void Execute(IRuleContext context)
@@ -1656,7 +1711,8 @@ public sealed class KotlinCollectionModificationRule : PatternRuleBase
     public override string Name => "Collections should not be modified while being iterated";
     public override Severity Severity => Severity.Major;
     public override IssueKind Kind => IssueKind.Bug;
-    public override string RemediationEffort => "Collect the items to change first, or iterate over a snapshot copy.";
+    public override string RemediationEffort => "20min";
+    public override string FixAdvice => "Collect the items to change first, or iterate over a snapshot copy.";
     public override string[] Languages => ["kt"];
 
     public override void Execute(IRuleContext context)
@@ -1716,7 +1772,8 @@ public sealed class KotlinIgnoredCancellationRule : PatternRuleBase
     public override string Name => "Coroutine cancellation exceptions should be rethrown";
     public override Severity Severity => Severity.Major;
     public override IssueKind Kind => IssueKind.Bug;
-    public override string RemediationEffort => "Rethrow CancellationException to preserve coroutine cancellation semantics.";
+    public override string RemediationEffort => "20min";
+    public override string FixAdvice => "Rethrow CancellationException to preserve coroutine cancellation semantics.";
     public override string[] Languages => ["kt"];
 
     public override void Execute(IRuleContext context)
@@ -1770,7 +1827,8 @@ public sealed class KotlinFunctionNameConventionRule : PatternRuleBase
     public override string Name => "Function names should comply with a naming convention";
     public override Severity Severity => Severity.Minor;
     public override IssueKind Kind => IssueKind.CodeSmell;
-    public override string RemediationEffort => "Rename this function using lowerCamelCase.";
+    public override string RemediationEffort => "10min";
+    public override string FixAdvice => "Rename this function using lowerCamelCase.";
     public override string[] Languages => ["kt"];
 
     public override void Execute(IRuleContext context)
@@ -1832,7 +1890,8 @@ public sealed class KotlinConstantNameConventionRule : PatternRuleBase
     public override string Name => "Constants should comply with a naming convention";
     public override Severity Severity => Severity.Minor;
     public override IssueKind Kind => IssueKind.CodeSmell;
-    public override string RemediationEffort => "Rename this constant using UPPER_SNAKE_CASE.";
+    public override string RemediationEffort => "10min";
+    public override string FixAdvice => "Rename this constant using UPPER_SNAKE_CASE.";
     public override string[] Languages => ["kt"];
 
     public override void Execute(IRuleContext context)
@@ -1855,7 +1914,8 @@ public sealed class KotlinPackageNameConventionRule : PatternRuleBase
     public override string Name => "Package names should comply with a naming convention";
     public override Severity Severity => Severity.Minor;
     public override IssueKind Kind => IssueKind.CodeSmell;
-    public override string RemediationEffort => "Rename this package to use only lowercase identifiers.";
+    public override string RemediationEffort => "10min";
+    public override string FixAdvice => "Rename this package to use only lowercase identifiers.";
     public override string[] Languages => ["kt"];
 
     public override void Execute(IRuleContext context)

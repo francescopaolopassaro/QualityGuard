@@ -94,9 +94,32 @@ public class RuleRegistryTests
     public void Catalog_documentation_reaches_the_rules_it_targets()
     {
         var orphans = RuleCatalog.Entries
-            .Where(e => e.IsDocumentationOnly && !e.IsPlanned && RuleRepository.Find(e.Key) == null)
+            .Where(e => e.IsDocumentationOnly && !e.IsPlanned && !e.IsSuperseded
+                        && RuleRepository.Find(e.Key) == null)
             .Select(e => e.Key)
             .ToList();
         Assert.Empty(orphans);
     }
+    [Fact]
+    public void Every_rule_states_its_effort_as_a_duration()
+    {
+        // the value is written into SARIF as remediationEffort and summed into the technical debt:
+        // a sentence there is read as zero minutes and quietly removes the rule from the total
+        var prose = Rules
+            .Where(r => QualityGuard.Core.Analysis.QualityRatings.EffortMinutes(r.RemediationEffort) <= 0)
+            .Select(r => $"{r.Key}: {r.RemediationEffort}")
+            .ToList();
+        Assert.Empty(prose);
+    }
+
+    [Fact]
+    public void Every_rule_says_how_the_finding_is_fixed()
+    {
+        var silent = Rules
+            .Where(r => string.IsNullOrWhiteSpace(r.Description.HowToFix))
+            .Select(r => r.Key)
+            .ToList();
+        Assert.Empty(silent);
+    }
+
 }

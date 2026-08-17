@@ -57,7 +57,8 @@ public sealed class GoExecCommandRule : PatternRuleBase
     public override string Name => "Shell command built from dynamic input";
     public override Severity Severity => Severity.Critical;
     public override IssueKind Kind => IssueKind.Vulnerability;
-    public override string RemediationEffort => "Avoid exec.Command with dynamic arguments; always pass a static command name.";
+    public override string RemediationEffort => "30min";
+    public override string FixAdvice => "Avoid exec.Command with dynamic arguments; always pass a static command name.";
     public override string[] Languages => ["go"];
 
     public override void Execute(IRuleContext context)
@@ -77,7 +78,8 @@ public sealed class GoSqlInjectionRule : PatternRuleBase
     public override string Name => "SQL query built by string concatenation";
     public override Severity Severity => Severity.Critical;
     public override IssueKind Kind => IssueKind.Vulnerability;
-    public override string RemediationEffort => "Use prepared statements and bind parameters instead of string concatenation.";
+    public override string RemediationEffort => "30min";
+    public override string FixAdvice => "Use prepared statements and bind parameters instead of string concatenation.";
     public override string[] Languages => ["go"];
 
     public override void Execute(IRuleContext context)
@@ -101,7 +103,8 @@ public sealed class GoWeakCryptoRule : PatternRuleBase
     public override string Name => "Weak cryptographic hashing is used";
     public override Severity Severity => Severity.Major;
     public override IssueKind Kind => IssueKind.Vulnerability;
-    public override string RemediationEffort => "Replace MD5/SHA-1 with a strong algorithm such as SHA-256 or higher.";
+    public override string RemediationEffort => "20min";
+    public override string FixAdvice => "Replace MD5/SHA-1 with a strong algorithm such as SHA-256 or higher.";
     public override string[] Languages => ["go"];
 
     public override void Execute(IRuleContext context)
@@ -126,7 +129,8 @@ public sealed class GoHardcodedCredentialsRule : PatternRuleBase
     public override string Name => "Hard-coded credentials";
     public override Severity Severity => Severity.Blocker;
     public override IssueKind Kind => IssueKind.Vulnerability;
-    public override string RemediationEffort => "Read secrets from environment variables or a secret manager instead of source code.";
+    public override string RemediationEffort => "30min";
+    public override string FixAdvice => "Read secrets from environment variables or a secret manager instead of source code.";
     public override string[] Languages => ["go"];
 
     public override void Execute(IRuleContext context)
@@ -155,7 +159,8 @@ public sealed class GoCleartextHttpRule : PatternRuleBase
     public override string Name => "Cleartext HTTP communication";
     public override Severity Severity => Severity.Major;
     public override IssueKind Kind => IssueKind.Vulnerability;
-    public override string RemediationEffort => "Use HTTPS to encrypt data in transit.";
+    public override string RemediationEffort => "20min";
+    public override string FixAdvice => "Use HTTPS to encrypt data in transit.";
     public override string[] Languages => ["go"];
 
     public override void Execute(IRuleContext context)
@@ -171,7 +176,8 @@ public sealed class GoInsecureRandomRule : PatternRuleBase
     public override string Name => "Pseudo-random number generator used for security";
     public override Severity Severity => Severity.Major;
     public override IssueKind Kind => IssueKind.Vulnerability;
-    public override string RemediationEffort => "Use crypto/rand instead of math/rand for security-sensitive values.";
+    public override string RemediationEffort => "20min";
+    public override string FixAdvice => "Use crypto/rand instead of math/rand for security-sensitive values.";
     public override string[] Languages => ["go"];
 
     public override void Execute(IRuleContext context)
@@ -194,7 +200,8 @@ public sealed class GoInsecureSkipVerifyRule : PatternRuleBase
     public override string Name => "TLS certificate verification disabled";
     public override Severity Severity => Severity.Critical;
     public override IssueKind Kind => IssueKind.Vulnerability;
-    public override string RemediationEffort => "Keep InsecureSkipVerify false to protect against MITM attacks.";
+    public override string RemediationEffort => "30min";
+    public override string FixAdvice => "Keep InsecureSkipVerify false to protect against MITM attacks.";
     public override string[] Languages => ["go"];
 
     public override void Execute(IRuleContext context)
@@ -214,7 +221,8 @@ public sealed class GoShCRule : PatternRuleBase
     public override string Name => "Shell invocation through sh -c";
     public override Severity Severity => Severity.Major;
     public override IssueKind Kind => IssueKind.Vulnerability;
-    public override string RemediationEffort => "Avoid invoking sh -c; execute the intended program directly.";
+    public override string RemediationEffort => "20min";
+    public override string FixAdvice => "Avoid invoking sh -c; execute the intended program directly.";
     public override string[] Languages => ["go"];
 
     public override void Execute(IRuleContext context)
@@ -321,7 +329,8 @@ public sealed class GoUnsafePackageRule : PatternRuleBase
     public override string Name => "Unsafe package should not be used";
     public override Severity Severity => Severity.Major;
     public override IssueKind Kind => IssueKind.CodeSmell;
-    public override string RemediationEffort => "Avoid the unsafe package; it defeats Go type safety.";
+    public override string RemediationEffort => "20min";
+    public override string FixAdvice => "Avoid the unsafe package; it defeats Go type safety.";
     public override string[] Languages => ["go"];
 
     public override void Execute(IRuleContext context)
@@ -340,7 +349,8 @@ public sealed class GoDebugPrintRule : PatternRuleBase
     public override string Name => "Debug output statements";
     public override Severity Severity => Severity.Minor;
     public override IssueKind Kind => IssueKind.CodeSmell;
-    public override string RemediationEffort => "Use a structured logger and remove leftover fmt print statements.";
+    public override string RemediationEffort => "10min";
+    public override string FixAdvice => "Use a structured logger and remove leftover fmt print statements.";
     public override string[] Languages => ["go"];
 
     public override void Execute(IRuleContext context)
@@ -357,7 +367,8 @@ public sealed class GoGotoRule : PatternRuleBase
     public override string Name => "Goto statements should not be used";
     public override Severity Severity => Severity.Minor;
     public override IssueKind Kind => IssueKind.CodeSmell;
-    public override string RemediationEffort => "Replace goto with structured control flow.";
+    public override string RemediationEffort => "10min";
+    public override string FixAdvice => "Replace goto with structured control flow.";
     public override string[] Languages => ["go"];
 
     public override void Execute(IRuleContext context)
@@ -376,7 +387,8 @@ public sealed class GoInfiniteForRule : PatternRuleBase
     public override string Name => "Infinite loop without exit condition";
     public override Severity Severity => Severity.Minor;
     public override IssueKind Kind => IssueKind.CodeSmell;
-    public override string RemediationEffort => "Ensure the loop has a guaranteed break/return to avoid hanging the process.";
+    public override string RemediationEffort => "10min";
+    public override string FixAdvice => "Ensure the loop has a guaranteed break/return to avoid hanging the process.";
     public override string[] Languages => ["go"];
 
     public override void Execute(IRuleContext context)
@@ -396,7 +408,8 @@ public sealed class GoSsrfRule : PatternRuleBase
     public override string Name => "Server-Side Request Forgery via HTTP client";
     public override Severity Severity => Severity.Major;
     public override IssueKind Kind => IssueKind.Vulnerability;
-    public override string RemediationEffort => "Validate and allow list destination URLs and prevent access to internal hosts.";
+    public override string RemediationEffort => "20min";
+    public override string FixAdvice => "Validate and allow list destination URLs and prevent access to internal hosts.";
     public override string[] Languages => ["go"];
 
     public override void Execute(IRuleContext context)
@@ -416,7 +429,8 @@ public sealed class GoPathTraversalRule : PatternRuleBase
     public override string Name => "Path traversal via user-controlled file path";
     public override Severity Severity => Severity.Major;
     public override IssueKind Kind => IssueKind.Vulnerability;
-    public override string RemediationEffort => "Validate and sanitize file paths against a base directory allow list.";
+    public override string RemediationEffort => "20min";
+    public override string FixAdvice => "Validate and sanitize file paths against a base directory allow list.";
     public override string[] Languages => ["go"];
 
     public override void Execute(IRuleContext context)
@@ -436,7 +450,8 @@ public sealed class GoTemplateInjectionRule : PatternRuleBase
     public override string Name => "HTML template injection via unescaped cast";
     public override Severity Severity => Severity.Major;
     public override IssueKind Kind => IssueKind.Vulnerability;
-    public override string RemediationEffort => "Avoid casting raw strings to template.HTML; escape untrusted data.";
+    public override string RemediationEffort => "20min";
+    public override string FixAdvice => "Avoid casting raw strings to template.HTML; escape untrusted data.";
     public override string[] Languages => ["go"];
 
     public override void Execute(IRuleContext context)
@@ -452,7 +467,8 @@ public sealed class GoNewZeroValueRule : PatternRuleBase
     public override string Name => "new(T) used instead of composite literal";
     public override Severity Severity => Severity.Minor;
     public override IssueKind Kind => IssueKind.CodeSmell;
-    public override string RemediationEffort => "Prefer &T{} over new(T) for clarity and consistency.";
+    public override string RemediationEffort => "10min";
+    public override string FixAdvice => "Prefer &T{} over new(T) for clarity and consistency.";
     public override string[] Languages => ["go"];
 
     public override void Execute(IRuleContext context)
@@ -472,7 +488,8 @@ public sealed class GoElseAfterReturnRule : PatternRuleBase
     public override string Name => "Unnecessary else after return";
     public override Severity Severity => Severity.Minor;
     public override IssueKind Kind => IssueKind.CodeSmell;
-    public override string RemediationEffort => "Remove the else block and return directly to reduce nesting.";
+    public override string RemediationEffort => "10min";
+    public override string FixAdvice => "Remove the else block and return directly to reduce nesting.";
     public override string[] Languages => ["go"];
 
     public override void Execute(IRuleContext context)

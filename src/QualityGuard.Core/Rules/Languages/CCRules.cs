@@ -58,7 +58,8 @@ public sealed class CcCommandExecutionRule : PatternRuleBase
     public override string Name => "Unsafe OS command execution";
     public override Severity Severity => Severity.Critical;
     public override IssueKind Kind => IssueKind.Vulnerability;
-    public override string RemediationEffort => "Do not build OS commands from external input; use a whitelist or escape arguments.";
+    public override string RemediationEffort => "30min";
+    public override string FixAdvice => "Do not build OS commands from external input; use a whitelist or escape arguments.";
     public override string[] Languages => ["c", "cpp"];
 
     public override void Execute(IRuleContext context)
@@ -79,7 +80,8 @@ public sealed class CcUnsafeStringFunctionRule : PatternRuleBase
     public override string Name => "Unsafe string functions";
     public override Severity Severity => Severity.Major;
     public override IssueKind Kind => IssueKind.Vulnerability;
-    public override string RemediationEffort => "Replace unbounded string functions with bounds-checked variants.";
+    public override string RemediationEffort => "20min";
+    public override string FixAdvice => "Replace unbounded string functions with bounds-checked variants.";
     public override string[] Languages => ["c", "cpp"];
 
     public override void Execute(IRuleContext context)
@@ -95,7 +97,8 @@ public sealed class CcGetsRule : PatternRuleBase
     public override string Name => "Use of gets";
     public override Severity Severity => Severity.Critical;
     public override IssueKind Kind => IssueKind.Vulnerability;
-    public override string RemediationEffort => "gets cannot bound the input buffer; use fgets instead.";
+    public override string RemediationEffort => "30min";
+    public override string FixAdvice => "gets cannot bound the input buffer; use fgets instead.";
     public override string[] Languages => ["c", "cpp"];
 
     public override void Execute(IRuleContext context)
@@ -111,7 +114,8 @@ public sealed class CcFormatStringRule : PatternRuleBase
     public override string Name => "Format string built from user input";
     public override Severity Severity => Severity.Critical;
     public override IssueKind Kind => IssueKind.Vulnerability;
-    public override string RemediationEffort => "Always pass a static format string; pass user input only as arguments.";
+    public override string RemediationEffort => "30min";
+    public override string FixAdvice => "Always pass a static format string; pass user input only as arguments.";
     public override string[] Languages => ["c", "cpp"];
 
     public override void Execute(IRuleContext context)
@@ -168,7 +172,8 @@ public sealed class CcHardcodedCredentialsRule : PatternRuleBase
     public override string Name => "Hardcoded credentials";
     public override Severity Severity => Severity.Critical;
     public override IssueKind Kind => IssueKind.Vulnerability;
-    public override string RemediationEffort => "Load credentials from a secure secret store or environment variable.";
+    public override string RemediationEffort => "30min";
+    public override string FixAdvice => "Load credentials from a secure secret store or environment variable.";
     public override string[] Languages => ["c", "cpp"];
 
     public override void Execute(IRuleContext context)
@@ -206,7 +211,8 @@ public sealed class CcWeakCryptoRule : PatternRuleBase
     public override string Name => "Use of weak cryptographic primitives";
     public override Severity Severity => Severity.Major;
     public override IssueKind Kind => IssueKind.Vulnerability;
-    public override string RemediationEffort => "Replace MD5/SHA-1/DES/RC4 and ECB mode with modern algorithms.";
+    public override string RemediationEffort => "20min";
+    public override string FixAdvice => "Replace MD5/SHA-1/DES/RC4 and ECB mode with modern algorithms.";
     public override string[] Languages => ["c", "cpp"];
 
     public override void Execute(IRuleContext context)
@@ -225,7 +231,8 @@ public sealed class CcInsecureRandomRule : PatternRuleBase
     public override string Name => "Use of non-cryptographic random generator";
     public override Severity Severity => Severity.Major;
     public override IssueKind Kind => IssueKind.Vulnerability;
-    public override string RemediationEffort => "Use a cryptographically secure random generator for sensitive values.";
+    public override string RemediationEffort => "20min";
+    public override string FixAdvice => "Use a cryptographically secure random generator for sensitive values.";
     public override string[] Languages => ["c", "cpp"];
 
     public override void Execute(IRuleContext context)
@@ -241,7 +248,8 @@ public sealed class CcInsecureTempRule : PatternRuleBase
     public override string Name => "Insecure temporary file creation";
     public override Severity Severity => Severity.Critical;
     public override IssueKind Kind => IssueKind.Vulnerability;
-    public override string RemediationEffort => "Use mkstemp or similar safe APIs instead of tmpnam/tempnam/mktemp.";
+    public override string RemediationEffort => "30min";
+    public override string FixAdvice => "Use mkstemp or similar safe APIs instead of tmpnam/tempnam/mktemp.";
     public override string[] Languages => ["c", "cpp"];
 
     public override void Execute(IRuleContext context)
@@ -257,7 +265,8 @@ public sealed class CcWorldWritableRule : PatternRuleBase
     public override string Name => "World-writable permissions";
     public override Severity Severity => Severity.Major;
     public override IssueKind Kind => IssueKind.Vulnerability;
-    public override string RemediationEffort => "Restrict permissions; world-writable files and directories expose data.";
+    public override string RemediationEffort => "20min";
+    public override string FixAdvice => "Restrict permissions; world-writable files and directories expose data.";
     public override string[] Languages => ["c", "cpp"];
 
     public override void Execute(IRuleContext context)
@@ -278,7 +287,8 @@ public sealed class CcFormatNumberRule : PatternRuleBase
     public override string Name => "Use of %n in format strings";
     public override Severity Severity => Severity.Major;
     public override IssueKind Kind => IssueKind.Vulnerability;
-    public override string RemediationEffort => "Remove %n from format strings; it writes to memory and is exploitable.";
+    public override string RemediationEffort => "20min";
+    public override string FixAdvice => "Remove %n from format strings; it writes to memory and is exploitable.";
     public override string[] Languages => ["c", "cpp"];
 
     public override void Execute(IRuleContext context)
@@ -294,7 +304,8 @@ public sealed class CcAssignmentConditionRule : PatternRuleBase
     public override string Name => "Assignment used as a condition";
     public override Severity Severity => Severity.Major;
     public override IssueKind Kind => IssueKind.Bug;
-    public override string RemediationEffort => "Use == to compare values in conditions instead of a single =.";
+    public override string RemediationEffort => "20min";
+    public override string FixAdvice => "Use == to compare values in conditions instead of a single =.";
     public override string[] Languages => ["c", "cpp"];
 
     public override void Execute(IRuleContext context)
@@ -337,7 +348,8 @@ public sealed class CcDebugOutputRule : PatternRuleBase
     public override string Name => "Debug output left in production code";
     public override Severity Severity => Severity.Minor;
     public override IssueKind Kind => IssueKind.CodeSmell;
-    public override string RemediationEffort => "Remove debug prints and console output before shipping.";
+    public override string RemediationEffort => "10min";
+    public override string FixAdvice => "Remove debug prints and console output before shipping.";
     public override string[] Languages => ["c", "cpp"];
 
     public override void Execute(IRuleContext context)
@@ -359,7 +371,8 @@ public sealed class CcGotoRule : PatternRuleBase
     public override string Name => "Goto statements";
     public override Severity Severity => Severity.Minor;
     public override IssueKind Kind => IssueKind.CodeSmell;
-    public override string RemediationEffort => "Refactor to structured control flow.";
+    public override string RemediationEffort => "10min";
+    public override string FixAdvice => "Refactor to structured control flow.";
     public override string[] Languages => ["c", "cpp"];
 
     public override void Execute(IRuleContext context)
@@ -375,7 +388,8 @@ public sealed class CcVoidMainRule : PatternRuleBase
     public override string Name => "main declared with void return type";
     public override Severity Severity => Severity.Minor;
     public override IssueKind Kind => IssueKind.CodeSmell;
-    public override string RemediationEffort => "Declare main with an int return type.";
+    public override string RemediationEffort => "10min";
+    public override string FixAdvice => "Declare main with an int return type.";
     public override string[] Languages => ["c", "cpp"];
 
     public override void Execute(IRuleContext context)
@@ -395,7 +409,8 @@ public sealed class CcUsingNamespaceRule : PatternRuleBase
     public override string Name => "Using-directives in headers";
     public override Severity Severity => Severity.Minor;
     public override IssueKind Kind => IssueKind.CodeSmell;
-    public override string RemediationEffort => "Avoid using namespace directives; pollutes the global scope.";
+    public override string RemediationEffort => "10min";
+    public override string FixAdvice => "Avoid using namespace directives; pollutes the global scope.";
     public override string[] Languages => ["cpp"];
 
     public override void Execute(IRuleContext context)
@@ -415,7 +430,8 @@ public sealed class CcStrlenLoopRule : PatternRuleBase
     public override string Name => "strlen recomputed in a loop condition";
     public override Severity Severity => Severity.Minor;
     public override IssueKind Kind => IssueKind.CodeSmell;
-    public override string RemediationEffort => "Cache the string length before the loop instead of calling strlen each iteration.";
+    public override string RemediationEffort => "10min";
+    public override string FixAdvice => "Cache the string length before the loop instead of calling strlen each iteration.";
     public override string[] Languages => ["c", "cpp"];
 
     public override void Execute(IRuleContext context)

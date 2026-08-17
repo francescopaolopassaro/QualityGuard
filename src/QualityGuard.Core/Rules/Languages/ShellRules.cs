@@ -34,7 +34,8 @@ public sealed class ShEvalRule : PatternRuleBase
     public override string Name => "Eval of dynamic shell code";
     public override Severity Severity => Severity.Critical;
     public override IssueKind Kind => IssueKind.Vulnerability;
-    public override string RemediationEffort => "Do not eval dynamic code; run the intended command directly.";
+    public override string RemediationEffort => "30min";
+    public override string FixAdvice => "Do not eval dynamic code; run the intended command directly.";
     public override string[] Languages => ["sh"];
 
     public override void Execute(IRuleContext context)
@@ -50,7 +51,8 @@ public sealed class ShCommandSubstitutionRule : PatternRuleBase
     public override string Name => "Command substitution with variable";
     public override Severity Severity => Severity.Critical;
     public override IssueKind Kind => IssueKind.Vulnerability;
-    public override string RemediationEffort => "Validate the variable before using it inside command substitution.";
+    public override string RemediationEffort => "30min";
+    public override string FixAdvice => "Validate the variable before using it inside command substitution.";
     public override string[] Languages => ["sh"];
 
     public override void Execute(IRuleContext context)
@@ -71,7 +73,8 @@ public sealed class ShRemoteScriptRule : PatternRuleBase
     public override string Name => "Remote script piped to a shell";
     public override Severity Severity => Severity.Critical;
     public override IssueKind Kind => IssueKind.Vulnerability;
-    public override string RemediationEffort => "Do not pipe downloaded scripts directly into a shell; verify the source first.";
+    public override string RemediationEffort => "30min";
+    public override string FixAdvice => "Do not pipe downloaded scripts directly into a shell; verify the source first.";
     public override string[] Languages => ["sh"];
 
     public override void Execute(IRuleContext context)
@@ -94,7 +97,8 @@ public sealed class ShWorldWritableRule : PatternRuleBase
     public override string Name => "World-writable permissions";
     public override Severity Severity => Severity.Major;
     public override IssueKind Kind => IssueKind.Vulnerability;
-    public override string RemediationEffort => "Restrict permissions; avoid chmod 777 and umask 000.";
+    public override string RemediationEffort => "20min";
+    public override string FixAdvice => "Restrict permissions; avoid chmod 777 and umask 000.";
     public override string[] Languages => ["sh"];
 
     public override void Execute(IRuleContext context)
@@ -125,7 +129,8 @@ public sealed class ShHardcodedCredentialsRule : PatternRuleBase
     public override string Name => "Hardcoded credentials";
     public override Severity Severity => Severity.Critical;
     public override IssueKind Kind => IssueKind.Vulnerability;
-    public override string RemediationEffort => "Read secrets from the environment or a secret store instead of source code.";
+    public override string RemediationEffort => "30min";
+    public override string FixAdvice => "Read secrets from the environment or a secret store instead of source code.";
     public override string[] Languages => ["sh"];
 
     public override void Execute(IRuleContext context)
@@ -154,7 +159,8 @@ public sealed class ShSourceVariableRule : PatternRuleBase
     public override string Name => "Sourcing a file from a variable path";
     public override Severity Severity => Severity.Major;
     public override IssueKind Kind => IssueKind.Vulnerability;
-    public override string RemediationEffort => "Do not source files whose path comes from an unvalidated variable.";
+    public override string RemediationEffort => "20min";
+    public override string FixAdvice => "Do not source files whose path comes from an unvalidated variable.";
     public override string[] Languages => ["sh"];
 
     public override void Execute(IRuleContext context)
@@ -179,7 +185,8 @@ public sealed class ShPathRelativeRule : PatternRuleBase
     public override string Name => "Relative path in PATH";
     public override Severity Severity => Severity.Major;
     public override IssueKind Kind => IssueKind.Vulnerability;
-    public override string RemediationEffort => "Remove the current directory or relative components from PATH.";
+    public override string RemediationEffort => "20min";
+    public override string FixAdvice => "Remove the current directory or relative components from PATH.";
     public override string[] Languages => ["sh"];
 
     public override void Execute(IRuleContext context)
@@ -201,7 +208,8 @@ public sealed class ShRmRecursiveRule : PatternRuleBase
     public override string Name => "Recursive force removal";
     public override Severity Severity => Severity.Major;
     public override IssueKind Kind => IssueKind.Bug;
-    public override string RemediationEffort => "Verify the target before a recursive force removal; guard against empty variables.";
+    public override string RemediationEffort => "20min";
+    public override string FixAdvice => "Verify the target before a recursive force removal; guard against empty variables.";
     public override string[] Languages => ["sh"];
 
     public override void Execute(IRuleContext context)
@@ -221,7 +229,8 @@ public sealed class ShMissingSetERule : PatternRuleBase
     public override string Name => "Script without set -euo pipefail";
     public override Severity Severity => Severity.Minor;
     public override IssueKind Kind => IssueKind.CodeSmell;
-    public override string RemediationEffort => "Add 'set -euo pipefail' to fail fast on errors and undefined variables.";
+    public override string RemediationEffort => "10min";
+    public override string FixAdvice => "Add 'set -euo pipefail' to fail fast on errors and undefined variables.";
     public override string[] Languages => ["sh"];
 
     public override void Execute(IRuleContext context)
@@ -245,7 +254,8 @@ public sealed class ShUselessCatRule : PatternRuleBase
     public override string Name => "Useless use of cat";
     public override Severity Severity => Severity.Minor;
     public override IssueKind Kind => IssueKind.CodeSmell;
-    public override string RemediationEffort => "Redirect the file into the command instead of piping cat output.";
+    public override string RemediationEffort => "10min";
+    public override string FixAdvice => "Redirect the file into the command instead of piping cat output.";
     public override string[] Languages => ["sh"];
 
     public override void Execute(IRuleContext context)
@@ -265,7 +275,8 @@ public sealed class ShDeprecatedGrepRule : PatternRuleBase
     public override string Name => "Use of deprecated egrep/fgrep";
     public override Severity Severity => Severity.Minor;
     public override IssueKind Kind => IssueKind.CodeSmell;
-    public override string RemediationEffort => "Use grep -E and grep -F instead of egrep and fgrep.";
+    public override string RemediationEffort => "10min";
+    public override string FixAdvice => "Use grep -E and grep -F instead of egrep and fgrep.";
     public override string[] Languages => ["sh"];
 
     public override void Execute(IRuleContext context)
@@ -285,7 +296,8 @@ public sealed class ShMktempRule : PatternRuleBase
     public override string Name => "mktemp output not bound to a variable";
     public override Severity Severity => Severity.Minor;
     public override IssueKind Kind => IssueKind.CodeSmell;
-    public override string RemediationEffort => "Assign mktemp output to a variable or use -t for safe temporary files.";
+    public override string RemediationEffort => "10min";
+    public override string FixAdvice => "Assign mktemp output to a variable or use -t for safe temporary files.";
     public override string[] Languages => ["sh"];
 
     public override void Execute(IRuleContext context)
@@ -307,7 +319,8 @@ public sealed class ShWeakIntegrityRule : PatternRuleBase
     public override string Name => "Weak hash for integrity check";
     public override Severity Severity => Severity.Minor;
     public override IssueKind Kind => IssueKind.CodeSmell;
-    public override string RemediationEffort => "Use sha256sum for integrity checks instead of MD5 or SHA-1.";
+    public override string RemediationEffort => "10min";
+    public override string FixAdvice => "Use sha256sum for integrity checks instead of MD5 or SHA-1.";
     public override string[] Languages => ["sh"];
 
     public override void Execute(IRuleContext context)

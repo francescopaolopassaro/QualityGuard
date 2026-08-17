@@ -22,9 +22,6 @@ public static class JavaRuleSet
         new JavaWeakTlsRule(),
         new JavaSensitiveLoggingRule(),
         new JavaLocaleIndependentCaseRule(),
-        new JavaSwitchDefaultRule(),
-        new JavaEmptyCatchRule(),
-        new JavaConsoleLoggingRule(),
         new JavaThreadControlRule(),
         new JavaDeprecatedDateRule(),
         new JavaSystemExitRule(),
@@ -156,7 +153,8 @@ public sealed class JavaInsecureRandomRule : PatternRuleBase
     public override string Name => "Use cryptographically strong random numbers";
     public override Severity Severity => Severity.Critical;
     public override IssueKind Kind => IssueKind.Vulnerability;
-    public override string RemediationEffort => "Replace java.util.Random and ThreadLocalRandom with java.security.SecureRandom.";
+    public override string RemediationEffort => "30min";
+    public override string FixAdvice => "Replace java.util.Random and ThreadLocalRandom with java.security.SecureRandom.";
     public override string[] Languages => ["java"];
 
     public override void Execute(IRuleContext context)
@@ -172,7 +170,8 @@ public sealed class JavaUnsafeCommandExecutionRule : PatternRuleBase
     public override string Name => "Make sure no OS command is executed with untrusted input";
     public override Severity Severity => Severity.Critical;
     public override IssueKind Kind => IssueKind.Vulnerability;
-    public override string RemediationEffort => "Do not concatenate user input into OS commands; use a fixed list of allowed commands and arguments.";
+    public override string RemediationEffort => "30min";
+    public override string FixAdvice => "Do not concatenate user input into OS commands; use a fixed list of allowed commands and arguments.";
     public override string[] Languages => ["java"];
 
     public override void Execute(IRuleContext context)
@@ -197,7 +196,8 @@ public sealed class JavaWeakCryptoRule : PatternRuleBase
     public override string Name => "Use of weak cryptographic algorithm";
     public override Severity Severity => Severity.Critical;
     public override IssueKind Kind => IssueKind.Vulnerability;
-    public override string RemediationEffort => "Use a strong, modern algorithm such as AES-GCM or SHA-256.";
+    public override string RemediationEffort => "30min";
+    public override string FixAdvice => "Use a strong, modern algorithm such as AES-GCM or SHA-256.";
     public override string[] Languages => ["java"];
 
     public override void Execute(IRuleContext context)
@@ -222,7 +222,8 @@ public sealed class JavaSqlInjectionRule : PatternRuleBase
     public override string Name => "Make sure using this dynamic SQL is safe";
     public override Severity Severity => Severity.Critical;
     public override IssueKind Kind => IssueKind.Vulnerability;
-    public override string RemediationEffort => "Use parameterized queries (PreparedStatement) instead of concatenating input into SQL.";
+    public override string RemediationEffort => "30min";
+    public override string FixAdvice => "Use parameterized queries (PreparedStatement) instead of concatenating input into SQL.";
     public override string[] Languages => ["java"];
 
     public override void Execute(IRuleContext context)
@@ -247,7 +248,8 @@ public sealed class JavaHardcodedCredentialsRule : PatternRuleBase
     public override string Name => "Password or other credentials should not be hardcoded";
     public override Severity Severity => Severity.Critical;
     public override IssueKind Kind => IssueKind.Vulnerability;
-    public override string RemediationEffort => "Store secrets in environment variables or a secure configuration store.";
+    public override string RemediationEffort => "30min";
+    public override string FixAdvice => "Store secrets in environment variables or a secure configuration store.";
     public override string[] Languages => ["java"];
 
     public override void Execute(IRuleContext context)
@@ -270,7 +272,8 @@ public sealed class JavaUnsafeDynamicCodeRule : PatternRuleBase
     public override string Name => "Make sure the dynamic code executed is safe";
     public override Severity Severity => Severity.Critical;
     public override IssueKind Kind => IssueKind.Vulnerability;
-    public override string RemediationEffort => "Avoid eval() and scripting engines; validate and restrict the executed code.";
+    public override string RemediationEffort => "30min";
+    public override string FixAdvice => "Avoid eval() and scripting engines; validate and restrict the executed code.";
     public override string[] Languages => ["java"];
 
     public override void Execute(IRuleContext context)
@@ -286,7 +289,8 @@ public sealed class JavaInsecureDeserializationRule : PatternRuleBase
     public override string Name => "Make sure deserializing this object is safe";
     public override Severity Severity => Severity.Critical;
     public override IssueKind Kind => IssueKind.Vulnerability;
-    public override string RemediationEffort => "Restrict the deserialized object types, prefer safe data formats, and use them only with trusted input.";
+    public override string RemediationEffort => "30min";
+    public override string FixAdvice => "Restrict the deserialized object types, prefer safe data formats, and use them only with trusted input.";
     public override string[] Languages => ["java"];
 
     public override void Execute(IRuleContext context)
@@ -302,7 +306,8 @@ public sealed class JavaHttpCleartextRule : PatternRuleBase
     public override string Name => "Using http:// URLs is insecure";
     public override Severity Severity => Severity.Major;
     public override IssueKind Kind => IssueKind.Vulnerability;
-    public override string RemediationEffort => "Use https:// to prevent eavesdropping and man-in-the-middle attacks.";
+    public override string RemediationEffort => "20min";
+    public override string FixAdvice => "Use https:// to prevent eavesdropping and man-in-the-middle attacks.";
     public override string[] Languages => ["java"];
 
     public override void Execute(IRuleContext context)
@@ -318,7 +323,8 @@ public sealed class JavaInsecureCookieRule : PatternRuleBase
     public override string Name => "Cookies should be created with the Secure and HttpOnly flags";
     public override Severity Severity => Severity.Major;
     public override IssueKind Kind => IssueKind.Vulnerability;
-    public override string RemediationEffort => "Set the cookie HttpOnly and Secure properties when it is created.";
+    public override string RemediationEffort => "20min";
+    public override string FixAdvice => "Set the cookie HttpOnly and Secure properties when it is created.";
     public override string[] Languages => ["java"];
 
     public override void Execute(IRuleContext context)
@@ -342,7 +348,8 @@ public sealed class JavaXmlExternalEntityRule : PatternRuleBase
     public override string Name => "XML parsers should not be vulnerable to XXE attacks";
     public override Severity Severity => Severity.Major;
     public override IssueKind Kind => IssueKind.SecurityHotspot;
-    public override string RemediationEffort => "Configure the factory to disable external entities (setFeature and setExpandEntityReferences).";
+    public override string RemediationEffort => "20min";
+    public override string FixAdvice => "Configure the factory to disable external entities (setFeature and setExpandEntityReferences).";
     public override string[] Languages => ["java"];
 
     public override void Execute(IRuleContext context)
@@ -359,7 +366,8 @@ public sealed class JavaWeakTlsRule : PatternRuleBase
     public override string Name => "Old TLS and SSL protocols are insecure";
     public override Severity Severity => Severity.Major;
     public override IssueKind Kind => IssueKind.Vulnerability;
-    public override string RemediationEffort => "Only use TLSv1.2 or TLSv1.3 for the transport layer.";
+    public override string RemediationEffort => "20min";
+    public override string FixAdvice => "Only use TLSv1.2 or TLSv1.3 for the transport layer.";
     public override string[] Languages => ["java"];
 
     public override void Execute(IRuleContext context)
@@ -388,7 +396,8 @@ public sealed class JavaSensitiveLoggingRule : PatternRuleBase
     public override string Name => "Sensitive data should not be logged";
     public override Severity Severity => Severity.Major;
     public override IssueKind Kind => IssueKind.Vulnerability;
-    public override string RemediationEffort => "Remove sensitive data from log lines; log references that do not expose the value.";
+    public override string RemediationEffort => "20min";
+    public override string FixAdvice => "Remove sensitive data from log lines; log references that do not expose the value.";
     public override string[] Languages => ["java"];
 
     public override void Execute(IRuleContext context)
@@ -420,7 +429,8 @@ public sealed class JavaLocaleIndependentCaseRule : PatternRuleBase
     public override string Name => "String case-shifting methods should be called with an explicit Locale";
     public override Severity Severity => Severity.Major;
     public override IssueKind Kind => IssueKind.Bug;
-    public override string RemediationEffort => "Call toLowerCase() or toUpperCase() with a Locale argument.";
+    public override string RemediationEffort => "20min";
+    public override string FixAdvice => "Call toLowerCase() or toUpperCase() with a Locale argument.";
     public override string[] Languages => ["java"];
 
     public override void Execute(IRuleContext context)
@@ -430,109 +440,14 @@ public sealed class JavaLocaleIndependentCaseRule : PatternRuleBase
     }
 }
 
-public sealed class JavaSwitchDefaultRule : PatternRuleBase
-{
-    public override string Key => "QG-JV-SML-0001";
-    public override string Name => "Switch statements should end with a default clause";
-    public override Severity Severity => Severity.Major;
-    public override IssueKind Kind => IssueKind.CodeSmell;
-    public override string RemediationEffort => "Add a default clause to cover the unhandled cases.";
-    public override string[] Languages => ["java"];
-
-    public override void Execute(IRuleContext context)
-    {
-        var tokens = context.Tokens;
-        for (var i = 0; i < tokens.Count; i++)
-        {
-            if (tokens[i].Text != "switch")
-                continue;
-            var open = LanguageRuleSupport.NextIndex(tokens, i + 1, "{");
-            if (open < 0)
-                continue;
-            var depth = 0;
-            var hasCase = false;
-            var hasDefault = false;
-            for (var j = open; j < tokens.Count; j++)
-            {
-                if (tokens[j].Text == "{")
-                    depth++;
-                else if (tokens[j].Text == "}")
-                {
-                    depth--;
-                    if (depth == 0)
-                        break;
-                }
-                if (tokens[j].Text == "case")
-                    hasCase = true;
-                if (tokens[j].Text == "default")
-                    hasDefault = true;
-            }
-            if (hasCase && !hasDefault)
-                context.Report("Add a default clause to this switch statement.", tokens[i].Line);
-        }
-    }
-}
-
-public sealed class JavaEmptyCatchRule : PatternRuleBase
-{
-    public override string Key => "QG-JV-SML-0002";
-    public override string Name => "Empty catch blocks should not be left";
-    public override Severity Severity => Severity.Major;
-    public override IssueKind Kind => IssueKind.CodeSmell;
-    public override string RemediationEffort => "Log the exception or rethrow it; never swallow it silently.";
-    public override string[] Languages => ["java"];
-
-    public override void Execute(IRuleContext context)
-    {
-        var tokens = context.Tokens;
-        for (var i = 0; i < tokens.Count; i++)
-        {
-            if (tokens[i].Text != "catch")
-                continue;
-            var open = LanguageRuleSupport.NextIndex(tokens, i + 1, "{");
-            if (open < 0)
-                continue;
-            var j = open + 1;
-            while (j < tokens.Count && tokens[j].Kind == TokenKind.Comment)
-                j++;
-            if (j < tokens.Count && tokens[j].Text == "}")
-                context.Report("Either log or rethrow this exception, or remove the empty catch block.", tokens[i].Line);
-        }
-    }
-}
-
-public sealed class JavaConsoleLoggingRule : PatternRuleBase
-{
-    public override string Key => "QG-JV-SML-0003";
-    public override string Name => "System.out calls and printStackTrace should not remain in production code";
-    public override Severity Severity => Severity.Minor;
-    public override IssueKind Kind => IssueKind.CodeSmell;
-    public override string RemediationEffort => "Replace console output with a logger such as Log4j or SLF4J.";
-    public override string[] Languages => ["java"];
-
-    public override void Execute(IRuleContext context)
-    {
-        var tokens = context.Tokens;
-        for (var i = 0; i + 4 < tokens.Count; i++)
-        {
-            if (!RuleMatchers.IsName(tokens[i], "System") || tokens[i + 1].Text != "."
-                || !RuleMatchers.IsName(tokens[i + 2], "out") || tokens[i + 3].Text != "."
-                || !RuleMatchers.Contains(tokens[i + 4].Text, ["println", "print", "printf"]))
-                continue;
-            context.Report("Replace this console output with a proper logger.", tokens[i].Line);
-        }
-        foreach (var token in RuleMatchers.Names(context.Tokens, ["printStackTrace"]))
-            context.Report("Replace this printStackTrace() call with a logger.", token.Line);
-    }
-}
-
 public sealed class JavaThreadControlRule : PatternRuleBase
 {
     public override string Key => "QG-JV-SML-0004";
     public override string Name => "Thread.stop/suspend/resume should not be used";
     public override Severity Severity => Severity.Major;
     public override IssueKind Kind => IssueKind.CodeSmell;
-    public override string RemediationEffort => "Use interruption and synchronization primitives to control threads.";
+    public override string RemediationEffort => "20min";
+    public override string FixAdvice => "Use interruption and synchronization primitives to control threads.";
     public override string[] Languages => ["java"];
 
     public override void Execute(IRuleContext context)
@@ -554,7 +469,8 @@ public sealed class JavaDeprecatedDateRule : PatternRuleBase
     public override string Name => "java.util.Date and Calendar are deprecated";
     public override Severity Severity => Severity.Minor;
     public override IssueKind Kind => IssueKind.CodeSmell;
-    public override string RemediationEffort => "Use the java.time API (Instant, LocalDate, LocalDateTime).";
+    public override string RemediationEffort => "10min";
+    public override string FixAdvice => "Use the java.time API (Instant, LocalDate, LocalDateTime).";
     public override string[] Languages => ["java"];
 
     public override void Execute(IRuleContext context)
@@ -580,7 +496,8 @@ public sealed class JavaSystemExitRule : PatternRuleBase
     public override string Name => "System.exit should not be called in application code";
     public override Severity Severity => Severity.Minor;
     public override IssueKind Kind => IssueKind.CodeSmell;
-    public override string RemediationEffort => "Return an error status instead of terminating the whole JVM.";
+    public override string RemediationEffort => "10min";
+    public override string FixAdvice => "Return an error status instead of terminating the whole JVM.";
     public override string[] Languages => ["java"];
 
     public override void Execute(IRuleContext context)
@@ -601,7 +518,8 @@ public sealed class JavaInfiniteLoopRule : PatternRuleBase
     public override string Name => "while(true) loops should provide a break condition";
     public override Severity Severity => Severity.Minor;
     public override IssueKind Kind => IssueKind.CodeSmell;
-    public override string RemediationEffort => "Use a boolean or counter condition that terminates the loop.";
+    public override string RemediationEffort => "10min";
+    public override string FixAdvice => "Use a boolean or counter condition that terminates the loop.";
     public override string[] Languages => ["java"];
 
     public override void Execute(IRuleContext context)
@@ -645,7 +563,8 @@ public sealed class JavaTypeNameConventionRule : PatternRuleBase
     public override string Name => "Type names should comply with a naming convention";
     public override Severity Severity => Severity.Minor;
     public override IssueKind Kind => IssueKind.CodeSmell;
-    public override string RemediationEffort => "Rename this type using UpperCamelCase.";
+    public override string RemediationEffort => "10min";
+    public override string FixAdvice => "Rename this type using UpperCamelCase.";
     public override string[] Languages => ["java"];
 
     public override void Execute(IRuleContext context)
@@ -704,7 +623,8 @@ public sealed class JavaServerSideRequestForgeryRule : PatternRuleBase
     public override string Name => "Server-side requests should not be made to user-controlled URLs";
     public override Severity Severity => Severity.Major;
     public override IssueKind Kind => IssueKind.Vulnerability;
-    public override string RemediationEffort => "Validate and whitelist destination URLs before opening connections.";
+    public override string RemediationEffort => "20min";
+    public override string FixAdvice => "Validate and whitelist destination URLs before opening connections.";
     public override string[] Languages => ["java"];
 
     public override void Execute(IRuleContext context)
@@ -736,7 +656,8 @@ public sealed class JavaPathTraversalRule : PatternRuleBase
     public override string Name => "File operations should not use user-controlled paths";
     public override Severity Severity => Severity.Major;
     public override IssueKind Kind => IssueKind.Vulnerability;
-    public override string RemediationEffort => "Validate and canonicalize file paths; never build them from raw user input.";
+    public override string RemediationEffort => "20min";
+    public override string FixAdvice => "Validate and canonicalize file paths; never build them from raw user input.";
     public override string[] Languages => ["java"];
 
     public override void Execute(IRuleContext context)
@@ -772,7 +693,8 @@ public sealed class JavaLdapInjectionRule : PatternRuleBase
     public override string Name => "Make sure using this LDAP filter is safe";
     public override Severity Severity => Severity.Major;
     public override IssueKind Kind => IssueKind.Vulnerability;
-    public override string RemediationEffort => "Sanitize and parameterize LDAP filters; never concatenate user input into them.";
+    public override string RemediationEffort => "20min";
+    public override string FixAdvice => "Sanitize and parameterize LDAP filters; never concatenate user input into them.";
     public override string[] Languages => ["java"];
 
     public override void Execute(IRuleContext context)
@@ -798,7 +720,8 @@ public sealed class JavaHeaderInjectionRule : PatternRuleBase
     public override string Name => "Response headers should not be set with user-controlled values";
     public override Severity Severity => Severity.Major;
     public override IssueKind Kind => IssueKind.Vulnerability;
-    public override string RemediationEffort => "Validate header values and never embed user input directly into response headers.";
+    public override string RemediationEffort => "20min";
+    public override string FixAdvice => "Validate header values and never embed user input directly into response headers.";
     public override string[] Languages => ["java"];
 
     public override void Execute(IRuleContext context)
@@ -833,7 +756,8 @@ public sealed class JavaCorsWildcardRule : PatternRuleBase
     public override string Name => "Wildcard origins should not be allowed in CORS headers";
     public override Severity Severity => Severity.Major;
     public override IssueKind Kind => IssueKind.Vulnerability;
-    public override string RemediationEffort => "Restrict Access-Control-Allow-Origin to a fixed set of trusted origins.";
+    public override string RemediationEffort => "20min";
+    public override string FixAdvice => "Restrict Access-Control-Allow-Origin to a fixed set of trusted origins.";
     public override string[] Languages => ["java"];
 
     public override void Execute(IRuleContext context)
@@ -856,7 +780,8 @@ public sealed class JavaSystemGcRule : PatternRuleBase
     public override string Name => "System.gc() calls should not be used";
     public override Severity Severity => Severity.Minor;
     public override IssueKind Kind => IssueKind.CodeSmell;
-    public override string RemediationEffort => "Let the JVM manage garbage collection; avoid calling System.gc().";
+    public override string RemediationEffort => "10min";
+    public override string FixAdvice => "Let the JVM manage garbage collection; avoid calling System.gc().";
     public override string[] Languages => ["java"];
 
     public override void Execute(IRuleContext context)
@@ -877,7 +802,8 @@ public sealed class JavaDirectThreadRunRule : PatternRuleBase
     public override string Name => "Thread.run() should not be called directly";
     public override Severity Severity => Severity.Major;
     public override IssueKind Kind => IssueKind.Bug;
-    public override string RemediationEffort => "Call start() instead of run() to execute the thread asynchronously.";
+    public override string RemediationEffort => "20min";
+    public override string FixAdvice => "Call start() instead of run() to execute the thread asynchronously.";
     public override string[] Languages => ["java"];
 
     public override void Execute(IRuleContext context)

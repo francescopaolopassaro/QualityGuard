@@ -28,7 +28,8 @@ public sealed class KubernetesMissingSecurityContextRule : PatternRuleBase
     public override string Name => "Container has no securityContext";
     public override Severity Severity => Severity.Major;
     public override IssueKind Kind => IssueKind.Vulnerability;
-    public override string RemediationEffort => "Define a securityContext that runs the container as an unprivileged non-root user.";
+    public override string RemediationEffort => "20min";
+    public override string FixAdvice => "Define a securityContext that runs the container as an unprivileged non-root user.";
     public override string[] Languages => ["k8"];
 
     public override void Execute(IRuleContext context)
@@ -54,7 +55,8 @@ public sealed class KubernetesAddCapabilitiesRule : PatternRuleBase
     public override string Name => "Container is granted powerful capabilities";
     public override Severity Severity => Severity.Major;
     public override IssueKind Kind => IssueKind.Vulnerability;
-    public override string RemediationEffort => "Drop all capabilities and add only the minimal required set.";
+    public override string RemediationEffort => "20min";
+    public override string FixAdvice => "Drop all capabilities and add only the minimal required set.";
     public override string[] Languages => ["k8"];
 
     public override void Execute(IRuleContext context)
@@ -77,7 +79,8 @@ public sealed class KubernetesSecretsInEnvRule : PatternRuleBase
     public override string Name => "Secret exposed as an environment value";
     public override Severity Severity => Severity.Critical;
     public override IssueKind Kind => IssueKind.Vulnerability;
-    public override string RemediationEffort => "Mount secrets as files or use secretKeyRef references instead of literal values.";
+    public override string RemediationEffort => "30min";
+    public override string FixAdvice => "Mount secrets as files or use secretKeyRef references instead of literal values.";
     public override string[] Languages => ["k8"];
 
     private static readonly string[] SecretNames = ["PASSWORD", "SECRET", "TOKEN", "API_KEY"];
@@ -105,7 +108,8 @@ public sealed class KubernetesAutomountTokenRule : PatternRuleBase
     public override string Name => "Service account token is automatically mounted";
     public override Severity Severity => Severity.Major;
     public override IssueKind Kind => IssueKind.Vulnerability;
-    public override string RemediationEffort => "Set automountServiceAccountToken to false when the pod does not need the API.";
+    public override string RemediationEffort => "20min";
+    public override string FixAdvice => "Set automountServiceAccountToken to false when the pod does not need the API.";
     public override string[] Languages => ["k8"];
 
     public override void Execute(IRuleContext context)
@@ -126,7 +130,8 @@ public sealed class KubernetesMissingProbesRule : PatternRuleBase
     public override string Name => "Container has no liveness or readiness probe";
     public override Severity Severity => Severity.Minor;
     public override IssueKind Kind => IssueKind.CodeSmell;
-    public override string RemediationEffort => "Define liveness and readiness probes for the container.";
+    public override string RemediationEffort => "10min";
+    public override string FixAdvice => "Define liveness and readiness probes for the container.";
     public override string[] Languages => ["k8"];
 
     public override void Execute(IRuleContext context)
@@ -153,7 +158,8 @@ public sealed class KubernetesMissingAppLabelRule : PatternRuleBase
     public override string Name => "Workload has no app label";
     public override Severity Severity => Severity.Minor;
     public override IssueKind Kind => IssueKind.CodeSmell;
-    public override string RemediationEffort => "Add an app label that identifies the workload for selectors and matching labels.";
+    public override string RemediationEffort => "10min";
+    public override string FixAdvice => "Add an app label that identifies the workload for selectors and matching labels.";
     public override string[] Languages => ["k8"];
 
     public override void Execute(IRuleContext context)

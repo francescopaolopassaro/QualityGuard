@@ -45,7 +45,8 @@ public sealed class VbShellExecutionRule : PatternRuleBase
     public override string Name => "Execution of externally-influenced OS commands";
     public override Severity Severity => Severity.Critical;
     public override IssueKind Kind => IssueKind.Vulnerability;
-    public override string RemediationEffort => "Validate and allow list the command and its arguments.";
+    public override string RemediationEffort => "30min";
+    public override string FixAdvice => "Validate and allow list the command and its arguments.";
     public override string[] Languages => ["vb"];
 
     public override void Execute(IRuleContext context)
@@ -67,7 +68,8 @@ public sealed class VbSqlInjectionRule : PatternRuleBase
     public override string Name => "SQL injection via concatenated queries";
     public override Severity Severity => Severity.Critical;
     public override IssueKind Kind => IssueKind.Vulnerability;
-    public override string RemediationEffort => "Use parameterized queries to prevent SQL injection.";
+    public override string RemediationEffort => "30min";
+    public override string FixAdvice => "Use parameterized queries to prevent SQL injection.";
     public override string[] Languages => ["vb"];
 
     public override void Execute(IRuleContext context)
@@ -92,7 +94,8 @@ public sealed class VbHardcodedCredentialsRule : PatternRuleBase
     public override string Name => "Hardcoded credentials";
     public override Severity Severity => Severity.Critical;
     public override IssueKind Kind => IssueKind.Vulnerability;
-    public override string RemediationEffort => "Load credentials from a secure secret store.";
+    public override string RemediationEffort => "30min";
+    public override string FixAdvice => "Load credentials from a secure secret store.";
     public override string[] Languages => ["vb"];
 
     public override void Execute(IRuleContext context)
@@ -123,7 +126,8 @@ public sealed class VbDeclareFunctionRule : PatternRuleBase
     public override string Name => "Unsafe P/Invoke declarations";
     public override Severity Severity => Severity.Major;
     public override IssueKind Kind => IssueKind.Vulnerability;
-    public override string RemediationEffort => "Use safe marshaling with explicit CharSet and CallingConvention.";
+    public override string RemediationEffort => "20min";
+    public override string FixAdvice => "Use safe marshaling with explicit CharSet and CallingConvention.";
     public override string[] Languages => ["vb"];
 
     public override void Execute(IRuleContext context)
@@ -144,7 +148,8 @@ public sealed class VbWeakCryptoRule : PatternRuleBase
     public override string Name => "Use of weak cryptographic primitives";
     public override Severity Severity => Severity.Major;
     public override IssueKind Kind => IssueKind.Vulnerability;
-    public override string RemediationEffort => "Replace DES/TripleDES/RC2/MD5/SHA1 with modern algorithms.";
+    public override string RemediationEffort => "20min";
+    public override string FixAdvice => "Replace DES/TripleDES/RC2/MD5/SHA1 with modern algorithms.";
     public override string[] Languages => ["vb"];
 
     public override void Execute(IRuleContext context)
@@ -160,7 +165,8 @@ public sealed class VbMsgBoxRule : PatternRuleBase
     public override string Name => "MsgBox and Debug output left in production code";
     public override Severity Severity => Severity.Minor;
     public override IssueKind Kind => IssueKind.CodeSmell;
-    public override string RemediationEffort => "Remove MsgBox and Debug.Print before shipping.";
+    public override string RemediationEffort => "10min";
+    public override string FixAdvice => "Remove MsgBox and Debug.Print before shipping.";
     public override string[] Languages => ["vb"];
 
     public override void Execute(IRuleContext context)
@@ -182,7 +188,8 @@ public sealed class VbOnErrorRule : PatternRuleBase
     public override string Name => "On Error Resume Next swallows errors";
     public override Severity Severity => Severity.Major;
     public override IssueKind Kind => IssueKind.CodeSmell;
-    public override string RemediationEffort => "Use structured exception handling (Try/Catch) instead of On Error.";
+    public override string RemediationEffort => "20min";
+    public override string FixAdvice => "Use structured exception handling (Try/Catch) instead of On Error.";
     public override string[] Languages => ["vb"];
 
     public override void Execute(IRuleContext context)
@@ -203,7 +210,8 @@ public sealed class VbEmptyCatchRule : PatternRuleBase
     public override string Name => "Empty catch block";
     public override Severity Severity => Severity.Minor;
     public override IssueKind Kind => IssueKind.CodeSmell;
-    public override string RemediationEffort => "Handle or log the exception instead of swallowing it.";
+    public override string RemediationEffort => "10min";
+    public override string FixAdvice => "Handle or log the exception instead of swallowing it.";
     public override string[] Languages => ["vb"];
 
     public override void Execute(IRuleContext context)
@@ -229,7 +237,8 @@ public sealed class VbInfiniteDoLoopRule : PatternRuleBase
     public override string Name => "Do loop without an exit condition";
     public override Severity Severity => Severity.Minor;
     public override IssueKind Kind => IssueKind.Bug;
-    public override string RemediationEffort => "Add a While/Until condition or an Exit Do statement.";
+    public override string RemediationEffort => "10min";
+    public override string FixAdvice => "Add a While/Until condition or an Exit Do statement.";
     public override string[] Languages => ["vb"];
 
     public override void Execute(IRuleContext context)
@@ -263,7 +272,8 @@ public sealed class VbOptionStrictRule : PatternRuleBase
     public override string Name => "Option Strict and Option Explicit should be enabled";
     public override Severity Severity => Severity.Minor;
     public override IssueKind Kind => IssueKind.CodeSmell;
-    public override string RemediationEffort => "Add Option Strict On and Option Explicit On at the top of the file.";
+    public override string RemediationEffort => "10min";
+    public override string FixAdvice => "Add Option Strict On and Option Explicit On at the top of the file.";
     public override string[] Languages => ["vb"];
 
     public override void Execute(IRuleContext context)

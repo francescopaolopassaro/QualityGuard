@@ -89,7 +89,8 @@ public sealed class HtmlIframeSandboxRule : PatternRuleBase
     public override string Name => "Iframe without sandbox";
     public override Severity Severity => Severity.Major;
     public override IssueKind Kind => IssueKind.Vulnerability;
-    public override string RemediationEffort => "Add a sandbox attribute (with allow-same-origin only when needed) to the iframe.";
+    public override string RemediationEffort => "20min";
+    public override string FixAdvice => "Add a sandbox attribute (with allow-same-origin only when needed) to the iframe.";
     public override string[] Languages => ["html"];
 
     public override void Execute(IRuleContext context)
@@ -110,7 +111,8 @@ public sealed class HtmlCleartextSourceRule : PatternRuleBase
     public override string Name => "Resource loaded over cleartext HTTP";
     public override Severity Severity => Severity.Major;
     public override IssueKind Kind => IssueKind.Vulnerability;
-    public override string RemediationEffort => "Load scripts and links over HTTPS.";
+    public override string RemediationEffort => "20min";
+    public override string FixAdvice => "Load scripts and links over HTTPS.";
     public override string[] Languages => ["html"];
 
     public override void Execute(IRuleContext context)
@@ -132,7 +134,8 @@ public sealed class HtmlMissingMetaCharsetRule : PatternRuleBase
     public override string Name => "Declare the document character encoding";
     public override Severity Severity => Severity.Minor;
     public override IssueKind Kind => IssueKind.CodeSmell;
-    public override string RemediationEffort => "Add a <meta charset=\"utf-8\"> element within the document head.";
+    public override string RemediationEffort => "10min";
+    public override string FixAdvice => "Add a <meta charset=\"utf-8\"> element within the document head.";
     public override string[] Languages => ["html"];
 
     public override void Execute(IRuleContext context)
@@ -150,7 +153,8 @@ public sealed class XmlExternalEntityRule : PatternRuleBase
     public override string Name => "External entity declarations";
     public override Severity Severity => Severity.Critical;
     public override IssueKind Kind => IssueKind.Vulnerability;
-    public override string RemediationEffort => "Disable external entity resolution or reject DOCTYPE declarations.";
+    public override string RemediationEffort => "30min";
+    public override string FixAdvice => "Disable external entity resolution or reject DOCTYPE declarations.";
     public override string[] Languages => ["xml"];
 
     public override void Execute(IRuleContext context)
@@ -173,7 +177,8 @@ public sealed class XmlExternalDtdRule : PatternRuleBase
     public override string Name => "External DTD loaded over HTTP";
     public override Severity Severity => Severity.Major;
     public override IssueKind Kind => IssueKind.Vulnerability;
-    public override string RemediationEffort => "Avoid loading external DTDs; embed a local schema.";
+    public override string RemediationEffort => "20min";
+    public override string FixAdvice => "Avoid loading external DTDs; embed a local schema.";
     public override string[] Languages => ["xml"];
 
     public override void Execute(IRuleContext context)
@@ -194,7 +199,8 @@ public sealed class XmlMissingEncodingRule : PatternRuleBase
     public override string Name => "XML declaration without encoding";
     public override Severity Severity => Severity.Minor;
     public override IssueKind Kind => IssueKind.CodeSmell;
-    public override string RemediationEffort => "Declare encoding=\"utf-8\" in the XML declaration.";
+    public override string RemediationEffort => "10min";
+    public override string FixAdvice => "Declare encoding=\"utf-8\" in the XML declaration.";
     public override string[] Languages => ["xml"];
 
     public override void Execute(IRuleContext context)
@@ -212,7 +218,8 @@ public sealed class XmlEntityExpansionRule : PatternRuleBase
     public override string Name => "Excessive entity declarations";
     public override Severity Severity => Severity.Major;
     public override IssueKind Kind => IssueKind.Vulnerability;
-    public override string RemediationEffort => "Do not allow nested entity expansion that can exhaust memory (billion laughs).";
+    public override string RemediationEffort => "20min";
+    public override string FixAdvice => "Do not allow nested entity expansion that can exhaust memory (billion laughs).";
     public override string[] Languages => ["xml"];
 
     public override void Execute(IRuleContext context)

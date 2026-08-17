@@ -37,7 +37,8 @@ public sealed class CfWideOpenIngressRule : PatternRuleBase
     public override string Name => "Security group ingress open to the world";
     public override Severity Severity => Severity.Critical;
     public override IssueKind Kind => IssueKind.Vulnerability;
-    public override string RemediationEffort => "Restrict CidrIp to specific trusted ranges.";
+    public override string RemediationEffort => "30min";
+    public override string FixAdvice => "Restrict CidrIp to specific trusted ranges.";
     public override string[] Languages => ["cf"];
 
     public override void Execute(IRuleContext context)
@@ -57,7 +58,8 @@ public sealed class CfOpenSshRdpRule : PatternRuleBase
     public override string Name => "SSH or RDP port open to the whole internet";
     public override Severity Severity => Severity.Critical;
     public override IssueKind Kind => IssueKind.Vulnerability;
-    public override string RemediationEffort => "Restrict the source IP range instead of opening management ports to 0.0.0.0/0.";
+    public override string RemediationEffort => "30min";
+    public override string FixAdvice => "Restrict the source IP range instead of opening management ports to 0.0.0.0/0.";
     public override string[] Languages => ["cf"];
 
     public override void Execute(IRuleContext context)
@@ -80,7 +82,8 @@ public sealed class CfPublicS3AclRule : PatternRuleBase
     public override string Name => "S3 bucket uses a public ACL";
     public override Severity Severity => Severity.Critical;
     public override IssueKind Kind => IssueKind.Vulnerability;
-    public override string RemediationEffort => "Use private ACLs or restrict access through bucket policies.";
+    public override string RemediationEffort => "30min";
+    public override string FixAdvice => "Use private ACLs or restrict access through bucket policies.";
     public override string[] Languages => ["cf"];
 
     public override void Execute(IRuleContext context)
@@ -101,7 +104,8 @@ public sealed class CfS3WithoutEncryptionRule : PatternRuleBase
     public override string Name => "S3 bucket does not enforce encryption";
     public override Severity Severity => Severity.Major;
     public override IssueKind Kind => IssueKind.Vulnerability;
-    public override string RemediationEffort => "Configure BucketEncryption with a server-side encryption algorithm.";
+    public override string RemediationEffort => "20min";
+    public override string FixAdvice => "Configure BucketEncryption with a server-side encryption algorithm.";
     public override string[] Languages => ["cf"];
 
     public override void Execute(IRuleContext context)
@@ -128,7 +132,8 @@ public sealed class CfPublicDatabaseRule : PatternRuleBase
     public override string Name => "Database is publicly accessible";
     public override Severity Severity => Severity.Critical;
     public override IssueKind Kind => IssueKind.Vulnerability;
-    public override string RemediationEffort => "Set PubliclyAccessible to false and keep the database in a private network.";
+    public override string RemediationEffort => "30min";
+    public override string FixAdvice => "Set PubliclyAccessible to false and keep the database in a private network.";
     public override string[] Languages => ["cf"];
 
     public override void Execute(IRuleContext context)
@@ -149,7 +154,8 @@ public sealed class CfUnencryptedDatabaseRule : PatternRuleBase
     public override string Name => "RDS database does not enforce encryption";
     public override Severity Severity => Severity.Critical;
     public override IssueKind Kind => IssueKind.Vulnerability;
-    public override string RemediationEffort => "Set StorageEncrypted to true for the database instance.";
+    public override string RemediationEffort => "30min";
+    public override string FixAdvice => "Set StorageEncrypted to true for the database instance.";
     public override string[] Languages => ["cf"];
 
     public override void Execute(IRuleContext context)
@@ -176,7 +182,8 @@ public sealed class CfIamWildcardRule : PatternRuleBase
     public override string Name => "IAM policy allows wildcard actions or resources";
     public override Severity Severity => Severity.Major;
     public override IssueKind Kind => IssueKind.Vulnerability;
-    public override string RemediationEffort => "Scope IAM actions and resources to the minimum required set.";
+    public override string RemediationEffort => "20min";
+    public override string FixAdvice => "Scope IAM actions and resources to the minimum required set.";
     public override string[] Languages => ["cf"];
 
     public override void Execute(IRuleContext context)
@@ -198,7 +205,8 @@ public sealed class CfHardcodedSecretRule : PatternRuleBase
     public override string Name => "Credential hardcoded in the template";
     public override Severity Severity => Severity.Critical;
     public override IssueKind Kind => IssueKind.Vulnerability;
-    public override string RemediationEffort => "Use a parameter, a secret reference such as {{resolve:secretsmanager:...}}, or !Ref/!GetAtt instead of a literal.";
+    public override string RemediationEffort => "30min";
+    public override string FixAdvice => "Use a parameter, a secret reference such as {{resolve:secretsmanager:...}}, or !Ref/!GetAtt instead of a literal.";
     public override string[] Languages => ["cf"];
 
     public override void Execute(IRuleContext context)
@@ -230,7 +238,8 @@ public sealed class CfUserDataPipeRule : PatternRuleBase
     public override string Name => "UserData pipes remote script to the shell";
     public override Severity Severity => Severity.Major;
     public override IssueKind Kind => IssueKind.Vulnerability;
-    public override string RemediationEffort => "Fetch and verify the script before execution, and avoid chmod 777 on it.";
+    public override string RemediationEffort => "20min";
+    public override string FixAdvice => "Fetch and verify the script before execution, and avoid chmod 777 on it.";
     public override string[] Languages => ["cf"];
 
     public override void Execute(IRuleContext context)
@@ -254,7 +263,8 @@ public sealed class CfUnencryptedEbsRule : PatternRuleBase
     public override string Name => "EBS volume does not enforce encryption";
     public override Severity Severity => Severity.Major;
     public override IssueKind Kind => IssueKind.Vulnerability;
-    public override string RemediationEffort => "Set Encrypted to true on the volume.";
+    public override string RemediationEffort => "20min";
+    public override string FixAdvice => "Set Encrypted to true on the volume.";
     public override string[] Languages => ["cf"];
 
     public override void Execute(IRuleContext context)
@@ -281,7 +291,8 @@ public sealed class CfAllowAllViewerRule : PatternRuleBase
     public override string Name => "CloudFront distribution allows insecure HTTP";
     public override Severity Severity => Severity.Major;
     public override IssueKind Kind => IssueKind.Vulnerability;
-    public override string RemediationEffort => "Set ViewerProtocolPolicy to redirect-to-https or https-only.";
+    public override string RemediationEffort => "20min";
+    public override string FixAdvice => "Set ViewerProtocolPolicy to redirect-to-https or https-only.";
     public override string[] Languages => ["cf"];
 
     public override void Execute(IRuleContext context)
@@ -302,7 +313,8 @@ public sealed class CfS3WithoutVersioningRule : PatternRuleBase
     public override string Name => "S3 bucket has versioning disabled";
     public override Severity Severity => Severity.Minor;
     public override IssueKind Kind => IssueKind.CodeSmell;
-    public override string RemediationEffort => "Enable VersioningConfiguration to keep object history.";
+    public override string RemediationEffort => "10min";
+    public override string FixAdvice => "Enable VersioningConfiguration to keep object history.";
     public override string[] Languages => ["cf"];
 
     public override void Execute(IRuleContext context)

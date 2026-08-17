@@ -100,7 +100,8 @@ public sealed class PhpEvalRule : PatternRuleBase
     public override string Name => "Arbitrary code execution via eval";
     public override Severity Severity => Severity.Critical;
     public override IssueKind Kind => IssueKind.Vulnerability;
-    public override string RemediationEffort => "Do not use eval(); parse and validate input instead.";
+    public override string RemediationEffort => "30min";
+    public override string FixAdvice => "Do not use eval(); parse and validate input instead.";
     public override string[] Languages => ["php"];
 
     public override void Execute(IRuleContext context)
@@ -116,7 +117,8 @@ public sealed class PhpDynamicCodeRule : PatternRuleBase
     public override string Name => "Arbitrary code execution via assert and string-based callbacks";
     public override Severity Severity => Severity.Critical;
     public override IssueKind Kind => IssueKind.Vulnerability;
-    public override string RemediationEffort => "Avoid assert and callback-based code generation; validate input strictly.";
+    public override string RemediationEffort => "30min";
+    public override string FixAdvice => "Avoid assert and callback-based code generation; validate input strictly.";
     public override string[] Languages => ["php"];
 
     public override void Execute(IRuleContext context)
@@ -138,7 +140,8 @@ public sealed class PhpSystemCallsRule : PatternRuleBase
     public override string Name => "Execution of OS commands";
     public override Severity Severity => Severity.Critical;
     public override IssueKind Kind => IssueKind.Vulnerability;
-    public override string RemediationEffort => "Replace system calls with safe APIs and validate all input.";
+    public override string RemediationEffort => "30min";
+    public override string FixAdvice => "Replace system calls with safe APIs and validate all input.";
     public override string[] Languages => ["php"];
     private static readonly string[] Calls = ["exec", "system", "shell_exec", "passthru", "proc_open", "popen"];
 
@@ -165,7 +168,8 @@ public sealed class PhpSqlInjectionRule : PatternRuleBase
     public override string Name => "SQL injection via concatenated queries";
     public override Severity Severity => Severity.Critical;
     public override IssueKind Kind => IssueKind.Vulnerability;
-    public override string RemediationEffort => "Use prepared statements with bound parameters.";
+    public override string RemediationEffort => "30min";
+    public override string FixAdvice => "Use prepared statements with bound parameters.";
     public override string[] Languages => ["php"];
 
     public override void Execute(IRuleContext context)
@@ -191,7 +195,8 @@ public sealed class PhpHardcodedCredentialsRule : PatternRuleBase
     public override string Name => "Hardcoded credentials";
     public override Severity Severity => Severity.Critical;
     public override IssueKind Kind => IssueKind.Vulnerability;
-    public override string RemediationEffort => "Load credentials from a secure secret store.";
+    public override string RemediationEffort => "30min";
+    public override string FixAdvice => "Load credentials from a secure secret store.";
     public override string[] Languages => ["php"];
 
     public override void Execute(IRuleContext context)
@@ -221,7 +226,8 @@ public sealed class PhpXssRule : PatternRuleBase
     public override string Name => "Reflected XSS without output escaping";
     public override Severity Severity => Severity.Major;
     public override IssueKind Kind => IssueKind.Vulnerability;
-    public override string RemediationEffort => "Escape request data before writing it to output.";
+    public override string RemediationEffort => "20min";
+    public override string FixAdvice => "Escape request data before writing it to output.";
     public override string[] Languages => ["php"];
 
     public override void Execute(IRuleContext context)
@@ -244,7 +250,8 @@ public sealed class PhpDynamicIncludeRule : PatternRuleBase
     public override string Name => "Dynamic file inclusion";
     public override Severity Severity => Severity.Major;
     public override IssueKind Kind => IssueKind.Vulnerability;
-    public override string RemediationEffort => "Resolve file paths used with include/require to a safe allow list.";
+    public override string RemediationEffort => "20min";
+    public override string FixAdvice => "Resolve file paths used with include/require to a safe allow list.";
     public override string[] Languages => ["php"];
     private static readonly string[] Forms = ["include", "include_once", "require", "require_once"];
 
@@ -265,7 +272,8 @@ public sealed class PhpCleartextHttpRule : PatternRuleBase
     public override string Name => "Cleartext HTTP";
     public override Severity Severity => Severity.Major;
     public override IssueKind Kind => IssueKind.Vulnerability;
-    public override string RemediationEffort => "Use HTTPS instead of cleartext HTTP.";
+    public override string RemediationEffort => "20min";
+    public override string FixAdvice => "Use HTTPS instead of cleartext HTTP.";
     public override string[] Languages => ["php"];
 
     public override void Execute(IRuleContext context)
@@ -281,7 +289,8 @@ public sealed class PhpWeakCryptoRule : PatternRuleBase
     public override string Name => "Use of weak cryptographic primitives";
     public override Severity Severity => Severity.Major;
     public override IssueKind Kind => IssueKind.Vulnerability;
-    public override string RemediationEffort => "Replace MD5/SHA1 and legacy ciphers with modern algorithms (AES-256-GCM, sha2).";
+    public override string RemediationEffort => "20min";
+    public override string FixAdvice => "Replace MD5/SHA1 and legacy ciphers with modern algorithms (AES-256-GCM, sha2).";
     public override string[] Languages => ["php"];
 
     public override void Execute(IRuleContext context)
@@ -301,7 +310,8 @@ public sealed class PhpUnsafeDeserializationRule : PatternRuleBase
     public override string Name => "Unsafe deserialization";
     public override Severity Severity => Severity.Critical;
     public override IssueKind Kind => IssueKind.Vulnerability;
-    public override string RemediationEffort => "Avoid unserialize() on untrusted data; use JSON with schema validation.";
+    public override string RemediationEffort => "30min";
+    public override string FixAdvice => "Avoid unserialize() on untrusted data; use JSON with schema validation.";
     public override string[] Languages => ["php"];
 
     public override void Execute(IRuleContext context)
@@ -317,7 +327,8 @@ public sealed class PhpOpenRedirectRule : PatternRuleBase
     public override string Name => "Open redirect via Location header";
     public override Severity Severity => Severity.Major;
     public override IssueKind Kind => IssueKind.Vulnerability;
-    public override string RemediationEffort => "Validate redirect targets against an allow list.";
+    public override string RemediationEffort => "20min";
+    public override string FixAdvice => "Validate redirect targets against an allow list.";
     public override string[] Languages => ["php"];
 
     public override void Execute(IRuleContext context)
@@ -340,7 +351,8 @@ public sealed class PhpUnrestrictedUploadRule : PatternRuleBase
     public override string Name => "Unrestricted file upload";
     public override Severity Severity => Severity.Major;
     public override IssueKind Kind => IssueKind.Vulnerability;
-    public override string RemediationEffort => "Validate uploaded file type, size and content before storing.";
+    public override string RemediationEffort => "20min";
+    public override string FixAdvice => "Validate uploaded file type, size and content before storing.";
     public override string[] Languages => ["php"];
 
     public override void Execute(IRuleContext context)
@@ -356,7 +368,8 @@ public sealed class PhpInsecureCookieRule : PatternRuleBase
     public override string Name => "Insecure cookie configuration";
     public override Severity Severity => Severity.Major;
     public override IssueKind Kind => IssueKind.Vulnerability;
-    public override string RemediationEffort => "Set the Secure and HttpOnly flags on cookies.";
+    public override string RemediationEffort => "20min";
+    public override string FixAdvice => "Set the Secure and HttpOnly flags on cookies.";
     public override string[] Languages => ["php"];
 
     public override void Execute(IRuleContext context)
@@ -377,7 +390,8 @@ public sealed class PhpSsrfRule : PatternRuleBase
     public override string Name => "Server-Side Request Forgery via remote resource";
     public override Severity Severity => Severity.Major;
     public override IssueKind Kind => IssueKind.Vulnerability;
-    public override string RemediationEffort => "Validate and allow list URLs passed to remote resource access.";
+    public override string RemediationEffort => "20min";
+    public override string FixAdvice => "Validate and allow list URLs passed to remote resource access.";
     public override string[] Languages => ["php"];
 
     public override void Execute(IRuleContext context)
@@ -396,7 +410,8 @@ public sealed class PhpExtractSuperglobalRule : PatternRuleBase
     public override string Name => "Variable injection via extract";
     public override Severity Severity => Severity.Major;
     public override IssueKind Kind => IssueKind.Vulnerability;
-    public override string RemediationEffort => "Do not extract request data into local variables.";
+    public override string RemediationEffort => "20min";
+    public override string FixAdvice => "Do not extract request data into local variables.";
     public override string[] Languages => ["php"];
 
     public override void Execute(IRuleContext context)
@@ -415,7 +430,8 @@ public sealed class PhpDebugOutputRule : PatternRuleBase
     public override string Name => "Debug output left in production code";
     public override Severity Severity => Severity.Major;
     public override IssueKind Kind => IssueKind.CodeSmell;
-    public override string RemediationEffort => "Remove var_dump and print_r calls before shipping.";
+    public override string RemediationEffort => "20min";
+    public override string FixAdvice => "Remove var_dump and print_r calls before shipping.";
     public override string[] Languages => ["php"];
 
     public override void Execute(IRuleContext context)
@@ -431,7 +447,8 @@ public sealed class PhpErrorSuppressionRule : PatternRuleBase
     public override string Name => "Error suppression operator";
     public override Severity Severity => Severity.Minor;
     public override IssueKind Kind => IssueKind.CodeSmell;
-    public override string RemediationEffort => "Handle errors explicitly instead of suppressing them.";
+    public override string RemediationEffort => "10min";
+    public override string FixAdvice => "Handle errors explicitly instead of suppressing them.";
     public override string[] Languages => ["php"];
 
     public override void Execute(IRuleContext context)
@@ -452,7 +469,8 @@ public sealed class PhpGotoRule : PatternRuleBase
     public override string Name => "Goto statements";
     public override Severity Severity => Severity.Minor;
     public override IssueKind Kind => IssueKind.CodeSmell;
-    public override string RemediationEffort => "Refactor to structured control flow.";
+    public override string RemediationEffort => "10min";
+    public override string FixAdvice => "Refactor to structured control flow.";
     public override string[] Languages => ["php"];
 
     public override void Execute(IRuleContext context)
@@ -468,7 +486,8 @@ public sealed class PhpEmptyCatchRule : PatternRuleBase
     public override string Name => "Empty catch block";
     public override Severity Severity => Severity.Major;
     public override IssueKind Kind => IssueKind.CodeSmell;
-    public override string RemediationEffort => "Handle or log the exception instead of swallowing it.";
+    public override string RemediationEffort => "20min";
+    public override string FixAdvice => "Handle or log the exception instead of swallowing it.";
     public override string[] Languages => ["php"];
 
     public override void Execute(IRuleContext context)
@@ -488,7 +507,8 @@ public sealed class PhpDeprecatedMysqlFunctionsRule : PatternRuleBase
     public override string Name => "Deprecated mysql_* functions";
     public override Severity Severity => Severity.Major;
     public override IssueKind Kind => IssueKind.CodeSmell;
-    public override string RemediationEffort => "Migrate to mysqli or PDO.";
+    public override string RemediationEffort => "20min";
+    public override string FixAdvice => "Migrate to mysqli or PDO.";
     public override string[] Languages => ["php"];
 
     public override void Execute(IRuleContext context)
@@ -505,7 +525,8 @@ public sealed class PhpInfiniteLoopRule : PatternRuleBase
     public override string Name => "Unconditional infinite loop";
     public override Severity Severity => Severity.Minor;
     public override IssueKind Kind => IssueKind.CodeSmell;
-    public override string RemediationEffort => "Introduce an explicit exit condition.";
+    public override string RemediationEffort => "10min";
+    public override string FixAdvice => "Introduce an explicit exit condition.";
     public override string[] Languages => ["php"];
 
     public override void Execute(IRuleContext context)
@@ -526,7 +547,8 @@ public sealed class PhpDeprecatedMcryptRule : PatternRuleBase
     public override string Name => "Deprecated mcrypt_* functions";
     public override Severity Severity => Severity.Minor;
     public override IssueKind Kind => IssueKind.CodeSmell;
-    public override string RemediationEffort => "Use OpenSSL or sodium instead of mcrypt.";
+    public override string RemediationEffort => "10min";
+    public override string FixAdvice => "Use OpenSSL or sodium instead of mcrypt.";
     public override string[] Languages => ["php"];
 
     public override void Execute(IRuleContext context)
@@ -543,7 +565,8 @@ public sealed class PhpSsrfClientRule : PatternRuleBase
     public override string Name => "Server-Side Request Forgery via HTTP clients";
     public override Severity Severity => Severity.Major;
     public override IssueKind Kind => IssueKind.Vulnerability;
-    public override string RemediationEffort => "Validate and allow list URLs passed to HTTP clients such as cURL.";
+    public override string RemediationEffort => "20min";
+    public override string FixAdvice => "Validate and allow list URLs passed to HTTP clients such as cURL.";
     public override string[] Languages => ["php"];
 
     public override void Execute(IRuleContext context)
@@ -568,7 +591,8 @@ public sealed class PhpPathTraversalRule : PatternRuleBase
     public override string Name => "Path traversal via user-controlled file path";
     public override Severity Severity => Severity.Major;
     public override IssueKind Kind => IssueKind.Vulnerability;
-    public override string RemediationEffort => "Validate file paths against a base directory allow list.";
+    public override string RemediationEffort => "20min";
+    public override string FixAdvice => "Validate file paths against a base directory allow list.";
     public override string[] Languages => ["php"];
 
     public override void Execute(IRuleContext context)
@@ -592,7 +616,8 @@ public sealed class PhpHeaderInjectionRule : PatternRuleBase
     public override string Name => "HTTP header injection";
     public override Severity Severity => Severity.Major;
     public override IssueKind Kind => IssueKind.Vulnerability;
-    public override string RemediationEffort => "Strip CR/LF characters and validate header values before sending.";
+    public override string RemediationEffort => "20min";
+    public override string FixAdvice => "Strip CR/LF characters and validate header values before sending.";
     public override string[] Languages => ["php"];
 
     public override void Execute(IRuleContext context)
@@ -613,7 +638,8 @@ public sealed class PhpLdapInjectionRule : PatternRuleBase
     public override string Name => "LDAP injection via dynamic filter";
     public override Severity Severity => Severity.Major;
     public override IssueKind Kind => IssueKind.Vulnerability;
-    public override string RemediationEffort => "Escape LDAP special characters and use allow lists in filters.";
+    public override string RemediationEffort => "20min";
+    public override string FixAdvice => "Escape LDAP special characters and use allow lists in filters.";
     public override string[] Languages => ["php"];
 
     public override void Execute(IRuleContext context)
@@ -637,7 +663,8 @@ public sealed class PhpGlobalsUsageRule : PatternRuleBase
     public override string Name => "Direct use of the $GLOBALS superglobal";
     public override Severity Severity => Severity.Minor;
     public override IssueKind Kind => IssueKind.CodeSmell;
-    public override string RemediationEffort => "Avoid the $GLOBALS superglobal; pass dependencies explicitly.";
+    public override string RemediationEffort => "10min";
+    public override string FixAdvice => "Avoid the $GLOBALS superglobal; pass dependencies explicitly.";
     public override string[] Languages => ["php"];
 
     public override void Execute(IRuleContext context)
@@ -657,7 +684,8 @@ public sealed class PhpLooseComparisonRule : PatternRuleBase
     public override string Name => "Loose comparison operator";
     public override Severity Severity => Severity.Major;
     public override IssueKind Kind => IssueKind.Bug;
-    public override string RemediationEffort => "Use strict comparison === to avoid type coercion bugs.";
+    public override string RemediationEffort => "20min";
+    public override string FixAdvice => "Use strict comparison === to avoid type coercion bugs.";
     public override string[] Languages => ["php"];
 
     public override void Execute(IRuleContext context)

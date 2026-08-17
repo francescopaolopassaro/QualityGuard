@@ -35,7 +35,8 @@ public sealed class ArmHardcodedSecretRule : PatternRuleBase
     public override string Name => "Credential hardcoded in the template";
     public override Severity Severity => Severity.Critical;
     public override IssueKind Kind => IssueKind.Vulnerability;
-    public override string RemediationEffort => "Use parameters(), variables(), or listKeys() instead of literal credentials.";
+    public override string RemediationEffort => "30min";
+    public override string FixAdvice => "Use parameters(), variables(), or listKeys() instead of literal credentials.";
     public override string[] Languages => ["ar"];
 
     public override void Execute(IRuleContext context)
@@ -66,7 +67,8 @@ public sealed class ArmHttpsDisabledRule : PatternRuleBase
     public override string Name => "Storage account allows plain HTTP traffic";
     public override Severity Severity => Severity.Critical;
     public override IssueKind Kind => IssueKind.Vulnerability;
-    public override string RemediationEffort => "Set supportsHttpsTrafficOnly to true.";
+    public override string RemediationEffort => "30min";
+    public override string FixAdvice => "Set supportsHttpsTrafficOnly to true.";
     public override string[] Languages => ["ar"];
 
     public override void Execute(IRuleContext context)
@@ -87,7 +89,8 @@ public sealed class ArmWeakTlsVersionRule : PatternRuleBase
     public override string Name => "Storage account allows a weak minimum TLS version";
     public override Severity Severity => Severity.Major;
     public override IssueKind Kind => IssueKind.Vulnerability;
-    public override string RemediationEffort => "Set minimumTlsVersion to TLS1_2 or higher.";
+    public override string RemediationEffort => "20min";
+    public override string FixAdvice => "Set minimumTlsVersion to TLS1_2 or higher.";
     public override string[] Languages => ["ar"];
 
     public override void Execute(IRuleContext context)
@@ -109,7 +112,8 @@ public sealed class ArmSqlAdminPasswordRule : PatternRuleBase
     public override string Name => "SQL administrator password is hardcoded";
     public override Severity Severity => Severity.Critical;
     public override IssueKind Kind => IssueKind.Vulnerability;
-    public override string RemediationEffort => "Reference administratorLoginPassword through parameters() or key vault instead of a literal.";
+    public override string RemediationEffort => "30min";
+    public override string FixAdvice => "Reference administratorLoginPassword through parameters() or key vault instead of a literal.";
     public override string[] Languages => ["ar"];
 
     public override void Execute(IRuleContext context)
@@ -133,7 +137,8 @@ public sealed class ArmOpenSecurityRulesRule : PatternRuleBase
     public override string Name => "Network security rule allows any source address";
     public override Severity Severity => Severity.Critical;
     public override IssueKind Kind => IssueKind.Vulnerability;
-    public override string RemediationEffort => "Restrict sourceAddressPrefix to specific trusted ranges instead of * or 0.0.0.0/0.";
+    public override string RemediationEffort => "30min";
+    public override string FixAdvice => "Restrict sourceAddressPrefix to specific trusted ranges instead of * or 0.0.0.0/0.";
     public override string[] Languages => ["ar"];
 
     public override void Execute(IRuleContext context)
@@ -156,7 +161,8 @@ public sealed class ArmAppServiceHttpOnlyRule : PatternRuleBase
     public override string Name => "App Service allows plain HTTP traffic";
     public override Severity Severity => Severity.Major;
     public override IssueKind Kind => IssueKind.Vulnerability;
-    public override string RemediationEffort => "Set httpsOnly to true.";
+    public override string RemediationEffort => "20min";
+    public override string FixAdvice => "Set httpsOnly to true.";
     public override string[] Languages => ["ar"];
 
     public override void Execute(IRuleContext context)
@@ -177,7 +183,8 @@ public sealed class ArmFlexibleServerPublicNetworkRule : PatternRuleBase
     public override string Name => "Flexible server is publicly reachable";
     public override Severity Severity => Severity.Major;
     public override IssueKind Kind => IssueKind.Vulnerability;
-    public override string RemediationEffort => "Set publicNetworkAccess to Disabled and keep the server in a private network.";
+    public override string RemediationEffort => "20min";
+    public override string FixAdvice => "Set publicNetworkAccess to Disabled and keep the server in a private network.";
     public override string[] Languages => ["ar"];
 
     public override void Execute(IRuleContext context)
@@ -198,7 +205,8 @@ public sealed class ArmMissingContentVersionRule : PatternRuleBase
     public override string Name => "Template is missing contentVersion";
     public override Severity Severity => Severity.Minor;
     public override IssueKind Kind => IssueKind.CodeSmell;
-    public override string RemediationEffort => "Declare a contentVersion for the template.";
+    public override string RemediationEffort => "10min";
+    public override string FixAdvice => "Declare a contentVersion for the template.";
     public override string[] Languages => ["ar"];
 
     public override void Execute(IRuleContext context)
@@ -215,7 +223,8 @@ public sealed class ArmMissingSchemaRule : PatternRuleBase
     public override string Name => "Template is missing $schema";
     public override Severity Severity => Severity.Minor;
     public override IssueKind Kind => IssueKind.CodeSmell;
-    public override string RemediationEffort => "Declare the $schema of the template.";
+    public override string RemediationEffort => "10min";
+    public override string FixAdvice => "Declare the $schema of the template.";
     public override string[] Languages => ["ar"];
 
     public override void Execute(IRuleContext context)

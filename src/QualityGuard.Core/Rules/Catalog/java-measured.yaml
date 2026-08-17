@@ -1,0 +1,166 @@
+# Descriptions for the Java rules in Rules/Languages/JavaMeasuredRules.cs. These were chosen by
+# measurement: tools/compare_expectations.py named the checks whose expected lines we covered least
+# on an annotated reference corpus, and this file closes the top of that list.
+
+- key: QG-JV-BUG-0198
+  name: A control character in a literal should be written as an escape
+  languages: [java]
+  category: BUG
+  severity: major
+  effort: 10min
+  tags: [suspicious]
+  summary: A string literal contains a character that renders as nothing.
+  why: |
+    A reader cannot tell it is there, a diff cannot show it changing, and a comparison against the
+    same text typed by hand fails for no visible reason. Zero-width spaces travel invisibly through a
+    copy from a document or a web page.
+  fix: |
+    Write the character as an escape, or remove it.
+
+- key: QG-JV-BUG-0199
+  name: Text conversion should state its charset
+  languages: [java]
+  category: BUG
+  severity: major
+  effort: 15min
+  tags: [portability]
+  summary: A reader, writer or byte conversion relies on the platform default charset.
+  why: |
+    The default differs between the machine that wrote the file and the one that reads it, and
+    between a developer's laptop and the server. The same code then produces different bytes, and the
+    failure appears only after deployment.
+  fix: |
+    Pass the charset — StandardCharsets.UTF_8 in almost every case.
+
+- key: QG-JV-BUG-0200
+  name: A mathematical call should not have a fixed answer
+  languages: [java]
+  category: BUG
+  severity: major
+  effort: 10min
+  tags: [suspicious]
+  summary: Math is called with a literal, or with the same argument twice.
+  why: |
+    The call computes nothing: its answer is decided before the program runs. Either the wrong
+    variable was passed, or the expression can be written as its result.
+  fix: |
+    Pass the value that was meant, or replace the call with the constant.
+
+- key: QG-JV-BUG-0201
+  name: A volatile field is not made atomic by being volatile
+  languages: [java]
+  category: BUG
+  severity: critical
+  effort: 30min
+  tags: [concurrency]
+  summary: A volatile field is incremented or compound-assigned.
+  why: |
+    Volatile makes every read see the latest value and nothing more. A statement that reads, computes
+    and writes is three steps, and two threads running it at once lose one of the updates — rarely,
+    and never in the test that was written for it.
+  fix: |
+    Use an atomic type, or guard the update with a lock.
+
+- key: QG-JV-SEC-0069
+  name: A cryptographic key should be long enough
+  languages: [java]
+  category: SEC
+  severity: critical
+  effort: 30min
+  tags: [cryptography]
+  summary: An RSA or DSA key is initialised below 2048 bits.
+  why: |
+    Keys in that range are factored today with rented hardware, so whatever they protect is protected
+    only until someone decides it is worth the cost.
+  fix: |
+    Use at least 2048 bits for RSA and DSA, or an elliptic curve of 256.
+
+- key: QG-JV-SML-0452
+  name: A standard charset should be named by its constant
+  languages: [java]
+  category: SML
+  severity: minor
+  effort: 5min
+  tags: [readability]
+  summary: Charset.forName is given the name of a standard charset.
+  why: |
+    A typo in the string becomes an UnsupportedCharsetException at run time. The constant is checked
+    by the compiler and needs no exception handling around it.
+  fix: |
+    Use StandardCharsets.UTF_8 and its neighbours.
+
+- key: QG-JV-SML-0453
+  name: A log message should be built only when it is written
+  languages: [java]
+  category: SML
+  severity: major
+  effort: 10min
+  tags: [performance]
+  summary: A logging call is given a concatenated string.
+  why: |
+    The message is assembled before the logger decides whether to write it, so the work happens even
+    when the level is switched off — which for a debug line is most of the time in production.
+  fix: |
+    Pass the parts as arguments and let the logger join them if it needs to.
+
+- key: QG-JV-SML-0454
+  name: An array should be copied by the library
+  languages: [java]
+  category: SML
+  severity: major
+  effort: 10min
+  tags: [performance, readability]
+  summary: A loop copies one array into another element by element.
+  why: |
+    System.arraycopy does the same work in one call, with the bounds checked once instead of on every
+    iteration — and it says what is happening, which the loop does not.
+  fix: |
+    Use System.arraycopy or Arrays.copyOf.
+
+- key: QG-JV-SML-0455
+  name: The clock should be read through the type that represents it
+  languages: [java]
+  category: SML
+  severity: minor
+  effort: 5min
+  tags: [readability]
+  summary: An instant is built from System.currentTimeMillis.
+  why: |
+    Reading the clock as a number and converting it back says in two steps what Instant.now() says in
+    one, and the two steps can disagree about the unit.
+  fix: |
+    Use Instant.now, and inject a Clock where the time has to be controlled.
+
+- key: QG-JV-SML-0456
+  name: An executable should be found on the path
+  languages: [java]
+  category: SML
+  severity: major
+  effort: 20min
+  tags: [portability]
+  summary: A command is launched by its absolute path.
+  why: |
+    The code runs only on a machine laid out exactly like this one, and it runs whatever sits at that
+    path — which is the first place anyone with write access will look.
+  fix: |
+    Use the command name and let the system path resolve it.
+
+- key: QG-JV-BUG-0202
+  name: A format string should match the arguments it is given
+  languages: [java]
+  category: BUG
+  severity: critical
+  effort: 10min
+  tags: [suspicious, formatting]
+  summary: A format call is given the wrong number of values, an unknown conversion, or placeholders it does not read.
+  why: |
+    Too few values and the call throws the first time it runs; too many and the extra ones are printed
+    nowhere, which usually means a specifier was left out. Placeholders written for a different
+    formatter are printed as they stand, so the message ships with braces in it.
+  fix: |
+    Line the specifiers up with the arguments, and let the format string hold every value the message
+    needs instead of concatenating them into it.
+  bad: |
+    String.format("%d items in %s", count);
+  good: |
+    String.format("%d items in %s", count, basket);

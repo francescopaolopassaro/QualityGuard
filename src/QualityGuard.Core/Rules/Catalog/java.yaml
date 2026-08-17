@@ -82,7 +82,10 @@
     Reference the class directly, or map a small set of accepted identifiers to the classes you support
     and reject anything else.
   detect:
-    - invocation: [forName, loadClass]
+    # the receiver matters: Charset.forName is an ordinary lookup, Class.forName is not
+    - invocation: [forName]
+      receiver: [Class]
+    - invocation: [loadClass]
     - invocation: [newInstance]
       receiver: [Class]
 

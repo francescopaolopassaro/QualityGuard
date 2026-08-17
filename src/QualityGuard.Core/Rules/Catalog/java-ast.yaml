@@ -91,6 +91,8 @@
 
 - key: QG-JV-BUG-0185
   name: A public static field should be final
+  status: superseded
+  superseded_by: QG-ALL-SML-0038
   languages: [java]
   category: BUG
   severity: major
