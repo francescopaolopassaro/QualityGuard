@@ -971,8 +971,82 @@ public sealed class CSharpParser
         return node;
     }
 
+    /// <summary>
+    /// A Kotlin lambda: an optional parameter list ending in an arrow, then the statements. The
+    /// implicit parameter has no declaration at all, which is why the list may be missing.
+    /// </summary>
+    private SyntaxNode ParseKotlinLambda()
+    {
+        var start = Mark();
+        var lambda = Node(NodeKind.Lambda, start, string.Empty);
+        Expect("{");
+
+        // the parameters run up to the arrow, when there is one on the same nesting level
+        var arrow = -1;
+        var depth = 0;
+        for (var i = _index; i < _tokens.Count && i < _index + 40; i++)
+        {
+            var text = _tokens[i].Text;
+            if (text is "{" or "(" or "[")
+                depth++;
+            else if (text is "}" or ")" or "]")
+            {
+                if (depth == 0)
+                    break;
+                depth--;
+            }
+            else if (text == "->" && depth == 0)
+            {
+                arrow = i;
+                break;
+            }
+        }
+
+        if (arrow >= 0)
+        {
+            var parameters = new SyntaxNode(NodeKind.ParameterList, "", TextRange.Of([_tokens[_index]]));
+            while (_index < arrow)
+            {
+                if (IsName)
+                {
+                    var parameterStart = Mark();
+                    var name = Take().Text;
+                    var parameter = Node(NodeKind.Parameter, parameterStart, name);
+                    if (Accept(":"))
+                        parameter.Add(ParseType());
+                    parameters.Add(parameter);
+                    continue;
+                }
+                _index++;
+            }
+            _index = arrow + 1;
+            lambda.Add(parameters);
+        }
+
+        var body = new SyntaxNode(NodeKind.Block, "", lambda.Range);
+        while (!AtEnd && !Is("}"))
+        {
+            var before = _index;
+            var statement = ParseStatement();
+            if (statement != null)
+                body.Add(statement);
+            if (_index == before)
+                _index++;
+        }
+        var closing = Current;
+        Accept("}");
+        if (closing != null)
+            body.Range = body.Range with { EndLine = closing.Line, EndColumn = closing.Column };
+        lambda.Add(body);
+
+        lambda.Tokens = SliceFrom(start);
+        lambda.Range = TextRange.Of(lambda.Tokens);
+        return lambda;
+    }
+
     /// <summary>A val or var, with its optional type, initialiser and accessors.</summary>
-    private SyntaxNode ParseKotlinProperty(int start, List<SyntaxNode> attributes, List<string> modifiers)
+    private SyntaxNode ParseKotlinProperty(int start, List<SyntaxNode> attributes, List<string> modifiers,
+        bool asField = false)
     {
         Take();
         if (Is("<"))
@@ -1002,7 +1076,10 @@ public sealed class CSharpParser
             names.Add(first);
         }
 
-        var node = Node(NodeKind.VariableDeclaration, start, names.FirstOrDefault() ?? string.Empty);
+        // a property of a type is a field: that is what it is, and it keeps the rules about
+        // members from reading it as a local variable nobody uses
+        var node = Node(asField ? NodeKind.FieldDeclaration : NodeKind.VariableDeclaration, start,
+            names.FirstOrDefault() ?? string.Empty);
         AddDecorations(node, attributes, modifiers);
         if (Accept(":"))
             node.Add(ParseType());
@@ -1063,7 +1140,7 @@ public sealed class CSharpParser
         if (Is("fun"))
             return ParseKotlinFunction(start, attributes, modifiers);
         if (Is("val") || Is("var"))
-            return ParseKotlinProperty(start, attributes, modifiers);
+            return ParseKotlinProperty(start, attributes, modifiers, asField: true);
 
         if (Is("init") && PeekText() == "{")
         {
@@ -2986,7 +3063,7 @@ public sealed class CSharpParser
             }
 
             // PHP reaches a static member with ::, which is the same access for a rule
-            if (Is(".") || Is("?.") || Is("->") || (IsPhp && Is("::")))
+            if (Is(".") || Is("?.") || (Is("->") && !IsKotlin) || (IsPhp && Is("::")))
             {
                 _index++;
                 var privateMember = IsJs && Accept("#");
@@ -3061,6 +3138,31 @@ public sealed class CSharpParser
             if (Is("{") && node.Kind is NodeKind.ObjectCreation)
             {
                 node.Add(ParseInitializer());
+                continue;
+            }
+
+            // Kotlin writes the last argument outside the parentheses when it is a lambda, and
+            // 'items.filter { it > 0 }' is how most of the language is written. Read as a block it
+            // detached the body from the call, which left every rule about the call blind.
+            if (IsKotlin && Is("{")
+                && node.Kind is NodeKind.Invocation or NodeKind.Identifier or NodeKind.MemberSelect)
+            {
+                var lambda = ParseKotlinLambda();
+                if (node.Kind == NodeKind.Invocation)
+                {
+                    (node.FirstChild(NodeKind.ArgumentList) ?? node).Add(lambda);
+                    continue;
+                }
+
+                var call = new SyntaxNode(NodeKind.Invocation, SyntaxQuery.DottedName(node),
+                    node.Range, node.Tokens);
+                call.Add(node);
+                var arguments = new SyntaxNode(NodeKind.ArgumentList, "", lambda.Range, lambda.Tokens);
+                arguments.Add(lambda);
+                call.Add(arguments);
+                call.Range = new TextRange(node.Range.StartLine, node.Range.StartColumn,
+                    lambda.Range.EndLine, lambda.Range.EndColumn);
+                node = call;
                 continue;
             }
 

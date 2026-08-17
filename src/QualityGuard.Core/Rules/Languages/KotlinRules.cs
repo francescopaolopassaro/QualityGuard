@@ -28,7 +28,6 @@ public static class KotlinRuleSet
         new KotlinSystemExitRule(),
         new KotlinThreadControlRule(),
         new KotlinTypeNameConventionRule(),
-        new KotlinDuplicatedLiteralsRule(),
         new KotlinServerSideRequestForgeryRule(),
         new KotlinQueryInjectionRule(),
         new KotlinHeaderInjectionRule(),
@@ -51,7 +50,6 @@ public static class KotlinRuleSet
         new KotlinWebViewPasswordSaveRule(),
         new KotlinStringBuilderInLoopRule(),
         new KotlinExplicitNullCheckRule(),
-        new KotlinWhenWithoutElseRule(),
         new KotlinCompanionMutableStateRule(),
         new KotlinDataClassEqualsRule(),
         new KotlinLongFunctionRule(),
@@ -572,29 +570,6 @@ public sealed class KotlinTypeNameConventionRule : PatternRuleBase
             var name = tokens[i + 1];
             if (RuleMatchers.IsIdentifier(name) && char.IsLower(name.Text[0]))
                 context.Report("Rename this type to follow the UpperCamelCase convention.", name.Line);
-        }
-    }
-}
-
-public sealed class KotlinDuplicatedLiteralsRule : PatternRuleBase
-{
-    public override string Key => "QG-KT-CNV-0002";
-    public override string Name => "String literals should not be duplicated";
-    public override Severity Severity => Severity.Minor;
-    public override IssueKind Kind => IssueKind.CodeSmell;
-    public override string RemediationEffort => "10min";
-    public override string FixAdvice => "Define a named constant for this repeated literal.";
-    public override string[] Languages => ["kt"];
-
-    public override void Execute(IRuleContext context)
-    {
-        var groups = context.Tokens.Where(t => RuleMatchers.IsString(t) && t.Text.Length >= 6)
-            .GroupBy(t => t.Text)
-            .Where(g => g.Count() > 1);
-        foreach (var group in groups)
-        {
-            var first = group.OrderBy(t => t.Line).First();
-            context.Report($"Define a constant instead of duplicating this literal {group.Count()} times.", first.Line);
         }
     }
 }
@@ -1333,44 +1308,6 @@ public sealed class KotlinExplicitNullCheckRule : PatternRuleBase
     }
 }
 
-public sealed class KotlinWhenWithoutElseRule : PatternRuleBase
-{
-    public override string Key => "QG-KT-SML-0011";
-    public override string Name => "when expressions should have an else branch";
-    public override Severity Severity => Severity.Minor;
-    public override IssueKind Kind => IssueKind.CodeSmell;
-    public override string RemediationEffort => "10min";
-    public override string FixAdvice => "Add an else branch to make the when exhaustive.";
-    public override string[] Languages => ["kt"];
-
-    public override void Execute(IRuleContext context)
-    {
-        var tokens = context.Tokens;
-        for (var i = 0; i < tokens.Count; i++)
-        {
-            if (tokens[i].Text != "when")
-                continue;
-            var open = LanguageRuleSupport.NextIndex(tokens, i + 1, "{");
-            if (open < 0)
-                continue;
-            var close = KotlinRuleSupport.FindMatchingBrace(tokens, open);
-            if (close < 0)
-                continue;
-            var hasElse = false;
-            for (var j = open + 1; j < close; j++)
-            {
-                if (tokens[j].Text == "else")
-                {
-                    hasElse = true;
-                    break;
-                }
-            }
-            if (!hasElse)
-                context.Report("Add an else branch to this when expression.", tokens[i].Line);
-        }
-    }
-}
-
 public sealed class KotlinCompanionMutableStateRule : PatternRuleBase
 {
     public override string Key => "QG-KT-SML-0012";
@@ -1453,6 +1390,10 @@ public sealed class KotlinLongFunctionRule : PatternRuleBase
 
     public override void Execute(IRuleContext context)
     {
+        // a test names its cases in prose, and the underscore is how Kotlin writes that prose
+        if (LanguageRuleSupport.IsTestFile(context.File.Path, System.IO.Path.GetFileName(context.File.Path)))
+            return;
+
         var tokens = context.Tokens;
         for (var i = 0; i < tokens.Count; i++)
         {
@@ -1833,6 +1774,10 @@ public sealed class KotlinFunctionNameConventionRule : PatternRuleBase
 
     public override void Execute(IRuleContext context)
     {
+        // a test names its cases in prose, and the underscore is how Kotlin writes that prose
+        if (LanguageRuleSupport.IsTestFile(context.File.Path, System.IO.Path.GetFileName(context.File.Path)))
+            return;
+
         var tokens = context.Tokens;
         for (var i = 0; i < tokens.Count; i++)
         {
@@ -1848,10 +1793,17 @@ public sealed class KotlinFunctionNameConventionRule : PatternRuleBase
 
             // An extension function writes its receiver first: 'fun KotlinFileContext.reportIssue'.
             // The name is what follows the dot, and the receiver is a type, so it is upper case on
-            // purpose — reading it as the name reports every extension function in the file.
-            while (name + 1 < tokens.Count && tokens[name + 1].Text == "."
-                   && RuleMatchers.IsIdentifier(tokens[name]))
-                name += 2;
+            // purpose — reading it as the name reports every extension function in the file. A
+            // nullable receiver puts a question mark between the type and the dot.
+            while (name < tokens.Count && RuleMatchers.IsIdentifier(tokens[name]))
+            {
+                var dot = name + 1;
+                if (dot < tokens.Count && tokens[dot].Text == "?")
+                    dot++;
+                if (dot >= tokens.Count || tokens[dot].Text != ".")
+                    break;
+                name = dot + 1;
+            }
 
             if (name >= tokens.Count || !RuleMatchers.IsIdentifier(tokens[name]))
                 continue;

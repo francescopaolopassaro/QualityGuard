@@ -261,9 +261,10 @@ public sealed class RepeatedUnaryOperatorRule : CorrectnessRuleBase
         if (!HasPreciseTree(context))
             return;
 
-        // in the script languages !! is the established way of converting a value to a boolean, so
-        // reporting it there would fight the language instead of finding a defect
-        var doubleNegationIsIdiomatic = context.Language.LanguageKey is "js" or "ts" or "php";
+        // In the script languages !! is the established way of converting a value to a boolean, and
+        // in Kotlin it is a single operator that asserts a value is not null — not a negation
+        // repeated. Reporting either would fight the language instead of finding a defect.
+        var doubleNegationIsIdiomatic = context.Language.LanguageKey is "js" or "ts" or "php" or "kt";
 
         foreach (var unary in context.Root.OfKind(NodeKind.Unary))
         {

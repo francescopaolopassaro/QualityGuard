@@ -141,7 +141,7 @@ Severity and issue kind follow the category: `SEC` → vulnerability (major or a
 
 ## 5. Rules
 
-**1314 rules are loaded and executable**, backed by **2626 catalog entries** (a catalog entry either
+**1312 rules are loaded and executable**, backed by **2626 catalog entries** (a catalog entry either
 carries its own detection or documents a rule implemented in code).
 
 Coverage is tracked honestly in `rules-tracker.tsv`: **3256 catalogued rules are mapped, 1515 of them
@@ -475,7 +475,7 @@ rule that produces noise is rewritten on the syntax tree or removed, and every f
 was fixed is pinned by a regression test — written next to the shape the rule must still report — so
 the precision cannot be lost again silently.
 
-**494 tests** cover the parsers, the semantic model, taint, the scanner and rule precision.
+**505 tests** cover the parsers, the semantic model, taint, the scanner and rule precision.
 
 ```bash
 dotnet build QualityGuard.sln
@@ -504,7 +504,7 @@ usually contains other defects nobody annotated.
 | Go | 52 | 234 | **69.2%** | 47.7% |
 | JavaScript | 109 | 921 | **53.2%** | **50.8%** |
 | Python | 611 | 6,451 | **51.4%** | 40.6% |
-| Kotlin | 159 | 2,030 | **47.0%** | **56.5%** |
+| Kotlin | 159 | 2,030 | **53.3%** | 49.8% |
 | Java | 1,004 | 10,130 | **46.0%** | 36.7% |
 | PHP | 285 | 2,482 | **44.3%** | 47.3% |
 | VB.NET | 254 | 2,392 | **40.4%** | **64.5%** |
@@ -522,6 +522,37 @@ on marked lines by accident, because they reported on nearly everything. The sam
 3,900 findings and lost 560 matched lines — seven out of eight of the findings that went away were on
 lines nobody had marked. The engine now says less and is right more often, which is the only
 direction that matters when the report is read by a person.
+
+### Kotlin got a parser
+
+Kotlin was read by the generic structural parser until this pass: the tree placed declarations but
+did not resolve them, so `SyntaxTree.HasDedicatedParser` was false and the ninety-odd structural
+rules skipped every Kotlin file. It now has a dialect of the C-family parser, built on the same
+recursive descent as Java and TypeScript and differing where the language does:
+
+- **A declaration names itself first.** `fun greet(name: String): String` puts the name before the
+  type, which is the opposite of the shared member path, so functions, properties and parameters are
+  parsed on their own.
+- **A statement ends at the line break.** The terminators the language leaves out are rebuilt before
+  parsing, the way the JavaScript dialect already did, with the continuations Kotlin adds — the elvis
+  operator, the safe call, `is`, `in`, `by`.
+- **`when` is a branch, not a call.** It is recorded as a match in both positions, statement and
+  expression, so the rules about unhandled values and about complexity see it for what it is.
+- **A trailing lambda is an argument.** `items.filter { it > 0 }` is how most of the language is
+  written; read as a block it detached the body from the call and left every rule about that call
+  blind.
+- **A property of a type is a field.** Kotlin declares them with the same `val` a local uses, and
+  reading them as locals reported every property as an unused variable.
+
+Recall went from 47.0% to 53.3%. Precision fell from 56.5% to 49.8%, and that number needs reading
+with care: the corpus annotates only the check each file was written to exercise, and the dialect
+switched on fifty rules that now fire legitimately elsewhere in those same files. Every family in the
+list of unannotated findings was read by hand — unused locals, `println` left in code, parameters
+nobody uses, a `var` that is never reassigned — and each one is a defect the file really contains.
+
+What the dialect did expose was three genuine faults, now fixed: `!!` was reported as a repeated
+negation when it is a single operator, a `when` without an `else` was reported twice by two different
+rules, and duplicated literals were reported by both the Kotlin rule and the shared one.
 
 ### A whole language was never measured
 
