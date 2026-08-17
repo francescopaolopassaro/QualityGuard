@@ -5910,10 +5910,6 @@
   fix: |
     Switch to the recommended construct; the behaviour is the same in the normal case and defined in the
     cases the old form got wrong.
-  detect:
-    - invocation: [replaceAll]
-    - invocation: [replace]
-
 - key: QG-JS-SML-0320
   name: TrimLeft() and trimRight() should be simplified
   languages: [js, ts]

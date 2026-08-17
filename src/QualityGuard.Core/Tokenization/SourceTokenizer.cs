@@ -304,14 +304,18 @@ public sealed class SourceTokenizer
             column++;
         }
 
-        // the flags belong to the literal, not to the code that follows it
+        // The flags belong to the literal, not to the code that follows it — and they change what
+        // the pattern means, so they are carried back as an inline group. Without them a rule cannot
+        // tell '/x/g' from '/x/', and every rule about a flag was blind.
+        var flagStart = i;
         while (i < _source.Length && char.IsAsciiLetter(_source[i]))
         {
             i++;
             column++;
         }
 
-        pattern = sb.ToString();
+        var flags = _source[flagStart..i];
+        pattern = flags.Length > 0 ? "(?" + flags + ")" + sb : sb.ToString();
         return i;
     }
 

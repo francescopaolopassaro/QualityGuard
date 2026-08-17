@@ -49,6 +49,8 @@
 
 - key: QG-CSS-SML-0022
   name: A stylesheet should not rely on !important
+  status: superseded
+  superseded_by: QG-CSS-SML-0001
   languages: [css]
   category: SML
   severity: major

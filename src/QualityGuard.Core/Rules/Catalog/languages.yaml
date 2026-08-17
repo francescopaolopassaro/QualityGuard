@@ -550,6 +550,8 @@
 
 - key: QG-JS-CNV-0002
   name: Comparisons should be strict
+  status: superseded
+  superseded_by: QG-JS-BUG-0114
   languages: [js]
   category: CNV
   severity: major
@@ -564,8 +566,6 @@
   fix: |
     Use === and !==, converting the operands yourself when a comparison across types is intended. The
     only common exception is comparing with null to cover undefined as well.
-  detect:
-    - line: "[^=!<>]\\s(==|!=)\\s[^=]"
 
 - key: QG-TS-SML-0003
   name: The any type should not be used

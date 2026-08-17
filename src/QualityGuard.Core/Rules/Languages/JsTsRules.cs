@@ -39,7 +39,6 @@ public static class JsTsRuleSet
         new JsSwitchDefaultRule(),
         new JsInfiniteLoopRule(),
         new JsParseIntRadixRule(),
-        new JsVarRule(),
         new JsSetTimeoutStringRule(),
         new TsSuppressionRule()
     ];
@@ -636,23 +635,6 @@ public sealed class JsInfiniteLoopRule : PatternRuleBase
             if (tokens[i].Text == "while" && tokens[i + 1].Text == "(" && tokens[i + 2].Text == "true")
                 context.Report("This loop condition is always true; make sure a break is reachable.", tokens[i].Line);
         }
-    }
-}
-
-public sealed class JsVarRule : PatternRuleBase
-{
-    public override string Key => "QG-JS-CNV-0001";
-    public override string Name => "Use of var instead of const or let";
-    public override Severity Severity => Severity.Minor;
-    public override IssueKind Kind => IssueKind.CodeSmell;
-    public override string RemediationEffort => "10min";
-    public override string FixAdvice => "Use const for never-reassigned bindings and let otherwise.";
-    public override string[] Languages => ["js", "ts"];
-
-    public override void Execute(IRuleContext context)
-    {
-        foreach (var token in context.Tokens.Where(t => t.Text == "var"))
-            context.Report("Use const or let instead of var.", token.Line);
     }
 }
 

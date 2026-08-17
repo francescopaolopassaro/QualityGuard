@@ -24,7 +24,8 @@ public static class JsTsMeasuredRuleSet
         new JsRelativeCommandPathRule(),
         new JsTestHookOrderRule(),
         new JsMemoizeWithoutKeyRule(),
-        new JsUncertainAssertionRule()
+        new JsUncertainAssertionRule(),
+        new JsReplaceAllRule()
     ];
 }
 
@@ -733,5 +734,58 @@ public sealed class JsUncertainAssertionRule : JsTsMeasuredRuleBase
                            + "case it was not written for. Assert the one thing that must be true.",
                 statement.Range.StartLine);
         }
+    }
+}
+
+public sealed class JsReplaceAllRule : JsTsMeasuredRuleBase
+{
+    public override string Key => "QG-JS-SML-0319";
+    public override string Name => "A global replacement should say so in the method";
+    public override Severity Severity => Severity.Minor;
+    public override string RemediationEffort => "5min";
+
+    public override void Execute(IRuleContext context)
+    {
+        if (!HasTree(context))
+            return;
+
+        foreach (var call in SyntaxQuery.InvocationsNamed(context.Root, "replace"))
+        {
+            var pattern = SyntaxQuery.ArgumentAt(call, 0);
+            if (pattern == null)
+                continue;
+
+            // 'replace' with a plain string changes the first occurrence only, which is a decision
+            // the author may well have meant. What is worth saying is the other case: a regular
+            // expression written only to carry the global flag, where replaceAll says it in a word.
+            var written = pattern.Tokens.Count == 1 ? pattern.Tokens[0].Text : pattern.Text;
+            if (!IsSimpleGlobalPattern(written))
+                continue;
+
+            context.Report("This uses a regular expression only to say 'every occurrence'. "
+                           + "'replaceAll' says the same thing with a plain string, and a string "
+                           + "needs no escaping.", call.Range.StartLine);
+        }
+    }
+
+    /// <summary>
+    /// A pattern that is a literal run of characters with the global flag: nothing in it needs a
+    /// regular expression engine.
+    /// </summary>
+    private static bool IsSimpleGlobalPattern(string written)
+    {
+        // the tokenizer hands the flags back as an inline group in front of the pattern
+        if (!written.StartsWith("(?", StringComparison.Ordinal))
+            return false;
+        var close = written.IndexOf(')');
+        if (close < 0)
+            return false;
+        var flags = written[2..close];
+        if (!flags.Contains('g'))
+            return false;
+
+        var body = written[(close + 1)..];
+        // any metacharacter means the expression is doing real work
+        return body.Length > 0 && body.All(c => char.IsLetterOrDigit(c) || c is ' ' or '_' or '-' or ',');
     }
 }

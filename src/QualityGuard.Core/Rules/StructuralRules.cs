@@ -1678,6 +1678,17 @@ public sealed class UnusedInternalMemberRule : StructuralRuleBase
         if (!HasPreciseTree(context) || context.Project.Types.Count == 0)
             return;
 
+        // A code-behind is reached from the markup beside it. When the scan did not include the
+        // templates the engine cannot see those callers, and saying "nothing reaches this" would be
+        // a statement about the scan rather than about the code.
+        var fileName = System.IO.Path.GetFileName(context.File.Path);
+        var isCodeBehind = fileName.EndsWith(".razor.cs", StringComparison.OrdinalIgnoreCase)
+                           || fileName.EndsWith(".cshtml.cs", StringComparison.OrdinalIgnoreCase)
+                           || fileName.EndsWith(".xaml.cs", StringComparison.OrdinalIgnoreCase)
+                           || fileName.EndsWith(".aspx.cs", StringComparison.OrdinalIgnoreCase);
+        if (isCodeBehind && !context.Project.SawTemplates)
+            return;
+
         foreach (var member in context.Root.OfKind(NodeKind.FunctionDeclaration))
         {
             var modifiers = member.ChildrenOf(NodeKind.Modifier).Select(m => m.Text).ToArray();

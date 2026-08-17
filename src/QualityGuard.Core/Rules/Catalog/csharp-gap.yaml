@@ -1,0 +1,87 @@
+# Descriptions for the rules in Rules/Languages/CSharpGapRules.cs. Each of these was found by running
+# the reference analyzer and this engine over the same production projects and reading what only the
+# other one reported.
+
+- key: QG-CS-CNV-0010
+  name: A type name should be written in Pascal case
+  languages: [cs]
+  category: CNV
+  severity: minor
+  effort: 15min
+  tags: [naming, readability]
+  summary: A type name runs capitals together, starts lower-case, or separates words with underscores.
+  why: |
+    A reader picks a type name apart by its capitals. Three of them in a row read as one word, so
+    'DocDocumentiWKFModelliFasi' takes a second look to parse where the acronym ends.
+  fix: |
+    Capitalise the first letter of each word and write an acronym longer than two letters as a word.
+
+- key: QG-CS-SML-0478
+  name: The empty identifier should be named
+  languages: [cs]
+  category: SML
+  severity: minor
+  effort: 5min
+  tags: [readability]
+  summary: The all-zero identifier is written out instead of using the constant for it.
+  why: |
+    A reader has to count the zeroes to be sure it is the empty one, and a typo in them produces a
+    different identifier that still looks right.
+  fix: |
+    Use Guid.Empty.
+
+- key: QG-CS-SML-0479
+  name: A type nobody can inherit should say so
+  languages: [cs]
+  category: SML
+  severity: minor
+  effort: 5min
+  tags: [design, performance]
+  summary: A private nested class is not sealed.
+  why: |
+    Nothing outside the enclosing type can derive from it, so the door is open on paper only. Sealing
+    says what is true, and lets the runtime call its methods without looking them up first.
+  fix: |
+    Mark the class sealed.
+
+- key: QG-CS-SML-0480
+  name: A type that adds nothing should not exist
+  languages: [cs]
+  category: SML
+  severity: major
+  effort: 15min
+  tags: [design]
+  summary: A type derives from another and declares no member of its own.
+  why: |
+    Every use of it could name the base instead, so it adds a name to learn and nothing else. Usually
+    it was created for a difference that was never written, and the reader is left looking for one.
+  fix: |
+    Give the type the behaviour it was created for, or remove it and use the base.
+
+- key: QG-CS-SML-0481
+  name: An indexed collection should be read by index
+  languages: [cs]
+  category: SML
+  severity: minor
+  effort: 5min
+  tags: [linq, performance, readability]
+  summary: First or Last is called on a collection that can be indexed.
+  why: |
+    The operator sets up an enumerator to reach something the collection can hand over directly, and
+    it says less: brackets state that the position is known.
+  fix: |
+    Use the indexer.
+
+- key: QG-CS-SML-0482
+  name: Overloads of one method should be written together
+  languages: [cs]
+  category: SML
+  severity: minor
+  effort: 10min
+  tags: [readability]
+  summary: Two overloads of the same method are separated by other members.
+  why: |
+    A reader comparing them scrolls between the two, and a change made to one is easy to miss on the
+    other — which is how two overloads of the same operation come to behave differently.
+  fix: |
+    Move the overloads next to each other.

@@ -101,6 +101,13 @@ public sealed class ProjectIndex
     /// '{{ total }}', 'th:text="${name}"' — and none of that reaches a syntax tree the engine builds
     /// for markup. Without this, every handler a page calls looked like code nobody reaches.
     /// </summary>
+    /// <summary>
+    /// True when at least one template was read. A rule that asks "does anything reach this member"
+    /// needs to know: the answer for a code-behind lives in the markup beside it, and a scan
+    /// narrowed to source files never sees it.
+    /// </summary>
+    public bool SawTemplates { get; private set; }
+
     private void AddTemplateReferences(FileAnalysis analysis)
     {
         if (analysis.Tree.HasDedicatedParser)
@@ -109,6 +116,7 @@ public sealed class ProjectIndex
         if (!TemplateLanguages.Contains(language, StringComparer.OrdinalIgnoreCase))
             return;
 
+        SawTemplates = true;
         foreach (var token in analysis.Tokens)
         {
             if (token.Kind is not (Tokenization.TokenKind.Identifier or Tokenization.TokenKind.String))

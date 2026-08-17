@@ -16,7 +16,6 @@ public static class StyleSheetRuleSet
         new DuplicatePropertyRule(),
         new ShorthandOverriddenRule(),
         new EmptyStyleBlockRule(),
-        new ImportantOverusedRule(),
         new DuplicateSelectorRule(),
         new FontWithoutFallbackRule(),
         new ImportAfterRulesRule(),
@@ -151,29 +150,6 @@ public sealed class EmptyStyleBlockRule : StyleRuleBase
     }
 }
 
-public sealed class ImportantOverusedRule : StyleRuleBase
-{
-    private const int Limit = 5;
-
-    public override string Key => "QG-CSS-SML-0022";
-    public override string Name => "A stylesheet should not rely on !important";
-    public override Severity Severity => Severity.Major;
-    public override string RemediationEffort => "30min";
-
-    public override void Execute(IRuleContext context)
-    {
-        var root = Sheet(context);
-        var forced = Blocks(root).SelectMany(b => b.Declarations).Where(d => d.Important).ToList();
-        if (forced.Count <= Limit)
-            return;
-
-        context.Report($"This sheet forces {forced.Count} declarations with !important. Each one wins "
-                       + "against every future rule, so the next change has to escalate too, and the "
-                       + "cascade stops describing what the page looks like. Give the rules that must "
-                       + "win a more specific selector instead.", forced[0].Line);
-    }
-}
-
 public sealed class DuplicateSelectorRule : StyleRuleBase
 {
     public override string Key => "QG-CSS-SML-0023";
@@ -219,6 +195,11 @@ public sealed class FontWithoutFallbackRule : StyleRuleBase
     public override string Name => "A font family should end with a generic family";
     public override IssueKind Kind => IssueKind.Bug;
 
+    /// <summary>Families that carry glyphs rather than letters.</summary>
+    private static readonly string[] IconFonts =
+        ["Font Awesome", "FontAwesome", "Material Icons", "Material Symbols", "Glyphicons",
+         "bootstrap-icons", "Ionicons", "feather", "octicons", "Segoe MDL2", "Segoe Fluent Icons"];
+
     public override void Execute(IRuleContext context)
     {
         foreach (var block in Blocks(Sheet(context)))
@@ -235,6 +216,10 @@ public sealed class FontWithoutFallbackRule : StyleRuleBase
                     .Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
                     .Select(f => f.Trim('"', '\'', ' '))
                     .ToList();
+                // an icon font has no fallback worth naming: a generic family renders a letter
+                // where the design expects a glyph, which is worse than the missing icon
+                if (families.Any(f => IconFonts.Any(icon => f.Contains(icon, StringComparison.OrdinalIgnoreCase))))
+                    continue;
                 if (families.Count == 0 || GenericFamilies.Contains(families[^1], StringComparer.OrdinalIgnoreCase))
                     continue;
 

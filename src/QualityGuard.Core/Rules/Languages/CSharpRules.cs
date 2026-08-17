@@ -1235,9 +1235,12 @@ public sealed class CsCountInsteadOfAnyRule : PatternRuleBase
         for (var i = 0; i < lines.Length; i++)
         {
             var line = lines[i];
-            if (!CSharpRuleSet.HasAny(line, [".Count()", ".Count", "CountAsync()"])) continue;
+            // '.Count' is a property: a list knows its own size, and comparing it costs nothing.
+            // The call form is the one that walks the sequence to find out.
+            if (!CSharpRuleSet.HasAny(line, [".Count()", "CountAsync()", ".Count ()"])) continue;
             if (!(CSharpRuleSet.HasAny(line, ["> 0", "== 0", "!= 0", "> 0)", "== 0)"]))) continue;
-            context.Report("Use Any() to test whether a sequence is non-empty.", i + 1);
+            context.Report("Counting the whole sequence to find out whether it holds anything reads "
+                           + "every element. 'Any()' stops at the first one.", i + 1);
         }
     }
 }
@@ -1418,6 +1421,10 @@ public sealed class CsNullReferenceRule : PatternRuleBase
                 // not a defect whatever else it does: 'return x != null && x.P' checks before it
                 // reads, and so does 'if (x is null) return;'.
                 if (Tests(next, name))
+                    continue;
+
+                // 'var x = list.FirstOrDefault()?.Name;' answers the question where it is asked
+                if (declaration.OfKind(NodeKind.MemberSelect).Any(m => m.Tokens.Any(t => t.Text == "?.")))
                     continue;
 
                 var dereference = next.OfKind(NodeKind.MemberSelect)
@@ -1649,6 +1656,12 @@ public sealed class CsAsyncSuffixRule : PatternRuleBase
 public sealed class CsMutableCollectionPropertyRule : PatternRuleBase
 {
     /// <summary>Collection types a caller can change through the reference they are handed.</summary>
+    /// <summary>Names a type ends with when it exists to carry data across a boundary.</summary>
+    private static readonly string[] DataCarrierSuffixes =
+        ["Dto", "DTO", "Model", "ViewModel", "Request", "Response", "Entity", "Args", "Options",
+         "Settings", "Config", "Configuration", "Payload", "Message", "Command", "Query", "Result",
+         "Record", "Info", "Data"];
+
     private static readonly string[] Mutable =
         ["List", "IList", "ICollection", "Collection", "Dictionary", "IDictionary", "HashSet",
          "ISet", "SortedList", "SortedDictionary", "ObservableCollection", "Queue", "Stack"];
@@ -1676,6 +1689,13 @@ public sealed class CsMutableCollectionPropertyRule : PatternRuleBase
                 continue;
             var bare = declared.Split('<')[0].Split('.').Last();
             if (!Mutable.Contains(bare, StringComparer.Ordinal))
+                continue;
+
+            // A type that carries data is filled by whoever deserialises it, and that needs the
+            // setter. The name says what the type is for, and every project in the world names them
+            // the same way.
+            var owner = property.Ancestor(NodeKind.ClassDeclaration)?.Text ?? string.Empty;
+            if (DataCarrierSuffixes.Any(suffix => owner.EndsWith(suffix, StringComparison.Ordinal)))
                 continue;
 
             // A framework can require the shape: an ORM writes into a navigation collection through

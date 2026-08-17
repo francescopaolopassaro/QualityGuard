@@ -95,20 +95,53 @@ public sealed class CssEmptyBlockRule : PatternRuleBase
 
 public sealed class CssZIndexRule : PatternRuleBase
 {
+    /// <summary>Values of position that take an element out of the normal flow.</summary>
+    private static readonly string[] Positioned = ["relative", "absolute", "fixed", "sticky"];
+
     public override string Key => "QG-CSS-BUG-0001";
     public override string Name => "z-index requires a positioned element";
     public override Severity Severity => Severity.Major;
     public override IssueKind Kind => IssueKind.Bug;
-    public override string RemediationEffort => "20min";
+    public override string RemediationEffort => "10min";
     public override string FixAdvice => "Set a position value (relative, absolute, fixed or sticky) for z-index to apply.";
     public override string[] Languages => ["css"];
 
     public override void Execute(IRuleContext context)
     {
-        var lines = context.File.Content.Split('\n');
-        for (var i = 0; i < lines.Length; i++)
-            if (RuleMatchers.LineContains(lines[i], "z-index:"))
-                context.Report("z-index only applies to positioned elements; set position.", i + 1);
+        var sheet = Analysis.StyleSheet.Parse(context.File.Content);
+        foreach (var block in sheet.Descendants())
+        {
+            var stack = block.Declarations
+                .FirstOrDefault(d => d.Property.Equals("z-index", StringComparison.OrdinalIgnoreCase));
+            if (stack == null)
+                continue;
+
+            // the position can be set here, or on a block this one is nested inside
+            if (IsPositioned(block))
+                continue;
+
+            context.Report($"'z-index: {stack.Value}' does nothing here: the browser only stacks an "
+                           + "element that has been taken out of the normal flow. Set position to "
+                           + "relative, absolute, fixed or sticky, or drop the z-index.", stack.Line);
+        }
+    }
+
+    private static bool IsPositioned(Analysis.StyleRule block)
+    {
+        for (var node = block; node != null; node = node.Parent)
+        {
+            var position = node.Declarations
+                .FirstOrDefault(d => d.Property.Equals("position", StringComparison.OrdinalIgnoreCase));
+            if (position == null)
+                continue;
+            // a variable or a function is something this rule cannot read, so it stays quiet
+            if (position.Value.Contains("var(", StringComparison.OrdinalIgnoreCase)
+                || position.Value.Contains('$') || position.Value.Contains('#'))
+                return true;
+            if (Positioned.Any(v => position.Value.Contains(v, StringComparison.OrdinalIgnoreCase)))
+                return true;
+        }
+        return false;
     }
 }
 

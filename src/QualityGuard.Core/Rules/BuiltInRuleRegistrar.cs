@@ -36,6 +36,7 @@ public static class BuiltInRuleRegistrar
         ..Languages.CSharpRuleSet.All,
         ..Languages.CSharpAstRuleSet.All,
         ..Languages.CSharpApiRuleSet.All,
+        ..Languages.CSharpGapRuleSet.All,
         ..Languages.TerraformRuleSet.All,
         ..Languages.DockerRuleSet.All,
         ..Languages.KubernetesRuleSet.All,
