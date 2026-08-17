@@ -52,7 +52,7 @@ public sealed class SyntaxTree
         var profile = SyntaxProfile.For(language.LanguageKey);
         var dedicated = language.LanguageKey is LanguageKeys.CSharp or LanguageKeys.Java
             or LanguageKeys.Go or LanguageKeys.JavaScript or LanguageKeys.TypeScript
-            or LanguageKeys.Python or LanguageKeys.Dart or LanguageKeys.Php;
+            or LanguageKeys.Python or LanguageKeys.Dart or LanguageKeys.Php or LanguageKeys.Kotlin;
         var root = language.LanguageKey switch
         {
             LanguageKeys.CSharp => CSharp.CSharpParser.Parse(tokens, language),
@@ -66,6 +66,7 @@ public sealed class SyntaxTree
             LanguageKeys.Dart => CSharp.CSharpParser.Parse(tokens, language, CSharp.CFamilyDialect.Java),
             LanguageKeys.Php => CSharp.CSharpParser.Parse(WithoutPhpMarkers(tokens), language,
                 CSharp.CFamilyDialect.Php),
+            LanguageKeys.Kotlin => CSharp.CSharpParser.Parse(tokens, language, CSharp.CFamilyDialect.Kotlin),
             _ => StructureParser.Parse(tokens, profile)
         };
         return new SyntaxTree

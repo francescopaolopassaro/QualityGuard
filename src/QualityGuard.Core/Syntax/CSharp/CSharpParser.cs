@@ -10,7 +10,8 @@ public enum CFamilyDialect
     Go,
     JavaScript,
     TypeScript,
-    Php
+    Php,
+    Kotlin
 }
 
 /// <summary>
@@ -86,6 +87,25 @@ public sealed class CSharpParser
 
     private static readonly string[] JsDeclarationKeywords = ["const", "let", "var"];
 
+    /// <summary>
+    /// Kotlin puts a great deal in front of a declaration, and all of it is a modifier: what a class
+    /// is (data, sealed, enum, annotation), how it may be extended (open, final, abstract), and how a
+    /// function behaves (suspend, inline, operator, infix).
+    /// </summary>
+    private static readonly string[] KotlinModifiers =
+    [
+        "public", "private", "protected", "internal", "open", "final", "abstract", "override",
+        "const", "lateinit", "suspend", "inline", "noinline", "crossinline", "reified", "data",
+        "sealed", "annotation", "enum", "companion", "inner", "operator", "infix", "tailrec",
+        "external", "vararg", "expect", "actual", "value", "fun"
+    ];
+
+    /// <summary>
+    /// The words that open a type. 'fun' is not among them: a Kotlin function is parsed on its own
+    /// path because the name comes before the type, not after it.
+    /// </summary>
+    private static readonly string[] KotlinTypeKeywords = ["class", "interface", "object"];
+
     private bool IsJava => _dialect == CFamilyDialect.Java;
 
     private bool IsGo => _dialect == CFamilyDialect.Go;
@@ -96,11 +116,14 @@ public sealed class CSharpParser
 
     private bool IsPhp => _dialect == CFamilyDialect.Php;
 
+    private bool IsKotlin => _dialect == CFamilyDialect.Kotlin;
+
     private string[] ModifierWords => _dialect switch
     {
         CFamilyDialect.Java => JavaModifiers,
         CFamilyDialect.Go => [],
         CFamilyDialect.JavaScript or CFamilyDialect.TypeScript => JsModifiers,
+        CFamilyDialect.Kotlin => KotlinModifiers,
         _ => Modifiers
     };
 
@@ -109,10 +132,11 @@ public sealed class CSharpParser
         CFamilyDialect.Java => JavaTypeKeywords,
         CFamilyDialect.Go => GoTypeKeywords,
         CFamilyDialect.JavaScript or CFamilyDialect.TypeScript => JsTypeKeywords,
+        CFamilyDialect.Kotlin => KotlinTypeKeywords,
         _ => TypeKeywords
     };
 
-    private bool IsLambdaArrow => Is("=>") || (IsJava && Is("->"));
+    private bool IsLambdaArrow => Is("=>") || ((IsJava || IsKotlin) && Is("->"));
 
     public static SyntaxNode Parse(IReadOnlyList<Token> tokens, LanguageInfo language,
         CFamilyDialect dialect = CFamilyDialect.CSharp)
@@ -125,6 +149,8 @@ public sealed class CSharpParser
             code = GoSemicolons.Insert(code);
         else if (dialect is CFamilyDialect.JavaScript or CFamilyDialect.TypeScript)
             code = JsSemicolons.Insert(code);
+        else if (dialect == CFamilyDialect.Kotlin)
+            code = KotlinSemicolons.Insert(code);
         new CSharpParser(code, language, dialect).FillCompilationUnit(root);
         return root;
     }
@@ -217,7 +243,7 @@ public sealed class CSharpParser
         if (!IsJava && Is("using") && PeekText() != "(" && !IsUsingDeclaration())
             return ParseUsingDirective(start);
 
-        if ((IsJava || IsGo) && (Is("import") || Is("package")))
+        if ((IsJava || IsGo || IsKotlin) && (Is("import") || Is("package")))
         {
             var isPackage = Is("package");
             _index++;
@@ -266,6 +292,10 @@ public sealed class CSharpParser
             return ParseJsFunction(start, modifiers);
         if (IsTs && Is("type") && Peek() is { Kind: TokenKind.Identifier })
             return ParseTsTypeAlias(start);
+        if (IsKotlin && Is("fun"))
+            return ParseKotlinFunction(start, attributes, modifiers);
+        if (IsKotlin && (Is("val") || Is("var")))
+            return ParseKotlinProperty(start, attributes, modifiers);
         if (IsGo && Is("func"))
             return ParseGoFunction(start);
         if (IsGo && Is("type"))
@@ -325,7 +355,7 @@ public sealed class CSharpParser
     private List<SyntaxNode> ParseAttributes()
     {
         var attributes = new List<SyntaxNode>();
-        while (IsJava && Is("@") && Peek() is { Kind: TokenKind.Identifier })
+        while ((IsJava || IsKotlin) && Is("@") && Peek() is { Kind: TokenKind.Identifier })
         {
             var annotationStart = Mark();
             _index++;
@@ -409,8 +439,16 @@ public sealed class CSharpParser
         var name = IsName ? Take().Text : string.Empty;
         if (Is("<"))
             SkipGenericParameters();
+        SyntaxNode? primaryConstructor = null;
         if (Is("("))
-            SkipBalanced("(", ")"); // primary constructor of a record
+        {
+            // the primary constructor of a Kotlin class declares the properties of the type, so it is
+            // parsed rather than skipped; a record does the same and loses nothing by it
+            if (IsKotlin)
+                primaryConstructor = ParseParameterList();
+            else
+                SkipBalanced("(", ")");
+        }
 
         if (Accept(":") || IsAny("extends", "implements", "permits"))
         {
@@ -427,6 +465,8 @@ public sealed class CSharpParser
         _currentType = name;
         var node = Node(NodeKind.ClassDeclaration, start, name);
         AddDecorations(node, attributes, modifiers);
+        if (primaryConstructor != null)
+            node.Add(primaryConstructor);
 
         if (Accept(";"))
         {
@@ -866,6 +906,266 @@ public sealed class CSharpParser
         return node;
     }
 
+    // ------------------------------------------------------------- Kotlin
+
+    /// <summary>
+    /// A Kotlin function: <c>fun &lt;T&gt; Receiver.name(parameters): Type</c> followed by a block or by
+    /// an expression body. The name comes before the type, which is why it cannot go through the
+    /// shared member path.
+    /// </summary>
+    private SyntaxNode ParseKotlinFunction(int start, List<SyntaxNode> attributes, List<string> modifiers)
+    {
+        Expect("fun");
+        if (Is("<"))
+            SkipGenericParameters();
+
+        // an extension function names the type it extends before its own name
+        var name = IsName ? Take().Text : string.Empty;
+        while (Is(".") && Peek() is { Kind: TokenKind.Identifier })
+        {
+            _index++;
+            name = Take().Text;
+        }
+        if (Is("<"))
+            SkipGenericParameters();
+
+        var node = Node(NodeKind.FunctionDeclaration, start, name);
+        AddDecorations(node, attributes, modifiers);
+        if (Is("("))
+            node.Add(ParseParameterList());
+        if (Accept(":"))
+            node.Add(ParseType());
+        while (Is("where"))
+        {
+            while (!AtEnd && !Is("{") && !Is("=") && !Is(";"))
+                _index++;
+        }
+
+        if (Accept("="))
+        {
+            // an expression body is the whole function, so it is kept as the body: every rule that
+            // asks what a function does then finds something to read
+            var bodyStart = Mark();
+            var body = new SyntaxNode(NodeKind.Block, "", node.Range);
+            var statement = Node(NodeKind.ExpressionStatement, bodyStart);
+            if (ParseExpression() is { } value)
+                statement.Add(value);
+            statement.Tokens = SliceFrom(bodyStart);
+            statement.Range = TextRange.Of(statement.Tokens);
+            body.Add(statement);
+            body.Range = statement.Range;
+            node.Add(body);
+            Accept(";");
+        }
+        else if (Is("{"))
+        {
+            node.Add(ParseBlock());
+        }
+        else
+        {
+            Accept(";"); // a declaration in an interface has no body at all
+        }
+
+        node.Tokens = SliceFrom(start);
+        node.Range = TextRange.Of(node.Tokens);
+        return node;
+    }
+
+    /// <summary>A val or var, with its optional type, initialiser and accessors.</summary>
+    private SyntaxNode ParseKotlinProperty(int start, List<SyntaxNode> attributes, List<string> modifiers)
+    {
+        Take();
+        if (Is("<"))
+            SkipGenericParameters();
+
+        // a destructuring declaration names several things at once
+        var names = new List<string>();
+        if (Accept("("))
+        {
+            while (!AtEnd && !Is(")"))
+            {
+                if (IsName)
+                    names.Add(Text);
+                _index++;
+            }
+            Accept(")");
+        }
+        else if (IsName)
+        {
+            var first = Take().Text;
+            // an extension property names its receiver first
+            while (Is(".") && Peek() is { Kind: TokenKind.Identifier })
+            {
+                _index++;
+                first = Take().Text;
+            }
+            names.Add(first);
+        }
+
+        var node = Node(NodeKind.VariableDeclaration, start, names.FirstOrDefault() ?? string.Empty);
+        AddDecorations(node, attributes, modifiers);
+        if (Accept(":"))
+            node.Add(ParseType());
+        if (Accept("by") && ParseExpression() is { } delegated)
+            node.Add(delegated);
+
+        if (Accept("="))
+        {
+            var value = ParseAssignment();
+            var assignment = new SyntaxNode(NodeKind.Assignment, "=", node.Range);
+            assignment.Add(new SyntaxNode(NodeKind.Identifier, node.Text, node.Range));
+            if (value != null)
+                assignment.Add(value);
+            node.Add(assignment);
+        }
+        foreach (var extra in names.Skip(1))
+            node.Add(new SyntaxNode(NodeKind.Identifier, extra, node.Range));
+        Accept(";");
+
+        // 'get() = ...' and 'set(value) { ... }' belong to the property
+        while (Is("get") || Is("set"))
+        {
+            var accessorStart = Mark();
+            var accessorName = Take().Text;
+            var accessor = Node(NodeKind.Accessor, accessorStart, accessorName);
+            if (Is("("))
+                accessor.Add(ParseParameterList());
+            if (Accept(":"))
+                accessor.Add(ParseType());
+            if (Accept("="))
+            {
+                if (ParseExpression() is { } expression)
+                    accessor.Add(expression);
+                Accept(";");
+            }
+            else if (Is("{"))
+            {
+                accessor.Add(ParseBlock());
+            }
+            else
+            {
+                Accept(";");
+            }
+            node.Add(accessor);
+        }
+
+        node.Tokens = SliceFrom(start);
+        node.Range = TextRange.Of(node.Tokens);
+        return node;
+    }
+
+    /// <summary>
+    /// A member of a Kotlin type, or null when the next tokens are not one and the shared path should
+    /// have its turn.
+    /// </summary>
+    private SyntaxNode? ParseKotlinMember(int start, List<SyntaxNode> attributes, List<string> modifiers)
+    {
+        if (Is("fun"))
+            return ParseKotlinFunction(start, attributes, modifiers);
+        if (Is("val") || Is("var"))
+            return ParseKotlinProperty(start, attributes, modifiers);
+
+        if (Is("init") && PeekText() == "{")
+        {
+            _index++;
+            var initializer = Node(NodeKind.ConstructorDeclaration, start, "init");
+            AddDecorations(initializer, attributes, modifiers);
+            initializer.Add(ParseBlock());
+            return initializer;
+        }
+
+        if (Is("constructor"))
+        {
+            _index++;
+            var constructor = Node(NodeKind.ConstructorDeclaration, start, _currentType);
+            AddDecorations(constructor, attributes, modifiers);
+            if (Is("("))
+                constructor.Add(ParseParameterList());
+            if (Accept(":"))
+            {
+                // 'this(...)' or 'super(...)' runs another constructor, and the reader has to see it
+                var targetStart = Mark();
+                var target = IsName ? Take().Text : string.Empty;
+                if (Is("("))
+                {
+                    var call = Node(NodeKind.Invocation, targetStart, target);
+                    call.Add(Node(NodeKind.Identifier, targetStart, target));
+                    call.Add(ParseArgumentList());
+                    constructor.Add(call);
+                }
+            }
+            if (Is("{"))
+                constructor.Add(ParseBlock());
+            else
+                Accept(";");
+            return constructor;
+        }
+
+        return null;
+    }
+
+    /// <summary>
+    /// 'when' is Kotlin's multi-way branch. It is recorded as a match, so the rules about unhandled
+    /// values and about complexity see it for what it is.
+    /// </summary>
+    private SyntaxNode ParseKotlinWhen(int start)
+    {
+        Expect("when");
+        var node = Node(NodeKind.Match, start, "when");
+        if (Is("("))
+        {
+            SkipOpenParen();
+            if (ParseExpression() is { } subject)
+                node.Add(subject);
+            Accept(")");
+        }
+
+        var body = new SyntaxNode(NodeKind.Block, "", node.Range, node.Tokens);
+        if (Accept("{"))
+        {
+            while (!AtEnd && !Is("}"))
+            {
+                var before = _index;
+                var branchStart = Mark();
+                var isElse = Is("else");
+
+                // the condition runs up to the arrow that introduces the branch
+                var guard = 0;
+                while (!AtEnd && !Is("}") && !IsLambdaArrow && guard++ < 200)
+                {
+                    if (Is("(") || Is("[") || Is("{"))
+                    {
+                        var open = Text;
+                        SkipBalanced(open, open == "(" ? ")" : open == "[" ? "]" : "}");
+                        continue;
+                    }
+                    _index++;
+                }
+
+                if (IsLambdaArrow)
+                {
+                    _index++;
+                    var section = Node(NodeKind.SwitchSection, branchStart, isElse ? "else" : "case");
+                    var branch = Is("{") ? ParseBlock() : ParseStatement();
+                    if (branch != null)
+                        section.Add(branch);
+                    body.Add(section);
+                }
+
+                if (_index == before)
+                    _index++;
+            }
+            var closing = Current;
+            Accept("}");
+            if (closing != null)
+                body.Range = body.Range with { EndLine = closing.Line };
+        }
+        node.Add(body);
+        node.Range = node.Range with { EndLine = body.Range.EndLine };
+        Accept(";");
+        return node;
+    }
+
     private SyntaxNode ParseTypeBody(bool isEnum)
     {
         var start = Mark();
@@ -912,6 +1212,9 @@ public sealed class CSharpParser
 
         if (IsAny(TypeWords))
             return ParseTypeDeclaration(start, attributes, modifiers);
+
+        if (IsKotlin && ParseKotlinMember(start, attributes, modifiers) is { } kotlinMember)
+            return kotlinMember;
 
         if (IsPhp && ParsePhpMember(start, attributes, modifiers) is { } phpMember)
             return phpMember;
@@ -1459,10 +1762,33 @@ public sealed class CSharpParser
         {
             var before = _index;
             ParseAttributes();
-            while (!IsJs && !IsGo && IsAny("ref", "out", "in", "params", "this", "scoped", "readonly"))
+            while (!IsJs && !IsGo && !IsKotlin
+                   && IsAny("ref", "out", "in", "params", "this", "scoped", "readonly"))
                 _index++;
 
             var parameterStart = Mark();
+            if (IsKotlin)
+            {
+                // 'vararg out: String' and 'val name: String' — the modifiers come first, the name
+                // second, and the type after the colon
+                while (IsAny("vararg", "val", "var", "noinline", "crossinline", "private", "public",
+                           "protected", "internal", "override"))
+                    _index++;
+                if (IsName)
+                {
+                    var kotlinName = Take().Text;
+                    var kotlinParameter = Node(NodeKind.Parameter, parameterStart, kotlinName);
+                    if (Accept(":"))
+                        kotlinParameter.Add(ParseType());
+                    if (Accept("=") && ParseAssignment() is { } kotlinDefault)
+                        kotlinParameter.Add(kotlinDefault);
+                    list.Add(kotlinParameter);
+                }
+                if (!Accept(",") && !Is(")") && _index == before)
+                    _index++;
+                continue;
+            }
+
             if (IsJs)
             {
                 while (IsAny("public", "private", "protected", "readonly"))
@@ -1637,7 +1963,7 @@ public sealed class CSharpParser
             case ";":
                 _index++;
                 // generated terminators are not empty statements
-                return IsGo || IsJs ? null : Node(NodeKind.ExpressionStatement, start, ";");
+                return IsGo || IsJs || IsKotlin ? null : Node(NodeKind.ExpressionStatement, start, ";");
             case "if":
                 return ParseIf(start);
             case "switch":
@@ -1651,6 +1977,13 @@ public sealed class CSharpParser
             case "let" when IsJs:
             case "var" when IsJs:
                 return ParseJsDeclaration(start);
+            case "val" when IsKotlin:
+            case "var" when IsKotlin:
+                return ParseKotlinProperty(start, [], []);
+            case "fun" when IsKotlin:
+                return ParseKotlinFunction(start, [], []);
+            case "when" when IsKotlin:
+                return ParseKotlinWhen(start);
             case "function" when IsJs:
                 return ParseJsFunction(start, []);
             case "import" when IsJs:
@@ -2800,6 +3133,15 @@ public sealed class CSharpParser
         // and reading it as a call named "function" scattered its body into the argument list
         if (IsJs && token.Text == "function")
             return ParseJsFunctionExpression(start);
+
+        // Kotlin's branches are expressions: 'val label = when (x) { ... }' is ordinary code, and
+        // reading it as a call named "when" scattered the branches into an argument list
+        if (IsKotlin && token.Text == "when")
+            return ParseKotlinWhen(start);
+        if (IsKotlin && token.Text == "if")
+            return ParseIf(start);
+        if (IsKotlin && token.Text == "try")
+            return ParseTry(start);
 
         switch (token.Kind)
         {
