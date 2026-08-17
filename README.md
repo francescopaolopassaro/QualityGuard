@@ -8,7 +8,7 @@ a configurable Quality Gate and exits with `PASSED` or `FAILED` — no server, n
 dotnet run --project src/QualityGuard.Cli -- --path ./src --by-folder
 ```
 
-**1295 rules** across 26 languages, on a real syntax tree with a semantic model, a project index and
+**1314 rules** across 26 languages, on a real syntax tree with a semantic model, a project index and
 interprocedural taint analysis. The bar the engine is held to is precision: every rule is measured on
 a production codebase in its own language before it is kept, and a rule that produces noise is
 rewritten or removed — see [§8](#8-quality-bar).
@@ -141,18 +141,18 @@ Severity and issue kind follow the category: `SEC` → vulnerability (major or a
 
 ## 5. Rules
 
-**1295 rules are loaded and executable**, backed by **2628 catalog entries** (a catalog entry either
+**1316 rules are loaded and executable**, backed by **2634 catalog entries** (a catalog entry either
 carries its own detection or documents a rule implemented in code).
 
-Coverage is tracked honestly in `rules-tracker.tsv`: **3256 catalogued rules are mapped, 1488 of them
+Coverage is tracked honestly in `rules-tracker.tsv`: **3256 catalogued rules are mapped, 1506 of them
 executable**. The rest are documented and deliberately silent — a rule counts as implemented only
 when it detects something and has been measured on real code.
 
 | Area | Code | Rules |
 | --- | --- | --- |
 | C# / VB.NET | `CS` | 253 |
-| Java | `JV` | 188 |
-| Python | `PY` | 164 |
+| Java | `JV` | 198 |
+| Python | `PY` | 173 |
 | JavaScript | `JS` | 140 |
 | Kotlin | `KT` | 83 |
 | Swift | `SW` | 14 |
@@ -475,7 +475,7 @@ rule that produces noise is rewritten on the syntax tree or removed, and every f
 was fixed is pinned by a regression test — written next to the shape the rule must still report — so
 the precision cannot be lost again silently.
 
-**419 tests** cover the parsers, the semantic model, taint, the scanner and rule precision.
+**481 tests** cover the parsers, the semantic model, taint, the scanner and rule precision.
 
 ```bash
 dotnet build QualityGuard.sln
@@ -498,13 +498,69 @@ findings land on an expected line), and the findings on unannotated lines — me
 than counted, since the two catalogues do not coincide and a file written to exercise one check
 usually contains other defects nobody annotated.
 
-| Corpus | Annotated files | Expected lines | Recall | Rules ported |
+| Corpus | Annotated files | Expected lines | Recall | Precision |
 | --- | --- | --- | --- | --- |
-| Python | 590 | 6,427 | **51.6%** | 181/447 (41%) |
-| Java | 748 | 8,202 | **47.9%** | 307/723 (42%) |
+| Go | 52 | 234 | **69.2%** | 47.7% |
+| JavaScript | 109 | 921 | **53.2%** | **50.8%** |
+| Python | 611 | 6,451 | **51.8%** | 39.4% |
+| Java | 1,004 | 10,130 | **44.9%** | 36.7% |
 
-Recall sits above the share of rules ported in both languages. It is the number each new wave has to
-move, and the honest answer to "how much is still missing".
+Recall sits above the share of rules ported in every language measured. It is the number each new
+wave has to move, and the honest answer to "how much is still missing".
+
+The tool also names the checks it covers least (`--missing`), and the waves are chosen from the top
+of that list rather than from taste. The JavaScript wave took recall from 31.8% to 53.2% and
+precision from 43.7% to 50.8% in the same pass.
+
+**Recall borrowed from a noisy rule is not recall.** The Java figure fell from 48.1% to 43.5% in the
+pass that fixed three structural rules, and that is the trade being made on purpose: those rules were
+landing on marked lines by accident, because they reported on nearly everything. The same pass removed
+about 3,900 findings and lost 560 matched lines — seven out of eight of the findings that went away
+were on lines nobody had marked. The engine now says less and is right more often, which is the only
+direction that matters when the report is read by a person.
+
+### One defect, one finding
+
+A reader who is told the same thing three times stops reading. `tools/overlapping_rules.py` runs the
+engine over a corpus and reports the rule pairs whose findings land on the same line:
+
+```bash
+python tools/overlapping_rules.py --path <corpus> --extension .java
+```
+
+On the Java corpus it found twenty such pairs, and the largest was four rules for one defect: a call
+to `System.out` was reported by a shared analyzer and by three separate ported entries, 1,076 times
+each. Seven rules were retired in favour of the one that says it best. Retirement is recorded in the
+catalogue rather than hidden: the entry keeps its documentation and takes `status: superseded` with
+`superseded_by`, so the identifier keeps its meaning and is never handed to a different check. The
+validator enforces that pairing, and the count of overlapping pairs is down to nine.
+
+Two of the retired rules were worse than redundant. *Unsafe APIs should not be used* and *Invalid
+Date values should not be used* were both written as one-line matches — `new Random()` and
+`new Date()` — which is not what either title claims. The first is gone; the second was rewritten to
+do what it says, and now reports `new Date(2020, 13, 5)` and leaves `new Date(2020, 11, 5)` alone.
+
+### Saying less on purpose
+
+Four changes in this pass exist to make the report describe code someone actually wrote:
+
+- **Generated files are not reviewed code.** A file whose first lines say a tool wrote it is skipped
+  unless `--all-files` is given. On one production repository that removed 13 files — and with them
+  half the counted lines, the 16.6% duplication figure, and 300 findings nobody could have acted on,
+  since the next run of the generator would erase the fix.
+- **Only a private method is asked to become static.** Anything else — an override, an interface
+  implementation, a member a subclass replaces — is somebody's contract, and the engine cannot see
+  those callers from one file.
+- **An empty body that explains itself is left alone.** The rule asks for the emptiness to be
+  documented, so a comment inside the body is the answer to it.
+- **A security rule needs its receiver.** *Classes should not be loaded from names computed at run
+  time* matched any call named `forName`, so every `Charset.forName("UTF-8")` was reported as a
+  vulnerability. It now asks for `Class`.
+- **A file is not binary because of one odd byte.** The scanner rejected any file with a zero byte in
+  its first block, which silently dropped whole sources — including the ones holding exactly the
+  control characters a rule exists to find. It now measures how much of the head is unreadable.
+- **A repeated type name is only confusing among neighbours.** `Settings` exists once per module by
+  design; the comparison is made within one folder instead of across the whole tree.
 
 ### What the measurements found
 

@@ -48,12 +48,24 @@ public static class RegexLiterals
     private static readonly string[] RegexReceivers =
         ["Regex", "RegExp", "re", "Pattern", "regexp"];
 
+    /// <summary>
+    /// Methods that take a regular expression on an ordinary string receiver. In Java this is how
+    /// most patterns in a codebase are written — 'text.matches(...)', 'text.replaceAll(...)' — and
+    /// requiring a Pattern receiver skipped every one of them.
+    /// </summary>
+    private static readonly string[] StringRegexMethods =
+        ["matches", "replaceAll", "replaceFirst", "split"];
+
     public static IEnumerable<RegexLiteral> In(IRuleContext context)
     {
+        var stringMethodsCarryRegex = context.Language.LanguageKey is "java" or "kt";
+
         foreach (var call in SyntaxQuery.Invocations(context.Root))
         {
             var name = SyntaxQuery.InvokedName(call);
-            var certain = AlwaysPatterns.Contains(name, StringComparer.Ordinal);
+            var certain = AlwaysPatterns.Contains(name, StringComparer.Ordinal)
+                          || (stringMethodsCarryRegex
+                              && StringRegexMethods.Contains(name, StringComparer.Ordinal));
             if (!certain && !(OnlyWithRegexReceiver.Contains(name, StringComparer.Ordinal)
                               && RegexReceivers.Contains(SyntaxQuery.Receiver(call), StringComparer.Ordinal)))
                 continue;
@@ -288,15 +300,69 @@ public sealed class DuplicateCharacterInClassRule : RegexRuleBase
                 var duplicate = characterClass.Items
                     .GroupBy(item => item, StringComparer.Ordinal)
                     .FirstOrDefault(group => group.Count() > 1);
-                if (duplicate == null)
+                if (duplicate != null)
+                {
+                    context.Report(literal.Node, $"'{duplicate.Key}' appears twice in the same "
+                                                 + "character class. One of the two was meant to be a "
+                                                 + "different character, or the class can be "
+                                                 + "shortened.");
+                    break;
+                }
+
+                // A range covers the characters between its ends, so '[0-99]' and '[0-73-9]' repeat
+                // themselves without repeating a symbol. Matching only identical items missed every
+                // overlap, which is the form this mistake usually takes.
+                var overlap = Overlapping(characterClass.Items);
+                if (overlap == null)
                     continue;
-                context.Report(literal.Node, $"'{duplicate.Key}' appears twice in the same character "
-                                             + "class. One of the two was meant to be a different "
-                                             + "character, or the class can be shortened.");
+                context.Report(literal.Node, $"'{overlap.Value.Second}' is already covered by "
+                                             + $"'{overlap.Value.First}' in this character class, so "
+                                             + "one of the two does nothing. Widen the range, or "
+                                             + "correct the character that was meant.");
                 break;
             }
         }
     }
+
+    /// <summary>
+    /// The first pair of items in a class where one already matches everything the other does. A
+    /// range is expanded to the set it stands for; anything the parser could not read is skipped
+    /// rather than guessed at.
+    /// </summary>
+    private static (string First, string Second)? Overlapping(IReadOnlyList<string> items)
+    {
+        var sets = new List<(string Text, HashSet<char> Chars)>();
+        foreach (var item in items)
+        {
+            var chars = Expand(item);
+            if (chars == null)
+                continue;
+            foreach (var (text, previous) in sets)
+            {
+                if (previous.Overlaps(chars))
+                    return (text, item);
+            }
+            sets.Add((item, chars));
+        }
+        return null;
+    }
+
+    /// <summary>The characters an item stands for, or null when it is not a plain literal or range.</summary>
+    private static HashSet<char>? Expand(string item)
+    {
+        if (item.Length == 1 && !char.IsControl(item[0]))
+            return [item[0]];
+        if (item.Length == 3 && item[1] == '-' && item[0] <= item[2]
+            && char.IsLetterOrDigit(item[0]) && char.IsLetterOrDigit(item[2]))
+        {
+            var set = new HashSet<char>();
+            for (var c = item[0]; c <= item[2]; c++)
+                set.Add(c);
+            return set;
+        }
+        return null;
+    }
+
 }
 
 public sealed class SingleCharacterClassRule : RegexRuleBase

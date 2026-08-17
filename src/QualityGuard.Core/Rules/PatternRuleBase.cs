@@ -28,7 +28,23 @@ public abstract class RuleBase : IRule
         }
     }
 
-    public virtual RuleDescription Description => RuleDocs.For(Key, Name, Kind, Category);
+    /// <summary>
+    /// The one sentence that says how this particular finding is fixed, for rules that have no catalog
+    /// entry to take it from. Without it those rules fall back to the generic advice for their
+    /// category, which is true but says nothing about the code in front of the reader.
+    /// </summary>
+    public virtual string? FixAdvice => null;
+
+    public virtual RuleDescription Description
+    {
+        get
+        {
+            var described = RuleDocs.For(Key, Name, Kind, Category);
+            return FixAdvice is { Length: > 0 } advice && RuleCatalog.Find(Key) == null
+                ? described with { HowToFix = advice }
+                : described;
+        }
+    }
 
     public virtual string[] Tags => RuleDocs.TagsFor(Key, []);
 

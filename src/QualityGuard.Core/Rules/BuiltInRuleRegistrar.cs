@@ -17,13 +17,16 @@ public static class BuiltInRuleRegistrar
         ..Languages.SwiftRuleSet.All,
         ..Languages.JavaAstRuleSet.All,
         ..Languages.JavaContractRuleSet.All,
+        ..Languages.JavaMeasuredRuleSet.All,
         ..Languages.JsTsRuleSet.All,
         ..Languages.JsTsAstRuleSet.All,
         ..Languages.JsTsSemanticRuleSet.All,
         ..Languages.JsTsUsageRuleSet.All,
+        ..Languages.JsTsMeasuredRuleSet.All,
         ..Languages.PythonRuleSet.All,
         ..Languages.PythonAstRuleSet.All,
         ..Languages.PythonRuntimeRuleSet.All,
+        ..Languages.PythonMeasuredRuleSet.All,
         ..Languages.RubyRuleSet.All,
         ..Languages.GoRuleSet.All,
         ..Languages.PhpRuleSet.All,
@@ -125,7 +128,9 @@ public sealed class EmptyBlockRule : TextualRuleBase
     /// <summary>Keywords whose block is nested inside a body rather than being one.</summary>
     private static readonly string[] NestingKeywords =
     [
-        "if", "else", "for", "foreach", "while", "do", "switch", "try", "catch", "finally",
+        // 'catch' is deliberately absent: an ignored exception is a defect of its own, and the rule
+        // about it says more than "this block is empty"
+        "if", "else", "for", "foreach", "while", "do", "switch", "try", "finally",
         "using", "lock", "synchronized", "unless", "elsif", "elif"
     ];
 

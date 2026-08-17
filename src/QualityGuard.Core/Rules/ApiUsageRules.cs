@@ -152,6 +152,14 @@ public sealed class StandardOutputForLoggingRule : ApiRuleBase
                                  + "timestamp and no way of being switched off in production. Send it "
                                  + "through the logger the application already configures.");
         }
+
+        foreach (var call in SyntaxQuery.InvocationsNamed(context.Root, "printStackTrace"))
+        {
+            context.Report(call, "The stack trace goes to the console with nothing around it: no level, "
+                                 + "no timestamp, and no record of what the program was doing. Log the "
+                                 + "exception through the logger, which keeps the trace and the context "
+                                 + "together.");
+        }
     }
 }
 

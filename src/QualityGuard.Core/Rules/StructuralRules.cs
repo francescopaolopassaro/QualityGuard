@@ -446,7 +446,16 @@ public sealed class MatchWithoutDefaultRule : StructuralRuleBase
 public sealed class DuplicatedStringLiteralRule : StructuralRuleBase
 {
     private const int Threshold = 3;
-    private const int MinLength = 6;
+
+    /// <summary>
+    /// Short strings are repeated everywhere and naming them buys nothing: a constant called
+    /// SLASH holding "/" is worse than the slash. The advice starts paying at about this length.
+    /// </summary>
+    private const int MinLength = 10;
+
+    /// <summary>Calls whose string argument names a module, not a value that could be a constant.</summary>
+    private static readonly string[] ModuleReferences =
+        ["require", "import", "define", "mock", "unmock", "doMock", "jest.mock", "importScripts"];
 
     public override string Key => "QG-ALL-SML-0008";
     public override string Name => "String literals should not be duplicated";
@@ -456,8 +465,9 @@ public sealed class DuplicatedStringLiteralRule : StructuralRuleBase
 
     public override void Execute(IRuleContext context)
     {
+        var modules = ModuleNames(context);
         var groups = context.Root.OfKind(NodeKind.StringLiteral)
-            .Where(l => l.Text.Trim().Length >= MinLength)
+            .Where(l => Nameable(l.Text) && !modules.Contains(l.Text))
             .GroupBy(l => l.Text, StringComparer.Ordinal)
             .Where(g => g.Count() >= Threshold);
 
@@ -467,6 +477,36 @@ public sealed class DuplicatedStringLiteralRule : StructuralRuleBase
             context.Report(first, $"This literal is repeated {group.Count()} times; "
                                   + "declare it once as a constant and reference it.");
         }
+    }
+
+    /// <summary>
+    /// Whether a literal is the kind of thing a constant can be given a name for: long enough to be
+    /// worth naming, and made of words rather than punctuation or a number.
+    /// </summary>
+    private static bool Nameable(string text)
+    {
+        var trimmed = text.Trim();
+        return trimmed.Length >= MinLength && trimmed.Any(char.IsLetter);
+    }
+
+    /// <summary>
+    /// The module names the file mentions. Repeating one is how imports are written, and replacing it
+    /// with a constant would break the tools that read those calls statically.
+    /// </summary>
+    private static HashSet<string> ModuleNames(IRuleContext context)
+    {
+        var names = new HashSet<string>(StringComparer.Ordinal);
+        foreach (var call in SyntaxQuery.Invocations(context.Root))
+        {
+            var invoked = SyntaxQuery.InvokedName(call);
+            var dotted = SyntaxQuery.InvokedDottedName(call);
+            if (!ModuleReferences.Contains(invoked, StringComparer.Ordinal)
+                && !ModuleReferences.Contains(dotted, StringComparer.Ordinal))
+                continue;
+            if (SyntaxQuery.ArgumentAt(call, 0) is { Kind: NodeKind.StringLiteral } module)
+                names.Add(module.Text);
+        }
+        return names;
     }
 }
 
@@ -512,10 +552,20 @@ public sealed class EmptyFunctionRule : StructuralRuleBase
     {
         foreach (var function in SyntaxQuery.Functions(context.Root))
         {
+            if (function.Kind == NodeKind.ConstructorDeclaration)
+                continue; // an empty constructor is how a class says it takes no setup
             var body = SyntaxQuery.Body(function);
-            if (body is { Children.Count: 0 })
-                context.Report(function, $"'{function.Text}' has an empty body; implement it, "
-                                         + "or document why doing nothing is the intended behaviour.");
+            if (body is not { Children.Count: 0 })
+                continue;
+            // the rule asks for the emptiness to be documented, so a comment inside the body is the
+            // answer to it — and the tree does not keep comments, which is why the tokens are read
+            // strictly inside: a comment on the closing line is a note about the method, not in it
+            if (context.Tokens.Any(t => t.Kind == Tokenization.TokenKind.Comment
+                                        && t.Line > body.Range.StartLine && t.Line < body.Range.EndLine))
+                continue;
+
+            context.Report(function, $"'{function.Text}' has an empty body; implement it, "
+                                     + "or document why doing nothing is the intended behaviour.");
         }
     }
 }
@@ -1071,11 +1121,13 @@ public sealed class TestWithoutAssertionRule : StructuralRuleBase
         }
     }
 
+    /// <summary>
+    /// Whether the file is a test. It shares the judgement with the rest of the engine rather than
+    /// asking whether the name contains "test": a sample under src/test/resources is data a test
+    /// reads, and every one of those was being reported as a test that verifies nothing.
+    /// </summary>
     private static bool LooksLikeTestFile(IRuleContext context)
-    {
-        var name = context.File.FileName.ToLowerInvariant();
-        return name.Contains("test") || name.Contains("spec");
-    }
+        => Rules.Languages.LanguageRuleSupport.IsTestFile(context.File.Path, context.File.FileName);
 
     private static bool IsTestName(SyntaxNode function)
     {
@@ -1125,7 +1177,7 @@ public sealed class GenericExceptionThrownRule : StructuralRuleBase
         ["Exception", "SystemException", "Throwable", "Error", "RuntimeException", "BaseException"];
 
     public override string Key => "QG-ALL-SML-0026";
-    public override string Name => "Thrown exceptions should say what went wrong";
+    public override string Name => "Thrown exceptions should be specific";
     public override Severity Severity => Severity.Major;
     public override IssueKind Kind => IssueKind.CodeSmell;
     public override string RemediationEffort => "15min";
@@ -1489,10 +1541,16 @@ public sealed class DuplicateTypeNameRule : StructuralRuleBase
 
         foreach (var type in context.Root.OfKind(NodeKind.ClassDeclaration))
         {
-            if (type.Text.Length == 0 || !context.Project.IsDeclaredMoreThanOnce(type.Text))
+            if (type.Text.Length < 3 || !context.Project.IsDeclaredMoreThanOnce(type.Text))
                 continue;
+            // The same simple name in two packages is ordinary — Settings, Options, Handler exist
+            // once per module by design, and the language keeps them apart. It only confuses a
+            // reader when the two sit side by side, so the comparison is made within one folder.
+            var folder = System.IO.Path.GetDirectoryName(context.File.Path) ?? string.Empty;
             var others = context.Project.FindTypes(type.Text)
-                .Where(t => t.File != context.File.Path)
+                .Where(t => t.File != context.File.Path
+                            && string.Equals(System.IO.Path.GetDirectoryName(t.File), folder,
+                                StringComparison.OrdinalIgnoreCase))
                 .Select(t => System.IO.Path.GetFileName(t.File))
                 .Distinct()
                 .ToArray();
@@ -1679,9 +1737,16 @@ public sealed class MethodCouldBeStaticRule : StructuralRuleBase
                 if (method.Ancestor(NodeKind.ClassDeclaration) != type || method.Text.Length == 0)
                     continue;
                 var modifiers = method.ChildrenOf(NodeKind.Modifier).Select(m => m.Text).ToArray();
-                if (modifiers.Any(m => m is "static" or "override" or "virtual" or "abstract" or "partial"))
+                if (modifiers.Any(m => m is "static" or "override" or "virtual" or "abstract" or "partial"
+                        or "default" or "extern" or "async"))
                     continue;
-                if (method.ChildrenOf(NodeKind.Attribute).Any())
+                // Only a private method can be turned static without touching anything outside the
+                // class: everything else is somebody's contract — an override, an implementation of
+                // an interface, or a member a subclass is expected to be able to replace. The engine
+                // cannot see those callers from one file, so it does not guess about them.
+                if (!modifiers.Contains("private", StringComparer.Ordinal))
+                    continue;
+                if (method.ChildrenOf(NodeKind.Attribute).Any() || method.ChildrenOf(NodeKind.Annotation).Any())
                     continue; // a framework may require the instance form
                 var body = SyntaxQuery.Body(method);
                 if (body is null or { Children.Count: 0 })
