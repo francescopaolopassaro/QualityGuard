@@ -40,7 +40,6 @@ public static class JsTsRuleSet
         new JsInfiniteLoopRule(),
         new JsParseIntRadixRule(),
         new JsVarRule(),
-        new JsStrictEqualityRule(),
         new JsSetTimeoutStringRule(),
         new TsSuppressionRule()
     ];
@@ -654,33 +653,6 @@ public sealed class JsVarRule : PatternRuleBase
     {
         foreach (var token in context.Tokens.Where(t => t.Text == "var"))
             context.Report("Use const or let instead of var.", token.Line);
-    }
-}
-
-public sealed class JsStrictEqualityRule : PatternRuleBase
-{
-    public override string Key => "QG-JS-BUG-0001";
-    public override string Name => "Loose equality operators";
-    public override Severity Severity => Severity.Major;
-    public override IssueKind Kind => IssueKind.Bug;
-    public override string RemediationEffort => "20min";
-    public override string FixAdvice => "Use === and !== to avoid implicit type coercion.";
-    public override string[] Languages => ["js", "ts"];
-
-    public override void Execute(IRuleContext context)
-    {
-        var tokens = context.Tokens;
-        for (var i = 0; i < tokens.Count; i++)
-        {
-            if (tokens[i].Text != "==" && tokens[i].Text != "!=")
-                continue;
-            // comparing with null covers undefined as well and is the accepted idiom
-            var neighbour = i + 1 < tokens.Count ? tokens[i + 1].Text : string.Empty;
-            var previous = i > 0 ? tokens[i - 1].Text : string.Empty;
-            if (neighbour is "null" or "undefined" || previous is "null" or "undefined")
-                continue;
-            context.Report("Use strict equality (===/!==) to avoid type coercion bugs.", tokens[i].Line);
-        }
     }
 }
 

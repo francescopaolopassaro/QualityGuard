@@ -234,6 +234,12 @@ public sealed class SelfAssignmentRule : StructuralRuleBase
             if (assignment.Text != "=")
                 continue;
             // a declaration is not a self-assignment, whatever its initializer is called
+            // 'new Thing { Id = Id }' sets a member of the object being built from a variable that
+            // happens to share its name. The two sides are different things, and reading them as one
+            // reported every object initialiser written against a matching parameter name.
+            if (assignment.Ancestor(NodeKind.ObjectCreation, NodeKind.ListLiteral,
+                    NodeKind.ArrayCreation, NodeKind.Attribute) != null)
+                continue;
             if (assignment.Parent is { Kind: NodeKind.VariableDeclaration or NodeKind.FieldDeclaration })
                 continue;
 
@@ -477,8 +483,19 @@ public sealed class DuplicatedStringLiteralRule : StructuralRuleBase
     public override IssueKind Kind => IssueKind.CodeSmell;
     public override string RemediationEffort => "10min";
 
+    /// <summary>
+    /// Formats with nowhere to put a constant. A repeated value in JSON, in a template or in a
+    /// stylesheet is how those files are written, and there is no declaration to move it to.
+    /// </summary>
+    private static readonly string[] NoConstants =
+        ["json", "yaml", "yml", "xml", "csv", "html", "raz", "razor", "cshtml", "vbhtml", "vue",
+         "css", "scss", "sass", "less", "md", "txt", "resx", "config", "sql"];
+
     public override void Execute(IRuleContext context)
     {
+        if (NoConstants.Contains(context.Language.LanguageKey, StringComparer.OrdinalIgnoreCase))
+            return;
+
         var modules = ModuleNames(context);
         var groups = context.Root.OfKind(NodeKind.StringLiteral)
             .Where(l => Nameable(l.Text) && !modules.Contains(l.Text))
@@ -1254,9 +1271,17 @@ public sealed class TestWithoutAssertionRule : StructuralRuleBase
                 continue;
             if (!IsTestName(function))
                 continue;
-            var asserts = function.OfKind(NodeKind.Invocation)
-                .Any(call => AssertionNames.Any(name =>
-                    SyntaxQuery.InvokedName(call).ToLowerInvariant().Contains(name)));
+            // The assertion is often the receiver, not the method: NUnit writes 'Assert.That',
+            // xUnit 'Assert.Equal', FluentAssertions 'value.Should().Be'. Reading only the method
+            // name saw 'That' and 'Be' and reported tests that assert on every line.
+            var asserts = function.OfKind(NodeKind.Invocation).Any(call =>
+            {
+                var chain = SyntaxQuery.InvokedDottedName(call);
+                if (chain.Length == 0)
+                    chain = SyntaxQuery.InvokedName(call);
+                var lowered = chain.ToLowerInvariant();
+                return AssertionNames.Any(name => lowered.Contains(name));
+            });
             if (asserts)
                 continue;
             context.Report(function, $"'{function.Text}' runs code but asserts nothing, "

@@ -8,6 +8,9 @@ public static class CSharpRuleSet
 {
     public static IReadOnlyList<IRule> All { get; } =
     [
+        new CsUploadedFileNameRule(),
+        new CsMutableCollectionPropertyRule(),
+        new CsAsyncSuffixRule(),
         new CsProcessExecutionRule(),
         new CsSqlInjectionRule(),
         new CsWeakCryptoRule(),
@@ -587,6 +590,10 @@ public sealed class CsSsrRule : PatternRuleBase
     public override void Execute(IRuleContext context)
     {
         if (!context.Tree.HasDedicatedParser)
+            return;
+
+        // a test names the address of the server it started itself
+        if (LanguageRuleSupport.IsTestFile(context.File.Path, System.IO.Path.GetFileName(context.File.Path)))
             return;
 
         foreach (var call in SyntaxQuery.Invocations(context.Root))
@@ -1381,87 +1388,114 @@ public sealed class CsNullReferenceRule : PatternRuleBase
     /// <summary>Calls that answer with null when they find nothing.</summary>
     private static readonly string[] MayReturnNull =
     [
-        "FirstOrDefault", "SingleOrDefault", "LastOrDefault", "GetValueOrDefault",
-        "FirstOrDefaultAsync", "SingleOrDefaultAsync", "Find"
+        "FirstOrDefault", "SingleOrDefault", "LastOrDefault", "ElementAtOrDefault",
+        "FirstOrDefaultAsync", "SingleOrDefaultAsync", "LastOrDefaultAsync", "Find", "FindAsync"
     ];
 
     public override void Execute(IRuleContext context)
     {
-        // The rule used to mark a name nullable anywhere in the file and then report every later
-        // dereference of it, with no flow and no scope: '??=' three lines above did not help, and a
-        // reassignment did not either. Without a null analysis the only honest form is the local
-        // one — the value comes back possibly null and is dereferenced immediately, with nothing in
-        // between that could have checked it.
-        var tokens = context.Tokens;
-        for (var i = 0; i + 3 < tokens.Count; i++)
+        if (!context.Tree.HasDedicatedParser)
+            return;
+
+        foreach (var block in context.Root.OfKind(NodeKind.Block))
         {
-            if (tokens[i].Kind != TokenKind.Identifier || tokens[i + 1].Text != "=")
-                continue;
-            if (tokens[i + 1].Text is "==" or "=>" || tokens[i - 1 < 0 ? 0 : i - 1].Text is "?" or "!" or "<" or ">")
-                continue;
+            var statements = block.Children;
+            for (var i = 0; i < statements.Count - 1; i++)
+            {
+                // the value comes back possibly null and is given a name
+                var declaration = statements[i];
+                if (declaration.Kind != NodeKind.VariableDeclaration || declaration.Text.Length == 0)
+                    continue;
+                var producer = declaration.OfKind(NodeKind.Invocation)
+                    .FirstOrDefault(c => MayReturnNull.Contains(SyntaxQuery.InvokedName(c), StringComparer.Ordinal));
+                if (producer == null)
+                    continue;
 
-            var source = FindNullableCall(tokens, i + 2);
-            if (source < 0)
-                continue;
+                var name = declaration.Text;
+                var next = statements[i + 1];
 
-            var name = tokens[i].Text;
-            var statementEnd = EndOfStatement(tokens, source);
-            var use = FindImmediateDereference(tokens, statementEnd, name);
-            if (use < 0)
-                continue;
+                // Anything that tests the value stops the search, and a statement that tests it is
+                // not a defect whatever else it does: 'return x != null && x.P' checks before it
+                // reads, and so does 'if (x is null) return;'.
+                if (Tests(next, name))
+                    continue;
 
-            context.Report($"'{name}' is null when nothing is found, and this line reads a member of "
-                           + "it without checking. Test it first, or use the null-conditional "
-                           + "operator.", tokens[use].Line);
+                var dereference = next.OfKind(NodeKind.MemberSelect)
+                    .FirstOrDefault(m => m.ChildAt(0) is { Kind: NodeKind.Identifier } target
+                                         && target.Text == name
+                                         // '?.' already answers the question
+                                         && !m.Tokens.Any(t => t.Text == "?."));
+                if (dereference == null)
+                    continue;
+
+                context.Report($"'{name}' is null when nothing is found, and the next line reads a "
+                               + "member of it without checking. Test it first, or use the "
+                               + "null-conditional operator.", dereference.Range.StartLine);
+            }
         }
     }
 
-    /// <summary>The index of a call that may answer null, within the statement starting here.</summary>
-    private static int FindNullableCall(IReadOnlyList<Token> tokens, int from)
+    /// <summary>Whether a statement checks the name against null before using it.</summary>
+    private static bool Tests(SyntaxNode statement, string name)
     {
-        for (var i = from; i < tokens.Count && i - from < 48; i++)
+        if (statement.Kind is NodeKind.If or NodeKind.Match)
+            return true;
+        foreach (var node in statement.DescendantsAndSelf())
         {
-            if (tokens[i].Text == ";")
-                return -1;
-            if (tokens[i].Kind == TokenKind.Identifier && MayReturnNull.Contains(tokens[i].Text))
-                return i;
-        }
-        return -1;
-    }
-
-    private static int EndOfStatement(IReadOnlyList<Token> tokens, int from)
-    {
-        for (var i = from; i < tokens.Count && i - from < 96; i++)
-        {
-            if (tokens[i].Text == ";")
-                return i;
-        }
-        return -1;
-    }
-
-    /// <summary>
-    /// A dereference of the name in the statement that follows, with nothing between that could
-    /// have checked it — no if, no null-conditional, no coalescing assignment.
-    /// </summary>
-    private static int FindImmediateDereference(IReadOnlyList<Token> tokens, int statementEnd, string name)
-    {
-        if (statementEnd < 0)
-            return -1;
-
-        for (var i = statementEnd + 1; i < tokens.Count && i - statementEnd < 64; i++)
-        {
-            var text = tokens[i].Text;
-            // only something that could have checked the value stops the search; 'return' does not
-            if (text is "if" or "?" or "??" or "??=" or "while" or "}" or "{")
-                return -1;
-            if (text == ";")
-                return -1;
-            if (tokens[i].Kind != TokenKind.Identifier || tokens[i].Text != name)
+            // '!=', '==', 'is' and the null-conditional all read as a check of the same name
+            var checks = node.Kind switch
+            {
+                NodeKind.Binary => node.Text is "==" or "!=" or "&&" or "||" or "??" or "is",
+                NodeKind.Conditional => true,
+                _ => node.Text is "?." or "??"
+            };
+            if (!checks)
                 continue;
-            if (i + 1 < tokens.Count && tokens[i + 1].Text == ".")
-                return i;
+            if (node.DescendantsAndSelf().Any(n => n.Kind == NodeKind.Identifier && n.Text == name))
+                return true;
         }
-        return -1;
+        return false;
+    }
+}
+
+public sealed class CsUploadedFileNameRule : PatternRuleBase
+{
+    /// <summary>Calls that turn a string into a place on disk.</summary>
+    private static readonly string[] PathCalls =
+        ["Combine", "GetFullPath", "Create", "WriteAllBytes", "WriteAllText", "OpenWrite", "Open",
+         "CreateText", "AppendAllText", "Move", "Copy", "SaveAs", "SaveAsAsync"];
+
+    public override string Key => "QG-CS-SEC-0066";
+    public override string Name => "An uploaded file should not name its own place on disk";
+    public override Severity Severity => Severity.Critical;
+    public override IssueKind Kind => IssueKind.Vulnerability;
+    public override string RemediationEffort => "30min";
+    public override string FixAdvice => "Generate the stored name yourself and keep the original only as data.";
+    public override string[] Languages => ["cs", "vb"];
+
+    public override void Execute(IRuleContext context)
+    {
+        if (!context.Tree.HasDedicatedParser)
+            return;
+
+        foreach (var call in SyntaxQuery.Invocations(context.Root))
+        {
+            if (!PathCalls.Contains(SyntaxQuery.InvokedName(call), StringComparer.Ordinal))
+                continue;
+
+            // Storing the name the client sent is ordinary — it is data about the upload. The defect
+            // is letting that name decide where the bytes land, because it can contain a path.
+            var fromClient = SyntaxQuery.Arguments(call)
+                .Any(a => a.DescendantsAndSelf().Any(n => n.Kind == NodeKind.MemberSelect
+                                                          && n.Text.EndsWith(".FileName", StringComparison.Ordinal)));
+            if (!fromClient)
+                continue;
+
+            context.Report("The name the client sent decides where this file is written, and a name "
+                           + "can contain a path: '..' walks out of the folder, and a familiar name "
+                           + "overwrites something that was already there. Generate the stored name "
+                           + "yourself and keep the original only as data.", call.Range.StartLine);
+        }
     }
 }
 
@@ -1493,47 +1527,181 @@ public sealed class CsFloatEqualityRule : PatternRuleBase
 
 public sealed class CsCollectionModifiedRule : PatternRuleBase
 {
+    /// <summary>Calls that change the shape of a collection while something is walking it.</summary>
+    private static readonly string[] Structural =
+        ["Add", "AddRange", "Remove", "RemoveAt", "RemoveAll", "RemoveRange", "Clear", "Insert",
+         "InsertRange", "Push", "Pop", "Enqueue", "Dequeue"];
+
     public override string Key => "QG-CS-BUG-0005";
-    public override string Name => "Collection modified while iterating";
+    public override string Name => "A collection should not change while it is being walked";
     public override Severity Severity => Severity.Major;
     public override IssueKind Kind => IssueKind.Bug;
     public override string RemediationEffort => "20min";
-    public override string FixAdvice => "Collect the changes and apply them after the loop.";
+    public override string FixAdvice => "Iterate a copy, or collect the changes and apply them after the loop.";
     public override string[] Languages => ["cs", "vb"];
 
     public override void Execute(IRuleContext context)
     {
-        var tokens = context.Tokens;
-        for (var i = 0; i < tokens.Count; i++)
+        if (!context.Tree.HasDedicatedParser)
+            return;
+
+        foreach (var loop in context.Root.OfKind(NodeKind.Loop))
         {
-            if (!CSharpRuleSet.IsWord(tokens[i], "foreach")) continue;
-            string? coll = null;
-            var paren = 0;
-            for (var j = i + 1; j < tokens.Count; j++)
+            // the collection being walked is the last name in the header, before the body
+            var walked = WalkedCollection(loop);
+            if (walked.Length == 0)
+                continue;
+            var body = loop.FirstChild(NodeKind.Block);
+            if (body == null)
+                continue;
+
+            foreach (var call in SyntaxQuery.Invocations(body))
             {
-                if (tokens[j].Text == "(") { paren++; continue; }
-                if (tokens[j].Text == ")") { if (paren == 0) break; paren--; continue; }
-                if (paren > 0 && CSharpRuleSet.IsWord(tokens[j], "in") && j + 1 < tokens.Count && tokens[j + 1].Kind == TokenKind.Identifier)
-                    coll = tokens[j + 1].Text;
+                if (!Structural.Contains(SyntaxQuery.InvokedName(call), StringComparer.Ordinal))
+                    continue;
+                // it is only a defect when the collection changed is the one being walked
+                if (SyntaxQuery.Receiver(call) != walked)
+                    continue;
+
+                context.Report($"'{walked}' is being walked by this loop and changed inside it, so the "
+                               + "enumerator is invalidated and the next step throws. Iterate a copy, "
+                               + "or collect the changes and apply them after the loop.",
+                    call.Range.StartLine);
             }
-            if (coll == null) continue;
-            var brace = -1;
-            for (var j = i; j < tokens.Count; j++)
-            {
-                if (tokens[j].Text == "{") { brace = j; break; }
-            }
-            if (brace < 0) continue;
-            var depth = 1;
-            for (var j = brace + 1; j < tokens.Count && depth > 0; j++)
-            {
-                if (tokens[j].Text == "{") { depth++; continue; }
-                if (tokens[j].Text == "}") { depth--; continue; }
-                if (tokens[j].Kind != TokenKind.Identifier || tokens[j].Text != coll) continue;
-                if (j + 3 >= tokens.Count || tokens[j + 1].Text != ".") continue;
-                if (!CSharpRuleSet.IsWord(tokens[j + 2], ["Add", "Remove", "RemoveAt", "Clear", "Insert", "AddRange", "RemoveRange"])) continue;
-                if (tokens[j + 3].Text != "(") continue;
-                context.Report("Do not modify a collection while iterating over it.", tokens[j].Line);
-            }
+        }
+    }
+
+    /// <summary>The name of the collection a foreach walks, or empty when it is not a plain name.</summary>
+    private static string WalkedCollection(SyntaxNode loop)
+    {
+        var body = loop.FirstChild(NodeKind.Block);
+        var header = loop.Children.Where(c => c != body).ToList();
+        if (header.Count == 0)
+            return string.Empty;
+
+        // 'foreach (var item in items)' keeps the source as the last thing before the body
+        var source = header[^1];
+        return source.Kind switch
+        {
+            NodeKind.Identifier => source.Text,
+            NodeKind.MemberSelect => SyntaxQuery.DottedName(source),
+            _ => string.Empty
+        };
+    }
+}
+
+public sealed class CsAsyncSuffixRule : PatternRuleBase
+{
+    private static readonly string[] Awaitable = ["Task", "ValueTask", "IAsyncEnumerable"];
+
+    /// <summary>
+    /// Methods whose name is fixed by something outside the class: the framework calls them by that
+    /// name, and renaming one breaks the binding rather than improving it.
+    /// </summary>
+    private static readonly string[] Reserved =
+        ["Main", "MoveNextAsync", "DisposeAsync", "InvokeAsync", "Invoke", "ExecuteAsync",
+         "OnInitialized", "OnParametersSet", "OnAfterRender", "SetParametersAsync"];
+
+    public override string Key => "QG-CS-SML-0053";
+    public override string Name => "Asynchronous methods should be named accordingly";
+    public override Severity Severity => Severity.Minor;
+    public override IssueKind Kind => IssueKind.CodeSmell;
+    public override string RemediationEffort => "10min";
+    public override string[] Languages => ["cs"];
+
+    public override void Execute(IRuleContext context)
+    {
+        if (!context.Tree.HasDedicatedParser)
+            return;
+
+        foreach (var method in context.Root.OfKind(NodeKind.FunctionDeclaration))
+        {
+            var name = method.Text;
+            if (name.Length == 0 || name.EndsWith("Async", StringComparison.Ordinal))
+                continue;
+            if (Reserved.Contains(name, StringComparer.Ordinal))
+                continue;
+
+            var returned = method.FirstChild(NodeKind.TypeReference)?.Text;
+            if (returned == null || !Awaitable.Any(t => returned == t
+                    || returned.StartsWith(t + "<", StringComparison.Ordinal)))
+                continue;
+
+            // An override, an interface implementation and an event handler are all named by
+            // somebody else. The modifier says so for the first; for the rest the attribute does,
+            // because a framework that routes to a method also decorates it.
+            var modifiers = method.ChildrenOf(NodeKind.Modifier).Select(m => m.Text).ToArray();
+            if (modifiers.Contains("override") || modifiers.Contains("partial"))
+                continue;
+            if (method.ChildrenOf(NodeKind.Attribute).Any() || method.ChildrenOf(NodeKind.AttributeList).Any())
+                continue;
+            // a method with no body is a declaration in an interface: the implementation carries the name
+            if (SyntaxQuery.Body(method) == null)
+                continue;
+
+            context.Report(method, $"'{name}' hands back something that has to be awaited, and its name "
+                                   + "does not say so. A caller who forgets the await gets a task "
+                                   + "nobody watches, and the exception it carries is never raised.");
+        }
+    }
+}
+
+public sealed class CsMutableCollectionPropertyRule : PatternRuleBase
+{
+    /// <summary>Collection types a caller can change through the reference they are handed.</summary>
+    private static readonly string[] Mutable =
+        ["List", "IList", "ICollection", "Collection", "Dictionary", "IDictionary", "HashSet",
+         "ISet", "SortedList", "SortedDictionary", "ObservableCollection", "Queue", "Stack"];
+
+    public override string Key => "QG-CS-SML-0057";
+    public override string Name => "Collections exposed by properties should be read-only";
+    public override Severity Severity => Severity.Major;
+    public override IssueKind Kind => IssueKind.CodeSmell;
+    public override string RemediationEffort => "20min";
+    public override string[] Languages => ["cs"];
+
+    public override void Execute(IRuleContext context)
+    {
+        if (!context.Tree.HasDedicatedParser)
+            return;
+
+        foreach (var property in context.Root.OfKind(NodeKind.PropertyDeclaration))
+        {
+            var modifiers = property.ChildrenOf(NodeKind.Modifier).Select(m => m.Text).ToArray();
+            if (!modifiers.Contains("public") && !modifiers.Contains("protected"))
+                continue;
+
+            var declared = property.FirstChild(NodeKind.TypeReference)?.Text;
+            if (declared == null)
+                continue;
+            var bare = declared.Split('<')[0].Split('.').Last();
+            if (!Mutable.Contains(bare, StringComparer.Ordinal))
+                continue;
+
+            // A framework can require the shape: an ORM writes into a navigation collection through
+            // the setter, and a component receives its parameters the same way. Both are declared
+            // that way on purpose, and neither is the author's choice to make.
+            if (property.ChildrenOf(NodeKind.Attribute).Any())
+                continue;
+            if (modifiers.Contains("virtual") || bare is "ICollection" or "IDictionary" or "ISet")
+                continue;
+
+            // a setter hands the whole collection over; without one the reference is still shared,
+            // but replacing it is at least out of reach
+            var setter = property.OfKind(NodeKind.Accessor)
+                .FirstOrDefault(a => a.Text is "set" or "init");
+            if (setter == null)
+                continue;
+            if (setter.ChildrenOf(NodeKind.Modifier).Any(m => m.Text is "private" or "protected" or "internal"))
+                continue;
+            if (setter.Text == "init")
+                continue;
+
+            context.Report(property, $"'{property.Text}' hands out a {bare} and lets a caller replace "
+                                     + "it. Anything they add or remove skips the checks this type "
+                                     + "performs, and whoever held the previous reference keeps "
+                                     + "watching a collection nobody updates. Expose a read-only view "
+                                     + "and keep the mutable one private.");
         }
     }
 }

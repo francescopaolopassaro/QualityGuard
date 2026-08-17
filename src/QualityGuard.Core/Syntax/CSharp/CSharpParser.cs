@@ -419,14 +419,24 @@ public sealed class CSharpParser
         // reading it as one consumed the rest of the file — after which every position was past the
         // end. Look ahead for the bracket, and stop at what an attribute can never contain.
         var depth = 0;
+        var parens = 0;
         for (var i = _index; i < _tokens.Count && i < _index + 200; i++)
         {
             var text = _tokens[i].Text;
-            if (text == "[")
+            if (text == "(")
+                parens++;
+            else if (text == ")")
+            {
+                // an attribute carries arguments, so only a parenthesis that closes nothing ends it
+                if (parens == 0)
+                    return false;
+                parens--;
+            }
+            else if (text == "[")
                 depth++;
             else if (text == "]" && --depth == 0)
                 return true;
-            else if (text is "{" or ";" or ")")
+            else if (parens == 0 && text is "{" or ";")
                 return false;
         }
         return false;
@@ -1566,13 +1576,17 @@ public sealed class CSharpParser
         {
             var before = _index;
             ParseAttributes();
-            ParseModifiers();
+            // an accessor can narrow the visibility of the property — 'private set' is the usual one
+            // — and a rule about what callers can reach has to be able to see that
+            var accessorModifiers = ParseModifiers();
             if (IsAny(AccessorNames))
             {
                 var accessorStart = Mark();
                 var name = Take().Text;
                 var accessor = new SyntaxNode(NodeKind.Accessor, name,
                     TextRange.Of([_tokens[Math.Min(accessorStart, _tokens.Count - 1)]]));
+                foreach (var modifier in accessorModifiers)
+                    accessor.Add(new SyntaxNode(NodeKind.Modifier, modifier, accessor.Range));
                 if (Is("{"))
                     accessor.Add(ParseBlock());
                 else if (Accept("=>"))
@@ -3177,6 +3191,9 @@ public sealed class CSharpParser
             // PHP reaches a static member with ::, which is the same access for a rule
             if (Is(".") || Is("?.") || (Is("->") && !IsKotlin) || (IsPhp && Is("::")))
             {
+                // the operator itself is kept in the node's tokens: without it a null-conditional
+                // access reads exactly like a plain one, and a rule about null cannot tell them apart
+                var accessOperator = Current;
                 _index++;
                 var privateMember = IsJs && Accept("#");
                 if (!IsName)
@@ -3196,7 +3213,9 @@ public sealed class CSharpParser
                 select.Text = SyntaxQuery.DottedName(select);
                 select.Range = new TextRange(node.Range.StartLine, node.Range.StartColumn,
                     memberNode.Range.EndLine, memberNode.Range.EndColumn);
-                select.Tokens = node.Tokens.Concat(memberNode.Tokens).ToArray();
+                select.Tokens = accessOperator == null
+                    ? node.Tokens.Concat(memberNode.Tokens).ToArray()
+                    : node.Tokens.Append(accessOperator).Concat(memberNode.Tokens).ToArray();
                 node = select;
                 continue;
             }

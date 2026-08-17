@@ -226,7 +226,9 @@ public static class BuiltInLanguages
 
     public static readonly LanguageInfo Xml = new(
         "xml", [".xml", ".xsd", ".xsl", ".xslt", ".csproj", ".fsproj", ".vbproj", ".props", ".targets", ".config",
-            ".resx", ".sln", ".nuspec"],
+            // '.sln' is deliberately absent: a solution file is not XML, and reading it as XML
+            // turned its project list into statements
+            ".resx", ".nuspec"],
         [],
         [],
         null, "<!--", "-->",

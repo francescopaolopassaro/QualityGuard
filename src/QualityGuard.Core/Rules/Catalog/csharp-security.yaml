@@ -450,6 +450,3 @@
     Generate the stored name yourself — an identifier plus an extension derived from a validated content
     type — keep uploads outside the web root, and serve them through an action that sets the content
     type and disposition explicitly.
-  detect:
-    - member: [FileName]
-      requires: [IFormFile, HttpPostedFile]

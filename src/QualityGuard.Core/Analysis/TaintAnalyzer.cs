@@ -202,9 +202,23 @@ public static class TaintEngine
         return changed;
     }
 
+    /// <summary>
+    /// Calls that build the application out of what they are given. 'WebApplication.CreateBuilder(args)'
+    /// reads the command line, but what comes back is the host: treating every member of it as
+    /// attacker-controlled marked the whole program, starting with its own configuration.
+    /// </summary>
+    private static readonly string[] HostFactories =
+    [
+        "CreateBuilder", "CreateDefaultBuilder", "CreateApplicationBuilder", "CreateHostBuilder",
+        "CreateSlimBuilder", "CreateEmptyBuilder", "BuildServiceProvider", "AddCommandLine"
+    ];
+
     internal static bool CarriesTaint(SyntaxNode value, TaintContext context)
     {
         if (IsSanitized(value))
+            return false;
+        if (value.Kind == NodeKind.Invocation
+            && HostFactories.Contains(SyntaxQuery.InvokedName(value), StringComparer.Ordinal))
             return false;
         foreach (var node in value.DescendantsAndSelf())
         {

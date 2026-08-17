@@ -523,6 +523,46 @@ on marked lines by accident, because they reported on nearly everything. The sam
 lines nobody had marked. The engine now says less and is right more often, which is the only
 direction that matters when the report is read by a person.
 
+### Where the false positives come from
+
+Counting the rules by how they are implemented settles the question:
+
+| implementation | rules | share of findings on production code |
+| --- | --- | --- |
+| syntax tree, semantic model, taint | 276 | 55% |
+| token scanning | 409 | |
+| line scanning | 60 | **45%** |
+| catalogue entry with only a line pattern | 181 | |
+
+Six hundred and fifty rules out of nine hundred are heuristics, and they produce nearly half the
+findings. Every false-positive family closed so far came from that half, and they fail in the same
+three ways: a **substring** taken for a word (`0px` inside `40px`, `e.ToString()` inside
+`base.ToString()`), a **name** taken for a type (`_service.DeleteAsync` read as an HTTP call), and a
+**line** taken for a statement (a selector without the blocks it is nested in).
+
+So the programme is to convert them, ordered by how much noise each one makes on real code rather
+than by how easy it is. Nothing new is written as a pattern any more: a rule gets the tree, the
+semantic model and the taint, or it does not get written.
+
+The conversions are worth reading because each one shows what the tree knows that a line does not:
+
+- *Asynchronous methods should be named accordingly* was a regular expression over the line. On the
+  tree it can tell an override from a declaration, see that a method has no body, and know that a
+  method carrying an attribute is named by the framework rather than by its author. 484 findings
+  became 231, and the ones that went were all correct code.
+- *A collection should not change while it is being walked* looked for `foreach` and then for any
+  `.Add(` in the tokens that followed, which reported `anomalie.Add(...)` inside a loop over
+  `comuniSezioni`. It now takes the collection the loop actually walks and compares it with the
+  receiver of the call.
+- *Collections exposed by properties should be read-only* matched a one-line pattern, so it missed
+  every property written over two lines and could not see a `private set`. The parser was keeping the
+  accessors but throwing their modifiers away; it keeps them now.
+
+Converting also found a regression this work had introduced two hours earlier: the guard that stops
+the parser reading an unclosed `[` as an attribute list was returning at the first `)`, and an
+attribute with arguments — `[HttpGet("by-verbale/{id}")]`, which is every controller action ever
+written — has one. Every action in the scanned code had lost its attributes.
+
 ### What a sample found in somebody else's library
 
 The second judged sample was drawn from a different application, and almost every row of it was

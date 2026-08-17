@@ -77,7 +77,9 @@ public static class SourceScanner
         "*.min.js", "*.min.css", "*.bundle.js", "*.map", "*-lock.json", "*.lock",
         "*.g.cs", "*.g.i.cs", "*.designer.cs", "*.Designer.cs", "*.generated.cs", "*.generated.ts",
         "*_pb2.py", "*_pb.go", "*.pb.go", "*.d.ts", "*.snap",
-        "*.designer.vb", "*.Designer.vb", "*.g.vb", "Reference.vb", "Reference.cs"
+        "*.designer.vb", "*.Designer.vb", "*.g.vb", "Reference.vb", "Reference.cs",
+        // a solution file lists projects for the build; nothing in it is written to be reviewed
+        "*.sln", "*.slnx", "*.suo", "*.user", "*.dbmdl"
     ];
 
     /// <summary>

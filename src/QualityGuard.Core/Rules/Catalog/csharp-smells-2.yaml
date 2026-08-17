@@ -37,11 +37,6 @@
   fix: |
     Rename the method with the Async suffix, and keep the synchronous overload — if there is one — under
     the plain name.
-  detect:
-    - line: "(public|private|protected|internal)[^\\n(]*\\b(Task|ValueTask)(<[^>]*>)?\\s+(?!\\w*Async\\b)\\w+\\s*\\("
-      # a controller action is named without the suffix on purpose
-      absent: [ApiController, ControllerBase, "Controller\n", IActionResult]
-
 - key: QG-CS-SML-0054
   name: Library code should not capture the synchronization context
   status: planned
@@ -118,9 +113,6 @@
   fix: |
     Expose IReadOnlyList or IReadOnlyCollection, keep the mutable instance private, and offer explicit
     Add and Remove methods where callers legitimately need to change the contents.
-  detect:
-    - line: "public\\s+(List|Dictionary|HashSet|Collection|IList|ICollection|IDictionary)<[^>]*>\\s+\\w+\\s*\\{[^}]*set\\s*;"
-
 - key: QG-CS-SML-0058
   name: Collection-specific members should be preferred over LINQ
   languages: [cs]
