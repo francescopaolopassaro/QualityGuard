@@ -91,3 +91,74 @@
     to attach to and is ignored. The property is null at run time, and nothing warns at compile time.
   fix: |
     Ask for the related data inside the projection, or apply the loading instruction before it.
+
+- key: QG-CS-SEC-0093
+  name: A command should not be assembled from values
+  languages: [cs, vb]
+  category: SEC
+  severity: blocker
+  effort: 30min
+  cwe: [89]
+  owasp: [A3]
+  tags: [orm, injection, database]
+  summary: A database command is built by joining a value into its text.
+  why: |
+    Whatever the value contains becomes part of the statement. A quote ends the string the author
+    meant and everything after it is executed with the privileges of the connection — reading tables
+    the feature never mentions, or changing them.
+  fix: |
+    Pass the value as a parameter. Every mapper supports it, and the text of the command then never
+    changes.
+  bad: |
+    con.Query("select * from Orders where Id = " + id);
+  good: |
+    con.Query("select * from Orders where Id = @id", new { id });
+
+- key: QG-CS-SEC-0094
+  name: A cryptographic key should be long enough
+  languages: [cs, vb]
+  category: SEC
+  severity: critical
+  effort: 30min
+  cwe: [326]
+  tags: [cryptography]
+  summary: An RSA or DSA key is created below 2048 bits, or with a default that is.
+  why: |
+    Keys of that length are factored today with rented hardware, so what they protect is protected
+    only until someone decides it is worth the cost. The provider's own default is one of them.
+  fix: |
+    State a length of at least 2048 bits, or use an elliptic curve of 256.
+
+- key: QG-CS-PRF-0007
+  name: A query in an asynchronous method should be awaited
+  languages: [cs, vb]
+  category: PRF
+  severity: major
+  effort: 15min
+  tags: [orm, async, performance]
+  summary: A synchronous query ending is used inside a method that is already asynchronous.
+  why: |
+    The thread waits for the database instead of being handed back to the pool, in a method that was
+    written to avoid exactly that. Under load the pool runs out of threads while every one of them
+    sits idle.
+  fix: |
+    Use the awaitable form the mapper provides and await it.
+
+- key: QG-CS-SML-0477
+  name: A collection should answer with its own member
+  languages: [cs, vb]
+  category: SML
+  severity: minor
+  effort: 5min
+  tags: [linq, performance]
+  summary: A LINQ operator is used where the concrete collection has a member for the same question.
+  why: |
+    The operator walks the sequence through an enumerator it has to set up; the collection answers
+    from its own storage. On a hot path the difference is allocations and time spent in the
+    enumerator rather than in the work.
+  fix: |
+    Use the member the type provides.
+  bad: |
+    var all = list.All(x => x.IsValid);
+  good: |
+    var all = list.TrueForAll(x => x.IsValid);

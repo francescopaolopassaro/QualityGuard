@@ -178,4 +178,76 @@ public class OrmRulesTests
             """;
         Assert.Empty(Lines(ordered, "QG-CS-BUG-0147"));
     }
+    [Fact]
+    public void A_command_joined_from_values_is_reported()
+    {
+        var joined = """
+            class A
+            {
+                void F(IDbConnection con, string query, string param)
+                {
+                    con.Query(query + param);
+                }
+            }
+            """;
+        Assert.NotEmpty(Lines(joined, "QG-CS-SEC-0093"));
+
+        var parameterised = """
+            class A
+            {
+                void F(IDbConnection con, int id)
+                {
+                    con.Query("select * from Orders where Id = @id", new { id });
+                }
+            }
+            """;
+        Assert.Empty(Lines(parameterised, "QG-CS-SEC-0093"));
+    }
+
+    [Fact]
+    public void A_short_key_is_reported()
+    {
+        var weak = """
+            class A
+            {
+                object F() => new RSACryptoServiceProvider(1024);
+            }
+            """;
+        Assert.NotEmpty(Lines(weak, "QG-CS-SEC-0094"));
+
+        var strong = """
+            class A
+            {
+                object F() => new RSACryptoServiceProvider(2048);
+            }
+            """;
+        Assert.Empty(Lines(strong, "QG-CS-SEC-0094"));
+    }
+
+    [Fact]
+    public void A_blocking_query_in_an_async_method_is_reported()
+    {
+        var blocking = """
+            class A
+            {
+                async Task F()
+                {
+                    var n = _db.Orders.AsNoTracking().Count();
+                }
+            }
+            """;
+        Assert.NotEmpty(Lines(blocking, "QG-CS-PRF-0007"));
+
+        var inMemory = """
+            class A
+            {
+                async Task F(List<Order> orders)
+                {
+                    var n = orders.Count();
+                }
+            }
+            """;
+        Assert.Empty(Lines(inMemory, "QG-CS-PRF-0007"));
+    }
+
 }

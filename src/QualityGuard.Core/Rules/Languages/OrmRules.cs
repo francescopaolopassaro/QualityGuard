@@ -20,7 +20,8 @@ public static class OrmRuleSet
         new RepeatedEnumerationRule(),
         new RawSqlFromValuesRule(),
         new SynchronousQueryInAsyncRule(),
-        new CollectionOwnPredicateRule()
+        new CollectionOwnPredicateRule(),
+        new WeakKeySizeRule()
     ];
 }
 
@@ -288,10 +289,13 @@ public sealed class RawSqlFromValuesRule : OrmRuleBase
         "QuerySingleOrDefaultAsync", "QueryMultiple", "QueryMultipleAsync", "Execute", "ExecuteAsync",
         "ExecuteScalar", "ExecuteScalarAsync", "ExecuteReader", "ExecuteReaderAsync",
         // NHibernate and OrmLite
-        "CreateSQLQuery", "CreateQuery", "SqlList", "SqlScalar", "SqlColumn", "ExecuteSql"
+        "CreateSQLQuery", "CreateQuery", "SqlList", "SqlScalar", "SqlColumn", "ExecuteSql",
+        // OrmLite: the name is a LINQ name too, and only the concatenated argument tells them apart
+        "Select", "SelectLazy", "SelectNonDefaults", "Single", "SingleById", "Scalar", "Column",
+        "ColumnDistinct", "Dictionary", "Lookup", "Exists", "SqlProc"
     ];
 
-    public override string Key => "QG-CS-SEC-0067";
+    public override string Key => "QG-CS-SEC-0093";
     public override string Name => "A command should not be assembled from values";
     public override IssueKind Kind => IssueKind.Vulnerability;
     public override Severity Severity => Severity.Blocker;
@@ -427,6 +431,63 @@ public sealed class CollectionOwnPredicateRule : OrmRuleBase
             context.Report($"'{bare}' has '{member}' for this, and it answers from its own storage "
                            + $"instead of walking the sequence through an enumerator that '{name}' "
                            + "sets up.", call.Range.StartLine);
+        }
+    }
+}
+
+public sealed class WeakKeySizeRule : OrmRuleBase
+{
+    /// <summary>Providers whose default key length is below what is usable today.</summary>
+    private static readonly string[] WeakByDefault =
+        ["RSACryptoServiceProvider", "DSACryptoServiceProvider"];
+
+    private static readonly string[] Factories = ["Create", "GenerateKey", "KeySize"];
+
+    public override string Key => "QG-CS-SEC-0094";
+    public override string Name => "A cryptographic key should be long enough";
+    public override IssueKind Kind => IssueKind.Vulnerability;
+    public override Severity Severity => Severity.Critical;
+    public override string RemediationEffort => "30min";
+
+    public override void Execute(IRuleContext context)
+    {
+        if (!HasTree(context))
+            return;
+
+        foreach (var creation in context.Root.OfKind(NodeKind.ObjectCreation))
+        {
+            var type = SyntaxQuery.SimpleName(creation.ChildAt(0));
+            if (type.Length == 0)
+                type = creation.Text;
+            if (!WeakByDefault.Contains(type, StringComparer.Ordinal))
+                continue;
+
+            var size = SyntaxQuery.Arguments(creation).FirstOrDefault(a => a.Kind == NodeKind.NumberLiteral);
+            if (size != null && int.TryParse(size.Text, out var bits) && bits >= 2048)
+                continue;
+
+            context.Report(size == null
+                ? $"'{type}' defaults to a 1024-bit key, which is inside the range that is factored "
+                  + "today with rented hardware. State a length of at least 2048."
+                : $"A {size.Text}-bit key is inside the range that is factored today with rented "
+                  + "hardware, so whatever it protects is protected only until someone decides it is "
+                  + "worth the cost. Use at least 2048 bits.", creation.Range.StartLine);
+        }
+
+        foreach (var call in SyntaxQuery.InvocationsNamed(context.Root, Factories))
+        {
+            var receiver = SyntaxQuery.Receiver(call);
+            if (receiver is not ("RSA" or "DSA" or "System.Security.Cryptography.RSA"))
+                continue;
+            var size = SyntaxQuery.ArgumentAt(call, 0);
+            if (size is not { Kind: NodeKind.NumberLiteral } || !int.TryParse(size.Text, out var bits))
+                continue;
+            if (bits >= 2048)
+                continue;
+
+            context.Report($"A {bits}-bit key is too short for this algorithm: keys of that length are "
+                           + "factored today with rented hardware. Use at least 2048 bits.",
+                call.Range.StartLine);
         }
     }
 }

@@ -27,6 +27,7 @@ public static class StructuralRuleSet
         new MatchWithoutDefaultRule(),
         new DuplicatedStringLiteralRule(),
         new UnusedLocalVariableRule(),
+        new DeadStoreRule(),
         new EmptyFunctionRule(),
         new MultipleStatementsPerLineRule(),
         new StringConcatenationInLoopRule(),
@@ -520,6 +521,111 @@ public sealed class DuplicatedStringLiteralRule : StructuralRuleBase
                 names.Add(module.Text);
         }
         return names;
+    }
+}
+
+public sealed class DeadStoreRule : StructuralRuleBase
+{
+    public override string Key => "QG-ALL-BUG-0041";
+    public override string Name => "A value should be read before it is replaced";
+    public override Severity Severity => Severity.Major;
+    public override IssueKind Kind => IssueKind.Bug;
+    public override string RemediationEffort => "10min";
+
+    public override void Execute(IRuleContext context)
+    {
+        if (!HasPreciseTree(context))
+            return;
+
+        foreach (var symbol in context.Semantics.AllSymbols())
+        {
+            if (symbol.Scope.Kind is not (ScopeKind.Function or ScopeKind.Block) || symbol.IsParameter)
+                continue;
+            // a dotted name is a member of another object: it outlives the statement and is read
+            // through the name of the object, which this rule cannot follow
+            if (symbol.Name.StartsWith('_') || symbol.Name.Contains('.'))
+                continue;
+
+            var usages = symbol.Usages
+                .Where(u => u.Kind is UsageKind.Declaration or UsageKind.Assignment or UsageKind.Reference)
+                .OrderBy(u => u.Line)
+                .ToList();
+
+            for (var i = 0; i < usages.Count - 1; i++)
+            {
+                var write = usages[i];
+                if (write.Kind == UsageKind.Reference)
+                    continue;
+                var next = usages[i + 1];
+                if (next.Kind == UsageKind.Reference)
+                    continue;
+
+                // Two writes with no read between them mean the first value never mattered — but
+                // only when both are on the same straight line of code. Across a branch the earlier
+                // write is the value the other path uses, and reporting it would be wrong.
+                if (!SameStraightLine(write.Identifier, next.Identifier))
+                    continue;
+                // a declaration with no value written is not a store
+                if (write.Kind == UsageKind.Declaration && write.Value == null)
+                    continue;
+                // 'new Thing { Name = "a" }' assigns a member of the object being built, not a
+                // variable: two initialisers naming the same member are two different objects
+                if (InsideInitializer(write.Identifier) || InsideInitializer(next.Identifier))
+                    continue;
+                if (SetsAMember(write.Identifier) || SetsAMember(next.Identifier))
+                    continue;
+                // 'ret = ret.Where(...)' reads the value it replaces, so the first store mattered
+                if (next.Value != null && next.Value.DescendantsAndSelf()
+                        .Any(n => n.Kind == NodeKind.Identifier && n.Text == symbol.Name))
+                    continue;
+
+                context.Report(write.Identifier, $"The value put in '{symbol.Name}' here is replaced on "
+                                                 + $"line {next.Line} without ever being read. Either "
+                                                 + "this assignment is left over, or the one that "
+                                                 + "reads it was lost.");
+                break;
+            }
+        }
+    }
+
+    /// <summary>
+    /// Whether the write sets a member of another object — 'filter.Page = 2' — rather than a local.
+    /// The object outlives the statement and is read through its own name, which this rule cannot
+    /// follow.
+    /// </summary>
+    private static bool SetsAMember(SyntaxNode identifier)
+        => identifier.Parent?.Kind == NodeKind.MemberSelect;
+
+    /// <summary>Whether the write sets a member of an object being constructed.</summary>
+    private static bool InsideInitializer(SyntaxNode node)
+    {
+        for (var parent = node.Parent; parent != null; parent = parent.Parent)
+        {
+            // an object initialiser, a collection literal, and the named argument of an attribute:
+            // in none of them is the left-hand side a variable with a lifetime of its own
+            if (parent.Kind is NodeKind.ObjectCreation or NodeKind.ListLiteral or NodeKind.ArrayCreation
+                or NodeKind.Attribute or NodeKind.AttributeList or NodeKind.ArgumentList)
+                return true;
+            if (parent.Kind is NodeKind.Block or NodeKind.FunctionDeclaration)
+                return false;
+        }
+        return false;
+    }
+
+    /// <summary>
+    /// Whether two writes run one after the other with nothing choosing between them: same block, and
+    /// no branch or loop in between that either of them sits inside.
+    /// </summary>
+    private static bool SameStraightLine(SyntaxNode first, SyntaxNode second)
+    {
+        var firstBlock = first.Ancestor(NodeKind.Block);
+        var secondBlock = second.Ancestor(NodeKind.Block);
+        if (firstBlock == null || firstBlock != secondBlock)
+            return false;
+        return first.Ancestor(NodeKind.If, NodeKind.Else, NodeKind.Loop, NodeKind.Match,
+                   NodeKind.Try, NodeKind.Catch, NodeKind.Lambda)
+               == second.Ancestor(NodeKind.If, NodeKind.Else, NodeKind.Loop, NodeKind.Match,
+                   NodeKind.Try, NodeKind.Catch, NodeKind.Lambda);
     }
 }
 

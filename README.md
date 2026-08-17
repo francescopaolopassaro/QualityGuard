@@ -8,7 +8,7 @@ a configurable Quality Gate and exits with `PASSED` or `FAILED` — no server, n
 dotnet run --project src/QualityGuard.Cli -- --path ./src --by-folder
 ```
 
-**1316 rules** across 26 languages, on a real syntax tree with a semantic model, a project index and
+**1318 rules** across 26 languages, on a real syntax tree with a semantic model, a project index and
 interprocedural taint analysis. The bar the engine is held to is precision: every rule is measured on
 a production codebase in its own language before it is kept, and a rule that produces noise is
 rewritten or removed — see [§8](#8-quality-bar).
@@ -141,7 +141,7 @@ Severity and issue kind follow the category: `SEC` → vulnerability (major or a
 
 ## 5. Rules
 
-**1316 rules are loaded and executable**, backed by **2631 catalog entries** (a catalog entry either
+**1318 rules are loaded and executable**, backed by **2636 catalog entries** (a catalog entry either
 carries its own detection or documents a rule implemented in code).
 
 Coverage is tracked honestly in `rules-tracker.tsv`: **3256 catalogued rules are mapped, 1515 of them
@@ -475,7 +475,7 @@ rule that produces noise is rewritten on the syntax tree or removed, and every f
 was fixed is pinned by a regression test — written next to the shape the rule must still report — so
 the precision cannot be lost again silently.
 
-**511 tests** cover the parsers, the semantic model, taint, the scanner and rule precision.
+**514 tests** cover the parsers, the semantic model, taint, the scanner and rule precision.
 
 ```bash
 dotnet build QualityGuard.sln
@@ -500,7 +500,7 @@ usually contains other defects nobody annotated.
 
 | Corpus | Annotated files | Expected lines | Recall | Precision |
 | --- | --- | --- | --- | --- |
-| C# | 1,079 | 11,238 | **63.5%** | 39.1% |
+| C# | 1,079 | 11,238 | **64.3%** | 39.3% |
 | Go | 52 | 234 | **69.2%** | 47.7% |
 | JavaScript | 109 | 921 | **53.2%** | **50.8%** |
 | Python | 611 | 6,451 | **51.4%** | 40.6% |
@@ -522,6 +522,27 @@ on marked lines by accident, because they reported on nearly everything. The sam
 3,900 findings and lost 560 matched lines — seven out of eight of the findings that went away were on
 lines nobody had marked. The engine now says less and is right more often, which is the only
 direction that matters when the report is read by a person.
+
+### What a sample found in somebody else's library
+
+The second judged sample was drawn from a different application, and almost every row of it was
+Bootstrap. `app.css` at fifteen thousand lines, `_buttons.scss`, `_variables.scss`, a folder called
+`bootstrap-5.3.0`: the report was describing a library the team had downloaded, and its own code was
+a tenth of what was being counted.
+
+The scanner already refused `node_modules` and minified bundles for exactly this reason, so the gap
+was in the disguises it did not know. It now also refuses a directory named after a library and its
+version, a directory named after a library the industry has one of — bootstrap, jQuery, DevExpress,
+Font Awesome, Kendo and the rest — and a stylesheet or script that is a build artefact, which gives
+itself away by running to thousands of lines or by carrying the library's banner at the top. That one
+project went from 71,845 counted lines to 7,548, and from 6,592 code smells to 583.
+
+The same sample found two rules wrong in the same way, and it is worth naming because it is the
+commonest mistake in this codebase: **searching for a substring**. "Omit the unit on zero values"
+looked for the text `0px`, which is inside `40px` and `1280px`; more than half its findings were
+ordinary lengths. And "a selector should be defined once" compared the text of a selector without the
+blocks it is nested in, so every `&.hidden` in a stylesheet looked like a duplicate of every other
+one — seventy findings, all of them wrong.
 
 ### Two questions, two instruments
 

@@ -399,3 +399,23 @@
     Regex.IsMatch(input, "^[a-z+$");
   good: |
     Regex.IsMatch(input, @"^[a-z]+$");
+
+- key: QG-ALL-BUG-0041
+  name: A value should be read before it is replaced
+  languages: []
+  category: BUG
+  severity: major
+  effort: 10min
+  tags: [suspicious]
+  summary: A variable is written twice with no read in between.
+  why: |
+    The first value never reached anything, so either the assignment is left over from a change that
+    was not finished, or the line that was supposed to read it was lost. Both are worth a look,
+    because the code says something happens and nothing does.
+  fix: |
+    Remove the assignment that has no effect, or restore the use that was meant to read it.
+  bad: |
+    var name = user.FullName;
+    name = "unknown";
+  good: |
+    var name = user.FullName ?? "unknown";
