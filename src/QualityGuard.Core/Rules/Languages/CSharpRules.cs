@@ -48,7 +48,6 @@ public static class CSharpRuleSet
         new CsDivisionByZeroRule(),
         new CsMissingDisposalRule(),
         new CsDeadStoreRule(),
-        new CsMagicNumberRule(),
         new CsCommentedOutCodeRule(),
         new CsNullReferenceRule(),
         new CsFloatEqualityRule(),
@@ -1316,34 +1315,6 @@ public sealed class CsDeadStoreRule : PatternRuleBase
             var occurrences = tokens.Count(t => t.Kind == TokenKind.Identifier && t.Text == name);
             if (occurrences == 1)
                 context.Report("This local variable is assigned but never used.", tokens[i].Line);
-        }
-    }
-}
-
-public sealed class CsMagicNumberRule : PatternRuleBase
-{
-    public override string Key => "QG-CS-SML-0022";
-    public override string Name => "Magic number used in expressions";
-    public override Severity Severity => Severity.Minor;
-    public override IssueKind Kind => IssueKind.CodeSmell;
-    public override string RemediationEffort => "10min";
-    public override string FixAdvice => "Replace the literal with a named constant.";
-    public override string[] Languages => ["cs", "vb"];
-
-    public override void Execute(IRuleContext context)
-    {
-        var tokens = context.Tokens;
-        for (var i = 0; i < tokens.Count; i++)
-        {
-            if (tokens[i].Kind != TokenKind.Number) continue;
-            if (!int.TryParse(tokens[i].Text, out var value)) continue;
-            if (value is 0 or 1 or 2 or -1) continue;
-            var prev = i > 0 ? tokens[i - 1].Text : "";
-            if (prev is "[" or "(" or "," or "." or "case") continue;
-            var line = CSharpRuleSet.LineAt(context, tokens[i].Line);
-            if (CSharpRuleSet.HasAny(line, ["const", "enum", "case", "new ", "#define"])) continue;
-            if (i + 1 < tokens.Count && tokens[i + 1].Text == "]") continue;
-            context.Report("Replace this magic number with a named constant.", tokens[i].Line);
         }
     }
 }

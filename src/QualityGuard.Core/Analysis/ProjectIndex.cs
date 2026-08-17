@@ -92,6 +92,56 @@ public sealed class ProjectIndex
 
         foreach (var identifier in root.OfKind(NodeKind.Identifier))
             _referenced[identifier.Text] = _referenced.GetValueOrDefault(identifier.Text) + 1;
+
+        AddTemplateReferences(analysis);
+    }
+
+    /// <summary>
+    /// Records the names a template mentions. A view binds code by naming it — '@onclick="Save"',
+    /// '{{ total }}', 'th:text="${name}"' — and none of that reaches a syntax tree the engine builds
+    /// for markup. Without this, every handler a page calls looked like code nobody reaches.
+    /// </summary>
+    private void AddTemplateReferences(FileAnalysis analysis)
+    {
+        if (analysis.Tree.HasDedicatedParser)
+            return;
+        var language = analysis.File.Language?.LanguageKey ?? string.Empty;
+        if (!TemplateLanguages.Contains(language, StringComparer.OrdinalIgnoreCase))
+            return;
+
+        foreach (var token in analysis.Tokens)
+        {
+            if (token.Kind is not (Tokenization.TokenKind.Identifier or Tokenization.TokenKind.String))
+                continue;
+            foreach (var word in Words(token.Text))
+                _referenced[word] = _referenced.GetValueOrDefault(word) + 1;
+        }
+    }
+
+    /// <summary>Languages whose files are templates over code written elsewhere.</summary>
+    private static readonly string[] TemplateLanguages =
+        ["html", "raz", "razor", "cshtml", "vbhtml", "xaml", "aspx", "ascx", "jsp", "vue", "xml",
+         "svelte", "twig", "blade", "erb", "hbs", "mustache", "jinja"];
+
+    /// <summary>
+    /// The identifier-shaped words inside a piece of markup. A binding is written among punctuation
+    /// the markup owns, so the text is cut on everything that cannot be part of a name.
+    /// </summary>
+    private static IEnumerable<string> Words(string text)
+    {
+        var start = -1;
+        for (var i = 0; i <= text.Length; i++)
+        {
+            var isName = i < text.Length && (char.IsLetterOrDigit(text[i]) || text[i] == '_');
+            if (isName && start < 0)
+                start = i;
+            else if (!isName && start >= 0)
+            {
+                if (i - start > 2)
+                    yield return text[start..i];
+                start = -1;
+            }
+        }
     }
 
     private static IReadOnlyDictionary<string, string> MemberTypesOf(SyntaxNode type)

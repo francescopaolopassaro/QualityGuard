@@ -149,7 +149,43 @@ public sealed class CssZeroUnitRule : PatternRuleBase
     {
         var lines = context.File.Content.Split('\n');
         for (var i = 0; i < lines.Length; i++)
-            if (RuleMatchers.LineContains(lines[i], "0px"))
-                context.Report("Omit the unit on zero values; write 0 instead of 0px.", i + 1);
+        {
+            if (!HasZeroWithUnit(lines[i]))
+                continue;
+            context.Report("The unit says nothing on a zero: zero pixels, zero rems and zero percent "
+                           + "are the same length. Write 0.", i + 1);
+        }
     }
+
+    /// <summary>
+    /// Whether the line writes a zero with a unit on it. The digit before matters: searching for the
+    /// text "0px" also finds it inside 40px and 1280px, which are ordinary lengths.
+    /// </summary>
+    private static bool HasZeroWithUnit(string line)
+    {
+        for (var i = 0; i < line.Length; i++)
+        {
+            if (line[i] != '0')
+                continue;
+            if (i > 0 && (char.IsAsciiDigit(line[i - 1]) || line[i - 1] == '.'))
+                continue;
+
+            foreach (var unit in Units)
+            {
+                if (i + 1 + unit.Length > line.Length)
+                    continue;
+                if (!line.AsSpan(i + 1, unit.Length).SequenceEqual(unit))
+                    continue;
+                var after = i + 1 + unit.Length;
+                if (after < line.Length && (char.IsAsciiLetterOrDigit(line[after]) || line[after] == '%'))
+                    continue;
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /// <summary>Units that say nothing on a zero. Time and angle units are left out: 0s is not 0deg.</summary>
+    private static readonly string[] Units =
+        ["px", "em", "rem", "ex", "ch", "vw", "vh", "vmin", "vmax", "cm", "mm", "in", "pt", "pc"];
 }

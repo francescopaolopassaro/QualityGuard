@@ -34,6 +34,26 @@ public sealed class StyleRule
         }
     }
 
+    /// <summary>
+    /// The selector together with the blocks it is written inside. Two '&amp;.hidden' under different
+    /// parents are two different selectors, and comparing only their own text made every nested
+    /// override in a stylesheet look like a duplicate of the others.
+    /// </summary>
+    public string Path
+    {
+        get
+        {
+            var parts = new List<string>();
+            for (var node = this; node != null; node = node.Parent)
+            {
+                if (node.Selector.Length > 0)
+                    parts.Add(node.Selector);
+            }
+            parts.Reverse();
+            return string.Join(" ", parts);
+        }
+    }
+
     public IEnumerable<StyleRule> Descendants()
     {
         foreach (var child in Children)

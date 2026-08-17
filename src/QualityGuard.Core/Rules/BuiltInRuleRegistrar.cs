@@ -225,7 +225,7 @@ public sealed class LineTooLongRule : TextualRuleBase
     /// </summary>
     private static readonly string[] NotProse =
         ["json", "csv", "xml", "yaml", "yml", "css", "scss", "sass", "less", "html", "htm", "svg",
-         "sql", "md", "txt", "resx", "config", "props", "targets", "razor", "cshtml", "vbhtml",
+         "sql", "md", "txt", "resx", "config", "props", "targets", "raz", "razor", "cshtml", "vbhtml",
          "xaml", "aspx", "ascx", "jsp", "vue"];
 
     public override void Execute(IRuleContext context)

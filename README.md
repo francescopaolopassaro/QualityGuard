@@ -8,7 +8,7 @@ a configurable Quality Gate and exits with `PASSED` or `FAILED` — no server, n
 dotnet run --project src/QualityGuard.Cli -- --path ./src --by-folder
 ```
 
-**1314 rules** across 26 languages, on a real syntax tree with a semantic model, a project index and
+**1316 rules** across 26 languages, on a real syntax tree with a semantic model, a project index and
 interprocedural taint analysis. The bar the engine is held to is precision: every rule is measured on
 a production codebase in its own language before it is kept, and a rule that produces noise is
 rewritten or removed — see [§8](#8-quality-bar).
@@ -141,7 +141,7 @@ Severity and issue kind follow the category: `SEC` → vulnerability (major or a
 
 ## 5. Rules
 
-**1312 rules are loaded and executable**, backed by **2626 catalog entries** (a catalog entry either
+**1316 rules are loaded and executable**, backed by **2631 catalog entries** (a catalog entry either
 carries its own detection or documents a rule implemented in code).
 
 Coverage is tracked honestly in `rules-tracker.tsv`: **3256 catalogued rules are mapped, 1515 of them
@@ -475,7 +475,7 @@ rule that produces noise is rewritten on the syntax tree or removed, and every f
 was fixed is pinned by a regression test — written next to the shape the rule must still report — so
 the precision cannot be lost again silently.
 
-**505 tests** cover the parsers, the semantic model, taint, the scanner and rule precision.
+**511 tests** cover the parsers, the semantic model, taint, the scanner and rule precision.
 
 ```bash
 dotnet build QualityGuard.sln
@@ -500,7 +500,7 @@ usually contains other defects nobody annotated.
 
 | Corpus | Annotated files | Expected lines | Recall | Precision |
 | --- | --- | --- | --- | --- |
-| C# | 1,079 | 11,238 | **65.8%** | 38.3% |
+| C# | 1,079 | 11,238 | **63.5%** | 39.1% |
 | Go | 52 | 234 | **69.2%** | 47.7% |
 | JavaScript | 109 | 921 | **53.2%** | **50.8%** |
 | Python | 611 | 6,451 | **51.4%** | 40.6% |
@@ -522,6 +522,41 @@ on marked lines by accident, because they reported on nearly everything. The sam
 3,900 findings and lost 560 matched lines — seven out of eight of the findings that went away were on
 lines nobody had marked. The engine now says less and is right more often, which is the only
 direction that matters when the report is read by a person.
+
+### Two questions, two instruments
+
+The table above answers one question: how much of another catalogue does this engine find. It cannot
+answer the other one — of the findings it produces, how many are true — and reading it as if it could
+is the most tempting mistake available here.
+
+The reason is in how the corpus is built. Each file exercises one check, and only the lines for that
+check carry a marker. A file written to test "empty method body" also contains an unused variable, a
+magic number and a catch that swallows everything, all real, none marked. Every one of them counts
+against precision in that table. The number is a measure of overlap with someone else's catalogue,
+not of correctness.
+
+Correctness has to be judged by reading the code, so there is a second instrument:
+
+```bash
+python tools/sample_findings.py --path <repo> --size 60 --out review.tsv
+python tools/sample_findings.py --score review.tsv
+```
+
+It draws a sample weighted by how much each rule contributes to the report — a rule that fires a
+thousand times decides how the report reads, one that fires twice does not — and writes each finding
+with the lines around it. A person marks `ok` or `fp`, and the tool reports precision with the
+interval the sample size actually supports.
+
+The first judged sample, forty findings on a 58,000-line production application, came out at **78%**,
+and it named the defect that mattered: four of the seven wrong findings were Blazor event handlers
+reported as unreachable code. The engine indexes what the C# files reference; the handlers are named
+in the markup, `@onclick="SalvaModifiche"`, which no syntax tree of ours ever saw. Templates are now
+indexed for the names they mention — Razor, Blazor, Vue, JSP, XAML and the rest — and that family
+went from 278 findings to 11 on the same repository.
+
+That is how the number goes up: draw a sample, read it, fix the family the wrong ones belong to,
+draw again. Each pass costs an hour and moves a whole category, because false positives arrive in
+families and almost never one at a time.
 
 ### Kotlin got a parser
 

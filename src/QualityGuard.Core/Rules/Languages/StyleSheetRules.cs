@@ -185,7 +185,8 @@ public sealed class DuplicateSelectorRule : StyleRuleBase
 
         foreach (var block in Blocks(Sheet(context)))
         {
-            var selector = Normalize(block.Selector);
+            // the identity of a nested selector is the whole path down to it
+            var selector = Normalize(block.Path);
             if (selector.Length == 0 || block.Declarations.Count == 0)
                 continue;
             if (seen.TryGetValue(selector, out var first))

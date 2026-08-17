@@ -47,8 +47,28 @@ public static class SourceScanner
         ".git", ".svn", ".hg", ".idea", ".vs", ".vscode", ".gradle", ".terraform", ".mypy_cache",
         ".pytest_cache", ".ruff_cache", ".tox", ".next", ".nuxt", ".angular", ".cache",
         "bin", "obj", "build", "dist", "out", "target", "node_modules", "bower_components",
-        "packages", "vendor", "venv", ".venv", "env", "__pycache__", "coverage", "htmlcov",
-        "site-packages", "third_party", "Pods", "DerivedData"
+        "packages", "vendor", "vendors", "venv", ".venv", "env", "__pycache__", "coverage", "htmlcov",
+        "site-packages", "third_party", "Pods", "DerivedData",
+        // where a .NET or a front-end project drops the libraries it did not write
+        // 'Content' is deliberately absent: in an MVC project it holds the application's own
+        // stylesheets next to the libraries, and the libraries are caught by their own name anyway
+        "lib", "libs", "Scripts", "plugins", "jspm_packages", "external"
+    ];
+
+    /// <summary>
+    /// A directory named after a library and its version — bootstrap-5.3.0, jquery-3.7.1 — is a copy
+    /// of somebody else's release. Reviewing it is reviewing their code, and the fix would be undone
+    /// by the next upgrade.
+    /// </summary>
+    private static readonly Regex VersionedLibrary =
+        new(@"^[A-Za-z][A-Za-z0-9._]*[-.]v?\d+(\.\d+)+", RegexOptions.Compiled);
+
+    /// <summary>Libraries that arrive under their own name, with or without a version.</summary>
+    private static readonly string[] KnownLibraries =
+    [
+        "bootstrap", "jquery", "fontawesome", "font-awesome", "devexpress", "devextreme", "select2",
+        "datatables", "moment", "popper", "chartjs", "chart.js", "tinymce", "ckeditor", "kendo",
+        "syncfusion", "telerik", "materialize", "foundation", "semantic-ui", "primeng", "swiper"
     ];
 
     /// <summary>Files that are produced by a tool: reviewing them is reviewing the generator.</summary>
@@ -72,6 +92,14 @@ public static class SourceScanner
         // an Entity Framework migration is written by the tooling from the model
         "[migration(", "<migration(", "migrationbuilder"
     ];
+
+    /// <summary>Whether a directory holds a library the project did not write.</summary>
+    private static bool IsLibraryDirectory(string name)
+    {
+        if (KnownLibraries.Any(library => name.StartsWith(library, StringComparison.OrdinalIgnoreCase)))
+            return true;
+        return VersionedLibrary.IsMatch(name);
+    }
 
     public static ScanResult Scan(ScanOptions options)
     {
@@ -125,6 +153,11 @@ public static class SourceScanner
                     continue;
                 }
                 if (options.UseDefaultExcludes && LooksGenerated(file))
+                {
+                    excluded++;
+                    continue;
+                }
+                if (options.UseDefaultExcludes && LooksBundled(file))
                 {
                     excluded++;
                     continue;
@@ -191,6 +224,8 @@ public static class SourceScanner
             foreach (var child in children)
             {
                 var name = Path.GetFileName(child);
+                if (options.UseDefaultExcludes && IsLibraryDirectory(name))
+                    continue;
                 if (options.UseDefaultExcludes
                     && DefaultExcludedDirectories.Contains(name, StringComparer.OrdinalIgnoreCase))
                     continue;
@@ -229,6 +264,43 @@ public static class SourceScanner
         }
         return false;
     }
+
+    /// <summary>
+    /// Whether a stylesheet or a script is a build artefact rather than something a person typed. The
+    /// giveaway is size: a compiled stylesheet or a bundle runs to thousands of lines, and no one
+    /// hand-writes that. A banner naming the library settles it either way.
+    /// </summary>
+    private static bool LooksBundled(string path)
+    {
+        var extension = Path.GetExtension(path).ToLowerInvariant();
+        if (extension is not (".css" or ".js"))
+            return false;
+
+        try
+        {
+            using var reader = new StreamReader(path);
+            var head = new System.Text.StringBuilder();
+            var lines = 0;
+            while (reader.ReadLine() is { } line)
+            {
+                if (lines < 8)
+                    head.Append(line).Append(' ');
+                if (++lines > BundleLines)
+                    return true;
+            }
+
+            var banner = head.ToString();
+            return KnownLibraries.Any(library => banner.Contains(library, StringComparison.OrdinalIgnoreCase))
+                   || banner.Contains("sourceMappingURL", StringComparison.Ordinal);
+        }
+        catch (IOException)
+        {
+            return false;
+        }
+    }
+
+    /// <summary>Above this many lines a stylesheet or a script was written by a tool.</summary>
+    private const int BundleLines = 3000;
 
     private static bool LooksBinary(string file)
     {
