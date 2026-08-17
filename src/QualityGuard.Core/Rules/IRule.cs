@@ -76,6 +76,13 @@ public interface IRuleContext
 
     void Report(string message, int? line = null);
 
+    /// <summary>
+    /// Reports a finding whose cost depends on how big the problem is. A method twice over the
+    /// complexity limit takes longer to untangle than one a point over it, and a report that gives
+    /// them the same price tells the reader nothing about where to start.
+    /// </summary>
+    void ReportCosting(string message, int minutes, int? line = null);
+
     /// <summary>Reports on a node, attaching the taint flow when the finding is data-flow driven.</summary>
     void Report(SyntaxNode node, string message, bool withFlow = false);
 }
@@ -108,19 +115,22 @@ internal sealed class RuleContext(SourceFile file, FileAnalysis analysis) : IRul
 
     public void Report(string message, int? line = null) => Add(message, line, null);
 
+    public void ReportCosting(string message, int minutes, int? line = null)
+        => Add(message, line, null, minutes <= 0 ? null : minutes + "min");
+
     public void Report(SyntaxNode node, string message, bool withFlow = false)
         => Add(message, node.Line, withFlow ? _analysis.Taint?.FlowTo(node) : null);
 
     private readonly HashSet<(string Rule, int Line)> _reported = [];
 
-    private void Add(string message, int? line, IReadOnlyList<FlowStep>? flow)
+    private void Add(string message, int? line, IReadOnlyList<FlowStep>? flow, string? effort = null)
     {
         // several clauses of the same rule can match one line; report it once
         if (!_reported.Add((CurrentRule.Key, line ?? 0)))
             return;
         _analysis.Issues.Add(new Issue(CurrentRule.Key, message, CurrentRule.Severity, CurrentRule.Kind,
-            File.Path, line, CurrentRule.RemediationEffort, howToFix: CurrentRule.Description.HowToFix,
-            flow: flow));
+            File.Path, line, effort ?? CurrentRule.RemediationEffort,
+            howToFix: CurrentRule.Description.HowToFix, flow: flow));
     }
 }
 

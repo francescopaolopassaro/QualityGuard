@@ -1,4 +1,5 @@
 using QualityGuard.Core.Models;
+using QualityGuard.Core.Syntax;
 using QualityGuard.Core.Tokenization;
 
 namespace QualityGuard.Core.Rules.Languages;
@@ -569,16 +570,48 @@ public sealed class CsSsrRule : PatternRuleBase
     public override string FixAdvice => "Validate and allow list the target URL before issuing the request.";
     public override string[] Languages => ["cs", "vb"];
 
+    private static readonly string[] RequestCalls =
+    [
+        "GetAsync", "PostAsync", "PutAsync", "PatchAsync", "DeleteAsync", "SendAsync",
+        "GetStringAsync", "GetByteArrayAsync", "GetStreamAsync", "DownloadString", "DownloadFile",
+        "OpenRead", "UploadString"
+    ];
+
+    /// <summary>
+    /// Receivers that really do reach the network. Without this, an application service with a method
+    /// called DeleteAsync — which every repository has — was reported as a request to a foreign host.
+    /// </summary>
+    private static readonly string[] Clients =
+        ["HttpClient", "httpClient", "_httpClient", "client", "_client", "WebClient", "webClient",
+         "http", "_http", "restClient", "_restClient"];
+
     public override void Execute(IRuleContext context)
     {
-        var tokens = context.Tokens;
-        for (var i = 1; i < tokens.Count - 1; i++)
+        if (!context.Tree.HasDedicatedParser)
+            return;
+
+        foreach (var call in SyntaxQuery.Invocations(context.Root))
         {
-            if (tokens[i + 1].Text != "(") continue;
-            if (tokens[i - 1].Text != ".") continue;
-            if (!CSharpRuleSet.IsWord(tokens[i], ["GetAsync", "PostAsync", "PutAsync", "DeleteAsync", "SendAsync", "GetStringAsync", "GetByteArrayAsync"])) continue;
-            if (CSharpRuleSet.NextArgIsConstant(tokens, i)) continue;
-            context.Report("Validate the target URL to prevent SSRF.", tokens[i].Line);
+            if (!RequestCalls.Contains(SyntaxQuery.InvokedName(call), StringComparer.Ordinal))
+                continue;
+
+            var receiver = SyntaxQuery.Receiver(call);
+            var last = receiver.Split('.').LastOrDefault() ?? string.Empty;
+            var isClient = Clients.Contains(last, StringComparer.OrdinalIgnoreCase)
+                           || last.EndsWith("HttpClient", StringComparison.OrdinalIgnoreCase)
+                           || context.Types.TypeOf(call.ChildAt(0)) is "HttpClient" or "WebClient";
+            if (!isClient)
+                continue;
+
+            // a constant address is the code's own choice; the defect is letting the caller pick it
+            var target = SyntaxQuery.ArgumentAt(call, 0);
+            if (target == null || !context.IsTainted(target))
+                continue;
+
+            context.Report("The address of this request comes from data the caller controls, so the "
+                           + "caller decides which host the server talks to — including one inside "
+                           + "the network that is not reachable from outside. Check the target "
+                           + "against a list of hosts you allow.", call.Range.StartLine);
         }
     }
 }
@@ -593,27 +626,39 @@ public sealed class CsPathTraversalRule : PatternRuleBase
     public override string FixAdvice => "Validate the path and restrict it to an allow listed directory.";
     public override string[] Languages => ["cs", "vb"];
 
+    /// <summary>File and directory calls whose first argument is a path.</summary>
+    private static readonly string[] PathCalls =
+    [
+        "Combine", "GetFullPath", "ReadAllText", "ReadAllBytes", "ReadAllLines", "OpenRead", "Open",
+        "OpenText", "WriteAllText", "WriteAllBytes", "AppendAllText", "Delete", "Copy", "Move",
+        "GetFiles", "GetDirectories", "CreateDirectory", "Create"
+    ];
+
+    private static readonly string[] PathOwners = ["Path", "File", "Directory", "FileInfo", "DirectoryInfo"];
+
     public override void Execute(IRuleContext context)
     {
-        var tokens = context.Tokens;
-        for (var i = 1; i < tokens.Count - 1; i++)
+        if (!context.Tree.HasDedicatedParser)
+            return;
+
+        foreach (var call in SyntaxQuery.Invocations(context.Root))
         {
-            if (tokens[i + 1].Text != "(") continue;
-            var isPathApi =
-                CSharpRuleSet.IsMemberAccess(tokens, i, "Path", "Combine")
-                || CSharpRuleSet.IsMemberAccess(tokens, i, "Path", "GetFullPath")
-                || CSharpRuleSet.IsMemberAccess(tokens, i, "File", "ReadAllText")
-                || CSharpRuleSet.IsMemberAccess(tokens, i, "File", "ReadAllBytes")
-                || CSharpRuleSet.IsMemberAccess(tokens, i, "File", "ReadAllLines")
-                || CSharpRuleSet.IsMemberAccess(tokens, i, "File", "OpenRead")
-                || CSharpRuleSet.IsMemberAccess(tokens, i, "File", "Open")
-                || CSharpRuleSet.IsMemberAccess(tokens, i, "File", "WriteAllText")
-                || CSharpRuleSet.IsMemberAccess(tokens, i, "File", "Delete")
-                || CSharpRuleSet.IsMemberAccess(tokens, i, "Directory", "GetFiles")
-                || CSharpRuleSet.IsMemberAccess(tokens, i, "Directory", "Delete");
-            if (!isPathApi) continue;
-            if (CSharpRuleSet.NextArgIsConstant(tokens, i)) continue;
-            context.Report("Validate the path to prevent path traversal.", tokens[i].Line);
+            if (!PathCalls.Contains(SyntaxQuery.InvokedName(call), StringComparer.Ordinal))
+                continue;
+            var owner = SyntaxQuery.Receiver(call);
+            if (!PathOwners.Any(o => owner == o || owner.EndsWith("." + o, StringComparison.Ordinal)))
+                continue;
+
+            // Reading a file is not a defect; reading the file the caller named is. Without a path
+            // that comes from outside, this rule would report every program that touches the disk.
+            var argument = SyntaxQuery.ArgumentAt(call, 0);
+            if (argument == null || !context.IsTainted(argument))
+                continue;
+
+            context.Report($"The path handed to '{SyntaxQuery.InvokedName(call)}' is built from data "
+                           + "the caller controls, so a name containing .. walks out of the directory "
+                           + "this code meant to stay in. Resolve the path and check that it is still "
+                           + "under the folder you allow.", call.Range.StartLine);
         }
     }
 }
@@ -686,8 +731,12 @@ public sealed class CsCorsWildcardRule : PatternRuleBase
         for (var i = 0; i < tokens.Count - 1; i++)
         {
             if (tokens[i + 1].Text != "(") continue;
-            if (CSharpRuleSet.IsWord(tokens[i], ["AllowAnyOrigin", "AllowAnyHeader", "AllowAnyMethod"]))
-                context.Report("Restrict CORS origins instead of allowing any.", tokens[i].Line);
+            // only the origin matters: any header and any method are ordinary once the origins are
+            // named, and reporting all three turned one policy into three findings
+            if (CSharpRuleSet.IsWord(tokens[i], ["AllowAnyOrigin", "SetIsOriginAllowedToAllowWildcardSubdomains"]))
+                context.Report("The policy accepts every origin, so any site can have a visitor's "
+                               + "browser call this API and read the answer. Name the origins you "
+                               + "actually serve.", tokens[i].Line);
         }
         var lines = CSharpRuleSet.LinesOf(context);
         for (var i = 0; i < lines.Length; i++)
@@ -917,21 +966,80 @@ public sealed class CsExceptionInfoLeakRule : PatternRuleBase
     public override string FixAdvice => "Return a generic error message and log the exception details.";
     public override string[] Languages => ["cs", "vb"];
 
+    /// <summary>What a caught exception can be asked for that a stranger should not read.</summary>
+    private static readonly string[] Revealing = ["Message", "StackTrace", "ToString", "InnerException"];
+
+    /// <summary>Calls that put their argument into the response.</summary>
+    private static readonly string[] Responses =
+        ["Content", "Json", "WriteAsync", "Write", "StatusCode", "Problem", "BadRequest", "NotFound",
+         "Ok", "InternalServerError", "Send"];
+
     public override void Execute(IRuleContext context)
     {
-        var lines = CSharpRuleSet.LinesOf(context);
-        for (var i = 0; i < lines.Length; i++)
+        if (!context.Tree.HasDedicatedParser)
+            return;
+
+        foreach (var catchClause in context.Root.OfKind(NodeKind.Catch))
         {
-            var line = lines[i];
-            if (CSharpRuleSet.HasAny(line, ["InternalServerError"]))
-            {
-                context.Report("Do not expose exception details to the client.", i + 1);
+            var caught = catchClause.FirstChild(NodeKind.VariableDeclaration)?.Text;
+            if (string.IsNullOrEmpty(caught))
                 continue;
+            var body = catchClause.FirstChild(NodeKind.Block);
+            if (body == null)
+                continue;
+
+            foreach (var read in Reads(body, caught))
+            {
+                if (!LeavesTheProcess(read))
+                    continue;
+
+                context.Report($"'{read.Text}' is handed back to the caller, and it carries the shape "
+                               + "of the system with it: a file path, a query, a class name, sometimes "
+                               + "a connection string. Log it, and answer with a message that says only "
+                               + "that the request failed.", read.Range.StartLine);
+                break;
             }
-            if (!CSharpRuleSet.HasAny(line, ["ex.Message", "exception.Message", "e.ToString()", "ex.ToString()"])) continue;
-            if (!CSharpRuleSet.HasAny(line, ["Response", "return", "Content(", "Json(", "StatusCode", "WriteAsync"])) continue;
-            context.Report("Do not expose exception details to the client.", i + 1);
         }
+    }
+
+    /// <summary>Every place the caught exception is asked for something revealing.</summary>
+    private static IEnumerable<SyntaxNode> Reads(SyntaxNode body, string caught)
+    {
+        foreach (var member in body.OfKind(NodeKind.MemberSelect))
+        {
+            var parts = member.Text.Split('.');
+            if (parts.Length < 2 || parts[0] != caught)
+                continue;
+            if (!Revealing.Contains(parts[^1], StringComparer.Ordinal))
+                continue;
+            yield return member;
+        }
+    }
+
+    /// <summary>
+    /// Whether the value reaches the caller: returned, thrown back as a message, or handed to
+    /// something that writes the response. A read that only feeds the logger is the correct thing
+    /// to do and is left alone.
+    /// </summary>
+    private static bool LeavesTheProcess(SyntaxNode read)
+    {
+        for (var node = read.Parent; node != null; node = node.Parent)
+        {
+            if (node.Kind == NodeKind.Jump && node.Text == "return")
+                return true;
+            if (node.Kind == NodeKind.Invocation)
+            {
+                var name = SyntaxQuery.InvokedName(node);
+                if (Responses.Contains(name, StringComparer.Ordinal))
+                    return true;
+                // a logger is the right destination, and it ends the search
+                if (name.Length > 0)
+                    return false;
+            }
+            if (node.Kind == NodeKind.Block)
+                return false;
+        }
+        return false;
     }
 }
 
@@ -1015,22 +1123,29 @@ public sealed class CsImplicitToStringRule : PatternRuleBase
         foreach (var token in context.Tokens.Where(t => t.Kind == TokenKind.String && t.Text.Contains('{')))
         {
             var text = token.Text;
-            var hasComplex = false;
             for (var k = 0; k < text.Length; k++)
             {
-                if (text[k] != '{') continue;
+                if (text[k] != '{')
+                    continue;
                 var end = text.IndexOf('}', k);
-                if (end < 0) break;
-                var content = text[(k + 1)..end];
-                if (content.Contains('.') || content.Contains('(') || content.Contains(':'))
-                {
-                    hasComplex = true;
+                if (end < 0)
                     break;
-                }
+                var content = text[(k + 1)..end];
                 k = end;
+
+                // '{value:yyyy-MM-dd}' already says how to render it, and '{order.Id}' is how every
+                // interpolated string is written. What is worth saying is a conversion asked for
+                // without a culture, which is the one that changes answer between machines.
+                if (content.Contains(':'))
+                    continue;
+                if (!content.Contains("ToString()", StringComparison.Ordinal))
+                    continue;
+
+                context.Report("This conversion uses whatever culture the machine happens to have, so "
+                               + "the same value is written differently on a developer's laptop and on "
+                               + "the server. Pass a culture, or a format.", token.Line);
+                break;
             }
-            if (hasComplex)
-                context.Report("Specify an explicit ToString for the interpolated value.", token.Line);
         }
     }
 }

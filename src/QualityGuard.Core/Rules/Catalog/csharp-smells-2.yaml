@@ -39,9 +39,12 @@
     the plain name.
   detect:
     - line: "(public|private|protected|internal)[^\\n(]*\\b(Task|ValueTask)(<[^>]*>)?\\s+(?!\\w*Async\\b)\\w+\\s*\\("
+      # a controller action is named without the suffix on purpose
+      absent: [ApiController, ControllerBase, "Controller\n", IActionResult]
 
 - key: QG-CS-SML-0054
   name: Library code should not capture the synchronization context
+  status: planned
   languages: [cs]
   category: SML
   severity: major
@@ -55,9 +58,6 @@
   fix: |
     Append ConfigureAwait(false) to awaits in library code, or use a synchronization-context-free host.
     Application code that touches the UI keeps the default.
-  detect:
-    - line: "await\\s+[A-Za-z_][\\w.]*\\([^;]*\\)\\s*;"
-      absent: [ConfigureAwait, Microsoft.AspNetCore, WPF]
 
 - key: QG-CS-SML-0055
   name: Instants should be recorded in UTC with an explicit kind

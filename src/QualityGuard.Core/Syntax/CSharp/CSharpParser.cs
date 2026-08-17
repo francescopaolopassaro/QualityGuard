@@ -68,6 +68,21 @@ public sealed class CSharpParser
     /// </summary>
     private int _compositeLiteralBan;
 
+    /// <summary>
+    /// How deep the expression parser currently is. Generated code and machine-written initialisers
+    /// nest far past anything a person writes, and a recursive descent that follows them all the way
+    /// down runs out of stack — which no catch block can recover from, so it ends the whole run. Past
+    /// this depth the parser stops descending and records what is left as one unread node.
+    /// </summary>
+    private int _expressionDepth;
+
+    private const int MaxExpressionDepth = 40;
+
+    /// <summary>How many blocks deep the parser currently is.</summary>
+    private int _blockDepth;
+
+    private const int MaxBlockDepth = 96;
+
     private CSharpParser(IReadOnlyList<Token> tokens, LanguageInfo language, CFamilyDialect dialect)
     {
         _tokens = tokens;
@@ -1974,6 +1989,49 @@ public sealed class CSharpParser
 
     private SyntaxNode ParseBlock()
     {
+        if (_blockDepth >= MaxBlockDepth)
+            return SkipDeepBlock();
+
+        _blockDepth++;
+        try
+        {
+            return ParseBlockCore();
+        }
+        finally
+        {
+            _blockDepth--;
+        }
+    }
+
+    /// <summary>
+    /// Consumes a block nested deeper than the parser will follow. Generated code reaches depths no
+    /// person writes, and following them exhausts the stack — which ends the whole run, because a
+    /// stack overflow is the one failure no catch block can take back.
+    /// </summary>
+    private SyntaxNode SkipDeepBlock()
+    {
+        var start = Mark();
+        var depth = 0;
+        while (!AtEnd)
+        {
+            if (Is("{"))
+                depth++;
+            else if (Is("}"))
+            {
+                depth--;
+                if (depth == 0)
+                {
+                    _index++;
+                    break;
+                }
+            }
+            _index++;
+        }
+        return Node(NodeKind.Block, start, "…");
+    }
+
+    private SyntaxNode ParseBlockCore()
+    {
         var start = Mark();
         var block = new SyntaxNode(NodeKind.Block, "",
             TextRange.Of([_tokens[Math.Min(start, _tokens.Count - 1)]]));
@@ -2173,12 +2231,21 @@ public sealed class CSharpParser
         return declaration;
     }
 
+    /// <summary>
+    /// Words that begin a statement and can never be the type of a local function. Without them
+    /// 'await Helper(items)' read as 'await' the return type and 'Helper' the name, which turned an
+    /// ordinary call into a declaration — and with it every rule that asks who calls what.
+    /// </summary>
+    private static readonly string[] NotATypeName =
+        ["await", "return", "throw", "yield", "new", "typeof", "sizeof", "nameof", "default",
+         "checked", "unchecked", "stackalloc", "delegate"];
+
     private bool LooksLikeLocalFunction()
     {
         var start = _index;
         try
         {
-            if (!IsName)
+            if (!IsName || IsAny(NotATypeName))
                 return false;
             ParseType();
             if (!IsIdentifier)
@@ -2641,6 +2708,51 @@ public sealed class CSharpParser
     private SyntaxNode? ParseExpression() => ParseAssignment();
 
     private SyntaxNode? ParseAssignment()
+    {
+        if (_expressionDepth >= MaxExpressionDepth)
+            return SkipDeepExpression();
+
+        _expressionDepth++;
+        try
+        {
+            return ParseAssignmentCore();
+        }
+        finally
+        {
+            _expressionDepth--;
+        }
+    }
+
+    /// <summary>
+    /// Consumes an expression that is nested deeper than the parser will follow, up to the token that
+    /// closes it. The result is an Unknown node: rules see that something is there and know they
+    /// cannot read it, which is the honest answer.
+    /// </summary>
+    private SyntaxNode SkipDeepExpression()
+    {
+        var start = Mark();
+        var depth = 0;
+        while (!AtEnd)
+        {
+            var text = Text;
+            if (text is "(" or "[" or "{")
+                depth++;
+            else if (text is ")" or "]" or "}")
+            {
+                if (depth == 0)
+                    break;
+                depth--;
+            }
+            else if (depth == 0 && text is ";" or ",")
+            {
+                break;
+            }
+            _index++;
+        }
+        return Node(NodeKind.Unknown, start, "…");
+    }
+
+    private SyntaxNode? ParseAssignmentCore()
     {
         var left = ParseTernary();
         if (left == null || !IsAny(AssignmentOperators))

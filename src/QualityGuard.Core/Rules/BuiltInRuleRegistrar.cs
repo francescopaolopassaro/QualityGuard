@@ -217,8 +217,20 @@ public sealed class LineTooLongRule : TextualRuleBase
     public override string[] Languages => [];
     private const int MaxLength = 200;
 
+    /// <summary>
+    /// Formats where a long line is not a choice anyone made. A data file holds one record per line,
+    /// a stylesheet is minified by a tool, a query is generated: nobody is going to split them, and a
+    /// rule that asks for it buries the findings that matter under the ones that do not.
+    /// </summary>
+    private static readonly string[] NotProse =
+        ["json", "csv", "xml", "yaml", "yml", "css", "scss", "sass", "less", "html", "htm", "svg",
+         "sql", "md", "txt", "resx", "config", "props", "targets"];
+
     public override void Execute(IRuleContext context)
     {
+        if (NotProse.Contains(context.Language.LanguageKey, StringComparer.OrdinalIgnoreCase))
+            return;
+
         var lines = context.File.Content.Split('\n');
         for (var i = 0; i < lines.Length; i++)
         {

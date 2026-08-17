@@ -223,7 +223,20 @@ static void PrintQualitySummary(List<FileAnalysis> analyses, Dictionary<string, 
                       + $"{metrics.GetValueOrDefault(CoreMetrics.NewSecurityHotspotsReviewed):0}%");
     Console.WriteLine($"  Code smells      {Count(IssueKind.CodeSmell),5}   maintainability {Letter(CoreMetrics.MaintainabilityRating)}"
                       + $"   {Breakdown(IssueKind.CodeSmell)}");
-    Console.WriteLine($"  Technical debt   {FormatDebt(debt),5}   ratio {metrics.GetValueOrDefault(CoreMetrics.DebtRatio):0.00}%");
+    var ratio = metrics.GetValueOrDefault(CoreMetrics.DebtRatio);
+    Console.WriteLine($"  Technical debt   {FormatDebt(debt),5}   ratio {ratio:0.00}% {NextRating(ratio)}");
+
+    // A rating saturates: nearly every codebase lands on A for maintainability, and a letter that
+    // never changes tells the reader nothing. The density does change, and it is comparable between
+    // one project and the next whatever their size.
+    var ncloc = metrics.GetValueOrDefault(CoreMetrics.Ncloc);
+    if (ncloc > 0)
+    {
+        Console.WriteLine($"  Per 1k lines     {issues.Count / ncloc * 1000,5:0.0}   issues"
+                          + $"   ({Count(IssueKind.Bug) / ncloc * 1000:0.0} bugs,"
+                          + $" {Count(IssueKind.Vulnerability) / ncloc * 1000:0.0} vulnerabilities,"
+                          + $" {Count(IssueKind.CodeSmell) / ncloc * 1000:0.0} smells)");
+    }
 
     var worst = issues.GroupBy(i => i.RuleKey)
         .OrderByDescending(g => g.Count())
@@ -235,6 +248,33 @@ static void PrintQualitySummary(List<FileAnalysis> analyses, Dictionary<string, 
         foreach (var group in worst)
             Console.WriteLine($"    {group.Key} {group.Count(),5}  {group.First().Message[..Math.Min(70, group.First().Message.Length)]}");
     }
+
+    // where the work is, which is the question a reader actually has after reading the totals
+    var heaviest = analyses
+        .Select(a => (Path: a.File.Path, Debt: a.Issues.Sum(i => QualityRatings.EffortMinutes(i.RemediationEffort)),
+            Count: a.Issues.Count))
+        .Where(f => f.Debt > 0)
+        .OrderByDescending(f => f.Debt)
+        .Take(5)
+        .ToList();
+    if (heaviest.Count > 0)
+    {
+        Console.WriteLine("  Files holding the most debt:");
+        foreach (var file in heaviest)
+        {
+            var name = System.IO.Path.GetFileName(file.Path);
+            Console.WriteLine($"    {FormatDebt(file.Debt),6}  {file.Count,4} issues  {name}");
+        }
+    }
+
+    static string NextRating(double ratio) => ratio switch
+    {
+        <= 5 => $"(A up to 5%)",
+        <= 10 => $"(B up to 10%)",
+        <= 20 => $"(C up to 20%)",
+        <= 50 => $"(D up to 50%)",
+        _ => "(E above 50%)"
+    };
 
     int Count(IssueKind kind) => issues.Count(i => i.Kind == kind);
 

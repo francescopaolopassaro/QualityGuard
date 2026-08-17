@@ -340,9 +340,14 @@ public sealed class TooManyParametersRule : StructuralRuleBase
         foreach (var function in SyntaxQuery.Functions(context.Root))
         {
             var count = SyntaxQuery.Parameters(function).Count();
-            if (count > Max)
-                context.Report(function, $"'{function.Text}' takes {count} parameters (limit is {Max}); "
-                                         + "group the related ones into an object.");
+            if (count <= Max)
+                continue;
+
+            // the cost follows the size of the problem: every parameter past the limit is another
+            // one to find a home for, and every caller has to be changed with it
+            context.ReportCosting($"'{function.Text}' takes {count} parameters (limit is {Max}); "
+                                  + "group the related ones into an object.",
+                20 + (count - Max) * 10, function.Line);
         }
     }
 }
@@ -363,9 +368,12 @@ public sealed class FunctionTooLongRule : StructuralRuleBase
         {
             var body = SyntaxQuery.Body(function);
             var length = (body ?? function).Range.LineCount;
-            if (length > MaxLines)
-                context.Report(function, $"'{function.Text}' is {length} lines long (limit is {MaxLines}); "
-                                         + "split the steps it performs into separate functions.");
+            if (length <= MaxLines)
+                continue;
+
+            context.ReportCosting($"'{function.Text}' is {length} lines long (limit is {MaxLines}); "
+                                  + "split the steps it performs into separate functions.",
+                30 + (length - MaxLines) / 20 * 10, function.Line);
         }
     }
 }
@@ -385,9 +393,14 @@ public sealed class CognitiveComplexityRule : StructuralRuleBase
         foreach (var function in SyntaxQuery.Functions(context.Root))
         {
             var score = MetricCalculator.CognitiveComplexity(function, 0);
-            if (score > Max)
-                context.Report(function, $"'{function.Text}' scores {score} on nesting-aware complexity "
-                                         + $"(limit is {Max}); flatten the branches or extract the inner logic.");
+            if (score <= Max)
+                continue;
+
+            // a function three times over the limit is not three times the work of one a point over
+            // it, but it is not the same work either: the cost grows with the distance
+            context.ReportCosting($"'{function.Text}' scores {score} on nesting-aware complexity "
+                                  + $"(limit is {Max}); flatten the branches or extract the inner logic.",
+                30 + (score - Max), function.Line);
         }
     }
 }
@@ -1090,7 +1103,10 @@ public sealed class TestWithoutAssertionRule : StructuralRuleBase
     private static readonly string[] AssertionNames =
     [
         "assert", "assertthat", "assertequals", "asserttrue", "assertfalse", "assertnull",
-        "assertnotnull", "expect", "should", "verify", "check", "mustbe", "throws", "assertion"
+        "assertnotnull", "expect", "should", "verify", "check", "mustbe", "throws", "assertion",
+        // a test can state its expectation without the word: these throw when it does not hold
+        "ensuresuccessstatuscode", "received", "musthavehappened", "shouldbe", "shouldsatisfy",
+        "matchsnapshot", "approve", "isvalid", "haveoccurred"
     ];
 
     public override string Key => "QG-ALL-BUG-0008";
@@ -1517,8 +1533,11 @@ public sealed class UnusedInternalMemberRule : StructuralRuleBase
                 continue;
             if (member.Text.Length == 0 || context.Project.IsCalledAnywhere(member.Text))
                 continue;
-            // one occurrence is the declaration; anything more means it is referenced somewhere
-            if (context.Project.ReferenceCount(member.Text) > 1)
+            // A method group is a reference without a call: '.Select(MapDocumento)' uses the method
+            // as a value. Only the identifiers the declaration itself contributes are discounted,
+            // and in most languages that is none of them.
+            var own = member.OfKind(NodeKind.Identifier).Count(i => i.Text == member.Text);
+            if (context.Project.ReferenceCount(member.Text) > own)
                 continue;
             context.Report(member, $"Nothing in the scanned code reaches '{member.Text}'; "
                                    + "remove it or make the caller explicit.");

@@ -710,6 +710,8 @@
 
 - key: QG-CSS-SML-0005
   name: Declarations should not rely on the important flag
+  status: superseded
+  superseded_by: QG-CSS-SML-0001
   languages: [css]
   category: SML
   severity: minor
@@ -724,8 +726,6 @@
   fix: |
     Increase the specificity of the selector or reorganise the rules so the intended declaration wins
     naturally. Keep the flag for third-party styles you cannot change.
-  detect:
-    - line: "!\\s*important"
 
 - key: QG-HTML-SEC-0006
   name: Forms should not submit over plain HTTP
