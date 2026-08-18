@@ -37,6 +37,7 @@ public static class JsTsMeasuredRuleSet
         new JsCookieWithoutHttpOnlyRule(),
         new JsCsrfProtectionSkippedRule(),
         new JsUnboundedUploadRule(),
+        new JsAssignmentInExpressionRule()
         // Braces and shorthand are house style, not defects: neither is switched on in the
         // reference's own default profile, and running them added three hundred findings to one
         // small project. They stay written, and off, until a profile mechanism can offer them.
@@ -1333,5 +1334,58 @@ public sealed class JsLonghandPropertyRule : JsTsMeasuredRuleBase
                                          + "halves disagreeing.");
             }
         }
+    }
+}
+
+
+/// <summary>
+/// A value stored in the middle of a larger expression. The line then does two things at once, and
+/// the one that is easy to miss is the store — which is why 'if (a = b)' reads as a comparison to
+/// almost everyone, including the person who wrote it.
+/// </summary>
+public sealed class JsAssignmentInExpressionRule : JsTsMeasuredRuleBase
+{
+    public override string Key => "QG-JS-BUG-0193";
+    public override string Name => "A value should not be stored in the middle of an expression";
+    public override IssueKind Kind => IssueKind.Bug;
+    public override Severity Severity => Severity.Major;
+    public override string RemediationEffort => "5min";
+
+    public override void Execute(IRuleContext context)
+    {
+        if (!HasTree(context))
+            return;
+
+        foreach (var assignment in context.Root.OfKind(NodeKind.Assignment))
+        {
+            if (assignment.Text is not ("=" or "+=" or "-=" or "*=" or "/=" or "|=" or "&=" or "??="))
+                continue;
+            var parent = assignment.Parent;
+            if (parent is null)
+                continue;
+            // a statement of its own, or the initialiser of a declaration, is the ordinary form
+            if (parent.Kind is NodeKind.ExpressionStatement or NodeKind.VariableDeclaration
+                or NodeKind.TopLevel or NodeKind.Block or NodeKind.ArgumentList)
+                continue;
+            // a for loop states its step and its start in the header on purpose
+            if (parent.Kind == NodeKind.Loop || Ancestor(assignment, NodeKind.Loop) is { } loop
+                && loop.Children.Contains(assignment))
+                continue;
+            // chained assignment — 'a = b = 0' — stores twice by design
+            if (parent.Kind == NodeKind.Assignment)
+                continue;
+
+            context.Report(assignment, "This stores a value in the middle of a larger expression, so "
+                                       + "the line both decides something and changes something. The "
+                                       + "store is the half a reader skips. Do it on a line of its own.");
+        }
+    }
+
+    private static SyntaxNode? Ancestor(SyntaxNode node, NodeKind kind)
+    {
+        for (var current = node.Parent; current != null; current = current.Parent)
+            if (current.Kind == kind)
+                return current;
+        return null;
     }
 }

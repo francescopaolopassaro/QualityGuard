@@ -168,3 +168,21 @@
   fix: |
     Set a ceiling that matches what the endpoint is actually for, and reject anything larger before
     it is written anywhere.
+
+- key: QG-JS-BUG-0193
+  name: A value should not be stored in the middle of an expression
+  languages: [js, ts]
+  category: BUG
+  severity: major
+  effort: 5min
+  cwe: [481]
+  tags: [suspicious]
+  message: This stores a value in the middle of a larger expression.
+  summary: An assignment is used where a value was expected.
+  why: |
+    The line then does two things at once, and the one that is easy to miss is the store. A reader
+    scanning a condition sees a comparison, because that is what belongs there — which is how
+    `if (a = b)` survives review while it overwrites a value and tests the wrong thing.
+  fix: |
+    Store on a line of its own and use the name afterwards. Where the compactness is genuinely wanted,
+    the extra parentheses that some styles require are a hint, not a fix.

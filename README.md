@@ -8,7 +8,7 @@ a configurable Quality Gate and exits with `PASSED` or `FAILED` — no server, n
 dotnet run --project src/QualityGuard.Cli -- --path ./src --by-folder
 ```
 
-**1333 rules** across 26 languages, on a real syntax tree with a semantic model, a project index and
+**3206 rules** across 26 languages, on a real syntax tree with a semantic model, a project index and
 interprocedural taint analysis. The bar the engine is held to is precision: every rule is measured on
 a production codebase in its own language before it is kept, and a rule that produces noise is
 rewritten or removed — see [§8](#8-quality-bar).
@@ -141,18 +141,24 @@ Severity and issue kind follow the category: `SEC` → vulnerability (major or a
 
 ## 5. Rules
 
-**1333 rules are loaded and executable**, backed by **2656 catalog entries** (a catalog entry either
+**3206 rules are loaded and executable**, backed by **4574 catalog entries** (a catalog entry either
 carries its own detection or documents a rule implemented in code).
 
-Coverage is tracked honestly in `rules-tracker.tsv`: **3256 catalogued rules are mapped, 1515 of them
+Coverage is tracked honestly in `rules-tracker.tsv`: **3256 catalogued rules are mapped, 1477 of them
 executable**. The rest are documented and deliberately silent — a rule counts as implemented only
 when it detects something and has been measured on real code.
 
 Measured against the published rule inventories of the reference catalogues — 3358 rules across 21
 languages, read from their own metadata rather than from a summary of it — **92% are mapped**, and
-**1217 are executable today**, 216 of them security rules. Ruby (83%), Go (83%), Docker (64%),
-CloudFormation (57%) and PHP (53%) are the furthest along, and the same method is being applied
-language by language to bring the rest up to them.
+**1449 are executable today**, 271 of them security rules. Python (89% of its security rules), Java
+(85%), Ruby (83%), Go (78%) and CloudFormation (64%) are the furthest along.
+
+Two numbers are worth separating. A rule counts as executable when it has a detection; whether that
+detection is right is a different question, answered by the comparison below. Of the rules added by
+reading the reference implementations in bulk, thirteen have so far been seen to fire on the projects
+measured here — the rest are present and quiet, some because they cover an API those projects never
+touch, some because a detection table without the logic around it recognises where to look and not
+what to look for.
 
 | Area | Code | Rules |
 | --- | --- | --- |
@@ -483,6 +489,32 @@ the precision cannot be lost again silently.
 
 **514 tests** cover the parsers, the semantic model, taint, the scanner and rule precision.
 
+### Noise, measured per language
+
+Precision is not an opinion, so it is kept as a number per language on projects nobody here wrote.
+`tools/noise_audit.py` runs the engine over each of them, ranks the rules most likely to be noise —
+by density, by how far one file dominates their findings, by how often they land on a line another
+rule already took — and compares against a stored baseline, so a change to a shared part of the
+engine cannot quietly wreck a language nobody was looking at. That guard has already caught one: a
+rule about indentation reached Go, where tabs are the convention, and produced fifteen thousand
+findings in a single run.
+
+| project | language | findings per 1k lines |
+| --- | --- | --- |
+| a production C# application | C# | 29.5 |
+| guzzle | PHP | 36.8 |
+| gson | Java | 40.9 |
+| express | JavaScript | 42.7 |
+| gin | Go | 46.0 |
+| flask | Python | 63.7 |
+| requests | Python | 67.1 |
+
+One measure that moved all of them at once: a cap on how many times a single rule may speak about one
+file. A generated documentation page produced four hundred and seventy-five findings from one rule
+about a retired markup tag — every one of them true, and past the first few, useless. The twentieth
+finding now carries the total and the rest are left out, which took a fifth off the noise of some
+projects without hiding anything.
+
 ```bash
 dotnet build QualityGuard.sln
 dotnet test                       # parser, semantics, taint, scanner, rule precision
@@ -679,6 +711,31 @@ wraps the work in a `try`, because there it cannot be followed. And `== false` i
 operand's type cannot be resolved, because on a `bool?` the suggested `!x` does not mean the same
 thing. Silence chosen for a reason costs coverage and is worth it; the two that are left are ordinary
 gaps.
+
+### The same comparison, on JavaScript
+
+The reference publishes the findings it expects on a hundred open-source projects, file by file and
+line by line, with the sources pinned to an exact revision. That is a ground truth nobody here chose,
+and running against it says plainly where this engine stands.
+
+It also has to be read with one correction. The published expectations come from running *every*
+rule, and the default profile enables 459 of 583. The five rules that dominated the first gap list —
+braces around a one-line body, object shorthand, the ternary operator — are not among them: they are
+house style, switched off unless a team asks for them. Measuring against rules nobody enables would
+have flattered the number and pointed the work in the wrong direction. Both were written and are kept
+switched off for the same reason.
+
+Against the default profile, on the projects whose sources are available:
+
+| project | reference | here | of its lines covered |
+| --- | --- | --- | --- |
+| backbone | 86 | 407 | 41% |
+| jquery | 366 | 895 | 9% |
+
+That is the honest position: on C# the engine reaches 95% of what the reference reports; on
+JavaScript it does not, and it says more than the reference does while covering less of it. The gap
+list is ranked by volume and worked from the top — the first rule taken from it, a value stored in
+the middle of an expression, was 107 of the missed lines on its own.
 
 ### Two questions, two instruments
 
