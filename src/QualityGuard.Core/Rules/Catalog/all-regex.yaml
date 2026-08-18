@@ -2,6 +2,8 @@
 # parsed by the analyzer; this file supplies the reasoning and the fix shown in the report.
 
 - key: QG-ALL-BUG-0025
+  status: superseded
+  superseded_by: QG-CS-BUG-0174
   name: A character class should not list the same character twice
   languages: []
   category: BUG
@@ -18,6 +20,8 @@
     already complete.
 
 - key: QG-ALL-SML-0039
+  status: superseded
+  superseded_by: QG-CS-SML-0533
   name: A character class holding one character should be that character
   languages: []
   category: SML
@@ -33,6 +37,8 @@
     Write the character directly, escaping it when the flavour requires it.
 
 - key: QG-ALL-SML-0040
+  status: superseded
+  superseded_by: QG-CS-SML-0534
   name: Alternations of single characters should be a character class
   languages: []
   category: SML
@@ -48,6 +54,8 @@
     Replace the alternation with a character class listing the same characters.
 
 - key: QG-ALL-SML-0041
+  status: superseded
+  superseded_by: QG-CS-SML-0535
   name: Repeated spaces in a pattern should be written as a count
   languages: []
   category: SML
@@ -63,6 +71,8 @@
     State the number explicitly with a quantifier, as in ' {3}', so the intent is visible and stable.
 
 - key: QG-ALL-BUG-0026
+  status: superseded
+  superseded_by: QG-CS-BUG-0175
   name: An alternation should not contain an empty branch
   languages: []
   category: BUG
@@ -79,6 +89,8 @@
     optional, mark it with '?' so the intent is explicit.
 
 - key: QG-ALL-BUG-0027
+  status: superseded
+  superseded_by: QG-CS-BUG-0176
   name: An alternation should not repeat the same branch
   languages: []
   category: BUG
@@ -94,6 +106,8 @@
     Remove the duplicate, or correct it to the alternative that is actually missing.
 
 - key: QG-ALL-BUG-0028
+  status: superseded
+  superseded_by: QG-CS-BUG-0177
   name: A quantifier should not be applied to an already repeating group
   languages: []
   category: BUG
@@ -113,6 +127,8 @@
     backtrack into the group.
 
 - key: QG-ALL-BUG-0029
+  status: superseded
+  superseded_by: QG-CS-BUG-0178
   name: A back reference should point at a group that exists
   languages: []
   category: BUG
@@ -129,6 +145,8 @@
     the pattern again.
 
 - key: QG-ALL-BUG-0030
+  status: superseded
+  superseded_by: QG-CS-BUG-0179
   name: A pattern should not contain a raw control character
   languages: []
   category: BUG

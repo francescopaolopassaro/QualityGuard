@@ -23,7 +23,7 @@ public class ExceptionRulesTests
                 private void Work() { }
             }
             """;
-        Assert.NotEmpty(Lines("Loader.cs", code, "QG-ALL-SML-0048"));
+        Assert.NotEmpty(Lines("Loader.cs", code, "QG-CS-SML-0541"));
     }
 
     [Fact]
@@ -41,7 +41,7 @@ public class ExceptionRulesTests
                 private void Work() { }
             }
             """;
-        Assert.Empty(Lines("Loader.cs", code, "QG-ALL-SML-0048"));
+        Assert.Empty(Lines("Loader.cs", code, "QG-CS-SML-0541"));
     }
 
     [Fact]
@@ -59,7 +59,7 @@ public class ExceptionRulesTests
                 private void Work() { }
             }
             """;
-        Assert.NotEmpty(Lines("Loader.cs", code, "QG-ALL-BUG-0037"));
+        Assert.NotEmpty(Lines("Loader.cs", code, "QG-CS-BUG-0186"));
     }
 
     [Fact]
@@ -78,7 +78,7 @@ public class ExceptionRulesTests
                 private void Close() { }
             }
             """;
-        Assert.Empty(Lines("Loader.cs", code, "QG-ALL-BUG-0037"));
+        Assert.Empty(Lines("Loader.cs", code, "QG-CS-BUG-0186"));
     }
 
     [Fact]
@@ -96,7 +96,7 @@ public class ExceptionRulesTests
                 private int Compute() => 1;
             }
             """;
-        Assert.Equal([5], Lines("Loader.cs", code, "QG-ALL-SML-0050"));
+        Assert.Equal([5], Lines("Loader.cs", code, "QG-CS-SML-0543"));
     }
 
     [Fact]
@@ -116,7 +116,7 @@ public class ExceptionRulesTests
                 private void Log(int value) { }
             }
             """;
-        Assert.Empty(Lines("Loader.cs", code, "QG-ALL-SML-0050"));
+        Assert.Empty(Lines("Loader.cs", code, "QG-CS-SML-0543"));
     }
 
     [Fact]
@@ -134,7 +134,7 @@ public class ExceptionRulesTests
                 private void Work() { }
             }
             """;
-        Assert.NotEmpty(Lines("Loader.cs", code, "QG-ALL-BUG-0038"));
+        Assert.NotEmpty(Lines("Loader.cs", code, "QG-CS-BUG-0187"));
     }
 
     [Fact]
@@ -153,7 +153,7 @@ public class ExceptionRulesTests
                 private void Report() { }
             }
             """;
-        Assert.Empty(Lines("Loader.cs", code, "QG-ALL-BUG-0038"));
+        Assert.Empty(Lines("Loader.cs", code, "QG-CS-BUG-0187"));
     }
 
     [Fact]
@@ -166,7 +166,7 @@ public class ExceptionRulesTests
                 public void Run() { }
             }
             """;
-        Assert.NotEmpty(Lines("Loader.cs", withEmpty, "QG-ALL-SML-0051"));
+        Assert.NotEmpty(Lines("Loader.cs", withEmpty, "QG-CS-SML-0544"));
 
         var docBlock = """
             public class Loader
@@ -178,6 +178,6 @@ public class ExceptionRulesTests
                 public void Run() { }
             }
             """;
-        Assert.Empty(Lines("Loader.cs", docBlock, "QG-ALL-SML-0051"));
+        Assert.Empty(Lines("Loader.cs", docBlock, "QG-CS-SML-0544"));
     }
 }

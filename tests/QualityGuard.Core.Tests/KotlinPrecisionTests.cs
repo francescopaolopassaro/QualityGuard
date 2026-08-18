@@ -73,7 +73,7 @@ public class KotlinPrecisionTests
                 return withSession { resolve() }
             }
             """;
-        Assert.Empty(Lines(code, "QG-ALL-BUG-0001"));
+        Assert.Empty(Lines(code, "QG-KT-BUG-0031"));
 
         var real = """
             fun go(): Int {
@@ -81,7 +81,7 @@ public class KotlinPrecisionTests
                 log("never")
             }
             """;
-        Assert.NotEmpty(Lines(real, "QG-ALL-BUG-0001"));
+        Assert.NotEmpty(Lines(real, "QG-KT-BUG-0031"));
     }
 
     [Fact]

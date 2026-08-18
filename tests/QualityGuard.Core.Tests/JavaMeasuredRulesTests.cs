@@ -267,7 +267,7 @@ public class JavaMeasuredRulesTests
               }
             }
             """;
-        Assert.NotEmpty(Lines(duplicated, "QG-ALL-BUG-0025"));
+        Assert.NotEmpty(Lines(duplicated, "QG-JV-BUG-0228"));
 
         var distinct = """
             package demo;
@@ -278,7 +278,7 @@ public class JavaMeasuredRulesTests
               }
             }
             """;
-        Assert.Empty(Lines(distinct, "QG-ALL-BUG-0025"));
+        Assert.Empty(Lines(distinct, "QG-JV-BUG-0228"));
     }
 
     [Fact]
@@ -293,7 +293,7 @@ public class JavaMeasuredRulesTests
               }
             }
             """;
-        Assert.NotEmpty(Lines(overlapping, "QG-ALL-BUG-0025"));
+        Assert.NotEmpty(Lines(overlapping, "QG-JV-BUG-0228"));
 
         var disjoint = """
             package demo;
@@ -304,7 +304,7 @@ public class JavaMeasuredRulesTests
               }
             }
             """;
-        Assert.Empty(Lines(disjoint, "QG-ALL-BUG-0025"));
+        Assert.Empty(Lines(disjoint, "QG-JV-BUG-0228"));
     }
     [Fact]
     public void A_format_string_missing_a_value_is_reported()

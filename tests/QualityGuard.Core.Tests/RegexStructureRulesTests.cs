@@ -21,7 +21,7 @@ public class RegexStructureRulesTests
               return preg_match("/[aa]/", $s);
             }
             """;
-        Assert.NotEmpty(Php(duplicated, "QG-ALL-BUG-0025"));
+        Assert.NotEmpty(Php(duplicated, "QG-PP-BUG-0075"));
 
         var distinct = """
             <?php
@@ -29,7 +29,7 @@ public class RegexStructureRulesTests
               return preg_match("/[ab]/", $s);
             }
             """;
-        Assert.Empty(Php(distinct, "QG-ALL-BUG-0025"));
+        Assert.Empty(Php(distinct, "QG-PP-BUG-0075"));
     }
 
     [Fact]
@@ -43,7 +43,7 @@ public class RegexStructureRulesTests
               return preg_replace($regex, '<a href="http$1://$2">$0</a>', $s);
             }
             """;
-        Assert.Empty(Php(code, "QG-ALL-BUG-0040"));
+        Assert.Empty(Php(code, "QG-PP-BUG-0090"));
     }
 
     [Fact]
@@ -55,7 +55,7 @@ public class RegexStructureRulesTests
               return preg_match("/(x*)*/", $s);
             }
             """;
-        Assert.NotEmpty(Php(empty, "QG-ALL-BUG-0039"));
+        Assert.NotEmpty(Php(empty, "QG-PP-BUG-0089"));
 
         var required = """
             <?php
@@ -63,7 +63,7 @@ public class RegexStructureRulesTests
               return preg_match("/(x+)*/", $s);
             }
             """;
-        Assert.Empty(Php(required, "QG-ALL-BUG-0039"));
+        Assert.Empty(Php(required, "QG-PP-BUG-0089"));
     }
 
     [Fact]
@@ -75,7 +75,7 @@ public class RegexStructureRulesTests
               return preg_match('/$[a-z]/', $s);
             }
             """;
-        Assert.NotEmpty(Php(impossible, "QG-ALL-BUG-0040"));
+        Assert.NotEmpty(Php(impossible, "QG-PP-BUG-0090"));
 
         var fine = """
             <?php
@@ -83,7 +83,7 @@ public class RegexStructureRulesTests
               return preg_match('/[a-z]$/', $s);
             }
             """;
-        Assert.Empty(Php(fine, "QG-ALL-BUG-0040"));
+        Assert.Empty(Php(fine, "QG-PP-BUG-0090"));
     }
 
     [Fact]
@@ -97,7 +97,7 @@ public class RegexStructureRulesTests
               return preg_match('/a$\nb/m', $s);
             }
             """;
-        Assert.Empty(Php(multiline, "QG-ALL-BUG-0040"));
+        Assert.Empty(Php(multiline, "QG-PP-BUG-0090"));
     }
 
     [Fact]
@@ -109,7 +109,7 @@ public class RegexStructureRulesTests
               return preg_match("/<.+?>/", $s);
             }
             """;
-        Assert.NotEmpty(Php(lazy, "QG-ALL-SML-0052"));
+        Assert.NotEmpty(Php(lazy, "QG-PP-SML-0166"));
 
         var negated = """
             <?php
@@ -117,7 +117,7 @@ public class RegexStructureRulesTests
               return preg_match("/<[^>]+>/", $s);
             }
             """;
-        Assert.Empty(Php(negated, "QG-ALL-SML-0052"));
+        Assert.Empty(Php(negated, "QG-PP-SML-0166"));
     }
 
     [Fact]
@@ -130,6 +130,6 @@ public class RegexStructureRulesTests
               return preg_match("/<--.+?-->/", $s);
             }
             """;
-        Assert.Empty(Php(code, "QG-ALL-SML-0052"));
+        Assert.Empty(Php(code, "QG-PP-SML-0166"));
     }
 }

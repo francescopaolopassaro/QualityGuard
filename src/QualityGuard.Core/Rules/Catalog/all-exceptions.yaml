@@ -1,6 +1,8 @@
 # Descriptions for the failure-handling rules implemented in Rules/ExceptionRules.cs.
 
 - key: QG-ALL-SML-0048
+  status: superseded
+  superseded_by: QG-CS-SML-0541
   name: A catch clause should do more than rethrow
   languages: []
   category: SML
@@ -17,6 +19,8 @@
     cleanup, or an exception that names the operation that failed and keeps the original as its cause.
 
 - key: QG-ALL-SML-0049
+  status: superseded
+  superseded_by: QG-CS-SML-0542
   name: A type named like an exception should be one
   languages: []
   category: SML
@@ -32,6 +36,8 @@
     promise it can be thrown and caught.
 
 - key: QG-ALL-BUG-0037
+  status: superseded
+  superseded_by: QG-CS-BUG-0186
   name: A finally block should not throw
   languages: []
   category: BUG
@@ -48,6 +54,8 @@
     suppressed one — and let the first exception continue on its way.
 
 - key: QG-ALL-SML-0050
+  status: superseded
+  superseded_by: QG-CS-SML-0543
   name: A local should not be declared only to be returned on the next line
   languages: []
   category: SML
@@ -63,6 +71,8 @@
     expression does not.
 
 - key: QG-ALL-BUG-0038
+  status: superseded
+  superseded_by: QG-CS-BUG-0187
   name: A failure the program cannot recover from should not be caught
   languages: []
   category: BUG
@@ -79,6 +89,8 @@
     where the process can log and stop.
 
 - key: QG-ALL-SML-0051
+  status: superseded
+  superseded_by: QG-CS-SML-0544
   name: A comment should say something
   languages: []
   category: SML

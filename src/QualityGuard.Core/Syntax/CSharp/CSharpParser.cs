@@ -412,6 +412,12 @@ public sealed class CSharpParser
     /// <summary>Distinguishes an attribute list from an array or a collection expression.</summary>
     private bool LooksLikeAttribute()
     {
+        // Only C# writes an attribute as '[Name]'. Everywhere else the bracket opens a list, and in
+        // PHP and JavaScript a statement can start with one: '[$a, $b] = $pair' unpacks a value, and
+        // reading it as an attribute split one assignment into two statements.
+        if (_dialect != CFamilyDialect.CSharp)
+            return false;
+
         var next = Peek();
         if (next is not { Kind: TokenKind.Identifier or TokenKind.Keyword })
             return false;
@@ -2952,6 +2958,15 @@ public sealed class CSharpParser
         if (AtEnd)
             return null;
         var start = Mark();
+
+        // PHP writes '\strlen($x)' to say "the one in the global namespace". The backslash carries
+        // no meaning for any rule, and leaving it in the stream ended the expression: 'return' was
+        // left without a value and the call became a statement of its own on the same line.
+        if (IsPhp && Is("\\"))
+        {
+            Take();
+            return ParseUnary();
+        }
 
         if (IsAny("!", "-", "+", "~", "++", "--", "await", "&", "*", "^")
             || (IsJs && IsAny("typeof", "void", "delete", "yield", "new")))

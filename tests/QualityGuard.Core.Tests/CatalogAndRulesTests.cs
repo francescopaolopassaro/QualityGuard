@@ -68,10 +68,10 @@ public class CatalogAndRulesTests
                     log("done");
                 }
             }
-            """, "QG-ALL-BUG-0001", "QG-ALL-BUG-0002");
+            """, "QG-CS-BUG-0150", "QG-CS-BUG-0151");
 
-        Assert.NotEmpty(Analyze.LinesOf(analysis, "QG-ALL-BUG-0001"));
-        Assert.NotEmpty(Analyze.LinesOf(analysis, "QG-ALL-BUG-0002"));
+        Assert.NotEmpty(Analyze.LinesOf(analysis, "QG-CS-BUG-0150"));
+        Assert.NotEmpty(Analyze.LinesOf(analysis, "QG-CS-BUG-0151"));
     }
 
     [Fact]
@@ -79,7 +79,7 @@ public class CatalogAndRulesTests
     {
         var analysis = Analyze.WithRules("Sample.cs", """
             class A { void go() { var x = 1; } }
-            """, "QG-ALL-SML-0009");
+            """, "QG-CS-SML-0499");
 
         var issue = Assert.Single(analysis.Issues);
         Assert.False(string.IsNullOrWhiteSpace(issue.HowToFix));

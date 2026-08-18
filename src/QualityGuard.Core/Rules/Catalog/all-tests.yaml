@@ -1,6 +1,8 @@
 # Descriptions for the test-quality rules implemented in Rules/TestQualityRules.cs.
 
 - key: QG-ALL-BUG-0031
+  status: superseded
+  superseded_by: QG-CS-BUG-0180
   name: An assertion should not compare a value with itself
   languages: []
   category: BUG
@@ -17,6 +19,8 @@
     that the test fails when the behaviour is changed on purpose.
 
 - key: QG-ALL-BUG-0032
+  status: superseded
+  superseded_by: QG-CS-BUG-0181
   name: The expected value should come first in an assertion
   languages: []
   category: BUG
@@ -32,6 +36,8 @@
     Swap the arguments so the expected value comes first, the way the framework documents it.
 
 - key: QG-ALL-SML-0042
+  status: superseded
+  superseded_by: QG-CS-SML-0536
   name: An assertion should check one thing
   languages: []
   category: SML
@@ -47,6 +53,8 @@
     Write one assertion per condition, so the failure points at the part that broke.
 
 - key: QG-ALL-SML-0043
+  status: superseded
+  superseded_by: QG-CS-SML-0537
   name: A comparison inside a boolean assertion should use the dedicated assertion
   languages: []
   category: SML
@@ -62,6 +70,8 @@
     Use the equality or the null assertion of the framework and pass the two values to it.
 
 - key: QG-ALL-SML-0044
+  status: superseded
+  superseded_by: QG-CS-SML-0538
   name: A test class should contain at least one test
   languages: []
   category: SML

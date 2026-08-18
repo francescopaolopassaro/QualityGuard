@@ -14,15 +14,168 @@ public static class CorrectnessRuleSet
 {
     public static IReadOnlyList<IRule> All { get; } =
     [
-        new LoopWithAtMostOneIterationRule(),
-        new NonsensicalSizeComparisonRule(),
-        new CollectionPassedToItsOwnMethodRule(),
-        new DiscardedPureResultRule(),
-        new RepeatedUnaryOperatorRule(),
-        new PointlessShiftRule(),
-        new LoopCounterMovesAwayFromBoundRule(),
-        new LoopWithoutExitRule(),
-        new UselessIncrementRule()
+        new LoopWithAtMostOneIterationRuleCs(),
+        new LoopWithAtMostOneIterationRuleJava(),
+        new LoopWithAtMostOneIterationRuleKotlin(),
+        new LoopWithAtMostOneIterationRuleJs(),
+        new LoopWithAtMostOneIterationRulePython(),
+        new LoopWithAtMostOneIterationRulePhp(),
+        new LoopWithAtMostOneIterationRuleGo(),
+        new LoopWithAtMostOneIterationRuleDart(),
+        new LoopWithAtMostOneIterationRuleRuby(),
+        new LoopWithAtMostOneIterationRuleSwift(),
+        new LoopWithAtMostOneIterationRuleCss(),
+        new LoopWithAtMostOneIterationRuleHtml(),
+        new LoopWithAtMostOneIterationRuleXml(),
+        new LoopWithAtMostOneIterationRuleTerraform(),
+        new LoopWithAtMostOneIterationRuleDockerfile(),
+        new LoopWithAtMostOneIterationRuleKubernetes(),
+        new LoopWithAtMostOneIterationRuleCloudFormation(),
+        new LoopWithAtMostOneIterationRuleJson(),
+        new NonsensicalSizeComparisonRuleCs(),
+        new NonsensicalSizeComparisonRuleJava(),
+        new NonsensicalSizeComparisonRuleKotlin(),
+        new NonsensicalSizeComparisonRuleJs(),
+        new NonsensicalSizeComparisonRulePython(),
+        new NonsensicalSizeComparisonRulePhp(),
+        new NonsensicalSizeComparisonRuleGo(),
+        new NonsensicalSizeComparisonRuleDart(),
+        new NonsensicalSizeComparisonRuleRuby(),
+        new NonsensicalSizeComparisonRuleSwift(),
+        new NonsensicalSizeComparisonRuleCss(),
+        new NonsensicalSizeComparisonRuleHtml(),
+        new NonsensicalSizeComparisonRuleXml(),
+        new NonsensicalSizeComparisonRuleTerraform(),
+        new NonsensicalSizeComparisonRuleDockerfile(),
+        new NonsensicalSizeComparisonRuleKubernetes(),
+        new NonsensicalSizeComparisonRuleCloudFormation(),
+        new NonsensicalSizeComparisonRuleJson(),
+        new CollectionPassedToItsOwnMethodRuleCs(),
+        new CollectionPassedToItsOwnMethodRuleJava(),
+        new CollectionPassedToItsOwnMethodRuleKotlin(),
+        new CollectionPassedToItsOwnMethodRuleJs(),
+        new CollectionPassedToItsOwnMethodRulePython(),
+        new CollectionPassedToItsOwnMethodRulePhp(),
+        new CollectionPassedToItsOwnMethodRuleGo(),
+        new CollectionPassedToItsOwnMethodRuleDart(),
+        new CollectionPassedToItsOwnMethodRuleRuby(),
+        new CollectionPassedToItsOwnMethodRuleSwift(),
+        new CollectionPassedToItsOwnMethodRuleCss(),
+        new CollectionPassedToItsOwnMethodRuleHtml(),
+        new CollectionPassedToItsOwnMethodRuleXml(),
+        new CollectionPassedToItsOwnMethodRuleTerraform(),
+        new CollectionPassedToItsOwnMethodRuleDockerfile(),
+        new CollectionPassedToItsOwnMethodRuleKubernetes(),
+        new CollectionPassedToItsOwnMethodRuleCloudFormation(),
+        new CollectionPassedToItsOwnMethodRuleJson(),
+        new DiscardedPureResultRuleCs(),
+        new DiscardedPureResultRuleJava(),
+        new DiscardedPureResultRuleKotlin(),
+        new DiscardedPureResultRuleJs(),
+        new DiscardedPureResultRulePython(),
+        new DiscardedPureResultRulePhp(),
+        new DiscardedPureResultRuleGo(),
+        new DiscardedPureResultRuleDart(),
+        new DiscardedPureResultRuleRuby(),
+        new DiscardedPureResultRuleSwift(),
+        new DiscardedPureResultRuleCss(),
+        new DiscardedPureResultRuleHtml(),
+        new DiscardedPureResultRuleXml(),
+        new DiscardedPureResultRuleTerraform(),
+        new DiscardedPureResultRuleDockerfile(),
+        new DiscardedPureResultRuleKubernetes(),
+        new DiscardedPureResultRuleCloudFormation(),
+        new DiscardedPureResultRuleJson(),
+        new RepeatedUnaryOperatorRuleCs(),
+        new RepeatedUnaryOperatorRuleJava(),
+        new RepeatedUnaryOperatorRuleKotlin(),
+        new RepeatedUnaryOperatorRuleJs(),
+        new RepeatedUnaryOperatorRulePython(),
+        new RepeatedUnaryOperatorRulePhp(),
+        new RepeatedUnaryOperatorRuleGo(),
+        new RepeatedUnaryOperatorRuleDart(),
+        new RepeatedUnaryOperatorRuleRuby(),
+        new RepeatedUnaryOperatorRuleSwift(),
+        new RepeatedUnaryOperatorRuleCss(),
+        new RepeatedUnaryOperatorRuleHtml(),
+        new RepeatedUnaryOperatorRuleXml(),
+        new RepeatedUnaryOperatorRuleTerraform(),
+        new RepeatedUnaryOperatorRuleDockerfile(),
+        new RepeatedUnaryOperatorRuleKubernetes(),
+        new RepeatedUnaryOperatorRuleCloudFormation(),
+        new RepeatedUnaryOperatorRuleJson(),
+        new PointlessShiftRuleCs(),
+        new PointlessShiftRuleJava(),
+        new PointlessShiftRuleKotlin(),
+        new PointlessShiftRuleJs(),
+        new PointlessShiftRulePython(),
+        new PointlessShiftRulePhp(),
+        new PointlessShiftRuleGo(),
+        new PointlessShiftRuleDart(),
+        new PointlessShiftRuleRuby(),
+        new PointlessShiftRuleSwift(),
+        new PointlessShiftRuleCss(),
+        new PointlessShiftRuleHtml(),
+        new PointlessShiftRuleXml(),
+        new PointlessShiftRuleTerraform(),
+        new PointlessShiftRuleDockerfile(),
+        new PointlessShiftRuleKubernetes(),
+        new PointlessShiftRuleCloudFormation(),
+        new PointlessShiftRuleJson(),
+        new LoopCounterMovesAwayFromBoundRuleCs(),
+        new LoopCounterMovesAwayFromBoundRuleJava(),
+        new LoopCounterMovesAwayFromBoundRuleKotlin(),
+        new LoopCounterMovesAwayFromBoundRuleJs(),
+        new LoopCounterMovesAwayFromBoundRulePython(),
+        new LoopCounterMovesAwayFromBoundRulePhp(),
+        new LoopCounterMovesAwayFromBoundRuleGo(),
+        new LoopCounterMovesAwayFromBoundRuleDart(),
+        new LoopCounterMovesAwayFromBoundRuleRuby(),
+        new LoopCounterMovesAwayFromBoundRuleSwift(),
+        new LoopCounterMovesAwayFromBoundRuleCss(),
+        new LoopCounterMovesAwayFromBoundRuleHtml(),
+        new LoopCounterMovesAwayFromBoundRuleXml(),
+        new LoopCounterMovesAwayFromBoundRuleTerraform(),
+        new LoopCounterMovesAwayFromBoundRuleDockerfile(),
+        new LoopCounterMovesAwayFromBoundRuleKubernetes(),
+        new LoopCounterMovesAwayFromBoundRuleCloudFormation(),
+        new LoopCounterMovesAwayFromBoundRuleJson(),
+        new LoopWithoutExitRuleCs(),
+        new LoopWithoutExitRuleJava(),
+        new LoopWithoutExitRuleKotlin(),
+        new LoopWithoutExitRuleJs(),
+        new LoopWithoutExitRulePython(),
+        new LoopWithoutExitRulePhp(),
+        new LoopWithoutExitRuleGo(),
+        new LoopWithoutExitRuleDart(),
+        new LoopWithoutExitRuleRuby(),
+        new LoopWithoutExitRuleSwift(),
+        new LoopWithoutExitRuleCss(),
+        new LoopWithoutExitRuleHtml(),
+        new LoopWithoutExitRuleXml(),
+        new LoopWithoutExitRuleTerraform(),
+        new LoopWithoutExitRuleDockerfile(),
+        new LoopWithoutExitRuleKubernetes(),
+        new LoopWithoutExitRuleCloudFormation(),
+        new LoopWithoutExitRuleJson(),
+        new UselessIncrementRuleCs(),
+        new UselessIncrementRuleRuby(),
+        new UselessIncrementRuleSwift(),
+        new UselessIncrementRuleCss(),
+        new UselessIncrementRuleHtml(),
+        new UselessIncrementRuleXml(),
+        new UselessIncrementRuleTerraform(),
+        new UselessIncrementRuleDockerfile(),
+        new UselessIncrementRuleKubernetes(),
+        new UselessIncrementRuleCloudFormation(),
+        new UselessIncrementRuleJson(),
+        new UselessIncrementRuleJava(),
+        new UselessIncrementRuleKotlin(),
+        new UselessIncrementRuleJs(),
+        new UselessIncrementRulePython(),
+        new UselessIncrementRulePhp(),
+        new UselessIncrementRuleGo(),
+        new UselessIncrementRuleDart()
     ];
 }
 
@@ -57,9 +210,8 @@ public abstract class CorrectnessRuleBase : RuleBase
     }
 }
 
-public sealed class LoopWithAtMostOneIterationRule : CorrectnessRuleBase
+public abstract class LoopWithAtMostOneIterationRule : CorrectnessRuleBase
 {
-    public override string Key => "QG-ALL-BUG-0016";
     public override string Name => "Loops should be able to run more than once";
     public override Severity Severity => Severity.Major;
     public override IssueKind Kind => IssueKind.Bug;
@@ -100,12 +252,118 @@ public sealed class LoopWithAtMostOneIterationRule : CorrectnessRuleBase
                                                    || n.Text.StartsWith("throw", StringComparison.Ordinal));
 }
 
-public sealed class NonsensicalSizeComparisonRule : CorrectnessRuleBase
+public sealed class LoopWithAtMostOneIterationRuleCs : LoopWithAtMostOneIterationRule
+{
+    public override string Key => "QG-CS-BUG-0165";
+    public override string[] Languages => ["cs", "vb"];
+}
+
+public sealed class LoopWithAtMostOneIterationRuleJava : LoopWithAtMostOneIterationRule
+{
+    public override string Key => "QG-JV-BUG-0219";
+    public override string[] Languages => ["java"];
+}
+
+public sealed class LoopWithAtMostOneIterationRuleKotlin : LoopWithAtMostOneIterationRule
+{
+    public override string Key => "QG-KT-BUG-0046";
+    public override string[] Languages => ["kt"];
+}
+
+public sealed class LoopWithAtMostOneIterationRuleJs : LoopWithAtMostOneIterationRule
+{
+    public override string Key => "QG-JS-BUG-0163";
+    public override string[] Languages => ["js", "ts"];
+}
+
+public sealed class LoopWithAtMostOneIterationRulePython : LoopWithAtMostOneIterationRule
+{
+    public override string Key => "QG-PY-BUG-0169";
+    public override string[] Languages => ["py"];
+}
+
+public sealed class LoopWithAtMostOneIterationRulePhp : LoopWithAtMostOneIterationRule
+{
+    public override string Key => "QG-PP-BUG-0066";
+    public override string[] Languages => ["php"];
+}
+
+public sealed class LoopWithAtMostOneIterationRuleGo : LoopWithAtMostOneIterationRule
+{
+    public override string Key => "QG-GO-BUG-0022";
+    public override string[] Languages => ["go"];
+}
+
+public sealed class LoopWithAtMostOneIterationRuleDart : LoopWithAtMostOneIterationRule
+{
+    public override string Key => "QG-DART-BUG-0020";
+    public override string[] Languages => ["dart"];
+}
+
+public sealed class LoopWithAtMostOneIterationRuleRuby : LoopWithAtMostOneIterationRule
+{
+    public override string Key => "QG-RB-BUG-0006";
+    public override string[] Languages => ["rb"];
+}
+
+public sealed class LoopWithAtMostOneIterationRuleSwift : LoopWithAtMostOneIterationRule
+{
+    public override string Key => "QG-SW-BUG-0010";
+    public override string[] Languages => ["swift"];
+}
+
+public sealed class LoopWithAtMostOneIterationRuleCss : LoopWithAtMostOneIterationRule
+{
+    public override string Key => "QG-CSS-BUG-0035";
+    public override string[] Languages => ["css"];
+}
+
+public sealed class LoopWithAtMostOneIterationRuleHtml : LoopWithAtMostOneIterationRule
+{
+    public override string Key => "QG-HTML-BUG-0035";
+    public override string[] Languages => ["html"];
+}
+
+public sealed class LoopWithAtMostOneIterationRuleXml : LoopWithAtMostOneIterationRule
+{
+    public override string Key => "QG-XML-BUG-0010";
+    public override string[] Languages => ["xml"];
+}
+
+public sealed class LoopWithAtMostOneIterationRuleTerraform : LoopWithAtMostOneIterationRule
+{
+    public override string Key => "QG-TF-BUG-0005";
+    public override string[] Languages => ["tf"];
+}
+
+public sealed class LoopWithAtMostOneIterationRuleDockerfile : LoopWithAtMostOneIterationRule
+{
+    public override string Key => "QG-DK-BUG-0012";
+    public override string[] Languages => ["dk"];
+}
+
+public sealed class LoopWithAtMostOneIterationRuleKubernetes : LoopWithAtMostOneIterationRule
+{
+    public override string Key => "QG-K8-BUG-0005";
+    public override string[] Languages => ["k8"];
+}
+
+public sealed class LoopWithAtMostOneIterationRuleCloudFormation : LoopWithAtMostOneIterationRule
+{
+    public override string Key => "QG-CF-BUG-0005";
+    public override string[] Languages => ["cf"];
+}
+
+public sealed class LoopWithAtMostOneIterationRuleJson : LoopWithAtMostOneIterationRule
+{
+    public override string Key => "QG-JSON-BUG-0006";
+    public override string[] Languages => ["json"];
+}
+
+public abstract class NonsensicalSizeComparisonRule : CorrectnessRuleBase
 {
     private static readonly string[] SizeNames =
         ["Count", "Length", "size", "length", "count", "len", "Size", "__len__"];
-
-    public override string Key => "QG-ALL-BUG-0017";
     public override string Name => "Size comparisons should be able to fail";
     public override Severity Severity => Severity.Major;
     public override IssueKind Kind => IssueKind.Bug;
@@ -163,7 +421,115 @@ public sealed class NonsensicalSizeComparisonRule : CorrectnessRuleBase
     }
 }
 
-public sealed class CollectionPassedToItsOwnMethodRule : CorrectnessRuleBase
+public sealed class NonsensicalSizeComparisonRuleCs : NonsensicalSizeComparisonRule
+{
+    public override string Key => "QG-CS-BUG-0166";
+    public override string[] Languages => ["cs", "vb"];
+}
+
+public sealed class NonsensicalSizeComparisonRuleJava : NonsensicalSizeComparisonRule
+{
+    public override string Key => "QG-JV-BUG-0220";
+    public override string[] Languages => ["java"];
+}
+
+public sealed class NonsensicalSizeComparisonRuleKotlin : NonsensicalSizeComparisonRule
+{
+    public override string Key => "QG-KT-BUG-0047";
+    public override string[] Languages => ["kt"];
+}
+
+public sealed class NonsensicalSizeComparisonRuleJs : NonsensicalSizeComparisonRule
+{
+    public override string Key => "QG-JS-BUG-0164";
+    public override string[] Languages => ["js", "ts"];
+}
+
+public sealed class NonsensicalSizeComparisonRulePython : NonsensicalSizeComparisonRule
+{
+    public override string Key => "QG-PY-BUG-0170";
+    public override string[] Languages => ["py"];
+}
+
+public sealed class NonsensicalSizeComparisonRulePhp : NonsensicalSizeComparisonRule
+{
+    public override string Key => "QG-PP-BUG-0067";
+    public override string[] Languages => ["php"];
+}
+
+public sealed class NonsensicalSizeComparisonRuleGo : NonsensicalSizeComparisonRule
+{
+    public override string Key => "QG-GO-BUG-0023";
+    public override string[] Languages => ["go"];
+}
+
+public sealed class NonsensicalSizeComparisonRuleDart : NonsensicalSizeComparisonRule
+{
+    public override string Key => "QG-DART-BUG-0021";
+    public override string[] Languages => ["dart"];
+}
+
+public sealed class NonsensicalSizeComparisonRuleRuby : NonsensicalSizeComparisonRule
+{
+    public override string Key => "QG-RB-BUG-0007";
+    public override string[] Languages => ["rb"];
+}
+
+public sealed class NonsensicalSizeComparisonRuleSwift : NonsensicalSizeComparisonRule
+{
+    public override string Key => "QG-SW-BUG-0011";
+    public override string[] Languages => ["swift"];
+}
+
+public sealed class NonsensicalSizeComparisonRuleCss : NonsensicalSizeComparisonRule
+{
+    public override string Key => "QG-CSS-BUG-0036";
+    public override string[] Languages => ["css"];
+}
+
+public sealed class NonsensicalSizeComparisonRuleHtml : NonsensicalSizeComparisonRule
+{
+    public override string Key => "QG-HTML-BUG-0036";
+    public override string[] Languages => ["html"];
+}
+
+public sealed class NonsensicalSizeComparisonRuleXml : NonsensicalSizeComparisonRule
+{
+    public override string Key => "QG-XML-BUG-0011";
+    public override string[] Languages => ["xml"];
+}
+
+public sealed class NonsensicalSizeComparisonRuleTerraform : NonsensicalSizeComparisonRule
+{
+    public override string Key => "QG-TF-BUG-0006";
+    public override string[] Languages => ["tf"];
+}
+
+public sealed class NonsensicalSizeComparisonRuleDockerfile : NonsensicalSizeComparisonRule
+{
+    public override string Key => "QG-DK-BUG-0013";
+    public override string[] Languages => ["dk"];
+}
+
+public sealed class NonsensicalSizeComparisonRuleKubernetes : NonsensicalSizeComparisonRule
+{
+    public override string Key => "QG-K8-BUG-0006";
+    public override string[] Languages => ["k8"];
+}
+
+public sealed class NonsensicalSizeComparisonRuleCloudFormation : NonsensicalSizeComparisonRule
+{
+    public override string Key => "QG-CF-BUG-0006";
+    public override string[] Languages => ["cf"];
+}
+
+public sealed class NonsensicalSizeComparisonRuleJson : NonsensicalSizeComparisonRule
+{
+    public override string Key => "QG-JSON-BUG-0007";
+    public override string[] Languages => ["json"];
+}
+
+public abstract class CollectionPassedToItsOwnMethodRule : CorrectnessRuleBase
 {
     private static readonly string[] Suspicious =
     [
@@ -171,8 +537,6 @@ public sealed class CollectionPassedToItsOwnMethodRule : CorrectnessRuleBase
         "add", "Add", "remove", "Remove", "push", "extend", "update", "concat", "Union", "Intersect",
         "Except", "SequenceEqual", "copyOf", "CopyTo", "putAll", "merge"
     ];
-
-    public override string Key => "QG-ALL-BUG-0018";
     public override string Name => "A collection should not be passed to its own method";
     public override Severity Severity => Severity.Major;
     public override IssueKind Kind => IssueKind.Bug;
@@ -203,7 +567,115 @@ public sealed class CollectionPassedToItsOwnMethodRule : CorrectnessRuleBase
     }
 }
 
-public sealed class DiscardedPureResultRule : CorrectnessRuleBase
+public sealed class CollectionPassedToItsOwnMethodRuleCs : CollectionPassedToItsOwnMethodRule
+{
+    public override string Key => "QG-CS-BUG-0167";
+    public override string[] Languages => ["cs", "vb"];
+}
+
+public sealed class CollectionPassedToItsOwnMethodRuleJava : CollectionPassedToItsOwnMethodRule
+{
+    public override string Key => "QG-JV-BUG-0221";
+    public override string[] Languages => ["java"];
+}
+
+public sealed class CollectionPassedToItsOwnMethodRuleKotlin : CollectionPassedToItsOwnMethodRule
+{
+    public override string Key => "QG-KT-BUG-0048";
+    public override string[] Languages => ["kt"];
+}
+
+public sealed class CollectionPassedToItsOwnMethodRuleJs : CollectionPassedToItsOwnMethodRule
+{
+    public override string Key => "QG-JS-BUG-0165";
+    public override string[] Languages => ["js", "ts"];
+}
+
+public sealed class CollectionPassedToItsOwnMethodRulePython : CollectionPassedToItsOwnMethodRule
+{
+    public override string Key => "QG-PY-BUG-0171";
+    public override string[] Languages => ["py"];
+}
+
+public sealed class CollectionPassedToItsOwnMethodRulePhp : CollectionPassedToItsOwnMethodRule
+{
+    public override string Key => "QG-PP-BUG-0068";
+    public override string[] Languages => ["php"];
+}
+
+public sealed class CollectionPassedToItsOwnMethodRuleGo : CollectionPassedToItsOwnMethodRule
+{
+    public override string Key => "QG-GO-BUG-0024";
+    public override string[] Languages => ["go"];
+}
+
+public sealed class CollectionPassedToItsOwnMethodRuleDart : CollectionPassedToItsOwnMethodRule
+{
+    public override string Key => "QG-DART-BUG-0022";
+    public override string[] Languages => ["dart"];
+}
+
+public sealed class CollectionPassedToItsOwnMethodRuleRuby : CollectionPassedToItsOwnMethodRule
+{
+    public override string Key => "QG-RB-BUG-0008";
+    public override string[] Languages => ["rb"];
+}
+
+public sealed class CollectionPassedToItsOwnMethodRuleSwift : CollectionPassedToItsOwnMethodRule
+{
+    public override string Key => "QG-SW-BUG-0012";
+    public override string[] Languages => ["swift"];
+}
+
+public sealed class CollectionPassedToItsOwnMethodRuleCss : CollectionPassedToItsOwnMethodRule
+{
+    public override string Key => "QG-CSS-BUG-0037";
+    public override string[] Languages => ["css"];
+}
+
+public sealed class CollectionPassedToItsOwnMethodRuleHtml : CollectionPassedToItsOwnMethodRule
+{
+    public override string Key => "QG-HTML-BUG-0037";
+    public override string[] Languages => ["html"];
+}
+
+public sealed class CollectionPassedToItsOwnMethodRuleXml : CollectionPassedToItsOwnMethodRule
+{
+    public override string Key => "QG-XML-BUG-0012";
+    public override string[] Languages => ["xml"];
+}
+
+public sealed class CollectionPassedToItsOwnMethodRuleTerraform : CollectionPassedToItsOwnMethodRule
+{
+    public override string Key => "QG-TF-BUG-0007";
+    public override string[] Languages => ["tf"];
+}
+
+public sealed class CollectionPassedToItsOwnMethodRuleDockerfile : CollectionPassedToItsOwnMethodRule
+{
+    public override string Key => "QG-DK-BUG-0014";
+    public override string[] Languages => ["dk"];
+}
+
+public sealed class CollectionPassedToItsOwnMethodRuleKubernetes : CollectionPassedToItsOwnMethodRule
+{
+    public override string Key => "QG-K8-BUG-0007";
+    public override string[] Languages => ["k8"];
+}
+
+public sealed class CollectionPassedToItsOwnMethodRuleCloudFormation : CollectionPassedToItsOwnMethodRule
+{
+    public override string Key => "QG-CF-BUG-0007";
+    public override string[] Languages => ["cf"];
+}
+
+public sealed class CollectionPassedToItsOwnMethodRuleJson : CollectionPassedToItsOwnMethodRule
+{
+    public override string Key => "QG-JSON-BUG-0008";
+    public override string[] Languages => ["json"];
+}
+
+public abstract class DiscardedPureResultRule : CorrectnessRuleBase
 {
     /// <summary>Calls that only compute: dropping the result means the statement does nothing at all.</summary>
     /// <summary>
@@ -219,8 +691,6 @@ public sealed class DiscardedPureResultRule : CorrectnessRuleBase
         "StartsWith", "startsWith", "EndsWith", "endsWith", "ToString", "toString",
         "Abs", "Sqrt", "Pow", "Floor", "Ceiling", "Round"
     ];
-
-    public override string Key => "QG-ALL-BUG-0019";
     public override string Name => "The result of a pure call should be used";
     public override Severity Severity => Severity.Major;
     public override IssueKind Kind => IssueKind.Bug;
@@ -248,9 +718,116 @@ public sealed class DiscardedPureResultRule : CorrectnessRuleBase
     }
 }
 
-public sealed class RepeatedUnaryOperatorRule : CorrectnessRuleBase
+public sealed class DiscardedPureResultRuleCs : DiscardedPureResultRule
 {
-    public override string Key => "QG-ALL-BUG-0020";
+    public override string Key => "QG-CS-BUG-0168";
+    public override string[] Languages => ["cs", "vb"];
+}
+
+public sealed class DiscardedPureResultRuleJava : DiscardedPureResultRule
+{
+    public override string Key => "QG-JV-BUG-0222";
+    public override string[] Languages => ["java"];
+}
+
+public sealed class DiscardedPureResultRuleKotlin : DiscardedPureResultRule
+{
+    public override string Key => "QG-KT-BUG-0049";
+    public override string[] Languages => ["kt"];
+}
+
+public sealed class DiscardedPureResultRuleJs : DiscardedPureResultRule
+{
+    public override string Key => "QG-JS-BUG-0166";
+    public override string[] Languages => ["js", "ts"];
+}
+
+public sealed class DiscardedPureResultRulePython : DiscardedPureResultRule
+{
+    public override string Key => "QG-PY-BUG-0172";
+    public override string[] Languages => ["py"];
+}
+
+public sealed class DiscardedPureResultRulePhp : DiscardedPureResultRule
+{
+    public override string Key => "QG-PP-BUG-0069";
+    public override string[] Languages => ["php"];
+}
+
+public sealed class DiscardedPureResultRuleGo : DiscardedPureResultRule
+{
+    public override string Key => "QG-GO-BUG-0025";
+    public override string[] Languages => ["go"];
+}
+
+public sealed class DiscardedPureResultRuleDart : DiscardedPureResultRule
+{
+    public override string Key => "QG-DART-BUG-0023";
+    public override string[] Languages => ["dart"];
+}
+
+public sealed class DiscardedPureResultRuleRuby : DiscardedPureResultRule
+{
+    public override string Key => "QG-RB-BUG-0009";
+    public override string[] Languages => ["rb"];
+}
+
+public sealed class DiscardedPureResultRuleSwift : DiscardedPureResultRule
+{
+    public override string Key => "QG-SW-BUG-0013";
+    public override string[] Languages => ["swift"];
+}
+
+public sealed class DiscardedPureResultRuleCss : DiscardedPureResultRule
+{
+    public override string Key => "QG-CSS-BUG-0038";
+    public override string[] Languages => ["css"];
+}
+
+public sealed class DiscardedPureResultRuleHtml : DiscardedPureResultRule
+{
+    public override string Key => "QG-HTML-BUG-0038";
+    public override string[] Languages => ["html"];
+}
+
+public sealed class DiscardedPureResultRuleXml : DiscardedPureResultRule
+{
+    public override string Key => "QG-XML-BUG-0013";
+    public override string[] Languages => ["xml"];
+}
+
+public sealed class DiscardedPureResultRuleTerraform : DiscardedPureResultRule
+{
+    public override string Key => "QG-TF-BUG-0008";
+    public override string[] Languages => ["tf"];
+}
+
+public sealed class DiscardedPureResultRuleDockerfile : DiscardedPureResultRule
+{
+    public override string Key => "QG-DK-BUG-0015";
+    public override string[] Languages => ["dk"];
+}
+
+public sealed class DiscardedPureResultRuleKubernetes : DiscardedPureResultRule
+{
+    public override string Key => "QG-K8-BUG-0008";
+    public override string[] Languages => ["k8"];
+}
+
+public sealed class DiscardedPureResultRuleCloudFormation : DiscardedPureResultRule
+{
+    public override string Key => "QG-CF-BUG-0008";
+    public override string[] Languages => ["cf"];
+}
+
+public sealed class DiscardedPureResultRuleJson : DiscardedPureResultRule
+{
+    public override string Key => "QG-JSON-BUG-0009";
+    public override string[] Languages => ["json"];
+}
+
+public abstract class RepeatedUnaryOperatorRule : CorrectnessRuleBase
+{
     public override string Name => "Unary operators should not be repeated";
     public override Severity Severity => Severity.Major;
     public override IssueKind Kind => IssueKind.Bug;
@@ -284,9 +861,116 @@ public sealed class RepeatedUnaryOperatorRule : CorrectnessRuleBase
     }
 }
 
-public sealed class PointlessShiftRule : CorrectnessRuleBase
+public sealed class RepeatedUnaryOperatorRuleCs : RepeatedUnaryOperatorRule
 {
-    public override string Key => "QG-ALL-BUG-0021";
+    public override string Key => "QG-CS-BUG-0169";
+    public override string[] Languages => ["cs", "vb"];
+}
+
+public sealed class RepeatedUnaryOperatorRuleJava : RepeatedUnaryOperatorRule
+{
+    public override string Key => "QG-JV-BUG-0223";
+    public override string[] Languages => ["java"];
+}
+
+public sealed class RepeatedUnaryOperatorRuleKotlin : RepeatedUnaryOperatorRule
+{
+    public override string Key => "QG-KT-BUG-0050";
+    public override string[] Languages => ["kt"];
+}
+
+public sealed class RepeatedUnaryOperatorRuleJs : RepeatedUnaryOperatorRule
+{
+    public override string Key => "QG-JS-BUG-0167";
+    public override string[] Languages => ["js", "ts"];
+}
+
+public sealed class RepeatedUnaryOperatorRulePython : RepeatedUnaryOperatorRule
+{
+    public override string Key => "QG-PY-BUG-0173";
+    public override string[] Languages => ["py"];
+}
+
+public sealed class RepeatedUnaryOperatorRulePhp : RepeatedUnaryOperatorRule
+{
+    public override string Key => "QG-PP-BUG-0070";
+    public override string[] Languages => ["php"];
+}
+
+public sealed class RepeatedUnaryOperatorRuleGo : RepeatedUnaryOperatorRule
+{
+    public override string Key => "QG-GO-BUG-0026";
+    public override string[] Languages => ["go"];
+}
+
+public sealed class RepeatedUnaryOperatorRuleDart : RepeatedUnaryOperatorRule
+{
+    public override string Key => "QG-DART-BUG-0024";
+    public override string[] Languages => ["dart"];
+}
+
+public sealed class RepeatedUnaryOperatorRuleRuby : RepeatedUnaryOperatorRule
+{
+    public override string Key => "QG-RB-BUG-0010";
+    public override string[] Languages => ["rb"];
+}
+
+public sealed class RepeatedUnaryOperatorRuleSwift : RepeatedUnaryOperatorRule
+{
+    public override string Key => "QG-SW-BUG-0014";
+    public override string[] Languages => ["swift"];
+}
+
+public sealed class RepeatedUnaryOperatorRuleCss : RepeatedUnaryOperatorRule
+{
+    public override string Key => "QG-CSS-BUG-0039";
+    public override string[] Languages => ["css"];
+}
+
+public sealed class RepeatedUnaryOperatorRuleHtml : RepeatedUnaryOperatorRule
+{
+    public override string Key => "QG-HTML-BUG-0039";
+    public override string[] Languages => ["html"];
+}
+
+public sealed class RepeatedUnaryOperatorRuleXml : RepeatedUnaryOperatorRule
+{
+    public override string Key => "QG-XML-BUG-0014";
+    public override string[] Languages => ["xml"];
+}
+
+public sealed class RepeatedUnaryOperatorRuleTerraform : RepeatedUnaryOperatorRule
+{
+    public override string Key => "QG-TF-BUG-0009";
+    public override string[] Languages => ["tf"];
+}
+
+public sealed class RepeatedUnaryOperatorRuleDockerfile : RepeatedUnaryOperatorRule
+{
+    public override string Key => "QG-DK-BUG-0016";
+    public override string[] Languages => ["dk"];
+}
+
+public sealed class RepeatedUnaryOperatorRuleKubernetes : RepeatedUnaryOperatorRule
+{
+    public override string Key => "QG-K8-BUG-0009";
+    public override string[] Languages => ["k8"];
+}
+
+public sealed class RepeatedUnaryOperatorRuleCloudFormation : RepeatedUnaryOperatorRule
+{
+    public override string Key => "QG-CF-BUG-0009";
+    public override string[] Languages => ["cf"];
+}
+
+public sealed class RepeatedUnaryOperatorRuleJson : RepeatedUnaryOperatorRule
+{
+    public override string Key => "QG-JSON-BUG-0010";
+    public override string[] Languages => ["json"];
+}
+
+public abstract class PointlessShiftRule : CorrectnessRuleBase
+{
     public override string Name => "Shift distances should be inside the width of the value";
     public override Severity Severity => Severity.Major;
     public override IssueKind Kind => IssueKind.Bug;
@@ -320,9 +1004,116 @@ public sealed class PointlessShiftRule : CorrectnessRuleBase
     }
 }
 
-public sealed class LoopCounterMovesAwayFromBoundRule : CorrectnessRuleBase
+public sealed class PointlessShiftRuleCs : PointlessShiftRule
 {
-    public override string Key => "QG-ALL-BUG-0022";
+    public override string Key => "QG-CS-BUG-0170";
+    public override string[] Languages => ["cs", "vb"];
+}
+
+public sealed class PointlessShiftRuleJava : PointlessShiftRule
+{
+    public override string Key => "QG-JV-BUG-0224";
+    public override string[] Languages => ["java"];
+}
+
+public sealed class PointlessShiftRuleKotlin : PointlessShiftRule
+{
+    public override string Key => "QG-KT-BUG-0051";
+    public override string[] Languages => ["kt"];
+}
+
+public sealed class PointlessShiftRuleJs : PointlessShiftRule
+{
+    public override string Key => "QG-JS-BUG-0168";
+    public override string[] Languages => ["js", "ts"];
+}
+
+public sealed class PointlessShiftRulePython : PointlessShiftRule
+{
+    public override string Key => "QG-PY-BUG-0174";
+    public override string[] Languages => ["py"];
+}
+
+public sealed class PointlessShiftRulePhp : PointlessShiftRule
+{
+    public override string Key => "QG-PP-BUG-0071";
+    public override string[] Languages => ["php"];
+}
+
+public sealed class PointlessShiftRuleGo : PointlessShiftRule
+{
+    public override string Key => "QG-GO-BUG-0027";
+    public override string[] Languages => ["go"];
+}
+
+public sealed class PointlessShiftRuleDart : PointlessShiftRule
+{
+    public override string Key => "QG-DART-BUG-0025";
+    public override string[] Languages => ["dart"];
+}
+
+public sealed class PointlessShiftRuleRuby : PointlessShiftRule
+{
+    public override string Key => "QG-RB-BUG-0011";
+    public override string[] Languages => ["rb"];
+}
+
+public sealed class PointlessShiftRuleSwift : PointlessShiftRule
+{
+    public override string Key => "QG-SW-BUG-0015";
+    public override string[] Languages => ["swift"];
+}
+
+public sealed class PointlessShiftRuleCss : PointlessShiftRule
+{
+    public override string Key => "QG-CSS-BUG-0040";
+    public override string[] Languages => ["css"];
+}
+
+public sealed class PointlessShiftRuleHtml : PointlessShiftRule
+{
+    public override string Key => "QG-HTML-BUG-0040";
+    public override string[] Languages => ["html"];
+}
+
+public sealed class PointlessShiftRuleXml : PointlessShiftRule
+{
+    public override string Key => "QG-XML-BUG-0015";
+    public override string[] Languages => ["xml"];
+}
+
+public sealed class PointlessShiftRuleTerraform : PointlessShiftRule
+{
+    public override string Key => "QG-TF-BUG-0010";
+    public override string[] Languages => ["tf"];
+}
+
+public sealed class PointlessShiftRuleDockerfile : PointlessShiftRule
+{
+    public override string Key => "QG-DK-BUG-0017";
+    public override string[] Languages => ["dk"];
+}
+
+public sealed class PointlessShiftRuleKubernetes : PointlessShiftRule
+{
+    public override string Key => "QG-K8-BUG-0010";
+    public override string[] Languages => ["k8"];
+}
+
+public sealed class PointlessShiftRuleCloudFormation : PointlessShiftRule
+{
+    public override string Key => "QG-CF-BUG-0010";
+    public override string[] Languages => ["cf"];
+}
+
+public sealed class PointlessShiftRuleJson : PointlessShiftRule
+{
+    public override string Key => "QG-JSON-BUG-0011";
+    public override string[] Languages => ["json"];
+}
+
+public abstract class LoopCounterMovesAwayFromBoundRule : CorrectnessRuleBase
+{
     public override string Name => "A loop counter should move towards the bound that ends the loop";
     public override Severity Severity => Severity.Critical;
     public override IssueKind Kind => IssueKind.Bug;
@@ -361,9 +1152,116 @@ public sealed class LoopCounterMovesAwayFromBoundRule : CorrectnessRuleBase
     }
 }
 
-public sealed class LoopWithoutExitRule : CorrectnessRuleBase
+public sealed class LoopCounterMovesAwayFromBoundRuleCs : LoopCounterMovesAwayFromBoundRule
 {
-    public override string Key => "QG-ALL-BUG-0023";
+    public override string Key => "QG-CS-BUG-0171";
+    public override string[] Languages => ["cs", "vb"];
+}
+
+public sealed class LoopCounterMovesAwayFromBoundRuleJava : LoopCounterMovesAwayFromBoundRule
+{
+    public override string Key => "QG-JV-BUG-0225";
+    public override string[] Languages => ["java"];
+}
+
+public sealed class LoopCounterMovesAwayFromBoundRuleKotlin : LoopCounterMovesAwayFromBoundRule
+{
+    public override string Key => "QG-KT-BUG-0052";
+    public override string[] Languages => ["kt"];
+}
+
+public sealed class LoopCounterMovesAwayFromBoundRuleJs : LoopCounterMovesAwayFromBoundRule
+{
+    public override string Key => "QG-JS-BUG-0169";
+    public override string[] Languages => ["js", "ts"];
+}
+
+public sealed class LoopCounterMovesAwayFromBoundRulePython : LoopCounterMovesAwayFromBoundRule
+{
+    public override string Key => "QG-PY-BUG-0175";
+    public override string[] Languages => ["py"];
+}
+
+public sealed class LoopCounterMovesAwayFromBoundRulePhp : LoopCounterMovesAwayFromBoundRule
+{
+    public override string Key => "QG-PP-BUG-0072";
+    public override string[] Languages => ["php"];
+}
+
+public sealed class LoopCounterMovesAwayFromBoundRuleGo : LoopCounterMovesAwayFromBoundRule
+{
+    public override string Key => "QG-GO-BUG-0028";
+    public override string[] Languages => ["go"];
+}
+
+public sealed class LoopCounterMovesAwayFromBoundRuleDart : LoopCounterMovesAwayFromBoundRule
+{
+    public override string Key => "QG-DART-BUG-0026";
+    public override string[] Languages => ["dart"];
+}
+
+public sealed class LoopCounterMovesAwayFromBoundRuleRuby : LoopCounterMovesAwayFromBoundRule
+{
+    public override string Key => "QG-RB-BUG-0012";
+    public override string[] Languages => ["rb"];
+}
+
+public sealed class LoopCounterMovesAwayFromBoundRuleSwift : LoopCounterMovesAwayFromBoundRule
+{
+    public override string Key => "QG-SW-BUG-0016";
+    public override string[] Languages => ["swift"];
+}
+
+public sealed class LoopCounterMovesAwayFromBoundRuleCss : LoopCounterMovesAwayFromBoundRule
+{
+    public override string Key => "QG-CSS-BUG-0041";
+    public override string[] Languages => ["css"];
+}
+
+public sealed class LoopCounterMovesAwayFromBoundRuleHtml : LoopCounterMovesAwayFromBoundRule
+{
+    public override string Key => "QG-HTML-BUG-0041";
+    public override string[] Languages => ["html"];
+}
+
+public sealed class LoopCounterMovesAwayFromBoundRuleXml : LoopCounterMovesAwayFromBoundRule
+{
+    public override string Key => "QG-XML-BUG-0016";
+    public override string[] Languages => ["xml"];
+}
+
+public sealed class LoopCounterMovesAwayFromBoundRuleTerraform : LoopCounterMovesAwayFromBoundRule
+{
+    public override string Key => "QG-TF-BUG-0011";
+    public override string[] Languages => ["tf"];
+}
+
+public sealed class LoopCounterMovesAwayFromBoundRuleDockerfile : LoopCounterMovesAwayFromBoundRule
+{
+    public override string Key => "QG-DK-BUG-0018";
+    public override string[] Languages => ["dk"];
+}
+
+public sealed class LoopCounterMovesAwayFromBoundRuleKubernetes : LoopCounterMovesAwayFromBoundRule
+{
+    public override string Key => "QG-K8-BUG-0011";
+    public override string[] Languages => ["k8"];
+}
+
+public sealed class LoopCounterMovesAwayFromBoundRuleCloudFormation : LoopCounterMovesAwayFromBoundRule
+{
+    public override string Key => "QG-CF-BUG-0011";
+    public override string[] Languages => ["cf"];
+}
+
+public sealed class LoopCounterMovesAwayFromBoundRuleJson : LoopCounterMovesAwayFromBoundRule
+{
+    public override string Key => "QG-JSON-BUG-0012";
+    public override string[] Languages => ["json"];
+}
+
+public abstract class LoopWithoutExitRule : CorrectnessRuleBase
+{
     public override string Name => "An always-true loop should contain a way out";
     public override Severity Severity => Severity.Critical;
     public override IssueKind Kind => IssueKind.Bug;
@@ -412,9 +1310,116 @@ public sealed class LoopWithoutExitRule : CorrectnessRuleBase
     }
 }
 
-public sealed class UselessIncrementRule : CorrectnessRuleBase
+public sealed class LoopWithoutExitRuleCs : LoopWithoutExitRule
 {
-    public override string Key => "QG-ALL-BUG-0024";
+    public override string Key => "QG-CS-BUG-0172";
+    public override string[] Languages => ["cs", "vb"];
+}
+
+public sealed class LoopWithoutExitRuleJava : LoopWithoutExitRule
+{
+    public override string Key => "QG-JV-BUG-0226";
+    public override string[] Languages => ["java"];
+}
+
+public sealed class LoopWithoutExitRuleKotlin : LoopWithoutExitRule
+{
+    public override string Key => "QG-KT-BUG-0053";
+    public override string[] Languages => ["kt"];
+}
+
+public sealed class LoopWithoutExitRuleJs : LoopWithoutExitRule
+{
+    public override string Key => "QG-JS-BUG-0170";
+    public override string[] Languages => ["js", "ts"];
+}
+
+public sealed class LoopWithoutExitRulePython : LoopWithoutExitRule
+{
+    public override string Key => "QG-PY-BUG-0176";
+    public override string[] Languages => ["py"];
+}
+
+public sealed class LoopWithoutExitRulePhp : LoopWithoutExitRule
+{
+    public override string Key => "QG-PP-BUG-0073";
+    public override string[] Languages => ["php"];
+}
+
+public sealed class LoopWithoutExitRuleGo : LoopWithoutExitRule
+{
+    public override string Key => "QG-GO-BUG-0029";
+    public override string[] Languages => ["go"];
+}
+
+public sealed class LoopWithoutExitRuleDart : LoopWithoutExitRule
+{
+    public override string Key => "QG-DART-BUG-0027";
+    public override string[] Languages => ["dart"];
+}
+
+public sealed class LoopWithoutExitRuleRuby : LoopWithoutExitRule
+{
+    public override string Key => "QG-RB-BUG-0013";
+    public override string[] Languages => ["rb"];
+}
+
+public sealed class LoopWithoutExitRuleSwift : LoopWithoutExitRule
+{
+    public override string Key => "QG-SW-BUG-0017";
+    public override string[] Languages => ["swift"];
+}
+
+public sealed class LoopWithoutExitRuleCss : LoopWithoutExitRule
+{
+    public override string Key => "QG-CSS-BUG-0042";
+    public override string[] Languages => ["css"];
+}
+
+public sealed class LoopWithoutExitRuleHtml : LoopWithoutExitRule
+{
+    public override string Key => "QG-HTML-BUG-0042";
+    public override string[] Languages => ["html"];
+}
+
+public sealed class LoopWithoutExitRuleXml : LoopWithoutExitRule
+{
+    public override string Key => "QG-XML-BUG-0017";
+    public override string[] Languages => ["xml"];
+}
+
+public sealed class LoopWithoutExitRuleTerraform : LoopWithoutExitRule
+{
+    public override string Key => "QG-TF-BUG-0012";
+    public override string[] Languages => ["tf"];
+}
+
+public sealed class LoopWithoutExitRuleDockerfile : LoopWithoutExitRule
+{
+    public override string Key => "QG-DK-BUG-0019";
+    public override string[] Languages => ["dk"];
+}
+
+public sealed class LoopWithoutExitRuleKubernetes : LoopWithoutExitRule
+{
+    public override string Key => "QG-K8-BUG-0012";
+    public override string[] Languages => ["k8"];
+}
+
+public sealed class LoopWithoutExitRuleCloudFormation : LoopWithoutExitRule
+{
+    public override string Key => "QG-CF-BUG-0012";
+    public override string[] Languages => ["cf"];
+}
+
+public sealed class LoopWithoutExitRuleJson : LoopWithoutExitRule
+{
+    public override string Key => "QG-JSON-BUG-0013";
+    public override string[] Languages => ["json"];
+}
+
+public abstract class UselessIncrementRule : CorrectnessRuleBase
+{
     public override string Name => "A value assigned to a local should be read before the local goes away";
     public override Severity Severity => Severity.Major;
     public override IssueKind Kind => IssueKind.Bug;
@@ -461,4 +1466,112 @@ public sealed class UselessIncrementRule : CorrectnessRuleBase
                || (operand.Range.StartLine == unary.Range.StartLine
                    && operand.Range.StartColumn < unary.Range.StartColumn);
     }
+}
+
+public sealed class UselessIncrementRuleCs : UselessIncrementRule
+{
+    public override string Key => "QG-CS-BUG-0173";
+    public override string[] Languages => ["cs", "vb"];
+}
+
+public sealed class UselessIncrementRuleJava : UselessIncrementRule
+{
+    public override string Key => "QG-JV-BUG-0227";
+    public override string[] Languages => ["java"];
+}
+
+public sealed class UselessIncrementRuleKotlin : UselessIncrementRule
+{
+    public override string Key => "QG-KT-BUG-0054";
+    public override string[] Languages => ["kt"];
+}
+
+public sealed class UselessIncrementRuleJs : UselessIncrementRule
+{
+    public override string Key => "QG-JS-BUG-0171";
+    public override string[] Languages => ["js", "ts"];
+}
+
+public sealed class UselessIncrementRulePython : UselessIncrementRule
+{
+    public override string Key => "QG-PY-BUG-0177";
+    public override string[] Languages => ["py"];
+}
+
+public sealed class UselessIncrementRulePhp : UselessIncrementRule
+{
+    public override string Key => "QG-PP-BUG-0074";
+    public override string[] Languages => ["php"];
+}
+
+public sealed class UselessIncrementRuleGo : UselessIncrementRule
+{
+    public override string Key => "QG-GO-BUG-0030";
+    public override string[] Languages => ["go"];
+}
+
+public sealed class UselessIncrementRuleDart : UselessIncrementRule
+{
+    public override string Key => "QG-DART-BUG-0028";
+    public override string[] Languages => ["dart"];
+}
+
+public sealed class UselessIncrementRuleRuby : UselessIncrementRule
+{
+    public override string Key => "QG-RB-BUG-0014";
+    public override string[] Languages => ["rb"];
+}
+
+public sealed class UselessIncrementRuleSwift : UselessIncrementRule
+{
+    public override string Key => "QG-SW-BUG-0018";
+    public override string[] Languages => ["swift"];
+}
+
+public sealed class UselessIncrementRuleCss : UselessIncrementRule
+{
+    public override string Key => "QG-CSS-BUG-0043";
+    public override string[] Languages => ["css"];
+}
+
+public sealed class UselessIncrementRuleHtml : UselessIncrementRule
+{
+    public override string Key => "QG-HTML-BUG-0043";
+    public override string[] Languages => ["html"];
+}
+
+public sealed class UselessIncrementRuleXml : UselessIncrementRule
+{
+    public override string Key => "QG-XML-BUG-0018";
+    public override string[] Languages => ["xml"];
+}
+
+public sealed class UselessIncrementRuleTerraform : UselessIncrementRule
+{
+    public override string Key => "QG-TF-BUG-0013";
+    public override string[] Languages => ["tf"];
+}
+
+public sealed class UselessIncrementRuleDockerfile : UselessIncrementRule
+{
+    public override string Key => "QG-DK-BUG-0020";
+    public override string[] Languages => ["dk"];
+}
+
+public sealed class UselessIncrementRuleKubernetes : UselessIncrementRule
+{
+    public override string Key => "QG-K8-BUG-0013";
+    public override string[] Languages => ["k8"];
+}
+
+public sealed class UselessIncrementRuleCloudFormation : UselessIncrementRule
+{
+    public override string Key => "QG-CF-BUG-0013";
+    public override string[] Languages => ["cf"];
+}
+
+public sealed class UselessIncrementRuleJson : UselessIncrementRule
+{
+    public override string Key => "QG-JSON-BUG-0014";
+    public override string[] Languages => ["json"];
 }

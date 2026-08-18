@@ -7,11 +7,35 @@ public static class BuiltInRuleRegistrar
 {
     public static IReadOnlyList<IRule> All { get; } =
     [
-        new TodosAndFixmesRule(),
-        new TrailingCommasRule(),
-        new EmptyBlockRule(),
-        new TabCharacterRule(),
-        new LineTooLongRule(),
+        new TodosAndFixmesRuleCs(),
+        new TodosAndFixmesRuleJava(),
+        new TodosAndFixmesRuleKotlin(),
+        new TodosAndFixmesRuleJs(),
+        new TodosAndFixmesRulePython(),
+        new TodosAndFixmesRulePhp(),
+        new TodosAndFixmesRuleGo(),
+        new TrailingCommasRuleCs(),
+        new TrailingCommasRuleJava(),
+        new EmptyBlockRuleCs(),
+        new EmptyBlockRuleJava(),
+        new EmptyBlockRuleKotlin(),
+        new EmptyBlockRuleJs(),
+        new EmptyBlockRulePython(),
+        new EmptyBlockRulePhp(),
+        new TabCharacterRuleCs(),
+        new TabCharacterRuleJava(),
+        new TabCharacterRuleKotlin(),
+        new TabCharacterRuleJs(),
+        new TabCharacterRulePython(),
+        new TabCharacterRulePhp(),
+        new LineTooLongRuleCs(),
+        new LineTooLongRuleJava(),
+        new LineTooLongRuleKotlin(),
+        new LineTooLongRuleJs(),
+        new LineTooLongRulePython(),
+        new LineTooLongRulePhp(),
+        new LineTooLongRuleGo(),
+        new LineTooLongRuleDart(),
         ..Languages.JavaRuleSet.All,
         ..Languages.KotlinRuleSet.All,
         ..Languages.SwiftRuleSet.All,
@@ -71,9 +95,8 @@ public abstract class TextualRuleBase : RuleBase
         => context.Tokens.Where(t => t.Kind == TokenKind.Comment);
 }
 
-public sealed class TodosAndFixmesRule : TextualRuleBase
+public abstract class TodosAndFixmesRule : TextualRuleBase
 {
-    public override string Key => "QG-ALL-SML-0001";
     public override string Name => "Track uses of TODO and FIXME tags";
     public override Severity Severity => Severity.Info;
     public override IssueKind Kind => IssueKind.CodeSmell;
@@ -94,9 +117,51 @@ public sealed class TodosAndFixmesRule : TextualRuleBase
     }
 }
 
-public sealed class TrailingCommasRule : TextualRuleBase
+public sealed class TodosAndFixmesRuleCs : TodosAndFixmesRule
 {
-    public override string Key => "QG-ALL-CNV-0001";
+    public override string Key => "QG-CS-SML-0503";
+    public override string[] Languages => ["cs", "vb"];
+}
+
+public sealed class TodosAndFixmesRuleJava : TodosAndFixmesRule
+{
+    public override string Key => "QG-JV-SML-0464";
+    public override string[] Languages => ["java"];
+}
+
+public sealed class TodosAndFixmesRuleKotlin : TodosAndFixmesRule
+{
+    public override string Key => "QG-KT-SML-0086";
+    public override string[] Languages => ["kt"];
+}
+
+public sealed class TodosAndFixmesRuleJs : TodosAndFixmesRule
+{
+    public override string Key => "QG-JS-SML-0380";
+    public override string[] Languages => ["js", "ts"];
+}
+
+public sealed class TodosAndFixmesRulePython : TodosAndFixmesRule
+{
+    public override string Key => "QG-PY-SML-0259";
+    public override string[] Languages => ["py"];
+}
+
+public sealed class TodosAndFixmesRulePhp : TodosAndFixmesRule
+{
+    public override string Key => "QG-PP-SML-0124";
+    public override string[] Languages => ["php"];
+}
+
+public sealed class TodosAndFixmesRuleGo : TodosAndFixmesRule
+{
+    public override string Key => "QG-GO-SML-0038";
+    public override string[] Languages => ["go"];
+}
+
+
+public abstract class TrailingCommasRule : TextualRuleBase
+{
     public override string Name => "Trailing commas should not be used";
     public override Severity Severity => Severity.Minor;
     public override IssueKind Kind => IssueKind.CodeSmell;
@@ -117,9 +182,26 @@ public sealed class TrailingCommasRule : TextualRuleBase
     }
 }
 
-public sealed class EmptyBlockRule : TextualRuleBase
+public sealed class TrailingCommasRuleCs : TrailingCommasRule
 {
-    public override string Key => "QG-ALL-SML-0002";
+    public override string Key => "QG-CS-CNV-0012";
+    public override string[] Languages => ["cs", "vb"];
+}
+
+public sealed class TrailingCommasRuleJava : TrailingCommasRule
+{
+    public override string Key => "QG-JV-CNV-0004";
+    public override string[] Languages => ["java"];
+}
+
+
+
+
+
+
+
+public abstract class EmptyBlockRule : TextualRuleBase
+{
     public override string Name => "Nested blocks of code should not be left empty";
     public override Severity Severity => Severity.Major;
     public override IssueKind Kind => IssueKind.CodeSmell;
@@ -186,9 +268,46 @@ public sealed class EmptyBlockRule : TextualRuleBase
     }
 }
 
-public sealed class TabCharacterRule : TextualRuleBase
+public sealed class EmptyBlockRuleCs : EmptyBlockRule
 {
-    public override string Key => "QG-ALL-CNV-0002";
+    public override string Key => "QG-CS-SML-0504";
+    public override string[] Languages => ["cs", "vb"];
+}
+
+public sealed class EmptyBlockRuleJava : EmptyBlockRule
+{
+    public override string Key => "QG-JV-SML-0465";
+    public override string[] Languages => ["java"];
+}
+
+public sealed class EmptyBlockRuleKotlin : EmptyBlockRule
+{
+    public override string Key => "QG-KT-SML-0087";
+    public override string[] Languages => ["kt"];
+}
+
+public sealed class EmptyBlockRuleJs : EmptyBlockRule
+{
+    public override string Key => "QG-JS-SML-0381";
+    public override string[] Languages => ["js", "ts"];
+}
+
+public sealed class EmptyBlockRulePython : EmptyBlockRule
+{
+    public override string Key => "QG-PY-SML-0260";
+    public override string[] Languages => ["py"];
+}
+
+public sealed class EmptyBlockRulePhp : EmptyBlockRule
+{
+    public override string Key => "QG-PP-SML-0125";
+    public override string[] Languages => ["php"];
+}
+
+
+
+public abstract class TabCharacterRule : TextualRuleBase
+{
     public override string Name => "Replace all tab characters in this file by sequences of white-spaces";
     public override Severity Severity => Severity.Minor;
     public override IssueKind Kind => IssueKind.CodeSmell;
@@ -209,9 +328,46 @@ public sealed class TabCharacterRule : TextualRuleBase
     }
 }
 
-public sealed class LineTooLongRule : TextualRuleBase
+public sealed class TabCharacterRuleCs : TabCharacterRule
 {
-    public override string Key => "QG-ALL-CNV-0003";
+    public override string Key => "QG-CS-CNV-0013";
+    public override string[] Languages => ["cs", "vb"];
+}
+
+public sealed class TabCharacterRuleJava : TabCharacterRule
+{
+    public override string Key => "QG-JV-CNV-0005";
+    public override string[] Languages => ["java"];
+}
+
+public sealed class TabCharacterRuleKotlin : TabCharacterRule
+{
+    public override string Key => "QG-KT-CNV-0007";
+    public override string[] Languages => ["kt"];
+}
+
+public sealed class TabCharacterRuleJs : TabCharacterRule
+{
+    public override string Key => "QG-JS-CNV-0005";
+    public override string[] Languages => ["js", "ts"];
+}
+
+public sealed class TabCharacterRulePython : TabCharacterRule
+{
+    public override string Key => "QG-PY-CNV-0012";
+    public override string[] Languages => ["py"];
+}
+
+public sealed class TabCharacterRulePhp : TabCharacterRule
+{
+    public override string Key => "QG-PP-CNV-0003";
+    public override string[] Languages => ["php"];
+}
+
+
+
+public abstract class LineTooLongRule : TextualRuleBase
+{
     public override string Name => "Lines should not be too long";
     public override Severity Severity => Severity.Major;
     public override IssueKind Kind => IssueKind.CodeSmell;
@@ -241,4 +397,52 @@ public sealed class LineTooLongRule : TextualRuleBase
                 context.Report($"Split this {lines[i].Length} characters long line (which is greater than {MaxLength} authorized).", i + 1);
         }
     }
+}
+
+public sealed class LineTooLongRuleCs : LineTooLongRule
+{
+    public override string Key => "QG-CS-CNV-0014";
+    public override string[] Languages => ["cs", "vb"];
+}
+
+public sealed class LineTooLongRuleJava : LineTooLongRule
+{
+    public override string Key => "QG-JV-CNV-0006";
+    public override string[] Languages => ["java"];
+}
+
+public sealed class LineTooLongRuleKotlin : LineTooLongRule
+{
+    public override string Key => "QG-KT-CNV-0008";
+    public override string[] Languages => ["kt"];
+}
+
+public sealed class LineTooLongRuleJs : LineTooLongRule
+{
+    public override string Key => "QG-JS-CNV-0006";
+    public override string[] Languages => ["js", "ts"];
+}
+
+public sealed class LineTooLongRulePython : LineTooLongRule
+{
+    public override string Key => "QG-PY-CNV-0013";
+    public override string[] Languages => ["py"];
+}
+
+public sealed class LineTooLongRulePhp : LineTooLongRule
+{
+    public override string Key => "QG-PP-CNV-0004";
+    public override string[] Languages => ["php"];
+}
+
+public sealed class LineTooLongRuleGo : LineTooLongRule
+{
+    public override string Key => "QG-GO-CNV-0005";
+    public override string[] Languages => ["go"];
+}
+
+public sealed class LineTooLongRuleDart : LineTooLongRule
+{
+    public override string Key => "QG-DART-CNV-0004";
+    public override string[] Languages => ["dart"];
 }

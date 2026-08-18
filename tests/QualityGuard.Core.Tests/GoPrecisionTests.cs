@@ -42,12 +42,12 @@ public class GoPrecisionTests
     public void A_permission_mask_is_not_an_accidental_octal()
     {
         Assert.Empty(Lines("package main\n\nfunc go1() {\n    mkdir(\"/tmp/x\", 0755)\n}\n",
-            "QG-ALL-BUG-0033"));
+            "QG-GO-BUG-0039"));
         Assert.Empty(Lines("package main\n\nfunc go1() {\n    chmod(\"/tmp/x\", 0644)\n}\n",
-            "QG-ALL-BUG-0033"));
+            "QG-GO-BUG-0039"));
         // a number that simply starts with a zero is still the accident the rule is about
         Assert.NotEmpty(Lines("package main\n\nfunc go1() int {\n    return 012345\n}\n",
-            "QG-ALL-BUG-0033"));
+            "QG-GO-BUG-0039"));
     }
 
     [Fact]

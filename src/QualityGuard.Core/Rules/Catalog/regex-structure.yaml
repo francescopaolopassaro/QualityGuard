@@ -3,6 +3,8 @@
 # engine can find.
 
 - key: QG-ALL-BUG-0039
+  status: superseded
+  superseded_by: QG-CS-BUG-0188
   name: A repeated group should not match the empty string
   languages: []
   category: BUG
@@ -22,6 +24,8 @@
     preg_match('/(x+)*/', $input);
 
 - key: QG-ALL-BUG-0040
+  status: superseded
+  superseded_by: QG-CS-BUG-0189
   name: An anchor should be in a position where it can hold
   languages: []
   category: BUG
@@ -41,6 +45,8 @@
     preg_match('/[a-z]$/', $input);
 
 - key: QG-ALL-SML-0052
+  status: superseded
+  superseded_by: QG-CS-SML-0545
   name: A lazy quantifier before a fixed terminator should be a negated class
   languages: []
   category: SML

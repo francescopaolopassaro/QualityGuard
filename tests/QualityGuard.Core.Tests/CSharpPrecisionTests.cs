@@ -31,14 +31,14 @@ public class CSharpPrecisionTests
             }
             """;
         // QG-CS-SML-0023 was retired: the shared analyzer answers the same question
-        Assert.Empty(Lines(header, "QG-ALL-SML-0030"));
+        Assert.Empty(Lines(header, "QG-CS-SML-0524"));
     }
 
     [Fact]
     public void A_commented_statement_is_still_reported()
         => Assert.NotEmpty(Lines("namespace Demo;\npublic class A\n{\n"
                                  + "    // var total = items.Count();\n    private int _a;\n}\n",
-            "QG-ALL-SML-0030"));
+            "QG-CS-SML-0524"));
 
     [Fact]
     public void A_constructor_forwarding_with_an_empty_body_is_left_alone()
@@ -52,13 +52,13 @@ public class CSharpPrecisionTests
                     : this(diagnostic, context.Report, context.Tree) { }
             }
             """;
-        Assert.Empty(Lines(forwarding, "QG-ALL-SML-0002"));
+        Assert.Empty(Lines(forwarding, "QG-CS-SML-0504"));
     }
 
     [Fact]
     public void An_empty_nested_block_is_still_reported()
         => Assert.NotEmpty(Lines("namespace Demo;\npublic class A\n{\n    void F(int a)\n    {\n"
-                                 + "        if (a > 0) { }\n    }\n}\n", "QG-ALL-SML-0002"));
+                                 + "        if (a > 0) { }\n    }\n}\n", "QG-CS-SML-0504"));
 
     [Fact]
     public void A_value_that_may_be_null_is_reported_only_when_nothing_checked_it()

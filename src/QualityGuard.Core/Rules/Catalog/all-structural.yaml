@@ -3,6 +3,8 @@
 # Every text field must be English and written for this engine.
 
 - key: QG-ALL-BUG-0001
+  status: superseded
+  superseded_by: QG-CS-BUG-0150
   name: Statements after a jump are never executed
   languages: []
   category: BUG
@@ -25,6 +27,8 @@
     return total;
 
 - key: QG-ALL-BUG-0002
+  status: superseded
+  superseded_by: QG-CS-BUG-0151
   name: A condition should not be repeated in the same branch chain
   languages: []
   category: BUG
@@ -47,6 +51,8 @@
     else if (status == Status.Blocked) { escalate(); }
 
 - key: QG-ALL-BUG-0003
+  status: superseded
+  superseded_by: QG-CS-BUG-0152
   name: Conditions should not always evaluate to the same result
   languages: []
   category: BUG
@@ -67,6 +73,8 @@
     if (isEnabled) { deleteAll(); }
 
 - key: QG-ALL-BUG-0004
+  status: superseded
+  superseded_by: QG-CS-BUG-0153
   name: A variable should not be assigned to itself
   languages: []
   category: BUG
@@ -89,6 +97,8 @@
     this.price = price;
 
 - key: QG-ALL-BUG-0005
+  status: superseded
+  superseded_by: QG-CS-BUG-0154
   name: Both operands of an operator should not be identical
   languages: []
   category: BUG
@@ -109,6 +119,8 @@
     if (start <= end) { ... }
 
 - key: QG-ALL-BUG-0006
+  status: superseded
+  superseded_by: QG-CS-BUG-0155
   name: Branches of a conditional should not have the same body
   languages: []
   category: BUG
@@ -128,6 +140,8 @@
     grant(user);
 
 - key: QG-ALL-SML-0003
+  status: superseded
+  superseded_by: QG-CS-SML-0505
   name: Functions should not take too many parameters
   languages: []
   category: SML
@@ -148,6 +162,8 @@
     void createUser(Name name, Address address, ContactDetails contact)
 
 - key: QG-ALL-SML-0004
+  status: superseded
+  superseded_by: QG-CS-SML-0506
   name: Functions should not be too long
   languages: []
   category: SML
@@ -164,6 +180,8 @@
     and keep the original as the sequence of those steps.
 
 - key: QG-ALL-SML-0005
+  status: superseded
+  superseded_by: QG-CS-SML-0500
   name: Functions should not be too hard to follow
   languages: []
   category: SML
@@ -181,6 +199,8 @@
     shallow ones lowers the score much faster than shortening lines.
 
 - key: QG-ALL-SML-0006
+  status: superseded
+  superseded_by: QG-CS-SML-0507
   name: Control structures should not be nested too deeply
   languages: []
   category: SML
@@ -202,6 +222,8 @@
     if (c && d) work();
 
 - key: QG-ALL-SML-0007
+  status: superseded
+  superseded_by: QG-CS-SML-0508
   name: Multi-way branches should handle the unexpected value
   languages: []
   category: SML
@@ -226,6 +248,8 @@
     }
 
 - key: QG-ALL-SML-0008
+  status: superseded
+  superseded_by: QG-CS-SML-0496
   name: String literals should not be duplicated
   languages: []
   category: SML
@@ -242,6 +266,8 @@
     everywhere else.
 
 - key: QG-ALL-SML-0009
+  status: superseded
+  superseded_by: QG-CS-SML-0499
   name: Local variables should be used
   languages: []
   category: SML
@@ -258,6 +284,8 @@
     it. If a name is needed only to document a discarded result, prefix it with an underscore.
 
 - key: QG-ALL-SML-0010
+  status: superseded
+  superseded_by: QG-CS-SML-0501
   name: Function bodies should not be empty
   languages: []
   category: SML
@@ -274,6 +302,8 @@
     is deliberate — leave a comment stating why, so the next reader does not treat it as a gap.
 
 - key: QG-ALL-CNV-0004
+  status: superseded
+  superseded_by: QG-CS-CNV-0011
   name: One statement per line
   languages: []
   category: CNV
@@ -288,6 +318,8 @@
     Put each statement on its own line and let the formatter handle the layout.
 
 - key: QG-ALL-PRF-0001
+  status: superseded
+  superseded_by: QG-CS-PRF-0008
   name: Strings should not be built by concatenation inside a loop
   languages: []
   category: PRF
@@ -309,6 +341,8 @@
     foreach (var row in rows) report.Append(row).Append('\n');
 
 - key: QG-ALL-SML-0001
+  status: superseded
+  superseded_by: QG-CS-SML-0503
   name: Track uses of TODO and FIXME tags
   languages: []
   category: SML
@@ -324,6 +358,8 @@
     lives somewhere that gets reviewed.
 
 - key: QG-ALL-SML-0002
+  status: superseded
+  superseded_by: QG-CS-SML-0504
   name: Nested blocks of code should not be left empty
   languages: []
   category: SML
@@ -339,6 +375,8 @@
     comment that states the reason.
 
 - key: QG-ALL-CNV-0001
+  status: superseded
+  superseded_by: QG-CS-CNV-0012
   name: Trailing commas should not be used
   languages: []
   category: CNV
@@ -353,6 +391,8 @@
     Remove the comma before the closing delimiter.
 
 - key: QG-ALL-CNV-0002
+  status: superseded
+  superseded_by: QG-CS-CNV-0013
   name: Tabs should not be used for indentation
   languages: []
   category: CNV
@@ -367,6 +407,8 @@
     Replace tabs with spaces and set the editor or formatter to do it automatically.
 
 - key: QG-ALL-CNV-0003
+  status: superseded
+  superseded_by: QG-CS-CNV-0014
   name: Lines should not be too long
   languages: []
   category: CNV
@@ -381,6 +423,8 @@
     Break the line at a logical boundary, or extract part of the expression into a named local.
 
 - key: QG-ALL-BUG-0007
+  status: superseded
+  superseded_by: QG-CS-BUG-0156
   name: Regular expressions should be syntactically valid
   languages: []
   category: BUG
@@ -401,6 +445,8 @@
     Regex.IsMatch(input, @"^[a-z]+$");
 
 - key: QG-ALL-BUG-0041
+  status: superseded
+  superseded_by: QG-CS-BUG-0149
   name: A value should be read before it is replaced
   languages: []
   category: BUG

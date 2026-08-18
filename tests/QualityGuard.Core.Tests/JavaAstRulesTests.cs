@@ -99,14 +99,14 @@ public class JavaAstRulesTests
               public static int counter = 0;
             }
             """;
-        Assert.NotEmpty(Lines(mutable, "QG-ALL-SML-0038"));
+        Assert.NotEmpty(Lines(mutable, "QG-JV-SML-0493"));
 
         var constant = """
             class A {
               public static final int LIMIT = 10;
             }
             """;
-        Assert.Empty(Lines(constant, "QG-ALL-SML-0038"));
+        Assert.Empty(Lines(constant, "QG-JV-SML-0493"));
     }
 
     [Fact]

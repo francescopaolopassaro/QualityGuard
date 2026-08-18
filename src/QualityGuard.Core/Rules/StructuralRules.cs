@@ -14,60 +14,978 @@ public static class StructuralRuleSet
 {
     public static IReadOnlyList<IRule> All { get; } =
     [
-        new UnreachableCodeAfterJumpRule(),
-        new DuplicateConditionRule(),
-        new ConstantConditionRule(),
-        new SelfAssignmentRule(),
-        new IdenticalOperandsRule(),
-        new IdenticalBranchesRule(),
-        new TooManyParametersRule(),
-        new FunctionTooLongRule(),
-        new CognitiveComplexityRule(),
-        new DeepNestingRule(),
-        new MatchWithoutDefaultRule(),
-        new DuplicatedStringLiteralRule(),
-        new UnusedLocalVariableRule(),
-        new DeadStoreRule(),
-        new EmptyFunctionRule(),
-        new MultipleStatementsPerLineRule(),
-        new StringConcatenationInLoopRule(),
-        new InvalidRegexRule(),
-        new FileTooLongRule(),
-        new UnusedParameterRule(),
-        new MergeableIfRule(),
-        new RedundantNestedBlockRule(),
-        new IfChainWithoutElseRule(),
-        new ComplexConditionRule(),
-        new NestedMatchRule(),
-        new MissingBracesRule(),
-        new TooManyReturnsRule(),
-        new EmptyCatchRule(),
-        new BooleanLiteralComparisonRule(),
-        new MagicNumberRule(),
-        new NestedTernaryRule(),
-        new TooManyMembersRule(),
-        new TestWithoutAssertionRule(),
-        new GenericExceptionCaughtRule(),
-        new GenericExceptionThrownRule(),
-        new RethrowLosingStackRule(),
-        new JumpInFinallyRule(),
-        new LockOnSharedObjectRule(),
-        new IgnoredTestRule(),
-        new UnusedPrivateFunctionRule(),
-        new RedundantJumpRule(),
-        new CommentedOutCodeRule(),
-        new DeepInheritanceRule(),
-        new HiddenBaseMemberRule(),
-        new UnusedInternalMemberRule(),
-        new DuplicateTypeNameRule(),
-        new EqualityContractRule(),
-        new OverrideOnlyCallsBaseRule(),
-        new EmptyTypeRule(),
-        new FieldCouldBeReadOnlyRule(),
-        new MethodCouldBeStaticRule(),
-        new MutableStaticStateRule(),
-        new UnreleasedResourceRule(),
-        new MismatchedComparisonRule()
+        new UnreachableCodeAfterJumpRuleCs(),
+        new UnreachableCodeAfterJumpRuleJava(),
+        new UnreachableCodeAfterJumpRuleKotlin(),
+        new UnreachableCodeAfterJumpRuleJs(),
+        new UnreachableCodeAfterJumpRulePython(),
+        new UnreachableCodeAfterJumpRulePhp(),
+        new UnreachableCodeAfterJumpRuleGo(),
+        new UnreachableCodeAfterJumpRuleDart(),
+        new UnreachableCodeAfterJumpRuleRuby(),
+        new UnreachableCodeAfterJumpRuleSwift(),
+        new UnreachableCodeAfterJumpRuleCss(),
+        new UnreachableCodeAfterJumpRuleHtml(),
+        new UnreachableCodeAfterJumpRuleXml(),
+        new UnreachableCodeAfterJumpRuleTerraform(),
+        new UnreachableCodeAfterJumpRuleDockerfile(),
+        new UnreachableCodeAfterJumpRuleKubernetes(),
+        new UnreachableCodeAfterJumpRuleCloudFormation(),
+        new UnreachableCodeAfterJumpRuleJson(),
+        new DuplicateConditionRuleCs(),
+        new DuplicateConditionRuleJava(),
+        new DuplicateConditionRuleKotlin(),
+        new DuplicateConditionRuleJs(),
+        new DuplicateConditionRulePython(),
+        new DuplicateConditionRulePhp(),
+        new DuplicateConditionRuleGo(),
+        new DuplicateConditionRuleDart(),
+        new DuplicateConditionRuleRuby(),
+        new DuplicateConditionRuleSwift(),
+        new DuplicateConditionRuleCss(),
+        new DuplicateConditionRuleHtml(),
+        new DuplicateConditionRuleXml(),
+        new DuplicateConditionRuleTerraform(),
+        new DuplicateConditionRuleDockerfile(),
+        new DuplicateConditionRuleKubernetes(),
+        new DuplicateConditionRuleCloudFormation(),
+        new DuplicateConditionRuleJson(),
+        new ConstantConditionRuleCs(),
+        new ConstantConditionRuleJava(),
+        new ConstantConditionRuleKotlin(),
+        new ConstantConditionRuleJs(),
+        new ConstantConditionRulePython(),
+        new ConstantConditionRulePhp(),
+        new ConstantConditionRuleGo(),
+        new ConstantConditionRuleDart(),
+        new ConstantConditionRuleRuby(),
+        new ConstantConditionRuleSwift(),
+        new ConstantConditionRuleCss(),
+        new ConstantConditionRuleHtml(),
+        new ConstantConditionRuleXml(),
+        new ConstantConditionRuleTerraform(),
+        new ConstantConditionRuleDockerfile(),
+        new ConstantConditionRuleKubernetes(),
+        new ConstantConditionRuleCloudFormation(),
+        new ConstantConditionRuleJson(),
+        new SelfAssignmentRuleCs(),
+        new SelfAssignmentRuleJava(),
+        new SelfAssignmentRuleKotlin(),
+        new SelfAssignmentRuleJs(),
+        new SelfAssignmentRulePython(),
+        new SelfAssignmentRulePhp(),
+        new SelfAssignmentRuleGo(),
+        new SelfAssignmentRuleDart(),
+        new SelfAssignmentRuleRuby(),
+        new SelfAssignmentRuleSwift(),
+        new SelfAssignmentRuleCss(),
+        new SelfAssignmentRuleHtml(),
+        new SelfAssignmentRuleXml(),
+        new SelfAssignmentRuleTerraform(),
+        new SelfAssignmentRuleDockerfile(),
+        new SelfAssignmentRuleKubernetes(),
+        new SelfAssignmentRuleCloudFormation(),
+        new SelfAssignmentRuleJson(),
+        new IdenticalOperandsRuleCs(),
+        new IdenticalOperandsRuleJava(),
+        new IdenticalOperandsRuleKotlin(),
+        new IdenticalOperandsRuleJs(),
+        new IdenticalOperandsRulePython(),
+        new IdenticalOperandsRulePhp(),
+        new IdenticalOperandsRuleGo(),
+        new IdenticalOperandsRuleDart(),
+        new IdenticalOperandsRuleRuby(),
+        new IdenticalOperandsRuleSwift(),
+        new IdenticalOperandsRuleCss(),
+        new IdenticalOperandsRuleHtml(),
+        new IdenticalOperandsRuleXml(),
+        new IdenticalOperandsRuleTerraform(),
+        new IdenticalOperandsRuleDockerfile(),
+        new IdenticalOperandsRuleKubernetes(),
+        new IdenticalOperandsRuleCloudFormation(),
+        new IdenticalOperandsRuleJson(),
+        new IdenticalBranchesRuleCs(),
+        new IdenticalBranchesRuleJava(),
+        new IdenticalBranchesRuleKotlin(),
+        new IdenticalBranchesRuleJs(),
+        new IdenticalBranchesRulePython(),
+        new IdenticalBranchesRulePhp(),
+        new IdenticalBranchesRuleGo(),
+        new IdenticalBranchesRuleDart(),
+        new IdenticalBranchesRuleRuby(),
+        new IdenticalBranchesRuleSwift(),
+        new IdenticalBranchesRuleCss(),
+        new IdenticalBranchesRuleHtml(),
+        new IdenticalBranchesRuleXml(),
+        new IdenticalBranchesRuleTerraform(),
+        new IdenticalBranchesRuleDockerfile(),
+        new IdenticalBranchesRuleKubernetes(),
+        new IdenticalBranchesRuleCloudFormation(),
+        new IdenticalBranchesRuleJson(),
+        new TooManyParametersRuleCs(),
+        new TooManyParametersRuleJava(),
+        new TooManyParametersRuleKotlin(),
+        new TooManyParametersRuleJs(),
+        new TooManyParametersRulePython(),
+        new TooManyParametersRulePhp(),
+        new TooManyParametersRuleGo(),
+        new TooManyParametersRuleDart(),
+        new TooManyParametersRuleRuby(),
+        new TooManyParametersRuleSwift(),
+        new TooManyParametersRuleCss(),
+        new TooManyParametersRuleHtml(),
+        new TooManyParametersRuleXml(),
+        new TooManyParametersRuleTerraform(),
+        new TooManyParametersRuleDockerfile(),
+        new TooManyParametersRuleKubernetes(),
+        new TooManyParametersRuleCloudFormation(),
+        new TooManyParametersRuleJson(),
+        new FunctionTooLongRuleCs(),
+        new FunctionTooLongRuleJava(),
+        new FunctionTooLongRuleKotlin(),
+        new FunctionTooLongRuleJs(),
+        new FunctionTooLongRulePython(),
+        new FunctionTooLongRulePhp(),
+        new FunctionTooLongRuleGo(),
+        new FunctionTooLongRuleDart(),
+        new FunctionTooLongRuleRuby(),
+        new FunctionTooLongRuleSwift(),
+        new FunctionTooLongRuleCss(),
+        new FunctionTooLongRuleHtml(),
+        new FunctionTooLongRuleXml(),
+        new FunctionTooLongRuleTerraform(),
+        new FunctionTooLongRuleDockerfile(),
+        new FunctionTooLongRuleKubernetes(),
+        new FunctionTooLongRuleCloudFormation(),
+        new FunctionTooLongRuleJson(),
+        new CognitiveComplexityRuleCs(),
+        new CognitiveComplexityRuleJava(),
+        new CognitiveComplexityRuleJs(),
+        new CognitiveComplexityRulePython(),
+        new CognitiveComplexityRulePhp(),
+        new CognitiveComplexityRuleGo(),
+        new CognitiveComplexityRuleRuby(),
+        new CognitiveComplexityRuleSwift(),
+        new CognitiveComplexityRuleCss(),
+        new CognitiveComplexityRuleHtml(),
+        new CognitiveComplexityRuleXml(),
+        new CognitiveComplexityRuleTerraform(),
+        new CognitiveComplexityRuleDockerfile(),
+        new CognitiveComplexityRuleKubernetes(),
+        new CognitiveComplexityRuleCloudFormation(),
+        new CognitiveComplexityRuleJson(),
+        new CognitiveComplexityRuleKotlin(),
+        new CognitiveComplexityRuleDart(),
+        new DeepNestingRuleCs(),
+        new DeepNestingRuleJava(),
+        new DeepNestingRuleKotlin(),
+        new DeepNestingRuleJs(),
+        new DeepNestingRulePython(),
+        new DeepNestingRulePhp(),
+        new DeepNestingRuleGo(),
+        new DeepNestingRuleDart(),
+        new DeepNestingRuleRuby(),
+        new DeepNestingRuleSwift(),
+        new DeepNestingRuleCss(),
+        new DeepNestingRuleHtml(),
+        new DeepNestingRuleXml(),
+        new DeepNestingRuleTerraform(),
+        new DeepNestingRuleDockerfile(),
+        new DeepNestingRuleKubernetes(),
+        new DeepNestingRuleCloudFormation(),
+        new DeepNestingRuleJson(),
+        new MatchWithoutDefaultRuleCs(),
+        new MatchWithoutDefaultRuleJava(),
+        new MatchWithoutDefaultRuleKotlin(),
+        new MatchWithoutDefaultRuleJs(),
+        new MatchWithoutDefaultRulePython(),
+        new MatchWithoutDefaultRulePhp(),
+        new MatchWithoutDefaultRuleGo(),
+        new MatchWithoutDefaultRuleDart(),
+        new MatchWithoutDefaultRuleRuby(),
+        new MatchWithoutDefaultRuleSwift(),
+        new MatchWithoutDefaultRuleCss(),
+        new MatchWithoutDefaultRuleHtml(),
+        new MatchWithoutDefaultRuleXml(),
+        new MatchWithoutDefaultRuleTerraform(),
+        new MatchWithoutDefaultRuleDockerfile(),
+        new MatchWithoutDefaultRuleKubernetes(),
+        new MatchWithoutDefaultRuleCloudFormation(),
+        new MatchWithoutDefaultRuleJson(),
+        new DuplicatedStringLiteralRuleCs(),
+        new DuplicatedStringLiteralRuleJava(),
+        new DuplicatedStringLiteralRuleJs(),
+        new DuplicatedStringLiteralRulePython(),
+        new DuplicatedStringLiteralRulePhp(),
+        new DuplicatedStringLiteralRuleGo(),
+        new DuplicatedStringLiteralRuleRuby(),
+        new DuplicatedStringLiteralRuleSwift(),
+        new DuplicatedStringLiteralRuleCss(),
+        new DuplicatedStringLiteralRuleHtml(),
+        new DuplicatedStringLiteralRuleXml(),
+        new DuplicatedStringLiteralRuleTerraform(),
+        new DuplicatedStringLiteralRuleDockerfile(),
+        new DuplicatedStringLiteralRuleKubernetes(),
+        new DuplicatedStringLiteralRuleCloudFormation(),
+        new DuplicatedStringLiteralRuleJson(),
+        new DuplicatedStringLiteralRuleKotlin(),
+        new DuplicatedStringLiteralRuleDart(),
+        new UnusedLocalVariableRuleCs(),
+        new UnusedLocalVariableRuleJava(),
+        new UnusedLocalVariableRuleJs(),
+        new UnusedLocalVariableRulePython(),
+        new UnusedLocalVariableRulePhp(),
+        new UnusedLocalVariableRuleGo(),
+        new UnusedLocalVariableRuleRuby(),
+        new UnusedLocalVariableRuleSwift(),
+        new UnusedLocalVariableRuleCss(),
+        new UnusedLocalVariableRuleHtml(),
+        new UnusedLocalVariableRuleXml(),
+        new UnusedLocalVariableRuleTerraform(),
+        new UnusedLocalVariableRuleDockerfile(),
+        new UnusedLocalVariableRuleKubernetes(),
+        new UnusedLocalVariableRuleCloudFormation(),
+        new UnusedLocalVariableRuleJson(),
+        new UnusedLocalVariableRuleKotlin(),
+        new UnusedLocalVariableRuleDart(),
+        new DeadStoreRuleCs(),
+        new DeadStoreRuleJava(),
+        new DeadStoreRuleJs(),
+        new DeadStoreRulePython(),
+        new DeadStoreRulePhp(),
+        new DeadStoreRuleGo(),
+        new DeadStoreRuleRuby(),
+        new DeadStoreRuleSwift(),
+        new DeadStoreRuleCss(),
+        new DeadStoreRuleHtml(),
+        new DeadStoreRuleXml(),
+        new DeadStoreRuleTerraform(),
+        new DeadStoreRuleDockerfile(),
+        new DeadStoreRuleKubernetes(),
+        new DeadStoreRuleCloudFormation(),
+        new DeadStoreRuleJson(),
+        new DeadStoreRuleKotlin(),
+        new DeadStoreRuleDart(),
+        new EmptyFunctionRuleCs(),
+        new EmptyFunctionRuleJava(),
+        new EmptyFunctionRuleJs(),
+        new EmptyFunctionRulePython(),
+        new EmptyFunctionRulePhp(),
+        new EmptyFunctionRuleGo(),
+        new EmptyFunctionRuleRuby(),
+        new EmptyFunctionRuleSwift(),
+        new EmptyFunctionRuleCss(),
+        new EmptyFunctionRuleHtml(),
+        new EmptyFunctionRuleXml(),
+        new EmptyFunctionRuleTerraform(),
+        new EmptyFunctionRuleDockerfile(),
+        new EmptyFunctionRuleKubernetes(),
+        new EmptyFunctionRuleCloudFormation(),
+        new EmptyFunctionRuleJson(),
+        new EmptyFunctionRuleKotlin(),
+        new EmptyFunctionRuleDart(),
+        new MultipleStatementsPerLineRuleCs(),
+        new MultipleStatementsPerLineRuleJava(),
+        new MultipleStatementsPerLineRuleJs(),
+        new MultipleStatementsPerLineRulePython(),
+        new MultipleStatementsPerLineRulePhp(),
+        new MultipleStatementsPerLineRuleGo(),
+        new MultipleStatementsPerLineRuleRuby(),
+        new MultipleStatementsPerLineRuleSwift(),
+        new MultipleStatementsPerLineRuleCss(),
+        new MultipleStatementsPerLineRuleHtml(),
+        new MultipleStatementsPerLineRuleXml(),
+        new MultipleStatementsPerLineRuleTerraform(),
+        new MultipleStatementsPerLineRuleDockerfile(),
+        new MultipleStatementsPerLineRuleKubernetes(),
+        new MultipleStatementsPerLineRuleCloudFormation(),
+        new MultipleStatementsPerLineRuleJson(),
+        new MultipleStatementsPerLineRuleKotlin(),
+        new MultipleStatementsPerLineRuleDart(),
+        new StringConcatenationInLoopRuleCs(),
+        new StringConcatenationInLoopRuleJava(),
+        new StringConcatenationInLoopRuleKotlin(),
+        new StringConcatenationInLoopRuleJs(),
+        new StringConcatenationInLoopRulePython(),
+        new StringConcatenationInLoopRulePhp(),
+        new StringConcatenationInLoopRuleGo(),
+        new StringConcatenationInLoopRuleDart(),
+        new StringConcatenationInLoopRuleRuby(),
+        new StringConcatenationInLoopRuleSwift(),
+        new StringConcatenationInLoopRuleCss(),
+        new StringConcatenationInLoopRuleHtml(),
+        new StringConcatenationInLoopRuleXml(),
+        new StringConcatenationInLoopRuleTerraform(),
+        new StringConcatenationInLoopRuleDockerfile(),
+        new StringConcatenationInLoopRuleKubernetes(),
+        new StringConcatenationInLoopRuleCloudFormation(),
+        new StringConcatenationInLoopRuleJson(),
+        new InvalidRegexRuleCs(),
+        new InvalidRegexRuleJava(),
+        new InvalidRegexRuleKotlin(),
+        new InvalidRegexRuleJs(),
+        new InvalidRegexRulePython(),
+        new InvalidRegexRulePhp(),
+        new InvalidRegexRuleGo(),
+        new InvalidRegexRuleDart(),
+        new InvalidRegexRuleRuby(),
+        new InvalidRegexRuleSwift(),
+        new InvalidRegexRuleCss(),
+        new InvalidRegexRuleHtml(),
+        new InvalidRegexRuleXml(),
+        new InvalidRegexRuleTerraform(),
+        new InvalidRegexRuleDockerfile(),
+        new InvalidRegexRuleKubernetes(),
+        new InvalidRegexRuleCloudFormation(),
+        new InvalidRegexRuleJson(),
+        new FileTooLongRuleCs(),
+        new FileTooLongRuleJava(),
+        new FileTooLongRuleKotlin(),
+        new FileTooLongRuleJs(),
+        new FileTooLongRulePython(),
+        new FileTooLongRulePhp(),
+        new FileTooLongRuleGo(),
+        new FileTooLongRuleDart(),
+        new FileTooLongRuleRuby(),
+        new FileTooLongRuleSwift(),
+        new FileTooLongRuleCss(),
+        new FileTooLongRuleHtml(),
+        new FileTooLongRuleXml(),
+        new FileTooLongRuleTerraform(),
+        new FileTooLongRuleDockerfile(),
+        new FileTooLongRuleKubernetes(),
+        new FileTooLongRuleCloudFormation(),
+        new FileTooLongRuleJson(),
+        new UnusedParameterRuleCs(),
+        new UnusedParameterRuleJava(),
+        new UnusedParameterRuleJs(),
+        new UnusedParameterRulePython(),
+        new UnusedParameterRulePhp(),
+        new UnusedParameterRuleGo(),
+        new UnusedParameterRuleRuby(),
+        new UnusedParameterRuleSwift(),
+        new UnusedParameterRuleCss(),
+        new UnusedParameterRuleHtml(),
+        new UnusedParameterRuleXml(),
+        new UnusedParameterRuleTerraform(),
+        new UnusedParameterRuleDockerfile(),
+        new UnusedParameterRuleKubernetes(),
+        new UnusedParameterRuleCloudFormation(),
+        new UnusedParameterRuleJson(),
+        new UnusedParameterRuleKotlin(),
+        new UnusedParameterRuleDart(),
+        new MergeableIfRuleCs(),
+        new MergeableIfRuleJava(),
+        new MergeableIfRuleKotlin(),
+        new MergeableIfRuleJs(),
+        new MergeableIfRulePython(),
+        new MergeableIfRulePhp(),
+        new MergeableIfRuleGo(),
+        new MergeableIfRuleDart(),
+        new MergeableIfRuleRuby(),
+        new MergeableIfRuleSwift(),
+        new MergeableIfRuleCss(),
+        new MergeableIfRuleHtml(),
+        new MergeableIfRuleXml(),
+        new MergeableIfRuleTerraform(),
+        new MergeableIfRuleDockerfile(),
+        new MergeableIfRuleKubernetes(),
+        new MergeableIfRuleCloudFormation(),
+        new MergeableIfRuleJson(),
+        new RedundantNestedBlockRuleCs(),
+        new RedundantNestedBlockRuleJava(),
+        new RedundantNestedBlockRuleKotlin(),
+        new RedundantNestedBlockRuleJs(),
+        new RedundantNestedBlockRulePython(),
+        new RedundantNestedBlockRulePhp(),
+        new RedundantNestedBlockRuleGo(),
+        new RedundantNestedBlockRuleDart(),
+        new RedundantNestedBlockRuleRuby(),
+        new RedundantNestedBlockRuleSwift(),
+        new RedundantNestedBlockRuleCss(),
+        new RedundantNestedBlockRuleHtml(),
+        new RedundantNestedBlockRuleXml(),
+        new RedundantNestedBlockRuleTerraform(),
+        new RedundantNestedBlockRuleDockerfile(),
+        new RedundantNestedBlockRuleKubernetes(),
+        new RedundantNestedBlockRuleCloudFormation(),
+        new RedundantNestedBlockRuleJson(),
+        new IfChainWithoutElseRuleCs(),
+        new IfChainWithoutElseRuleJava(),
+        new IfChainWithoutElseRuleKotlin(),
+        new IfChainWithoutElseRuleJs(),
+        new IfChainWithoutElseRulePython(),
+        new IfChainWithoutElseRulePhp(),
+        new IfChainWithoutElseRuleGo(),
+        new IfChainWithoutElseRuleDart(),
+        new IfChainWithoutElseRuleRuby(),
+        new IfChainWithoutElseRuleSwift(),
+        new IfChainWithoutElseRuleCss(),
+        new IfChainWithoutElseRuleHtml(),
+        new IfChainWithoutElseRuleXml(),
+        new IfChainWithoutElseRuleTerraform(),
+        new IfChainWithoutElseRuleDockerfile(),
+        new IfChainWithoutElseRuleKubernetes(),
+        new IfChainWithoutElseRuleCloudFormation(),
+        new IfChainWithoutElseRuleJson(),
+        new ComplexConditionRuleCs(),
+        new ComplexConditionRuleJava(),
+        new ComplexConditionRuleKotlin(),
+        new ComplexConditionRuleJs(),
+        new ComplexConditionRulePython(),
+        new ComplexConditionRulePhp(),
+        new ComplexConditionRuleGo(),
+        new ComplexConditionRuleDart(),
+        new ComplexConditionRuleRuby(),
+        new ComplexConditionRuleSwift(),
+        new ComplexConditionRuleCss(),
+        new ComplexConditionRuleHtml(),
+        new ComplexConditionRuleXml(),
+        new ComplexConditionRuleTerraform(),
+        new ComplexConditionRuleDockerfile(),
+        new ComplexConditionRuleKubernetes(),
+        new ComplexConditionRuleCloudFormation(),
+        new ComplexConditionRuleJson(),
+        new NestedMatchRuleCs(),
+        new NestedMatchRuleJava(),
+        new NestedMatchRuleKotlin(),
+        new NestedMatchRuleJs(),
+        new NestedMatchRulePython(),
+        new NestedMatchRulePhp(),
+        new NestedMatchRuleGo(),
+        new NestedMatchRuleDart(),
+        new NestedMatchRuleRuby(),
+        new NestedMatchRuleSwift(),
+        new NestedMatchRuleCss(),
+        new NestedMatchRuleHtml(),
+        new NestedMatchRuleXml(),
+        new NestedMatchRuleTerraform(),
+        new NestedMatchRuleDockerfile(),
+        new NestedMatchRuleKubernetes(),
+        new NestedMatchRuleCloudFormation(),
+        new NestedMatchRuleJson(),
+        new MissingBracesRuleCs(),
+        new MissingBracesRuleJava(),
+        new MissingBracesRuleKotlin(),
+        new MissingBracesRuleJs(),
+        new MissingBracesRulePython(),
+        new MissingBracesRulePhp(),
+        new MissingBracesRuleGo(),
+        new MissingBracesRuleDart(),
+        new MissingBracesRuleRuby(),
+        new MissingBracesRuleSwift(),
+        new MissingBracesRuleCss(),
+        new MissingBracesRuleHtml(),
+        new MissingBracesRuleXml(),
+        new MissingBracesRuleTerraform(),
+        new MissingBracesRuleDockerfile(),
+        new MissingBracesRuleKubernetes(),
+        new MissingBracesRuleCloudFormation(),
+        new MissingBracesRuleJson(),
+        new TooManyReturnsRuleCs(),
+        new TooManyReturnsRuleJava(),
+        new TooManyReturnsRuleKotlin(),
+        new TooManyReturnsRuleJs(),
+        new TooManyReturnsRulePython(),
+        new TooManyReturnsRulePhp(),
+        new TooManyReturnsRuleGo(),
+        new TooManyReturnsRuleDart(),
+        new TooManyReturnsRuleRuby(),
+        new TooManyReturnsRuleSwift(),
+        new TooManyReturnsRuleCss(),
+        new TooManyReturnsRuleHtml(),
+        new TooManyReturnsRuleXml(),
+        new TooManyReturnsRuleTerraform(),
+        new TooManyReturnsRuleDockerfile(),
+        new TooManyReturnsRuleKubernetes(),
+        new TooManyReturnsRuleCloudFormation(),
+        new TooManyReturnsRuleJson(),
+        new EmptyCatchRuleCs(),
+        new EmptyCatchRuleJava(),
+        new EmptyCatchRuleKotlin(),
+        new EmptyCatchRuleJs(),
+        new EmptyCatchRulePython(),
+        new EmptyCatchRulePhp(),
+        new EmptyCatchRuleGo(),
+        new EmptyCatchRuleDart(),
+        new EmptyCatchRuleRuby(),
+        new EmptyCatchRuleSwift(),
+        new EmptyCatchRuleCss(),
+        new EmptyCatchRuleHtml(),
+        new EmptyCatchRuleXml(),
+        new EmptyCatchRuleTerraform(),
+        new EmptyCatchRuleDockerfile(),
+        new EmptyCatchRuleKubernetes(),
+        new EmptyCatchRuleCloudFormation(),
+        new EmptyCatchRuleJson(),
+        new BooleanLiteralComparisonRuleCs(),
+        new BooleanLiteralComparisonRuleJava(),
+        new BooleanLiteralComparisonRuleKotlin(),
+        new BooleanLiteralComparisonRuleJs(),
+        new BooleanLiteralComparisonRulePython(),
+        new BooleanLiteralComparisonRulePhp(),
+        new BooleanLiteralComparisonRuleGo(),
+        new BooleanLiteralComparisonRuleDart(),
+        new BooleanLiteralComparisonRuleRuby(),
+        new BooleanLiteralComparisonRuleSwift(),
+        new BooleanLiteralComparisonRuleCss(),
+        new BooleanLiteralComparisonRuleHtml(),
+        new BooleanLiteralComparisonRuleXml(),
+        new BooleanLiteralComparisonRuleTerraform(),
+        new BooleanLiteralComparisonRuleDockerfile(),
+        new BooleanLiteralComparisonRuleKubernetes(),
+        new BooleanLiteralComparisonRuleCloudFormation(),
+        new BooleanLiteralComparisonRuleJson(),
+        new MagicNumberRuleCs(),
+        new MagicNumberRuleJava(),
+        new MagicNumberRuleJs(),
+        new MagicNumberRulePython(),
+        new MagicNumberRulePhp(),
+        new MagicNumberRuleGo(),
+        new MagicNumberRuleRuby(),
+        new MagicNumberRuleSwift(),
+        new MagicNumberRuleCss(),
+        new MagicNumberRuleHtml(),
+        new MagicNumberRuleXml(),
+        new MagicNumberRuleTerraform(),
+        new MagicNumberRuleDockerfile(),
+        new MagicNumberRuleKubernetes(),
+        new MagicNumberRuleCloudFormation(),
+        new MagicNumberRuleJson(),
+        new MagicNumberRuleKotlin(),
+        new MagicNumberRuleDart(),
+        new NestedTernaryRuleCs(),
+        new NestedTernaryRuleJava(),
+        new NestedTernaryRuleKotlin(),
+        new NestedTernaryRuleJs(),
+        new NestedTernaryRulePython(),
+        new NestedTernaryRulePhp(),
+        new NestedTernaryRuleGo(),
+        new NestedTernaryRuleDart(),
+        new NestedTernaryRuleRuby(),
+        new NestedTernaryRuleSwift(),
+        new NestedTernaryRuleCss(),
+        new NestedTernaryRuleHtml(),
+        new NestedTernaryRuleXml(),
+        new NestedTernaryRuleTerraform(),
+        new NestedTernaryRuleDockerfile(),
+        new NestedTernaryRuleKubernetes(),
+        new NestedTernaryRuleCloudFormation(),
+        new NestedTernaryRuleJson(),
+        new TooManyMembersRuleCs(),
+        new TooManyMembersRuleJava(),
+        new TooManyMembersRuleJs(),
+        new TooManyMembersRulePython(),
+        new TooManyMembersRulePhp(),
+        new TooManyMembersRuleGo(),
+        new TooManyMembersRuleRuby(),
+        new TooManyMembersRuleSwift(),
+        new TooManyMembersRuleCss(),
+        new TooManyMembersRuleHtml(),
+        new TooManyMembersRuleXml(),
+        new TooManyMembersRuleTerraform(),
+        new TooManyMembersRuleDockerfile(),
+        new TooManyMembersRuleKubernetes(),
+        new TooManyMembersRuleCloudFormation(),
+        new TooManyMembersRuleJson(),
+        new TooManyMembersRuleKotlin(),
+        new TooManyMembersRuleDart(),
+        new TestWithoutAssertionRuleCs(),
+        new TestWithoutAssertionRuleJava(),
+        new TestWithoutAssertionRuleKotlin(),
+        new TestWithoutAssertionRuleJs(),
+        new TestWithoutAssertionRulePython(),
+        new TestWithoutAssertionRulePhp(),
+        new TestWithoutAssertionRuleGo(),
+        new TestWithoutAssertionRuleDart(),
+        new TestWithoutAssertionRuleRuby(),
+        new TestWithoutAssertionRuleSwift(),
+        new TestWithoutAssertionRuleCss(),
+        new TestWithoutAssertionRuleHtml(),
+        new TestWithoutAssertionRuleXml(),
+        new TestWithoutAssertionRuleTerraform(),
+        new TestWithoutAssertionRuleDockerfile(),
+        new TestWithoutAssertionRuleKubernetes(),
+        new TestWithoutAssertionRuleCloudFormation(),
+        new TestWithoutAssertionRuleJson(),
+        new GenericExceptionCaughtRuleCs(),
+        new GenericExceptionCaughtRuleJava(),
+        new GenericExceptionCaughtRuleKotlin(),
+        new GenericExceptionCaughtRuleJs(),
+        new GenericExceptionCaughtRulePython(),
+        new GenericExceptionCaughtRulePhp(),
+        new GenericExceptionCaughtRuleGo(),
+        new GenericExceptionCaughtRuleDart(),
+        new GenericExceptionCaughtRuleRuby(),
+        new GenericExceptionCaughtRuleSwift(),
+        new GenericExceptionCaughtRuleCss(),
+        new GenericExceptionCaughtRuleHtml(),
+        new GenericExceptionCaughtRuleXml(),
+        new GenericExceptionCaughtRuleTerraform(),
+        new GenericExceptionCaughtRuleDockerfile(),
+        new GenericExceptionCaughtRuleKubernetes(),
+        new GenericExceptionCaughtRuleCloudFormation(),
+        new GenericExceptionCaughtRuleJson(),
+        new GenericExceptionThrownRuleCs(),
+        new GenericExceptionThrownRuleJava(),
+        new GenericExceptionThrownRuleKotlin(),
+        new GenericExceptionThrownRuleJs(),
+        new GenericExceptionThrownRulePython(),
+        new GenericExceptionThrownRulePhp(),
+        new GenericExceptionThrownRuleGo(),
+        new GenericExceptionThrownRuleDart(),
+        new GenericExceptionThrownRuleRuby(),
+        new GenericExceptionThrownRuleSwift(),
+        new GenericExceptionThrownRuleCss(),
+        new GenericExceptionThrownRuleHtml(),
+        new GenericExceptionThrownRuleXml(),
+        new GenericExceptionThrownRuleTerraform(),
+        new GenericExceptionThrownRuleDockerfile(),
+        new GenericExceptionThrownRuleKubernetes(),
+        new GenericExceptionThrownRuleCloudFormation(),
+        new GenericExceptionThrownRuleJson(),
+        new RethrowLosingStackRuleCs(),
+        new RethrowLosingStackRuleJava(),
+        new RethrowLosingStackRuleKotlin(),
+        new RethrowLosingStackRuleJs(),
+        new RethrowLosingStackRulePython(),
+        new RethrowLosingStackRulePhp(),
+        new RethrowLosingStackRuleGo(),
+        new RethrowLosingStackRuleDart(),
+        new RethrowLosingStackRuleRuby(),
+        new RethrowLosingStackRuleSwift(),
+        new RethrowLosingStackRuleCss(),
+        new RethrowLosingStackRuleHtml(),
+        new RethrowLosingStackRuleXml(),
+        new RethrowLosingStackRuleTerraform(),
+        new RethrowLosingStackRuleDockerfile(),
+        new RethrowLosingStackRuleKubernetes(),
+        new RethrowLosingStackRuleCloudFormation(),
+        new RethrowLosingStackRuleJson(),
+        new JumpInFinallyRuleCs(),
+        new JumpInFinallyRuleJava(),
+        new JumpInFinallyRuleKotlin(),
+        new JumpInFinallyRuleJs(),
+        new JumpInFinallyRulePython(),
+        new JumpInFinallyRulePhp(),
+        new JumpInFinallyRuleGo(),
+        new JumpInFinallyRuleDart(),
+        new JumpInFinallyRuleRuby(),
+        new JumpInFinallyRuleSwift(),
+        new JumpInFinallyRuleCss(),
+        new JumpInFinallyRuleHtml(),
+        new JumpInFinallyRuleXml(),
+        new JumpInFinallyRuleTerraform(),
+        new JumpInFinallyRuleDockerfile(),
+        new JumpInFinallyRuleKubernetes(),
+        new JumpInFinallyRuleCloudFormation(),
+        new JumpInFinallyRuleJson(),
+        new LockOnSharedObjectRuleCs(),
+        new LockOnSharedObjectRuleJava(),
+        new LockOnSharedObjectRuleKotlin(),
+        new LockOnSharedObjectRuleJs(),
+        new LockOnSharedObjectRulePython(),
+        new LockOnSharedObjectRulePhp(),
+        new LockOnSharedObjectRuleGo(),
+        new LockOnSharedObjectRuleDart(),
+        new LockOnSharedObjectRuleRuby(),
+        new LockOnSharedObjectRuleSwift(),
+        new LockOnSharedObjectRuleCss(),
+        new LockOnSharedObjectRuleHtml(),
+        new LockOnSharedObjectRuleXml(),
+        new LockOnSharedObjectRuleTerraform(),
+        new LockOnSharedObjectRuleDockerfile(),
+        new LockOnSharedObjectRuleKubernetes(),
+        new LockOnSharedObjectRuleCloudFormation(),
+        new LockOnSharedObjectRuleJson(),
+        new IgnoredTestRuleCs(),
+        new IgnoredTestRuleJava(),
+        new IgnoredTestRuleKotlin(),
+        new IgnoredTestRuleJs(),
+        new IgnoredTestRulePython(),
+        new IgnoredTestRulePhp(),
+        new IgnoredTestRuleGo(),
+        new IgnoredTestRuleDart(),
+        new IgnoredTestRuleRuby(),
+        new IgnoredTestRuleSwift(),
+        new IgnoredTestRuleCss(),
+        new IgnoredTestRuleHtml(),
+        new IgnoredTestRuleXml(),
+        new IgnoredTestRuleTerraform(),
+        new IgnoredTestRuleDockerfile(),
+        new IgnoredTestRuleKubernetes(),
+        new IgnoredTestRuleCloudFormation(),
+        new IgnoredTestRuleJson(),
+        new UnusedPrivateFunctionRuleCs(),
+        new UnusedPrivateFunctionRuleJava(),
+        new UnusedPrivateFunctionRuleKotlin(),
+        new UnusedPrivateFunctionRuleJs(),
+        new UnusedPrivateFunctionRulePython(),
+        new UnusedPrivateFunctionRulePhp(),
+        new UnusedPrivateFunctionRuleGo(),
+        new UnusedPrivateFunctionRuleDart(),
+        new UnusedPrivateFunctionRuleRuby(),
+        new UnusedPrivateFunctionRuleSwift(),
+        new UnusedPrivateFunctionRuleCss(),
+        new UnusedPrivateFunctionRuleHtml(),
+        new UnusedPrivateFunctionRuleXml(),
+        new UnusedPrivateFunctionRuleTerraform(),
+        new UnusedPrivateFunctionRuleDockerfile(),
+        new UnusedPrivateFunctionRuleKubernetes(),
+        new UnusedPrivateFunctionRuleCloudFormation(),
+        new UnusedPrivateFunctionRuleJson(),
+        new RedundantJumpRuleCs(),
+        new RedundantJumpRuleJava(),
+        new RedundantJumpRuleKotlin(),
+        new RedundantJumpRuleJs(),
+        new RedundantJumpRulePython(),
+        new RedundantJumpRulePhp(),
+        new RedundantJumpRuleGo(),
+        new RedundantJumpRuleDart(),
+        new RedundantJumpRuleRuby(),
+        new RedundantJumpRuleSwift(),
+        new RedundantJumpRuleCss(),
+        new RedundantJumpRuleHtml(),
+        new RedundantJumpRuleXml(),
+        new RedundantJumpRuleTerraform(),
+        new RedundantJumpRuleDockerfile(),
+        new RedundantJumpRuleKubernetes(),
+        new RedundantJumpRuleCloudFormation(),
+        new RedundantJumpRuleJson(),
+        new CommentedOutCodeRuleCs(),
+        new CommentedOutCodeRuleJava(),
+        new CommentedOutCodeRuleKotlin(),
+        new CommentedOutCodeRuleJs(),
+        new CommentedOutCodeRulePython(),
+        new CommentedOutCodeRulePhp(),
+        new CommentedOutCodeRuleGo(),
+        new CommentedOutCodeRuleDart(),
+        new CommentedOutCodeRuleRuby(),
+        new CommentedOutCodeRuleSwift(),
+        new CommentedOutCodeRuleCss(),
+        new CommentedOutCodeRuleHtml(),
+        new CommentedOutCodeRuleXml(),
+        new CommentedOutCodeRuleTerraform(),
+        new CommentedOutCodeRuleDockerfile(),
+        new CommentedOutCodeRuleKubernetes(),
+        new CommentedOutCodeRuleCloudFormation(),
+        new CommentedOutCodeRuleJson(),
+        new DeepInheritanceRuleCs(),
+        new DeepInheritanceRuleJava(),
+        new DeepInheritanceRuleKotlin(),
+        new DeepInheritanceRuleJs(),
+        new DeepInheritanceRulePython(),
+        new DeepInheritanceRulePhp(),
+        new DeepInheritanceRuleGo(),
+        new DeepInheritanceRuleDart(),
+        new DeepInheritanceRuleRuby(),
+        new DeepInheritanceRuleSwift(),
+        new DeepInheritanceRuleCss(),
+        new DeepInheritanceRuleHtml(),
+        new DeepInheritanceRuleXml(),
+        new DeepInheritanceRuleTerraform(),
+        new DeepInheritanceRuleDockerfile(),
+        new DeepInheritanceRuleKubernetes(),
+        new DeepInheritanceRuleCloudFormation(),
+        new DeepInheritanceRuleJson(),
+        new HiddenBaseMemberRuleCs(),
+        new HiddenBaseMemberRuleJava(),
+        new HiddenBaseMemberRuleKotlin(),
+        new HiddenBaseMemberRuleJs(),
+        new HiddenBaseMemberRulePython(),
+        new HiddenBaseMemberRulePhp(),
+        new HiddenBaseMemberRuleGo(),
+        new HiddenBaseMemberRuleDart(),
+        new HiddenBaseMemberRuleRuby(),
+        new HiddenBaseMemberRuleSwift(),
+        new HiddenBaseMemberRuleCss(),
+        new HiddenBaseMemberRuleHtml(),
+        new HiddenBaseMemberRuleXml(),
+        new HiddenBaseMemberRuleTerraform(),
+        new HiddenBaseMemberRuleDockerfile(),
+        new HiddenBaseMemberRuleKubernetes(),
+        new HiddenBaseMemberRuleCloudFormation(),
+        new HiddenBaseMemberRuleJson(),
+        new UnusedInternalMemberRuleCs(),
+        new UnusedInternalMemberRuleJava(),
+        new UnusedInternalMemberRuleKotlin(),
+        new UnusedInternalMemberRuleJs(),
+        new UnusedInternalMemberRulePython(),
+        new UnusedInternalMemberRulePhp(),
+        new UnusedInternalMemberRuleGo(),
+        new UnusedInternalMemberRuleDart(),
+        new UnusedInternalMemberRuleRuby(),
+        new UnusedInternalMemberRuleSwift(),
+        new UnusedInternalMemberRuleCss(),
+        new UnusedInternalMemberRuleHtml(),
+        new UnusedInternalMemberRuleXml(),
+        new UnusedInternalMemberRuleTerraform(),
+        new UnusedInternalMemberRuleDockerfile(),
+        new UnusedInternalMemberRuleKubernetes(),
+        new UnusedInternalMemberRuleCloudFormation(),
+        new UnusedInternalMemberRuleJson(),
+        new DuplicateTypeNameRuleCs(),
+        new DuplicateTypeNameRuleJava(),
+        new DuplicateTypeNameRuleKotlin(),
+        new DuplicateTypeNameRuleJs(),
+        new DuplicateTypeNameRulePython(),
+        new DuplicateTypeNameRulePhp(),
+        new DuplicateTypeNameRuleGo(),
+        new DuplicateTypeNameRuleDart(),
+        new DuplicateTypeNameRuleRuby(),
+        new DuplicateTypeNameRuleSwift(),
+        new DuplicateTypeNameRuleCss(),
+        new DuplicateTypeNameRuleHtml(),
+        new DuplicateTypeNameRuleXml(),
+        new DuplicateTypeNameRuleTerraform(),
+        new DuplicateTypeNameRuleDockerfile(),
+        new DuplicateTypeNameRuleKubernetes(),
+        new DuplicateTypeNameRuleCloudFormation(),
+        new DuplicateTypeNameRuleJson(),
+        new EqualityContractRuleCs(),
+        new EqualityContractRuleJava(),
+        new EqualityContractRuleKotlin(),
+        new EqualityContractRuleJs(),
+        new EqualityContractRulePython(),
+        new EqualityContractRulePhp(),
+        new EqualityContractRuleGo(),
+        new EqualityContractRuleDart(),
+        new EqualityContractRuleRuby(),
+        new EqualityContractRuleSwift(),
+        new EqualityContractRuleCss(),
+        new EqualityContractRuleHtml(),
+        new EqualityContractRuleXml(),
+        new EqualityContractRuleTerraform(),
+        new EqualityContractRuleDockerfile(),
+        new EqualityContractRuleKubernetes(),
+        new EqualityContractRuleCloudFormation(),
+        new EqualityContractRuleJson(),
+        new OverrideOnlyCallsBaseRuleCs(),
+        new OverrideOnlyCallsBaseRuleJava(),
+        new OverrideOnlyCallsBaseRuleKotlin(),
+        new OverrideOnlyCallsBaseRuleJs(),
+        new OverrideOnlyCallsBaseRulePython(),
+        new OverrideOnlyCallsBaseRulePhp(),
+        new OverrideOnlyCallsBaseRuleGo(),
+        new OverrideOnlyCallsBaseRuleDart(),
+        new OverrideOnlyCallsBaseRuleRuby(),
+        new OverrideOnlyCallsBaseRuleSwift(),
+        new OverrideOnlyCallsBaseRuleCss(),
+        new OverrideOnlyCallsBaseRuleHtml(),
+        new OverrideOnlyCallsBaseRuleXml(),
+        new OverrideOnlyCallsBaseRuleTerraform(),
+        new OverrideOnlyCallsBaseRuleDockerfile(),
+        new OverrideOnlyCallsBaseRuleKubernetes(),
+        new OverrideOnlyCallsBaseRuleCloudFormation(),
+        new OverrideOnlyCallsBaseRuleJson(),
+        new EmptyTypeRuleCs(),
+        new EmptyTypeRuleJava(),
+        new EmptyTypeRuleKotlin(),
+        new EmptyTypeRuleJs(),
+        new EmptyTypeRulePython(),
+        new EmptyTypeRulePhp(),
+        new EmptyTypeRuleGo(),
+        new EmptyTypeRuleDart(),
+        new EmptyTypeRuleRuby(),
+        new EmptyTypeRuleSwift(),
+        new EmptyTypeRuleCss(),
+        new EmptyTypeRuleHtml(),
+        new EmptyTypeRuleXml(),
+        new EmptyTypeRuleTerraform(),
+        new EmptyTypeRuleDockerfile(),
+        new EmptyTypeRuleKubernetes(),
+        new EmptyTypeRuleCloudFormation(),
+        new EmptyTypeRuleJson(),
+        new FieldCouldBeReadOnlyRuleCs(),
+        new FieldCouldBeReadOnlyRuleJava(),
+        new FieldCouldBeReadOnlyRuleKotlin(),
+        new FieldCouldBeReadOnlyRuleJs(),
+        new FieldCouldBeReadOnlyRulePython(),
+        new FieldCouldBeReadOnlyRulePhp(),
+        new FieldCouldBeReadOnlyRuleGo(),
+        new FieldCouldBeReadOnlyRuleDart(),
+        new FieldCouldBeReadOnlyRuleRuby(),
+        new FieldCouldBeReadOnlyRuleSwift(),
+        new FieldCouldBeReadOnlyRuleCss(),
+        new FieldCouldBeReadOnlyRuleHtml(),
+        new FieldCouldBeReadOnlyRuleXml(),
+        new FieldCouldBeReadOnlyRuleTerraform(),
+        new FieldCouldBeReadOnlyRuleDockerfile(),
+        new FieldCouldBeReadOnlyRuleKubernetes(),
+        new FieldCouldBeReadOnlyRuleCloudFormation(),
+        new FieldCouldBeReadOnlyRuleJson(),
+        new MethodCouldBeStaticRuleCs(),
+        new MethodCouldBeStaticRuleJava(),
+        new MethodCouldBeStaticRuleKotlin(),
+        new MethodCouldBeStaticRuleJs(),
+        new MethodCouldBeStaticRulePython(),
+        new MethodCouldBeStaticRulePhp(),
+        new MethodCouldBeStaticRuleGo(),
+        new MethodCouldBeStaticRuleDart(),
+        new MethodCouldBeStaticRuleRuby(),
+        new MethodCouldBeStaticRuleSwift(),
+        new MethodCouldBeStaticRuleCss(),
+        new MethodCouldBeStaticRuleHtml(),
+        new MethodCouldBeStaticRuleXml(),
+        new MethodCouldBeStaticRuleTerraform(),
+        new MethodCouldBeStaticRuleDockerfile(),
+        new MethodCouldBeStaticRuleKubernetes(),
+        new MethodCouldBeStaticRuleCloudFormation(),
+        new MethodCouldBeStaticRuleJson(),
+        new MutableStaticStateRuleCs(),
+        new MutableStaticStateRuleJava(),
+        new MutableStaticStateRuleKotlin(),
+        new MutableStaticStateRuleJs(),
+        new MutableStaticStateRulePython(),
+        new MutableStaticStateRulePhp(),
+        new MutableStaticStateRuleGo(),
+        new MutableStaticStateRuleDart(),
+        new MutableStaticStateRuleRuby(),
+        new MutableStaticStateRuleSwift(),
+        new MutableStaticStateRuleCss(),
+        new MutableStaticStateRuleHtml(),
+        new MutableStaticStateRuleXml(),
+        new MutableStaticStateRuleTerraform(),
+        new MutableStaticStateRuleDockerfile(),
+        new MutableStaticStateRuleKubernetes(),
+        new MutableStaticStateRuleCloudFormation(),
+        new MutableStaticStateRuleJson(),
+        new UnreleasedResourceRuleCs(),
+        new UnreleasedResourceRuleJava(),
+        new UnreleasedResourceRuleKotlin(),
+        new UnreleasedResourceRuleJs(),
+        new UnreleasedResourceRulePython(),
+        new UnreleasedResourceRulePhp(),
+        new UnreleasedResourceRuleGo(),
+        new UnreleasedResourceRuleDart(),
+        new UnreleasedResourceRuleRuby(),
+        new UnreleasedResourceRuleSwift(),
+        new UnreleasedResourceRuleCss(),
+        new UnreleasedResourceRuleHtml(),
+        new UnreleasedResourceRuleXml(),
+        new UnreleasedResourceRuleTerraform(),
+        new UnreleasedResourceRuleDockerfile(),
+        new UnreleasedResourceRuleKubernetes(),
+        new UnreleasedResourceRuleCloudFormation(),
+        new UnreleasedResourceRuleJson(),
+        new MismatchedComparisonRuleCs(),
+        new MismatchedComparisonRuleRuby(),
+        new MismatchedComparisonRuleSwift(),
+        new MismatchedComparisonRuleCss(),
+        new MismatchedComparisonRuleHtml(),
+        new MismatchedComparisonRuleXml(),
+        new MismatchedComparisonRuleTerraform(),
+        new MismatchedComparisonRuleDockerfile(),
+        new MismatchedComparisonRuleKubernetes(),
+        new MismatchedComparisonRuleCloudFormation(),
+        new MismatchedComparisonRuleJson(),
+        new MismatchedComparisonRuleJava(),
+        new MismatchedComparisonRuleKotlin(),
+        new MismatchedComparisonRuleJs(),
+        new MismatchedComparisonRulePython(),
+        new MismatchedComparisonRulePhp(),
+        new MismatchedComparisonRuleGo(),
+        new MismatchedComparisonRuleDart()
     ];
 
     internal static string Normalized(SyntaxNode node)
@@ -88,9 +1006,8 @@ public abstract class StructuralRuleBase : RuleBase
         => branch.Children.FirstOrDefault(c => c.Kind is not (NodeKind.Block or NodeKind.ParameterList));
 }
 
-public sealed class UnreachableCodeAfterJumpRule : StructuralRuleBase
+public abstract class UnreachableCodeAfterJumpRule : StructuralRuleBase
 {
-    public override string Key => "QG-ALL-BUG-0001";
     public override string Name => "Statements after a jump are never executed";
     public override Severity Severity => Severity.Major;
     public override IssueKind Kind => IssueKind.Bug;
@@ -126,9 +1043,116 @@ public sealed class UnreachableCodeAfterJumpRule : StructuralRuleBase
     }
 }
 
-public sealed class DuplicateConditionRule : StructuralRuleBase
+public sealed class UnreachableCodeAfterJumpRuleCs : UnreachableCodeAfterJumpRule
 {
-    public override string Key => "QG-ALL-BUG-0002";
+    public override string Key => "QG-CS-BUG-0150";
+    public override string[] Languages => ["cs", "vb"];
+}
+
+public sealed class UnreachableCodeAfterJumpRuleJava : UnreachableCodeAfterJumpRule
+{
+    public override string Key => "QG-JV-BUG-0204";
+    public override string[] Languages => ["java"];
+}
+
+public sealed class UnreachableCodeAfterJumpRuleKotlin : UnreachableCodeAfterJumpRule
+{
+    public override string Key => "QG-KT-BUG-0031";
+    public override string[] Languages => ["kt"];
+}
+
+public sealed class UnreachableCodeAfterJumpRuleJs : UnreachableCodeAfterJumpRule
+{
+    public override string Key => "QG-JS-BUG-0148";
+    public override string[] Languages => ["js", "ts"];
+}
+
+public sealed class UnreachableCodeAfterJumpRulePython : UnreachableCodeAfterJumpRule
+{
+    public override string Key => "QG-PY-BUG-0154";
+    public override string[] Languages => ["py"];
+}
+
+public sealed class UnreachableCodeAfterJumpRulePhp : UnreachableCodeAfterJumpRule
+{
+    public override string Key => "QG-PP-BUG-0051";
+    public override string[] Languages => ["php"];
+}
+
+public sealed class UnreachableCodeAfterJumpRuleGo : UnreachableCodeAfterJumpRule
+{
+    public override string Key => "QG-GO-BUG-0007";
+    public override string[] Languages => ["go"];
+}
+
+public sealed class UnreachableCodeAfterJumpRuleDart : UnreachableCodeAfterJumpRule
+{
+    public override string Key => "QG-DART-BUG-0005";
+    public override string[] Languages => ["dart"];
+}
+
+public sealed class UnreachableCodeAfterJumpRuleRuby : UnreachableCodeAfterJumpRule
+{
+    public override string Key => "QG-RB-BUG-0025";
+    public override string[] Languages => ["rb"];
+}
+
+public sealed class UnreachableCodeAfterJumpRuleSwift : UnreachableCodeAfterJumpRule
+{
+    public override string Key => "QG-SW-BUG-0029";
+    public override string[] Languages => ["swift"];
+}
+
+public sealed class UnreachableCodeAfterJumpRuleCss : UnreachableCodeAfterJumpRule
+{
+    public override string Key => "QG-CSS-BUG-0054";
+    public override string[] Languages => ["css"];
+}
+
+public sealed class UnreachableCodeAfterJumpRuleHtml : UnreachableCodeAfterJumpRule
+{
+    public override string Key => "QG-HTML-BUG-0054";
+    public override string[] Languages => ["html"];
+}
+
+public sealed class UnreachableCodeAfterJumpRuleXml : UnreachableCodeAfterJumpRule
+{
+    public override string Key => "QG-XML-BUG-0029";
+    public override string[] Languages => ["xml"];
+}
+
+public sealed class UnreachableCodeAfterJumpRuleTerraform : UnreachableCodeAfterJumpRule
+{
+    public override string Key => "QG-TF-BUG-0024";
+    public override string[] Languages => ["tf"];
+}
+
+public sealed class UnreachableCodeAfterJumpRuleDockerfile : UnreachableCodeAfterJumpRule
+{
+    public override string Key => "QG-DK-BUG-0031";
+    public override string[] Languages => ["dk"];
+}
+
+public sealed class UnreachableCodeAfterJumpRuleKubernetes : UnreachableCodeAfterJumpRule
+{
+    public override string Key => "QG-K8-BUG-0024";
+    public override string[] Languages => ["k8"];
+}
+
+public sealed class UnreachableCodeAfterJumpRuleCloudFormation : UnreachableCodeAfterJumpRule
+{
+    public override string Key => "QG-CF-BUG-0024";
+    public override string[] Languages => ["cf"];
+}
+
+public sealed class UnreachableCodeAfterJumpRuleJson : UnreachableCodeAfterJumpRule
+{
+    public override string Key => "QG-JSON-BUG-0025";
+    public override string[] Languages => ["json"];
+}
+
+public abstract class DuplicateConditionRule : StructuralRuleBase
+{
     public override string Name => "A condition should not be repeated in the same branch chain";
     public override Severity Severity => Severity.Major;
     public override IssueKind Kind => IssueKind.Bug;
@@ -191,9 +1215,116 @@ public sealed class DuplicateConditionRule : StructuralRuleBase
     }
 }
 
-public sealed class ConstantConditionRule : StructuralRuleBase
+public sealed class DuplicateConditionRuleCs : DuplicateConditionRule
 {
-    public override string Key => "QG-ALL-BUG-0003";
+    public override string Key => "QG-CS-BUG-0151";
+    public override string[] Languages => ["cs", "vb"];
+}
+
+public sealed class DuplicateConditionRuleJava : DuplicateConditionRule
+{
+    public override string Key => "QG-JV-BUG-0205";
+    public override string[] Languages => ["java"];
+}
+
+public sealed class DuplicateConditionRuleKotlin : DuplicateConditionRule
+{
+    public override string Key => "QG-KT-BUG-0032";
+    public override string[] Languages => ["kt"];
+}
+
+public sealed class DuplicateConditionRuleJs : DuplicateConditionRule
+{
+    public override string Key => "QG-JS-BUG-0149";
+    public override string[] Languages => ["js", "ts"];
+}
+
+public sealed class DuplicateConditionRulePython : DuplicateConditionRule
+{
+    public override string Key => "QG-PY-BUG-0155";
+    public override string[] Languages => ["py"];
+}
+
+public sealed class DuplicateConditionRulePhp : DuplicateConditionRule
+{
+    public override string Key => "QG-PP-BUG-0052";
+    public override string[] Languages => ["php"];
+}
+
+public sealed class DuplicateConditionRuleGo : DuplicateConditionRule
+{
+    public override string Key => "QG-GO-BUG-0008";
+    public override string[] Languages => ["go"];
+}
+
+public sealed class DuplicateConditionRuleDart : DuplicateConditionRule
+{
+    public override string Key => "QG-DART-BUG-0006";
+    public override string[] Languages => ["dart"];
+}
+
+public sealed class DuplicateConditionRuleRuby : DuplicateConditionRule
+{
+    public override string Key => "QG-RB-BUG-0026";
+    public override string[] Languages => ["rb"];
+}
+
+public sealed class DuplicateConditionRuleSwift : DuplicateConditionRule
+{
+    public override string Key => "QG-SW-BUG-0030";
+    public override string[] Languages => ["swift"];
+}
+
+public sealed class DuplicateConditionRuleCss : DuplicateConditionRule
+{
+    public override string Key => "QG-CSS-BUG-0055";
+    public override string[] Languages => ["css"];
+}
+
+public sealed class DuplicateConditionRuleHtml : DuplicateConditionRule
+{
+    public override string Key => "QG-HTML-BUG-0055";
+    public override string[] Languages => ["html"];
+}
+
+public sealed class DuplicateConditionRuleXml : DuplicateConditionRule
+{
+    public override string Key => "QG-XML-BUG-0030";
+    public override string[] Languages => ["xml"];
+}
+
+public sealed class DuplicateConditionRuleTerraform : DuplicateConditionRule
+{
+    public override string Key => "QG-TF-BUG-0025";
+    public override string[] Languages => ["tf"];
+}
+
+public sealed class DuplicateConditionRuleDockerfile : DuplicateConditionRule
+{
+    public override string Key => "QG-DK-BUG-0032";
+    public override string[] Languages => ["dk"];
+}
+
+public sealed class DuplicateConditionRuleKubernetes : DuplicateConditionRule
+{
+    public override string Key => "QG-K8-BUG-0025";
+    public override string[] Languages => ["k8"];
+}
+
+public sealed class DuplicateConditionRuleCloudFormation : DuplicateConditionRule
+{
+    public override string Key => "QG-CF-BUG-0025";
+    public override string[] Languages => ["cf"];
+}
+
+public sealed class DuplicateConditionRuleJson : DuplicateConditionRule
+{
+    public override string Key => "QG-JSON-BUG-0026";
+    public override string[] Languages => ["json"];
+}
+
+public abstract class ConstantConditionRule : StructuralRuleBase
+{
     public override string Name => "Conditions should not always evaluate to the same result";
     public override Severity Severity => Severity.Major;
     public override IssueKind Kind => IssueKind.Bug;
@@ -225,9 +1356,116 @@ public sealed class ConstantConditionRule : StructuralRuleBase
         => node.Kind is NodeKind.Parenthesized && node.Children.Count == 1 ? Unwrap(node.Children[0]) : node;
 }
 
-public sealed class SelfAssignmentRule : StructuralRuleBase
+public sealed class ConstantConditionRuleCs : ConstantConditionRule
 {
-    public override string Key => "QG-ALL-BUG-0004";
+    public override string Key => "QG-CS-BUG-0152";
+    public override string[] Languages => ["cs", "vb"];
+}
+
+public sealed class ConstantConditionRuleJava : ConstantConditionRule
+{
+    public override string Key => "QG-JV-BUG-0206";
+    public override string[] Languages => ["java"];
+}
+
+public sealed class ConstantConditionRuleKotlin : ConstantConditionRule
+{
+    public override string Key => "QG-KT-BUG-0033";
+    public override string[] Languages => ["kt"];
+}
+
+public sealed class ConstantConditionRuleJs : ConstantConditionRule
+{
+    public override string Key => "QG-JS-BUG-0150";
+    public override string[] Languages => ["js", "ts"];
+}
+
+public sealed class ConstantConditionRulePython : ConstantConditionRule
+{
+    public override string Key => "QG-PY-BUG-0156";
+    public override string[] Languages => ["py"];
+}
+
+public sealed class ConstantConditionRulePhp : ConstantConditionRule
+{
+    public override string Key => "QG-PP-BUG-0053";
+    public override string[] Languages => ["php"];
+}
+
+public sealed class ConstantConditionRuleGo : ConstantConditionRule
+{
+    public override string Key => "QG-GO-BUG-0009";
+    public override string[] Languages => ["go"];
+}
+
+public sealed class ConstantConditionRuleDart : ConstantConditionRule
+{
+    public override string Key => "QG-DART-BUG-0007";
+    public override string[] Languages => ["dart"];
+}
+
+public sealed class ConstantConditionRuleRuby : ConstantConditionRule
+{
+    public override string Key => "QG-RB-BUG-0027";
+    public override string[] Languages => ["rb"];
+}
+
+public sealed class ConstantConditionRuleSwift : ConstantConditionRule
+{
+    public override string Key => "QG-SW-BUG-0031";
+    public override string[] Languages => ["swift"];
+}
+
+public sealed class ConstantConditionRuleCss : ConstantConditionRule
+{
+    public override string Key => "QG-CSS-BUG-0056";
+    public override string[] Languages => ["css"];
+}
+
+public sealed class ConstantConditionRuleHtml : ConstantConditionRule
+{
+    public override string Key => "QG-HTML-BUG-0056";
+    public override string[] Languages => ["html"];
+}
+
+public sealed class ConstantConditionRuleXml : ConstantConditionRule
+{
+    public override string Key => "QG-XML-BUG-0031";
+    public override string[] Languages => ["xml"];
+}
+
+public sealed class ConstantConditionRuleTerraform : ConstantConditionRule
+{
+    public override string Key => "QG-TF-BUG-0026";
+    public override string[] Languages => ["tf"];
+}
+
+public sealed class ConstantConditionRuleDockerfile : ConstantConditionRule
+{
+    public override string Key => "QG-DK-BUG-0033";
+    public override string[] Languages => ["dk"];
+}
+
+public sealed class ConstantConditionRuleKubernetes : ConstantConditionRule
+{
+    public override string Key => "QG-K8-BUG-0026";
+    public override string[] Languages => ["k8"];
+}
+
+public sealed class ConstantConditionRuleCloudFormation : ConstantConditionRule
+{
+    public override string Key => "QG-CF-BUG-0026";
+    public override string[] Languages => ["cf"];
+}
+
+public sealed class ConstantConditionRuleJson : ConstantConditionRule
+{
+    public override string Key => "QG-JSON-BUG-0027";
+    public override string[] Languages => ["json"];
+}
+
+public abstract class SelfAssignmentRule : StructuralRuleBase
+{
     public override string Name => "A variable should not be assigned to itself";
     public override Severity Severity => Severity.Major;
     public override IssueKind Kind => IssueKind.Bug;
@@ -280,12 +1518,118 @@ public sealed class SelfAssignmentRule : StructuralRuleBase
     }
 }
 
-public sealed class IdenticalOperandsRule : StructuralRuleBase
+public sealed class SelfAssignmentRuleCs : SelfAssignmentRule
+{
+    public override string Key => "QG-CS-BUG-0153";
+    public override string[] Languages => ["cs", "vb"];
+}
+
+public sealed class SelfAssignmentRuleJava : SelfAssignmentRule
+{
+    public override string Key => "QG-JV-BUG-0207";
+    public override string[] Languages => ["java"];
+}
+
+public sealed class SelfAssignmentRuleKotlin : SelfAssignmentRule
+{
+    public override string Key => "QG-KT-BUG-0034";
+    public override string[] Languages => ["kt"];
+}
+
+public sealed class SelfAssignmentRuleJs : SelfAssignmentRule
+{
+    public override string Key => "QG-JS-BUG-0151";
+    public override string[] Languages => ["js", "ts"];
+}
+
+public sealed class SelfAssignmentRulePython : SelfAssignmentRule
+{
+    public override string Key => "QG-PY-BUG-0157";
+    public override string[] Languages => ["py"];
+}
+
+public sealed class SelfAssignmentRulePhp : SelfAssignmentRule
+{
+    public override string Key => "QG-PP-BUG-0054";
+    public override string[] Languages => ["php"];
+}
+
+public sealed class SelfAssignmentRuleGo : SelfAssignmentRule
+{
+    public override string Key => "QG-GO-BUG-0010";
+    public override string[] Languages => ["go"];
+}
+
+public sealed class SelfAssignmentRuleDart : SelfAssignmentRule
+{
+    public override string Key => "QG-DART-BUG-0008";
+    public override string[] Languages => ["dart"];
+}
+
+public sealed class SelfAssignmentRuleRuby : SelfAssignmentRule
+{
+    public override string Key => "QG-RB-BUG-0028";
+    public override string[] Languages => ["rb"];
+}
+
+public sealed class SelfAssignmentRuleSwift : SelfAssignmentRule
+{
+    public override string Key => "QG-SW-BUG-0032";
+    public override string[] Languages => ["swift"];
+}
+
+public sealed class SelfAssignmentRuleCss : SelfAssignmentRule
+{
+    public override string Key => "QG-CSS-BUG-0057";
+    public override string[] Languages => ["css"];
+}
+
+public sealed class SelfAssignmentRuleHtml : SelfAssignmentRule
+{
+    public override string Key => "QG-HTML-BUG-0057";
+    public override string[] Languages => ["html"];
+}
+
+public sealed class SelfAssignmentRuleXml : SelfAssignmentRule
+{
+    public override string Key => "QG-XML-BUG-0032";
+    public override string[] Languages => ["xml"];
+}
+
+public sealed class SelfAssignmentRuleTerraform : SelfAssignmentRule
+{
+    public override string Key => "QG-TF-BUG-0027";
+    public override string[] Languages => ["tf"];
+}
+
+public sealed class SelfAssignmentRuleDockerfile : SelfAssignmentRule
+{
+    public override string Key => "QG-DK-BUG-0034";
+    public override string[] Languages => ["dk"];
+}
+
+public sealed class SelfAssignmentRuleKubernetes : SelfAssignmentRule
+{
+    public override string Key => "QG-K8-BUG-0027";
+    public override string[] Languages => ["k8"];
+}
+
+public sealed class SelfAssignmentRuleCloudFormation : SelfAssignmentRule
+{
+    public override string Key => "QG-CF-BUG-0027";
+    public override string[] Languages => ["cf"];
+}
+
+public sealed class SelfAssignmentRuleJson : SelfAssignmentRule
+{
+    public override string Key => "QG-JSON-BUG-0028";
+    public override string[] Languages => ["json"];
+}
+
+public abstract class IdenticalOperandsRule : StructuralRuleBase
 {
     private static readonly string[] Operators =
         ["==", "!=", "===", "!==", "<", ">", "<=", ">=", "&&", "||", "and", "or", "-", "/", "%"];
-
-    public override string Key => "QG-ALL-BUG-0005";
     public override string Name => "Both operands of an operator should not be identical";
     public override Severity Severity => Severity.Major;
     public override IssueKind Kind => IssueKind.Bug;
@@ -312,9 +1656,116 @@ public sealed class IdenticalOperandsRule : StructuralRuleBase
     }
 }
 
-public sealed class IdenticalBranchesRule : StructuralRuleBase
+public sealed class IdenticalOperandsRuleCs : IdenticalOperandsRule
 {
-    public override string Key => "QG-ALL-BUG-0006";
+    public override string Key => "QG-CS-BUG-0154";
+    public override string[] Languages => ["cs", "vb"];
+}
+
+public sealed class IdenticalOperandsRuleJava : IdenticalOperandsRule
+{
+    public override string Key => "QG-JV-BUG-0208";
+    public override string[] Languages => ["java"];
+}
+
+public sealed class IdenticalOperandsRuleKotlin : IdenticalOperandsRule
+{
+    public override string Key => "QG-KT-BUG-0035";
+    public override string[] Languages => ["kt"];
+}
+
+public sealed class IdenticalOperandsRuleJs : IdenticalOperandsRule
+{
+    public override string Key => "QG-JS-BUG-0152";
+    public override string[] Languages => ["js", "ts"];
+}
+
+public sealed class IdenticalOperandsRulePython : IdenticalOperandsRule
+{
+    public override string Key => "QG-PY-BUG-0158";
+    public override string[] Languages => ["py"];
+}
+
+public sealed class IdenticalOperandsRulePhp : IdenticalOperandsRule
+{
+    public override string Key => "QG-PP-BUG-0055";
+    public override string[] Languages => ["php"];
+}
+
+public sealed class IdenticalOperandsRuleGo : IdenticalOperandsRule
+{
+    public override string Key => "QG-GO-BUG-0011";
+    public override string[] Languages => ["go"];
+}
+
+public sealed class IdenticalOperandsRuleDart : IdenticalOperandsRule
+{
+    public override string Key => "QG-DART-BUG-0009";
+    public override string[] Languages => ["dart"];
+}
+
+public sealed class IdenticalOperandsRuleRuby : IdenticalOperandsRule
+{
+    public override string Key => "QG-RB-BUG-0029";
+    public override string[] Languages => ["rb"];
+}
+
+public sealed class IdenticalOperandsRuleSwift : IdenticalOperandsRule
+{
+    public override string Key => "QG-SW-BUG-0033";
+    public override string[] Languages => ["swift"];
+}
+
+public sealed class IdenticalOperandsRuleCss : IdenticalOperandsRule
+{
+    public override string Key => "QG-CSS-BUG-0058";
+    public override string[] Languages => ["css"];
+}
+
+public sealed class IdenticalOperandsRuleHtml : IdenticalOperandsRule
+{
+    public override string Key => "QG-HTML-BUG-0058";
+    public override string[] Languages => ["html"];
+}
+
+public sealed class IdenticalOperandsRuleXml : IdenticalOperandsRule
+{
+    public override string Key => "QG-XML-BUG-0033";
+    public override string[] Languages => ["xml"];
+}
+
+public sealed class IdenticalOperandsRuleTerraform : IdenticalOperandsRule
+{
+    public override string Key => "QG-TF-BUG-0028";
+    public override string[] Languages => ["tf"];
+}
+
+public sealed class IdenticalOperandsRuleDockerfile : IdenticalOperandsRule
+{
+    public override string Key => "QG-DK-BUG-0035";
+    public override string[] Languages => ["dk"];
+}
+
+public sealed class IdenticalOperandsRuleKubernetes : IdenticalOperandsRule
+{
+    public override string Key => "QG-K8-BUG-0028";
+    public override string[] Languages => ["k8"];
+}
+
+public sealed class IdenticalOperandsRuleCloudFormation : IdenticalOperandsRule
+{
+    public override string Key => "QG-CF-BUG-0028";
+    public override string[] Languages => ["cf"];
+}
+
+public sealed class IdenticalOperandsRuleJson : IdenticalOperandsRule
+{
+    public override string Key => "QG-JSON-BUG-0029";
+    public override string[] Languages => ["json"];
+}
+
+public abstract class IdenticalBranchesRule : StructuralRuleBase
+{
     public override string Name => "Branches of a conditional should not have the same body";
     public override Severity Severity => Severity.Major;
     public override IssueKind Kind => IssueKind.Bug;
@@ -338,11 +1789,117 @@ public sealed class IdenticalBranchesRule : StructuralRuleBase
     }
 }
 
-public sealed class TooManyParametersRule : StructuralRuleBase
+public sealed class IdenticalBranchesRuleCs : IdenticalBranchesRule
+{
+    public override string Key => "QG-CS-BUG-0155";
+    public override string[] Languages => ["cs", "vb"];
+}
+
+public sealed class IdenticalBranchesRuleJava : IdenticalBranchesRule
+{
+    public override string Key => "QG-JV-BUG-0209";
+    public override string[] Languages => ["java"];
+}
+
+public sealed class IdenticalBranchesRuleKotlin : IdenticalBranchesRule
+{
+    public override string Key => "QG-KT-BUG-0036";
+    public override string[] Languages => ["kt"];
+}
+
+public sealed class IdenticalBranchesRuleJs : IdenticalBranchesRule
+{
+    public override string Key => "QG-JS-BUG-0153";
+    public override string[] Languages => ["js", "ts"];
+}
+
+public sealed class IdenticalBranchesRulePython : IdenticalBranchesRule
+{
+    public override string Key => "QG-PY-BUG-0159";
+    public override string[] Languages => ["py"];
+}
+
+public sealed class IdenticalBranchesRulePhp : IdenticalBranchesRule
+{
+    public override string Key => "QG-PP-BUG-0056";
+    public override string[] Languages => ["php"];
+}
+
+public sealed class IdenticalBranchesRuleGo : IdenticalBranchesRule
+{
+    public override string Key => "QG-GO-BUG-0012";
+    public override string[] Languages => ["go"];
+}
+
+public sealed class IdenticalBranchesRuleDart : IdenticalBranchesRule
+{
+    public override string Key => "QG-DART-BUG-0010";
+    public override string[] Languages => ["dart"];
+}
+
+public sealed class IdenticalBranchesRuleRuby : IdenticalBranchesRule
+{
+    public override string Key => "QG-RB-BUG-0030";
+    public override string[] Languages => ["rb"];
+}
+
+public sealed class IdenticalBranchesRuleSwift : IdenticalBranchesRule
+{
+    public override string Key => "QG-SW-BUG-0034";
+    public override string[] Languages => ["swift"];
+}
+
+public sealed class IdenticalBranchesRuleCss : IdenticalBranchesRule
+{
+    public override string Key => "QG-CSS-BUG-0059";
+    public override string[] Languages => ["css"];
+}
+
+public sealed class IdenticalBranchesRuleHtml : IdenticalBranchesRule
+{
+    public override string Key => "QG-HTML-BUG-0059";
+    public override string[] Languages => ["html"];
+}
+
+public sealed class IdenticalBranchesRuleXml : IdenticalBranchesRule
+{
+    public override string Key => "QG-XML-BUG-0034";
+    public override string[] Languages => ["xml"];
+}
+
+public sealed class IdenticalBranchesRuleTerraform : IdenticalBranchesRule
+{
+    public override string Key => "QG-TF-BUG-0029";
+    public override string[] Languages => ["tf"];
+}
+
+public sealed class IdenticalBranchesRuleDockerfile : IdenticalBranchesRule
+{
+    public override string Key => "QG-DK-BUG-0036";
+    public override string[] Languages => ["dk"];
+}
+
+public sealed class IdenticalBranchesRuleKubernetes : IdenticalBranchesRule
+{
+    public override string Key => "QG-K8-BUG-0029";
+    public override string[] Languages => ["k8"];
+}
+
+public sealed class IdenticalBranchesRuleCloudFormation : IdenticalBranchesRule
+{
+    public override string Key => "QG-CF-BUG-0029";
+    public override string[] Languages => ["cf"];
+}
+
+public sealed class IdenticalBranchesRuleJson : IdenticalBranchesRule
+{
+    public override string Key => "QG-JSON-BUG-0030";
+    public override string[] Languages => ["json"];
+}
+
+public abstract class TooManyParametersRule : StructuralRuleBase
 {
     private const int Max = 7;
-
-    public override string Key => "QG-ALL-SML-0003";
     public override string Name => "Functions should not take too many parameters";
     public override Severity Severity => Severity.Major;
     public override IssueKind Kind => IssueKind.CodeSmell;
@@ -365,11 +1922,117 @@ public sealed class TooManyParametersRule : StructuralRuleBase
     }
 }
 
-public sealed class FunctionTooLongRule : StructuralRuleBase
+public sealed class TooManyParametersRuleCs : TooManyParametersRule
+{
+    public override string Key => "QG-CS-SML-0505";
+    public override string[] Languages => ["cs", "vb"];
+}
+
+public sealed class TooManyParametersRuleJava : TooManyParametersRule
+{
+    public override string Key => "QG-JV-SML-0466";
+    public override string[] Languages => ["java"];
+}
+
+public sealed class TooManyParametersRuleKotlin : TooManyParametersRule
+{
+    public override string Key => "QG-KT-SML-0088";
+    public override string[] Languages => ["kt"];
+}
+
+public sealed class TooManyParametersRuleJs : TooManyParametersRule
+{
+    public override string Key => "QG-JS-SML-0382";
+    public override string[] Languages => ["js", "ts"];
+}
+
+public sealed class TooManyParametersRulePython : TooManyParametersRule
+{
+    public override string Key => "QG-PY-SML-0261";
+    public override string[] Languages => ["py"];
+}
+
+public sealed class TooManyParametersRulePhp : TooManyParametersRule
+{
+    public override string Key => "QG-PP-SML-0126";
+    public override string[] Languages => ["php"];
+}
+
+public sealed class TooManyParametersRuleGo : TooManyParametersRule
+{
+    public override string Key => "QG-GO-SML-0040";
+    public override string[] Languages => ["go"];
+}
+
+public sealed class TooManyParametersRuleDart : TooManyParametersRule
+{
+    public override string Key => "QG-DART-SML-0005";
+    public override string[] Languages => ["dart"];
+}
+
+public sealed class TooManyParametersRuleRuby : TooManyParametersRule
+{
+    public override string Key => "QG-RB-SML-0032";
+    public override string[] Languages => ["rb"];
+}
+
+public sealed class TooManyParametersRuleSwift : TooManyParametersRule
+{
+    public override string Key => "QG-SW-SML-0016";
+    public override string[] Languages => ["swift"];
+}
+
+public sealed class TooManyParametersRuleCss : TooManyParametersRule
+{
+    public override string Key => "QG-CSS-SML-0037";
+    public override string[] Languages => ["css"];
+}
+
+public sealed class TooManyParametersRuleHtml : TooManyParametersRule
+{
+    public override string Key => "QG-HTML-SML-0109";
+    public override string[] Languages => ["html"];
+}
+
+public sealed class TooManyParametersRuleXml : TooManyParametersRule
+{
+    public override string Key => "QG-XML-SML-0024";
+    public override string[] Languages => ["xml"];
+}
+
+public sealed class TooManyParametersRuleTerraform : TooManyParametersRule
+{
+    public override string Key => "QG-TF-SML-0016";
+    public override string[] Languages => ["tf"];
+}
+
+public sealed class TooManyParametersRuleDockerfile : TooManyParametersRule
+{
+    public override string Key => "QG-DK-SML-0030";
+    public override string[] Languages => ["dk"];
+}
+
+public sealed class TooManyParametersRuleKubernetes : TooManyParametersRule
+{
+    public override string Key => "QG-K8-SML-0024";
+    public override string[] Languages => ["k8"];
+}
+
+public sealed class TooManyParametersRuleCloudFormation : TooManyParametersRule
+{
+    public override string Key => "QG-CF-SML-0017";
+    public override string[] Languages => ["cf"];
+}
+
+public sealed class TooManyParametersRuleJson : TooManyParametersRule
+{
+    public override string Key => "QG-JSON-SML-0012";
+    public override string[] Languages => ["json"];
+}
+
+public abstract class FunctionTooLongRule : StructuralRuleBase
 {
     private const int MaxLines = 120;
-
-    public override string Key => "QG-ALL-SML-0004";
     public override string Name => "Functions should not be too long";
     public override Severity Severity => Severity.Major;
     public override IssueKind Kind => IssueKind.CodeSmell;
@@ -391,11 +2054,117 @@ public sealed class FunctionTooLongRule : StructuralRuleBase
     }
 }
 
-public sealed class CognitiveComplexityRule : StructuralRuleBase
+public sealed class FunctionTooLongRuleCs : FunctionTooLongRule
+{
+    public override string Key => "QG-CS-SML-0506";
+    public override string[] Languages => ["cs", "vb"];
+}
+
+public sealed class FunctionTooLongRuleJava : FunctionTooLongRule
+{
+    public override string Key => "QG-JV-SML-0467";
+    public override string[] Languages => ["java"];
+}
+
+public sealed class FunctionTooLongRuleKotlin : FunctionTooLongRule
+{
+    public override string Key => "QG-KT-SML-0089";
+    public override string[] Languages => ["kt"];
+}
+
+public sealed class FunctionTooLongRuleJs : FunctionTooLongRule
+{
+    public override string Key => "QG-JS-SML-0383";
+    public override string[] Languages => ["js", "ts"];
+}
+
+public sealed class FunctionTooLongRulePython : FunctionTooLongRule
+{
+    public override string Key => "QG-PY-SML-0262";
+    public override string[] Languages => ["py"];
+}
+
+public sealed class FunctionTooLongRulePhp : FunctionTooLongRule
+{
+    public override string Key => "QG-PP-SML-0127";
+    public override string[] Languages => ["php"];
+}
+
+public sealed class FunctionTooLongRuleGo : FunctionTooLongRule
+{
+    public override string Key => "QG-GO-SML-0041";
+    public override string[] Languages => ["go"];
+}
+
+public sealed class FunctionTooLongRuleDart : FunctionTooLongRule
+{
+    public override string Key => "QG-DART-SML-0006";
+    public override string[] Languages => ["dart"];
+}
+
+public sealed class FunctionTooLongRuleRuby : FunctionTooLongRule
+{
+    public override string Key => "QG-RB-SML-0033";
+    public override string[] Languages => ["rb"];
+}
+
+public sealed class FunctionTooLongRuleSwift : FunctionTooLongRule
+{
+    public override string Key => "QG-SW-SML-0017";
+    public override string[] Languages => ["swift"];
+}
+
+public sealed class FunctionTooLongRuleCss : FunctionTooLongRule
+{
+    public override string Key => "QG-CSS-SML-0038";
+    public override string[] Languages => ["css"];
+}
+
+public sealed class FunctionTooLongRuleHtml : FunctionTooLongRule
+{
+    public override string Key => "QG-HTML-SML-0110";
+    public override string[] Languages => ["html"];
+}
+
+public sealed class FunctionTooLongRuleXml : FunctionTooLongRule
+{
+    public override string Key => "QG-XML-SML-0025";
+    public override string[] Languages => ["xml"];
+}
+
+public sealed class FunctionTooLongRuleTerraform : FunctionTooLongRule
+{
+    public override string Key => "QG-TF-SML-0017";
+    public override string[] Languages => ["tf"];
+}
+
+public sealed class FunctionTooLongRuleDockerfile : FunctionTooLongRule
+{
+    public override string Key => "QG-DK-SML-0031";
+    public override string[] Languages => ["dk"];
+}
+
+public sealed class FunctionTooLongRuleKubernetes : FunctionTooLongRule
+{
+    public override string Key => "QG-K8-SML-0025";
+    public override string[] Languages => ["k8"];
+}
+
+public sealed class FunctionTooLongRuleCloudFormation : FunctionTooLongRule
+{
+    public override string Key => "QG-CF-SML-0018";
+    public override string[] Languages => ["cf"];
+}
+
+public sealed class FunctionTooLongRuleJson : FunctionTooLongRule
+{
+    public override string Key => "QG-JSON-SML-0013";
+    public override string[] Languages => ["json"];
+}
+
+public abstract class CognitiveComplexityRule : StructuralRuleBase
 {
     private const int Max = 15;
-
-    public override string Key => "QG-ALL-SML-0005";
     public override string Name => "Functions should not be too hard to follow";
     public override Severity Severity => Severity.Critical;
     public override IssueKind Kind => IssueKind.CodeSmell;
@@ -418,11 +2187,117 @@ public sealed class CognitiveComplexityRule : StructuralRuleBase
     }
 }
 
-public sealed class DeepNestingRule : StructuralRuleBase
+public sealed class CognitiveComplexityRuleCs : CognitiveComplexityRule
+{
+    public override string Key => "QG-CS-SML-0500";
+    public override string[] Languages => ["cs", "vb"];
+}
+
+public sealed class CognitiveComplexityRuleJava : CognitiveComplexityRule
+{
+    public override string Key => "QG-JV-SML-0461";
+    public override string[] Languages => ["java"];
+}
+
+public sealed class CognitiveComplexityRuleJs : CognitiveComplexityRule
+{
+    public override string Key => "QG-JS-SML-0377";
+    public override string[] Languages => ["js", "ts"];
+}
+
+public sealed class CognitiveComplexityRulePython : CognitiveComplexityRule
+{
+    public override string Key => "QG-PY-SML-0256";
+    public override string[] Languages => ["py"];
+}
+
+public sealed class CognitiveComplexityRulePhp : CognitiveComplexityRule
+{
+    public override string Key => "QG-PP-SML-0121";
+    public override string[] Languages => ["php"];
+}
+
+public sealed class CognitiveComplexityRuleGo : CognitiveComplexityRule
+{
+    public override string Key => "QG-GO-SML-0035";
+    public override string[] Languages => ["go"];
+}
+
+public sealed class CognitiveComplexityRuleRuby : CognitiveComplexityRule
+{
+    public override string Key => "QG-RB-SML-0034";
+    public override string[] Languages => ["rb"];
+}
+
+public sealed class CognitiveComplexityRuleSwift : CognitiveComplexityRule
+{
+    public override string Key => "QG-SW-SML-0018";
+    public override string[] Languages => ["swift"];
+}
+
+public sealed class CognitiveComplexityRuleCss : CognitiveComplexityRule
+{
+    public override string Key => "QG-CSS-SML-0039";
+    public override string[] Languages => ["css"];
+}
+
+public sealed class CognitiveComplexityRuleHtml : CognitiveComplexityRule
+{
+    public override string Key => "QG-HTML-SML-0111";
+    public override string[] Languages => ["html"];
+}
+
+public sealed class CognitiveComplexityRuleXml : CognitiveComplexityRule
+{
+    public override string Key => "QG-XML-SML-0026";
+    public override string[] Languages => ["xml"];
+}
+
+public sealed class CognitiveComplexityRuleTerraform : CognitiveComplexityRule
+{
+    public override string Key => "QG-TF-SML-0018";
+    public override string[] Languages => ["tf"];
+}
+
+public sealed class CognitiveComplexityRuleDockerfile : CognitiveComplexityRule
+{
+    public override string Key => "QG-DK-SML-0032";
+    public override string[] Languages => ["dk"];
+}
+
+public sealed class CognitiveComplexityRuleKubernetes : CognitiveComplexityRule
+{
+    public override string Key => "QG-K8-SML-0026";
+    public override string[] Languages => ["k8"];
+}
+
+public sealed class CognitiveComplexityRuleCloudFormation : CognitiveComplexityRule
+{
+    public override string Key => "QG-CF-SML-0019";
+    public override string[] Languages => ["cf"];
+}
+
+public sealed class CognitiveComplexityRuleJson : CognitiveComplexityRule
+{
+    public override string Key => "QG-JSON-SML-0014";
+    public override string[] Languages => ["json"];
+}
+
+public sealed class CognitiveComplexityRuleKotlin : CognitiveComplexityRule
+{
+    public override string Key => "QG-KT-SML-0129";
+    public override string[] Languages => ["kt"];
+}
+
+public sealed class CognitiveComplexityRuleDart : CognitiveComplexityRule
+{
+    public override string Key => "QG-DART-SML-0047";
+    public override string[] Languages => ["dart"];
+}
+
+public abstract class DeepNestingRule : StructuralRuleBase
 {
     private const int Max = 4;
-
-    public override string Key => "QG-ALL-SML-0006";
     public override string Name => "Control structures should not be nested too deeply";
     public override Severity Severity => Severity.Major;
     public override IssueKind Kind => IssueKind.CodeSmell;
@@ -445,9 +2320,116 @@ public sealed class DeepNestingRule : StructuralRuleBase
     }
 }
 
-public sealed class MatchWithoutDefaultRule : StructuralRuleBase
+public sealed class DeepNestingRuleCs : DeepNestingRule
 {
-    public override string Key => "QG-ALL-SML-0007";
+    public override string Key => "QG-CS-SML-0507";
+    public override string[] Languages => ["cs", "vb"];
+}
+
+public sealed class DeepNestingRuleJava : DeepNestingRule
+{
+    public override string Key => "QG-JV-SML-0468";
+    public override string[] Languages => ["java"];
+}
+
+public sealed class DeepNestingRuleKotlin : DeepNestingRule
+{
+    public override string Key => "QG-KT-SML-0090";
+    public override string[] Languages => ["kt"];
+}
+
+public sealed class DeepNestingRuleJs : DeepNestingRule
+{
+    public override string Key => "QG-JS-SML-0384";
+    public override string[] Languages => ["js", "ts"];
+}
+
+public sealed class DeepNestingRulePython : DeepNestingRule
+{
+    public override string Key => "QG-PY-SML-0263";
+    public override string[] Languages => ["py"];
+}
+
+public sealed class DeepNestingRulePhp : DeepNestingRule
+{
+    public override string Key => "QG-PP-SML-0128";
+    public override string[] Languages => ["php"];
+}
+
+public sealed class DeepNestingRuleGo : DeepNestingRule
+{
+    public override string Key => "QG-GO-SML-0042";
+    public override string[] Languages => ["go"];
+}
+
+public sealed class DeepNestingRuleDart : DeepNestingRule
+{
+    public override string Key => "QG-DART-SML-0007";
+    public override string[] Languages => ["dart"];
+}
+
+public sealed class DeepNestingRuleRuby : DeepNestingRule
+{
+    public override string Key => "QG-RB-SML-0035";
+    public override string[] Languages => ["rb"];
+}
+
+public sealed class DeepNestingRuleSwift : DeepNestingRule
+{
+    public override string Key => "QG-SW-SML-0019";
+    public override string[] Languages => ["swift"];
+}
+
+public sealed class DeepNestingRuleCss : DeepNestingRule
+{
+    public override string Key => "QG-CSS-SML-0040";
+    public override string[] Languages => ["css"];
+}
+
+public sealed class DeepNestingRuleHtml : DeepNestingRule
+{
+    public override string Key => "QG-HTML-SML-0112";
+    public override string[] Languages => ["html"];
+}
+
+public sealed class DeepNestingRuleXml : DeepNestingRule
+{
+    public override string Key => "QG-XML-SML-0027";
+    public override string[] Languages => ["xml"];
+}
+
+public sealed class DeepNestingRuleTerraform : DeepNestingRule
+{
+    public override string Key => "QG-TF-SML-0019";
+    public override string[] Languages => ["tf"];
+}
+
+public sealed class DeepNestingRuleDockerfile : DeepNestingRule
+{
+    public override string Key => "QG-DK-SML-0033";
+    public override string[] Languages => ["dk"];
+}
+
+public sealed class DeepNestingRuleKubernetes : DeepNestingRule
+{
+    public override string Key => "QG-K8-SML-0027";
+    public override string[] Languages => ["k8"];
+}
+
+public sealed class DeepNestingRuleCloudFormation : DeepNestingRule
+{
+    public override string Key => "QG-CF-SML-0020";
+    public override string[] Languages => ["cf"];
+}
+
+public sealed class DeepNestingRuleJson : DeepNestingRule
+{
+    public override string Key => "QG-JSON-SML-0015";
+    public override string[] Languages => ["json"];
+}
+
+public abstract class MatchWithoutDefaultRule : StructuralRuleBase
+{
     public override string Name => "Multi-way branches should handle the unexpected value";
     public override Severity Severity => Severity.Major;
     public override IssueKind Kind => IssueKind.CodeSmell;
@@ -469,7 +2451,115 @@ public sealed class MatchWithoutDefaultRule : StructuralRuleBase
     }
 }
 
-public sealed class DuplicatedStringLiteralRule : StructuralRuleBase
+public sealed class MatchWithoutDefaultRuleCs : MatchWithoutDefaultRule
+{
+    public override string Key => "QG-CS-SML-0508";
+    public override string[] Languages => ["cs", "vb"];
+}
+
+public sealed class MatchWithoutDefaultRuleJava : MatchWithoutDefaultRule
+{
+    public override string Key => "QG-JV-SML-0469";
+    public override string[] Languages => ["java"];
+}
+
+public sealed class MatchWithoutDefaultRuleKotlin : MatchWithoutDefaultRule
+{
+    public override string Key => "QG-KT-SML-0091";
+    public override string[] Languages => ["kt"];
+}
+
+public sealed class MatchWithoutDefaultRuleJs : MatchWithoutDefaultRule
+{
+    public override string Key => "QG-JS-SML-0385";
+    public override string[] Languages => ["js", "ts"];
+}
+
+public sealed class MatchWithoutDefaultRulePython : MatchWithoutDefaultRule
+{
+    public override string Key => "QG-PY-SML-0264";
+    public override string[] Languages => ["py"];
+}
+
+public sealed class MatchWithoutDefaultRulePhp : MatchWithoutDefaultRule
+{
+    public override string Key => "QG-PP-SML-0129";
+    public override string[] Languages => ["php"];
+}
+
+public sealed class MatchWithoutDefaultRuleGo : MatchWithoutDefaultRule
+{
+    public override string Key => "QG-GO-SML-0043";
+    public override string[] Languages => ["go"];
+}
+
+public sealed class MatchWithoutDefaultRuleDart : MatchWithoutDefaultRule
+{
+    public override string Key => "QG-DART-SML-0008";
+    public override string[] Languages => ["dart"];
+}
+
+public sealed class MatchWithoutDefaultRuleRuby : MatchWithoutDefaultRule
+{
+    public override string Key => "QG-RB-SML-0036";
+    public override string[] Languages => ["rb"];
+}
+
+public sealed class MatchWithoutDefaultRuleSwift : MatchWithoutDefaultRule
+{
+    public override string Key => "QG-SW-SML-0020";
+    public override string[] Languages => ["swift"];
+}
+
+public sealed class MatchWithoutDefaultRuleCss : MatchWithoutDefaultRule
+{
+    public override string Key => "QG-CSS-SML-0041";
+    public override string[] Languages => ["css"];
+}
+
+public sealed class MatchWithoutDefaultRuleHtml : MatchWithoutDefaultRule
+{
+    public override string Key => "QG-HTML-SML-0113";
+    public override string[] Languages => ["html"];
+}
+
+public sealed class MatchWithoutDefaultRuleXml : MatchWithoutDefaultRule
+{
+    public override string Key => "QG-XML-SML-0028";
+    public override string[] Languages => ["xml"];
+}
+
+public sealed class MatchWithoutDefaultRuleTerraform : MatchWithoutDefaultRule
+{
+    public override string Key => "QG-TF-SML-0020";
+    public override string[] Languages => ["tf"];
+}
+
+public sealed class MatchWithoutDefaultRuleDockerfile : MatchWithoutDefaultRule
+{
+    public override string Key => "QG-DK-SML-0034";
+    public override string[] Languages => ["dk"];
+}
+
+public sealed class MatchWithoutDefaultRuleKubernetes : MatchWithoutDefaultRule
+{
+    public override string Key => "QG-K8-SML-0028";
+    public override string[] Languages => ["k8"];
+}
+
+public sealed class MatchWithoutDefaultRuleCloudFormation : MatchWithoutDefaultRule
+{
+    public override string Key => "QG-CF-SML-0021";
+    public override string[] Languages => ["cf"];
+}
+
+public sealed class MatchWithoutDefaultRuleJson : MatchWithoutDefaultRule
+{
+    public override string Key => "QG-JSON-SML-0016";
+    public override string[] Languages => ["json"];
+}
+
+public abstract class DuplicatedStringLiteralRule : StructuralRuleBase
 {
     private const int Threshold = 3;
 
@@ -482,8 +2572,6 @@ public sealed class DuplicatedStringLiteralRule : StructuralRuleBase
     /// <summary>Calls whose string argument names a module, not a value that could be a constant.</summary>
     private static readonly string[] ModuleReferences =
         ["require", "import", "define", "mock", "unmock", "doMock", "jest.mock", "importScripts"];
-
-    public override string Key => "QG-ALL-SML-0008";
     public override string Name => "String literals should not be duplicated";
     public override Severity Severity => Severity.Minor;
     public override IssueKind Kind => IssueKind.CodeSmell;
@@ -547,9 +2635,116 @@ public sealed class DuplicatedStringLiteralRule : StructuralRuleBase
     }
 }
 
-public sealed class DeadStoreRule : StructuralRuleBase
+public sealed class DuplicatedStringLiteralRuleCs : DuplicatedStringLiteralRule
 {
-    public override string Key => "QG-ALL-BUG-0041";
+    public override string Key => "QG-CS-SML-0496";
+    public override string[] Languages => ["cs", "vb"];
+}
+
+public sealed class DuplicatedStringLiteralRuleJava : DuplicatedStringLiteralRule
+{
+    public override string Key => "QG-JV-SML-0457";
+    public override string[] Languages => ["java"];
+}
+
+public sealed class DuplicatedStringLiteralRuleJs : DuplicatedStringLiteralRule
+{
+    public override string Key => "QG-JS-SML-0373";
+    public override string[] Languages => ["js", "ts"];
+}
+
+public sealed class DuplicatedStringLiteralRulePython : DuplicatedStringLiteralRule
+{
+    public override string Key => "QG-PY-SML-0252";
+    public override string[] Languages => ["py"];
+}
+
+public sealed class DuplicatedStringLiteralRulePhp : DuplicatedStringLiteralRule
+{
+    public override string Key => "QG-PP-SML-0117";
+    public override string[] Languages => ["php"];
+}
+
+public sealed class DuplicatedStringLiteralRuleGo : DuplicatedStringLiteralRule
+{
+    public override string Key => "QG-GO-SML-0031";
+    public override string[] Languages => ["go"];
+}
+
+public sealed class DuplicatedStringLiteralRuleRuby : DuplicatedStringLiteralRule
+{
+    public override string Key => "QG-RB-SML-0037";
+    public override string[] Languages => ["rb"];
+}
+
+public sealed class DuplicatedStringLiteralRuleSwift : DuplicatedStringLiteralRule
+{
+    public override string Key => "QG-SW-SML-0021";
+    public override string[] Languages => ["swift"];
+}
+
+public sealed class DuplicatedStringLiteralRuleCss : DuplicatedStringLiteralRule
+{
+    public override string Key => "QG-CSS-SML-0042";
+    public override string[] Languages => ["css"];
+}
+
+public sealed class DuplicatedStringLiteralRuleHtml : DuplicatedStringLiteralRule
+{
+    public override string Key => "QG-HTML-SML-0114";
+    public override string[] Languages => ["html"];
+}
+
+public sealed class DuplicatedStringLiteralRuleXml : DuplicatedStringLiteralRule
+{
+    public override string Key => "QG-XML-SML-0029";
+    public override string[] Languages => ["xml"];
+}
+
+public sealed class DuplicatedStringLiteralRuleTerraform : DuplicatedStringLiteralRule
+{
+    public override string Key => "QG-TF-SML-0021";
+    public override string[] Languages => ["tf"];
+}
+
+public sealed class DuplicatedStringLiteralRuleDockerfile : DuplicatedStringLiteralRule
+{
+    public override string Key => "QG-DK-SML-0035";
+    public override string[] Languages => ["dk"];
+}
+
+public sealed class DuplicatedStringLiteralRuleKubernetes : DuplicatedStringLiteralRule
+{
+    public override string Key => "QG-K8-SML-0029";
+    public override string[] Languages => ["k8"];
+}
+
+public sealed class DuplicatedStringLiteralRuleCloudFormation : DuplicatedStringLiteralRule
+{
+    public override string Key => "QG-CF-SML-0022";
+    public override string[] Languages => ["cf"];
+}
+
+public sealed class DuplicatedStringLiteralRuleJson : DuplicatedStringLiteralRule
+{
+    public override string Key => "QG-JSON-SML-0017";
+    public override string[] Languages => ["json"];
+}
+
+public sealed class DuplicatedStringLiteralRuleKotlin : DuplicatedStringLiteralRule
+{
+    public override string Key => "QG-KT-SML-0130";
+    public override string[] Languages => ["kt"];
+}
+
+public sealed class DuplicatedStringLiteralRuleDart : DuplicatedStringLiteralRule
+{
+    public override string Key => "QG-DART-SML-0048";
+    public override string[] Languages => ["dart"];
+}
+
+public abstract class DeadStoreRule : StructuralRuleBase
+{
     public override string Name => "A value should be read before it is replaced";
     public override Severity Severity => Severity.Major;
     public override IssueKind Kind => IssueKind.Bug;
@@ -667,9 +2862,116 @@ public sealed class DeadStoreRule : StructuralRuleBase
     }
 }
 
-public sealed class UnusedLocalVariableRule : StructuralRuleBase
+public sealed class DeadStoreRuleCs : DeadStoreRule
 {
-    public override string Key => "QG-ALL-SML-0009";
+    public override string Key => "QG-CS-BUG-0149";
+    public override string[] Languages => ["cs", "vb"];
+}
+
+public sealed class DeadStoreRuleJava : DeadStoreRule
+{
+    public override string Key => "QG-JV-BUG-0203";
+    public override string[] Languages => ["java"];
+}
+
+public sealed class DeadStoreRuleJs : DeadStoreRule
+{
+    public override string Key => "QG-JS-BUG-0147";
+    public override string[] Languages => ["js", "ts"];
+}
+
+public sealed class DeadStoreRulePython : DeadStoreRule
+{
+    public override string Key => "QG-PY-BUG-0153";
+    public override string[] Languages => ["py"];
+}
+
+public sealed class DeadStoreRulePhp : DeadStoreRule
+{
+    public override string Key => "QG-PP-BUG-0050";
+    public override string[] Languages => ["php"];
+}
+
+public sealed class DeadStoreRuleGo : DeadStoreRule
+{
+    public override string Key => "QG-GO-BUG-0006";
+    public override string[] Languages => ["go"];
+}
+
+public sealed class DeadStoreRuleRuby : DeadStoreRule
+{
+    public override string Key => "QG-RB-BUG-0031";
+    public override string[] Languages => ["rb"];
+}
+
+public sealed class DeadStoreRuleSwift : DeadStoreRule
+{
+    public override string Key => "QG-SW-BUG-0035";
+    public override string[] Languages => ["swift"];
+}
+
+public sealed class DeadStoreRuleCss : DeadStoreRule
+{
+    public override string Key => "QG-CSS-BUG-0060";
+    public override string[] Languages => ["css"];
+}
+
+public sealed class DeadStoreRuleHtml : DeadStoreRule
+{
+    public override string Key => "QG-HTML-BUG-0060";
+    public override string[] Languages => ["html"];
+}
+
+public sealed class DeadStoreRuleXml : DeadStoreRule
+{
+    public override string Key => "QG-XML-BUG-0035";
+    public override string[] Languages => ["xml"];
+}
+
+public sealed class DeadStoreRuleTerraform : DeadStoreRule
+{
+    public override string Key => "QG-TF-BUG-0030";
+    public override string[] Languages => ["tf"];
+}
+
+public sealed class DeadStoreRuleDockerfile : DeadStoreRule
+{
+    public override string Key => "QG-DK-BUG-0037";
+    public override string[] Languages => ["dk"];
+}
+
+public sealed class DeadStoreRuleKubernetes : DeadStoreRule
+{
+    public override string Key => "QG-K8-BUG-0030";
+    public override string[] Languages => ["k8"];
+}
+
+public sealed class DeadStoreRuleCloudFormation : DeadStoreRule
+{
+    public override string Key => "QG-CF-BUG-0030";
+    public override string[] Languages => ["cf"];
+}
+
+public sealed class DeadStoreRuleJson : DeadStoreRule
+{
+    public override string Key => "QG-JSON-BUG-0031";
+    public override string[] Languages => ["json"];
+}
+
+public sealed class DeadStoreRuleKotlin : DeadStoreRule
+{
+    public override string Key => "QG-KT-BUG-0071";
+    public override string[] Languages => ["kt"];
+}
+
+public sealed class DeadStoreRuleDart : DeadStoreRule
+{
+    public override string Key => "QG-DART-BUG-0045";
+    public override string[] Languages => ["dart"];
+}
+
+public abstract class UnusedLocalVariableRule : StructuralRuleBase
+{
     public override string Name => "Local variables should be used";
     public override Severity Severity => Severity.Minor;
     public override IssueKind Kind => IssueKind.CodeSmell;
@@ -697,9 +2999,116 @@ public sealed class UnusedLocalVariableRule : StructuralRuleBase
     }
 }
 
-public sealed class EmptyFunctionRule : StructuralRuleBase
+public sealed class UnusedLocalVariableRuleCs : UnusedLocalVariableRule
 {
-    public override string Key => "QG-ALL-SML-0010";
+    public override string Key => "QG-CS-SML-0499";
+    public override string[] Languages => ["cs", "vb"];
+}
+
+public sealed class UnusedLocalVariableRuleJava : UnusedLocalVariableRule
+{
+    public override string Key => "QG-JV-SML-0460";
+    public override string[] Languages => ["java"];
+}
+
+public sealed class UnusedLocalVariableRuleJs : UnusedLocalVariableRule
+{
+    public override string Key => "QG-JS-SML-0376";
+    public override string[] Languages => ["js", "ts"];
+}
+
+public sealed class UnusedLocalVariableRulePython : UnusedLocalVariableRule
+{
+    public override string Key => "QG-PY-SML-0255";
+    public override string[] Languages => ["py"];
+}
+
+public sealed class UnusedLocalVariableRulePhp : UnusedLocalVariableRule
+{
+    public override string Key => "QG-PP-SML-0120";
+    public override string[] Languages => ["php"];
+}
+
+public sealed class UnusedLocalVariableRuleGo : UnusedLocalVariableRule
+{
+    public override string Key => "QG-GO-SML-0034";
+    public override string[] Languages => ["go"];
+}
+
+public sealed class UnusedLocalVariableRuleRuby : UnusedLocalVariableRule
+{
+    public override string Key => "QG-RB-SML-0038";
+    public override string[] Languages => ["rb"];
+}
+
+public sealed class UnusedLocalVariableRuleSwift : UnusedLocalVariableRule
+{
+    public override string Key => "QG-SW-SML-0022";
+    public override string[] Languages => ["swift"];
+}
+
+public sealed class UnusedLocalVariableRuleCss : UnusedLocalVariableRule
+{
+    public override string Key => "QG-CSS-SML-0043";
+    public override string[] Languages => ["css"];
+}
+
+public sealed class UnusedLocalVariableRuleHtml : UnusedLocalVariableRule
+{
+    public override string Key => "QG-HTML-SML-0115";
+    public override string[] Languages => ["html"];
+}
+
+public sealed class UnusedLocalVariableRuleXml : UnusedLocalVariableRule
+{
+    public override string Key => "QG-XML-SML-0030";
+    public override string[] Languages => ["xml"];
+}
+
+public sealed class UnusedLocalVariableRuleTerraform : UnusedLocalVariableRule
+{
+    public override string Key => "QG-TF-SML-0022";
+    public override string[] Languages => ["tf"];
+}
+
+public sealed class UnusedLocalVariableRuleDockerfile : UnusedLocalVariableRule
+{
+    public override string Key => "QG-DK-SML-0036";
+    public override string[] Languages => ["dk"];
+}
+
+public sealed class UnusedLocalVariableRuleKubernetes : UnusedLocalVariableRule
+{
+    public override string Key => "QG-K8-SML-0030";
+    public override string[] Languages => ["k8"];
+}
+
+public sealed class UnusedLocalVariableRuleCloudFormation : UnusedLocalVariableRule
+{
+    public override string Key => "QG-CF-SML-0023";
+    public override string[] Languages => ["cf"];
+}
+
+public sealed class UnusedLocalVariableRuleJson : UnusedLocalVariableRule
+{
+    public override string Key => "QG-JSON-SML-0018";
+    public override string[] Languages => ["json"];
+}
+
+public sealed class UnusedLocalVariableRuleKotlin : UnusedLocalVariableRule
+{
+    public override string Key => "QG-KT-SML-0131";
+    public override string[] Languages => ["kt"];
+}
+
+public sealed class UnusedLocalVariableRuleDart : UnusedLocalVariableRule
+{
+    public override string Key => "QG-DART-SML-0049";
+    public override string[] Languages => ["dart"];
+}
+
+public abstract class EmptyFunctionRule : StructuralRuleBase
+{
     public override string Name => "Function bodies should not be empty";
     public override Severity Severity => Severity.Major;
     public override IssueKind Kind => IssueKind.CodeSmell;
@@ -727,9 +3136,116 @@ public sealed class EmptyFunctionRule : StructuralRuleBase
     }
 }
 
-public sealed class MultipleStatementsPerLineRule : StructuralRuleBase
+public sealed class EmptyFunctionRuleCs : EmptyFunctionRule
 {
-    public override string Key => "QG-ALL-CNV-0004";
+    public override string Key => "QG-CS-SML-0501";
+    public override string[] Languages => ["cs", "vb"];
+}
+
+public sealed class EmptyFunctionRuleJava : EmptyFunctionRule
+{
+    public override string Key => "QG-JV-SML-0462";
+    public override string[] Languages => ["java"];
+}
+
+public sealed class EmptyFunctionRuleJs : EmptyFunctionRule
+{
+    public override string Key => "QG-JS-SML-0378";
+    public override string[] Languages => ["js", "ts"];
+}
+
+public sealed class EmptyFunctionRulePython : EmptyFunctionRule
+{
+    public override string Key => "QG-PY-SML-0257";
+    public override string[] Languages => ["py"];
+}
+
+public sealed class EmptyFunctionRulePhp : EmptyFunctionRule
+{
+    public override string Key => "QG-PP-SML-0122";
+    public override string[] Languages => ["php"];
+}
+
+public sealed class EmptyFunctionRuleGo : EmptyFunctionRule
+{
+    public override string Key => "QG-GO-SML-0036";
+    public override string[] Languages => ["go"];
+}
+
+public sealed class EmptyFunctionRuleRuby : EmptyFunctionRule
+{
+    public override string Key => "QG-RB-SML-0039";
+    public override string[] Languages => ["rb"];
+}
+
+public sealed class EmptyFunctionRuleSwift : EmptyFunctionRule
+{
+    public override string Key => "QG-SW-SML-0023";
+    public override string[] Languages => ["swift"];
+}
+
+public sealed class EmptyFunctionRuleCss : EmptyFunctionRule
+{
+    public override string Key => "QG-CSS-SML-0044";
+    public override string[] Languages => ["css"];
+}
+
+public sealed class EmptyFunctionRuleHtml : EmptyFunctionRule
+{
+    public override string Key => "QG-HTML-SML-0116";
+    public override string[] Languages => ["html"];
+}
+
+public sealed class EmptyFunctionRuleXml : EmptyFunctionRule
+{
+    public override string Key => "QG-XML-SML-0031";
+    public override string[] Languages => ["xml"];
+}
+
+public sealed class EmptyFunctionRuleTerraform : EmptyFunctionRule
+{
+    public override string Key => "QG-TF-SML-0023";
+    public override string[] Languages => ["tf"];
+}
+
+public sealed class EmptyFunctionRuleDockerfile : EmptyFunctionRule
+{
+    public override string Key => "QG-DK-SML-0037";
+    public override string[] Languages => ["dk"];
+}
+
+public sealed class EmptyFunctionRuleKubernetes : EmptyFunctionRule
+{
+    public override string Key => "QG-K8-SML-0031";
+    public override string[] Languages => ["k8"];
+}
+
+public sealed class EmptyFunctionRuleCloudFormation : EmptyFunctionRule
+{
+    public override string Key => "QG-CF-SML-0024";
+    public override string[] Languages => ["cf"];
+}
+
+public sealed class EmptyFunctionRuleJson : EmptyFunctionRule
+{
+    public override string Key => "QG-JSON-SML-0019";
+    public override string[] Languages => ["json"];
+}
+
+public sealed class EmptyFunctionRuleKotlin : EmptyFunctionRule
+{
+    public override string Key => "QG-KT-SML-0132";
+    public override string[] Languages => ["kt"];
+}
+
+public sealed class EmptyFunctionRuleDart : EmptyFunctionRule
+{
+    public override string Key => "QG-DART-SML-0050";
+    public override string[] Languages => ["dart"];
+}
+
+public abstract class MultipleStatementsPerLineRule : StructuralRuleBase
+{
     public override string Name => "One statement per line";
     public override Severity Severity => Severity.Minor;
     public override IssueKind Kind => IssueKind.CodeSmell;
@@ -766,9 +3282,116 @@ public sealed class MultipleStatementsPerLineRule : StructuralRuleBase
 
 }
 
-public sealed class StringConcatenationInLoopRule : StructuralRuleBase
+public sealed class MultipleStatementsPerLineRuleCs : MultipleStatementsPerLineRule
 {
-    public override string Key => "QG-ALL-PRF-0001";
+    public override string Key => "QG-CS-CNV-0011";
+    public override string[] Languages => ["cs", "vb"];
+}
+
+public sealed class MultipleStatementsPerLineRuleJava : MultipleStatementsPerLineRule
+{
+    public override string Key => "QG-JV-CNV-0003";
+    public override string[] Languages => ["java"];
+}
+
+public sealed class MultipleStatementsPerLineRuleJs : MultipleStatementsPerLineRule
+{
+    public override string Key => "QG-JS-CNV-0003";
+    public override string[] Languages => ["js", "ts"];
+}
+
+public sealed class MultipleStatementsPerLineRulePython : MultipleStatementsPerLineRule
+{
+    public override string Key => "QG-PY-CNV-0010";
+    public override string[] Languages => ["py"];
+}
+
+public sealed class MultipleStatementsPerLineRulePhp : MultipleStatementsPerLineRule
+{
+    public override string Key => "QG-PP-CNV-0001";
+    public override string[] Languages => ["php"];
+}
+
+public sealed class MultipleStatementsPerLineRuleGo : MultipleStatementsPerLineRule
+{
+    public override string Key => "QG-GO-CNV-0002";
+    public override string[] Languages => ["go"];
+}
+
+public sealed class MultipleStatementsPerLineRuleRuby : MultipleStatementsPerLineRule
+{
+    public override string Key => "QG-RB-CNV-0002";
+    public override string[] Languages => ["rb"];
+}
+
+public sealed class MultipleStatementsPerLineRuleSwift : MultipleStatementsPerLineRule
+{
+    public override string Key => "QG-SW-CNV-0002";
+    public override string[] Languages => ["swift"];
+}
+
+public sealed class MultipleStatementsPerLineRuleCss : MultipleStatementsPerLineRule
+{
+    public override string Key => "QG-CSS-CNV-0002";
+    public override string[] Languages => ["css"];
+}
+
+public sealed class MultipleStatementsPerLineRuleHtml : MultipleStatementsPerLineRule
+{
+    public override string Key => "QG-HTML-CNV-0002";
+    public override string[] Languages => ["html"];
+}
+
+public sealed class MultipleStatementsPerLineRuleXml : MultipleStatementsPerLineRule
+{
+    public override string Key => "QG-XML-CNV-0001";
+    public override string[] Languages => ["xml"];
+}
+
+public sealed class MultipleStatementsPerLineRuleTerraform : MultipleStatementsPerLineRule
+{
+    public override string Key => "QG-TF-CNV-0001";
+    public override string[] Languages => ["tf"];
+}
+
+public sealed class MultipleStatementsPerLineRuleDockerfile : MultipleStatementsPerLineRule
+{
+    public override string Key => "QG-DK-CNV-0003";
+    public override string[] Languages => ["dk"];
+}
+
+public sealed class MultipleStatementsPerLineRuleKubernetes : MultipleStatementsPerLineRule
+{
+    public override string Key => "QG-K8-CNV-0002";
+    public override string[] Languages => ["k8"];
+}
+
+public sealed class MultipleStatementsPerLineRuleCloudFormation : MultipleStatementsPerLineRule
+{
+    public override string Key => "QG-CF-CNV-0001";
+    public override string[] Languages => ["cf"];
+}
+
+public sealed class MultipleStatementsPerLineRuleJson : MultipleStatementsPerLineRule
+{
+    public override string Key => "QG-JSON-CNV-0001";
+    public override string[] Languages => ["json"];
+}
+
+public sealed class MultipleStatementsPerLineRuleKotlin : MultipleStatementsPerLineRule
+{
+    public override string Key => "QG-KT-CNV-0010";
+    public override string[] Languages => ["kt"];
+}
+
+public sealed class MultipleStatementsPerLineRuleDart : MultipleStatementsPerLineRule
+{
+    public override string Key => "QG-DART-CNV-0006";
+    public override string[] Languages => ["dart"];
+}
+
+public abstract class StringConcatenationInLoopRule : StructuralRuleBase
+{
     public override string Name => "Strings should not be built by concatenation inside a loop";
     public override Severity Severity => Severity.Major;
     public override IssueKind Kind => IssueKind.CodeSmell;
@@ -795,7 +3418,115 @@ public sealed class StringConcatenationInLoopRule : StructuralRuleBase
     }
 }
 
-public sealed class InvalidRegexRule : StructuralRuleBase
+public sealed class StringConcatenationInLoopRuleCs : StringConcatenationInLoopRule
+{
+    public override string Key => "QG-CS-PRF-0008";
+    public override string[] Languages => ["cs", "vb"];
+}
+
+public sealed class StringConcatenationInLoopRuleJava : StringConcatenationInLoopRule
+{
+    public override string Key => "QG-JV-PRF-0002";
+    public override string[] Languages => ["java"];
+}
+
+public sealed class StringConcatenationInLoopRuleKotlin : StringConcatenationInLoopRule
+{
+    public override string Key => "QG-KT-PRF-0002";
+    public override string[] Languages => ["kt"];
+}
+
+public sealed class StringConcatenationInLoopRuleJs : StringConcatenationInLoopRule
+{
+    public override string Key => "QG-JS-PRF-0001";
+    public override string[] Languages => ["js", "ts"];
+}
+
+public sealed class StringConcatenationInLoopRulePython : StringConcatenationInLoopRule
+{
+    public override string Key => "QG-PY-PRF-0002";
+    public override string[] Languages => ["py"];
+}
+
+public sealed class StringConcatenationInLoopRulePhp : StringConcatenationInLoopRule
+{
+    public override string Key => "QG-PP-PRF-0001";
+    public override string[] Languages => ["php"];
+}
+
+public sealed class StringConcatenationInLoopRuleGo : StringConcatenationInLoopRule
+{
+    public override string Key => "QG-GO-PRF-0001";
+    public override string[] Languages => ["go"];
+}
+
+public sealed class StringConcatenationInLoopRuleDart : StringConcatenationInLoopRule
+{
+    public override string Key => "QG-DART-PRF-0001";
+    public override string[] Languages => ["dart"];
+}
+
+public sealed class StringConcatenationInLoopRuleRuby : StringConcatenationInLoopRule
+{
+    public override string Key => "QG-RB-PRF-0001";
+    public override string[] Languages => ["rb"];
+}
+
+public sealed class StringConcatenationInLoopRuleSwift : StringConcatenationInLoopRule
+{
+    public override string Key => "QG-SW-PRF-0001";
+    public override string[] Languages => ["swift"];
+}
+
+public sealed class StringConcatenationInLoopRuleCss : StringConcatenationInLoopRule
+{
+    public override string Key => "QG-CSS-PRF-0002";
+    public override string[] Languages => ["css"];
+}
+
+public sealed class StringConcatenationInLoopRuleHtml : StringConcatenationInLoopRule
+{
+    public override string Key => "QG-HTML-PRF-0001";
+    public override string[] Languages => ["html"];
+}
+
+public sealed class StringConcatenationInLoopRuleXml : StringConcatenationInLoopRule
+{
+    public override string Key => "QG-XML-PRF-0001";
+    public override string[] Languages => ["xml"];
+}
+
+public sealed class StringConcatenationInLoopRuleTerraform : StringConcatenationInLoopRule
+{
+    public override string Key => "QG-TF-PRF-0001";
+    public override string[] Languages => ["tf"];
+}
+
+public sealed class StringConcatenationInLoopRuleDockerfile : StringConcatenationInLoopRule
+{
+    public override string Key => "QG-DK-PRF-0001";
+    public override string[] Languages => ["dk"];
+}
+
+public sealed class StringConcatenationInLoopRuleKubernetes : StringConcatenationInLoopRule
+{
+    public override string Key => "QG-K8-PRF-0001";
+    public override string[] Languages => ["k8"];
+}
+
+public sealed class StringConcatenationInLoopRuleCloudFormation : StringConcatenationInLoopRule
+{
+    public override string Key => "QG-CF-PRF-0001";
+    public override string[] Languages => ["cf"];
+}
+
+public sealed class StringConcatenationInLoopRuleJson : StringConcatenationInLoopRule
+{
+    public override string Key => "QG-JSON-PRF-0001";
+    public override string[] Languages => ["json"];
+}
+
+public abstract class InvalidRegexRule : StructuralRuleBase
 {
     /// <summary>Calls whose first string argument is a pattern whatever the receiver is.</summary>
     private static readonly string[] RegexEntryPoints =
@@ -814,8 +3545,6 @@ public sealed class InvalidRegexRule : StructuralRuleBase
 
     private static readonly string[] RegexReceivers =
         ["Regex", "RegExp", "re", "Pattern", "regexp", "System.Text.RegularExpressions.Regex"];
-
-    public override string Key => "QG-ALL-BUG-0007";
     public override string Name => "Regular expressions should be syntactically valid";
     public override Severity Severity => Severity.Blocker;
     public override IssueKind Kind => IssueKind.Bug;
@@ -861,11 +3590,117 @@ public sealed class InvalidRegexRule : StructuralRuleBase
     }
 }
 
-public sealed class FileTooLongRule : StructuralRuleBase
+public sealed class InvalidRegexRuleCs : InvalidRegexRule
+{
+    public override string Key => "QG-CS-BUG-0156";
+    public override string[] Languages => ["cs", "vb"];
+}
+
+public sealed class InvalidRegexRuleJava : InvalidRegexRule
+{
+    public override string Key => "QG-JV-BUG-0210";
+    public override string[] Languages => ["java"];
+}
+
+public sealed class InvalidRegexRuleKotlin : InvalidRegexRule
+{
+    public override string Key => "QG-KT-BUG-0037";
+    public override string[] Languages => ["kt"];
+}
+
+public sealed class InvalidRegexRuleJs : InvalidRegexRule
+{
+    public override string Key => "QG-JS-BUG-0154";
+    public override string[] Languages => ["js", "ts"];
+}
+
+public sealed class InvalidRegexRulePython : InvalidRegexRule
+{
+    public override string Key => "QG-PY-BUG-0160";
+    public override string[] Languages => ["py"];
+}
+
+public sealed class InvalidRegexRulePhp : InvalidRegexRule
+{
+    public override string Key => "QG-PP-BUG-0057";
+    public override string[] Languages => ["php"];
+}
+
+public sealed class InvalidRegexRuleGo : InvalidRegexRule
+{
+    public override string Key => "QG-GO-BUG-0013";
+    public override string[] Languages => ["go"];
+}
+
+public sealed class InvalidRegexRuleDart : InvalidRegexRule
+{
+    public override string Key => "QG-DART-BUG-0011";
+    public override string[] Languages => ["dart"];
+}
+
+public sealed class InvalidRegexRuleRuby : InvalidRegexRule
+{
+    public override string Key => "QG-RB-BUG-0032";
+    public override string[] Languages => ["rb"];
+}
+
+public sealed class InvalidRegexRuleSwift : InvalidRegexRule
+{
+    public override string Key => "QG-SW-BUG-0036";
+    public override string[] Languages => ["swift"];
+}
+
+public sealed class InvalidRegexRuleCss : InvalidRegexRule
+{
+    public override string Key => "QG-CSS-BUG-0061";
+    public override string[] Languages => ["css"];
+}
+
+public sealed class InvalidRegexRuleHtml : InvalidRegexRule
+{
+    public override string Key => "QG-HTML-BUG-0061";
+    public override string[] Languages => ["html"];
+}
+
+public sealed class InvalidRegexRuleXml : InvalidRegexRule
+{
+    public override string Key => "QG-XML-BUG-0036";
+    public override string[] Languages => ["xml"];
+}
+
+public sealed class InvalidRegexRuleTerraform : InvalidRegexRule
+{
+    public override string Key => "QG-TF-BUG-0031";
+    public override string[] Languages => ["tf"];
+}
+
+public sealed class InvalidRegexRuleDockerfile : InvalidRegexRule
+{
+    public override string Key => "QG-DK-BUG-0038";
+    public override string[] Languages => ["dk"];
+}
+
+public sealed class InvalidRegexRuleKubernetes : InvalidRegexRule
+{
+    public override string Key => "QG-K8-BUG-0031";
+    public override string[] Languages => ["k8"];
+}
+
+public sealed class InvalidRegexRuleCloudFormation : InvalidRegexRule
+{
+    public override string Key => "QG-CF-BUG-0031";
+    public override string[] Languages => ["cf"];
+}
+
+public sealed class InvalidRegexRuleJson : InvalidRegexRule
+{
+    public override string Key => "QG-JSON-BUG-0032";
+    public override string[] Languages => ["json"];
+}
+
+public abstract class FileTooLongRule : StructuralRuleBase
 {
     private const int MaxLines = 1000;
-
-    public override string Key => "QG-ALL-SML-0011";
     public override string Name => "Files should not grow beyond a readable size";
     public override Severity Severity => Severity.Major;
     public override IssueKind Kind => IssueKind.CodeSmell;
@@ -880,9 +3715,116 @@ public sealed class FileTooLongRule : StructuralRuleBase
     }
 }
 
-public sealed class UnusedParameterRule : StructuralRuleBase
+public sealed class FileTooLongRuleCs : FileTooLongRule
 {
-    public override string Key => "QG-ALL-SML-0012";
+    public override string Key => "QG-CS-SML-0509";
+    public override string[] Languages => ["cs", "vb"];
+}
+
+public sealed class FileTooLongRuleJava : FileTooLongRule
+{
+    public override string Key => "QG-JV-SML-0470";
+    public override string[] Languages => ["java"];
+}
+
+public sealed class FileTooLongRuleKotlin : FileTooLongRule
+{
+    public override string Key => "QG-KT-SML-0092";
+    public override string[] Languages => ["kt"];
+}
+
+public sealed class FileTooLongRuleJs : FileTooLongRule
+{
+    public override string Key => "QG-JS-SML-0386";
+    public override string[] Languages => ["js", "ts"];
+}
+
+public sealed class FileTooLongRulePython : FileTooLongRule
+{
+    public override string Key => "QG-PY-SML-0265";
+    public override string[] Languages => ["py"];
+}
+
+public sealed class FileTooLongRulePhp : FileTooLongRule
+{
+    public override string Key => "QG-PP-SML-0130";
+    public override string[] Languages => ["php"];
+}
+
+public sealed class FileTooLongRuleGo : FileTooLongRule
+{
+    public override string Key => "QG-GO-SML-0044";
+    public override string[] Languages => ["go"];
+}
+
+public sealed class FileTooLongRuleDart : FileTooLongRule
+{
+    public override string Key => "QG-DART-SML-0009";
+    public override string[] Languages => ["dart"];
+}
+
+public sealed class FileTooLongRuleRuby : FileTooLongRule
+{
+    public override string Key => "QG-RB-SML-0040";
+    public override string[] Languages => ["rb"];
+}
+
+public sealed class FileTooLongRuleSwift : FileTooLongRule
+{
+    public override string Key => "QG-SW-SML-0024";
+    public override string[] Languages => ["swift"];
+}
+
+public sealed class FileTooLongRuleCss : FileTooLongRule
+{
+    public override string Key => "QG-CSS-SML-0045";
+    public override string[] Languages => ["css"];
+}
+
+public sealed class FileTooLongRuleHtml : FileTooLongRule
+{
+    public override string Key => "QG-HTML-SML-0117";
+    public override string[] Languages => ["html"];
+}
+
+public sealed class FileTooLongRuleXml : FileTooLongRule
+{
+    public override string Key => "QG-XML-SML-0032";
+    public override string[] Languages => ["xml"];
+}
+
+public sealed class FileTooLongRuleTerraform : FileTooLongRule
+{
+    public override string Key => "QG-TF-SML-0024";
+    public override string[] Languages => ["tf"];
+}
+
+public sealed class FileTooLongRuleDockerfile : FileTooLongRule
+{
+    public override string Key => "QG-DK-SML-0038";
+    public override string[] Languages => ["dk"];
+}
+
+public sealed class FileTooLongRuleKubernetes : FileTooLongRule
+{
+    public override string Key => "QG-K8-SML-0032";
+    public override string[] Languages => ["k8"];
+}
+
+public sealed class FileTooLongRuleCloudFormation : FileTooLongRule
+{
+    public override string Key => "QG-CF-SML-0025";
+    public override string[] Languages => ["cf"];
+}
+
+public sealed class FileTooLongRuleJson : FileTooLongRule
+{
+    public override string Key => "QG-JSON-SML-0020";
+    public override string[] Languages => ["json"];
+}
+
+public abstract class UnusedParameterRule : StructuralRuleBase
+{
     public override string Name => "Function parameters should be used";
     public override Severity Severity => Severity.Major;
     public override IssueKind Kind => IssueKind.CodeSmell;
@@ -922,9 +3864,116 @@ public sealed class UnusedParameterRule : StructuralRuleBase
     }
 }
 
-public sealed class MergeableIfRule : StructuralRuleBase
+public sealed class UnusedParameterRuleCs : UnusedParameterRule
 {
-    public override string Key => "QG-ALL-SML-0013";
+    public override string Key => "QG-CS-SML-0497";
+    public override string[] Languages => ["cs", "vb"];
+}
+
+public sealed class UnusedParameterRuleJava : UnusedParameterRule
+{
+    public override string Key => "QG-JV-SML-0458";
+    public override string[] Languages => ["java"];
+}
+
+public sealed class UnusedParameterRuleJs : UnusedParameterRule
+{
+    public override string Key => "QG-JS-SML-0374";
+    public override string[] Languages => ["js", "ts"];
+}
+
+public sealed class UnusedParameterRulePython : UnusedParameterRule
+{
+    public override string Key => "QG-PY-SML-0253";
+    public override string[] Languages => ["py"];
+}
+
+public sealed class UnusedParameterRulePhp : UnusedParameterRule
+{
+    public override string Key => "QG-PP-SML-0118";
+    public override string[] Languages => ["php"];
+}
+
+public sealed class UnusedParameterRuleGo : UnusedParameterRule
+{
+    public override string Key => "QG-GO-SML-0032";
+    public override string[] Languages => ["go"];
+}
+
+public sealed class UnusedParameterRuleRuby : UnusedParameterRule
+{
+    public override string Key => "QG-RB-SML-0041";
+    public override string[] Languages => ["rb"];
+}
+
+public sealed class UnusedParameterRuleSwift : UnusedParameterRule
+{
+    public override string Key => "QG-SW-SML-0025";
+    public override string[] Languages => ["swift"];
+}
+
+public sealed class UnusedParameterRuleCss : UnusedParameterRule
+{
+    public override string Key => "QG-CSS-SML-0046";
+    public override string[] Languages => ["css"];
+}
+
+public sealed class UnusedParameterRuleHtml : UnusedParameterRule
+{
+    public override string Key => "QG-HTML-SML-0118";
+    public override string[] Languages => ["html"];
+}
+
+public sealed class UnusedParameterRuleXml : UnusedParameterRule
+{
+    public override string Key => "QG-XML-SML-0033";
+    public override string[] Languages => ["xml"];
+}
+
+public sealed class UnusedParameterRuleTerraform : UnusedParameterRule
+{
+    public override string Key => "QG-TF-SML-0025";
+    public override string[] Languages => ["tf"];
+}
+
+public sealed class UnusedParameterRuleDockerfile : UnusedParameterRule
+{
+    public override string Key => "QG-DK-SML-0039";
+    public override string[] Languages => ["dk"];
+}
+
+public sealed class UnusedParameterRuleKubernetes : UnusedParameterRule
+{
+    public override string Key => "QG-K8-SML-0033";
+    public override string[] Languages => ["k8"];
+}
+
+public sealed class UnusedParameterRuleCloudFormation : UnusedParameterRule
+{
+    public override string Key => "QG-CF-SML-0026";
+    public override string[] Languages => ["cf"];
+}
+
+public sealed class UnusedParameterRuleJson : UnusedParameterRule
+{
+    public override string Key => "QG-JSON-SML-0021";
+    public override string[] Languages => ["json"];
+}
+
+public sealed class UnusedParameterRuleKotlin : UnusedParameterRule
+{
+    public override string Key => "QG-KT-SML-0133";
+    public override string[] Languages => ["kt"];
+}
+
+public sealed class UnusedParameterRuleDart : UnusedParameterRule
+{
+    public override string Key => "QG-DART-SML-0051";
+    public override string[] Languages => ["dart"];
+}
+
+public abstract class MergeableIfRule : StructuralRuleBase
+{
     public override string Name => "Nested conditions that can be merged should be merged";
     public override Severity Severity => Severity.Major;
     public override IssueKind Kind => IssueKind.CodeSmell;
@@ -951,9 +4000,116 @@ public sealed class MergeableIfRule : StructuralRuleBase
     }
 }
 
-public sealed class RedundantNestedBlockRule : StructuralRuleBase
+public sealed class MergeableIfRuleCs : MergeableIfRule
 {
-    public override string Key => "QG-ALL-SML-0014";
+    public override string Key => "QG-CS-SML-0510";
+    public override string[] Languages => ["cs", "vb"];
+}
+
+public sealed class MergeableIfRuleJava : MergeableIfRule
+{
+    public override string Key => "QG-JV-SML-0471";
+    public override string[] Languages => ["java"];
+}
+
+public sealed class MergeableIfRuleKotlin : MergeableIfRule
+{
+    public override string Key => "QG-KT-SML-0093";
+    public override string[] Languages => ["kt"];
+}
+
+public sealed class MergeableIfRuleJs : MergeableIfRule
+{
+    public override string Key => "QG-JS-SML-0387";
+    public override string[] Languages => ["js", "ts"];
+}
+
+public sealed class MergeableIfRulePython : MergeableIfRule
+{
+    public override string Key => "QG-PY-SML-0266";
+    public override string[] Languages => ["py"];
+}
+
+public sealed class MergeableIfRulePhp : MergeableIfRule
+{
+    public override string Key => "QG-PP-SML-0131";
+    public override string[] Languages => ["php"];
+}
+
+public sealed class MergeableIfRuleGo : MergeableIfRule
+{
+    public override string Key => "QG-GO-SML-0045";
+    public override string[] Languages => ["go"];
+}
+
+public sealed class MergeableIfRuleDart : MergeableIfRule
+{
+    public override string Key => "QG-DART-SML-0010";
+    public override string[] Languages => ["dart"];
+}
+
+public sealed class MergeableIfRuleRuby : MergeableIfRule
+{
+    public override string Key => "QG-RB-SML-0042";
+    public override string[] Languages => ["rb"];
+}
+
+public sealed class MergeableIfRuleSwift : MergeableIfRule
+{
+    public override string Key => "QG-SW-SML-0026";
+    public override string[] Languages => ["swift"];
+}
+
+public sealed class MergeableIfRuleCss : MergeableIfRule
+{
+    public override string Key => "QG-CSS-SML-0047";
+    public override string[] Languages => ["css"];
+}
+
+public sealed class MergeableIfRuleHtml : MergeableIfRule
+{
+    public override string Key => "QG-HTML-SML-0119";
+    public override string[] Languages => ["html"];
+}
+
+public sealed class MergeableIfRuleXml : MergeableIfRule
+{
+    public override string Key => "QG-XML-SML-0034";
+    public override string[] Languages => ["xml"];
+}
+
+public sealed class MergeableIfRuleTerraform : MergeableIfRule
+{
+    public override string Key => "QG-TF-SML-0026";
+    public override string[] Languages => ["tf"];
+}
+
+public sealed class MergeableIfRuleDockerfile : MergeableIfRule
+{
+    public override string Key => "QG-DK-SML-0040";
+    public override string[] Languages => ["dk"];
+}
+
+public sealed class MergeableIfRuleKubernetes : MergeableIfRule
+{
+    public override string Key => "QG-K8-SML-0034";
+    public override string[] Languages => ["k8"];
+}
+
+public sealed class MergeableIfRuleCloudFormation : MergeableIfRule
+{
+    public override string Key => "QG-CF-SML-0027";
+    public override string[] Languages => ["cf"];
+}
+
+public sealed class MergeableIfRuleJson : MergeableIfRule
+{
+    public override string Key => "QG-JSON-SML-0022";
+    public override string[] Languages => ["json"];
+}
+
+public abstract class RedundantNestedBlockRule : StructuralRuleBase
+{
     public override string Name => "Blocks should not be nested without a reason";
     public override Severity Severity => Severity.Minor;
     public override IssueKind Kind => IssueKind.CodeSmell;
@@ -974,9 +4130,116 @@ public sealed class RedundantNestedBlockRule : StructuralRuleBase
     }
 }
 
-public sealed class IfChainWithoutElseRule : StructuralRuleBase
+public sealed class RedundantNestedBlockRuleCs : RedundantNestedBlockRule
 {
-    public override string Key => "QG-ALL-SML-0015";
+    public override string Key => "QG-CS-SML-0511";
+    public override string[] Languages => ["cs", "vb"];
+}
+
+public sealed class RedundantNestedBlockRuleJava : RedundantNestedBlockRule
+{
+    public override string Key => "QG-JV-SML-0472";
+    public override string[] Languages => ["java"];
+}
+
+public sealed class RedundantNestedBlockRuleKotlin : RedundantNestedBlockRule
+{
+    public override string Key => "QG-KT-SML-0094";
+    public override string[] Languages => ["kt"];
+}
+
+public sealed class RedundantNestedBlockRuleJs : RedundantNestedBlockRule
+{
+    public override string Key => "QG-JS-SML-0388";
+    public override string[] Languages => ["js", "ts"];
+}
+
+public sealed class RedundantNestedBlockRulePython : RedundantNestedBlockRule
+{
+    public override string Key => "QG-PY-SML-0267";
+    public override string[] Languages => ["py"];
+}
+
+public sealed class RedundantNestedBlockRulePhp : RedundantNestedBlockRule
+{
+    public override string Key => "QG-PP-SML-0132";
+    public override string[] Languages => ["php"];
+}
+
+public sealed class RedundantNestedBlockRuleGo : RedundantNestedBlockRule
+{
+    public override string Key => "QG-GO-SML-0046";
+    public override string[] Languages => ["go"];
+}
+
+public sealed class RedundantNestedBlockRuleDart : RedundantNestedBlockRule
+{
+    public override string Key => "QG-DART-SML-0011";
+    public override string[] Languages => ["dart"];
+}
+
+public sealed class RedundantNestedBlockRuleRuby : RedundantNestedBlockRule
+{
+    public override string Key => "QG-RB-SML-0043";
+    public override string[] Languages => ["rb"];
+}
+
+public sealed class RedundantNestedBlockRuleSwift : RedundantNestedBlockRule
+{
+    public override string Key => "QG-SW-SML-0027";
+    public override string[] Languages => ["swift"];
+}
+
+public sealed class RedundantNestedBlockRuleCss : RedundantNestedBlockRule
+{
+    public override string Key => "QG-CSS-SML-0048";
+    public override string[] Languages => ["css"];
+}
+
+public sealed class RedundantNestedBlockRuleHtml : RedundantNestedBlockRule
+{
+    public override string Key => "QG-HTML-SML-0120";
+    public override string[] Languages => ["html"];
+}
+
+public sealed class RedundantNestedBlockRuleXml : RedundantNestedBlockRule
+{
+    public override string Key => "QG-XML-SML-0035";
+    public override string[] Languages => ["xml"];
+}
+
+public sealed class RedundantNestedBlockRuleTerraform : RedundantNestedBlockRule
+{
+    public override string Key => "QG-TF-SML-0027";
+    public override string[] Languages => ["tf"];
+}
+
+public sealed class RedundantNestedBlockRuleDockerfile : RedundantNestedBlockRule
+{
+    public override string Key => "QG-DK-SML-0041";
+    public override string[] Languages => ["dk"];
+}
+
+public sealed class RedundantNestedBlockRuleKubernetes : RedundantNestedBlockRule
+{
+    public override string Key => "QG-K8-SML-0035";
+    public override string[] Languages => ["k8"];
+}
+
+public sealed class RedundantNestedBlockRuleCloudFormation : RedundantNestedBlockRule
+{
+    public override string Key => "QG-CF-SML-0028";
+    public override string[] Languages => ["cf"];
+}
+
+public sealed class RedundantNestedBlockRuleJson : RedundantNestedBlockRule
+{
+    public override string Key => "QG-JSON-SML-0023";
+    public override string[] Languages => ["json"];
+}
+
+public abstract class IfChainWithoutElseRule : StructuralRuleBase
+{
     public override string Name => "Condition chains should end with a final branch";
     public override Severity Severity => Severity.Major;
     public override IssueKind Kind => IssueKind.CodeSmell;
@@ -1000,11 +4263,117 @@ public sealed class IfChainWithoutElseRule : StructuralRuleBase
     }
 }
 
-public sealed class ComplexConditionRule : StructuralRuleBase
+public sealed class IfChainWithoutElseRuleCs : IfChainWithoutElseRule
+{
+    public override string Key => "QG-CS-SML-0512";
+    public override string[] Languages => ["cs", "vb"];
+}
+
+public sealed class IfChainWithoutElseRuleJava : IfChainWithoutElseRule
+{
+    public override string Key => "QG-JV-SML-0473";
+    public override string[] Languages => ["java"];
+}
+
+public sealed class IfChainWithoutElseRuleKotlin : IfChainWithoutElseRule
+{
+    public override string Key => "QG-KT-SML-0095";
+    public override string[] Languages => ["kt"];
+}
+
+public sealed class IfChainWithoutElseRuleJs : IfChainWithoutElseRule
+{
+    public override string Key => "QG-JS-SML-0389";
+    public override string[] Languages => ["js", "ts"];
+}
+
+public sealed class IfChainWithoutElseRulePython : IfChainWithoutElseRule
+{
+    public override string Key => "QG-PY-SML-0268";
+    public override string[] Languages => ["py"];
+}
+
+public sealed class IfChainWithoutElseRulePhp : IfChainWithoutElseRule
+{
+    public override string Key => "QG-PP-SML-0133";
+    public override string[] Languages => ["php"];
+}
+
+public sealed class IfChainWithoutElseRuleGo : IfChainWithoutElseRule
+{
+    public override string Key => "QG-GO-SML-0047";
+    public override string[] Languages => ["go"];
+}
+
+public sealed class IfChainWithoutElseRuleDart : IfChainWithoutElseRule
+{
+    public override string Key => "QG-DART-SML-0012";
+    public override string[] Languages => ["dart"];
+}
+
+public sealed class IfChainWithoutElseRuleRuby : IfChainWithoutElseRule
+{
+    public override string Key => "QG-RB-SML-0044";
+    public override string[] Languages => ["rb"];
+}
+
+public sealed class IfChainWithoutElseRuleSwift : IfChainWithoutElseRule
+{
+    public override string Key => "QG-SW-SML-0028";
+    public override string[] Languages => ["swift"];
+}
+
+public sealed class IfChainWithoutElseRuleCss : IfChainWithoutElseRule
+{
+    public override string Key => "QG-CSS-SML-0049";
+    public override string[] Languages => ["css"];
+}
+
+public sealed class IfChainWithoutElseRuleHtml : IfChainWithoutElseRule
+{
+    public override string Key => "QG-HTML-SML-0121";
+    public override string[] Languages => ["html"];
+}
+
+public sealed class IfChainWithoutElseRuleXml : IfChainWithoutElseRule
+{
+    public override string Key => "QG-XML-SML-0036";
+    public override string[] Languages => ["xml"];
+}
+
+public sealed class IfChainWithoutElseRuleTerraform : IfChainWithoutElseRule
+{
+    public override string Key => "QG-TF-SML-0028";
+    public override string[] Languages => ["tf"];
+}
+
+public sealed class IfChainWithoutElseRuleDockerfile : IfChainWithoutElseRule
+{
+    public override string Key => "QG-DK-SML-0042";
+    public override string[] Languages => ["dk"];
+}
+
+public sealed class IfChainWithoutElseRuleKubernetes : IfChainWithoutElseRule
+{
+    public override string Key => "QG-K8-SML-0036";
+    public override string[] Languages => ["k8"];
+}
+
+public sealed class IfChainWithoutElseRuleCloudFormation : IfChainWithoutElseRule
+{
+    public override string Key => "QG-CF-SML-0029";
+    public override string[] Languages => ["cf"];
+}
+
+public sealed class IfChainWithoutElseRuleJson : IfChainWithoutElseRule
+{
+    public override string Key => "QG-JSON-SML-0024";
+    public override string[] Languages => ["json"];
+}
+
+public abstract class ComplexConditionRule : StructuralRuleBase
 {
     private const int MaxOperators = 4;
-
-    public override string Key => "QG-ALL-SML-0016";
     public override string Name => "Conditions should not combine too many operators";
     public override Severity Severity => Severity.Major;
     public override IssueKind Kind => IssueKind.CodeSmell;
@@ -1026,9 +4395,116 @@ public sealed class ComplexConditionRule : StructuralRuleBase
     }
 }
 
-public sealed class NestedMatchRule : StructuralRuleBase
+public sealed class ComplexConditionRuleCs : ComplexConditionRule
 {
-    public override string Key => "QG-ALL-SML-0017";
+    public override string Key => "QG-CS-SML-0513";
+    public override string[] Languages => ["cs", "vb"];
+}
+
+public sealed class ComplexConditionRuleJava : ComplexConditionRule
+{
+    public override string Key => "QG-JV-SML-0474";
+    public override string[] Languages => ["java"];
+}
+
+public sealed class ComplexConditionRuleKotlin : ComplexConditionRule
+{
+    public override string Key => "QG-KT-SML-0096";
+    public override string[] Languages => ["kt"];
+}
+
+public sealed class ComplexConditionRuleJs : ComplexConditionRule
+{
+    public override string Key => "QG-JS-SML-0390";
+    public override string[] Languages => ["js", "ts"];
+}
+
+public sealed class ComplexConditionRulePython : ComplexConditionRule
+{
+    public override string Key => "QG-PY-SML-0269";
+    public override string[] Languages => ["py"];
+}
+
+public sealed class ComplexConditionRulePhp : ComplexConditionRule
+{
+    public override string Key => "QG-PP-SML-0134";
+    public override string[] Languages => ["php"];
+}
+
+public sealed class ComplexConditionRuleGo : ComplexConditionRule
+{
+    public override string Key => "QG-GO-SML-0048";
+    public override string[] Languages => ["go"];
+}
+
+public sealed class ComplexConditionRuleDart : ComplexConditionRule
+{
+    public override string Key => "QG-DART-SML-0013";
+    public override string[] Languages => ["dart"];
+}
+
+public sealed class ComplexConditionRuleRuby : ComplexConditionRule
+{
+    public override string Key => "QG-RB-SML-0045";
+    public override string[] Languages => ["rb"];
+}
+
+public sealed class ComplexConditionRuleSwift : ComplexConditionRule
+{
+    public override string Key => "QG-SW-SML-0029";
+    public override string[] Languages => ["swift"];
+}
+
+public sealed class ComplexConditionRuleCss : ComplexConditionRule
+{
+    public override string Key => "QG-CSS-SML-0050";
+    public override string[] Languages => ["css"];
+}
+
+public sealed class ComplexConditionRuleHtml : ComplexConditionRule
+{
+    public override string Key => "QG-HTML-SML-0122";
+    public override string[] Languages => ["html"];
+}
+
+public sealed class ComplexConditionRuleXml : ComplexConditionRule
+{
+    public override string Key => "QG-XML-SML-0037";
+    public override string[] Languages => ["xml"];
+}
+
+public sealed class ComplexConditionRuleTerraform : ComplexConditionRule
+{
+    public override string Key => "QG-TF-SML-0029";
+    public override string[] Languages => ["tf"];
+}
+
+public sealed class ComplexConditionRuleDockerfile : ComplexConditionRule
+{
+    public override string Key => "QG-DK-SML-0043";
+    public override string[] Languages => ["dk"];
+}
+
+public sealed class ComplexConditionRuleKubernetes : ComplexConditionRule
+{
+    public override string Key => "QG-K8-SML-0037";
+    public override string[] Languages => ["k8"];
+}
+
+public sealed class ComplexConditionRuleCloudFormation : ComplexConditionRule
+{
+    public override string Key => "QG-CF-SML-0030";
+    public override string[] Languages => ["cf"];
+}
+
+public sealed class ComplexConditionRuleJson : ComplexConditionRule
+{
+    public override string Key => "QG-JSON-SML-0025";
+    public override string[] Languages => ["json"];
+}
+
+public abstract class NestedMatchRule : StructuralRuleBase
+{
     public override string Name => "Multi-way branches should not be nested";
     public override Severity Severity => Severity.Major;
     public override IssueKind Kind => IssueKind.CodeSmell;
@@ -1046,9 +4522,116 @@ public sealed class NestedMatchRule : StructuralRuleBase
     }
 }
 
-public sealed class MissingBracesRule : StructuralRuleBase
+public sealed class NestedMatchRuleCs : NestedMatchRule
 {
-    public override string Key => "QG-ALL-CNV-0005";
+    public override string Key => "QG-CS-SML-0514";
+    public override string[] Languages => ["cs", "vb"];
+}
+
+public sealed class NestedMatchRuleJava : NestedMatchRule
+{
+    public override string Key => "QG-JV-SML-0475";
+    public override string[] Languages => ["java"];
+}
+
+public sealed class NestedMatchRuleKotlin : NestedMatchRule
+{
+    public override string Key => "QG-KT-SML-0097";
+    public override string[] Languages => ["kt"];
+}
+
+public sealed class NestedMatchRuleJs : NestedMatchRule
+{
+    public override string Key => "QG-JS-SML-0391";
+    public override string[] Languages => ["js", "ts"];
+}
+
+public sealed class NestedMatchRulePython : NestedMatchRule
+{
+    public override string Key => "QG-PY-SML-0270";
+    public override string[] Languages => ["py"];
+}
+
+public sealed class NestedMatchRulePhp : NestedMatchRule
+{
+    public override string Key => "QG-PP-SML-0135";
+    public override string[] Languages => ["php"];
+}
+
+public sealed class NestedMatchRuleGo : NestedMatchRule
+{
+    public override string Key => "QG-GO-SML-0049";
+    public override string[] Languages => ["go"];
+}
+
+public sealed class NestedMatchRuleDart : NestedMatchRule
+{
+    public override string Key => "QG-DART-SML-0014";
+    public override string[] Languages => ["dart"];
+}
+
+public sealed class NestedMatchRuleRuby : NestedMatchRule
+{
+    public override string Key => "QG-RB-SML-0046";
+    public override string[] Languages => ["rb"];
+}
+
+public sealed class NestedMatchRuleSwift : NestedMatchRule
+{
+    public override string Key => "QG-SW-SML-0030";
+    public override string[] Languages => ["swift"];
+}
+
+public sealed class NestedMatchRuleCss : NestedMatchRule
+{
+    public override string Key => "QG-CSS-SML-0051";
+    public override string[] Languages => ["css"];
+}
+
+public sealed class NestedMatchRuleHtml : NestedMatchRule
+{
+    public override string Key => "QG-HTML-SML-0123";
+    public override string[] Languages => ["html"];
+}
+
+public sealed class NestedMatchRuleXml : NestedMatchRule
+{
+    public override string Key => "QG-XML-SML-0038";
+    public override string[] Languages => ["xml"];
+}
+
+public sealed class NestedMatchRuleTerraform : NestedMatchRule
+{
+    public override string Key => "QG-TF-SML-0030";
+    public override string[] Languages => ["tf"];
+}
+
+public sealed class NestedMatchRuleDockerfile : NestedMatchRule
+{
+    public override string Key => "QG-DK-SML-0044";
+    public override string[] Languages => ["dk"];
+}
+
+public sealed class NestedMatchRuleKubernetes : NestedMatchRule
+{
+    public override string Key => "QG-K8-SML-0038";
+    public override string[] Languages => ["k8"];
+}
+
+public sealed class NestedMatchRuleCloudFormation : NestedMatchRule
+{
+    public override string Key => "QG-CF-SML-0031";
+    public override string[] Languages => ["cf"];
+}
+
+public sealed class NestedMatchRuleJson : NestedMatchRule
+{
+    public override string Key => "QG-JSON-SML-0026";
+    public override string[] Languages => ["json"];
+}
+
+public abstract class MissingBracesRule : StructuralRuleBase
+{
     public override string Name => "Control structures should always use a block";
     public override Severity Severity => Severity.Major;
     public override IssueKind Kind => IssueKind.CodeSmell;
@@ -1075,12 +4658,118 @@ public sealed class MissingBracesRule : StructuralRuleBase
     }
 }
 
+public sealed class MissingBracesRuleCs : MissingBracesRule
+{
+    public override string Key => "QG-CS-CNV-0015";
+    public override string[] Languages => ["cs", "vb"];
+}
 
-public sealed class TooManyReturnsRule : StructuralRuleBase
+public sealed class MissingBracesRuleJava : MissingBracesRule
+{
+    public override string Key => "QG-JV-CNV-0007";
+    public override string[] Languages => ["java"];
+}
+
+public sealed class MissingBracesRuleKotlin : MissingBracesRule
+{
+    public override string Key => "QG-KT-CNV-0009";
+    public override string[] Languages => ["kt"];
+}
+
+public sealed class MissingBracesRuleJs : MissingBracesRule
+{
+    public override string Key => "QG-JS-CNV-0007";
+    public override string[] Languages => ["js", "ts"];
+}
+
+public sealed class MissingBracesRulePython : MissingBracesRule
+{
+    public override string Key => "QG-PY-CNV-0014";
+    public override string[] Languages => ["py"];
+}
+
+public sealed class MissingBracesRulePhp : MissingBracesRule
+{
+    public override string Key => "QG-PP-CNV-0005";
+    public override string[] Languages => ["php"];
+}
+
+public sealed class MissingBracesRuleGo : MissingBracesRule
+{
+    public override string Key => "QG-GO-CNV-0006";
+    public override string[] Languages => ["go"];
+}
+
+public sealed class MissingBracesRuleDart : MissingBracesRule
+{
+    public override string Key => "QG-DART-CNV-0005";
+    public override string[] Languages => ["dart"];
+}
+
+public sealed class MissingBracesRuleRuby : MissingBracesRule
+{
+    public override string Key => "QG-RB-CNV-0003";
+    public override string[] Languages => ["rb"];
+}
+
+public sealed class MissingBracesRuleSwift : MissingBracesRule
+{
+    public override string Key => "QG-SW-CNV-0003";
+    public override string[] Languages => ["swift"];
+}
+
+public sealed class MissingBracesRuleCss : MissingBracesRule
+{
+    public override string Key => "QG-CSS-CNV-0003";
+    public override string[] Languages => ["css"];
+}
+
+public sealed class MissingBracesRuleHtml : MissingBracesRule
+{
+    public override string Key => "QG-HTML-CNV-0003";
+    public override string[] Languages => ["html"];
+}
+
+public sealed class MissingBracesRuleXml : MissingBracesRule
+{
+    public override string Key => "QG-XML-CNV-0002";
+    public override string[] Languages => ["xml"];
+}
+
+public sealed class MissingBracesRuleTerraform : MissingBracesRule
+{
+    public override string Key => "QG-TF-CNV-0002";
+    public override string[] Languages => ["tf"];
+}
+
+public sealed class MissingBracesRuleDockerfile : MissingBracesRule
+{
+    public override string Key => "QG-DK-CNV-0004";
+    public override string[] Languages => ["dk"];
+}
+
+public sealed class MissingBracesRuleKubernetes : MissingBracesRule
+{
+    public override string Key => "QG-K8-CNV-0003";
+    public override string[] Languages => ["k8"];
+}
+
+public sealed class MissingBracesRuleCloudFormation : MissingBracesRule
+{
+    public override string Key => "QG-CF-CNV-0002";
+    public override string[] Languages => ["cf"];
+}
+
+public sealed class MissingBracesRuleJson : MissingBracesRule
+{
+    public override string Key => "QG-JSON-CNV-0002";
+    public override string[] Languages => ["json"];
+}
+
+
+public abstract class TooManyReturnsRule : StructuralRuleBase
 {
     private const int Max = 6;
-
-    public override string Key => "QG-ALL-SML-0018";
     public override string Name => "Functions should not have too many exit points";
     public override Severity Severity => Severity.Major;
     public override IssueKind Kind => IssueKind.CodeSmell;
@@ -1103,9 +4792,116 @@ public sealed class TooManyReturnsRule : StructuralRuleBase
     }
 }
 
-public sealed class EmptyCatchRule : StructuralRuleBase
+public sealed class TooManyReturnsRuleCs : TooManyReturnsRule
 {
-    public override string Key => "QG-ALL-SML-0020";
+    public override string Key => "QG-CS-SML-0515";
+    public override string[] Languages => ["cs", "vb"];
+}
+
+public sealed class TooManyReturnsRuleJava : TooManyReturnsRule
+{
+    public override string Key => "QG-JV-SML-0476";
+    public override string[] Languages => ["java"];
+}
+
+public sealed class TooManyReturnsRuleKotlin : TooManyReturnsRule
+{
+    public override string Key => "QG-KT-SML-0098";
+    public override string[] Languages => ["kt"];
+}
+
+public sealed class TooManyReturnsRuleJs : TooManyReturnsRule
+{
+    public override string Key => "QG-JS-SML-0392";
+    public override string[] Languages => ["js", "ts"];
+}
+
+public sealed class TooManyReturnsRulePython : TooManyReturnsRule
+{
+    public override string Key => "QG-PY-SML-0271";
+    public override string[] Languages => ["py"];
+}
+
+public sealed class TooManyReturnsRulePhp : TooManyReturnsRule
+{
+    public override string Key => "QG-PP-SML-0136";
+    public override string[] Languages => ["php"];
+}
+
+public sealed class TooManyReturnsRuleGo : TooManyReturnsRule
+{
+    public override string Key => "QG-GO-SML-0050";
+    public override string[] Languages => ["go"];
+}
+
+public sealed class TooManyReturnsRuleDart : TooManyReturnsRule
+{
+    public override string Key => "QG-DART-SML-0015";
+    public override string[] Languages => ["dart"];
+}
+
+public sealed class TooManyReturnsRuleRuby : TooManyReturnsRule
+{
+    public override string Key => "QG-RB-SML-0047";
+    public override string[] Languages => ["rb"];
+}
+
+public sealed class TooManyReturnsRuleSwift : TooManyReturnsRule
+{
+    public override string Key => "QG-SW-SML-0031";
+    public override string[] Languages => ["swift"];
+}
+
+public sealed class TooManyReturnsRuleCss : TooManyReturnsRule
+{
+    public override string Key => "QG-CSS-SML-0052";
+    public override string[] Languages => ["css"];
+}
+
+public sealed class TooManyReturnsRuleHtml : TooManyReturnsRule
+{
+    public override string Key => "QG-HTML-SML-0124";
+    public override string[] Languages => ["html"];
+}
+
+public sealed class TooManyReturnsRuleXml : TooManyReturnsRule
+{
+    public override string Key => "QG-XML-SML-0039";
+    public override string[] Languages => ["xml"];
+}
+
+public sealed class TooManyReturnsRuleTerraform : TooManyReturnsRule
+{
+    public override string Key => "QG-TF-SML-0031";
+    public override string[] Languages => ["tf"];
+}
+
+public sealed class TooManyReturnsRuleDockerfile : TooManyReturnsRule
+{
+    public override string Key => "QG-DK-SML-0045";
+    public override string[] Languages => ["dk"];
+}
+
+public sealed class TooManyReturnsRuleKubernetes : TooManyReturnsRule
+{
+    public override string Key => "QG-K8-SML-0039";
+    public override string[] Languages => ["k8"];
+}
+
+public sealed class TooManyReturnsRuleCloudFormation : TooManyReturnsRule
+{
+    public override string Key => "QG-CF-SML-0032";
+    public override string[] Languages => ["cf"];
+}
+
+public sealed class TooManyReturnsRuleJson : TooManyReturnsRule
+{
+    public override string Key => "QG-JSON-SML-0027";
+    public override string[] Languages => ["json"];
+}
+
+public abstract class EmptyCatchRule : StructuralRuleBase
+{
     public override string Name => "Caught exceptions should not be ignored";
     public override Severity Severity => Severity.Major;
     public override IssueKind Kind => IssueKind.CodeSmell;
@@ -1132,9 +4928,116 @@ public sealed class EmptyCatchRule : StructuralRuleBase
     }
 }
 
-public sealed class BooleanLiteralComparisonRule : StructuralRuleBase
+public sealed class EmptyCatchRuleCs : EmptyCatchRule
 {
-    public override string Key => "QG-ALL-SML-0021";
+    public override string Key => "QG-CS-SML-0516";
+    public override string[] Languages => ["cs", "vb"];
+}
+
+public sealed class EmptyCatchRuleJava : EmptyCatchRule
+{
+    public override string Key => "QG-JV-SML-0477";
+    public override string[] Languages => ["java"];
+}
+
+public sealed class EmptyCatchRuleKotlin : EmptyCatchRule
+{
+    public override string Key => "QG-KT-SML-0099";
+    public override string[] Languages => ["kt"];
+}
+
+public sealed class EmptyCatchRuleJs : EmptyCatchRule
+{
+    public override string Key => "QG-JS-SML-0393";
+    public override string[] Languages => ["js", "ts"];
+}
+
+public sealed class EmptyCatchRulePython : EmptyCatchRule
+{
+    public override string Key => "QG-PY-SML-0272";
+    public override string[] Languages => ["py"];
+}
+
+public sealed class EmptyCatchRulePhp : EmptyCatchRule
+{
+    public override string Key => "QG-PP-SML-0137";
+    public override string[] Languages => ["php"];
+}
+
+public sealed class EmptyCatchRuleGo : EmptyCatchRule
+{
+    public override string Key => "QG-GO-SML-0051";
+    public override string[] Languages => ["go"];
+}
+
+public sealed class EmptyCatchRuleDart : EmptyCatchRule
+{
+    public override string Key => "QG-DART-SML-0016";
+    public override string[] Languages => ["dart"];
+}
+
+public sealed class EmptyCatchRuleRuby : EmptyCatchRule
+{
+    public override string Key => "QG-RB-SML-0048";
+    public override string[] Languages => ["rb"];
+}
+
+public sealed class EmptyCatchRuleSwift : EmptyCatchRule
+{
+    public override string Key => "QG-SW-SML-0032";
+    public override string[] Languages => ["swift"];
+}
+
+public sealed class EmptyCatchRuleCss : EmptyCatchRule
+{
+    public override string Key => "QG-CSS-SML-0053";
+    public override string[] Languages => ["css"];
+}
+
+public sealed class EmptyCatchRuleHtml : EmptyCatchRule
+{
+    public override string Key => "QG-HTML-SML-0125";
+    public override string[] Languages => ["html"];
+}
+
+public sealed class EmptyCatchRuleXml : EmptyCatchRule
+{
+    public override string Key => "QG-XML-SML-0040";
+    public override string[] Languages => ["xml"];
+}
+
+public sealed class EmptyCatchRuleTerraform : EmptyCatchRule
+{
+    public override string Key => "QG-TF-SML-0032";
+    public override string[] Languages => ["tf"];
+}
+
+public sealed class EmptyCatchRuleDockerfile : EmptyCatchRule
+{
+    public override string Key => "QG-DK-SML-0046";
+    public override string[] Languages => ["dk"];
+}
+
+public sealed class EmptyCatchRuleKubernetes : EmptyCatchRule
+{
+    public override string Key => "QG-K8-SML-0040";
+    public override string[] Languages => ["k8"];
+}
+
+public sealed class EmptyCatchRuleCloudFormation : EmptyCatchRule
+{
+    public override string Key => "QG-CF-SML-0033";
+    public override string[] Languages => ["cf"];
+}
+
+public sealed class EmptyCatchRuleJson : EmptyCatchRule
+{
+    public override string Key => "QG-JSON-SML-0028";
+    public override string[] Languages => ["json"];
+}
+
+public abstract class BooleanLiteralComparisonRule : StructuralRuleBase
+{
     public override string Name => "Boolean values should not be compared with literals";
     public override Severity Severity => Severity.Minor;
     public override IssueKind Kind => IssueKind.CodeSmell;
@@ -1178,11 +5081,117 @@ public sealed class BooleanLiteralComparisonRule : StructuralRuleBase
     }
 }
 
-public sealed class MagicNumberRule : StructuralRuleBase
+public sealed class BooleanLiteralComparisonRuleCs : BooleanLiteralComparisonRule
+{
+    public override string Key => "QG-CS-SML-0517";
+    public override string[] Languages => ["cs", "vb"];
+}
+
+public sealed class BooleanLiteralComparisonRuleJava : BooleanLiteralComparisonRule
+{
+    public override string Key => "QG-JV-SML-0478";
+    public override string[] Languages => ["java"];
+}
+
+public sealed class BooleanLiteralComparisonRuleKotlin : BooleanLiteralComparisonRule
+{
+    public override string Key => "QG-KT-SML-0100";
+    public override string[] Languages => ["kt"];
+}
+
+public sealed class BooleanLiteralComparisonRuleJs : BooleanLiteralComparisonRule
+{
+    public override string Key => "QG-JS-SML-0394";
+    public override string[] Languages => ["js", "ts"];
+}
+
+public sealed class BooleanLiteralComparisonRulePython : BooleanLiteralComparisonRule
+{
+    public override string Key => "QG-PY-SML-0273";
+    public override string[] Languages => ["py"];
+}
+
+public sealed class BooleanLiteralComparisonRulePhp : BooleanLiteralComparisonRule
+{
+    public override string Key => "QG-PP-SML-0138";
+    public override string[] Languages => ["php"];
+}
+
+public sealed class BooleanLiteralComparisonRuleGo : BooleanLiteralComparisonRule
+{
+    public override string Key => "QG-GO-SML-0052";
+    public override string[] Languages => ["go"];
+}
+
+public sealed class BooleanLiteralComparisonRuleDart : BooleanLiteralComparisonRule
+{
+    public override string Key => "QG-DART-SML-0017";
+    public override string[] Languages => ["dart"];
+}
+
+public sealed class BooleanLiteralComparisonRuleRuby : BooleanLiteralComparisonRule
+{
+    public override string Key => "QG-RB-SML-0049";
+    public override string[] Languages => ["rb"];
+}
+
+public sealed class BooleanLiteralComparisonRuleSwift : BooleanLiteralComparisonRule
+{
+    public override string Key => "QG-SW-SML-0033";
+    public override string[] Languages => ["swift"];
+}
+
+public sealed class BooleanLiteralComparisonRuleCss : BooleanLiteralComparisonRule
+{
+    public override string Key => "QG-CSS-SML-0054";
+    public override string[] Languages => ["css"];
+}
+
+public sealed class BooleanLiteralComparisonRuleHtml : BooleanLiteralComparisonRule
+{
+    public override string Key => "QG-HTML-SML-0126";
+    public override string[] Languages => ["html"];
+}
+
+public sealed class BooleanLiteralComparisonRuleXml : BooleanLiteralComparisonRule
+{
+    public override string Key => "QG-XML-SML-0041";
+    public override string[] Languages => ["xml"];
+}
+
+public sealed class BooleanLiteralComparisonRuleTerraform : BooleanLiteralComparisonRule
+{
+    public override string Key => "QG-TF-SML-0033";
+    public override string[] Languages => ["tf"];
+}
+
+public sealed class BooleanLiteralComparisonRuleDockerfile : BooleanLiteralComparisonRule
+{
+    public override string Key => "QG-DK-SML-0047";
+    public override string[] Languages => ["dk"];
+}
+
+public sealed class BooleanLiteralComparisonRuleKubernetes : BooleanLiteralComparisonRule
+{
+    public override string Key => "QG-K8-SML-0041";
+    public override string[] Languages => ["k8"];
+}
+
+public sealed class BooleanLiteralComparisonRuleCloudFormation : BooleanLiteralComparisonRule
+{
+    public override string Key => "QG-CF-SML-0034";
+    public override string[] Languages => ["cf"];
+}
+
+public sealed class BooleanLiteralComparisonRuleJson : BooleanLiteralComparisonRule
+{
+    public override string Key => "QG-JSON-SML-0029";
+    public override string[] Languages => ["json"];
+}
+
+public abstract class MagicNumberRule : StructuralRuleBase
 {
     private static readonly string[] Accepted = ["0", "1", "2", "-1", "100", "1000"];
-
-    public override string Key => "QG-ALL-SML-0022";
     public override string Name => "Numbers should be named when their meaning is not obvious";
     public override Severity Severity => Severity.Minor;
     public override IssueKind Kind => IssueKind.CodeSmell;
@@ -1210,9 +5219,116 @@ public sealed class MagicNumberRule : StructuralRuleBase
     }
 }
 
-public sealed class NestedTernaryRule : StructuralRuleBase
+public sealed class MagicNumberRuleCs : MagicNumberRule
 {
-    public override string Key => "QG-ALL-SML-0023";
+    public override string Key => "QG-CS-SML-0498";
+    public override string[] Languages => ["cs", "vb"];
+}
+
+public sealed class MagicNumberRuleJava : MagicNumberRule
+{
+    public override string Key => "QG-JV-SML-0459";
+    public override string[] Languages => ["java"];
+}
+
+public sealed class MagicNumberRuleJs : MagicNumberRule
+{
+    public override string Key => "QG-JS-SML-0375";
+    public override string[] Languages => ["js", "ts"];
+}
+
+public sealed class MagicNumberRulePython : MagicNumberRule
+{
+    public override string Key => "QG-PY-SML-0254";
+    public override string[] Languages => ["py"];
+}
+
+public sealed class MagicNumberRulePhp : MagicNumberRule
+{
+    public override string Key => "QG-PP-SML-0119";
+    public override string[] Languages => ["php"];
+}
+
+public sealed class MagicNumberRuleGo : MagicNumberRule
+{
+    public override string Key => "QG-GO-SML-0033";
+    public override string[] Languages => ["go"];
+}
+
+public sealed class MagicNumberRuleRuby : MagicNumberRule
+{
+    public override string Key => "QG-RB-SML-0050";
+    public override string[] Languages => ["rb"];
+}
+
+public sealed class MagicNumberRuleSwift : MagicNumberRule
+{
+    public override string Key => "QG-SW-SML-0034";
+    public override string[] Languages => ["swift"];
+}
+
+public sealed class MagicNumberRuleCss : MagicNumberRule
+{
+    public override string Key => "QG-CSS-SML-0055";
+    public override string[] Languages => ["css"];
+}
+
+public sealed class MagicNumberRuleHtml : MagicNumberRule
+{
+    public override string Key => "QG-HTML-SML-0127";
+    public override string[] Languages => ["html"];
+}
+
+public sealed class MagicNumberRuleXml : MagicNumberRule
+{
+    public override string Key => "QG-XML-SML-0042";
+    public override string[] Languages => ["xml"];
+}
+
+public sealed class MagicNumberRuleTerraform : MagicNumberRule
+{
+    public override string Key => "QG-TF-SML-0034";
+    public override string[] Languages => ["tf"];
+}
+
+public sealed class MagicNumberRuleDockerfile : MagicNumberRule
+{
+    public override string Key => "QG-DK-SML-0048";
+    public override string[] Languages => ["dk"];
+}
+
+public sealed class MagicNumberRuleKubernetes : MagicNumberRule
+{
+    public override string Key => "QG-K8-SML-0042";
+    public override string[] Languages => ["k8"];
+}
+
+public sealed class MagicNumberRuleCloudFormation : MagicNumberRule
+{
+    public override string Key => "QG-CF-SML-0035";
+    public override string[] Languages => ["cf"];
+}
+
+public sealed class MagicNumberRuleJson : MagicNumberRule
+{
+    public override string Key => "QG-JSON-SML-0030";
+    public override string[] Languages => ["json"];
+}
+
+public sealed class MagicNumberRuleKotlin : MagicNumberRule
+{
+    public override string Key => "QG-KT-SML-0134";
+    public override string[] Languages => ["kt"];
+}
+
+public sealed class MagicNumberRuleDart : MagicNumberRule
+{
+    public override string Key => "QG-DART-SML-0052";
+    public override string[] Languages => ["dart"];
+}
+
+public abstract class NestedTernaryRule : StructuralRuleBase
+{
     public override string Name => "Conditional expressions should not be nested";
     public override Severity Severity => Severity.Major;
     public override IssueKind Kind => IssueKind.CodeSmell;
@@ -1233,12 +5349,118 @@ public sealed class NestedTernaryRule : StructuralRuleBase
     }
 }
 
-public sealed class TooManyMembersRule : StructuralRuleBase
+public sealed class NestedTernaryRuleCs : NestedTernaryRule
+{
+    public override string Key => "QG-CS-SML-0518";
+    public override string[] Languages => ["cs", "vb"];
+}
+
+public sealed class NestedTernaryRuleJava : NestedTernaryRule
+{
+    public override string Key => "QG-JV-SML-0479";
+    public override string[] Languages => ["java"];
+}
+
+public sealed class NestedTernaryRuleKotlin : NestedTernaryRule
+{
+    public override string Key => "QG-KT-SML-0101";
+    public override string[] Languages => ["kt"];
+}
+
+public sealed class NestedTernaryRuleJs : NestedTernaryRule
+{
+    public override string Key => "QG-JS-SML-0395";
+    public override string[] Languages => ["js", "ts"];
+}
+
+public sealed class NestedTernaryRulePython : NestedTernaryRule
+{
+    public override string Key => "QG-PY-SML-0274";
+    public override string[] Languages => ["py"];
+}
+
+public sealed class NestedTernaryRulePhp : NestedTernaryRule
+{
+    public override string Key => "QG-PP-SML-0139";
+    public override string[] Languages => ["php"];
+}
+
+public sealed class NestedTernaryRuleGo : NestedTernaryRule
+{
+    public override string Key => "QG-GO-SML-0053";
+    public override string[] Languages => ["go"];
+}
+
+public sealed class NestedTernaryRuleDart : NestedTernaryRule
+{
+    public override string Key => "QG-DART-SML-0018";
+    public override string[] Languages => ["dart"];
+}
+
+public sealed class NestedTernaryRuleRuby : NestedTernaryRule
+{
+    public override string Key => "QG-RB-SML-0051";
+    public override string[] Languages => ["rb"];
+}
+
+public sealed class NestedTernaryRuleSwift : NestedTernaryRule
+{
+    public override string Key => "QG-SW-SML-0035";
+    public override string[] Languages => ["swift"];
+}
+
+public sealed class NestedTernaryRuleCss : NestedTernaryRule
+{
+    public override string Key => "QG-CSS-SML-0056";
+    public override string[] Languages => ["css"];
+}
+
+public sealed class NestedTernaryRuleHtml : NestedTernaryRule
+{
+    public override string Key => "QG-HTML-SML-0128";
+    public override string[] Languages => ["html"];
+}
+
+public sealed class NestedTernaryRuleXml : NestedTernaryRule
+{
+    public override string Key => "QG-XML-SML-0043";
+    public override string[] Languages => ["xml"];
+}
+
+public sealed class NestedTernaryRuleTerraform : NestedTernaryRule
+{
+    public override string Key => "QG-TF-SML-0035";
+    public override string[] Languages => ["tf"];
+}
+
+public sealed class NestedTernaryRuleDockerfile : NestedTernaryRule
+{
+    public override string Key => "QG-DK-SML-0049";
+    public override string[] Languages => ["dk"];
+}
+
+public sealed class NestedTernaryRuleKubernetes : NestedTernaryRule
+{
+    public override string Key => "QG-K8-SML-0043";
+    public override string[] Languages => ["k8"];
+}
+
+public sealed class NestedTernaryRuleCloudFormation : NestedTernaryRule
+{
+    public override string Key => "QG-CF-SML-0036";
+    public override string[] Languages => ["cf"];
+}
+
+public sealed class NestedTernaryRuleJson : NestedTernaryRule
+{
+    public override string Key => "QG-JSON-SML-0031";
+    public override string[] Languages => ["json"];
+}
+
+public abstract class TooManyMembersRule : StructuralRuleBase
 {
     private const int MaxMethods = 25;
     private const int MaxFields = 20;
-
-    public override string Key => "QG-ALL-SML-0024";
     public override string Name => "Types should not accumulate too many members";
     public override Severity Severity => Severity.Major;
     public override IssueKind Kind => IssueKind.CodeSmell;
@@ -1263,7 +5485,115 @@ public sealed class TooManyMembersRule : StructuralRuleBase
     }
 }
 
-public sealed class TestWithoutAssertionRule : StructuralRuleBase
+public sealed class TooManyMembersRuleCs : TooManyMembersRule
+{
+    public override string Key => "QG-CS-SML-0502";
+    public override string[] Languages => ["cs", "vb"];
+}
+
+public sealed class TooManyMembersRuleJava : TooManyMembersRule
+{
+    public override string Key => "QG-JV-SML-0463";
+    public override string[] Languages => ["java"];
+}
+
+public sealed class TooManyMembersRuleJs : TooManyMembersRule
+{
+    public override string Key => "QG-JS-SML-0379";
+    public override string[] Languages => ["js", "ts"];
+}
+
+public sealed class TooManyMembersRulePython : TooManyMembersRule
+{
+    public override string Key => "QG-PY-SML-0258";
+    public override string[] Languages => ["py"];
+}
+
+public sealed class TooManyMembersRulePhp : TooManyMembersRule
+{
+    public override string Key => "QG-PP-SML-0123";
+    public override string[] Languages => ["php"];
+}
+
+public sealed class TooManyMembersRuleGo : TooManyMembersRule
+{
+    public override string Key => "QG-GO-SML-0037";
+    public override string[] Languages => ["go"];
+}
+
+public sealed class TooManyMembersRuleRuby : TooManyMembersRule
+{
+    public override string Key => "QG-RB-SML-0052";
+    public override string[] Languages => ["rb"];
+}
+
+public sealed class TooManyMembersRuleSwift : TooManyMembersRule
+{
+    public override string Key => "QG-SW-SML-0036";
+    public override string[] Languages => ["swift"];
+}
+
+public sealed class TooManyMembersRuleCss : TooManyMembersRule
+{
+    public override string Key => "QG-CSS-SML-0057";
+    public override string[] Languages => ["css"];
+}
+
+public sealed class TooManyMembersRuleHtml : TooManyMembersRule
+{
+    public override string Key => "QG-HTML-SML-0129";
+    public override string[] Languages => ["html"];
+}
+
+public sealed class TooManyMembersRuleXml : TooManyMembersRule
+{
+    public override string Key => "QG-XML-SML-0044";
+    public override string[] Languages => ["xml"];
+}
+
+public sealed class TooManyMembersRuleTerraform : TooManyMembersRule
+{
+    public override string Key => "QG-TF-SML-0036";
+    public override string[] Languages => ["tf"];
+}
+
+public sealed class TooManyMembersRuleDockerfile : TooManyMembersRule
+{
+    public override string Key => "QG-DK-SML-0050";
+    public override string[] Languages => ["dk"];
+}
+
+public sealed class TooManyMembersRuleKubernetes : TooManyMembersRule
+{
+    public override string Key => "QG-K8-SML-0044";
+    public override string[] Languages => ["k8"];
+}
+
+public sealed class TooManyMembersRuleCloudFormation : TooManyMembersRule
+{
+    public override string Key => "QG-CF-SML-0037";
+    public override string[] Languages => ["cf"];
+}
+
+public sealed class TooManyMembersRuleJson : TooManyMembersRule
+{
+    public override string Key => "QG-JSON-SML-0032";
+    public override string[] Languages => ["json"];
+}
+
+public sealed class TooManyMembersRuleKotlin : TooManyMembersRule
+{
+    public override string Key => "QG-KT-SML-0135";
+    public override string[] Languages => ["kt"];
+}
+
+public sealed class TooManyMembersRuleDart : TooManyMembersRule
+{
+    public override string Key => "QG-DART-SML-0053";
+    public override string[] Languages => ["dart"];
+}
+
+public abstract class TestWithoutAssertionRule : StructuralRuleBase
 {
     private static readonly string[] AssertionNames =
     [
@@ -1273,8 +5603,6 @@ public sealed class TestWithoutAssertionRule : StructuralRuleBase
         "ensuresuccessstatuscode", "received", "musthavehappened", "shouldbe", "shouldsatisfy",
         "matchsnapshot", "approve", "isvalid", "haveoccurred"
     ];
-
-    public override string Key => "QG-ALL-BUG-0008";
     public override string Name => "Tests should verify something";
     public override Severity Severity => Severity.Major;
     public override IssueKind Kind => IssueKind.Bug;
@@ -1334,12 +5662,118 @@ public sealed class TestWithoutAssertionRule : StructuralRuleBase
     }
 }
 
-public sealed class GenericExceptionCaughtRule : StructuralRuleBase
+public sealed class TestWithoutAssertionRuleCs : TestWithoutAssertionRule
+{
+    public override string Key => "QG-CS-BUG-0157";
+    public override string[] Languages => ["cs", "vb"];
+}
+
+public sealed class TestWithoutAssertionRuleJava : TestWithoutAssertionRule
+{
+    public override string Key => "QG-JV-BUG-0211";
+    public override string[] Languages => ["java"];
+}
+
+public sealed class TestWithoutAssertionRuleKotlin : TestWithoutAssertionRule
+{
+    public override string Key => "QG-KT-BUG-0038";
+    public override string[] Languages => ["kt"];
+}
+
+public sealed class TestWithoutAssertionRuleJs : TestWithoutAssertionRule
+{
+    public override string Key => "QG-JS-BUG-0155";
+    public override string[] Languages => ["js", "ts"];
+}
+
+public sealed class TestWithoutAssertionRulePython : TestWithoutAssertionRule
+{
+    public override string Key => "QG-PY-BUG-0161";
+    public override string[] Languages => ["py"];
+}
+
+public sealed class TestWithoutAssertionRulePhp : TestWithoutAssertionRule
+{
+    public override string Key => "QG-PP-BUG-0058";
+    public override string[] Languages => ["php"];
+}
+
+public sealed class TestWithoutAssertionRuleGo : TestWithoutAssertionRule
+{
+    public override string Key => "QG-GO-BUG-0014";
+    public override string[] Languages => ["go"];
+}
+
+public sealed class TestWithoutAssertionRuleDart : TestWithoutAssertionRule
+{
+    public override string Key => "QG-DART-BUG-0012";
+    public override string[] Languages => ["dart"];
+}
+
+public sealed class TestWithoutAssertionRuleRuby : TestWithoutAssertionRule
+{
+    public override string Key => "QG-RB-BUG-0033";
+    public override string[] Languages => ["rb"];
+}
+
+public sealed class TestWithoutAssertionRuleSwift : TestWithoutAssertionRule
+{
+    public override string Key => "QG-SW-BUG-0037";
+    public override string[] Languages => ["swift"];
+}
+
+public sealed class TestWithoutAssertionRuleCss : TestWithoutAssertionRule
+{
+    public override string Key => "QG-CSS-BUG-0062";
+    public override string[] Languages => ["css"];
+}
+
+public sealed class TestWithoutAssertionRuleHtml : TestWithoutAssertionRule
+{
+    public override string Key => "QG-HTML-BUG-0062";
+    public override string[] Languages => ["html"];
+}
+
+public sealed class TestWithoutAssertionRuleXml : TestWithoutAssertionRule
+{
+    public override string Key => "QG-XML-BUG-0037";
+    public override string[] Languages => ["xml"];
+}
+
+public sealed class TestWithoutAssertionRuleTerraform : TestWithoutAssertionRule
+{
+    public override string Key => "QG-TF-BUG-0032";
+    public override string[] Languages => ["tf"];
+}
+
+public sealed class TestWithoutAssertionRuleDockerfile : TestWithoutAssertionRule
+{
+    public override string Key => "QG-DK-BUG-0039";
+    public override string[] Languages => ["dk"];
+}
+
+public sealed class TestWithoutAssertionRuleKubernetes : TestWithoutAssertionRule
+{
+    public override string Key => "QG-K8-BUG-0032";
+    public override string[] Languages => ["k8"];
+}
+
+public sealed class TestWithoutAssertionRuleCloudFormation : TestWithoutAssertionRule
+{
+    public override string Key => "QG-CF-BUG-0032";
+    public override string[] Languages => ["cf"];
+}
+
+public sealed class TestWithoutAssertionRuleJson : TestWithoutAssertionRule
+{
+    public override string Key => "QG-JSON-BUG-0033";
+    public override string[] Languages => ["json"];
+}
+
+public abstract class GenericExceptionCaughtRule : StructuralRuleBase
 {
     private static readonly string[] BaseTypes =
         ["Exception", "SystemException", "Throwable", "Error", "BaseException", "RuntimeException"];
-
-    public override string Key => "QG-ALL-SML-0025";
     public override string Name => "Catch clauses should name the failures they handle";
     public override Severity Severity => Severity.Major;
     public override IssueKind Kind => IssueKind.CodeSmell;
@@ -1364,12 +5798,118 @@ public sealed class GenericExceptionCaughtRule : StructuralRuleBase
     }
 }
 
-public sealed class GenericExceptionThrownRule : StructuralRuleBase
+public sealed class GenericExceptionCaughtRuleCs : GenericExceptionCaughtRule
+{
+    public override string Key => "QG-CS-SML-0519";
+    public override string[] Languages => ["cs", "vb"];
+}
+
+public sealed class GenericExceptionCaughtRuleJava : GenericExceptionCaughtRule
+{
+    public override string Key => "QG-JV-SML-0480";
+    public override string[] Languages => ["java"];
+}
+
+public sealed class GenericExceptionCaughtRuleKotlin : GenericExceptionCaughtRule
+{
+    public override string Key => "QG-KT-SML-0102";
+    public override string[] Languages => ["kt"];
+}
+
+public sealed class GenericExceptionCaughtRuleJs : GenericExceptionCaughtRule
+{
+    public override string Key => "QG-JS-SML-0396";
+    public override string[] Languages => ["js", "ts"];
+}
+
+public sealed class GenericExceptionCaughtRulePython : GenericExceptionCaughtRule
+{
+    public override string Key => "QG-PY-SML-0275";
+    public override string[] Languages => ["py"];
+}
+
+public sealed class GenericExceptionCaughtRulePhp : GenericExceptionCaughtRule
+{
+    public override string Key => "QG-PP-SML-0140";
+    public override string[] Languages => ["php"];
+}
+
+public sealed class GenericExceptionCaughtRuleGo : GenericExceptionCaughtRule
+{
+    public override string Key => "QG-GO-SML-0054";
+    public override string[] Languages => ["go"];
+}
+
+public sealed class GenericExceptionCaughtRuleDart : GenericExceptionCaughtRule
+{
+    public override string Key => "QG-DART-SML-0019";
+    public override string[] Languages => ["dart"];
+}
+
+public sealed class GenericExceptionCaughtRuleRuby : GenericExceptionCaughtRule
+{
+    public override string Key => "QG-RB-SML-0053";
+    public override string[] Languages => ["rb"];
+}
+
+public sealed class GenericExceptionCaughtRuleSwift : GenericExceptionCaughtRule
+{
+    public override string Key => "QG-SW-SML-0037";
+    public override string[] Languages => ["swift"];
+}
+
+public sealed class GenericExceptionCaughtRuleCss : GenericExceptionCaughtRule
+{
+    public override string Key => "QG-CSS-SML-0058";
+    public override string[] Languages => ["css"];
+}
+
+public sealed class GenericExceptionCaughtRuleHtml : GenericExceptionCaughtRule
+{
+    public override string Key => "QG-HTML-SML-0130";
+    public override string[] Languages => ["html"];
+}
+
+public sealed class GenericExceptionCaughtRuleXml : GenericExceptionCaughtRule
+{
+    public override string Key => "QG-XML-SML-0045";
+    public override string[] Languages => ["xml"];
+}
+
+public sealed class GenericExceptionCaughtRuleTerraform : GenericExceptionCaughtRule
+{
+    public override string Key => "QG-TF-SML-0037";
+    public override string[] Languages => ["tf"];
+}
+
+public sealed class GenericExceptionCaughtRuleDockerfile : GenericExceptionCaughtRule
+{
+    public override string Key => "QG-DK-SML-0051";
+    public override string[] Languages => ["dk"];
+}
+
+public sealed class GenericExceptionCaughtRuleKubernetes : GenericExceptionCaughtRule
+{
+    public override string Key => "QG-K8-SML-0045";
+    public override string[] Languages => ["k8"];
+}
+
+public sealed class GenericExceptionCaughtRuleCloudFormation : GenericExceptionCaughtRule
+{
+    public override string Key => "QG-CF-SML-0038";
+    public override string[] Languages => ["cf"];
+}
+
+public sealed class GenericExceptionCaughtRuleJson : GenericExceptionCaughtRule
+{
+    public override string Key => "QG-JSON-SML-0033";
+    public override string[] Languages => ["json"];
+}
+
+public abstract class GenericExceptionThrownRule : StructuralRuleBase
 {
     private static readonly string[] BaseTypes =
         ["Exception", "SystemException", "Throwable", "Error", "RuntimeException", "BaseException"];
-
-    public override string Key => "QG-ALL-SML-0026";
     public override string Name => "Thrown exceptions should be specific";
     public override Severity Severity => Severity.Major;
     public override IssueKind Kind => IssueKind.CodeSmell;
@@ -1395,9 +5935,116 @@ public sealed class GenericExceptionThrownRule : StructuralRuleBase
     }
 }
 
-public sealed class RethrowLosingStackRule : StructuralRuleBase
+public sealed class GenericExceptionThrownRuleCs : GenericExceptionThrownRule
 {
-    public override string Key => "QG-ALL-BUG-0009";
+    public override string Key => "QG-CS-SML-0520";
+    public override string[] Languages => ["cs", "vb"];
+}
+
+public sealed class GenericExceptionThrownRuleJava : GenericExceptionThrownRule
+{
+    public override string Key => "QG-JV-SML-0481";
+    public override string[] Languages => ["java"];
+}
+
+public sealed class GenericExceptionThrownRuleKotlin : GenericExceptionThrownRule
+{
+    public override string Key => "QG-KT-SML-0103";
+    public override string[] Languages => ["kt"];
+}
+
+public sealed class GenericExceptionThrownRuleJs : GenericExceptionThrownRule
+{
+    public override string Key => "QG-JS-SML-0397";
+    public override string[] Languages => ["js", "ts"];
+}
+
+public sealed class GenericExceptionThrownRulePython : GenericExceptionThrownRule
+{
+    public override string Key => "QG-PY-SML-0276";
+    public override string[] Languages => ["py"];
+}
+
+public sealed class GenericExceptionThrownRulePhp : GenericExceptionThrownRule
+{
+    public override string Key => "QG-PP-SML-0141";
+    public override string[] Languages => ["php"];
+}
+
+public sealed class GenericExceptionThrownRuleGo : GenericExceptionThrownRule
+{
+    public override string Key => "QG-GO-SML-0055";
+    public override string[] Languages => ["go"];
+}
+
+public sealed class GenericExceptionThrownRuleDart : GenericExceptionThrownRule
+{
+    public override string Key => "QG-DART-SML-0020";
+    public override string[] Languages => ["dart"];
+}
+
+public sealed class GenericExceptionThrownRuleRuby : GenericExceptionThrownRule
+{
+    public override string Key => "QG-RB-SML-0054";
+    public override string[] Languages => ["rb"];
+}
+
+public sealed class GenericExceptionThrownRuleSwift : GenericExceptionThrownRule
+{
+    public override string Key => "QG-SW-SML-0038";
+    public override string[] Languages => ["swift"];
+}
+
+public sealed class GenericExceptionThrownRuleCss : GenericExceptionThrownRule
+{
+    public override string Key => "QG-CSS-SML-0059";
+    public override string[] Languages => ["css"];
+}
+
+public sealed class GenericExceptionThrownRuleHtml : GenericExceptionThrownRule
+{
+    public override string Key => "QG-HTML-SML-0131";
+    public override string[] Languages => ["html"];
+}
+
+public sealed class GenericExceptionThrownRuleXml : GenericExceptionThrownRule
+{
+    public override string Key => "QG-XML-SML-0046";
+    public override string[] Languages => ["xml"];
+}
+
+public sealed class GenericExceptionThrownRuleTerraform : GenericExceptionThrownRule
+{
+    public override string Key => "QG-TF-SML-0038";
+    public override string[] Languages => ["tf"];
+}
+
+public sealed class GenericExceptionThrownRuleDockerfile : GenericExceptionThrownRule
+{
+    public override string Key => "QG-DK-SML-0052";
+    public override string[] Languages => ["dk"];
+}
+
+public sealed class GenericExceptionThrownRuleKubernetes : GenericExceptionThrownRule
+{
+    public override string Key => "QG-K8-SML-0046";
+    public override string[] Languages => ["k8"];
+}
+
+public sealed class GenericExceptionThrownRuleCloudFormation : GenericExceptionThrownRule
+{
+    public override string Key => "QG-CF-SML-0039";
+    public override string[] Languages => ["cf"];
+}
+
+public sealed class GenericExceptionThrownRuleJson : GenericExceptionThrownRule
+{
+    public override string Key => "QG-JSON-SML-0034";
+    public override string[] Languages => ["json"];
+}
+
+public abstract class RethrowLosingStackRule : StructuralRuleBase
+{
     public override string Name => "Rethrowing should preserve the original trace";
     public override Severity Severity => Severity.Major;
     public override IssueKind Kind => IssueKind.Bug;
@@ -1425,9 +6072,116 @@ public sealed class RethrowLosingStackRule : StructuralRuleBase
     }
 }
 
-public sealed class JumpInFinallyRule : StructuralRuleBase
+public sealed class RethrowLosingStackRuleCs : RethrowLosingStackRule
 {
-    public override string Key => "QG-ALL-BUG-0010";
+    public override string Key => "QG-CS-BUG-0158";
+    public override string[] Languages => ["cs", "vb"];
+}
+
+public sealed class RethrowLosingStackRuleJava : RethrowLosingStackRule
+{
+    public override string Key => "QG-JV-BUG-0212";
+    public override string[] Languages => ["java"];
+}
+
+public sealed class RethrowLosingStackRuleKotlin : RethrowLosingStackRule
+{
+    public override string Key => "QG-KT-BUG-0039";
+    public override string[] Languages => ["kt"];
+}
+
+public sealed class RethrowLosingStackRuleJs : RethrowLosingStackRule
+{
+    public override string Key => "QG-JS-BUG-0156";
+    public override string[] Languages => ["js", "ts"];
+}
+
+public sealed class RethrowLosingStackRulePython : RethrowLosingStackRule
+{
+    public override string Key => "QG-PY-BUG-0162";
+    public override string[] Languages => ["py"];
+}
+
+public sealed class RethrowLosingStackRulePhp : RethrowLosingStackRule
+{
+    public override string Key => "QG-PP-BUG-0059";
+    public override string[] Languages => ["php"];
+}
+
+public sealed class RethrowLosingStackRuleGo : RethrowLosingStackRule
+{
+    public override string Key => "QG-GO-BUG-0015";
+    public override string[] Languages => ["go"];
+}
+
+public sealed class RethrowLosingStackRuleDart : RethrowLosingStackRule
+{
+    public override string Key => "QG-DART-BUG-0013";
+    public override string[] Languages => ["dart"];
+}
+
+public sealed class RethrowLosingStackRuleRuby : RethrowLosingStackRule
+{
+    public override string Key => "QG-RB-BUG-0034";
+    public override string[] Languages => ["rb"];
+}
+
+public sealed class RethrowLosingStackRuleSwift : RethrowLosingStackRule
+{
+    public override string Key => "QG-SW-BUG-0038";
+    public override string[] Languages => ["swift"];
+}
+
+public sealed class RethrowLosingStackRuleCss : RethrowLosingStackRule
+{
+    public override string Key => "QG-CSS-BUG-0063";
+    public override string[] Languages => ["css"];
+}
+
+public sealed class RethrowLosingStackRuleHtml : RethrowLosingStackRule
+{
+    public override string Key => "QG-HTML-BUG-0063";
+    public override string[] Languages => ["html"];
+}
+
+public sealed class RethrowLosingStackRuleXml : RethrowLosingStackRule
+{
+    public override string Key => "QG-XML-BUG-0038";
+    public override string[] Languages => ["xml"];
+}
+
+public sealed class RethrowLosingStackRuleTerraform : RethrowLosingStackRule
+{
+    public override string Key => "QG-TF-BUG-0033";
+    public override string[] Languages => ["tf"];
+}
+
+public sealed class RethrowLosingStackRuleDockerfile : RethrowLosingStackRule
+{
+    public override string Key => "QG-DK-BUG-0040";
+    public override string[] Languages => ["dk"];
+}
+
+public sealed class RethrowLosingStackRuleKubernetes : RethrowLosingStackRule
+{
+    public override string Key => "QG-K8-BUG-0033";
+    public override string[] Languages => ["k8"];
+}
+
+public sealed class RethrowLosingStackRuleCloudFormation : RethrowLosingStackRule
+{
+    public override string Key => "QG-CF-BUG-0033";
+    public override string[] Languages => ["cf"];
+}
+
+public sealed class RethrowLosingStackRuleJson : RethrowLosingStackRule
+{
+    public override string Key => "QG-JSON-BUG-0034";
+    public override string[] Languages => ["json"];
+}
+
+public abstract class JumpInFinallyRule : StructuralRuleBase
+{
     public override string Name => "Cleanup blocks should not change the control flow";
     public override Severity Severity => Severity.Blocker;
     public override IssueKind Kind => IssueKind.Bug;
@@ -1455,9 +6209,116 @@ public sealed class JumpInFinallyRule : StructuralRuleBase
     }
 }
 
-public sealed class LockOnSharedObjectRule : StructuralRuleBase
+public sealed class JumpInFinallyRuleCs : JumpInFinallyRule
 {
-    public override string Key => "QG-ALL-BUG-0011";
+    public override string Key => "QG-CS-BUG-0159";
+    public override string[] Languages => ["cs", "vb"];
+}
+
+public sealed class JumpInFinallyRuleJava : JumpInFinallyRule
+{
+    public override string Key => "QG-JV-BUG-0213";
+    public override string[] Languages => ["java"];
+}
+
+public sealed class JumpInFinallyRuleKotlin : JumpInFinallyRule
+{
+    public override string Key => "QG-KT-BUG-0040";
+    public override string[] Languages => ["kt"];
+}
+
+public sealed class JumpInFinallyRuleJs : JumpInFinallyRule
+{
+    public override string Key => "QG-JS-BUG-0157";
+    public override string[] Languages => ["js", "ts"];
+}
+
+public sealed class JumpInFinallyRulePython : JumpInFinallyRule
+{
+    public override string Key => "QG-PY-BUG-0163";
+    public override string[] Languages => ["py"];
+}
+
+public sealed class JumpInFinallyRulePhp : JumpInFinallyRule
+{
+    public override string Key => "QG-PP-BUG-0060";
+    public override string[] Languages => ["php"];
+}
+
+public sealed class JumpInFinallyRuleGo : JumpInFinallyRule
+{
+    public override string Key => "QG-GO-BUG-0016";
+    public override string[] Languages => ["go"];
+}
+
+public sealed class JumpInFinallyRuleDart : JumpInFinallyRule
+{
+    public override string Key => "QG-DART-BUG-0014";
+    public override string[] Languages => ["dart"];
+}
+
+public sealed class JumpInFinallyRuleRuby : JumpInFinallyRule
+{
+    public override string Key => "QG-RB-BUG-0035";
+    public override string[] Languages => ["rb"];
+}
+
+public sealed class JumpInFinallyRuleSwift : JumpInFinallyRule
+{
+    public override string Key => "QG-SW-BUG-0039";
+    public override string[] Languages => ["swift"];
+}
+
+public sealed class JumpInFinallyRuleCss : JumpInFinallyRule
+{
+    public override string Key => "QG-CSS-BUG-0064";
+    public override string[] Languages => ["css"];
+}
+
+public sealed class JumpInFinallyRuleHtml : JumpInFinallyRule
+{
+    public override string Key => "QG-HTML-BUG-0064";
+    public override string[] Languages => ["html"];
+}
+
+public sealed class JumpInFinallyRuleXml : JumpInFinallyRule
+{
+    public override string Key => "QG-XML-BUG-0039";
+    public override string[] Languages => ["xml"];
+}
+
+public sealed class JumpInFinallyRuleTerraform : JumpInFinallyRule
+{
+    public override string Key => "QG-TF-BUG-0034";
+    public override string[] Languages => ["tf"];
+}
+
+public sealed class JumpInFinallyRuleDockerfile : JumpInFinallyRule
+{
+    public override string Key => "QG-DK-BUG-0041";
+    public override string[] Languages => ["dk"];
+}
+
+public sealed class JumpInFinallyRuleKubernetes : JumpInFinallyRule
+{
+    public override string Key => "QG-K8-BUG-0034";
+    public override string[] Languages => ["k8"];
+}
+
+public sealed class JumpInFinallyRuleCloudFormation : JumpInFinallyRule
+{
+    public override string Key => "QG-CF-BUG-0034";
+    public override string[] Languages => ["cf"];
+}
+
+public sealed class JumpInFinallyRuleJson : JumpInFinallyRule
+{
+    public override string Key => "QG-JSON-BUG-0035";
+    public override string[] Languages => ["json"];
+}
+
+public abstract class LockOnSharedObjectRule : StructuralRuleBase
+{
     public override string Name => "Locks should be taken on a private object";
     public override Severity Severity => Severity.Critical;
     public override IssueKind Kind => IssueKind.Bug;
@@ -1488,12 +6349,118 @@ public sealed class LockOnSharedObjectRule : StructuralRuleBase
     }
 }
 
-public sealed class IgnoredTestRule : StructuralRuleBase
+public sealed class LockOnSharedObjectRuleCs : LockOnSharedObjectRule
+{
+    public override string Key => "QG-CS-BUG-0160";
+    public override string[] Languages => ["cs", "vb"];
+}
+
+public sealed class LockOnSharedObjectRuleJava : LockOnSharedObjectRule
+{
+    public override string Key => "QG-JV-BUG-0214";
+    public override string[] Languages => ["java"];
+}
+
+public sealed class LockOnSharedObjectRuleKotlin : LockOnSharedObjectRule
+{
+    public override string Key => "QG-KT-BUG-0041";
+    public override string[] Languages => ["kt"];
+}
+
+public sealed class LockOnSharedObjectRuleJs : LockOnSharedObjectRule
+{
+    public override string Key => "QG-JS-BUG-0158";
+    public override string[] Languages => ["js", "ts"];
+}
+
+public sealed class LockOnSharedObjectRulePython : LockOnSharedObjectRule
+{
+    public override string Key => "QG-PY-BUG-0164";
+    public override string[] Languages => ["py"];
+}
+
+public sealed class LockOnSharedObjectRulePhp : LockOnSharedObjectRule
+{
+    public override string Key => "QG-PP-BUG-0061";
+    public override string[] Languages => ["php"];
+}
+
+public sealed class LockOnSharedObjectRuleGo : LockOnSharedObjectRule
+{
+    public override string Key => "QG-GO-BUG-0017";
+    public override string[] Languages => ["go"];
+}
+
+public sealed class LockOnSharedObjectRuleDart : LockOnSharedObjectRule
+{
+    public override string Key => "QG-DART-BUG-0015";
+    public override string[] Languages => ["dart"];
+}
+
+public sealed class LockOnSharedObjectRuleRuby : LockOnSharedObjectRule
+{
+    public override string Key => "QG-RB-BUG-0036";
+    public override string[] Languages => ["rb"];
+}
+
+public sealed class LockOnSharedObjectRuleSwift : LockOnSharedObjectRule
+{
+    public override string Key => "QG-SW-BUG-0040";
+    public override string[] Languages => ["swift"];
+}
+
+public sealed class LockOnSharedObjectRuleCss : LockOnSharedObjectRule
+{
+    public override string Key => "QG-CSS-BUG-0065";
+    public override string[] Languages => ["css"];
+}
+
+public sealed class LockOnSharedObjectRuleHtml : LockOnSharedObjectRule
+{
+    public override string Key => "QG-HTML-BUG-0065";
+    public override string[] Languages => ["html"];
+}
+
+public sealed class LockOnSharedObjectRuleXml : LockOnSharedObjectRule
+{
+    public override string Key => "QG-XML-BUG-0040";
+    public override string[] Languages => ["xml"];
+}
+
+public sealed class LockOnSharedObjectRuleTerraform : LockOnSharedObjectRule
+{
+    public override string Key => "QG-TF-BUG-0035";
+    public override string[] Languages => ["tf"];
+}
+
+public sealed class LockOnSharedObjectRuleDockerfile : LockOnSharedObjectRule
+{
+    public override string Key => "QG-DK-BUG-0042";
+    public override string[] Languages => ["dk"];
+}
+
+public sealed class LockOnSharedObjectRuleKubernetes : LockOnSharedObjectRule
+{
+    public override string Key => "QG-K8-BUG-0035";
+    public override string[] Languages => ["k8"];
+}
+
+public sealed class LockOnSharedObjectRuleCloudFormation : LockOnSharedObjectRule
+{
+    public override string Key => "QG-CF-BUG-0035";
+    public override string[] Languages => ["cf"];
+}
+
+public sealed class LockOnSharedObjectRuleJson : LockOnSharedObjectRule
+{
+    public override string Key => "QG-JSON-BUG-0036";
+    public override string[] Languages => ["json"];
+}
+
+public abstract class IgnoredTestRule : StructuralRuleBase
 {
     private static readonly string[] Markers =
         ["Ignore", "Skip", "Skipped", "Disabled", "Pending", "Xfail", "Todo"];
-
-    public override string Key => "QG-ALL-SML-0027";
     public override string Name => "Disabled tests should not stay in the suite";
     public override Severity Severity => Severity.Major;
     public override IssueKind Kind => IssueKind.CodeSmell;
@@ -1516,9 +6483,116 @@ public sealed class IgnoredTestRule : StructuralRuleBase
     }
 }
 
-public sealed class UnusedPrivateFunctionRule : StructuralRuleBase
+public sealed class IgnoredTestRuleCs : IgnoredTestRule
 {
-    public override string Key => "QG-ALL-SML-0028";
+    public override string Key => "QG-CS-SML-0521";
+    public override string[] Languages => ["cs", "vb"];
+}
+
+public sealed class IgnoredTestRuleJava : IgnoredTestRule
+{
+    public override string Key => "QG-JV-SML-0482";
+    public override string[] Languages => ["java"];
+}
+
+public sealed class IgnoredTestRuleKotlin : IgnoredTestRule
+{
+    public override string Key => "QG-KT-SML-0104";
+    public override string[] Languages => ["kt"];
+}
+
+public sealed class IgnoredTestRuleJs : IgnoredTestRule
+{
+    public override string Key => "QG-JS-SML-0398";
+    public override string[] Languages => ["js", "ts"];
+}
+
+public sealed class IgnoredTestRulePython : IgnoredTestRule
+{
+    public override string Key => "QG-PY-SML-0277";
+    public override string[] Languages => ["py"];
+}
+
+public sealed class IgnoredTestRulePhp : IgnoredTestRule
+{
+    public override string Key => "QG-PP-SML-0142";
+    public override string[] Languages => ["php"];
+}
+
+public sealed class IgnoredTestRuleGo : IgnoredTestRule
+{
+    public override string Key => "QG-GO-SML-0056";
+    public override string[] Languages => ["go"];
+}
+
+public sealed class IgnoredTestRuleDart : IgnoredTestRule
+{
+    public override string Key => "QG-DART-SML-0021";
+    public override string[] Languages => ["dart"];
+}
+
+public sealed class IgnoredTestRuleRuby : IgnoredTestRule
+{
+    public override string Key => "QG-RB-SML-0055";
+    public override string[] Languages => ["rb"];
+}
+
+public sealed class IgnoredTestRuleSwift : IgnoredTestRule
+{
+    public override string Key => "QG-SW-SML-0039";
+    public override string[] Languages => ["swift"];
+}
+
+public sealed class IgnoredTestRuleCss : IgnoredTestRule
+{
+    public override string Key => "QG-CSS-SML-0060";
+    public override string[] Languages => ["css"];
+}
+
+public sealed class IgnoredTestRuleHtml : IgnoredTestRule
+{
+    public override string Key => "QG-HTML-SML-0132";
+    public override string[] Languages => ["html"];
+}
+
+public sealed class IgnoredTestRuleXml : IgnoredTestRule
+{
+    public override string Key => "QG-XML-SML-0047";
+    public override string[] Languages => ["xml"];
+}
+
+public sealed class IgnoredTestRuleTerraform : IgnoredTestRule
+{
+    public override string Key => "QG-TF-SML-0039";
+    public override string[] Languages => ["tf"];
+}
+
+public sealed class IgnoredTestRuleDockerfile : IgnoredTestRule
+{
+    public override string Key => "QG-DK-SML-0053";
+    public override string[] Languages => ["dk"];
+}
+
+public sealed class IgnoredTestRuleKubernetes : IgnoredTestRule
+{
+    public override string Key => "QG-K8-SML-0047";
+    public override string[] Languages => ["k8"];
+}
+
+public sealed class IgnoredTestRuleCloudFormation : IgnoredTestRule
+{
+    public override string Key => "QG-CF-SML-0040";
+    public override string[] Languages => ["cf"];
+}
+
+public sealed class IgnoredTestRuleJson : IgnoredTestRule
+{
+    public override string Key => "QG-JSON-SML-0035";
+    public override string[] Languages => ["json"];
+}
+
+public abstract class UnusedPrivateFunctionRule : StructuralRuleBase
+{
     public override string Name => "Private functions should be called";
     public override Severity Severity => Severity.Minor;
     public override IssueKind Kind => IssueKind.CodeSmell;
@@ -1558,9 +6632,116 @@ public sealed class UnusedPrivateFunctionRule : StructuralRuleBase
     }
 }
 
-public sealed class RedundantJumpRule : StructuralRuleBase
+public sealed class UnusedPrivateFunctionRuleCs : UnusedPrivateFunctionRule
 {
-    public override string Key => "QG-ALL-SML-0029";
+    public override string Key => "QG-CS-SML-0522";
+    public override string[] Languages => ["cs", "vb"];
+}
+
+public sealed class UnusedPrivateFunctionRuleJava : UnusedPrivateFunctionRule
+{
+    public override string Key => "QG-JV-SML-0483";
+    public override string[] Languages => ["java"];
+}
+
+public sealed class UnusedPrivateFunctionRuleKotlin : UnusedPrivateFunctionRule
+{
+    public override string Key => "QG-KT-SML-0105";
+    public override string[] Languages => ["kt"];
+}
+
+public sealed class UnusedPrivateFunctionRuleJs : UnusedPrivateFunctionRule
+{
+    public override string Key => "QG-JS-SML-0399";
+    public override string[] Languages => ["js", "ts"];
+}
+
+public sealed class UnusedPrivateFunctionRulePython : UnusedPrivateFunctionRule
+{
+    public override string Key => "QG-PY-SML-0278";
+    public override string[] Languages => ["py"];
+}
+
+public sealed class UnusedPrivateFunctionRulePhp : UnusedPrivateFunctionRule
+{
+    public override string Key => "QG-PP-SML-0143";
+    public override string[] Languages => ["php"];
+}
+
+public sealed class UnusedPrivateFunctionRuleGo : UnusedPrivateFunctionRule
+{
+    public override string Key => "QG-GO-SML-0057";
+    public override string[] Languages => ["go"];
+}
+
+public sealed class UnusedPrivateFunctionRuleDart : UnusedPrivateFunctionRule
+{
+    public override string Key => "QG-DART-SML-0022";
+    public override string[] Languages => ["dart"];
+}
+
+public sealed class UnusedPrivateFunctionRuleRuby : UnusedPrivateFunctionRule
+{
+    public override string Key => "QG-RB-SML-0056";
+    public override string[] Languages => ["rb"];
+}
+
+public sealed class UnusedPrivateFunctionRuleSwift : UnusedPrivateFunctionRule
+{
+    public override string Key => "QG-SW-SML-0040";
+    public override string[] Languages => ["swift"];
+}
+
+public sealed class UnusedPrivateFunctionRuleCss : UnusedPrivateFunctionRule
+{
+    public override string Key => "QG-CSS-SML-0061";
+    public override string[] Languages => ["css"];
+}
+
+public sealed class UnusedPrivateFunctionRuleHtml : UnusedPrivateFunctionRule
+{
+    public override string Key => "QG-HTML-SML-0133";
+    public override string[] Languages => ["html"];
+}
+
+public sealed class UnusedPrivateFunctionRuleXml : UnusedPrivateFunctionRule
+{
+    public override string Key => "QG-XML-SML-0048";
+    public override string[] Languages => ["xml"];
+}
+
+public sealed class UnusedPrivateFunctionRuleTerraform : UnusedPrivateFunctionRule
+{
+    public override string Key => "QG-TF-SML-0040";
+    public override string[] Languages => ["tf"];
+}
+
+public sealed class UnusedPrivateFunctionRuleDockerfile : UnusedPrivateFunctionRule
+{
+    public override string Key => "QG-DK-SML-0054";
+    public override string[] Languages => ["dk"];
+}
+
+public sealed class UnusedPrivateFunctionRuleKubernetes : UnusedPrivateFunctionRule
+{
+    public override string Key => "QG-K8-SML-0048";
+    public override string[] Languages => ["k8"];
+}
+
+public sealed class UnusedPrivateFunctionRuleCloudFormation : UnusedPrivateFunctionRule
+{
+    public override string Key => "QG-CF-SML-0041";
+    public override string[] Languages => ["cf"];
+}
+
+public sealed class UnusedPrivateFunctionRuleJson : UnusedPrivateFunctionRule
+{
+    public override string Key => "QG-JSON-SML-0036";
+    public override string[] Languages => ["json"];
+}
+
+public abstract class RedundantJumpRule : StructuralRuleBase
+{
     public override string Name => "Jumps that change nothing should be removed";
     public override Severity Severity => Severity.Minor;
     public override IssueKind Kind => IssueKind.CodeSmell;
@@ -1594,9 +6775,116 @@ public sealed class RedundantJumpRule : StructuralRuleBase
     }
 }
 
-public sealed class CommentedOutCodeRule : StructuralRuleBase
+public sealed class RedundantJumpRuleCs : RedundantJumpRule
 {
-    public override string Key => "QG-ALL-SML-0030";
+    public override string Key => "QG-CS-SML-0523";
+    public override string[] Languages => ["cs", "vb"];
+}
+
+public sealed class RedundantJumpRuleJava : RedundantJumpRule
+{
+    public override string Key => "QG-JV-SML-0484";
+    public override string[] Languages => ["java"];
+}
+
+public sealed class RedundantJumpRuleKotlin : RedundantJumpRule
+{
+    public override string Key => "QG-KT-SML-0106";
+    public override string[] Languages => ["kt"];
+}
+
+public sealed class RedundantJumpRuleJs : RedundantJumpRule
+{
+    public override string Key => "QG-JS-SML-0400";
+    public override string[] Languages => ["js", "ts"];
+}
+
+public sealed class RedundantJumpRulePython : RedundantJumpRule
+{
+    public override string Key => "QG-PY-SML-0279";
+    public override string[] Languages => ["py"];
+}
+
+public sealed class RedundantJumpRulePhp : RedundantJumpRule
+{
+    public override string Key => "QG-PP-SML-0144";
+    public override string[] Languages => ["php"];
+}
+
+public sealed class RedundantJumpRuleGo : RedundantJumpRule
+{
+    public override string Key => "QG-GO-SML-0058";
+    public override string[] Languages => ["go"];
+}
+
+public sealed class RedundantJumpRuleDart : RedundantJumpRule
+{
+    public override string Key => "QG-DART-SML-0023";
+    public override string[] Languages => ["dart"];
+}
+
+public sealed class RedundantJumpRuleRuby : RedundantJumpRule
+{
+    public override string Key => "QG-RB-SML-0057";
+    public override string[] Languages => ["rb"];
+}
+
+public sealed class RedundantJumpRuleSwift : RedundantJumpRule
+{
+    public override string Key => "QG-SW-SML-0041";
+    public override string[] Languages => ["swift"];
+}
+
+public sealed class RedundantJumpRuleCss : RedundantJumpRule
+{
+    public override string Key => "QG-CSS-SML-0062";
+    public override string[] Languages => ["css"];
+}
+
+public sealed class RedundantJumpRuleHtml : RedundantJumpRule
+{
+    public override string Key => "QG-HTML-SML-0134";
+    public override string[] Languages => ["html"];
+}
+
+public sealed class RedundantJumpRuleXml : RedundantJumpRule
+{
+    public override string Key => "QG-XML-SML-0049";
+    public override string[] Languages => ["xml"];
+}
+
+public sealed class RedundantJumpRuleTerraform : RedundantJumpRule
+{
+    public override string Key => "QG-TF-SML-0041";
+    public override string[] Languages => ["tf"];
+}
+
+public sealed class RedundantJumpRuleDockerfile : RedundantJumpRule
+{
+    public override string Key => "QG-DK-SML-0055";
+    public override string[] Languages => ["dk"];
+}
+
+public sealed class RedundantJumpRuleKubernetes : RedundantJumpRule
+{
+    public override string Key => "QG-K8-SML-0049";
+    public override string[] Languages => ["k8"];
+}
+
+public sealed class RedundantJumpRuleCloudFormation : RedundantJumpRule
+{
+    public override string Key => "QG-CF-SML-0042";
+    public override string[] Languages => ["cf"];
+}
+
+public sealed class RedundantJumpRuleJson : RedundantJumpRule
+{
+    public override string Key => "QG-JSON-SML-0037";
+    public override string[] Languages => ["json"];
+}
+
+public abstract class CommentedOutCodeRule : StructuralRuleBase
+{
     public override string Name => "Commented-out code should be deleted";
     public override Severity Severity => Severity.Major;
     public override IssueKind Kind => IssueKind.CodeSmell;
@@ -1637,11 +6925,117 @@ public sealed class CommentedOutCodeRule : StructuralRuleBase
     }
 }
 
-public sealed class DeepInheritanceRule : StructuralRuleBase
+public sealed class CommentedOutCodeRuleCs : CommentedOutCodeRule
+{
+    public override string Key => "QG-CS-SML-0524";
+    public override string[] Languages => ["cs", "vb"];
+}
+
+public sealed class CommentedOutCodeRuleJava : CommentedOutCodeRule
+{
+    public override string Key => "QG-JV-SML-0485";
+    public override string[] Languages => ["java"];
+}
+
+public sealed class CommentedOutCodeRuleKotlin : CommentedOutCodeRule
+{
+    public override string Key => "QG-KT-SML-0107";
+    public override string[] Languages => ["kt"];
+}
+
+public sealed class CommentedOutCodeRuleJs : CommentedOutCodeRule
+{
+    public override string Key => "QG-JS-SML-0401";
+    public override string[] Languages => ["js", "ts"];
+}
+
+public sealed class CommentedOutCodeRulePython : CommentedOutCodeRule
+{
+    public override string Key => "QG-PY-SML-0280";
+    public override string[] Languages => ["py"];
+}
+
+public sealed class CommentedOutCodeRulePhp : CommentedOutCodeRule
+{
+    public override string Key => "QG-PP-SML-0145";
+    public override string[] Languages => ["php"];
+}
+
+public sealed class CommentedOutCodeRuleGo : CommentedOutCodeRule
+{
+    public override string Key => "QG-GO-SML-0059";
+    public override string[] Languages => ["go"];
+}
+
+public sealed class CommentedOutCodeRuleDart : CommentedOutCodeRule
+{
+    public override string Key => "QG-DART-SML-0024";
+    public override string[] Languages => ["dart"];
+}
+
+public sealed class CommentedOutCodeRuleRuby : CommentedOutCodeRule
+{
+    public override string Key => "QG-RB-SML-0058";
+    public override string[] Languages => ["rb"];
+}
+
+public sealed class CommentedOutCodeRuleSwift : CommentedOutCodeRule
+{
+    public override string Key => "QG-SW-SML-0042";
+    public override string[] Languages => ["swift"];
+}
+
+public sealed class CommentedOutCodeRuleCss : CommentedOutCodeRule
+{
+    public override string Key => "QG-CSS-SML-0063";
+    public override string[] Languages => ["css"];
+}
+
+public sealed class CommentedOutCodeRuleHtml : CommentedOutCodeRule
+{
+    public override string Key => "QG-HTML-SML-0135";
+    public override string[] Languages => ["html"];
+}
+
+public sealed class CommentedOutCodeRuleXml : CommentedOutCodeRule
+{
+    public override string Key => "QG-XML-SML-0050";
+    public override string[] Languages => ["xml"];
+}
+
+public sealed class CommentedOutCodeRuleTerraform : CommentedOutCodeRule
+{
+    public override string Key => "QG-TF-SML-0042";
+    public override string[] Languages => ["tf"];
+}
+
+public sealed class CommentedOutCodeRuleDockerfile : CommentedOutCodeRule
+{
+    public override string Key => "QG-DK-SML-0056";
+    public override string[] Languages => ["dk"];
+}
+
+public sealed class CommentedOutCodeRuleKubernetes : CommentedOutCodeRule
+{
+    public override string Key => "QG-K8-SML-0050";
+    public override string[] Languages => ["k8"];
+}
+
+public sealed class CommentedOutCodeRuleCloudFormation : CommentedOutCodeRule
+{
+    public override string Key => "QG-CF-SML-0043";
+    public override string[] Languages => ["cf"];
+}
+
+public sealed class CommentedOutCodeRuleJson : CommentedOutCodeRule
+{
+    public override string Key => "QG-JSON-SML-0038";
+    public override string[] Languages => ["json"];
+}
+
+public abstract class DeepInheritanceRule : StructuralRuleBase
 {
     private const int MaxDepth = 4;
-
-    public override string Key => "QG-ALL-SML-0031";
     public override string Name => "Inheritance chains should stay shallow";
     public override Severity Severity => Severity.Major;
     public override IssueKind Kind => IssueKind.CodeSmell;
@@ -1666,11 +7060,117 @@ public sealed class DeepInheritanceRule : StructuralRuleBase
     }
 }
 
-public sealed class HiddenBaseMemberRule : StructuralRuleBase
+public sealed class DeepInheritanceRuleCs : DeepInheritanceRule
+{
+    public override string Key => "QG-CS-SML-0525";
+    public override string[] Languages => ["cs", "vb"];
+}
+
+public sealed class DeepInheritanceRuleJava : DeepInheritanceRule
+{
+    public override string Key => "QG-JV-SML-0486";
+    public override string[] Languages => ["java"];
+}
+
+public sealed class DeepInheritanceRuleKotlin : DeepInheritanceRule
+{
+    public override string Key => "QG-KT-SML-0108";
+    public override string[] Languages => ["kt"];
+}
+
+public sealed class DeepInheritanceRuleJs : DeepInheritanceRule
+{
+    public override string Key => "QG-JS-SML-0402";
+    public override string[] Languages => ["js", "ts"];
+}
+
+public sealed class DeepInheritanceRulePython : DeepInheritanceRule
+{
+    public override string Key => "QG-PY-SML-0281";
+    public override string[] Languages => ["py"];
+}
+
+public sealed class DeepInheritanceRulePhp : DeepInheritanceRule
+{
+    public override string Key => "QG-PP-SML-0146";
+    public override string[] Languages => ["php"];
+}
+
+public sealed class DeepInheritanceRuleGo : DeepInheritanceRule
+{
+    public override string Key => "QG-GO-SML-0060";
+    public override string[] Languages => ["go"];
+}
+
+public sealed class DeepInheritanceRuleDart : DeepInheritanceRule
+{
+    public override string Key => "QG-DART-SML-0025";
+    public override string[] Languages => ["dart"];
+}
+
+public sealed class DeepInheritanceRuleRuby : DeepInheritanceRule
+{
+    public override string Key => "QG-RB-SML-0059";
+    public override string[] Languages => ["rb"];
+}
+
+public sealed class DeepInheritanceRuleSwift : DeepInheritanceRule
+{
+    public override string Key => "QG-SW-SML-0043";
+    public override string[] Languages => ["swift"];
+}
+
+public sealed class DeepInheritanceRuleCss : DeepInheritanceRule
+{
+    public override string Key => "QG-CSS-SML-0064";
+    public override string[] Languages => ["css"];
+}
+
+public sealed class DeepInheritanceRuleHtml : DeepInheritanceRule
+{
+    public override string Key => "QG-HTML-SML-0136";
+    public override string[] Languages => ["html"];
+}
+
+public sealed class DeepInheritanceRuleXml : DeepInheritanceRule
+{
+    public override string Key => "QG-XML-SML-0051";
+    public override string[] Languages => ["xml"];
+}
+
+public sealed class DeepInheritanceRuleTerraform : DeepInheritanceRule
+{
+    public override string Key => "QG-TF-SML-0043";
+    public override string[] Languages => ["tf"];
+}
+
+public sealed class DeepInheritanceRuleDockerfile : DeepInheritanceRule
+{
+    public override string Key => "QG-DK-SML-0057";
+    public override string[] Languages => ["dk"];
+}
+
+public sealed class DeepInheritanceRuleKubernetes : DeepInheritanceRule
+{
+    public override string Key => "QG-K8-SML-0051";
+    public override string[] Languages => ["k8"];
+}
+
+public sealed class DeepInheritanceRuleCloudFormation : DeepInheritanceRule
+{
+    public override string Key => "QG-CF-SML-0044";
+    public override string[] Languages => ["cf"];
+}
+
+public sealed class DeepInheritanceRuleJson : DeepInheritanceRule
+{
+    public override string Key => "QG-JSON-SML-0039";
+    public override string[] Languages => ["json"];
+}
+
+public abstract class HiddenBaseMemberRule : StructuralRuleBase
 {
     private static readonly string[] IntentionalMarkers = ["override", "new", "virtual", "abstract", "partial"];
-
-    public override string Key => "QG-ALL-BUG-0012";
     public override string Name => "Members should not hide a base member by accident";
     public override Severity Severity => Severity.Major;
     public override IssueKind Kind => IssueKind.Bug;
@@ -1708,9 +7208,116 @@ public sealed class HiddenBaseMemberRule : StructuralRuleBase
     }
 }
 
-public sealed class UnusedInternalMemberRule : StructuralRuleBase
+public sealed class HiddenBaseMemberRuleCs : HiddenBaseMemberRule
 {
-    public override string Key => "QG-ALL-SML-0032";
+    public override string Key => "QG-CS-BUG-0161";
+    public override string[] Languages => ["cs", "vb"];
+}
+
+public sealed class HiddenBaseMemberRuleJava : HiddenBaseMemberRule
+{
+    public override string Key => "QG-JV-BUG-0215";
+    public override string[] Languages => ["java"];
+}
+
+public sealed class HiddenBaseMemberRuleKotlin : HiddenBaseMemberRule
+{
+    public override string Key => "QG-KT-BUG-0042";
+    public override string[] Languages => ["kt"];
+}
+
+public sealed class HiddenBaseMemberRuleJs : HiddenBaseMemberRule
+{
+    public override string Key => "QG-JS-BUG-0159";
+    public override string[] Languages => ["js", "ts"];
+}
+
+public sealed class HiddenBaseMemberRulePython : HiddenBaseMemberRule
+{
+    public override string Key => "QG-PY-BUG-0165";
+    public override string[] Languages => ["py"];
+}
+
+public sealed class HiddenBaseMemberRulePhp : HiddenBaseMemberRule
+{
+    public override string Key => "QG-PP-BUG-0062";
+    public override string[] Languages => ["php"];
+}
+
+public sealed class HiddenBaseMemberRuleGo : HiddenBaseMemberRule
+{
+    public override string Key => "QG-GO-BUG-0018";
+    public override string[] Languages => ["go"];
+}
+
+public sealed class HiddenBaseMemberRuleDart : HiddenBaseMemberRule
+{
+    public override string Key => "QG-DART-BUG-0016";
+    public override string[] Languages => ["dart"];
+}
+
+public sealed class HiddenBaseMemberRuleRuby : HiddenBaseMemberRule
+{
+    public override string Key => "QG-RB-BUG-0037";
+    public override string[] Languages => ["rb"];
+}
+
+public sealed class HiddenBaseMemberRuleSwift : HiddenBaseMemberRule
+{
+    public override string Key => "QG-SW-BUG-0041";
+    public override string[] Languages => ["swift"];
+}
+
+public sealed class HiddenBaseMemberRuleCss : HiddenBaseMemberRule
+{
+    public override string Key => "QG-CSS-BUG-0066";
+    public override string[] Languages => ["css"];
+}
+
+public sealed class HiddenBaseMemberRuleHtml : HiddenBaseMemberRule
+{
+    public override string Key => "QG-HTML-BUG-0066";
+    public override string[] Languages => ["html"];
+}
+
+public sealed class HiddenBaseMemberRuleXml : HiddenBaseMemberRule
+{
+    public override string Key => "QG-XML-BUG-0041";
+    public override string[] Languages => ["xml"];
+}
+
+public sealed class HiddenBaseMemberRuleTerraform : HiddenBaseMemberRule
+{
+    public override string Key => "QG-TF-BUG-0036";
+    public override string[] Languages => ["tf"];
+}
+
+public sealed class HiddenBaseMemberRuleDockerfile : HiddenBaseMemberRule
+{
+    public override string Key => "QG-DK-BUG-0043";
+    public override string[] Languages => ["dk"];
+}
+
+public sealed class HiddenBaseMemberRuleKubernetes : HiddenBaseMemberRule
+{
+    public override string Key => "QG-K8-BUG-0036";
+    public override string[] Languages => ["k8"];
+}
+
+public sealed class HiddenBaseMemberRuleCloudFormation : HiddenBaseMemberRule
+{
+    public override string Key => "QG-CF-BUG-0036";
+    public override string[] Languages => ["cf"];
+}
+
+public sealed class HiddenBaseMemberRuleJson : HiddenBaseMemberRule
+{
+    public override string Key => "QG-JSON-BUG-0037";
+    public override string[] Languages => ["json"];
+}
+
+public abstract class UnusedInternalMemberRule : StructuralRuleBase
+{
     public override string Name => "Non-public members should be reachable";
     public override Severity Severity => Severity.Minor;
     public override IssueKind Kind => IssueKind.CodeSmell;
@@ -1751,9 +7358,116 @@ public sealed class UnusedInternalMemberRule : StructuralRuleBase
     }
 }
 
-public sealed class DuplicateTypeNameRule : StructuralRuleBase
+public sealed class UnusedInternalMemberRuleCs : UnusedInternalMemberRule
 {
-    public override string Key => "QG-ALL-SML-0033";
+    public override string Key => "QG-CS-SML-0526";
+    public override string[] Languages => ["cs", "vb"];
+}
+
+public sealed class UnusedInternalMemberRuleJava : UnusedInternalMemberRule
+{
+    public override string Key => "QG-JV-SML-0487";
+    public override string[] Languages => ["java"];
+}
+
+public sealed class UnusedInternalMemberRuleKotlin : UnusedInternalMemberRule
+{
+    public override string Key => "QG-KT-SML-0109";
+    public override string[] Languages => ["kt"];
+}
+
+public sealed class UnusedInternalMemberRuleJs : UnusedInternalMemberRule
+{
+    public override string Key => "QG-JS-SML-0403";
+    public override string[] Languages => ["js", "ts"];
+}
+
+public sealed class UnusedInternalMemberRulePython : UnusedInternalMemberRule
+{
+    public override string Key => "QG-PY-SML-0282";
+    public override string[] Languages => ["py"];
+}
+
+public sealed class UnusedInternalMemberRulePhp : UnusedInternalMemberRule
+{
+    public override string Key => "QG-PP-SML-0147";
+    public override string[] Languages => ["php"];
+}
+
+public sealed class UnusedInternalMemberRuleGo : UnusedInternalMemberRule
+{
+    public override string Key => "QG-GO-SML-0061";
+    public override string[] Languages => ["go"];
+}
+
+public sealed class UnusedInternalMemberRuleDart : UnusedInternalMemberRule
+{
+    public override string Key => "QG-DART-SML-0026";
+    public override string[] Languages => ["dart"];
+}
+
+public sealed class UnusedInternalMemberRuleRuby : UnusedInternalMemberRule
+{
+    public override string Key => "QG-RB-SML-0060";
+    public override string[] Languages => ["rb"];
+}
+
+public sealed class UnusedInternalMemberRuleSwift : UnusedInternalMemberRule
+{
+    public override string Key => "QG-SW-SML-0044";
+    public override string[] Languages => ["swift"];
+}
+
+public sealed class UnusedInternalMemberRuleCss : UnusedInternalMemberRule
+{
+    public override string Key => "QG-CSS-SML-0065";
+    public override string[] Languages => ["css"];
+}
+
+public sealed class UnusedInternalMemberRuleHtml : UnusedInternalMemberRule
+{
+    public override string Key => "QG-HTML-SML-0137";
+    public override string[] Languages => ["html"];
+}
+
+public sealed class UnusedInternalMemberRuleXml : UnusedInternalMemberRule
+{
+    public override string Key => "QG-XML-SML-0052";
+    public override string[] Languages => ["xml"];
+}
+
+public sealed class UnusedInternalMemberRuleTerraform : UnusedInternalMemberRule
+{
+    public override string Key => "QG-TF-SML-0044";
+    public override string[] Languages => ["tf"];
+}
+
+public sealed class UnusedInternalMemberRuleDockerfile : UnusedInternalMemberRule
+{
+    public override string Key => "QG-DK-SML-0058";
+    public override string[] Languages => ["dk"];
+}
+
+public sealed class UnusedInternalMemberRuleKubernetes : UnusedInternalMemberRule
+{
+    public override string Key => "QG-K8-SML-0052";
+    public override string[] Languages => ["k8"];
+}
+
+public sealed class UnusedInternalMemberRuleCloudFormation : UnusedInternalMemberRule
+{
+    public override string Key => "QG-CF-SML-0045";
+    public override string[] Languages => ["cf"];
+}
+
+public sealed class UnusedInternalMemberRuleJson : UnusedInternalMemberRule
+{
+    public override string Key => "QG-JSON-SML-0040";
+    public override string[] Languages => ["json"];
+}
+
+public abstract class DuplicateTypeNameRule : StructuralRuleBase
+{
     public override string Name => "Type names should be unique across the code base";
     public override Severity Severity => Severity.Minor;
     public override IssueKind Kind => IssueKind.CodeSmell;
@@ -1818,9 +7532,116 @@ public sealed class DuplicateTypeNameRule : StructuralRuleBase
 
 }
 
-public sealed class EqualityContractRule : StructuralRuleBase
+public sealed class DuplicateTypeNameRuleCs : DuplicateTypeNameRule
 {
-    public override string Key => "QG-ALL-BUG-0013";
+    public override string Key => "QG-CS-SML-0527";
+    public override string[] Languages => ["cs", "vb"];
+}
+
+public sealed class DuplicateTypeNameRuleJava : DuplicateTypeNameRule
+{
+    public override string Key => "QG-JV-SML-0488";
+    public override string[] Languages => ["java"];
+}
+
+public sealed class DuplicateTypeNameRuleKotlin : DuplicateTypeNameRule
+{
+    public override string Key => "QG-KT-SML-0110";
+    public override string[] Languages => ["kt"];
+}
+
+public sealed class DuplicateTypeNameRuleJs : DuplicateTypeNameRule
+{
+    public override string Key => "QG-JS-SML-0404";
+    public override string[] Languages => ["js", "ts"];
+}
+
+public sealed class DuplicateTypeNameRulePython : DuplicateTypeNameRule
+{
+    public override string Key => "QG-PY-SML-0283";
+    public override string[] Languages => ["py"];
+}
+
+public sealed class DuplicateTypeNameRulePhp : DuplicateTypeNameRule
+{
+    public override string Key => "QG-PP-SML-0148";
+    public override string[] Languages => ["php"];
+}
+
+public sealed class DuplicateTypeNameRuleGo : DuplicateTypeNameRule
+{
+    public override string Key => "QG-GO-SML-0062";
+    public override string[] Languages => ["go"];
+}
+
+public sealed class DuplicateTypeNameRuleDart : DuplicateTypeNameRule
+{
+    public override string Key => "QG-DART-SML-0027";
+    public override string[] Languages => ["dart"];
+}
+
+public sealed class DuplicateTypeNameRuleRuby : DuplicateTypeNameRule
+{
+    public override string Key => "QG-RB-SML-0061";
+    public override string[] Languages => ["rb"];
+}
+
+public sealed class DuplicateTypeNameRuleSwift : DuplicateTypeNameRule
+{
+    public override string Key => "QG-SW-SML-0045";
+    public override string[] Languages => ["swift"];
+}
+
+public sealed class DuplicateTypeNameRuleCss : DuplicateTypeNameRule
+{
+    public override string Key => "QG-CSS-SML-0066";
+    public override string[] Languages => ["css"];
+}
+
+public sealed class DuplicateTypeNameRuleHtml : DuplicateTypeNameRule
+{
+    public override string Key => "QG-HTML-SML-0138";
+    public override string[] Languages => ["html"];
+}
+
+public sealed class DuplicateTypeNameRuleXml : DuplicateTypeNameRule
+{
+    public override string Key => "QG-XML-SML-0053";
+    public override string[] Languages => ["xml"];
+}
+
+public sealed class DuplicateTypeNameRuleTerraform : DuplicateTypeNameRule
+{
+    public override string Key => "QG-TF-SML-0045";
+    public override string[] Languages => ["tf"];
+}
+
+public sealed class DuplicateTypeNameRuleDockerfile : DuplicateTypeNameRule
+{
+    public override string Key => "QG-DK-SML-0059";
+    public override string[] Languages => ["dk"];
+}
+
+public sealed class DuplicateTypeNameRuleKubernetes : DuplicateTypeNameRule
+{
+    public override string Key => "QG-K8-SML-0053";
+    public override string[] Languages => ["k8"];
+}
+
+public sealed class DuplicateTypeNameRuleCloudFormation : DuplicateTypeNameRule
+{
+    public override string Key => "QG-CF-SML-0046";
+    public override string[] Languages => ["cf"];
+}
+
+public sealed class DuplicateTypeNameRuleJson : DuplicateTypeNameRule
+{
+    public override string Key => "QG-JSON-SML-0041";
+    public override string[] Languages => ["json"];
+}
+
+public abstract class EqualityContractRule : StructuralRuleBase
+{
     public override string Name => "Equality and hashing should be overridden together";
     public override Severity Severity => Severity.Critical;
     public override IssueKind Kind => IssueKind.Bug;
@@ -1849,9 +7670,116 @@ public sealed class EqualityContractRule : StructuralRuleBase
     }
 }
 
-public sealed class OverrideOnlyCallsBaseRule : StructuralRuleBase
+public sealed class EqualityContractRuleCs : EqualityContractRule
 {
-    public override string Key => "QG-ALL-SML-0034";
+    public override string Key => "QG-CS-BUG-0162";
+    public override string[] Languages => ["cs", "vb"];
+}
+
+public sealed class EqualityContractRuleJava : EqualityContractRule
+{
+    public override string Key => "QG-JV-BUG-0216";
+    public override string[] Languages => ["java"];
+}
+
+public sealed class EqualityContractRuleKotlin : EqualityContractRule
+{
+    public override string Key => "QG-KT-BUG-0043";
+    public override string[] Languages => ["kt"];
+}
+
+public sealed class EqualityContractRuleJs : EqualityContractRule
+{
+    public override string Key => "QG-JS-BUG-0160";
+    public override string[] Languages => ["js", "ts"];
+}
+
+public sealed class EqualityContractRulePython : EqualityContractRule
+{
+    public override string Key => "QG-PY-BUG-0166";
+    public override string[] Languages => ["py"];
+}
+
+public sealed class EqualityContractRulePhp : EqualityContractRule
+{
+    public override string Key => "QG-PP-BUG-0063";
+    public override string[] Languages => ["php"];
+}
+
+public sealed class EqualityContractRuleGo : EqualityContractRule
+{
+    public override string Key => "QG-GO-BUG-0019";
+    public override string[] Languages => ["go"];
+}
+
+public sealed class EqualityContractRuleDart : EqualityContractRule
+{
+    public override string Key => "QG-DART-BUG-0017";
+    public override string[] Languages => ["dart"];
+}
+
+public sealed class EqualityContractRuleRuby : EqualityContractRule
+{
+    public override string Key => "QG-RB-BUG-0038";
+    public override string[] Languages => ["rb"];
+}
+
+public sealed class EqualityContractRuleSwift : EqualityContractRule
+{
+    public override string Key => "QG-SW-BUG-0042";
+    public override string[] Languages => ["swift"];
+}
+
+public sealed class EqualityContractRuleCss : EqualityContractRule
+{
+    public override string Key => "QG-CSS-BUG-0067";
+    public override string[] Languages => ["css"];
+}
+
+public sealed class EqualityContractRuleHtml : EqualityContractRule
+{
+    public override string Key => "QG-HTML-BUG-0067";
+    public override string[] Languages => ["html"];
+}
+
+public sealed class EqualityContractRuleXml : EqualityContractRule
+{
+    public override string Key => "QG-XML-BUG-0042";
+    public override string[] Languages => ["xml"];
+}
+
+public sealed class EqualityContractRuleTerraform : EqualityContractRule
+{
+    public override string Key => "QG-TF-BUG-0037";
+    public override string[] Languages => ["tf"];
+}
+
+public sealed class EqualityContractRuleDockerfile : EqualityContractRule
+{
+    public override string Key => "QG-DK-BUG-0044";
+    public override string[] Languages => ["dk"];
+}
+
+public sealed class EqualityContractRuleKubernetes : EqualityContractRule
+{
+    public override string Key => "QG-K8-BUG-0037";
+    public override string[] Languages => ["k8"];
+}
+
+public sealed class EqualityContractRuleCloudFormation : EqualityContractRule
+{
+    public override string Key => "QG-CF-BUG-0037";
+    public override string[] Languages => ["cf"];
+}
+
+public sealed class EqualityContractRuleJson : EqualityContractRule
+{
+    public override string Key => "QG-JSON-BUG-0038";
+    public override string[] Languages => ["json"];
+}
+
+public abstract class OverrideOnlyCallsBaseRule : StructuralRuleBase
+{
     public override string Name => "Overrides should add something";
     public override Severity Severity => Severity.Minor;
     public override IssueKind Kind => IssueKind.CodeSmell;
@@ -1888,9 +7816,116 @@ public sealed class OverrideOnlyCallsBaseRule : StructuralRuleBase
     }
 }
 
-public sealed class EmptyTypeRule : StructuralRuleBase
+public sealed class OverrideOnlyCallsBaseRuleCs : OverrideOnlyCallsBaseRule
 {
-    public override string Key => "QG-ALL-SML-0035";
+    public override string Key => "QG-CS-SML-0528";
+    public override string[] Languages => ["cs", "vb"];
+}
+
+public sealed class OverrideOnlyCallsBaseRuleJava : OverrideOnlyCallsBaseRule
+{
+    public override string Key => "QG-JV-SML-0489";
+    public override string[] Languages => ["java"];
+}
+
+public sealed class OverrideOnlyCallsBaseRuleKotlin : OverrideOnlyCallsBaseRule
+{
+    public override string Key => "QG-KT-SML-0111";
+    public override string[] Languages => ["kt"];
+}
+
+public sealed class OverrideOnlyCallsBaseRuleJs : OverrideOnlyCallsBaseRule
+{
+    public override string Key => "QG-JS-SML-0405";
+    public override string[] Languages => ["js", "ts"];
+}
+
+public sealed class OverrideOnlyCallsBaseRulePython : OverrideOnlyCallsBaseRule
+{
+    public override string Key => "QG-PY-SML-0284";
+    public override string[] Languages => ["py"];
+}
+
+public sealed class OverrideOnlyCallsBaseRulePhp : OverrideOnlyCallsBaseRule
+{
+    public override string Key => "QG-PP-SML-0149";
+    public override string[] Languages => ["php"];
+}
+
+public sealed class OverrideOnlyCallsBaseRuleGo : OverrideOnlyCallsBaseRule
+{
+    public override string Key => "QG-GO-SML-0063";
+    public override string[] Languages => ["go"];
+}
+
+public sealed class OverrideOnlyCallsBaseRuleDart : OverrideOnlyCallsBaseRule
+{
+    public override string Key => "QG-DART-SML-0028";
+    public override string[] Languages => ["dart"];
+}
+
+public sealed class OverrideOnlyCallsBaseRuleRuby : OverrideOnlyCallsBaseRule
+{
+    public override string Key => "QG-RB-SML-0062";
+    public override string[] Languages => ["rb"];
+}
+
+public sealed class OverrideOnlyCallsBaseRuleSwift : OverrideOnlyCallsBaseRule
+{
+    public override string Key => "QG-SW-SML-0046";
+    public override string[] Languages => ["swift"];
+}
+
+public sealed class OverrideOnlyCallsBaseRuleCss : OverrideOnlyCallsBaseRule
+{
+    public override string Key => "QG-CSS-SML-0067";
+    public override string[] Languages => ["css"];
+}
+
+public sealed class OverrideOnlyCallsBaseRuleHtml : OverrideOnlyCallsBaseRule
+{
+    public override string Key => "QG-HTML-SML-0139";
+    public override string[] Languages => ["html"];
+}
+
+public sealed class OverrideOnlyCallsBaseRuleXml : OverrideOnlyCallsBaseRule
+{
+    public override string Key => "QG-XML-SML-0054";
+    public override string[] Languages => ["xml"];
+}
+
+public sealed class OverrideOnlyCallsBaseRuleTerraform : OverrideOnlyCallsBaseRule
+{
+    public override string Key => "QG-TF-SML-0046";
+    public override string[] Languages => ["tf"];
+}
+
+public sealed class OverrideOnlyCallsBaseRuleDockerfile : OverrideOnlyCallsBaseRule
+{
+    public override string Key => "QG-DK-SML-0060";
+    public override string[] Languages => ["dk"];
+}
+
+public sealed class OverrideOnlyCallsBaseRuleKubernetes : OverrideOnlyCallsBaseRule
+{
+    public override string Key => "QG-K8-SML-0054";
+    public override string[] Languages => ["k8"];
+}
+
+public sealed class OverrideOnlyCallsBaseRuleCloudFormation : OverrideOnlyCallsBaseRule
+{
+    public override string Key => "QG-CF-SML-0047";
+    public override string[] Languages => ["cf"];
+}
+
+public sealed class OverrideOnlyCallsBaseRuleJson : OverrideOnlyCallsBaseRule
+{
+    public override string Key => "QG-JSON-SML-0042";
+    public override string[] Languages => ["json"];
+}
+
+public abstract class EmptyTypeRule : StructuralRuleBase
+{
     public override string Name => "Types should declare something";
     public override Severity Severity => Severity.Minor;
     public override IssueKind Kind => IssueKind.CodeSmell;
@@ -1914,6 +7949,114 @@ public sealed class EmptyTypeRule : StructuralRuleBase
     }
 }
 
+public sealed class EmptyTypeRuleCs : EmptyTypeRule
+{
+    public override string Key => "QG-CS-SML-0529";
+    public override string[] Languages => ["cs", "vb"];
+}
+
+public sealed class EmptyTypeRuleJava : EmptyTypeRule
+{
+    public override string Key => "QG-JV-SML-0490";
+    public override string[] Languages => ["java"];
+}
+
+public sealed class EmptyTypeRuleKotlin : EmptyTypeRule
+{
+    public override string Key => "QG-KT-SML-0112";
+    public override string[] Languages => ["kt"];
+}
+
+public sealed class EmptyTypeRuleJs : EmptyTypeRule
+{
+    public override string Key => "QG-JS-SML-0406";
+    public override string[] Languages => ["js", "ts"];
+}
+
+public sealed class EmptyTypeRulePython : EmptyTypeRule
+{
+    public override string Key => "QG-PY-SML-0285";
+    public override string[] Languages => ["py"];
+}
+
+public sealed class EmptyTypeRulePhp : EmptyTypeRule
+{
+    public override string Key => "QG-PP-SML-0150";
+    public override string[] Languages => ["php"];
+}
+
+public sealed class EmptyTypeRuleGo : EmptyTypeRule
+{
+    public override string Key => "QG-GO-SML-0064";
+    public override string[] Languages => ["go"];
+}
+
+public sealed class EmptyTypeRuleDart : EmptyTypeRule
+{
+    public override string Key => "QG-DART-SML-0029";
+    public override string[] Languages => ["dart"];
+}
+
+public sealed class EmptyTypeRuleRuby : EmptyTypeRule
+{
+    public override string Key => "QG-RB-SML-0063";
+    public override string[] Languages => ["rb"];
+}
+
+public sealed class EmptyTypeRuleSwift : EmptyTypeRule
+{
+    public override string Key => "QG-SW-SML-0047";
+    public override string[] Languages => ["swift"];
+}
+
+public sealed class EmptyTypeRuleCss : EmptyTypeRule
+{
+    public override string Key => "QG-CSS-SML-0068";
+    public override string[] Languages => ["css"];
+}
+
+public sealed class EmptyTypeRuleHtml : EmptyTypeRule
+{
+    public override string Key => "QG-HTML-SML-0140";
+    public override string[] Languages => ["html"];
+}
+
+public sealed class EmptyTypeRuleXml : EmptyTypeRule
+{
+    public override string Key => "QG-XML-SML-0055";
+    public override string[] Languages => ["xml"];
+}
+
+public sealed class EmptyTypeRuleTerraform : EmptyTypeRule
+{
+    public override string Key => "QG-TF-SML-0047";
+    public override string[] Languages => ["tf"];
+}
+
+public sealed class EmptyTypeRuleDockerfile : EmptyTypeRule
+{
+    public override string Key => "QG-DK-SML-0061";
+    public override string[] Languages => ["dk"];
+}
+
+public sealed class EmptyTypeRuleKubernetes : EmptyTypeRule
+{
+    public override string Key => "QG-K8-SML-0055";
+    public override string[] Languages => ["k8"];
+}
+
+public sealed class EmptyTypeRuleCloudFormation : EmptyTypeRule
+{
+    public override string Key => "QG-CF-SML-0048";
+    public override string[] Languages => ["cf"];
+}
+
+public sealed class EmptyTypeRuleJson : EmptyTypeRule
+{
+    public override string Key => "QG-JSON-SML-0043";
+    public override string[] Languages => ["json"];
+}
+
 internal static class TypeNodeExtensions
 {
     /// <summary>Number of base types the declaration names, as seen by the project index.</summary>
@@ -1921,9 +8064,8 @@ internal static class TypeNodeExtensions
         => context.Project.FindTypes(type.Text).FirstOrDefault(t => t.Node == type)?.BaseNames.Count ?? 0;
 }
 
-public sealed class FieldCouldBeReadOnlyRule : StructuralRuleBase
+public abstract class FieldCouldBeReadOnlyRule : StructuralRuleBase
 {
-    public override string Key => "QG-ALL-SML-0036";
     public override string Name => "Fields set only during construction should be read-only";
     public override Severity Severity => Severity.Minor;
     public override IssueKind Kind => IssueKind.CodeSmell;
@@ -1965,9 +8107,116 @@ public sealed class FieldCouldBeReadOnlyRule : StructuralRuleBase
     }
 }
 
-public sealed class MethodCouldBeStaticRule : StructuralRuleBase
+public sealed class FieldCouldBeReadOnlyRuleCs : FieldCouldBeReadOnlyRule
 {
-    public override string Key => "QG-ALL-SML-0037";
+    public override string Key => "QG-CS-SML-0530";
+    public override string[] Languages => ["cs", "vb"];
+}
+
+public sealed class FieldCouldBeReadOnlyRuleJava : FieldCouldBeReadOnlyRule
+{
+    public override string Key => "QG-JV-SML-0491";
+    public override string[] Languages => ["java"];
+}
+
+public sealed class FieldCouldBeReadOnlyRuleKotlin : FieldCouldBeReadOnlyRule
+{
+    public override string Key => "QG-KT-SML-0113";
+    public override string[] Languages => ["kt"];
+}
+
+public sealed class FieldCouldBeReadOnlyRuleJs : FieldCouldBeReadOnlyRule
+{
+    public override string Key => "QG-JS-SML-0407";
+    public override string[] Languages => ["js", "ts"];
+}
+
+public sealed class FieldCouldBeReadOnlyRulePython : FieldCouldBeReadOnlyRule
+{
+    public override string Key => "QG-PY-SML-0286";
+    public override string[] Languages => ["py"];
+}
+
+public sealed class FieldCouldBeReadOnlyRulePhp : FieldCouldBeReadOnlyRule
+{
+    public override string Key => "QG-PP-SML-0151";
+    public override string[] Languages => ["php"];
+}
+
+public sealed class FieldCouldBeReadOnlyRuleGo : FieldCouldBeReadOnlyRule
+{
+    public override string Key => "QG-GO-SML-0065";
+    public override string[] Languages => ["go"];
+}
+
+public sealed class FieldCouldBeReadOnlyRuleDart : FieldCouldBeReadOnlyRule
+{
+    public override string Key => "QG-DART-SML-0030";
+    public override string[] Languages => ["dart"];
+}
+
+public sealed class FieldCouldBeReadOnlyRuleRuby : FieldCouldBeReadOnlyRule
+{
+    public override string Key => "QG-RB-SML-0064";
+    public override string[] Languages => ["rb"];
+}
+
+public sealed class FieldCouldBeReadOnlyRuleSwift : FieldCouldBeReadOnlyRule
+{
+    public override string Key => "QG-SW-SML-0048";
+    public override string[] Languages => ["swift"];
+}
+
+public sealed class FieldCouldBeReadOnlyRuleCss : FieldCouldBeReadOnlyRule
+{
+    public override string Key => "QG-CSS-SML-0069";
+    public override string[] Languages => ["css"];
+}
+
+public sealed class FieldCouldBeReadOnlyRuleHtml : FieldCouldBeReadOnlyRule
+{
+    public override string Key => "QG-HTML-SML-0141";
+    public override string[] Languages => ["html"];
+}
+
+public sealed class FieldCouldBeReadOnlyRuleXml : FieldCouldBeReadOnlyRule
+{
+    public override string Key => "QG-XML-SML-0056";
+    public override string[] Languages => ["xml"];
+}
+
+public sealed class FieldCouldBeReadOnlyRuleTerraform : FieldCouldBeReadOnlyRule
+{
+    public override string Key => "QG-TF-SML-0048";
+    public override string[] Languages => ["tf"];
+}
+
+public sealed class FieldCouldBeReadOnlyRuleDockerfile : FieldCouldBeReadOnlyRule
+{
+    public override string Key => "QG-DK-SML-0062";
+    public override string[] Languages => ["dk"];
+}
+
+public sealed class FieldCouldBeReadOnlyRuleKubernetes : FieldCouldBeReadOnlyRule
+{
+    public override string Key => "QG-K8-SML-0056";
+    public override string[] Languages => ["k8"];
+}
+
+public sealed class FieldCouldBeReadOnlyRuleCloudFormation : FieldCouldBeReadOnlyRule
+{
+    public override string Key => "QG-CF-SML-0049";
+    public override string[] Languages => ["cf"];
+}
+
+public sealed class FieldCouldBeReadOnlyRuleJson : FieldCouldBeReadOnlyRule
+{
+    public override string Key => "QG-JSON-SML-0044";
+    public override string[] Languages => ["json"];
+}
+
+public abstract class MethodCouldBeStaticRule : StructuralRuleBase
+{
     public override string Name => "Members that ignore instance state should be static";
     public override Severity Severity => Severity.Minor;
     public override IssueKind Kind => IssueKind.CodeSmell;
@@ -2022,9 +8271,116 @@ public sealed class MethodCouldBeStaticRule : StructuralRuleBase
     }
 }
 
-public sealed class MutableStaticStateRule : StructuralRuleBase
+public sealed class MethodCouldBeStaticRuleCs : MethodCouldBeStaticRule
 {
-    public override string Key => "QG-ALL-SML-0038";
+    public override string Key => "QG-CS-SML-0531";
+    public override string[] Languages => ["cs", "vb"];
+}
+
+public sealed class MethodCouldBeStaticRuleJava : MethodCouldBeStaticRule
+{
+    public override string Key => "QG-JV-SML-0492";
+    public override string[] Languages => ["java"];
+}
+
+public sealed class MethodCouldBeStaticRuleKotlin : MethodCouldBeStaticRule
+{
+    public override string Key => "QG-KT-SML-0114";
+    public override string[] Languages => ["kt"];
+}
+
+public sealed class MethodCouldBeStaticRuleJs : MethodCouldBeStaticRule
+{
+    public override string Key => "QG-JS-SML-0408";
+    public override string[] Languages => ["js", "ts"];
+}
+
+public sealed class MethodCouldBeStaticRulePython : MethodCouldBeStaticRule
+{
+    public override string Key => "QG-PY-SML-0287";
+    public override string[] Languages => ["py"];
+}
+
+public sealed class MethodCouldBeStaticRulePhp : MethodCouldBeStaticRule
+{
+    public override string Key => "QG-PP-SML-0152";
+    public override string[] Languages => ["php"];
+}
+
+public sealed class MethodCouldBeStaticRuleGo : MethodCouldBeStaticRule
+{
+    public override string Key => "QG-GO-SML-0066";
+    public override string[] Languages => ["go"];
+}
+
+public sealed class MethodCouldBeStaticRuleDart : MethodCouldBeStaticRule
+{
+    public override string Key => "QG-DART-SML-0031";
+    public override string[] Languages => ["dart"];
+}
+
+public sealed class MethodCouldBeStaticRuleRuby : MethodCouldBeStaticRule
+{
+    public override string Key => "QG-RB-SML-0065";
+    public override string[] Languages => ["rb"];
+}
+
+public sealed class MethodCouldBeStaticRuleSwift : MethodCouldBeStaticRule
+{
+    public override string Key => "QG-SW-SML-0049";
+    public override string[] Languages => ["swift"];
+}
+
+public sealed class MethodCouldBeStaticRuleCss : MethodCouldBeStaticRule
+{
+    public override string Key => "QG-CSS-SML-0070";
+    public override string[] Languages => ["css"];
+}
+
+public sealed class MethodCouldBeStaticRuleHtml : MethodCouldBeStaticRule
+{
+    public override string Key => "QG-HTML-SML-0142";
+    public override string[] Languages => ["html"];
+}
+
+public sealed class MethodCouldBeStaticRuleXml : MethodCouldBeStaticRule
+{
+    public override string Key => "QG-XML-SML-0057";
+    public override string[] Languages => ["xml"];
+}
+
+public sealed class MethodCouldBeStaticRuleTerraform : MethodCouldBeStaticRule
+{
+    public override string Key => "QG-TF-SML-0049";
+    public override string[] Languages => ["tf"];
+}
+
+public sealed class MethodCouldBeStaticRuleDockerfile : MethodCouldBeStaticRule
+{
+    public override string Key => "QG-DK-SML-0063";
+    public override string[] Languages => ["dk"];
+}
+
+public sealed class MethodCouldBeStaticRuleKubernetes : MethodCouldBeStaticRule
+{
+    public override string Key => "QG-K8-SML-0057";
+    public override string[] Languages => ["k8"];
+}
+
+public sealed class MethodCouldBeStaticRuleCloudFormation : MethodCouldBeStaticRule
+{
+    public override string Key => "QG-CF-SML-0050";
+    public override string[] Languages => ["cf"];
+}
+
+public sealed class MethodCouldBeStaticRuleJson : MethodCouldBeStaticRule
+{
+    public override string Key => "QG-JSON-SML-0045";
+    public override string[] Languages => ["json"];
+}
+
+public abstract class MutableStaticStateRule : StructuralRuleBase
+{
     public override string Name => "Shared state should not be mutable";
     public override Severity Severity => Severity.Major;
     public override IssueKind Kind => IssueKind.CodeSmell;
@@ -2049,7 +8405,115 @@ public sealed class MutableStaticStateRule : StructuralRuleBase
     }
 }
 
-public sealed class UnreleasedResourceRule : StructuralRuleBase
+public sealed class MutableStaticStateRuleCs : MutableStaticStateRule
+{
+    public override string Key => "QG-CS-SML-0532";
+    public override string[] Languages => ["cs", "vb"];
+}
+
+public sealed class MutableStaticStateRuleJava : MutableStaticStateRule
+{
+    public override string Key => "QG-JV-SML-0493";
+    public override string[] Languages => ["java"];
+}
+
+public sealed class MutableStaticStateRuleKotlin : MutableStaticStateRule
+{
+    public override string Key => "QG-KT-SML-0115";
+    public override string[] Languages => ["kt"];
+}
+
+public sealed class MutableStaticStateRuleJs : MutableStaticStateRule
+{
+    public override string Key => "QG-JS-SML-0409";
+    public override string[] Languages => ["js", "ts"];
+}
+
+public sealed class MutableStaticStateRulePython : MutableStaticStateRule
+{
+    public override string Key => "QG-PY-SML-0288";
+    public override string[] Languages => ["py"];
+}
+
+public sealed class MutableStaticStateRulePhp : MutableStaticStateRule
+{
+    public override string Key => "QG-PP-SML-0153";
+    public override string[] Languages => ["php"];
+}
+
+public sealed class MutableStaticStateRuleGo : MutableStaticStateRule
+{
+    public override string Key => "QG-GO-SML-0067";
+    public override string[] Languages => ["go"];
+}
+
+public sealed class MutableStaticStateRuleDart : MutableStaticStateRule
+{
+    public override string Key => "QG-DART-SML-0032";
+    public override string[] Languages => ["dart"];
+}
+
+public sealed class MutableStaticStateRuleRuby : MutableStaticStateRule
+{
+    public override string Key => "QG-RB-SML-0066";
+    public override string[] Languages => ["rb"];
+}
+
+public sealed class MutableStaticStateRuleSwift : MutableStaticStateRule
+{
+    public override string Key => "QG-SW-SML-0050";
+    public override string[] Languages => ["swift"];
+}
+
+public sealed class MutableStaticStateRuleCss : MutableStaticStateRule
+{
+    public override string Key => "QG-CSS-SML-0071";
+    public override string[] Languages => ["css"];
+}
+
+public sealed class MutableStaticStateRuleHtml : MutableStaticStateRule
+{
+    public override string Key => "QG-HTML-SML-0143";
+    public override string[] Languages => ["html"];
+}
+
+public sealed class MutableStaticStateRuleXml : MutableStaticStateRule
+{
+    public override string Key => "QG-XML-SML-0058";
+    public override string[] Languages => ["xml"];
+}
+
+public sealed class MutableStaticStateRuleTerraform : MutableStaticStateRule
+{
+    public override string Key => "QG-TF-SML-0050";
+    public override string[] Languages => ["tf"];
+}
+
+public sealed class MutableStaticStateRuleDockerfile : MutableStaticStateRule
+{
+    public override string Key => "QG-DK-SML-0064";
+    public override string[] Languages => ["dk"];
+}
+
+public sealed class MutableStaticStateRuleKubernetes : MutableStaticStateRule
+{
+    public override string Key => "QG-K8-SML-0058";
+    public override string[] Languages => ["k8"];
+}
+
+public sealed class MutableStaticStateRuleCloudFormation : MutableStaticStateRule
+{
+    public override string Key => "QG-CF-SML-0051";
+    public override string[] Languages => ["cf"];
+}
+
+public sealed class MutableStaticStateRuleJson : MutableStaticStateRule
+{
+    public override string Key => "QG-JSON-SML-0046";
+    public override string[] Languages => ["json"];
+}
+
+public abstract class UnreleasedResourceRule : StructuralRuleBase
 {
     private static readonly string[] ResourceTypes =
     [
@@ -2059,8 +8523,6 @@ public sealed class UnreleasedResourceRule : StructuralRuleBase
     ];
 
     private static readonly string[] ReleaseNames = ["Dispose", "close", "Close", "DisposeAsync"];
-
-    public override string Key => "QG-ALL-BUG-0014";
     public override string Name => "Resources should be released on every path";
     public override Severity Severity => Severity.Critical;
     public override IssueKind Kind => IssueKind.Bug;
@@ -2098,7 +8560,115 @@ public sealed class UnreleasedResourceRule : StructuralRuleBase
     }
 }
 
-public sealed class MismatchedComparisonRule : StructuralRuleBase
+public sealed class UnreleasedResourceRuleCs : UnreleasedResourceRule
+{
+    public override string Key => "QG-CS-BUG-0163";
+    public override string[] Languages => ["cs", "vb"];
+}
+
+public sealed class UnreleasedResourceRuleJava : UnreleasedResourceRule
+{
+    public override string Key => "QG-JV-BUG-0217";
+    public override string[] Languages => ["java"];
+}
+
+public sealed class UnreleasedResourceRuleKotlin : UnreleasedResourceRule
+{
+    public override string Key => "QG-KT-BUG-0044";
+    public override string[] Languages => ["kt"];
+}
+
+public sealed class UnreleasedResourceRuleJs : UnreleasedResourceRule
+{
+    public override string Key => "QG-JS-BUG-0161";
+    public override string[] Languages => ["js", "ts"];
+}
+
+public sealed class UnreleasedResourceRulePython : UnreleasedResourceRule
+{
+    public override string Key => "QG-PY-BUG-0167";
+    public override string[] Languages => ["py"];
+}
+
+public sealed class UnreleasedResourceRulePhp : UnreleasedResourceRule
+{
+    public override string Key => "QG-PP-BUG-0064";
+    public override string[] Languages => ["php"];
+}
+
+public sealed class UnreleasedResourceRuleGo : UnreleasedResourceRule
+{
+    public override string Key => "QG-GO-BUG-0020";
+    public override string[] Languages => ["go"];
+}
+
+public sealed class UnreleasedResourceRuleDart : UnreleasedResourceRule
+{
+    public override string Key => "QG-DART-BUG-0018";
+    public override string[] Languages => ["dart"];
+}
+
+public sealed class UnreleasedResourceRuleRuby : UnreleasedResourceRule
+{
+    public override string Key => "QG-RB-BUG-0039";
+    public override string[] Languages => ["rb"];
+}
+
+public sealed class UnreleasedResourceRuleSwift : UnreleasedResourceRule
+{
+    public override string Key => "QG-SW-BUG-0043";
+    public override string[] Languages => ["swift"];
+}
+
+public sealed class UnreleasedResourceRuleCss : UnreleasedResourceRule
+{
+    public override string Key => "QG-CSS-BUG-0068";
+    public override string[] Languages => ["css"];
+}
+
+public sealed class UnreleasedResourceRuleHtml : UnreleasedResourceRule
+{
+    public override string Key => "QG-HTML-BUG-0068";
+    public override string[] Languages => ["html"];
+}
+
+public sealed class UnreleasedResourceRuleXml : UnreleasedResourceRule
+{
+    public override string Key => "QG-XML-BUG-0043";
+    public override string[] Languages => ["xml"];
+}
+
+public sealed class UnreleasedResourceRuleTerraform : UnreleasedResourceRule
+{
+    public override string Key => "QG-TF-BUG-0038";
+    public override string[] Languages => ["tf"];
+}
+
+public sealed class UnreleasedResourceRuleDockerfile : UnreleasedResourceRule
+{
+    public override string Key => "QG-DK-BUG-0045";
+    public override string[] Languages => ["dk"];
+}
+
+public sealed class UnreleasedResourceRuleKubernetes : UnreleasedResourceRule
+{
+    public override string Key => "QG-K8-BUG-0038";
+    public override string[] Languages => ["k8"];
+}
+
+public sealed class UnreleasedResourceRuleCloudFormation : UnreleasedResourceRule
+{
+    public override string Key => "QG-CF-BUG-0038";
+    public override string[] Languages => ["cf"];
+}
+
+public sealed class UnreleasedResourceRuleJson : UnreleasedResourceRule
+{
+    public override string Key => "QG-JSON-BUG-0039";
+    public override string[] Languages => ["json"];
+}
+
+public abstract class MismatchedComparisonRule : StructuralRuleBase
 {
     private static readonly string[] Numeric =
         ["int", "long", "short", "byte", "double", "float", "decimal", "number", "Integer", "Double"];
@@ -2106,8 +8676,6 @@ public sealed class MismatchedComparisonRule : StructuralRuleBase
     private static readonly string[] Primitive =
         ["int", "long", "short", "byte", "double", "float", "decimal", "number", "bool", "boolean",
          "string", "str", "char", "object"];
-
-    public override string Key => "QG-ALL-BUG-0015";
     public override string Name => "Values of unrelated types should not be compared";
     public override Severity Severity => Severity.Major;
     public override IssueKind Kind => IssueKind.Bug;
@@ -2145,4 +8713,112 @@ public sealed class MismatchedComparisonRule : StructuralRuleBase
                                        + "so this comparison is constant.");
         }
     }
+}
+
+public sealed class MismatchedComparisonRuleCs : MismatchedComparisonRule
+{
+    public override string Key => "QG-CS-BUG-0164";
+    public override string[] Languages => ["cs", "vb"];
+}
+
+public sealed class MismatchedComparisonRuleJava : MismatchedComparisonRule
+{
+    public override string Key => "QG-JV-BUG-0218";
+    public override string[] Languages => ["java"];
+}
+
+public sealed class MismatchedComparisonRuleKotlin : MismatchedComparisonRule
+{
+    public override string Key => "QG-KT-BUG-0045";
+    public override string[] Languages => ["kt"];
+}
+
+public sealed class MismatchedComparisonRuleJs : MismatchedComparisonRule
+{
+    public override string Key => "QG-JS-BUG-0162";
+    public override string[] Languages => ["js", "ts"];
+}
+
+public sealed class MismatchedComparisonRulePython : MismatchedComparisonRule
+{
+    public override string Key => "QG-PY-BUG-0168";
+    public override string[] Languages => ["py"];
+}
+
+public sealed class MismatchedComparisonRulePhp : MismatchedComparisonRule
+{
+    public override string Key => "QG-PP-BUG-0065";
+    public override string[] Languages => ["php"];
+}
+
+public sealed class MismatchedComparisonRuleGo : MismatchedComparisonRule
+{
+    public override string Key => "QG-GO-BUG-0021";
+    public override string[] Languages => ["go"];
+}
+
+public sealed class MismatchedComparisonRuleDart : MismatchedComparisonRule
+{
+    public override string Key => "QG-DART-BUG-0019";
+    public override string[] Languages => ["dart"];
+}
+
+public sealed class MismatchedComparisonRuleRuby : MismatchedComparisonRule
+{
+    public override string Key => "QG-RB-BUG-0040";
+    public override string[] Languages => ["rb"];
+}
+
+public sealed class MismatchedComparisonRuleSwift : MismatchedComparisonRule
+{
+    public override string Key => "QG-SW-BUG-0044";
+    public override string[] Languages => ["swift"];
+}
+
+public sealed class MismatchedComparisonRuleCss : MismatchedComparisonRule
+{
+    public override string Key => "QG-CSS-BUG-0069";
+    public override string[] Languages => ["css"];
+}
+
+public sealed class MismatchedComparisonRuleHtml : MismatchedComparisonRule
+{
+    public override string Key => "QG-HTML-BUG-0069";
+    public override string[] Languages => ["html"];
+}
+
+public sealed class MismatchedComparisonRuleXml : MismatchedComparisonRule
+{
+    public override string Key => "QG-XML-BUG-0044";
+    public override string[] Languages => ["xml"];
+}
+
+public sealed class MismatchedComparisonRuleTerraform : MismatchedComparisonRule
+{
+    public override string Key => "QG-TF-BUG-0039";
+    public override string[] Languages => ["tf"];
+}
+
+public sealed class MismatchedComparisonRuleDockerfile : MismatchedComparisonRule
+{
+    public override string Key => "QG-DK-BUG-0046";
+    public override string[] Languages => ["dk"];
+}
+
+public sealed class MismatchedComparisonRuleKubernetes : MismatchedComparisonRule
+{
+    public override string Key => "QG-K8-BUG-0039";
+    public override string[] Languages => ["k8"];
+}
+
+public sealed class MismatchedComparisonRuleCloudFormation : MismatchedComparisonRule
+{
+    public override string Key => "QG-CF-BUG-0039";
+    public override string[] Languages => ["cf"];
+}
+
+public sealed class MismatchedComparisonRuleJson : MismatchedComparisonRule
+{
+    public override string Key => "QG-JSON-BUG-0040";
+    public override string[] Languages => ["json"];
 }

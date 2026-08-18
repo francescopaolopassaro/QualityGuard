@@ -27,7 +27,7 @@ public class CorrectnessRulesTests
                 }
             }
             """;
-        Assert.Equal([5], Lines("Finder.cs", code, "QG-ALL-BUG-0016"));
+        Assert.Equal([5], Lines("Finder.cs", code, "QG-CS-BUG-0165"));
     }
 
     [Fact]
@@ -47,7 +47,7 @@ public class CorrectnessRulesTests
                 }
             }
             """;
-        Assert.Empty(Lines("Finder.cs", code, "QG-ALL-BUG-0016"));
+        Assert.Empty(Lines("Finder.cs", code, "QG-CS-BUG-0165"));
     }
 
     [Fact]
@@ -64,7 +64,7 @@ public class CorrectnessRulesTests
                 }
             }
             """;
-        Assert.Equal([5, 7], Lines("Cart.cs", code, "QG-ALL-BUG-0017"));
+        Assert.Equal([5, 7], Lines("Cart.cs", code, "QG-CS-BUG-0166"));
     }
 
     [Fact]
@@ -76,7 +76,7 @@ public class CorrectnessRulesTests
                 public bool Any(System.Collections.Generic.List<int> items) => items.Count > 0;
             }
             """;
-        Assert.Empty(Lines("Cart.cs", code, "QG-ALL-BUG-0017"));
+        Assert.Empty(Lines("Cart.cs", code, "QG-CS-BUG-0166"));
     }
 
     [Fact]
@@ -91,7 +91,7 @@ public class CorrectnessRulesTests
                 }
             }
             """;
-        Assert.Equal([5], Lines("Merge.cs", code, "QG-ALL-BUG-0018"));
+        Assert.Equal([5], Lines("Merge.cs", code, "QG-CS-BUG-0167"));
     }
 
     [Fact]
@@ -106,7 +106,7 @@ public class CorrectnessRulesTests
                 }
             }
             """;
-        Assert.Empty(Lines("Merge.cs", code, "QG-ALL-BUG-0018"));
+        Assert.Empty(Lines("Merge.cs", code, "QG-CS-BUG-0167"));
     }
 
     [Fact]
@@ -122,7 +122,7 @@ public class CorrectnessRulesTests
                 }
             }
             """;
-        Assert.Equal([5], Lines("Names.cs", code, "QG-ALL-BUG-0019"));
+        Assert.Equal([5], Lines("Names.cs", code, "QG-CS-BUG-0168"));
     }
 
     [Fact]
@@ -134,7 +134,7 @@ public class CorrectnessRulesTests
                 public string Clean(string name) => name.Trim();
             }
             """;
-        Assert.Empty(Lines("Names.cs", code, "QG-ALL-BUG-0019"));
+        Assert.Empty(Lines("Names.cs", code, "QG-CS-BUG-0168"));
     }
 
     [Fact]
@@ -146,7 +146,7 @@ public class CorrectnessRulesTests
                 public bool Check(bool ready) => !!ready;
             }
             """;
-        Assert.Equal([3], Lines("Flags.cs", code, "QG-ALL-BUG-0020"));
+        Assert.Equal([3], Lines("Flags.cs", code, "QG-CS-BUG-0169"));
     }
 
     [Fact]
@@ -160,7 +160,7 @@ public class CorrectnessRulesTests
                 public int Fine(int value) => value << 3;
             }
             """;
-        Assert.Equal([3, 4], Lines("Bits.cs", code, "QG-ALL-BUG-0021"));
+        Assert.Equal([3, 4], Lines("Bits.cs", code, "QG-CS-BUG-0170"));
     }
 
     [Fact]
@@ -178,7 +178,7 @@ public class CorrectnessRulesTests
                 }
             }
             """;
-        Assert.Equal([5], Lines("Walk.cs", code, "QG-ALL-BUG-0022"));
+        Assert.Equal([5], Lines("Walk.cs", code, "QG-CS-BUG-0171"));
     }
 
     [Fact]
@@ -196,7 +196,7 @@ public class CorrectnessRulesTests
                 }
             }
             """;
-        Assert.Empty(Lines("Walk.cs", code, "QG-ALL-BUG-0022"));
+        Assert.Empty(Lines("Walk.cs", code, "QG-CS-BUG-0171"));
     }
 
     [Fact]
@@ -216,7 +216,7 @@ public class CorrectnessRulesTests
                 private void Work() { }
             }
             """;
-        Assert.Equal([5], Lines("Pump.cs", code, "QG-ALL-BUG-0023"));
+        Assert.Equal([5], Lines("Pump.cs", code, "QG-CS-BUG-0172"));
     }
 
     [Fact]
@@ -237,7 +237,7 @@ public class CorrectnessRulesTests
                 private bool Done() => true;
             }
             """;
-        Assert.Empty(Lines("Pump.cs", code, "QG-ALL-BUG-0023"));
+        Assert.Empty(Lines("Pump.cs", code, "QG-CS-BUG-0172"));
     }
 
     [Fact]
@@ -255,7 +255,7 @@ public class CorrectnessRulesTests
                 }
             }
             """;
-        Assert.Equal([8], Lines("Till.cs", code, "QG-ALL-BUG-0015"));
+        Assert.Equal([8], Lines("Till.cs", code, "QG-CS-BUG-0164"));
     }
 
     [Fact]
@@ -273,7 +273,7 @@ public class CorrectnessRulesTests
                 }
             }
             """;
-        Assert.Empty(Lines("Till.cs", code, "QG-ALL-BUG-0015"));
+        Assert.Empty(Lines("Till.cs", code, "QG-CS-BUG-0164"));
     }
 
     [Fact]
@@ -291,7 +291,7 @@ public class CorrectnessRulesTests
                 private int Read() => 1;
             }
             """;
-        Assert.Equal([6], Lines("Counter.cs", code, "QG-ALL-BUG-0024"));
+        Assert.Equal([6], Lines("Counter.cs", code, "QG-CS-BUG-0173"));
     }
 
     [Fact]
@@ -309,6 +309,6 @@ public class CorrectnessRulesTests
                 private int Read() => 1;
             }
             """;
-        Assert.Empty(Lines("Counter.cs", code, "QG-ALL-BUG-0024"));
+        Assert.Empty(Lines("Counter.cs", code, "QG-CS-BUG-0173"));
     }
 }

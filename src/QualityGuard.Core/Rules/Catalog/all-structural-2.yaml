@@ -1,6 +1,8 @@
 # Documentation for the second wave of language-agnostic AST rules.
 
 - key: QG-ALL-SML-0011
+  status: superseded
+  superseded_by: QG-CS-SML-0509
   name: Files should not grow beyond a readable size
   languages: []
   category: SML
@@ -17,6 +19,8 @@
     the directory structure carry the grouping the file used to provide.
 
 - key: QG-ALL-SML-0012
+  status: superseded
+  superseded_by: QG-CS-SML-0497
   name: Function parameters should be used
   languages: []
   category: SML
@@ -33,6 +37,8 @@
     interface or delegate forces the signature, name it with a leading underscore to record the intent.
 
 - key: QG-ALL-SML-0013
+  status: superseded
+  superseded_by: QG-CS-SML-0510
   name: Nested conditions that can be merged should be merged
   languages: []
   category: SML
@@ -54,6 +60,8 @@
     if (user != null && user.IsActive) { send(user); }
 
 - key: QG-ALL-SML-0014
+  status: superseded
+  superseded_by: QG-CS-SML-0511
   name: Blocks should not be nested without a reason
   languages: []
   category: SML
@@ -70,6 +78,8 @@
     into a function if the intent was to group a step.
 
 - key: QG-ALL-SML-0015
+  status: superseded
+  superseded_by: QG-CS-SML-0512
   name: Condition chains should end with a final branch
   languages: []
   category: SML
@@ -86,6 +96,8 @@
     the unexpected value.
 
 - key: QG-ALL-SML-0016
+  status: superseded
+  superseded_by: QG-CS-SML-0513
   name: Conditions should not combine too many operators
   languages: []
   category: SML
@@ -102,6 +114,8 @@
     a predicate function whose name states what it decides.
 
 - key: QG-ALL-SML-0017
+  status: superseded
+  superseded_by: QG-CS-SML-0514
   name: Multi-way branches should not be nested
   languages: []
   category: SML
@@ -118,6 +132,8 @@
     outer case. A lookup table often replaces both.
 
 - key: QG-ALL-CNV-0005
+  status: superseded
+  superseded_by: QG-CS-CNV-0015
   name: Control structures should always use a block
   languages: []
   category: CNV
@@ -143,6 +159,8 @@
     }
 
 - key: QG-ALL-SML-0018
+  status: superseded
+  superseded_by: QG-CS-SML-0515
   name: Functions should not have too many exit points
   languages: []
   category: SML

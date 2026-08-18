@@ -53,7 +53,7 @@ public class RulePrecisionTests
                 public string Normalize(string path) => path.Replace("\\", "/");
             }
             """;
-        Assert.Empty(Lines("Paths.cs", code, "QG-ALL-BUG-0007"));
+        Assert.Empty(Lines("Paths.cs", code, "QG-CS-BUG-0156"));
     }
 
     [Fact]
@@ -65,7 +65,7 @@ public class RulePrecisionTests
                 public bool Run(string text) => System.Text.RegularExpressions.Regex.IsMatch(text, "([a-z]");
             }
             """;
-        Assert.Equal([3], Lines("Check.cs", code, "QG-ALL-BUG-0007"));
+        Assert.Equal([3], Lines("Check.cs", code, "QG-CS-BUG-0156"));
     }
 
     [Fact]
@@ -120,7 +120,7 @@ public class RulePrecisionTests
             """;
         var analysis = Analyze.WithRules("Service.cs", code);
         var reported = analysis.Issues
-            .Where(i => i.RuleKey is "QG-ALL-SML-0028" or "QG-ALL-SML-0032")
+            .Where(i => i.RuleKey is "QG-CS-SML-0522" or "QG-CS-SML-0526")
             .Select(i => i.RuleKey)
             .ToList();
         Assert.Single(reported);

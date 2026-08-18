@@ -64,7 +64,7 @@ public class JavaPrecisionTests
               }
             }
             """;
-        Assert.Empty(Lines(code, "QG-ALL-BUG-0036"));
+        Assert.Empty(Lines(code, "QG-JV-BUG-0239"));
     }
 
     [Fact]
@@ -80,7 +80,7 @@ public class JavaPrecisionTests
               }
             }
             """;
-        Assert.Empty(Lines(code, "QG-ALL-BUG-0004"));
+        Assert.Empty(Lines(code, "QG-JV-BUG-0207"));
 
         var real = """
             package demo;
@@ -91,7 +91,7 @@ public class JavaPrecisionTests
               }
             }
             """;
-        Assert.NotEmpty(Lines(real, "QG-ALL-BUG-0004"));
+        Assert.NotEmpty(Lines(real, "QG-JV-BUG-0207"));
     }
 
     [Fact]
@@ -101,12 +101,12 @@ public class JavaPrecisionTests
         // empty on purpose — both declare a contract for subclasses
         Assert.Empty(Lines("package demo;\npublic abstract class A {\n"
                            + "  protected abstract boolean matches(ModifiersTree modifier);\n}\n",
-            "QG-ALL-SML-0012"));
+            "QG-JV-SML-0458"));
         Assert.Empty(Lines("package demo;\npublic class A {\n"
-                           + "  public void visitNode(Tree tree) {\n  }\n}\n", "QG-ALL-SML-0012"));
+                           + "  public void visitNode(Tree tree) {\n  }\n}\n", "QG-JV-SML-0458"));
         Assert.NotEmpty(Lines("package demo;\npublic class A {\n"
                               + "  public void go(Tree tree) {\n    log(\"x\");\n  }\n}\n",
-            "QG-ALL-SML-0012"));
+            "QG-JV-SML-0458"));
     }
     [Fact]
     public void Only_a_private_method_is_asked_to_become_static()
@@ -128,7 +128,7 @@ public class JavaPrecisionTests
               static void helper() {}
             }
             """;
-        Assert.Empty(Lines(contract, "QG-ALL-SML-0037"));
+        Assert.Empty(Lines(contract, "QG-JV-SML-0492"));
 
         var local = """
             package demo;
@@ -139,7 +139,7 @@ public class JavaPrecisionTests
               }
             }
             """;
-        Assert.NotEmpty(Lines(local, "QG-ALL-SML-0037"));
+        Assert.NotEmpty(Lines(local, "QG-JV-SML-0492"));
     }
 
     [Fact]
@@ -154,7 +154,7 @@ public class JavaPrecisionTests
               }
             }
             """;
-        Assert.Empty(Lines(documented, "QG-ALL-SML-0010"));
+        Assert.Empty(Lines(documented, "QG-JV-SML-0462"));
 
         var silent = """
             package demo;
@@ -164,7 +164,7 @@ public class JavaPrecisionTests
               }
             }
             """;
-        Assert.NotEmpty(Lines(silent, "QG-ALL-SML-0010"));
+        Assert.NotEmpty(Lines(silent, "QG-JV-SML-0462"));
     }
 
     [Fact]
@@ -177,7 +177,7 @@ public class JavaPrecisionTests
               A() {}
             }
             """;
-        Assert.Empty(Lines(code, "QG-ALL-SML-0010"));
+        Assert.Empty(Lines(code, "QG-JV-SML-0462"));
     }
 
 }

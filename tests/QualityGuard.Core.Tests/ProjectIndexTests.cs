@@ -42,7 +42,7 @@ public class ProjectIndexTests
             ("IStore.cs", "public interface IStore { void Save(); }"),
             ("Store.cs", "public class Store : IStore { public void Save() { } }"));
 
-        var findings = analyses.SelectMany(a => a.Issues).Where(i => i.RuleKey == "QG-ALL-BUG-0012");
+        var findings = analyses.SelectMany(a => a.Issues).Where(i => i.RuleKey == "QG-CS-BUG-0161");
         Assert.Empty(findings);
     }
 
@@ -53,7 +53,7 @@ public class ProjectIndexTests
             ("Base.cs", "public class Base { public void Save() { } }"),
             ("Child.cs", "public class Child : Base { public void Save() { } }"));
 
-        var findings = analyses.SelectMany(a => a.Issues).Where(i => i.RuleKey == "QG-ALL-BUG-0012");
+        var findings = analyses.SelectMany(a => a.Issues).Where(i => i.RuleKey == "QG-CS-BUG-0161");
         Assert.Single(findings);
     }
 
@@ -67,7 +67,7 @@ public class ProjectIndexTests
             }
             """));
 
-        var finding = Assert.Single(analyses[0].Issues.Where(i => i.RuleKey == "QG-ALL-BUG-0013"));
+        var finding = Assert.Single(analyses[0].Issues.Where(i => i.RuleKey == "QG-CS-BUG-0162"));
         Assert.Contains("hashing", finding.Message);
     }
 
@@ -78,7 +78,7 @@ public class ProjectIndexTests
             ("A.cs", "namespace One; public class Report { public void Go() { } }"),
             ("B.cs", "namespace One; public class Report { public void Stop() { } }"));
 
-        var findings = analyses.SelectMany(a => a.Issues).Where(i => i.RuleKey == "QG-ALL-SML-0033");
+        var findings = analyses.SelectMany(a => a.Issues).Where(i => i.RuleKey == "QG-CS-SML-0527");
         Assert.Equal(2, findings.Count());
     }
 
@@ -91,7 +91,7 @@ public class ProjectIndexTests
             ("A.cs", "namespace One; public class Report { public void Go() { } }"),
             ("B.cs", "namespace Two; public class Report { public void Go() { } }"));
 
-        var findings = analyses.SelectMany(a => a.Issues).Where(i => i.RuleKey == "QG-ALL-SML-0033");
+        var findings = analyses.SelectMany(a => a.Issues).Where(i => i.RuleKey == "QG-CS-SML-0527");
         Assert.Empty(findings);
     }
 }

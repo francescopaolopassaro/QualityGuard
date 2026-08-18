@@ -11,7 +11,7 @@ namespace QualityGuard.Core.Tests;
 public class QualityNumbersTests
 {
     private static Issue Finding(IssueKind kind, Severity severity, string effort = "10min")
-        => new("QG-ALL-BUG-0001", "message", severity, kind, "File.cs", 1, effort);
+        => new("QG-CS-BUG-0150", "message", severity, kind, "File.cs", 1, effort);
 
     [Theory]
     [InlineData("5min", 5)]

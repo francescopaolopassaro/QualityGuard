@@ -1,6 +1,8 @@
 # Documentation for the third wave of language-agnostic AST rules.
 
 - key: QG-ALL-SML-0020
+  status: superseded
+  superseded_by: QG-CS-SML-0516
   name: Caught exceptions should not be ignored
   languages: []
   category: SML
@@ -17,6 +19,8 @@
     failure really is expected and harmless, keep the empty block but write down the reason.
 
 - key: QG-ALL-SML-0021
+  status: superseded
+  superseded_by: QG-CS-SML-0517
   name: Boolean values should not be compared with literals
   languages: []
   category: SML
@@ -36,6 +40,8 @@
     if (isReady) { ... }
 
 - key: QG-ALL-SML-0022
+  status: superseded
+  superseded_by: QG-CS-SML-0498
   name: Numbers should be named when their meaning is not obvious
   languages: []
   category: SML
@@ -52,6 +58,8 @@
     place that needs it.
 
 - key: QG-ALL-SML-0023
+  status: superseded
+  superseded_by: QG-CS-SML-0518
   name: Conditional expressions should not be nested
   languages: []
   category: SML
@@ -68,6 +76,8 @@
     own condition.
 
 - key: QG-ALL-SML-0024
+  status: superseded
+  superseded_by: QG-CS-SML-0502
   name: Types should not accumulate too many members
   languages: []
   category: SML
@@ -83,6 +93,8 @@
     usually indicate where the seam is — and let the original delegate to the new types.
 
 - key: QG-ALL-BUG-0008
+  status: superseded
+  superseded_by: QG-CS-BUG-0157
   name: Tests should verify something
   languages: []
   category: BUG
@@ -99,6 +111,8 @@
     before trusting it again.
 
 - key: QG-ALL-SML-0025
+  status: superseded
+  superseded_by: QG-CS-SML-0519
   name: Catch clauses should name the failures they handle
   languages: []
   category: SML
@@ -115,6 +129,8 @@
     that logs and rethrows, so nothing is absorbed silently deeper in the call stack.
 
 - key: QG-ALL-SML-0026
+  status: superseded
+  superseded_by: QG-CS-SML-0520
   name: Thrown exceptions should say what went wrong
   languages: []
   category: SML
@@ -130,6 +146,8 @@
     context the caller needs.
 
 - key: QG-ALL-SML-0027
+  status: superseded
+  superseded_by: QG-CS-SML-0521
   name: Disabled tests should not stay in the suite
   languages: []
   category: SML
@@ -145,6 +163,8 @@
     reference the ticket that will bring it back.
 
 - key: QG-ALL-SML-0028
+  status: superseded
+  superseded_by: QG-CS-SML-0522
   name: Private functions should be called
   languages: []
   category: SML
@@ -160,6 +180,8 @@
     Delete it, or wire the call that was supposed to use it. Version control keeps the history.
 
 - key: QG-ALL-SML-0029
+  status: superseded
+  superseded_by: QG-CS-SML-0523
   name: Jumps that change nothing should be removed
   languages: []
   category: SML
@@ -174,6 +196,8 @@
     Delete the statement, and keep jumps only where they exit early from the middle of a block.
 
 - key: QG-ALL-SML-0030
+  status: superseded
+  superseded_by: QG-CS-SML-0524
   name: Commented-out code should be deleted
   languages: []
   category: SML
@@ -189,6 +213,8 @@
     an experiment.
 
 - key: QG-ALL-SML-0031
+  status: superseded
+  superseded_by: QG-CS-SML-0525
   name: Inheritance chains should stay shallow
   languages: []
   category: SML
@@ -205,6 +231,8 @@
     genuine specialisation of one concept.
 
 - key: QG-ALL-SML-0032
+  status: superseded
+  superseded_by: QG-CS-SML-0526
   name: Non-public members should be reachable
   languages: []
   category: SML
@@ -219,6 +247,8 @@
     Remove it, or restore the call that used to reach it. If it exists only for tests, make that explicit.
 
 - key: QG-ALL-SML-0033
+  status: superseded
+  superseded_by: QG-CS-SML-0527
   name: Type names should be unique across the code base
   languages: []
   category: SML
@@ -233,6 +263,8 @@
     Rename one of them after what makes it different, or merge them if they represent the same concept.
 
 - key: QG-ALL-SML-0034
+  status: superseded
+  superseded_by: QG-CS-SML-0528
   name: Overrides should add something
   languages: []
   category: SML
@@ -247,6 +279,8 @@
     Remove the override, or give it the behaviour it was added for.
 
 - key: QG-ALL-SML-0035
+  status: superseded
+  superseded_by: QG-CS-SML-0529
   name: Types should declare something
   languages: []
   category: SML
@@ -261,6 +295,8 @@
     Give it members, or delete it. A marker type is legitimate: say so with a comment when it is one.
 
 - key: QG-ALL-BUG-0009
+  status: superseded
+  superseded_by: QG-CS-BUG-0158
   name: Rethrowing should preserve the original trace
   languages: []
   category: BUG
@@ -276,6 +312,8 @@
     inner exception when context has to be added.
 
 - key: QG-ALL-BUG-0010
+  status: superseded
+  superseded_by: QG-CS-BUG-0159
   name: Cleanup blocks should not change the control flow
   languages: []
   category: BUG
@@ -291,6 +329,8 @@
     after the cleanup has run.
 
 - key: QG-ALL-BUG-0011
+  status: superseded
+  superseded_by: QG-CS-BUG-0160
   name: Locks should be taken on a private object
   languages: []
   category: BUG
@@ -307,6 +347,8 @@
     to unknown code while holding it.
 
 - key: QG-ALL-BUG-0012
+  status: superseded
+  superseded_by: QG-CS-BUG-0161
   name: Members should not hide a base member by accident
   languages: []
   category: BUG
@@ -322,6 +364,8 @@
     different operation that happens to share a word.
 
 - key: QG-ALL-BUG-0013
+  status: superseded
+  superseded_by: QG-CS-BUG-0162
   name: Equality and hashing should be overridden together
   languages: []
   category: BUG
@@ -338,6 +382,8 @@
     the object is stored.
 
 - key: QG-ALL-SML-0036
+  status: superseded
+  superseded_by: QG-CS-SML-0530
   name: Fields set only during construction should be read-only
   languages: []
   category: SML
@@ -354,6 +400,8 @@
     and say in the code why the value changes.
 
 - key: QG-ALL-SML-0037
+  status: superseded
+  superseded_by: QG-CS-SML-0531
   name: Members that ignore instance state should be static
   languages: []
   category: SML
@@ -369,6 +417,8 @@
     Make the member static, or use the instance state it was supposed to read.
 
 - key: QG-ALL-SML-0038
+  status: superseded
+  superseded_by: QG-CS-SML-0532
   name: Shared state should not be mutable
   languages: []
   category: SML
@@ -383,6 +433,8 @@
     Make the field read-only, or move the value into a scoped service that is injected where it is needed.
 
 - key: QG-ALL-BUG-0014
+  status: superseded
+  superseded_by: QG-CS-BUG-0163
   name: Resources should be released on every path
   languages: []
   category: BUG
@@ -399,6 +451,8 @@
     the exceptional ones.
 
 - key: QG-ALL-BUG-0015
+  status: superseded
+  superseded_by: QG-CS-BUG-0164
   name: Values of unrelated types should not be compared
   languages: []
   category: BUG

@@ -12,9 +12,60 @@ public static class RegexStructureRuleSet
 {
     public static IReadOnlyList<IRule> All { get; } =
     [
-        new EmptyStringRepetitionRule(),
-        new ImpossibleBoundaryRule(),
-        new ReluctantQuantifierRule()
+        new EmptyStringRepetitionRuleCs(),
+        new EmptyStringRepetitionRuleJava(),
+        new EmptyStringRepetitionRuleKotlin(),
+        new EmptyStringRepetitionRuleJs(),
+        new EmptyStringRepetitionRulePython(),
+        new EmptyStringRepetitionRulePhp(),
+        new EmptyStringRepetitionRuleGo(),
+        new EmptyStringRepetitionRuleDart(),
+        new EmptyStringRepetitionRuleRuby(),
+        new EmptyStringRepetitionRuleSwift(),
+        new EmptyStringRepetitionRuleCss(),
+        new EmptyStringRepetitionRuleHtml(),
+        new EmptyStringRepetitionRuleXml(),
+        new EmptyStringRepetitionRuleTerraform(),
+        new EmptyStringRepetitionRuleDockerfile(),
+        new EmptyStringRepetitionRuleKubernetes(),
+        new EmptyStringRepetitionRuleCloudFormation(),
+        new EmptyStringRepetitionRuleJson(),
+        new ImpossibleBoundaryRuleCs(),
+        new ImpossibleBoundaryRuleJava(),
+        new ImpossibleBoundaryRuleKotlin(),
+        new ImpossibleBoundaryRuleJs(),
+        new ImpossibleBoundaryRulePython(),
+        new ImpossibleBoundaryRulePhp(),
+        new ImpossibleBoundaryRuleGo(),
+        new ImpossibleBoundaryRuleDart(),
+        new ImpossibleBoundaryRuleRuby(),
+        new ImpossibleBoundaryRuleSwift(),
+        new ImpossibleBoundaryRuleCss(),
+        new ImpossibleBoundaryRuleHtml(),
+        new ImpossibleBoundaryRuleXml(),
+        new ImpossibleBoundaryRuleTerraform(),
+        new ImpossibleBoundaryRuleDockerfile(),
+        new ImpossibleBoundaryRuleKubernetes(),
+        new ImpossibleBoundaryRuleCloudFormation(),
+        new ImpossibleBoundaryRuleJson(),
+        new ReluctantQuantifierRuleCs(),
+        new ReluctantQuantifierRuleRuby(),
+        new ReluctantQuantifierRuleSwift(),
+        new ReluctantQuantifierRuleCss(),
+        new ReluctantQuantifierRuleHtml(),
+        new ReluctantQuantifierRuleXml(),
+        new ReluctantQuantifierRuleTerraform(),
+        new ReluctantQuantifierRuleDockerfile(),
+        new ReluctantQuantifierRuleKubernetes(),
+        new ReluctantQuantifierRuleCloudFormation(),
+        new ReluctantQuantifierRuleJson(),
+        new ReluctantQuantifierRuleJava(),
+        new ReluctantQuantifierRuleKotlin(),
+        new ReluctantQuantifierRuleJs(),
+        new ReluctantQuantifierRulePython(),
+        new ReluctantQuantifierRulePhp(),
+        new ReluctantQuantifierRuleGo(),
+        new ReluctantQuantifierRuleDart()
     ];
 }
 
@@ -248,9 +299,8 @@ public abstract class RegexStructureRuleBase : RuleBase
            || pattern.Contains("(?U", StringComparison.Ordinal);
 }
 
-public sealed class EmptyStringRepetitionRule : RegexStructureRuleBase
+public abstract class EmptyStringRepetitionRule : RegexStructureRuleBase
 {
-    public override string Key => "QG-ALL-BUG-0039";
     public override string Name => "A repeated group should not match the empty string";
 
     public override void Execute(IRuleContext context)
@@ -279,9 +329,116 @@ public sealed class EmptyStringRepetitionRule : RegexStructureRuleBase
     }
 }
 
-public sealed class ImpossibleBoundaryRule : RegexStructureRuleBase
+public sealed class EmptyStringRepetitionRuleCs : EmptyStringRepetitionRule
 {
-    public override string Key => "QG-ALL-BUG-0040";
+    public override string Key => "QG-CS-BUG-0188";
+    public override string[] Languages => ["cs", "vb"];
+}
+
+public sealed class EmptyStringRepetitionRuleJava : EmptyStringRepetitionRule
+{
+    public override string Key => "QG-JV-BUG-0242";
+    public override string[] Languages => ["java"];
+}
+
+public sealed class EmptyStringRepetitionRuleKotlin : EmptyStringRepetitionRule
+{
+    public override string Key => "QG-KT-BUG-0069";
+    public override string[] Languages => ["kt"];
+}
+
+public sealed class EmptyStringRepetitionRuleJs : EmptyStringRepetitionRule
+{
+    public override string Key => "QG-JS-BUG-0186";
+    public override string[] Languages => ["js", "ts"];
+}
+
+public sealed class EmptyStringRepetitionRulePython : EmptyStringRepetitionRule
+{
+    public override string Key => "QG-PY-BUG-0192";
+    public override string[] Languages => ["py"];
+}
+
+public sealed class EmptyStringRepetitionRulePhp : EmptyStringRepetitionRule
+{
+    public override string Key => "QG-PP-BUG-0089";
+    public override string[] Languages => ["php"];
+}
+
+public sealed class EmptyStringRepetitionRuleGo : EmptyStringRepetitionRule
+{
+    public override string Key => "QG-GO-BUG-0045";
+    public override string[] Languages => ["go"];
+}
+
+public sealed class EmptyStringRepetitionRuleDart : EmptyStringRepetitionRule
+{
+    public override string Key => "QG-DART-BUG-0043";
+    public override string[] Languages => ["dart"];
+}
+
+public sealed class EmptyStringRepetitionRuleRuby : EmptyStringRepetitionRule
+{
+    public override string Key => "QG-RB-BUG-0023";
+    public override string[] Languages => ["rb"];
+}
+
+public sealed class EmptyStringRepetitionRuleSwift : EmptyStringRepetitionRule
+{
+    public override string Key => "QG-SW-BUG-0027";
+    public override string[] Languages => ["swift"];
+}
+
+public sealed class EmptyStringRepetitionRuleCss : EmptyStringRepetitionRule
+{
+    public override string Key => "QG-CSS-BUG-0052";
+    public override string[] Languages => ["css"];
+}
+
+public sealed class EmptyStringRepetitionRuleHtml : EmptyStringRepetitionRule
+{
+    public override string Key => "QG-HTML-BUG-0052";
+    public override string[] Languages => ["html"];
+}
+
+public sealed class EmptyStringRepetitionRuleXml : EmptyStringRepetitionRule
+{
+    public override string Key => "QG-XML-BUG-0027";
+    public override string[] Languages => ["xml"];
+}
+
+public sealed class EmptyStringRepetitionRuleTerraform : EmptyStringRepetitionRule
+{
+    public override string Key => "QG-TF-BUG-0022";
+    public override string[] Languages => ["tf"];
+}
+
+public sealed class EmptyStringRepetitionRuleDockerfile : EmptyStringRepetitionRule
+{
+    public override string Key => "QG-DK-BUG-0029";
+    public override string[] Languages => ["dk"];
+}
+
+public sealed class EmptyStringRepetitionRuleKubernetes : EmptyStringRepetitionRule
+{
+    public override string Key => "QG-K8-BUG-0022";
+    public override string[] Languages => ["k8"];
+}
+
+public sealed class EmptyStringRepetitionRuleCloudFormation : EmptyStringRepetitionRule
+{
+    public override string Key => "QG-CF-BUG-0022";
+    public override string[] Languages => ["cf"];
+}
+
+public sealed class EmptyStringRepetitionRuleJson : EmptyStringRepetitionRule
+{
+    public override string Key => "QG-JSON-BUG-0023";
+    public override string[] Languages => ["json"];
+}
+
+public abstract class ImpossibleBoundaryRule : RegexStructureRuleBase
+{
     public override string Name => "An anchor should be in a position where it can hold";
 
     public override void Execute(IRuleContext context)
@@ -338,12 +495,118 @@ public sealed class ImpossibleBoundaryRule : RegexStructureRuleBase
            && (atom.Kind != 'g' || !RegexShape.MatchesEmpty(atom.Body));
 }
 
-public sealed class ReluctantQuantifierRule : RegexStructureRuleBase
+public sealed class ImpossibleBoundaryRuleCs : ImpossibleBoundaryRule
+{
+    public override string Key => "QG-CS-BUG-0189";
+    public override string[] Languages => ["cs", "vb"];
+}
+
+public sealed class ImpossibleBoundaryRuleJava : ImpossibleBoundaryRule
+{
+    public override string Key => "QG-JV-BUG-0243";
+    public override string[] Languages => ["java"];
+}
+
+public sealed class ImpossibleBoundaryRuleKotlin : ImpossibleBoundaryRule
+{
+    public override string Key => "QG-KT-BUG-0070";
+    public override string[] Languages => ["kt"];
+}
+
+public sealed class ImpossibleBoundaryRuleJs : ImpossibleBoundaryRule
+{
+    public override string Key => "QG-JS-BUG-0187";
+    public override string[] Languages => ["js", "ts"];
+}
+
+public sealed class ImpossibleBoundaryRulePython : ImpossibleBoundaryRule
+{
+    public override string Key => "QG-PY-BUG-0193";
+    public override string[] Languages => ["py"];
+}
+
+public sealed class ImpossibleBoundaryRulePhp : ImpossibleBoundaryRule
+{
+    public override string Key => "QG-PP-BUG-0090";
+    public override string[] Languages => ["php"];
+}
+
+public sealed class ImpossibleBoundaryRuleGo : ImpossibleBoundaryRule
+{
+    public override string Key => "QG-GO-BUG-0046";
+    public override string[] Languages => ["go"];
+}
+
+public sealed class ImpossibleBoundaryRuleDart : ImpossibleBoundaryRule
+{
+    public override string Key => "QG-DART-BUG-0044";
+    public override string[] Languages => ["dart"];
+}
+
+public sealed class ImpossibleBoundaryRuleRuby : ImpossibleBoundaryRule
+{
+    public override string Key => "QG-RB-BUG-0024";
+    public override string[] Languages => ["rb"];
+}
+
+public sealed class ImpossibleBoundaryRuleSwift : ImpossibleBoundaryRule
+{
+    public override string Key => "QG-SW-BUG-0028";
+    public override string[] Languages => ["swift"];
+}
+
+public sealed class ImpossibleBoundaryRuleCss : ImpossibleBoundaryRule
+{
+    public override string Key => "QG-CSS-BUG-0053";
+    public override string[] Languages => ["css"];
+}
+
+public sealed class ImpossibleBoundaryRuleHtml : ImpossibleBoundaryRule
+{
+    public override string Key => "QG-HTML-BUG-0053";
+    public override string[] Languages => ["html"];
+}
+
+public sealed class ImpossibleBoundaryRuleXml : ImpossibleBoundaryRule
+{
+    public override string Key => "QG-XML-BUG-0028";
+    public override string[] Languages => ["xml"];
+}
+
+public sealed class ImpossibleBoundaryRuleTerraform : ImpossibleBoundaryRule
+{
+    public override string Key => "QG-TF-BUG-0023";
+    public override string[] Languages => ["tf"];
+}
+
+public sealed class ImpossibleBoundaryRuleDockerfile : ImpossibleBoundaryRule
+{
+    public override string Key => "QG-DK-BUG-0030";
+    public override string[] Languages => ["dk"];
+}
+
+public sealed class ImpossibleBoundaryRuleKubernetes : ImpossibleBoundaryRule
+{
+    public override string Key => "QG-K8-BUG-0023";
+    public override string[] Languages => ["k8"];
+}
+
+public sealed class ImpossibleBoundaryRuleCloudFormation : ImpossibleBoundaryRule
+{
+    public override string Key => "QG-CF-BUG-0023";
+    public override string[] Languages => ["cf"];
+}
+
+public sealed class ImpossibleBoundaryRuleJson : ImpossibleBoundaryRule
+{
+    public override string Key => "QG-JSON-BUG-0024";
+    public override string[] Languages => ["json"];
+}
+
+public abstract class ReluctantQuantifierRule : RegexStructureRuleBase
 {
     /// <summary>Atoms that match nearly anything, so a lazy repetition of them scans one step at a time.</summary>
     private static readonly string[] Wide = [".", @"\S", @"\D", @"\W", @"\w", @"\d", @"\s"];
-
-    public override string Key => "QG-ALL-SML-0052";
     public override string Name => "A lazy quantifier before a fixed terminator should be a negated class";
     public override IssueKind Kind => IssueKind.CodeSmell;
     public override Severity Severity => Severity.Minor;
@@ -388,4 +651,112 @@ public sealed class ReluctantQuantifierRule : RegexStructureRuleBase
             }
         }
     }
+}
+
+public sealed class ReluctantQuantifierRuleCs : ReluctantQuantifierRule
+{
+    public override string Key => "QG-CS-SML-0545";
+    public override string[] Languages => ["cs", "vb"];
+}
+
+public sealed class ReluctantQuantifierRuleJava : ReluctantQuantifierRule
+{
+    public override string Key => "QG-JV-SML-0506";
+    public override string[] Languages => ["java"];
+}
+
+public sealed class ReluctantQuantifierRuleKotlin : ReluctantQuantifierRule
+{
+    public override string Key => "QG-KT-SML-0128";
+    public override string[] Languages => ["kt"];
+}
+
+public sealed class ReluctantQuantifierRuleJs : ReluctantQuantifierRule
+{
+    public override string Key => "QG-JS-SML-0422";
+    public override string[] Languages => ["js", "ts"];
+}
+
+public sealed class ReluctantQuantifierRulePython : ReluctantQuantifierRule
+{
+    public override string Key => "QG-PY-SML-0301";
+    public override string[] Languages => ["py"];
+}
+
+public sealed class ReluctantQuantifierRulePhp : ReluctantQuantifierRule
+{
+    public override string Key => "QG-PP-SML-0166";
+    public override string[] Languages => ["php"];
+}
+
+public sealed class ReluctantQuantifierRuleGo : ReluctantQuantifierRule
+{
+    public override string Key => "QG-GO-SML-0080";
+    public override string[] Languages => ["go"];
+}
+
+public sealed class ReluctantQuantifierRuleDart : ReluctantQuantifierRule
+{
+    public override string Key => "QG-DART-SML-0045";
+    public override string[] Languages => ["dart"];
+}
+
+public sealed class ReluctantQuantifierRuleRuby : ReluctantQuantifierRule
+{
+    public override string Key => "QG-RB-SML-0031";
+    public override string[] Languages => ["rb"];
+}
+
+public sealed class ReluctantQuantifierRuleSwift : ReluctantQuantifierRule
+{
+    public override string Key => "QG-SW-SML-0015";
+    public override string[] Languages => ["swift"];
+}
+
+public sealed class ReluctantQuantifierRuleCss : ReluctantQuantifierRule
+{
+    public override string Key => "QG-CSS-SML-0036";
+    public override string[] Languages => ["css"];
+}
+
+public sealed class ReluctantQuantifierRuleHtml : ReluctantQuantifierRule
+{
+    public override string Key => "QG-HTML-SML-0108";
+    public override string[] Languages => ["html"];
+}
+
+public sealed class ReluctantQuantifierRuleXml : ReluctantQuantifierRule
+{
+    public override string Key => "QG-XML-SML-0023";
+    public override string[] Languages => ["xml"];
+}
+
+public sealed class ReluctantQuantifierRuleTerraform : ReluctantQuantifierRule
+{
+    public override string Key => "QG-TF-SML-0015";
+    public override string[] Languages => ["tf"];
+}
+
+public sealed class ReluctantQuantifierRuleDockerfile : ReluctantQuantifierRule
+{
+    public override string Key => "QG-DK-SML-0029";
+    public override string[] Languages => ["dk"];
+}
+
+public sealed class ReluctantQuantifierRuleKubernetes : ReluctantQuantifierRule
+{
+    public override string Key => "QG-K8-SML-0023";
+    public override string[] Languages => ["k8"];
+}
+
+public sealed class ReluctantQuantifierRuleCloudFormation : ReluctantQuantifierRule
+{
+    public override string Key => "QG-CF-SML-0016";
+    public override string[] Languages => ["cf"];
+}
+
+public sealed class ReluctantQuantifierRuleJson : ReluctantQuantifierRule
+{
+    public override string Key => "QG-JSON-SML-0011";
+    public override string[] Languages => ["json"];
 }

@@ -12,16 +12,129 @@ public static class ApiUsageRuleSet
 {
     public static IReadOnlyList<IRule> All { get; } =
     [
-        new OctalLiteralRule(),
-        new ProcessExitInLibraryRule(),
+        new OctalLiteralRuleCs(),
+        new OctalLiteralRuleJava(),
+        new OctalLiteralRuleKotlin(),
+        new OctalLiteralRuleJs(),
+        new OctalLiteralRulePython(),
+        new OctalLiteralRulePhp(),
+        new OctalLiteralRuleGo(),
+        new OctalLiteralRuleDart(),
+        new OctalLiteralRuleRuby(),
+        new OctalLiteralRuleSwift(),
+        new OctalLiteralRuleCss(),
+        new OctalLiteralRuleHtml(),
+        new OctalLiteralRuleXml(),
+        new OctalLiteralRuleTerraform(),
+        new OctalLiteralRuleDockerfile(),
+        new OctalLiteralRuleKubernetes(),
+        new OctalLiteralRuleCloudFormation(),
+        new OctalLiteralRuleJson(),
+        new ProcessExitInLibraryRuleCs(),
+        new ProcessExitInLibraryRuleJava(),
+        new ProcessExitInLibraryRuleKotlin(),
+        new ProcessExitInLibraryRuleJs(),
+        new ProcessExitInLibraryRulePython(),
+        new ProcessExitInLibraryRulePhp(),
+        new ProcessExitInLibraryRuleGo(),
+        new ProcessExitInLibraryRuleDart(),
+        new ProcessExitInLibraryRuleRuby(),
+        new ProcessExitInLibraryRuleSwift(),
+        new ProcessExitInLibraryRuleCss(),
+        new ProcessExitInLibraryRuleHtml(),
+        new ProcessExitInLibraryRuleXml(),
+        new ProcessExitInLibraryRuleTerraform(),
+        new ProcessExitInLibraryRuleDockerfile(),
+        new ProcessExitInLibraryRuleKubernetes(),
+        new ProcessExitInLibraryRuleCloudFormation(),
+        new ProcessExitInLibraryRuleJson(),
         new CsStandardOutputForLoggingRule(),
         new JsStandardOutputForLoggingRule(),
         new JavaStandardOutputForLoggingRule(),
         new GoStandardOutputForLoggingRule(),
-        new WildcardImportRule(),
-        new SideEffectInsideExpressionRule(),
-        new LoopBoundCheckedWithInequalityRule(),
-        new ResultOfVoidCallUsedRule()
+        new StandardOutputForLoggingRuleRuby(),
+        new StandardOutputForLoggingRuleSwift(),
+        new StandardOutputForLoggingRuleCss(),
+        new StandardOutputForLoggingRuleHtml(),
+        new StandardOutputForLoggingRuleXml(),
+        new StandardOutputForLoggingRuleTerraform(),
+        new StandardOutputForLoggingRuleDockerfile(),
+        new StandardOutputForLoggingRuleKubernetes(),
+        new StandardOutputForLoggingRuleCloudFormation(),
+        new StandardOutputForLoggingRuleJson(),
+        new StandardOutputForLoggingRuleDart(),
+        new WildcardImportRuleCs(),
+        new WildcardImportRuleJava(),
+        new WildcardImportRuleKotlin(),
+        new WildcardImportRuleJs(),
+        new WildcardImportRulePython(),
+        new WildcardImportRulePhp(),
+        new WildcardImportRuleGo(),
+        new WildcardImportRuleDart(),
+        new WildcardImportRuleRuby(),
+        new WildcardImportRuleSwift(),
+        new WildcardImportRuleCss(),
+        new WildcardImportRuleHtml(),
+        new WildcardImportRuleXml(),
+        new WildcardImportRuleTerraform(),
+        new WildcardImportRuleDockerfile(),
+        new WildcardImportRuleKubernetes(),
+        new WildcardImportRuleCloudFormation(),
+        new WildcardImportRuleJson(),
+        new SideEffectInsideExpressionRuleCs(),
+        new SideEffectInsideExpressionRuleJava(),
+        new SideEffectInsideExpressionRuleKotlin(),
+        new SideEffectInsideExpressionRuleJs(),
+        new SideEffectInsideExpressionRulePython(),
+        new SideEffectInsideExpressionRulePhp(),
+        new SideEffectInsideExpressionRuleGo(),
+        new SideEffectInsideExpressionRuleDart(),
+        new SideEffectInsideExpressionRuleRuby(),
+        new SideEffectInsideExpressionRuleSwift(),
+        new SideEffectInsideExpressionRuleCss(),
+        new SideEffectInsideExpressionRuleHtml(),
+        new SideEffectInsideExpressionRuleXml(),
+        new SideEffectInsideExpressionRuleTerraform(),
+        new SideEffectInsideExpressionRuleDockerfile(),
+        new SideEffectInsideExpressionRuleKubernetes(),
+        new SideEffectInsideExpressionRuleCloudFormation(),
+        new SideEffectInsideExpressionRuleJson(),
+        new LoopBoundCheckedWithInequalityRuleCs(),
+        new LoopBoundCheckedWithInequalityRuleJava(),
+        new LoopBoundCheckedWithInequalityRuleKotlin(),
+        new LoopBoundCheckedWithInequalityRuleJs(),
+        new LoopBoundCheckedWithInequalityRulePython(),
+        new LoopBoundCheckedWithInequalityRulePhp(),
+        new LoopBoundCheckedWithInequalityRuleGo(),
+        new LoopBoundCheckedWithInequalityRuleDart(),
+        new LoopBoundCheckedWithInequalityRuleRuby(),
+        new LoopBoundCheckedWithInequalityRuleSwift(),
+        new LoopBoundCheckedWithInequalityRuleCss(),
+        new LoopBoundCheckedWithInequalityRuleHtml(),
+        new LoopBoundCheckedWithInequalityRuleXml(),
+        new LoopBoundCheckedWithInequalityRuleTerraform(),
+        new LoopBoundCheckedWithInequalityRuleDockerfile(),
+        new LoopBoundCheckedWithInequalityRuleKubernetes(),
+        new LoopBoundCheckedWithInequalityRuleCloudFormation(),
+        new LoopBoundCheckedWithInequalityRuleJson(),
+        new ResultOfVoidCallUsedRuleCs(),
+        new ResultOfVoidCallUsedRuleRuby(),
+        new ResultOfVoidCallUsedRuleSwift(),
+        new ResultOfVoidCallUsedRuleCss(),
+        new ResultOfVoidCallUsedRuleHtml(),
+        new ResultOfVoidCallUsedRuleXml(),
+        new ResultOfVoidCallUsedRuleTerraform(),
+        new ResultOfVoidCallUsedRuleDockerfile(),
+        new ResultOfVoidCallUsedRuleKubernetes(),
+        new ResultOfVoidCallUsedRuleCloudFormation(),
+        new ResultOfVoidCallUsedRuleJson(),
+        new ResultOfVoidCallUsedRuleJava(),
+        new ResultOfVoidCallUsedRuleKotlin(),
+        new ResultOfVoidCallUsedRuleJs(),
+        new ResultOfVoidCallUsedRulePython(),
+        new ResultOfVoidCallUsedRulePhp(),
+        new ResultOfVoidCallUsedRuleGo(),
+        new ResultOfVoidCallUsedRuleDart()
     ];
 }
 
@@ -49,9 +162,8 @@ public abstract class ApiRuleBase : RuleBase
     }
 }
 
-public sealed class OctalLiteralRule : ApiRuleBase
+public abstract class OctalLiteralRule : ApiRuleBase
 {
-    public override string Key => "QG-ALL-BUG-0033";
     public override string Name => "A number should not be written in octal by accident";
     public override Severity Severity => Severity.Major;
     public override IssueKind Kind => IssueKind.Bug;
@@ -93,15 +205,121 @@ public sealed class OctalLiteralRule : ApiRuleBase
     }
 }
 
-public sealed class ProcessExitInLibraryRule : ApiRuleBase
+public sealed class OctalLiteralRuleCs : OctalLiteralRule
+{
+    public override string Key => "QG-CS-BUG-0182";
+    public override string[] Languages => ["cs", "vb"];
+}
+
+public sealed class OctalLiteralRuleJava : OctalLiteralRule
+{
+    public override string Key => "QG-JV-BUG-0236";
+    public override string[] Languages => ["java"];
+}
+
+public sealed class OctalLiteralRuleKotlin : OctalLiteralRule
+{
+    public override string Key => "QG-KT-BUG-0063";
+    public override string[] Languages => ["kt"];
+}
+
+public sealed class OctalLiteralRuleJs : OctalLiteralRule
+{
+    public override string Key => "QG-JS-BUG-0180";
+    public override string[] Languages => ["js", "ts"];
+}
+
+public sealed class OctalLiteralRulePython : OctalLiteralRule
+{
+    public override string Key => "QG-PY-BUG-0186";
+    public override string[] Languages => ["py"];
+}
+
+public sealed class OctalLiteralRulePhp : OctalLiteralRule
+{
+    public override string Key => "QG-PP-BUG-0083";
+    public override string[] Languages => ["php"];
+}
+
+public sealed class OctalLiteralRuleGo : OctalLiteralRule
+{
+    public override string Key => "QG-GO-BUG-0039";
+    public override string[] Languages => ["go"];
+}
+
+public sealed class OctalLiteralRuleDart : OctalLiteralRule
+{
+    public override string Key => "QG-DART-BUG-0037";
+    public override string[] Languages => ["dart"];
+}
+
+public sealed class OctalLiteralRuleRuby : OctalLiteralRule
+{
+    public override string Key => "QG-RB-BUG-0002";
+    public override string[] Languages => ["rb"];
+}
+
+public sealed class OctalLiteralRuleSwift : OctalLiteralRule
+{
+    public override string Key => "QG-SW-BUG-0006";
+    public override string[] Languages => ["swift"];
+}
+
+public sealed class OctalLiteralRuleCss : OctalLiteralRule
+{
+    public override string Key => "QG-CSS-BUG-0031";
+    public override string[] Languages => ["css"];
+}
+
+public sealed class OctalLiteralRuleHtml : OctalLiteralRule
+{
+    public override string Key => "QG-HTML-BUG-0031";
+    public override string[] Languages => ["html"];
+}
+
+public sealed class OctalLiteralRuleXml : OctalLiteralRule
+{
+    public override string Key => "QG-XML-BUG-0006";
+    public override string[] Languages => ["xml"];
+}
+
+public sealed class OctalLiteralRuleTerraform : OctalLiteralRule
+{
+    public override string Key => "QG-TF-BUG-0001";
+    public override string[] Languages => ["tf"];
+}
+
+public sealed class OctalLiteralRuleDockerfile : OctalLiteralRule
+{
+    public override string Key => "QG-DK-BUG-0008";
+    public override string[] Languages => ["dk"];
+}
+
+public sealed class OctalLiteralRuleKubernetes : OctalLiteralRule
+{
+    public override string Key => "QG-K8-BUG-0001";
+    public override string[] Languages => ["k8"];
+}
+
+public sealed class OctalLiteralRuleCloudFormation : OctalLiteralRule
+{
+    public override string Key => "QG-CF-BUG-0001";
+    public override string[] Languages => ["cf"];
+}
+
+public sealed class OctalLiteralRuleJson : OctalLiteralRule
+{
+    public override string Key => "QG-JSON-BUG-0002";
+    public override string[] Languages => ["json"];
+}
+
+public abstract class ProcessExitInLibraryRule : ApiRuleBase
 {
     private static readonly string[] ExitCalls =
         ["exit", "Exit", "_exit", "abort", "halt", "die"];
 
     private static readonly string[] ExitOwners =
         ["System", "Environment", "os", "sys", "process", "Runtime", "Process"];
-
-    public override string Key => "QG-ALL-SML-0045";
     public override string Name => "A library should not end the process";
     public override Severity Severity => Severity.Major;
     public override string RemediationEffort => "20min";
@@ -125,6 +343,114 @@ public sealed class ProcessExitInLibraryRule : ApiRuleBase
                                  + "runner. Return an error and let the entry point decide.");
         }
     }
+}
+
+public sealed class ProcessExitInLibraryRuleCs : ProcessExitInLibraryRule
+{
+    public override string Key => "QG-CS-SML-0539";
+    public override string[] Languages => ["cs", "vb"];
+}
+
+public sealed class ProcessExitInLibraryRuleJava : ProcessExitInLibraryRule
+{
+    public override string Key => "QG-JV-SML-0500";
+    public override string[] Languages => ["java"];
+}
+
+public sealed class ProcessExitInLibraryRuleKotlin : ProcessExitInLibraryRule
+{
+    public override string Key => "QG-KT-SML-0122";
+    public override string[] Languages => ["kt"];
+}
+
+public sealed class ProcessExitInLibraryRuleJs : ProcessExitInLibraryRule
+{
+    public override string Key => "QG-JS-SML-0416";
+    public override string[] Languages => ["js", "ts"];
+}
+
+public sealed class ProcessExitInLibraryRulePython : ProcessExitInLibraryRule
+{
+    public override string Key => "QG-PY-SML-0295";
+    public override string[] Languages => ["py"];
+}
+
+public sealed class ProcessExitInLibraryRulePhp : ProcessExitInLibraryRule
+{
+    public override string Key => "QG-PP-SML-0160";
+    public override string[] Languages => ["php"];
+}
+
+public sealed class ProcessExitInLibraryRuleGo : ProcessExitInLibraryRule
+{
+    public override string Key => "QG-GO-SML-0074";
+    public override string[] Languages => ["go"];
+}
+
+public sealed class ProcessExitInLibraryRuleDart : ProcessExitInLibraryRule
+{
+    public override string Key => "QG-DART-SML-0039";
+    public override string[] Languages => ["dart"];
+}
+
+public sealed class ProcessExitInLibraryRuleRuby : ProcessExitInLibraryRule
+{
+    public override string Key => "QG-RB-SML-0021";
+    public override string[] Languages => ["rb"];
+}
+
+public sealed class ProcessExitInLibraryRuleSwift : ProcessExitInLibraryRule
+{
+    public override string Key => "QG-SW-SML-0005";
+    public override string[] Languages => ["swift"];
+}
+
+public sealed class ProcessExitInLibraryRuleCss : ProcessExitInLibraryRule
+{
+    public override string Key => "QG-CSS-SML-0026";
+    public override string[] Languages => ["css"];
+}
+
+public sealed class ProcessExitInLibraryRuleHtml : ProcessExitInLibraryRule
+{
+    public override string Key => "QG-HTML-SML-0098";
+    public override string[] Languages => ["html"];
+}
+
+public sealed class ProcessExitInLibraryRuleXml : ProcessExitInLibraryRule
+{
+    public override string Key => "QG-XML-SML-0013";
+    public override string[] Languages => ["xml"];
+}
+
+public sealed class ProcessExitInLibraryRuleTerraform : ProcessExitInLibraryRule
+{
+    public override string Key => "QG-TF-SML-0005";
+    public override string[] Languages => ["tf"];
+}
+
+public sealed class ProcessExitInLibraryRuleDockerfile : ProcessExitInLibraryRule
+{
+    public override string Key => "QG-DK-SML-0019";
+    public override string[] Languages => ["dk"];
+}
+
+public sealed class ProcessExitInLibraryRuleKubernetes : ProcessExitInLibraryRule
+{
+    public override string Key => "QG-K8-SML-0013";
+    public override string[] Languages => ["k8"];
+}
+
+public sealed class ProcessExitInLibraryRuleCloudFormation : ProcessExitInLibraryRule
+{
+    public override string Key => "QG-CF-SML-0006";
+    public override string[] Languages => ["cf"];
+}
+
+public sealed class ProcessExitInLibraryRuleJson : ProcessExitInLibraryRule
+{
+    public override string Key => "QG-JSON-SML-0001";
+    public override string[] Languages => ["json"];
 }
 
 /// <summary>
@@ -198,9 +524,74 @@ public sealed class GoStandardOutputForLoggingRule : StandardOutputForLoggingRul
     public override string[] Languages => ["go"];
 }
 
-public sealed class WildcardImportRule : ApiRuleBase
+public sealed class StandardOutputForLoggingRuleRuby : StandardOutputForLoggingRule
 {
-    public override string Key => "QG-ALL-SML-0047";
+    public override string Key => "QG-RB-SML-0022";
+    public override string[] Languages => ["rb"];
+}
+
+public sealed class StandardOutputForLoggingRuleSwift : StandardOutputForLoggingRule
+{
+    public override string Key => "QG-SW-SML-0006";
+    public override string[] Languages => ["swift"];
+}
+
+public sealed class StandardOutputForLoggingRuleCss : StandardOutputForLoggingRule
+{
+    public override string Key => "QG-CSS-SML-0027";
+    public override string[] Languages => ["css"];
+}
+
+public sealed class StandardOutputForLoggingRuleHtml : StandardOutputForLoggingRule
+{
+    public override string Key => "QG-HTML-SML-0099";
+    public override string[] Languages => ["html"];
+}
+
+public sealed class StandardOutputForLoggingRuleXml : StandardOutputForLoggingRule
+{
+    public override string Key => "QG-XML-SML-0014";
+    public override string[] Languages => ["xml"];
+}
+
+public sealed class StandardOutputForLoggingRuleTerraform : StandardOutputForLoggingRule
+{
+    public override string Key => "QG-TF-SML-0006";
+    public override string[] Languages => ["tf"];
+}
+
+public sealed class StandardOutputForLoggingRuleDockerfile : StandardOutputForLoggingRule
+{
+    public override string Key => "QG-DK-SML-0020";
+    public override string[] Languages => ["dk"];
+}
+
+public sealed class StandardOutputForLoggingRuleKubernetes : StandardOutputForLoggingRule
+{
+    public override string Key => "QG-K8-SML-0014";
+    public override string[] Languages => ["k8"];
+}
+
+public sealed class StandardOutputForLoggingRuleCloudFormation : StandardOutputForLoggingRule
+{
+    public override string Key => "QG-CF-SML-0007";
+    public override string[] Languages => ["cf"];
+}
+
+public sealed class StandardOutputForLoggingRuleJson : StandardOutputForLoggingRule
+{
+    public override string Key => "QG-JSON-SML-0002";
+    public override string[] Languages => ["json"];
+}
+
+public sealed class StandardOutputForLoggingRuleDart : StandardOutputForLoggingRule
+{
+    public override string Key => "QG-DART-SML-0046";
+    public override string[] Languages => ["dart"];
+}
+
+public abstract class WildcardImportRule : ApiRuleBase
+{
     public override string Name => "Imports should name what they bring in";
 
     public override void Execute(IRuleContext context)
@@ -221,9 +612,116 @@ public sealed class WildcardImportRule : ApiRuleBase
     }
 }
 
-public sealed class SideEffectInsideExpressionRule : ApiRuleBase
+public sealed class WildcardImportRuleCs : WildcardImportRule
 {
-    public override string Key => "QG-ALL-BUG-0034";
+    public override string Key => "QG-CS-SML-0540";
+    public override string[] Languages => ["cs", "vb"];
+}
+
+public sealed class WildcardImportRuleJava : WildcardImportRule
+{
+    public override string Key => "QG-JV-SML-0501";
+    public override string[] Languages => ["java"];
+}
+
+public sealed class WildcardImportRuleKotlin : WildcardImportRule
+{
+    public override string Key => "QG-KT-SML-0123";
+    public override string[] Languages => ["kt"];
+}
+
+public sealed class WildcardImportRuleJs : WildcardImportRule
+{
+    public override string Key => "QG-JS-SML-0417";
+    public override string[] Languages => ["js", "ts"];
+}
+
+public sealed class WildcardImportRulePython : WildcardImportRule
+{
+    public override string Key => "QG-PY-SML-0296";
+    public override string[] Languages => ["py"];
+}
+
+public sealed class WildcardImportRulePhp : WildcardImportRule
+{
+    public override string Key => "QG-PP-SML-0161";
+    public override string[] Languages => ["php"];
+}
+
+public sealed class WildcardImportRuleGo : WildcardImportRule
+{
+    public override string Key => "QG-GO-SML-0075";
+    public override string[] Languages => ["go"];
+}
+
+public sealed class WildcardImportRuleDart : WildcardImportRule
+{
+    public override string Key => "QG-DART-SML-0040";
+    public override string[] Languages => ["dart"];
+}
+
+public sealed class WildcardImportRuleRuby : WildcardImportRule
+{
+    public override string Key => "QG-RB-SML-0023";
+    public override string[] Languages => ["rb"];
+}
+
+public sealed class WildcardImportRuleSwift : WildcardImportRule
+{
+    public override string Key => "QG-SW-SML-0007";
+    public override string[] Languages => ["swift"];
+}
+
+public sealed class WildcardImportRuleCss : WildcardImportRule
+{
+    public override string Key => "QG-CSS-SML-0028";
+    public override string[] Languages => ["css"];
+}
+
+public sealed class WildcardImportRuleHtml : WildcardImportRule
+{
+    public override string Key => "QG-HTML-SML-0100";
+    public override string[] Languages => ["html"];
+}
+
+public sealed class WildcardImportRuleXml : WildcardImportRule
+{
+    public override string Key => "QG-XML-SML-0015";
+    public override string[] Languages => ["xml"];
+}
+
+public sealed class WildcardImportRuleTerraform : WildcardImportRule
+{
+    public override string Key => "QG-TF-SML-0007";
+    public override string[] Languages => ["tf"];
+}
+
+public sealed class WildcardImportRuleDockerfile : WildcardImportRule
+{
+    public override string Key => "QG-DK-SML-0021";
+    public override string[] Languages => ["dk"];
+}
+
+public sealed class WildcardImportRuleKubernetes : WildcardImportRule
+{
+    public override string Key => "QG-K8-SML-0015";
+    public override string[] Languages => ["k8"];
+}
+
+public sealed class WildcardImportRuleCloudFormation : WildcardImportRule
+{
+    public override string Key => "QG-CF-SML-0008";
+    public override string[] Languages => ["cf"];
+}
+
+public sealed class WildcardImportRuleJson : WildcardImportRule
+{
+    public override string Key => "QG-JSON-SML-0003";
+    public override string[] Languages => ["json"];
+}
+
+public abstract class SideEffectInsideExpressionRule : ApiRuleBase
+{
     public override string Name => "A variable changed inside an expression should not be read twice in it";
     public override Severity Severity => Severity.Critical;
     public override IssueKind Kind => IssueKind.Bug;
@@ -258,9 +756,116 @@ public sealed class SideEffectInsideExpressionRule : ApiRuleBase
     }
 }
 
-public sealed class LoopBoundCheckedWithInequalityRule : ApiRuleBase
+public sealed class SideEffectInsideExpressionRuleCs : SideEffectInsideExpressionRule
 {
-    public override string Key => "QG-ALL-BUG-0035";
+    public override string Key => "QG-CS-BUG-0183";
+    public override string[] Languages => ["cs", "vb"];
+}
+
+public sealed class SideEffectInsideExpressionRuleJava : SideEffectInsideExpressionRule
+{
+    public override string Key => "QG-JV-BUG-0237";
+    public override string[] Languages => ["java"];
+}
+
+public sealed class SideEffectInsideExpressionRuleKotlin : SideEffectInsideExpressionRule
+{
+    public override string Key => "QG-KT-BUG-0064";
+    public override string[] Languages => ["kt"];
+}
+
+public sealed class SideEffectInsideExpressionRuleJs : SideEffectInsideExpressionRule
+{
+    public override string Key => "QG-JS-BUG-0181";
+    public override string[] Languages => ["js", "ts"];
+}
+
+public sealed class SideEffectInsideExpressionRulePython : SideEffectInsideExpressionRule
+{
+    public override string Key => "QG-PY-BUG-0187";
+    public override string[] Languages => ["py"];
+}
+
+public sealed class SideEffectInsideExpressionRulePhp : SideEffectInsideExpressionRule
+{
+    public override string Key => "QG-PP-BUG-0084";
+    public override string[] Languages => ["php"];
+}
+
+public sealed class SideEffectInsideExpressionRuleGo : SideEffectInsideExpressionRule
+{
+    public override string Key => "QG-GO-BUG-0040";
+    public override string[] Languages => ["go"];
+}
+
+public sealed class SideEffectInsideExpressionRuleDart : SideEffectInsideExpressionRule
+{
+    public override string Key => "QG-DART-BUG-0038";
+    public override string[] Languages => ["dart"];
+}
+
+public sealed class SideEffectInsideExpressionRuleRuby : SideEffectInsideExpressionRule
+{
+    public override string Key => "QG-RB-BUG-0003";
+    public override string[] Languages => ["rb"];
+}
+
+public sealed class SideEffectInsideExpressionRuleSwift : SideEffectInsideExpressionRule
+{
+    public override string Key => "QG-SW-BUG-0007";
+    public override string[] Languages => ["swift"];
+}
+
+public sealed class SideEffectInsideExpressionRuleCss : SideEffectInsideExpressionRule
+{
+    public override string Key => "QG-CSS-BUG-0032";
+    public override string[] Languages => ["css"];
+}
+
+public sealed class SideEffectInsideExpressionRuleHtml : SideEffectInsideExpressionRule
+{
+    public override string Key => "QG-HTML-BUG-0032";
+    public override string[] Languages => ["html"];
+}
+
+public sealed class SideEffectInsideExpressionRuleXml : SideEffectInsideExpressionRule
+{
+    public override string Key => "QG-XML-BUG-0007";
+    public override string[] Languages => ["xml"];
+}
+
+public sealed class SideEffectInsideExpressionRuleTerraform : SideEffectInsideExpressionRule
+{
+    public override string Key => "QG-TF-BUG-0002";
+    public override string[] Languages => ["tf"];
+}
+
+public sealed class SideEffectInsideExpressionRuleDockerfile : SideEffectInsideExpressionRule
+{
+    public override string Key => "QG-DK-BUG-0009";
+    public override string[] Languages => ["dk"];
+}
+
+public sealed class SideEffectInsideExpressionRuleKubernetes : SideEffectInsideExpressionRule
+{
+    public override string Key => "QG-K8-BUG-0002";
+    public override string[] Languages => ["k8"];
+}
+
+public sealed class SideEffectInsideExpressionRuleCloudFormation : SideEffectInsideExpressionRule
+{
+    public override string Key => "QG-CF-BUG-0002";
+    public override string[] Languages => ["cf"];
+}
+
+public sealed class SideEffectInsideExpressionRuleJson : SideEffectInsideExpressionRule
+{
+    public override string Key => "QG-JSON-BUG-0003";
+    public override string[] Languages => ["json"];
+}
+
+public abstract class LoopBoundCheckedWithInequalityRule : ApiRuleBase
+{
     public override string Name => "A counting loop should stop with a comparison, not an inequality";
     public override Severity Severity => Severity.Major;
     public override IssueKind Kind => IssueKind.Bug;
@@ -292,9 +897,116 @@ public sealed class LoopBoundCheckedWithInequalityRule : ApiRuleBase
     }
 }
 
-public sealed class ResultOfVoidCallUsedRule : ApiRuleBase
+public sealed class LoopBoundCheckedWithInequalityRuleCs : LoopBoundCheckedWithInequalityRule
 {
-    public override string Key => "QG-ALL-BUG-0036";
+    public override string Key => "QG-CS-BUG-0184";
+    public override string[] Languages => ["cs", "vb"];
+}
+
+public sealed class LoopBoundCheckedWithInequalityRuleJava : LoopBoundCheckedWithInequalityRule
+{
+    public override string Key => "QG-JV-BUG-0238";
+    public override string[] Languages => ["java"];
+}
+
+public sealed class LoopBoundCheckedWithInequalityRuleKotlin : LoopBoundCheckedWithInequalityRule
+{
+    public override string Key => "QG-KT-BUG-0065";
+    public override string[] Languages => ["kt"];
+}
+
+public sealed class LoopBoundCheckedWithInequalityRuleJs : LoopBoundCheckedWithInequalityRule
+{
+    public override string Key => "QG-JS-BUG-0182";
+    public override string[] Languages => ["js", "ts"];
+}
+
+public sealed class LoopBoundCheckedWithInequalityRulePython : LoopBoundCheckedWithInequalityRule
+{
+    public override string Key => "QG-PY-BUG-0188";
+    public override string[] Languages => ["py"];
+}
+
+public sealed class LoopBoundCheckedWithInequalityRulePhp : LoopBoundCheckedWithInequalityRule
+{
+    public override string Key => "QG-PP-BUG-0085";
+    public override string[] Languages => ["php"];
+}
+
+public sealed class LoopBoundCheckedWithInequalityRuleGo : LoopBoundCheckedWithInequalityRule
+{
+    public override string Key => "QG-GO-BUG-0041";
+    public override string[] Languages => ["go"];
+}
+
+public sealed class LoopBoundCheckedWithInequalityRuleDart : LoopBoundCheckedWithInequalityRule
+{
+    public override string Key => "QG-DART-BUG-0039";
+    public override string[] Languages => ["dart"];
+}
+
+public sealed class LoopBoundCheckedWithInequalityRuleRuby : LoopBoundCheckedWithInequalityRule
+{
+    public override string Key => "QG-RB-BUG-0004";
+    public override string[] Languages => ["rb"];
+}
+
+public sealed class LoopBoundCheckedWithInequalityRuleSwift : LoopBoundCheckedWithInequalityRule
+{
+    public override string Key => "QG-SW-BUG-0008";
+    public override string[] Languages => ["swift"];
+}
+
+public sealed class LoopBoundCheckedWithInequalityRuleCss : LoopBoundCheckedWithInequalityRule
+{
+    public override string Key => "QG-CSS-BUG-0033";
+    public override string[] Languages => ["css"];
+}
+
+public sealed class LoopBoundCheckedWithInequalityRuleHtml : LoopBoundCheckedWithInequalityRule
+{
+    public override string Key => "QG-HTML-BUG-0033";
+    public override string[] Languages => ["html"];
+}
+
+public sealed class LoopBoundCheckedWithInequalityRuleXml : LoopBoundCheckedWithInequalityRule
+{
+    public override string Key => "QG-XML-BUG-0008";
+    public override string[] Languages => ["xml"];
+}
+
+public sealed class LoopBoundCheckedWithInequalityRuleTerraform : LoopBoundCheckedWithInequalityRule
+{
+    public override string Key => "QG-TF-BUG-0003";
+    public override string[] Languages => ["tf"];
+}
+
+public sealed class LoopBoundCheckedWithInequalityRuleDockerfile : LoopBoundCheckedWithInequalityRule
+{
+    public override string Key => "QG-DK-BUG-0010";
+    public override string[] Languages => ["dk"];
+}
+
+public sealed class LoopBoundCheckedWithInequalityRuleKubernetes : LoopBoundCheckedWithInequalityRule
+{
+    public override string Key => "QG-K8-BUG-0003";
+    public override string[] Languages => ["k8"];
+}
+
+public sealed class LoopBoundCheckedWithInequalityRuleCloudFormation : LoopBoundCheckedWithInequalityRule
+{
+    public override string Key => "QG-CF-BUG-0003";
+    public override string[] Languages => ["cf"];
+}
+
+public sealed class LoopBoundCheckedWithInequalityRuleJson : LoopBoundCheckedWithInequalityRule
+{
+    public override string Key => "QG-JSON-BUG-0004";
+    public override string[] Languages => ["json"];
+}
+
+public abstract class ResultOfVoidCallUsedRule : ApiRuleBase
+{
     public override string Name => "A call that returns nothing should not be used as a value";
     public override Severity Severity => Severity.Critical;
     public override IssueKind Kind => IssueKind.Bug;
@@ -334,4 +1046,112 @@ public sealed class ResultOfVoidCallUsedRule : ApiRuleBase
                                  + "Call it as a statement and use the value it produced elsewhere.");
         }
     }
+}
+
+public sealed class ResultOfVoidCallUsedRuleCs : ResultOfVoidCallUsedRule
+{
+    public override string Key => "QG-CS-BUG-0185";
+    public override string[] Languages => ["cs", "vb"];
+}
+
+public sealed class ResultOfVoidCallUsedRuleJava : ResultOfVoidCallUsedRule
+{
+    public override string Key => "QG-JV-BUG-0239";
+    public override string[] Languages => ["java"];
+}
+
+public sealed class ResultOfVoidCallUsedRuleKotlin : ResultOfVoidCallUsedRule
+{
+    public override string Key => "QG-KT-BUG-0066";
+    public override string[] Languages => ["kt"];
+}
+
+public sealed class ResultOfVoidCallUsedRuleJs : ResultOfVoidCallUsedRule
+{
+    public override string Key => "QG-JS-BUG-0183";
+    public override string[] Languages => ["js", "ts"];
+}
+
+public sealed class ResultOfVoidCallUsedRulePython : ResultOfVoidCallUsedRule
+{
+    public override string Key => "QG-PY-BUG-0189";
+    public override string[] Languages => ["py"];
+}
+
+public sealed class ResultOfVoidCallUsedRulePhp : ResultOfVoidCallUsedRule
+{
+    public override string Key => "QG-PP-BUG-0086";
+    public override string[] Languages => ["php"];
+}
+
+public sealed class ResultOfVoidCallUsedRuleGo : ResultOfVoidCallUsedRule
+{
+    public override string Key => "QG-GO-BUG-0042";
+    public override string[] Languages => ["go"];
+}
+
+public sealed class ResultOfVoidCallUsedRuleDart : ResultOfVoidCallUsedRule
+{
+    public override string Key => "QG-DART-BUG-0040";
+    public override string[] Languages => ["dart"];
+}
+
+public sealed class ResultOfVoidCallUsedRuleRuby : ResultOfVoidCallUsedRule
+{
+    public override string Key => "QG-RB-BUG-0005";
+    public override string[] Languages => ["rb"];
+}
+
+public sealed class ResultOfVoidCallUsedRuleSwift : ResultOfVoidCallUsedRule
+{
+    public override string Key => "QG-SW-BUG-0009";
+    public override string[] Languages => ["swift"];
+}
+
+public sealed class ResultOfVoidCallUsedRuleCss : ResultOfVoidCallUsedRule
+{
+    public override string Key => "QG-CSS-BUG-0034";
+    public override string[] Languages => ["css"];
+}
+
+public sealed class ResultOfVoidCallUsedRuleHtml : ResultOfVoidCallUsedRule
+{
+    public override string Key => "QG-HTML-BUG-0034";
+    public override string[] Languages => ["html"];
+}
+
+public sealed class ResultOfVoidCallUsedRuleXml : ResultOfVoidCallUsedRule
+{
+    public override string Key => "QG-XML-BUG-0009";
+    public override string[] Languages => ["xml"];
+}
+
+public sealed class ResultOfVoidCallUsedRuleTerraform : ResultOfVoidCallUsedRule
+{
+    public override string Key => "QG-TF-BUG-0004";
+    public override string[] Languages => ["tf"];
+}
+
+public sealed class ResultOfVoidCallUsedRuleDockerfile : ResultOfVoidCallUsedRule
+{
+    public override string Key => "QG-DK-BUG-0011";
+    public override string[] Languages => ["dk"];
+}
+
+public sealed class ResultOfVoidCallUsedRuleKubernetes : ResultOfVoidCallUsedRule
+{
+    public override string Key => "QG-K8-BUG-0004";
+    public override string[] Languages => ["k8"];
+}
+
+public sealed class ResultOfVoidCallUsedRuleCloudFormation : ResultOfVoidCallUsedRule
+{
+    public override string Key => "QG-CF-BUG-0004";
+    public override string[] Languages => ["cf"];
+}
+
+public sealed class ResultOfVoidCallUsedRuleJson : ResultOfVoidCallUsedRule
+{
+    public override string Key => "QG-JSON-BUG-0005";
+    public override string[] Languages => ["json"];
 }

@@ -37,9 +37,9 @@ public class CSharpApiRulesTests
     {
         // QG-CS-SML-0466 and QG-CS-SML-0005 were retired: one defect, one finding
         Assert.NotEmpty(Lines("namespace N;\npublic class A\n{\n    void F() { throw new Exception(\"x\"); }\n}\n",
-            "QG-ALL-SML-0026"));
+            "QG-CS-SML-0520"));
         Assert.Empty(Lines("namespace N;\npublic class A\n{\n    void F() { throw new ArgumentNullException(\"x\"); }\n}\n",
-            "QG-ALL-SML-0026"));
+            "QG-CS-SML-0520"));
     }
 
     [Fact]

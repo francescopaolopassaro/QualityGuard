@@ -21,7 +21,7 @@ public class TestQualityRulesTests
                 }
             }
             """;
-        Assert.Equal([6], Lines("CartTest.cs", code, "QG-ALL-BUG-0031"));
+        Assert.Equal([6], Lines("CartTest.cs", code, "QG-CS-BUG-0180"));
     }
 
     [Fact]
@@ -37,7 +37,7 @@ public class TestQualityRulesTests
                 }
             }
             """;
-        Assert.Empty(Lines("CartTest.cs", code, "QG-ALL-BUG-0031"));
+        Assert.Empty(Lines("CartTest.cs", code, "QG-CS-BUG-0180"));
     }
 
     [Fact]
@@ -52,7 +52,7 @@ public class TestQualityRulesTests
                 }
             }
             """;
-        Assert.Equal([5], Lines("CartTest.java", code, "QG-ALL-BUG-0032"));
+        Assert.Equal([5], Lines("CartTest.java", code, "QG-JV-BUG-0235"));
     }
 
     [Fact]
@@ -67,7 +67,7 @@ public class TestQualityRulesTests
                 }
             }
             """;
-        Assert.Empty(Lines("CartTest.java", code, "QG-ALL-BUG-0032"));
+        Assert.Empty(Lines("CartTest.java", code, "QG-JV-BUG-0235"));
     }
 
     [Fact]
@@ -82,7 +82,7 @@ public class TestQualityRulesTests
                 }
             }
             """;
-        Assert.Equal([5], Lines("CartTest.cs", code, "QG-ALL-SML-0042"));
+        Assert.Equal([5], Lines("CartTest.cs", code, "QG-CS-SML-0536"));
     }
 
     [Fact]
@@ -97,7 +97,7 @@ public class TestQualityRulesTests
                 }
             }
             """;
-        Assert.Equal([5], Lines("CartTest.cs", code, "QG-ALL-SML-0043"));
+        Assert.Equal([5], Lines("CartTest.cs", code, "QG-CS-SML-0537"));
     }
 
     [Fact]
@@ -112,7 +112,7 @@ public class TestQualityRulesTests
                 }
             }
             """;
-        Assert.Empty(Lines("CartTest.cs", code, "QG-ALL-SML-0043"));
+        Assert.Empty(Lines("CartTest.cs", code, "QG-CS-SML-0537"));
     }
 
     [Fact]
@@ -126,7 +126,7 @@ public class TestQualityRulesTests
                 private void Reset() { }
             }
             """;
-        Assert.Equal([1], Lines("CartTests.cs", code, "QG-ALL-SML-0044"));
+        Assert.Equal([1], Lines("CartTests.cs", code, "QG-CS-SML-0538"));
     }
 
     [Fact]
@@ -141,7 +141,7 @@ public class TestQualityRulesTests
                 public void Total_is_the_sum_of_the_lines() { }
             }
             """;
-        Assert.Empty(Lines("CartTests.cs", code, "QG-ALL-SML-0044"));
+        Assert.Empty(Lines("CartTests.cs", code, "QG-CS-SML-0538"));
     }
 
     [Fact]
@@ -154,6 +154,6 @@ public class TestQualityRulesTests
             }
             """;
         // "Latest.cs" contains "test" but is not a test file, so the rule stays out of it
-        Assert.Empty(Lines("src/Domain/Latest.cs", code, "QG-ALL-SML-0044"));
+        Assert.Empty(Lines("src/Domain/Latest.cs", code, "QG-CS-SML-0538"));
     }
 }

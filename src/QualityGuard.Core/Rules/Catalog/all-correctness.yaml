@@ -2,6 +2,8 @@
 # in the analyzer; this file supplies the reasoning and the fix shown in the report.
 
 - key: QG-ALL-BUG-0016
+  status: superseded
+  superseded_by: QG-CS-BUG-0165
   name: Loops should be able to run more than once
   languages: []
   category: BUG
@@ -18,6 +20,8 @@
     body. If the repetition is correct, move the jump under the condition that is supposed to end it.
 
 - key: QG-ALL-BUG-0017
+  status: superseded
+  superseded_by: QG-CS-BUG-0166
   name: Size comparisons should be able to fail
   languages: []
   category: BUG
@@ -34,6 +38,8 @@
     with the index the search returns rather than the size of the collection.
 
 - key: QG-ALL-BUG-0018
+  status: superseded
+  superseded_by: QG-CS-BUG-0167
   name: A collection should not be passed to its own method
   languages: []
   category: BUG
@@ -50,6 +56,8 @@
     the surrounding code expects.
 
 - key: QG-ALL-BUG-0019
+  status: superseded
+  superseded_by: QG-CS-BUG-0168
   name: The result of a pure call should be used
   languages: []
   category: BUG
@@ -66,6 +74,8 @@
     the line rather than leaving a call that suggests an effect it does not have.
 
 - key: QG-ALL-BUG-0020
+  status: superseded
+  superseded_by: QG-CS-BUG-0169
   name: Unary operators should not be repeated
   languages: []
   category: BUG
@@ -82,6 +92,8 @@
     conversion of the language so the next reader does not have to infer it.
 
 - key: QG-ALL-BUG-0021
+  status: superseded
+  superseded_by: QG-CS-BUG-0170
   name: Shift distances should be inside the width of the value
   languages: []
   category: BUG
@@ -98,6 +110,8 @@
     it further than its current type allows.
 
 - key: QG-ALL-BUG-0022
+  status: superseded
+  superseded_by: QG-CS-BUG-0171
   name: A loop counter should move towards the bound that ends the loop
   languages: []
   category: BUG
@@ -114,6 +128,8 @@
     one. Then check the boundary values, because this defect usually comes with an off-by-one.
 
 - key: QG-ALL-BUG-0023
+  status: superseded
+  superseded_by: QG-CS-BUG-0172
   name: An always-true loop should contain a way out
   languages: []
   category: BUG
@@ -130,6 +146,8 @@
     an error when the loop cannot make progress — or replace the condition with one that can fail.
 
 - key: QG-ALL-BUG-0024
+  status: superseded
+  superseded_by: QG-CS-BUG-0173
   name: A value assigned to a local should be read before the local goes away
   languages: []
   category: BUG
