@@ -8,7 +8,7 @@ a configurable Quality Gate and exits with `PASSED` or `FAILED` — no server, n
 dotnet run --project src/QualityGuard.Cli -- --path ./src --by-folder
 ```
 
-**1330 rules** across 26 languages, on a real syntax tree with a semantic model, a project index and
+**1333 rules** across 26 languages, on a real syntax tree with a semantic model, a project index and
 interprocedural taint analysis. The bar the engine is held to is precision: every rule is measured on
 a production codebase in its own language before it is kept, and a rule that produces noise is
 rewritten or removed — see [§8](#8-quality-bar).
@@ -141,12 +141,18 @@ Severity and issue kind follow the category: `SEC` → vulnerability (major or a
 
 ## 5. Rules
 
-**1330 rules are loaded and executable**, backed by **2653 catalog entries** (a catalog entry either
+**1333 rules are loaded and executable**, backed by **2656 catalog entries** (a catalog entry either
 carries its own detection or documents a rule implemented in code).
 
 Coverage is tracked honestly in `rules-tracker.tsv`: **3256 catalogued rules are mapped, 1515 of them
 executable**. The rest are documented and deliberately silent — a rule counts as implemented only
 when it detects something and has been measured on real code.
+
+Measured against the published rule inventories of the reference catalogues — 3358 rules across 21
+languages, read from their own metadata rather than from a summary of it — **92% are mapped**, and
+**1217 are executable today**, 216 of them security rules. Ruby (83%), Go (83%), Docker (64%),
+CloudFormation (57%) and PHP (53%) are the furthest along, and the same method is being applied
+language by language to bring the rest up to them.
 
 | Area | Code | Rules |
 | --- | --- | --- |
@@ -619,9 +625,9 @@ The two instruments above measure against a catalogue and against a reader. The 
 against the other analyzer, on the same source, and it is the only one that answers "are we there
 yet" directly.
 
-SonarSource ships its .NET rules as a Roslyn package, so they can be run without a server: copy the
-project, add `SonarAnalyzer.CSharp` through a `Directory.Build.props`, build, and collect the `S####`
-warnings. Then run this engine over the same projects and compare where the two land.
+A reference analyzer for .NET ships as a compiler package, so it can be run without a server: copy
+the project, add the package through a `Directory.Build.props`, build, and collect the warnings.
+Then run this engine over the same projects and compare where the two land.
 
 Two things have to be checked before the numbers mean anything, and both changed the answer:
 
@@ -631,30 +637,31 @@ Two things have to be checked before the numbers mean anything, and both changed
   nothing about the security families.
 - **The two sides do not see the same files.** Of 292 source files in those projects the engine reads
   205: it refuses generated migrations and designer files, which the compiler happily analyses. Nine
-  of the findings that looked like a gap were in exactly those.
+  of the findings that looked like a gap were in exactly those, so they are excluded from both sides.
 
 With both accounted for, on six production projects of one application:
 
-| | SonarAnalyzer | QualityGuard |
+| | Reference | QualityGuard |
 | --- | --- | --- |
-| findings | 142 | 351 |
-| distinct lines | 134 | 335 |
-| files touched | 43 | 69 |
-| distinct rules that fired | 39 | 55 |
+| findings | 132 | 434 |
+| distinct lines | 124 | 405 |
+| files touched | 36 | 70 |
+| distinct rules that fired | 36 | 69 |
 
-**82% of the lines SonarAnalyzer reports are reported here too**, up from 42% when the comparison was
+**95% of the lines the reference reports are reported here too**, up from 42% when the comparison was
 first run. The number is sensitive to how close two findings have to be to count as the same place —
-70% at the exact line, 82% within one, 87% within three — so one line is the figure quoted, and the
-sensitivity is quoted with it.
+88% at the exact line, 95% within one, 96% within three — so one line is the figure quoted, and the
+sensitivity is quoted with it. At file level, 33 of the 36 files it flags get attention here too.
 
-Closing that gap produced nineteen rules, each written after reading what the other analyzer saw and
+Closing that gap produced twenty-one rules, each written after reading what the other analyzer saw and
 this one did not: type names with an acronym buried in the middle, `new Guid("0000…")`, a private
 class that is not sealed, a derived type that adds nothing, `First()` on an indexed collection,
 overloads written apart, a host started with a blocking call, an action that returns a value while
 declaring `IActionResult`, a field that is really a local, a private member nothing reads, a loop
 whose body is one condition, an incomplete disposable, a switch whose arms hand back what they
 matched, a static constructor that only assigns, a failure logged and rethrown, a property nothing
-writes.
+writes, a function whose answer every caller discards, and a bound request field that cannot tell
+absent from zero.
 
 It also found gaps in rules that already existed. The dead-store rule only knew about two writes in a
 row; widened to cover a value written and never read again, it immediately found a real defect — a
@@ -663,11 +670,15 @@ that would use them is in the other branch. And the rule about awaiting a query 
 `context.Comuni.ToList()`, because it looked for `_context` with an underscore; it now reads the root
 of the chain, which tells `context.Comuni.ToList()` apart from `items.Select(…).ToList()`.
 
-**One place where this engine deliberately differs.** The reference reports a name like
-`AffissioneDatiDTO`; this one does not. An acronym at the end of a name hides nothing, and naming
-DTOs that way is a decision a codebase makes once — it was 130 findings on one project. An acronym in
-the middle is still reported, because `DocDocumentiWKFModelliFasi` does have to be read twice. That
-choice costs a point of the coverage figure and is worth it.
+**Four of the six remaining differences are deliberate, not gaps.** The reference reports a name
+like `AffissioneDatiDTO`; this one does not, because an acronym at the end of a name hides nothing
+and naming DTOs that way is a decision a codebase makes once — it was 130 findings on one project. An
+acronym in the middle is still reported, because `DocDocumentiWKFModelliFasi` does have to be read
+twice. The advice "initialise the field where it is declared" is withheld when the static constructor
+wraps the work in a `try`, because there it cannot be followed. And `== false` is left alone when the
+operand's type cannot be resolved, because on a `bool?` the suggested `!x` does not mean the same
+thing. Silence chosen for a reason costs coverage and is worth it; the two that are left are ordinary
+gaps.
 
 ### Two questions, two instruments
 
