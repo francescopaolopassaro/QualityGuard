@@ -2568,8 +2568,6 @@
   fix: |
     Assert the behaviour the test exists for, re-enable it, and make sure it fails when the behaviour is
     broken before trusting it again.
-  detect:
-    - invocation: [done]
 
 - key: QG-JS-BUG-0065
   name: Mocha timeouts should match the behaviour the code describes

@@ -50,10 +50,8 @@ public static class PythonRuleSet
         new PythonCleartextFtpRule(),
         new PythonUnusedImportRule(),
         new PythonIdentityComparisonRule(),
-        new PythonVagueVariableNameRule(),
         new PythonPassInExceptRule(),
         new PythonEqWithoutHashRule(),
-        new PythonMissingDocstringRule(),
         new PythonNoneComparisonRule(),
         new PythonMultipleStatementsRule(),
         new PythonDivisionByZeroRule(),
@@ -254,8 +252,17 @@ public sealed class PythonCleartextHttpRule : PatternRuleBase
 
     public override void Execute(IRuleContext context)
     {
-        foreach (var t in RuleMatchers.StringsContaining(context.Tokens, "http://"))
-            context.Report("Replace cleartext HTTP with HTTPS.", t.Line);
+        if (LanguageRuleSupport.IsTestFile(context.File.Path, context.File.FileName))
+            return;
+
+        foreach (var token in context.Tokens)
+        {
+            if (token.Kind != TokenKind.String)
+                continue;
+            if (!CleartextProtocols.IsExposedAddress(token.Text, out var scheme, out var instead))
+                continue;
+            context.Report(CleartextProtocols.Advice(scheme, instead), token.Line);
+        }
     }
 }
 
@@ -566,7 +573,9 @@ public sealed class PythonSsrfRule : PatternRuleBase
 
     private static void CheckUrl(IRuleContext context, IReadOnlyList<Token> tokens, int i)
     {
-        if (!RuleMatchers.NextNonParenIsString(tokens, i) || context.IsTaintedLine(tokens[i].Line))
+        // Reporting whenever the argument was not a plain literal flagged every request a test
+        // suite makes. What makes this a finding is the untrusted input, so that is what is asked.
+        if (context.IsTaintedLine(tokens[i].Line))
             context.Report("Do not fetch URLs derived from untrusted input.", tokens[i].Line);
     }
 }

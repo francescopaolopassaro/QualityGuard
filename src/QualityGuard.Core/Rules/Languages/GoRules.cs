@@ -165,8 +165,17 @@ public sealed class GoCleartextHttpRule : PatternRuleBase
 
     public override void Execute(IRuleContext context)
     {
-        foreach (var t in RuleMatchers.StringsContaining(context.Tokens, "http://"))
-            context.Report("Replace cleartext HTTP with HTTPS.", t.Line);
+        if (LanguageRuleSupport.IsTestFile(context.File.Path, context.File.FileName))
+            return;
+
+        foreach (var token in context.Tokens)
+        {
+            if (token.Kind != TokenKind.String)
+                continue;
+            if (!CleartextProtocols.IsExposedAddress(token.Text, out var scheme, out var instead))
+                continue;
+            context.Report(CleartextProtocols.Advice(scheme, instead), token.Line);
+        }
     }
 }
 

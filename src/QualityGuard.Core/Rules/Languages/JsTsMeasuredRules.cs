@@ -25,7 +25,9 @@ public static class JsTsMeasuredRuleSet
         new JsTestHookOrderRule(),
         new JsMemoizeWithoutKeyRule(),
         new JsUncertainAssertionRule(),
-        new JsReplaceAllRule()
+        new JsReplaceAllRule(),
+        new JsCodeAfterDoneRule(),
+        new JsFunctionScopedDeclarationRule()
     ];
 }
 
@@ -255,27 +257,17 @@ public sealed class JsClearTextProtocolRule : JsTsMeasuredRuleBase
 
     public override void Execute(IRuleContext context)
     {
+        // a fixture reaching a test server over plain HTTP is not shipping anything in the clear
+        if (LanguageRuleSupport.IsTestFile(context.File.Path, context.File.FileName))
+            return;
+
         foreach (var token in context.Tokens)
         {
             if (token.Kind != TokenKind.String)
                 continue;
-            var text = token.Text;
-            var protocol = Insecure.FirstOrDefault(p => text.StartsWith(p, StringComparison.OrdinalIgnoreCase));
-            if (protocol == null)
+            if (!CleartextProtocols.IsExposedAddress(token.Text, out var scheme, out var instead))
                 continue;
-            // the loopback and the namespaces and examples that are identifiers, not addresses
-            if (text.Contains("localhost", StringComparison.OrdinalIgnoreCase)
-                || text.Contains("127.0.0.1", StringComparison.Ordinal)
-                || text.Contains("0.0.0.0", StringComparison.Ordinal)
-                || text.Contains("example.", StringComparison.OrdinalIgnoreCase)
-                || text.Contains("www.w3.org", StringComparison.OrdinalIgnoreCase)
-                || text.Contains("schemas.", StringComparison.OrdinalIgnoreCase)
-                || text.Contains("xmlns", StringComparison.OrdinalIgnoreCase))
-                continue;
-
-            context.Report($"'{protocol}' carries everything readable across whatever network is "
-                           + "between the two ends, and anyone on that path can change the answer "
-                           + "before it arrives. Use the encrypted form of the protocol.", token.Line);
+            context.Report(CleartextProtocols.Advice(scheme, instead), token.Line);
         }
 
         var lines = LanguageRuleSupport.Lines(context);
@@ -795,5 +787,130 @@ public sealed class JsReplaceAllRule : JsTsMeasuredRuleBase
         var body = written[(close + 1)..];
         // any metacharacter means the expression is doing real work
         return body.Length > 0 && body.All(c => char.IsLetterOrDigit(c) || c is ' ' or '_' or '-' or ',');
+    }
+}
+
+
+/// <summary>
+/// An asynchronous test signals that it has finished by calling the callback it was handed. Anything
+/// written after that call still runs, but the framework has already moved on: the assertion is not
+/// attributed to this test, and if it throws, the failure surfaces against whichever test happens to
+/// be running. Reading it as "any call named done" reported every asynchronous test there is.
+/// </summary>
+public sealed class JsCodeAfterDoneRule : JsTsMeasuredRuleBase
+{
+    private static readonly string[] TestNames = ["it", "test", "specify", "before", "after",
+                                                  "beforeEach", "afterEach"];
+
+    public override string Key => "QG-JS-SML-0158";
+    public override string Name => "A test should finish where it says it finished";
+    public override Severity Severity => Severity.Major;
+    public override string RemediationEffort => "10min";
+
+    public override void Execute(IRuleContext context)
+    {
+        if (!HasTree(context))
+            return;
+
+        foreach (var call in SyntaxQuery.Invocations(context.Root))
+        {
+            if (!TestNames.Contains(SyntaxQuery.InvokedName(call), StringComparer.Ordinal))
+                continue;
+
+            var callback = SyntaxQuery.Arguments(call)
+                .Select(a => a.Kind == NodeKind.Lambda ? a : a.FirstChild(NodeKind.Lambda))
+                .FirstOrDefault(a => a is not null);
+            if (callback is null)
+                continue;
+
+            var signal = SyntaxQuery.Parameters(callback).FirstOrDefault()?.Text;
+            if (string.IsNullOrEmpty(signal))
+                continue;
+
+            var body = SyntaxQuery.Body(callback);
+            if (body is null)
+                continue;
+
+            Inspect(context, body, signal);
+        }
+    }
+
+    /// <summary>Report the statements that follow the signal inside the block that carries it.</summary>
+    private static void Inspect(IRuleContext context, SyntaxNode block, string signal)
+    {
+        var children = block.Children;
+        for (var i = 0; i < children.Count - 1; i++)
+        {
+            if (!Signals(children[i], signal))
+                continue;
+            context.Report(children[i + 1],
+                $"'{signal}()' on line {children[i].Line} already told the framework this test was "
+                + "over, so what follows runs outside it: an assertion here is not counted, and a "
+                + "failure here is blamed on another test. Move it above the call.");
+            return;
+        }
+
+        foreach (var nested in children.Where(c => c.Kind == NodeKind.Block))
+            Inspect(context, nested, signal);
+    }
+
+    private static bool Signals(SyntaxNode statement, string signal)
+    {
+        if (statement.Kind != NodeKind.ExpressionStatement || statement.Children.Count != 1)
+            return false;
+        var expression = statement.Children[0];
+        return expression.Kind == NodeKind.Invocation
+               && SyntaxQuery.InvokedDottedName(expression) == signal;
+    }
+}
+
+
+/// <summary>
+/// A declaration that is function-scoped rather than block-scoped. Reporting every one of them said
+/// nothing useful about a codebase written before block scoping existed — it was one finding per
+/// declaration, a hundred per thousand lines. The finding is the odd one out, so a file where this
+/// is plainly the chosen style is left alone and only the exceptions are reported.
+/// </summary>
+public sealed class JsFunctionScopedDeclarationRule : JsTsMeasuredRuleBase
+{
+    private const int Enough = 3;
+    private const double Dominant = 0.5;
+
+    public override string Key => "QG-JS-SML-0010";
+    public override string Name => "Variables should be declared with let or const";
+    public override string RemediationEffort => "10min";
+
+    public override void Execute(IRuleContext context)
+    {
+        var tokens = context.Tokens;
+        var functionScoped = new List<Token>();
+        var total = 0;
+
+        for (var i = 0; i < tokens.Count - 1; i++)
+        {
+            if (tokens[i].Kind != TokenKind.Keyword)
+                continue;
+            if (tokens[i].Text is not ("var" or "let" or "const"))
+                continue;
+            // a declaration names something straight away; 'const' in a type position does not
+            if (tokens[i + 1].Kind != TokenKind.Identifier)
+                continue;
+            total++;
+            if (tokens[i].Text == "var")
+                functionScoped.Add(tokens[i]);
+        }
+
+        if (total == 0 || functionScoped.Count == 0)
+            return;
+        if (functionScoped.Count >= Enough && (double)functionScoped.Count / total > Dominant)
+            return;
+
+        foreach (var token in functionScoped)
+        {
+            context.Report("This declaration is visible in the whole function however far down it "
+                           + "appears, and it can be declared a second time without complaint. The "
+                           + "rest of this file already scopes its declarations to the block; use "
+                           + "const, or let where the value changes.", token.Line);
+        }
     }
 }

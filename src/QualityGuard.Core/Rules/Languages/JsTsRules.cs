@@ -323,8 +323,8 @@ public sealed class JsCleartextHttpRule : PatternRuleBase
 
     public override void Execute(IRuleContext context)
     {
-        foreach (var token in RuleMatchers.StringsContaining(context.Tokens, "http://"))
-            context.Report("Communicating over cleartext HTTP may expose data.", token.Line);
+        // QG-JS-SEC-0080 reports the same strings and explains what the exposure costs, so every
+        // address was announced twice. This one stands down.
     }
 }
 
@@ -516,13 +516,8 @@ public sealed class JsConsoleLogRule : PatternRuleBase
 
     public override void Execute(IRuleContext context)
     {
-        var tokens = context.Tokens;
-        for (var i = 0; i < tokens.Count - 2; i++)
-        {
-            if (RuleMatchers.IsName(tokens[i], "console") && tokens[i + 1].Text == "."
-                && RuleMatchers.Contains(tokens[i + 2].Text, ["log", "debug", "info"]))
-                context.Report("Remove this logging statement from production code.", tokens[i].Line);
-        }
+        // QG-JS-SML-0008 reads the same calls off the tree and knows an entry point from a library,
+        // so both rules were reporting every console line. This one stands down.
     }
 }
 

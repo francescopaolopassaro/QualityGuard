@@ -14,7 +14,10 @@ public static class ApiUsageRuleSet
     [
         new OctalLiteralRule(),
         new ProcessExitInLibraryRule(),
-        new StandardOutputForLoggingRule(),
+        new CsStandardOutputForLoggingRule(),
+        new JsStandardOutputForLoggingRule(),
+        new JavaStandardOutputForLoggingRule(),
+        new GoStandardOutputForLoggingRule(),
         new WildcardImportRule(),
         new SideEffectInsideExpressionRule(),
         new LoopBoundCheckedWithInequalityRule(),
@@ -124,7 +127,12 @@ public sealed class ProcessExitInLibraryRule : ApiRuleBase
     }
 }
 
-public sealed class StandardOutputForLoggingRule : ApiRuleBase
+/// <summary>
+/// Diagnostics written straight to the console. The check reads the same on every language, but the
+/// rule does not: each one carries its own id, so a codebase can silence it where its conventions
+/// differ without losing the check everywhere else.
+/// </summary>
+public abstract class StandardOutputForLoggingRule : ApiRuleBase
 {
     private static readonly string[] ConsoleWrites =
         ["println", "print", "printf", "WriteLine", "Write", "log", "warn", "error", "puts"];
@@ -136,7 +144,6 @@ public sealed class StandardOutputForLoggingRule : ApiRuleBase
         "Debug", "Trace", "System.Console", "System.Diagnostics.Debug", "System.Diagnostics.Trace"
     ];
 
-    public override string Key => "QG-ALL-SML-0046";
     public override string Name => "Logging should not go straight to the console";
 
     public override void Execute(IRuleContext context)
@@ -165,6 +172,30 @@ public sealed class StandardOutputForLoggingRule : ApiRuleBase
                                  + "together.");
         }
     }
+}
+
+public sealed class CsStandardOutputForLoggingRule : StandardOutputForLoggingRule
+{
+    public override string Key => "QG-CS-SML-0071";
+    public override string[] Languages => ["cs", "vb"];
+}
+
+public sealed class JsStandardOutputForLoggingRule : StandardOutputForLoggingRule
+{
+    public override string Key => "QG-JS-SML-0008";
+    public override string[] Languages => ["js", "ts"];
+}
+
+public sealed class JavaStandardOutputForLoggingRule : StandardOutputForLoggingRule
+{
+    public override string Key => "QG-JV-SML-0025";
+    public override string[] Languages => ["java", "kt"];
+}
+
+public sealed class GoStandardOutputForLoggingRule : StandardOutputForLoggingRule
+{
+    public override string Key => "QG-GO-SML-0030";
+    public override string[] Languages => ["go"];
 }
 
 public sealed class WildcardImportRule : ApiRuleBase

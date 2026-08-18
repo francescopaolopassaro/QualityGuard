@@ -292,8 +292,6 @@
   fix: |
     Use const by default and let where the value must change, so the scope matches the block the reader
     sees.
-  detect:
-    - line: "^\\s*var\\s+[A-Za-z_$]"
 
 - key: QG-JS-SML-0011
   name: Delete should not be used on variables
@@ -350,3 +348,21 @@
   detect:
     - line: "^\\s*(export\\s+)?enum\\s+\\w+\\s*\\{"
       absent: ["= \""]
+
+- key: QG-JS-SEC-0010
+  name: Cleartext HTTP usage
+  status: superseded
+  superseded_by: QG-JS-SEC-0080
+  languages: [js, ts]
+  category: SEC
+  severity: major
+  effort: 20min
+  tags: [transport]
+  message: Communicating over cleartext HTTP may expose data.
+  summary: A network address uses a protocol without transport encryption.
+  why: |
+    Both this rule and the one that replaces it read the same string literals, so every plain address
+    was reported twice. The other one names the protocol it found and says what an observer on the
+    path can do with it, so this one stands down.
+  fix: |
+    Use the encrypted form of the protocol.

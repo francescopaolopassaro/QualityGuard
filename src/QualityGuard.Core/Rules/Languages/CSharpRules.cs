@@ -355,16 +355,11 @@ public sealed class CsCleartextHttpRule : PatternRuleBase
     public override void Execute(IRuleContext context)
     {
         var lines = LanguageRuleSupport.Lines(context);
-        foreach (var token in RuleMatchers.StringsContaining(context.Tokens, "http://"))
+        foreach (var token in context.Tokens)
         {
-            var text = token.Text;
-            if (IdentifierHosts.Any(h => text.Contains(h, StringComparison.OrdinalIgnoreCase)))
+            if (token.Kind != TokenKind.String)
                 continue;
-            // the loopback and an obvious placeholder never leave the machine
-            if (text.Contains("localhost", StringComparison.OrdinalIgnoreCase)
-                || text.Contains("127.0.0.1", StringComparison.Ordinal)
-                || text.Contains("://test", StringComparison.OrdinalIgnoreCase)
-                || text.Contains("example.", StringComparison.OrdinalIgnoreCase))
+            if (!CleartextProtocols.IsExposedAddress(token.Text, out var scheme, out var instead))
                 continue;
 
             // A namespace declared on a serialization or web-service attribute is an identifier that
@@ -374,9 +369,7 @@ public sealed class CsCleartextHttpRule : PatternRuleBase
             if (NamespaceMarkers.Any(m => line.Contains(m, StringComparison.Ordinal)))
                 continue;
 
-            context.Report("This address is plain HTTP, so everything sent over it — credentials "
-                           + "included — travels readable, and anyone on the path can change the "
-                           + "answer. Use https.", token.Line);
+            context.Report(CleartextProtocols.Advice(scheme, instead), token.Line);
         }
     }
 }

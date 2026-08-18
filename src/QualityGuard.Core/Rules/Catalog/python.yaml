@@ -102,6 +102,7 @@
 - key: QG-PY-SEC-0041
   name: Outgoing requests should have a timeout
   languages: [py]
+  scope: main
   category: SEC
   severity: major
   effort: 10min
@@ -339,3 +340,39 @@
     down.
   fix: |
     Pass the value in and return the new one, so the caller can see where it changed.
+
+- key: QG-PY-SML-0008
+  name: Variables should have descriptive names
+  status: superseded
+  superseded_by: QG-PY-SML-0020
+  languages: [py]
+  category: SML
+  severity: minor
+  effort: 10min
+  tags: [naming]
+  message: Rename this variable to something that describes its purpose.
+  summary: A variable carries a name that says nothing about what it holds.
+  why: |
+    The rule judged a name against a list of words it considered vague, and 'data' is on that list.
+    In a library that moves payloads around, 'data' is the accurate name — a hundred findings on one
+    project, none of them a defect. Naming is a judgement this engine cannot make from the name alone.
+  fix: |
+    Choose names that describe the value, and review them where the reader can see the context.
+
+- key: QG-PY-SML-0013
+  name: Functions should have docstrings
+  status: superseded
+  superseded_by: QG-PY-SML-0020
+  languages: [py]
+  category: SML
+  severity: info
+  effort: 5min
+  tags: [documentation]
+  message: Document what this function does.
+  summary: A function on the public surface carries no docstring.
+  why: |
+    A missing docstring is a gap, not a defect, and reporting one per undocumented function drowned
+    the findings that were defects. Documentation coverage is a thing to measure, not to report a
+    line at a time.
+  fix: |
+    Document the public surface where the reader needs it.

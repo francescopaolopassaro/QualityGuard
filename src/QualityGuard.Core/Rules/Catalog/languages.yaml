@@ -544,9 +544,7 @@
   fix: |
     Remove the statement, or route it through the project logger so the output can be filtered by level
     and disabled in production builds.
-  detect:
-    - invocation: [log, debug, trace, info]
-      receiver: [console]
+
 
 - key: QG-JS-CNV-0002
   name: Comparisons should be strict
@@ -769,3 +767,38 @@
     <html lang="en">
   # Detection moved to DocumentWithoutLanguageRule, which reads the document as a tree: the line
   # pattern missed an attribute written across two lines and matched the tag inside a comment.
+
+- key: QG-ALL-SML-0046
+  name: Logging should not go straight to the console
+  status: superseded
+  superseded_by: QG-JS-SML-0008
+  languages: [cs, vb, js, ts, java, kt, go]
+  category: SML
+  severity: minor
+  effort: 10min
+  tags: [logging]
+  message: This writes straight to the console instead of going through the logger.
+  summary: A diagnostic is written to standard output.
+  why: |
+    One rule covering every language reported the same console call as the language rules did, so a
+    single line was announced two and three times over. The check now carries a separate id per
+    language, which is also what lets one codebase silence it where its conventions differ.
+  fix: |
+    Send the message through the logger the application already configures.
+
+- key: QG-JS-SML-0001
+  name: Remove logging statements from production code
+  status: superseded
+  superseded_by: QG-JS-SML-0008
+  languages: [js, ts]
+  category: SML
+  severity: minor
+  effort: 10min
+  tags: [logging]
+  message: Remove this logging statement from production code.
+  summary: A diagnostic is written to the console.
+  why: |
+    This rule matched the call by name alone, so it reported the same lines as the rule that reads
+    them off the tree and can tell a library from an entry point. The more careful one is kept.
+  fix: |
+    Send the message through the logger, or remove it.

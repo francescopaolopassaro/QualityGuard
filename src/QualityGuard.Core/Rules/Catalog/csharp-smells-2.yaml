@@ -354,9 +354,7 @@
   fix: |
     Use the injected logger with an appropriate level so the output is routed, filtered and enriched like
     the rest of the diagnostics.
-  detect:
-    - invocation: [Write, WriteLine, WriteLineIf]
-      receiver: [Trace, Debug]
+
 
 - key: QG-CS-SML-0072
   name: Logger fields should follow one naming convention
