@@ -418,3 +418,22 @@
   fix: |
     Pass the flag when the cookie is set. Code that legitimately needs the value should receive it in
     the response body instead.
+
+- key: QG-PY-SML-0009
+  name: An except block should not silently ignore the failure
+  status: superseded
+  superseded_by: QG-PY-BUG-0004
+  languages: [py]
+  category: SML
+  severity: minor
+  effort: 10min
+  tags: [exception]
+  message: This except block silently ignores the exception.
+  summary: An except clause does nothing at all.
+  why: |
+    The reference catalogue reports an empty block anywhere except in an except clause, and the
+    exclusion is deliberate: 'except (OSError, JSONDecodeError): pass' around an optional migration
+    step is a decision, written narrowly, and saying so on every one of them buries the broad catches
+    that really do hide defects.
+  fix: |
+    The rule about catching everything covers the case that matters, and names what to change.

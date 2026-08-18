@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using QualityGuard.Core.Analysis;
 using Xunit;
 
@@ -278,6 +279,82 @@ public class CoverageCalculationTests
         var lines = GitChangedLines.Parse(diff, "C:/repo");
 
         Assert.Empty(lines);
+    }
+
+    [Fact]
+    public void Git_Resolve_keeps_named_refs_unchanged_and_recognizes_dates()
+    {
+        Assert.Equal("origin/main", GitChangedLines.Resolve("origin/main"));
+        Assert.Equal("feature/x", GitChangedLines.Resolve("feature/x"));
+        Assert.Equal("abc1234", GitChangedLines.Resolve("abc1234"));
+        Assert.False(GitChangedLines.IsDate("origin/main"));
+        Assert.False(GitChangedLines.IsDate("abc1234"));
+        Assert.True(GitChangedLines.IsDate("2024-01-01"));
+    }
+
+    [Fact]
+    public void Git_Resolve_a_date_to_the_last_commit_before_it()
+    {
+        var dir = System.IO.Path.Combine(System.IO.Path.GetTempPath(),
+            "qg-git-" + Guid.NewGuid().ToString("N")[..8]);
+        Directory.CreateDirectory(dir);
+        try
+        {
+            if (!Git(dir, "init -q", out _))
+                return; // no git on this machine: the pure parse contract is covered by the tests above
+            _ = Git(dir, "config user.email qg@test", out _);
+            _ = Git(dir, "config user.name qg", out _);
+            _ = Git(dir, "commit --allow-empty -m base", out _);
+            _ = Git(dir, "rev-parse HEAD", out var head);
+
+            // a date after the only commit resolves to that commit; a date before any of them has
+            // nothing to resolve to and falls back to HEAD, so the diff fails cleanly instead of
+            // silently comparing against nothing
+            Assert.Equal(head.Trim(), GitChangedLines.Resolve("2099-01-01", dir));
+            Assert.Equal("HEAD", GitChangedLines.Resolve("2000-01-01", dir));
+        }
+        finally
+        {
+            // git writes its object files read-only; deleting them straight away fails on Windows
+            if (Directory.Exists(dir))
+            {
+                foreach (var file in Directory.EnumerateFiles(dir, "*", SearchOption.AllDirectories))
+                    File.SetAttributes(file, FileAttributes.Normal);
+            }
+            Directory.Delete(dir, recursive: true);
+        }
+    }
+
+    private static bool Git(string cwd, string arguments, out string output)
+    {
+        try
+        {
+            var start = new ProcessStartInfo
+            {
+                FileName = "git",
+                Arguments = arguments,
+                WorkingDirectory = cwd,
+                UseShellExecute = false,
+                RedirectStandardOutput = true,
+                RedirectStandardError = true,
+                CreateNoWindow = true
+            };
+            using var process = Process.Start(start);
+            if (process is null)
+            {
+                output = string.Empty;
+                return false;
+            }
+            output = process.StandardOutput.ReadToEnd();
+            _ = process.StandardError.ReadToEnd();
+            process.WaitForExit();
+            return process.ExitCode == 0;
+        }
+        catch (Exception)
+        {
+            output = string.Empty;
+            return false;
+        }
     }
 
     [Fact]

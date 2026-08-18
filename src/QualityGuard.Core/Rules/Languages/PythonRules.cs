@@ -49,7 +49,6 @@ public static class PythonRuleSet
         new PythonCleartextFtpRule(),
         new PythonUnusedImportRule(),
         new PythonIdentityComparisonRule(),
-        new PythonPassInExceptRule(),
         new PythonEqWithoutHashRule(),
         new PythonNoneComparisonRule(),
         new PythonMultipleStatementsRule(),

@@ -77,6 +77,16 @@ try
     var analyses = AnalyzeAndScan(scanOptions, verbose);
     var metrics = AggregateMetrics(analyses);
 
+    // new_lines is a real count whenever a base is given: git is asked which lines the branch added
+    // or rewrote, and that total feeds the gate's fudge factor and the new-code ratings alike.
+    // Without a base the metric stays unset and the gate treats it as not applicable.
+    // git must resolve the repository the scan points at, not whichever directory the CLI was
+    // launched from: the scan root is the working directory for the rev-list and the diff
+    var workingDirectory = path is null ? null : ScanWorkingDirectory(path);
+    var changedLines = newCodeBase is null
+        ? null
+        : ReadNewCodeBase(metrics, GitChangedLines.Resolve(newCodeBase, workingDirectory), workingDirectory, newCodeBase);
+
     if (newCodeMode)
         ApplyNewCodeMetrics(metrics, analyses);
 
@@ -86,8 +96,8 @@ try
     {
         coverage = coverage.ExcludingFromSource(analyses);
         ApplyCoverageMetrics(metrics, coverage);
-        if (newCodeBase is not null)
-            ApplyNewCodeCoverage(metrics, coverage, newCodeBase, analyses);
+        if (changedLines is not null)
+            ApplyNewCodeCoverage(metrics, coverage, newCodeBase!, analyses, changedLines);
     }
 
     var gateResult = new QualityGateEvaluator().Evaluate(metrics, conditions);
@@ -197,7 +207,6 @@ static Dictionary<string, double> AggregateMetrics(List<FileAnalysis> all)
         metrics[key] = value;
     metrics[CoreMetrics.NewSecurityHotspotsReviewed] =
         issues.Any(i => i.Kind == IssueKind.SecurityHotspot) ? 0.0 : 100.0;
-    metrics[CoreMetrics.NewLines] = metrics.GetValueOrDefault(CoreMetrics.Ncloc);
     return metrics;
 }
 
@@ -256,24 +265,50 @@ static void ApplyCoverageMetrics(Dictionary<string, double> metrics,
 }
 
 /// <summary>
-/// New code means the lines the current branch added or rewrote against the base: git is asked which
-/// lines those are, the coverage report is restricted to them, and the same percentages are then
-/// computed over that smaller set. A gate that asks about <c>new_coverage</c> is then judging the
-/// change itself rather than the whole file. Without a base there is no new code to measure, so the
-/// <c>new_*</c> metrics are left unset — which is how a gate treats a metric it was not given.
+/// Where git should look for the repository: the scan root itself when it is a directory, its
+/// parent when <c>--path</c> names a single file.
+/// </summary>
+static string? ScanWorkingDirectory(string scanPath)
+{
+    var full = System.IO.Path.GetFullPath(scanPath);
+    if (Directory.Exists(full))
+        return full;
+    return System.IO.Path.GetDirectoryName(full);
+}
+
+/// <summary>
+/// Asks git how many lines the current branch added or rewrote against the base, and records that
+/// total as <c>new_lines</c> — the real size of the new code, not a stand-in for the whole file. The
+/// same map is then given back to the coverage step, so the new-code coverage is computed on exactly
+/// the lines this branch touched and the git process runs once per scan. When git cannot answer the
+/// metric is left unset, which is how the gate treats a metric it was not given.
+/// </summary>
+static IReadOnlyDictionary<string, IReadOnlySet<int>>? ReadNewCodeBase(
+    Dictionary<string, double> metrics, string gitBase, string? workingDirectory, string displayBase)
+{
+    var git = GitChangedLines.Read(gitBase, workingDirectory);
+    if (git.Count == 0)
+    {
+        Console.Error.WriteLine($"WARNING: could not read the lines changed since {displayBase} from git; "
+                                + "new code is not measured.");
+        return null;
+    }
+    metrics[CoreMetrics.NewLines] = git.Values.Sum(l => l.Count);
+    return git;
+}
+
+/// <summary>
+/// New code means the lines the current branch added or rewrote against the base: the coverage
+/// report is restricted to them, and the same percentages are then computed over that smaller set. A
+/// gate that asks about <c>new_coverage</c> is then judging the change itself rather than the whole
+/// file. Without a base there is no new code to measure, so the <c>new_*</c> metrics are left unset —
+/// which is how a gate treats a metric it was not given.
 /// </summary>
 static bool ApplyNewCodeCoverage(Dictionary<string, double> metrics,
                                  QualityGuard.Core.Analysis.CoverageReport coverage,
-                                 string baseRef, List<FileAnalysis> analyses)
+                                 string baseRef, List<FileAnalysis> analyses,
+                                 IReadOnlyDictionary<string, IReadOnlySet<int>> git)
 {
-    var git = GitChangedLines.Read(baseRef);
-    if (git.Count == 0)
-    {
-        Console.Error.WriteLine($"WARNING: could not read the lines changed since {baseRef} from git; "
-                                + "new code coverage is not measured.");
-        return false;
-    }
-
     // git reports absolute paths and the scan may have recorded relative ones, so every scanned file
     // is made absolute (against the working directory) before the two sides are compared
     var resolver = new CoveragePathResolver(analyses.Select(a => System.IO.Path.GetFullPath(a.File.Path)));
@@ -306,8 +341,6 @@ static bool ApplyNewCodeCoverage(Dictionary<string, double> metrics,
     metrics[CoreMetrics.NewCoverage] = newCode.Coverage;
     metrics[CoreMetrics.NewLineCoverage] = newCode.LineCoverage;
     metrics[CoreMetrics.NewBranchCoverage] = newCode.BranchCoverage;
-    // the fudge factor that skips coverage below 20 new lines reads this: it is the real new-code size
-    metrics[CoreMetrics.NewLines] = newCode.LinesToCover;
     return true;
 }
 

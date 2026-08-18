@@ -44,6 +44,29 @@ public static class GitChangedLines
     }
 
     /// <summary>
+    /// Turns the base the user named into something git diff accepts. A date (yyyy-MM-dd) is not a
+    /// revision git can diff directly, so it becomes the last commit on the first-parent history
+    /// strictly before that date — which is what "compare against the code as it was on &lt;date&gt;"
+    /// means for a diff. Anything that already names a branch, tag or commit passes through
+    /// unchanged, and when git cannot answer (no such date, no repository) the date falls back to
+    /// HEAD, which makes the diff itself fail cleanly rather than silently diffing nothing.
+    /// </summary>
+    public static string Resolve(string baseRef, string? workingDirectory = null)
+    {
+        if (!IsDate(baseRef))
+            return baseRef;
+        var cwd = workingDirectory ?? Environment.CurrentDirectory;
+        var resolved = Run($"rev-list -n1 --first-parent --before=\"{baseRef}\" HEAD", cwd, out var output)
+            ? output.Trim()
+            : string.Empty;
+        return resolved.Length == 0 ? "HEAD" : resolved;
+    }
+
+    /// <summary>Whether the value is a calendar date git can interpret with --before.</summary>
+    public static bool IsDate(string value)
+        => System.Text.RegularExpressions.Regex.IsMatch(value, @"^\d{4}-\d{2}-\d{2}");
+
+    /// <summary>
     /// Turns the output of <c>git diff --no-color --unified=0</c> into a map of file to added line
     /// numbers. A modified line is an added line: git writes it as one removed and one added line,
     /// and the added one is what the new code is made of.

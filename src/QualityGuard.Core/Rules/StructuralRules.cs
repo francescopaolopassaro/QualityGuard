@@ -5553,7 +5553,9 @@ public sealed class NestedTernaryRuleJson : NestedTernaryRule
 
 public abstract class TooManyMembersRule : StructuralRuleBase
 {
-    private const int MaxMethods = 25;
+    private // the reference allows thirty-five before it says a class does too much; ours said
+    // twenty-five, which reported classes nobody else would
+    const int MaxMethods = 35;
     private const int MaxFields = 20;
     public override string Name => "Types should not accumulate too many members";
     public override Severity Severity => Severity.Major;

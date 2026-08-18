@@ -445,7 +445,7 @@ dotnet run --project src/QualityGuard.Cli -- \
 | `--sarif-in <file>` | Read metrics from an existing SARIF report instead of scanning. |
 | `--new-code` | Map finding counts into the `new_*` rating metrics before evaluating the gate. |
 | `--coverage <file>` | Read a coverage report (LCOV, Cobertura or JaCoCo) and feed the gate `coverage`, `line_coverage`, `branch_coverage` and the line/condition counts. Repeatable: reports from every test shard are merged; the tests' own files are left out, and the lines the sources themselves mark as not to be measured (see below) are removed. |
-| `--base <ref>` | Base branch, tag or commit to measure new code against. With `--coverage`, git supplies the lines the current change added or rewrote and the `new_*` coverage metrics are computed on exactly those lines. Without it `new_coverage` stays unset, which the gate treats as passed. |
+| `--base <ref>` | Base branch, tag, commit **or date** (`yyyy-MM-dd`) to measure new code against. With `--coverage`, git supplies the lines the current change added or rewrote and the `new_*` coverage metrics are computed on exactly those lines; that same count is recorded as `new_lines` and feeds the gate's 20-line activation floor. A date is resolved to the last commit strictly before it (a date with no matching commit falls back to `HEAD`). Without it `new_lines` and `new_coverage` stay unset, which the gate treats as passed. |
 | `--fix-hints` | Print the remediation steps under every finding. |
 | `--verbose` | Per-file metrics, taint flow steps and what the scan skipped. |
 | `--rules` | List loaded rules and description coverage. |
