@@ -1,0 +1,3220 @@
+
+- key: QG-PY-BUG-0194
+  name: Suspicious code should match the behaviour the code describes
+  languages: [py]
+  category: BUG
+  severity: major
+  effort: 10min
+  tags: [bug, ported]
+  cwe: [628]
+  message: This code does not behave the way it reads.
+  summary: The code does not do what its shape suggests, or fails on ordinary input.
+  why: |
+    Written this way the code works by accident or breaks on values that are perfectly normal, and the
+    mistake is easy to miss in review because the intent reads correctly.
+  fix: |
+    Make the intended behaviour explicit — fix the condition, the operator or the order of operations —
+    and cover the case that used to fail with a test.
+  detect:
+    - invocation: [Interface, TypeVar]
+      receiver: [interface, typing]
+
+- key: QG-PY-SML-0302
+  name: Arguments given to functions should be simplified
+  languages: [py]
+  category: SML
+  severity: minor
+  effort: 20min
+  tags: [sml, ported]
+  message: This code is harder to read or change than the behaviour requires.
+  summary: The code works but is harder to read or change than the behaviour requires.
+  why: |
+    The intent is buried, duplicated, or spread across places that must stay in sync, so every future
+    change costs more than it should and carries a risk that has nothing to do with the change itself.
+  fix: |
+    Remove what is not used, name what is unclear, and keep one piece of behaviour in one place so the
+    next change touches a single spot.
+  status: planned
+
+- key: QG-PY-BUG-0195
+  name: Asyncio tasks should match the behaviour the code describes
+  languages: [py]
+  category: BUG
+  severity: major
+  effort: 5min
+  tags: [bug, ported]
+  message: This code does not behave the way it reads.
+  summary: The code does not do what its shape suggests, or fails on ordinary input.
+  why: |
+    Written this way the code works by accident or breaks on values that are perfectly normal, and the
+    mistake is easy to miss in review because the intent reads correctly.
+  fix: |
+    Make the intended behaviour explicit — fix the condition, the operator or the order of operations —
+    and cover the case that used to fail with a test.
+  detect:
+    - invocation: [create_task, ensure_future]
+      receiver: [asyncio]
+
+- key: QG-PY-SML-0303
+  name: Long sleep durations should be replaced by the recommended alternative
+  languages: [py]
+  category: SML
+  severity: minor
+  effort: 5min
+  tags: [prefer_api, ported]
+  message: The platform offers a clearer or safer construct for this.
+  summary: A construct is used where the platform offers one that is clearer or safer.
+  why: |
+    The alternative exists because it removes a class of mistake — a conversion, an allocation, an edge
+    case — that the current form leaves to the caller. Using the older form means every reader has to
+    check that the edge case was handled.
+  fix: |
+    Switch to the recommended construct; the behaviour is the same in the normal case and defined in the
+    cases the old form got wrong.
+  detect:
+    - invocation: [sleep]
+      receiver: [anyio, trio]
+
+- key: QG-PY-SML-0304
+  name: AWS CloudWatch metrics namespace should be simplified
+  languages: [py]
+  category: SML
+  severity: minor
+  effort: 5min
+  tags: [sml, ported]
+  message: This code is harder to read or change than the behaviour requires.
+  summary: The code works but is harder to read or change than the behaviour requires.
+  why: |
+    The intent is buried, duplicated, or spread across places that must stay in sync, so every future
+    change costs more than it should and carries a risk that has nothing to do with the change itself.
+  fix: |
+    Remove what is not used, name what is unclear, and keep one piece of behaviour in one place so the
+    next change touches a single spot.
+  detect:
+    - invocation: [put_metric_data]
+      receiver: [AioBaseClient, BaseClient]
+
+- key: QG-PY-SEC-0095
+  name: S3 operations should not weaken the security of the application
+  languages: [py]
+  category: SEC
+  severity: critical
+  effort: 5min
+  tags: [sec, ported]
+  cwe: [441, 693]
+  message: This construct weakens the security of the application.
+  summary: A construct that attackers routinely target is used without the guard it needs.
+  why: |
+    The pattern either trusts data the program does not control, or relies on a mechanism that no longer
+    offers the protection it appears to offer. Both keep working normally, which is why they survive
+    until someone looks for them.
+  fix: |
+    Validate the incoming value against an allowed set, pass it as data rather than as code or command,
+    and replace weakened mechanisms with the current recommended one.
+  detect:
+    - invocation: [AioBaseClient, BaseClient]
+      receiver: [client]
+
+- key: QG-PY-SML-0305
+  name: AWS region should not be committed with the source
+  languages: [py]
+  category: SML
+  severity: minor
+  effort: 5min
+  tags: [secret, ported]
+  message: This value looks like a credential committed with the source.
+  summary: A credential, key or token appears directly in the source instead of coming from a secret store.
+  why: |
+    Anything committed with the code is readable by everyone who can clone the repository, and it
+    survives in the history even after being deleted. Scanners find these values within minutes of a
+    repository becoming reachable, and rotating them means editing and redeploying every copy.
+  fix: |
+    Read the value at run time from the platform secret store or the environment, fail fast when it is
+    missing, and treat the committed value as compromised: rotate it before removing it.
+  detect:
+    - invocation: [Session, client, resource]
+      receiver: [Session, boto3, session]
+
+- key: QG-PY-SML-0306
+  name: Reusable resources should be simplified
+  languages: [py]
+  category: SML
+  severity: minor
+  effort: 20min
+  tags: [sml, ported]
+  message: This code is harder to read or change than the behaviour requires.
+  summary: The code works but is harder to read or change than the behaviour requires.
+  why: |
+    The intent is buried, duplicated, or spread across places that must stay in sync, so every future
+    change costs more than it should and carries a risk that has nothing to do with the change itself.
+  fix: |
+    Remove what is not used, name what is unclear, and keep one piece of behaviour in one place so the
+    next change touches a single spot.
+  detect:
+    - invocation: [MongoClient, MySQLDatabase, PostgresqlDatabase, Redis, Session, SqliteDatabase, StrictRedis, client, connect, resource]
+      receiver: [boto3, connector, dbapi2, mongoengine, orm, peewee, psycopg2, pymongo]
+
+- key: QG-PY-SML-0307
+  name: Lambdas should be accessed in a thread-safe way
+  languages: [py]
+  category: SML
+  severity: minor
+  effort: 3h
+  tags: [concurrency, ported]
+  message: Shared state is accessed without correct coordination.
+  summary: Shared state is accessed with locking that is missing, too wide, or on the wrong object.
+  why: |
+    Concurrency defects depend on timing, so they pass every test and appear under load in production.
+    Locking on a shared or public object also lets unrelated code block or deadlock this one.
+  fix: |
+    Lock a private object dedicated to the state it protects, keep the critical section short, and prefer
+    the concurrent collections and higher-level primitives the platform provides.
+  detect:
+    - invocation: [invoke]
+      receiver: [BaseClient]
+
+- key: QG-PY-BUG-0196
+  name: AWS Lambda handlers should match the behaviour the code describes
+  languages: [py]
+  category: BUG
+  severity: major
+  effort: 5min
+  tags: [bug, ported]
+  message: This code does not behave the way it reads.
+  summary: The code does not do what its shape suggests, or fails on ordinary input.
+  why: |
+    Written this way the code works by accident or breaks on values that are perfectly normal, and the
+    mistake is easy to miss in review because the intent reads correctly.
+  fix: |
+    Make the intended behaviour explicit — fix the condition, the operator or the order of operations —
+    and cover the case that used to fail with a test.
+  status: planned
+
+- key: QG-PY-SML-0308
+  name: Hard-to-read code should be simplified
+  languages: [py]
+  category: SML
+  severity: minor
+  effort: 5min
+  tags: [sml, ported]
+  message: This code is harder to read or change than the behaviour requires.
+  summary: The code works but is harder to read or change than the behaviour requires.
+  why: |
+    The intent is buried, duplicated, or spread across places that must stay in sync, so every future
+    change costs more than it should and carries a risk that has nothing to do with the change itself.
+  fix: |
+    Remove what is not used, name what is unclear, and keep one piece of behaviour in one place so the
+    next change touches a single spot.
+  detect:
+    - invocation: [list_objects_v2, scan]
+      receiver: [BaseClient]
+
+- key: QG-PY-BUG-0197
+  name: CSS selectors should be replaced by the recommended alternative
+  languages: [py]
+  category: BUG
+  severity: major
+  effort: 5min
+  tags: [prefer_api, ported]
+  message: The platform offers a clearer or safer construct for this.
+  summary: A construct is used where the platform offers one that is clearer or safer.
+  why: |
+    The alternative exists because it removes a class of mistake — a conversion, an allocation, an edge
+    case — that the current form leaves to the caller. Using the older form means every reader has to
+    check that the edge case was handled.
+  fix: |
+    Switch to the recommended construct; the behaviour is the same in the normal case and defined in the
+    cases the old form got wrong.
+  detect:
+    - invocation: [PageElement]
+      receiver: [element]
+
+- key: QG-PY-SML-0309
+  name: Deprecated code should be retired
+  languages: [py]
+  category: SML
+  severity: minor
+  effort: 5min
+  tags: [deprecation, ported]
+  message: This deprecated element still needs to be retired.
+  summary: A deprecated member is declared, used, or marked without an alternative.
+  why: |
+    A deprecation is a promise to remove something; left unattended it becomes permanent, and callers
+    keep appearing because the member still works. Without a documented replacement nobody can migrate
+    even if they want to.
+  fix: |
+    Document the replacement next to the marker, migrate the callers, and delete the member in a planned
+    release rather than leaving the warning in place.
+  detect:
+    - invocation: [PageElement]
+      receiver: [element]
+
+- key: QG-PY-BUG-0198
+  name: BeautifulSoup elements should match the behaviour the code describes
+  languages: [py]
+  category: BUG
+  severity: major
+  effort: 5min
+  tags: [bug, ported]
+  message: This code does not behave the way it reads.
+  summary: The code does not do what its shape suggests, or fails on ordinary input.
+  why: |
+    Written this way the code works by accident or breaks on values that are perfectly normal, and the
+    mistake is easy to miss in review because the intent reads correctly.
+  fix: |
+    Make the intended behaviour explicit — fix the condition, the operator or the order of operations —
+    and cover the case that used to fail with a test.
+  detect:
+    - invocation: [AttributeError, find]
+      receiver: [builtins, soup]
+
+- key: QG-PY-SML-0310
+  name: BeautifulSoup parser should be simplified
+  languages: [py]
+  category: SML
+  severity: minor
+  effort: 5min
+  tags: [sml, ported]
+  message: This code is harder to read or change than the behaviour requires.
+  summary: The code works but is harder to read or change than the behaviour requires.
+  why: |
+    The intent is buried, duplicated, or spread across places that must stay in sync, so every future
+    change costs more than it should and carries a risk that has nothing to do with the change itself.
+  fix: |
+    Remove what is not used, name what is unclear, and keep one piece of behaviour in one place so the
+    next change touches a single spot.
+  detect:
+    - invocation: [BeautifulSoup]
+      receiver: [bs4]
+
+- key: QG-PY-SML-0311
+  name: HTML elements should be replaced by the recommended alternative
+  languages: [py]
+  category: SML
+  severity: minor
+  effort: 5min
+  tags: [prefer_api, ported]
+  message: The platform offers a clearer or safer construct for this.
+  summary: A construct is used where the platform offers one that is clearer or safer.
+  why: |
+    The alternative exists because it removes a class of mistake — a conversion, an allocation, an edge
+    case — that the current form leaves to the caller. Using the older form means every reader has to
+    check that the edge case was handled.
+  fix: |
+    Switch to the recommended construct; the behaviour is the same in the normal case and defined in the
+    cases the old form got wrong.
+  detect:
+    - invocation: [append, extend, insert]
+      receiver: [PageElement]
+
+- key: QG-PY-SML-0312
+  name: Events should be replaced by the recommended alternative
+  languages: [py]
+  category: SML
+  severity: minor
+  effort: 10min
+  tags: [prefer_api, ported]
+  message: The platform offers a clearer or safer construct for this.
+  summary: A construct is used where the platform offers one that is clearer or safer.
+  why: |
+    The alternative exists because it removes a class of mistake — a conversion, an allocation, an edge
+    case — that the current form leaves to the caller. Using the older form means every reader has to
+    check that the edge case was handled.
+  fix: |
+    Switch to the recommended construct; the behaviour is the same in the normal case and defined in the
+    cases the old form got wrong.
+  status: planned
+
+- key: QG-PY-BUG-0199
+  name: Cancellation exceptions should make failure handling explicit
+  languages: [py]
+  category: BUG
+  severity: major
+  effort: 5min
+  tags: [exception, ported]
+  message: This handling hides the failure instead of dealing with it.
+  summary: An exception is thrown, caught or propagated in a way that hides the failure.
+  why: |
+    Handlers that are too broad, empty, or that replace the original error remove the information needed
+    to diagnose the incident, and let the program continue in a state nobody designed for. The symptom
+    then appears far from the cause.
+  fix: |
+    Catch the specific failures this code can recover from, keep the original exception as the cause when
+    wrapping, and let everything else reach the boundary handler.
+  detect:
+    - invocation: [Cancelled, CancelledError, get_cancelled_exc_class]
+      receiver: [anyio, asyncio, trio]
+
+- key: QG-PY-BUG-0200
+  name: Cancellation scopes should match the behaviour the code describes
+  languages: [py]
+  category: BUG
+  severity: major
+  effort: 5min
+  tags: [bug, ported]
+  message: This code does not behave the way it reads.
+  summary: The code does not do what its shape suggests, or fails on ordinary input.
+  why: |
+    Written this way the code works by accident or breaks on values that are perfectly normal, and the
+    mistake is easy to miss in review because the intent reads correctly.
+  fix: |
+    Make the intended behaviour explicit — fix the condition, the operator or the order of operations —
+    and cover the case that used to fail with a test.
+  status: planned
+
+- key: QG-PY-SML-0313
+  name: Method overrides should be simplified
+  languages: [py]
+  category: SML
+  severity: minor
+  effort: 15min
+  tags: [sml, ported]
+  message: This code is harder to read or change than the behaviour requires.
+  summary: The code works but is harder to read or change than the behaviour requires.
+  why: |
+    The intent is buried, duplicated, or spread across places that must stay in sync, so every future
+    change costs more than it should and carries a risk that has nothing to do with the change itself.
+  fix: |
+    Remove what is not used, name what is unclear, and keep one piece of behaviour in one place so the
+    next change touches a single spot.
+  detect:
+    - invocation: [abstractmethod, overload]
+      receiver: [abc, typing]
+
+- key: QG-PY-BUG-0201
+  name: Child routers should match the behaviour the code describes
+  languages: [py]
+  category: BUG
+  severity: major
+  effort: 5min
+  tags: [bug, ported]
+  message: This code does not behave the way it reads.
+  summary: The code does not do what its shape suggests, or fails on ordinary input.
+  why: |
+    Written this way the code works by accident or breaks on values that are perfectly normal, and the
+    mistake is easy to miss in review because the intent reads correctly.
+  fix: |
+    Make the intended behaviour explicit — fix the condition, the operator or the order of operations —
+    and cover the case that used to fail with a test.
+  detect:
+    - invocation: [include_router]
+      receiver: [APIRouter, FastAPI]
+
+- key: QG-PY-SEC-0096
+  name: Cipher Block Chaining IVs should use current cryptographic parameters
+  languages: [py]
+  category: SEC
+  severity: critical
+  effort: 15min
+  tags: [crypto, ported]
+  cwe: [327, 780]
+  message: This cryptographic choice no longer provides the protection it suggests.
+  summary: A cryptographic primitive, mode or key size that is no longer considered safe is used.
+  why: |
+    Broken primitives keep producing output that looks correct, so nothing fails while the protection is
+    already gone. Data encrypted today is often kept for years, which means an algorithm that is merely
+    weak now will be readable later.
+  fix: |
+    Use the algorithms the platform recommends today — authenticated encryption, a modern hash, a key
+    size at or above the current guidance — and keep the choice in one place so it can be raised.
+  detect:
+    - invocation: [Cipher]
+      receiver: [ciphers]
+
+- key: QG-PY-SML-0314
+  name: Type checks shouldnt be confusing should be simplified
+  languages: [py]
+  category: SML
+  severity: minor
+  effort: 5min
+  tags: [sml, ported]
+  message: This code is harder to read or change than the behaviour requires.
+  summary: The code works but is harder to read or change than the behaviour requires.
+  why: |
+    The intent is buried, duplicated, or spread across places that must stay in sync, so every future
+    change costs more than it should and carries a risk that has nothing to do with the change itself.
+  fix: |
+    Remove what is not used, name what is unclear, and keep one piece of behaviour in one place so the
+    next change touches a single spot.
+  detect:
+    - invocation: [Coroutine, TypeVar]
+      receiver: [typing]
+
+- key: QG-PY-BUG-0202
+  name: Control flow statements should not be used
+  languages: [py]
+  category: BUG
+  severity: major
+  effort: 5min
+  tags: [avoid_api, ported]
+  message: This API should be replaced by the current alternative.
+  summary: Code calls an API that is unsafe, obsolete or superseded by a better alternative.
+  why: |
+    The API stays available for compatibility, so nothing fails at build time, but it carries behaviour
+    the platform now considers a defect — unchecked input, a weak guarantee, or a cost the replacement
+    avoids. Its presence also spreads: new code copies what it finds nearby.
+  fix: |
+    Replace the call with the current API, and keep the old one only behind a compatibility layer that is
+    documented and dated.
+  detect:
+    - invocation: [TaskGroup, create_task_group, open_nursery]
+      receiver: [anyio, asyncio, trio]
+
+- key: QG-PY-SML-0315
+  name: Dataclass attributes should be simplified
+  languages: [py]
+  category: SML
+  severity: minor
+  effort: 5min
+  tags: [sml, ported]
+  message: This code is harder to read or change than the behaviour requires.
+  summary: The code works but is harder to read or change than the behaviour requires.
+  why: |
+    The intent is buried, duplicated, or spread across places that must stay in sync, so every future
+    change costs more than it should and carries a risk that has nothing to do with the change itself.
+  fix: |
+    Remove what is not used, name what is unclear, and keep one piece of behaviour in one place so the
+    next change touches a single spot.
+  detect:
+    - invocation: [dataclass]
+      receiver: [dataclasses]
+
+- key: QG-PY-BUG-0203
+  name: Enum classes should match the behaviour the code describes
+  languages: [py]
+  category: BUG
+  severity: major
+  effort: 5min
+  tags: [bug, ported]
+  message: This code does not behave the way it reads.
+  summary: The code does not do what its shape suggests, or fails on ordinary input.
+  why: |
+    Written this way the code works by accident or breaks on values that are perfectly normal, and the
+    mistake is easy to miss in review because the intent reads correctly.
+  fix: |
+    Make the intended behaviour explicit — fix the condition, the operator or the order of operations —
+    and cover the case that used to fail with a test.
+  detect:
+    - invocation: [Enum, IntEnum, IntFlag, dataclass]
+      receiver: [dataclasses, enum]
+
+- key: QG-PY-SEC-0097
+  name: Secure password should be replaced by the recommended alternative
+  languages: [py]
+  category: SEC
+  severity: critical
+  effort: 45min
+  tags: [prefer_api, ported]
+  cwe: [521]
+  message: The platform offers a clearer or safer construct for this.
+  summary: A construct is used where the platform offers one that is clearer or safer.
+  why: |
+    The alternative exists because it removes a class of mistake — a conversion, an allocation, an edge
+    case — that the current form leaves to the caller. Using the older form means every reader has to
+    check that the edge case was handled.
+  fix: |
+    Switch to the recommended construct; the behaviour is the same in the normal case and defined in the
+    cases the old form got wrong.
+  detect:
+    - invocation: [MySQLConnection, connect]
+      receiver: [connect, connection, connections, connector, psycopg2, settings]
+
+- key: QG-PY-SML-0316
+  name: Defaultdict should be simplified
+  languages: [py]
+  category: SML
+  severity: minor
+  effort: 5min
+  tags: [sml, ported]
+  message: This code is harder to read or change than the behaviour requires.
+  summary: The code works but is harder to read or change than the behaviour requires.
+  why: |
+    The intent is buried, duplicated, or spread across places that must stay in sync, so every future
+    change costs more than it should and carries a risk that has nothing to do with the change itself.
+  fix: |
+    Remove what is not used, name what is unclear, and keep one piece of behaviour in one place so the
+    next change touches a single spot.
+  detect:
+    - invocation: [defaultdict]
+      receiver: [collections]
+
+- key: QG-PY-SML-0317
+  name: Deprecated NumPy aliases of built-in types should not be used
+  languages: [py]
+  category: SML
+  severity: minor
+  effort: 5min
+  tags: [avoid_api, ported]
+  message: This API should be replaced by the current alternative.
+  summary: Code calls an API that is unsafe, obsolete or superseded by a better alternative.
+  why: |
+    The API stays available for compatibility, so nothing fails at build time, but it carries behaviour
+    the platform now considers a defect — unchecked input, a weak guarantee, or a cost the replacement
+    avoids. Its presence also spreads: new code copies what it finds nearby.
+  fix: |
+    Replace the call with the current API, and keep the old one only behind a compatibility layer that is
+    documented and dated.
+  detect:
+    - invocation: [complex, unicode]
+      receiver: [numpy]
+
+- key: QG-PY-SML-0318
+  name: Tests should assert something
+  languages: [py]
+  category: SML
+  severity: minor
+  effort: 1min
+  tags: [tests, ported]
+  message: This test cannot fail, so it verifies nothing.
+  summary: A test does not assert, is disabled, or cannot fail.
+  why: |
+    A test that cannot fail reports success forever while covering nothing, and the suite keeps its green
+    status. That is worse than having no test at all, because it removes the incentive to write one.
+  fix: |
+    Assert the behaviour the test exists for, re-enable it, and make sure it fails when the behaviour is
+    broken before trusting it again.
+  detect:
+    - invocation: [dict]
+      receiver: [builtins]
+
+- key: QG-PY-BUG-0204
+  name: Safe flag should match the behaviour the code describes
+  languages: [py]
+  category: BUG
+  severity: major
+  effort: 10min
+  tags: [bug, ported]
+  message: This code does not behave the way it reads.
+  summary: The code does not do what its shape suggests, or fails on ordinary input.
+  why: |
+    Written this way the code works by accident or breaks on values that are perfectly normal, and the
+    mistake is easy to miss in review because the intent reads correctly.
+  fix: |
+    Make the intended behaviour explicit — fix the condition, the operator or the order of operations —
+    and cover the case that used to fail with a test.
+  detect:
+    - invocation: [JsonResponse]
+      receiver: [http]
+
+- key: QG-PY-SML-0319
+  name: Locals() should be simplified
+  languages: [py]
+  category: SML
+  severity: minor
+  effort: 10min
+  tags: [sml, ported]
+  message: This code is harder to read or change than the behaviour requires.
+  summary: The code works but is harder to read or change than the behaviour requires.
+  why: |
+    The intent is buried, duplicated, or spread across places that must stay in sync, so every future
+    change costs more than it should and carries a risk that has nothing to do with the change itself.
+  fix: |
+    Remove what is not used, name what is unclear, and keep one piece of behaviour in one place so the
+    next change touches a single spot.
+  detect:
+    - invocation: [render]
+      receiver: [shortcuts]
+
+- key: QG-PY-BUG-0205
+  name: Einops pattern should match the behaviour the code describes
+  languages: [py]
+  category: BUG
+  severity: major
+  effort: 5min
+  tags: [bug, ported]
+  message: This code does not behave the way it reads.
+  summary: The code does not do what its shape suggests, or fails on ordinary input.
+  why: |
+    Written this way the code works by accident or breaks on values that are perfectly normal, and the
+    mistake is easy to miss in review because the intent reads correctly.
+  fix: |
+    Make the intended behaviour explicit — fix the condition, the operator or the order of operations —
+    and cover the case that used to fail with a test.
+  detect:
+    - invocation: [rearrange, reduce, repeat]
+      receiver: [einops]
+
+- key: QG-PY-BUG-0206
+  name: Membership tests should not be left empty
+  languages: [py]
+  category: BUG
+  severity: major
+  effort: 5min
+  tags: [empty, ported]
+  message: This construct is empty, so it does nothing.
+  summary: A construct is declared with no content.
+  why: |
+    An empty body reads as if the case is handled while nothing happens, which is exactly how ignored
+    errors and unimplemented branches survive review. It is also indistinguishable from an accidental
+    deletion.
+  fix: |
+    Implement the behaviour, or remove the construct. When doing nothing is deliberate, say so in a
+    comment so the next reader does not treat it as a gap.
+  detect:
+    - invocation: [frozenset, tuple]
+      receiver: [builtins]
+
+- key: QG-PY-SML-0320
+  name: FastAPI dependencies should be simplified
+  languages: [py]
+  category: SML
+  severity: minor
+  effort: 5min
+  tags: [sml, ported]
+  message: This code is harder to read or change than the behaviour requires.
+  summary: The code works but is harder to read or change than the behaviour requires.
+  why: |
+    The intent is buried, duplicated, or spread across places that must stay in sync, so every future
+    change costs more than it should and carries a risk that has nothing to do with the change itself.
+  fix: |
+    Remove what is not used, name what is unclear, and keep one piece of behaviour in one place so the
+    next change touches a single spot.
+  detect:
+    - invocation: [APIRouter, Annotated, Body, Cookie, Depends, FastAPI, File, Form, Header, Path]
+      receiver: [applications, param_functions, routing, typing, typing_extensions]
+
+- key: QG-PY-SEC-0098
+  name: FastAPI file upload endpoints should be replaced by the recommended alternative
+  languages: [py]
+  category: SEC
+  severity: critical
+  effort: 10min
+  tags: [prefer_api, ported]
+  message: The platform offers a clearer or safer construct for this.
+  summary: A construct is used where the platform offers one that is clearer or safer.
+  why: |
+    The alternative exists because it removes a class of mistake — a conversion, an allocation, an edge
+    case — that the current form leaves to the caller. Using the older form means every reader has to
+    check that the edge case was handled.
+  fix: |
+    Switch to the recommended construct; the behaviour is the same in the normal case and defined in the
+    cases the old form got wrong.
+  detect:
+    - invocation: [BaseModel, Body, Depends, File, UploadFile, patch, post]
+      receiver: [APIRouter, FastAPI, datastructures, param_functions, pydantic]
+
+- key: QG-PY-SML-0321
+  name: Generic route decorators should not be used
+  languages: [py]
+  category: SML
+  severity: minor
+  effort: 2min
+  tags: [avoid_api, ported]
+  message: This API should be replaced by the current alternative.
+  summary: Code calls an API that is unsafe, obsolete or superseded by a better alternative.
+  why: |
+    The API stays available for compatibility, so nothing fails at build time, but it carries behaviour
+    the platform now considers a defect — unchecked input, a weak guarantee, or a cost the replacement
+    avoids. Its presence also spreads: new code copies what it finds nearby.
+  fix: |
+    Replace the call with the current API, and keep the old one only behind a compatibility layer that is
+    documented and dated.
+  detect:
+    - invocation: [route]
+      receiver: [APIRouter, FastAPI]
+
+- key: QG-PY-SML-0322
+  name: HTTPException responses should make failure handling explicit
+  languages: [py]
+  category: SML
+  severity: minor
+  effort: 5min
+  tags: [exception, ported]
+  message: This handling hides the failure instead of dealing with it.
+  summary: An exception is thrown, caught or propagated in a way that hides the failure.
+  why: |
+    Handlers that are too broad, empty, or that replace the original error remove the information needed
+    to diagnose the incident, and let the program continue in a state nobody designed for. The symptom
+    then appears far from the cause.
+  fix: |
+    Catch the specific failures this code can recover from, keep the original exception as the cause when
+    wrapping, and let everything else reach the boundary handler.
+  detect:
+    - invocation: [APIRouter, FastAPI, HTTPException]
+      receiver: [applications, exceptions, fastapi, routing]
+
+- key: QG-PY-SML-0323
+  name: FastAPI applications should be simplified
+  languages: [py]
+  category: SML
+  severity: minor
+  effort: 5min
+  tags: [sml, ported]
+  message: This code is harder to read or change than the behaviour requires.
+  summary: The code works but is harder to read or change than the behaviour requires.
+  why: |
+    The intent is buried, duplicated, or spread across places that must stay in sync, so every future
+    change costs more than it should and carries a risk that has nothing to do with the change itself.
+  fix: |
+    Remove what is not used, name what is unclear, and keep one piece of behaviour in one place so the
+    next change touches a single spot.
+  detect:
+    - invocation: [FastAPI]
+      receiver: [applications, uvicorn]
+
+- key: QG-PY-BUG-0207
+  name: FastAPI path parameters should be declared the way the language intends
+  languages: [py]
+  category: BUG
+  severity: major
+  effort: 5min
+  tags: [declaration, ported]
+  message: This declaration exposes more than it should.
+  summary: A declaration uses modifiers, order or visibility that do not match its purpose.
+  why: |
+    Declarations are the contract other code relies on. A wider visibility than needed makes an internal
+    detail part of the public surface, and unusual modifier combinations hide the intent from readers and
+    tools alike.
+  fix: |
+    Declare the narrowest visibility that works, in the conventional modifier order, and mark as final or
+    read-only whatever is not meant to change.
+  detect:
+    - invocation: [APIRouter, Annotated, Depends, FastAPI, Path, Security]
+      receiver: [applications, fastapi, param_functions, routing, typing, typing_extensions]
+
+- key: QG-PY-SML-0324
+  name: FastAPI routes should be simplified
+  languages: [py]
+  category: SML
+  severity: minor
+  effort: 2min
+  tags: [sml, ported]
+  message: This code is harder to read or change than the behaviour requires.
+  summary: The code works but is harder to read or change than the behaviour requires.
+  why: |
+    The intent is buried, duplicated, or spread across places that must stay in sync, so every future
+    change costs more than it should and carries a risk that has nothing to do with the change itself.
+  fix: |
+    Remove what is not used, name what is unclear, and keep one piece of behaviour in one place so the
+    next change touches a single spot.
+  detect:
+    - invocation: [APIRouter, FastAPI]
+      receiver: [applications, routing]
+
+- key: QG-PY-BUG-0208
+  name: Flask error handlers should match the behaviour the code describes
+  languages: [py]
+  category: BUG
+  severity: major
+  effort: 5min
+  tags: [bug, ported]
+  message: This code does not behave the way it reads.
+  summary: The code does not do what its shape suggests, or fails on ordinary input.
+  why: |
+    Written this way the code works by accident or breaks on values that are perfectly normal, and the
+    mistake is easy to miss in review because the intent reads correctly.
+  fix: |
+    Make the intended behaviour explicit — fix the condition, the operator or the order of operations —
+    and cover the case that used to fail with a test.
+  status: planned
+
+- key: QG-PY-SEC-0099
+  name: Flask secret keys should not be committed with the source
+  languages: [py]
+  category: SEC
+  severity: critical
+  effort: 30min
+  tags: [secret, ported]
+  cwe: [798, 259]
+  message: This value looks like a credential committed with the source.
+  summary: A credential, key or token appears directly in the source instead of coming from a secret store.
+  why: |
+    Anything committed with the code is readable by everyone who can clone the repository, and it
+    survives in the history even after being deleted. Scanners find these values within minutes of a
+    repository becoming reachable, and rotating them means editing and redeploying every copy.
+  fix: |
+    Read the value at run time from the platform secret store or the environment, fail fast when it is
+    missing, and treat the committed value as compromised: rotate it before removing it.
+  detect:
+    - invocation: [secret_key]
+      receiver: [Flask, current_app]
+
+- key: QG-PY-BUG-0209
+  name: HTTP headers should make failure handling explicit
+  languages: [py]
+  category: BUG
+  severity: major
+  effort: 5min
+  tags: [exception, ported]
+  message: This handling hides the failure instead of dealing with it.
+  summary: An exception is thrown, caught or propagated in a way that hides the failure.
+  why: |
+    Handlers that are too broad, empty, or that replace the original error remove the information needed
+    to diagnose the incident, and let the program continue in a state nobody designed for. The symptom
+    then appears far from the cause.
+  fix: |
+    Catch the specific failures this code can recover from, keep the original exception as the cause when
+    wrapping, and let everything else reach the boundary handler.
+  detect:
+    - invocation: [Headers]
+      receiver: [headers]
+
+- key: QG-PY-SML-0325
+  name: Query parameters should not be used
+  languages: [py]
+  category: SML
+  severity: minor
+  effort: 30min
+  tags: [avoid_api, ported]
+  message: This API should be replaced by the current alternative.
+  summary: Code calls an API that is unsafe, obsolete or superseded by a better alternative.
+  why: |
+    The API stays available for compatibility, so nothing fails at build time, but it carries behaviour
+    the platform now considers a defect — unchecked input, a weak guarantee, or a cost the replacement
+    avoids. Its presence also spreads: new code copies what it finds nearby.
+  fix: |
+    Replace the call with the current API, and keep the old one only behind a compatibility layer that is
+    documented and dated.
+  detect:
+    - invocation: [Request, route]
+      receiver: [Blueprint, Flask, wrappers]
+
+- key: QG-PY-BUG-0210
+  name: Flask preprocess_request() return values should match the behaviour the code describes
+  languages: [py]
+  category: BUG
+  severity: major
+  effort: 5min
+  tags: [bug, ported]
+  message: This code does not behave the way it reads.
+  summary: The code does not do what its shape suggests, or fails on ordinary input.
+  why: |
+    Written this way the code works by accident or breaks on values that are perfectly normal, and the
+    mistake is easy to miss in review because the intent reads correctly.
+  fix: |
+    Make the intended behaviour explicit — fix the condition, the operator or the order of operations —
+    and cover the case that used to fail with a test.
+  detect:
+    - invocation: [preprocess_request]
+      receiver: [Flask]
+
+- key: QG-PY-SML-0326
+  name: REST API actions should be simplified
+  languages: [py]
+  category: SML
+  severity: minor
+  effort: 5min
+  tags: [sml, ported]
+  message: This code is harder to read or change than the behaviour requires.
+  summary: The code works but is harder to read or change than the behaviour requires.
+  why: |
+    The intent is buried, duplicated, or spread across places that must stay in sync, so every future
+    change costs more than it should and carries a risk that has nothing to do with the change itself.
+  fix: |
+    Remove what is not used, name what is unclear, and keep one piece of behaviour in one place so the
+    next change touches a single spot.
+  detect:
+    - invocation: [route]
+      receiver: [Blueprint, Flask]
+
+- key: QG-PY-BUG-0211
+  name: Send_file should match the behaviour the code describes
+  languages: [py]
+  category: BUG
+  severity: major
+  effort: 5min
+  tags: [bug, ported]
+  message: This code does not behave the way it reads.
+  summary: The code does not do what its shape suggests, or fails on ordinary input.
+  why: |
+    Written this way the code works by accident or breaks on values that are perfectly normal, and the
+    mistake is easy to miss in review because the intent reads correctly.
+  fix: |
+    Make the intended behaviour explicit — fix the condition, the operator or the order of operations —
+    and cover the case that used to fail with a test.
+  status: planned
+
+- key: QG-PY-BUG-0212
+  name: Flask class-based view decorators should match the behaviour the code describes
+  languages: [py]
+  category: BUG
+  severity: major
+  effort: 5min
+  tags: [bug, ported]
+  message: This code does not behave the way it reads.
+  summary: The code does not do what its shape suggests, or fails on ordinary input.
+  why: |
+    Written this way the code works by accident or breaks on values that are perfectly normal, and the
+    mistake is easy to miss in review because the intent reads correctly.
+  fix: |
+    Make the intended behaviour explicit — fix the condition, the operator or the order of operations —
+    and cover the case that used to fail with a test.
+  detect:
+    - invocation: [View]
+      receiver: [views]
+
+- key: QG-PY-SML-0327
+  name: Function return types should be simplified
+  languages: [py]
+  category: SML
+  severity: minor
+  effort: 5min
+  tags: [sml, ported]
+  message: This code is harder to read or change than the behaviour requires.
+  summary: The code works but is harder to read or change than the behaviour requires.
+  why: |
+    The intent is buried, duplicated, or spread across places that must stay in sync, so every future
+    change costs more than it should and carries a risk that has nothing to do with the change itself.
+  fix: |
+    Remove what is not used, name what is unclear, and keep one piece of behaviour in one place so the
+    next change touches a single spot.
+  detect:
+    - invocation: [AsyncGenerator, AsyncIterable, AsyncIterator, Generator, Iterable, Iterator, TypedDict, contextmanager]
+      receiver: [abc, contextlib, typing]
+
+- key: QG-PY-SML-0328
+  name: Generic classes should be declared the way the language intends
+  languages: [py]
+  category: SML
+  severity: minor
+  effort: 5min
+  tags: [declaration, ported]
+  message: This declaration exposes more than it should.
+  summary: A declaration uses modifiers, order or visibility that do not match its purpose.
+  why: |
+    Declarations are the contract other code relies on. A wider visibility than needed makes an internal
+    detail part of the public surface, and unusual modifier combinations hide the intent from readers and
+    tools alike.
+  fix: |
+    Declare the narrowest visibility that works, in the conventional modifier order, and mark as final or
+    read-only whatever is not meant to change.
+  detect:
+    - invocation: [Generic]
+      receiver: [typing]
+
+- key: QG-PY-SML-0329
+  name: Type hints of generic types should be simplified
+  languages: [py]
+  category: SML
+  severity: minor
+  effort: 5min
+  tags: [sml, ported]
+  message: This code is harder to read or change than the behaviour requires.
+  summary: The code works but is harder to read or change than the behaviour requires.
+  why: |
+    The intent is buried, duplicated, or spread across places that must stay in sync, so every future
+    change costs more than it should and carries a risk that has nothing to do with the change itself.
+  fix: |
+    Remove what is not used, name what is unclear, and keep one piece of behaviour in one place so the
+    next change touches a single spot.
+  detect:
+    - invocation: [Dict, List, Tuple]
+      receiver: [typing]
+
+- key: QG-PY-SEC-0100
+  name: GraphQL queries should not weaken the security of the application
+  languages: [py]
+  category: SEC
+  severity: critical
+  effort: 1d
+  tags: [sec, ported]
+  cwe: [770]
+  message: This construct weakens the security of the application.
+  summary: A construct that attackers routinely target is used without the guard it needs.
+  why: |
+    The pattern either trusts data the program does not control, or relies on a mechanism that no longer
+    offers the protection it appears to offer. Both keep working normally, which is why they survive
+    until someone looks for them.
+  fix: |
+    Validate the incoming value against an allowed set, pass it as data rather than as code or command,
+    and replace weakened mechanisms with the current recommended one.
+  detect:
+    - invocation: [DepthLimitValidator, SQLAlchemy]
+      receiver: [flask_sqlalchemy, validation]
+
+- key: QG-PY-BUG-0213
+  name: Group iterators from itertools.groupby should match the behaviour the code describes
+  languages: [py]
+  category: BUG
+  severity: major
+  effort: 5min
+  tags: [bug, ported]
+  message: This code does not behave the way it reads.
+  summary: The code does not do what its shape suggests, or fails on ordinary input.
+  why: |
+    Written this way the code works by accident or breaks on values that are perfectly normal, and the
+    mistake is easy to miss in review because the intent reads correctly.
+  fix: |
+    Make the intended behaviour explicit — fix the condition, the operator or the order of operations —
+    and cover the case that used to fail with a test.
+  detect:
+    - invocation: [groupby, join]
+      receiver: [bytes, itertools, str]
+
+- key: QG-PY-BUG-0214
+  name: Endpoints returning 204 status should not be left empty
+  languages: [py]
+  category: BUG
+  severity: major
+  effort: 5min
+  tags: [empty, ported]
+  cwe: [1004]
+  message: This construct is empty, so it does nothing.
+  summary: A construct is declared with no content.
+  why: |
+    An empty body reads as if the case is handled while nothing happens, which is exactly how ignored
+    errors and unimplemented branches survive review. It is also indistinguishable from an accidental
+    deletion.
+  fix: |
+    Implement the behaviour, or remove the construct. When doing nothing is deliberate, say so in a
+    comment so the next reader does not treat it as a gap.
+  detect:
+    - invocation: [Response, head, options, patch, post, trace]
+      receiver: [FastAPI, fastapi]
+
+- key: QG-PY-SML-0330
+  name: SystemExit should be simplified
+  languages: [py]
+  category: SML
+  severity: minor
+  effort: 5min
+  tags: [sml, ported]
+  message: This code is harder to read or change than the behaviour requires.
+  summary: The code works but is harder to read or change than the behaviour requires.
+  why: |
+    The intent is buried, duplicated, or spread across places that must stay in sync, so every future
+    change costs more than it should and carries a risk that has nothing to do with the change itself.
+  fix: |
+    Remove what is not used, name what is unclear, and keep one piece of behaviour in one place so the
+    next change touches a single spot.
+  status: planned
+
+- key: QG-PY-SML-0331
+  name: Comparison methods should be declared the way the language intends
+  languages: [py]
+  category: SML
+  severity: minor
+  effort: 5min
+  tags: [declaration, ported]
+  message: This declaration exposes more than it should.
+  summary: A declaration uses modifiers, order or visibility that do not match its purpose.
+  why: |
+    Declarations are the contract other code relies on. A wider visibility than needed makes an internal
+    detail part of the public surface, and unusual modifier combinations hide the intent from readers and
+    tools alike.
+  fix: |
+    Declare the narrowest visibility that works, in the conventional modifier order, and mark as final or
+    read-only whatever is not meant to change.
+  detect:
+    - invocation: [total_ordering]
+      receiver: [functools]
+
+- key: QG-PY-SML-0332
+  name: Values assigned to variables should be simplified
+  languages: [py]
+  category: SML
+  severity: minor
+  effort: 5min
+  tags: [sml, ported]
+  message: This code is harder to read or change than the behaviour requires.
+  summary: The code works but is harder to read or change than the behaviour requires.
+  why: |
+    The intent is buried, duplicated, or spread across places that must stay in sync, so every future
+    change costs more than it should and carries a risk that has nothing to do with the change itself.
+  fix: |
+    Remove what is not used, name what is unclear, and keep one piece of behaviour in one place so the
+    next change touches a single spot.
+  detect:
+    - invocation: [TypedDict]
+      receiver: [typing]
+
+- key: QG-PY-SML-0333
+  name: Hard-to-read code should be simplified
+  languages: [py]
+  category: SML
+  severity: minor
+  effort: 5min
+  tags: [sml, ported]
+  message: This code is harder to read or change than the behaviour requires.
+  summary: The code works but is harder to read or change than the behaviour requires.
+  why: |
+    The intent is buried, duplicated, or spread across places that must stay in sync, so every future
+    change costs more than it should and carries a risk that has nothing to do with the change itself.
+  fix: |
+    Remove what is not used, name what is unclear, and keep one piece of behaviour in one place so the
+    next change touches a single spot.
+  status: planned
+
+- key: QG-PY-BUG-0215
+  name: Suspicious code should match the behaviour the code describes
+  languages: [py]
+  category: BUG
+  severity: major
+  effort: 5min
+  tags: [bug, ported]
+  message: This code does not behave the way it reads.
+  summary: The code does not do what its shape suggests, or fails on ordinary input.
+  why: |
+    Written this way the code works by accident or breaks on values that are perfectly normal, and the
+    mistake is easy to miss in review because the intent reads correctly.
+  fix: |
+    Make the intended behaviour explicit — fix the condition, the operator or the order of operations —
+    and cover the case that used to fail with a test.
+  detect:
+    - invocation: [Sequence]
+      receiver: [typing]
+
+- key: QG-PY-SML-0334
+  name: .items() to iterate over a dictionary should be simplified
+  languages: [py]
+  category: SML
+  severity: minor
+  effort: 1min
+  tags: [sml, ported]
+  message: This code is harder to read or change than the behaviour requires.
+  summary: The code works but is harder to read or change than the behaviour requires.
+  why: |
+    The intent is buried, duplicated, or spread across places that must stay in sync, so every future
+    change costs more than it should and carries a risk that has nothing to do with the change itself.
+  fix: |
+    Remove what is not used, name what is unclear, and keep one piece of behaviour in one place so the
+    next change touches a single spot.
+  detect:
+    - invocation: [items]
+      receiver: [dict]
+
+- key: QG-PY-BUG-0216
+  name: Abs_tol parameter should match the behaviour the code describes
+  languages: [py]
+  category: BUG
+  severity: major
+  effort: 5min
+  tags: [bug, ported]
+  message: This code does not behave the way it reads.
+  summary: The code does not do what its shape suggests, or fails on ordinary input.
+  why: |
+    Written this way the code works by accident or breaks on values that are perfectly normal, and the
+    mistake is easy to miss in review because the intent reads correctly.
+  fix: |
+    Make the intended behaviour explicit — fix the condition, the operator or the order of operations —
+    and cover the case that used to fail with a test.
+  detect:
+    - invocation: [isclose]
+      receiver: [math]
+
+- key: QG-PY-SML-0335
+  name: Logging statements should be simplified
+  languages: [py]
+  category: SML
+  severity: minor
+  effort: 5min
+  tags: [sml, ported]
+  message: This code is harder to read or change than the behaviour requires.
+  summary: The code works but is harder to read or change than the behaviour requires.
+  why: |
+    The intent is buried, duplicated, or spread across places that must stay in sync, so every future
+    change costs more than it should and carries a risk that has nothing to do with the change itself.
+  fix: |
+    Remove what is not used, name what is unclear, and keep one piece of behaviour in one place so the
+    next change touches a single spot.
+  detect:
+    - invocation: [critical, debug, format, info, warn, warning]
+      receiver: [Logger, logging, str]
+
+- key: QG-PY-SML-0336
+  name: Logging.exception() should be replaced by the recommended alternative
+  languages: [py]
+  category: SML
+  severity: minor
+  effort: 5min
+  tags: [prefer_api, ported]
+  message: The platform offers a clearer or safer construct for this.
+  summary: A construct is used where the platform offers one that is clearer or safer.
+  why: |
+    The alternative exists because it removes a class of mistake — a conversion, an allocation, an edge
+    case — that the current form leaves to the caller. Using the older form means every reader has to
+    check that the edge case was handled.
+  fix: |
+    Switch to the recommended construct; the behaviour is the same in the normal case and defined in the
+    cases the old form got wrong.
+  status: planned
+
+- key: QG-PY-SML-0337
+  name: Function returns should be simplified
+  languages: [py]
+  category: SML
+  severity: minor
+  effort: 5min
+  tags: [sml, ported]
+  message: This code is harder to read or change than the behaviour requires.
+  summary: The code works but is harder to read or change than the behaviour requires.
+  why: |
+    The intent is buried, duplicated, or spread across places that must stay in sync, so every future
+    change costs more than it should and carries a risk that has nothing to do with the change itself.
+  fix: |
+    Remove what is not used, name what is unclear, and keep one piece of behaviour in one place so the
+    next change touches a single spot.
+  detect:
+    - invocation: [complex]
+      receiver: [builtins]
+
+- key: QG-PY-BUG-0217
+  name: Mutable default values should not be used
+  languages: [py]
+  category: BUG
+  severity: major
+  effort: 5min
+  tags: [avoid_api, ported]
+  message: This API should be replaced by the current alternative.
+  summary: Code calls an API that is unsafe, obsolete or superseded by a better alternative.
+  why: |
+    The API stays available for compatibility, so nothing fails at build time, but it carries behaviour
+    the platform now considers a defect — unchecked input, a weak guarantee, or a cost the replacement
+    avoids. Its presence also spreads: new code copies what it finds nearby.
+  fix: |
+    Replace the call with the current API, and keep the old one only behind a compatibility layer that is
+    documented and dated.
+  detect:
+    - invocation: [ContextVar, bytearray, dict, list]
+      receiver: [builtins, contextvars]
+
+- key: QG-PY-SML-0338
+  name: Tf.Variable objects should be simplified
+  languages: [py]
+  category: SML
+  severity: minor
+  effort: 5min
+  tags: [sml, ported]
+  message: This code is harder to read or change than the behaviour requires.
+  summary: The code works but is harder to read or change than the behaviour requires.
+  why: |
+    The intent is buried, duplicated, or spread across places that must stay in sync, so every future
+    change costs more than it should and carries a risk that has nothing to do with the change itself.
+  fix: |
+    Remove what is not used, name what is unclear, and keep one piece of behaviour in one place so the
+    next change touches a single spot.
+  detect:
+    - invocation: [Variable]
+      receiver: [tensorflow]
+
+- key: QG-PY-SML-0339
+  name: Passing a list to np.array should be replaced by the recommended alternative
+  languages: [py]
+  category: SML
+  severity: minor
+  effort: 5min
+  tags: [prefer_api, ported]
+  message: The platform offers a clearer or safer construct for this.
+  summary: A construct is used where the platform offers one that is clearer or safer.
+  why: |
+    The alternative exists because it removes a class of mistake — a conversion, an allocation, an edge
+    case — that the current form leaves to the caller. Using the older form means every reader has to
+    check that the edge case was handled.
+  fix: |
+    Switch to the recommended construct; the behaviour is the same in the normal case and defined in the
+    cases the old form got wrong.
+  detect:
+    - invocation: [array]
+      receiver: [builtins, numpy]
+
+- key: QG-PY-SML-0340
+  name: Numpy weekmask should be simplified
+  languages: [py]
+  category: SML
+  severity: minor
+  effort: 5min
+  tags: [sml, ported]
+  message: This code is harder to read or change than the behaviour requires.
+  summary: The code works but is harder to read or change than the behaviour requires.
+  why: |
+    The intent is buried, duplicated, or spread across places that must stay in sync, so every future
+    change costs more than it should and carries a risk that has nothing to do with the change itself.
+  fix: |
+    Remove what is not used, name what is unclear, and keep one piece of behaviour in one place so the
+    next change touches a single spot.
+  detect:
+    - invocation: [busday_count, busday_offset, busdaycalendar, is_busday]
+      receiver: [numpy]
+
+- key: QG-PY-SML-0341
+  name: Np.nonzero should be replaced by the recommended alternative
+  languages: [py]
+  category: SML
+  severity: minor
+  effort: 5min
+  tags: [prefer_api, ported]
+  message: The platform offers a clearer or safer construct for this.
+  summary: A construct is used where the platform offers one that is clearer or safer.
+  why: |
+    The alternative exists because it removes a class of mistake — a conversion, an allocation, an edge
+    case — that the current form leaves to the caller. Using the older form means every reader has to
+    check that the edge case was handled.
+  fix: |
+    Switch to the recommended construct; the behaviour is the same in the normal case and defined in the
+    cases the old form got wrong.
+  detect:
+    - invocation: [where]
+      receiver: [numpy]
+
+- key: QG-PY-SML-0342
+  name: Hard-to-read code should be simplified
+  languages: [py]
+  category: SML
+  severity: minor
+  effort: 5min
+  tags: [sml, ported]
+  message: This code is harder to read or change than the behaviour requires.
+  summary: The code works but is harder to read or change than the behaviour requires.
+  why: |
+    The intent is buried, duplicated, or spread across places that must stay in sync, so every future
+    change costs more than it should and carries a risk that has nothing to do with the change itself.
+  fix: |
+    Remove what is not used, name what is unclear, and keep one piece of behaviour in one place so the
+    next change touches a single spot.
+  detect:
+    - invocation: [join, merge]
+      receiver: [DataFrame, merge]
+
+- key: QG-PY-SML-0343
+  name: Pandas.pipe method should be replaced by the recommended alternative
+  languages: [py]
+  category: SML
+  severity: minor
+  effort: 5min
+  tags: [prefer_api, ported]
+  message: The platform offers a clearer or safer construct for this.
+  summary: A construct is used where the platform offers one that is clearer or safer.
+  why: |
+    The alternative exists because it removes a class of mistake — a conversion, an allocation, an edge
+    case — that the current form leaves to the caller. Using the older form means every reader has to
+    check that the edge case was handled.
+  fix: |
+    Switch to the recommended construct; the behaviour is the same in the normal case and defined in the
+    cases the old form got wrong.
+  detect:
+    - invocation: [DataFrame]
+      receiver: [frame]
+
+- key: QG-PY-SML-0344
+  name: Pandas.DataFrame.to_numpy() method should be replaced by the recommended alternative
+  languages: [py]
+  category: SML
+  severity: minor
+  effort: 5min
+  tags: [prefer_api, ported]
+  message: The platform offers a clearer or safer construct for this.
+  summary: A construct is used where the platform offers one that is clearer or safer.
+  why: |
+    The alternative exists because it removes a class of mistake — a conversion, an allocation, an edge
+    case — that the current form leaves to the caller. Using the older form means every reader has to
+    check that the edge case was handled.
+  fix: |
+    Switch to the recommended construct; the behaviour is the same in the normal case and defined in the
+    cases the old form got wrong.
+  detect:
+    - invocation: [values]
+      receiver: [DataFrame]
+
+- key: QG-PY-SML-0345
+  name: Inplace=True should not be used
+  languages: [py]
+  category: SML
+  severity: minor
+  effort: 5min
+  tags: [avoid_api, ported]
+  message: This API should be replaced by the current alternative.
+  summary: Code calls an API that is unsafe, obsolete or superseded by a better alternative.
+  why: |
+    The API stays available for compatibility, so nothing fails at build time, but it carries behaviour
+    the platform now considers a defect — unchecked input, a weak guarantee, or a cost the replacement
+    avoids. Its presence also spreads: new code copies what it finds nearby.
+  fix: |
+    Replace the call with the current API, and keep the old one only behind a compatibility layer that is
+    documented and dated.
+  detect:
+    - invocation: [drop, drop_duplicates, dropna, eval, query, sort_index, sort_values]
+      receiver: [DataFrame]
+
+- key: QG-PY-SML-0346
+  name: Dtype parameter should be simplified
+  languages: [py]
+  category: SML
+  severity: minor
+  effort: 5min
+  tags: [sml, ported]
+  message: This code is harder to read or change than the behaviour requires.
+  summary: The code works but is harder to read or change than the behaviour requires.
+  why: |
+    The intent is buried, duplicated, or spread across places that must stay in sync, so every future
+    change costs more than it should and carries a risk that has nothing to do with the change itself.
+  fix: |
+    Remove what is not used, name what is unclear, and keep one piece of behaviour in one place so the
+    next change touches a single spot.
+  detect:
+    - invocation: [read_csv, read_table]
+      receiver: [pandas]
+
+- key: QG-PY-SML-0347
+  name: Dates should be simplified
+  languages: [py]
+  category: SML
+  severity: minor
+  effort: 5min
+  tags: [sml, ported]
+  message: This code is harder to read or change than the behaviour requires.
+  summary: The code works but is harder to read or change than the behaviour requires.
+  why: |
+    The intent is buried, duplicated, or spread across places that must stay in sync, so every future
+    change costs more than it should and carries a risk that has nothing to do with the change itself.
+  fix: |
+    Remove what is not used, name what is unclear, and keep one piece of behaviour in one place so the
+    next change touches a single spot.
+  detect:
+    - invocation: [to_datetime]
+      receiver: [datetimes]
+
+- key: QG-PY-BUG-0218
+  name: Property methods should match the behaviour the code describes
+  languages: [py]
+  category: BUG
+  severity: major
+  effort: 5min
+  tags: [bug, ported]
+  message: This code does not behave the way it reads.
+  summary: The code does not do what its shape suggests, or fails on ordinary input.
+  why: |
+    Written this way the code works by accident or breaks on values that are perfectly normal, and the
+    mistake is easy to miss in review because the intent reads correctly.
+  fix: |
+    Make the intended behaviour explicit — fix the condition, the operator or the order of operations —
+    and cover the case that used to fail with a test.
+  detect:
+    - invocation: [abstractmethod]
+      receiver: [abc]
+
+- key: QG-PY-BUG-0219
+  name: Pydantic models should match the behaviour the code describes
+  languages: [py]
+  category: BUG
+  severity: major
+  effort: 5min
+  tags: [bug, ported]
+  message: This code does not behave the way it reads.
+  summary: The code does not do what its shape suggests, or fails on ordinary input.
+  why: |
+    Written this way the code works by accident or breaks on values that are perfectly normal, and the
+    mistake is easy to miss in review because the intent reads correctly.
+  fix: |
+    Make the intended behaviour explicit — fix the condition, the operator or the order of operations —
+    and cover the case that used to fail with a test.
+  detect:
+    - invocation: [ConfigDict]
+      receiver: [pydantic]
+
+- key: QG-PY-BUG-0220
+  name: Pydantic-core serialization calls should match the behaviour the code describes
+  languages: [py]
+  category: BUG
+  severity: major
+  effort: 5min
+  tags: [bug, ported]
+  message: This code does not behave the way it reads.
+  summary: The code does not do what its shape suggests, or fails on ordinary input.
+  why: |
+    Written this way the code works by accident or breaks on values that are perfectly normal, and the
+    mistake is easy to miss in review because the intent reads correctly.
+  fix: |
+    Make the intended behaviour explicit — fix the condition, the operator or the order of operations —
+    and cover the case that used to fail with a test.
+  detect:
+    - invocation: [BaseModel, to_json, to_jsonable_python]
+      receiver: [pydantic, pydantic_core]
+
+- key: QG-PY-BUG-0221
+  name: Double leading underscores should not be used
+  languages: [py]
+  category: BUG
+  severity: major
+  effort: 5min
+  tags: [avoid_api, ported]
+  message: This API should be replaced by the current alternative.
+  summary: Code calls an API that is unsafe, obsolete or superseded by a better alternative.
+  why: |
+    The API stays available for compatibility, so nothing fails at build time, but it carries behaviour
+    the platform now considers a defect — unchecked input, a weak guarantee, or a cost the replacement
+    avoids. Its presence also spreads: new code copies what it finds nearby.
+  fix: |
+    Replace the call with the current API, and keep the old one only behind a compatibility layer that is
+    documented and dated.
+  detect:
+    - invocation: [BaseModel, PrivateAttr]
+      receiver: [pydantic]
+
+- key: QG-PY-BUG-0222
+  name: Pydantic field validators should match the behaviour the code describes
+  languages: [py]
+  category: BUG
+  severity: major
+  effort: 5min
+  tags: [bug, ported]
+  message: This code does not behave the way it reads.
+  summary: The code does not do what its shape suggests, or fails on ordinary input.
+  why: |
+    Written this way the code works by accident or breaks on values that are perfectly normal, and the
+    mistake is easy to miss in review because the intent reads correctly.
+  fix: |
+    Make the intended behaviour explicit — fix the condition, the operator or the order of operations —
+    and cover the case that used to fail with a test.
+  detect:
+    - invocation: [BaseModel, field_validator]
+      receiver: [functional_validators, pydantic]
+
+- key: QG-PY-BUG-0223
+  name: Json_schema_input_type should not be used
+  languages: [py]
+  category: BUG
+  severity: major
+  effort: 5min
+  tags: [avoid_api, ported]
+  message: This API should be replaced by the current alternative.
+  summary: Code calls an API that is unsafe, obsolete or superseded by a better alternative.
+  why: |
+    The API stays available for compatibility, so nothing fails at build time, but it carries behaviour
+    the platform now considers a defect — unchecked input, a weak guarantee, or a cost the replacement
+    avoids. Its presence also spreads: new code copies what it finds nearby.
+  fix: |
+    Replace the call with the current API, and keep the old one only behind a compatibility layer that is
+    documented and dated.
+  detect:
+    - invocation: [field_validator]
+      receiver: [functional_validators, pydantic]
+
+- key: QG-PY-SML-0348
+  name: Pydantic models should be simplified
+  languages: [py]
+  category: SML
+  severity: minor
+  effort: 5min
+  tags: [sml, ported]
+  message: This code is harder to read or change than the behaviour requires.
+  summary: The code works but is harder to read or change than the behaviour requires.
+  why: |
+    The intent is buried, duplicated, or spread across places that must stay in sync, so every future
+    change costs more than it should and carries a risk that has nothing to do with the change itself.
+  fix: |
+    Remove what is not used, name what is unclear, and keep one piece of behaviour in one place so the
+    next change touches a single spot.
+  detect:
+    - invocation: [BaseModel]
+      receiver: [pydantic]
+
+- key: QG-PY-SML-0349
+  name: Optional Pydantic fields should be simplified
+  languages: [py]
+  category: SML
+  severity: minor
+  effort: 5min
+  tags: [sml, ported]
+  message: This code is harder to read or change than the behaviour requires.
+  summary: The code works but is harder to read or change than the behaviour requires.
+  why: |
+    The intent is buried, duplicated, or spread across places that must stay in sync, so every future
+    change costs more than it should and carries a risk that has nothing to do with the change itself.
+  fix: |
+    Remove what is not used, name what is unclear, and keep one piece of behaviour in one place so the
+    next change touches a single spot.
+  detect:
+    - invocation: [BaseModel, Field, Optional]
+      receiver: [pydantic, typing]
+
+- key: QG-PY-BUG-0224
+  name: SkipValidation should match the behaviour the code describes
+  languages: [py]
+  category: BUG
+  severity: major
+  effort: 5min
+  tags: [bug, ported]
+  message: This code does not behave the way it reads.
+  summary: The code does not do what its shape suggests, or fails on ordinary input.
+  why: |
+    Written this way the code works by accident or breaks on values that are perfectly normal, and the
+    mistake is easy to miss in review because the intent reads correctly.
+  fix: |
+    Make the intended behaviour explicit — fix the condition, the operator or the order of operations —
+    and cover the case that used to fail with a test.
+  detect:
+    - invocation: [AfterValidator, Annotated, BaseModel, BeforeValidator, Field, PlainSerializer, PlainValidator, SkipValidation, StringConstraints, WrapSerializer]
+      receiver: [fields, functional_serializers, functional_validators, pydantic, types, typing, typing_extensions]
+
+- key: QG-PY-SML-0350
+  name: Num_workers parameter should be simplified
+  languages: [py]
+  category: SML
+  severity: minor
+  effort: 2min
+  tags: [sml, ported]
+  message: This code is harder to read or change than the behaviour requires.
+  summary: The code works but is harder to read or change than the behaviour requires.
+  why: |
+    The intent is buried, duplicated, or spread across places that must stay in sync, so every future
+    change costs more than it should and carries a risk that has nothing to do with the change itself.
+  fix: |
+    Remove what is not used, name what is unclear, and keep one piece of behaviour in one place so the
+    next change touches a single spot.
+  detect:
+    - invocation: [DataLoader]
+      receiver: [data]
+
+- key: QG-PY-SML-0351
+  name: Pytz.timezone should be simplified
+  languages: [py]
+  category: SML
+  severity: minor
+  effort: 5min
+  tags: [sml, ported]
+  message: This code is harder to read or change than the behaviour requires.
+  summary: The code works but is harder to read or change than the behaviour requires.
+  why: |
+    The intent is buried, duplicated, or spread across places that must stay in sync, so every future
+    change costs more than it should and carries a risk that has nothing to do with the change itself.
+  fix: |
+    Remove what is not used, name what is unclear, and keep one piece of behaviour in one place so the
+    next change touches a single spot.
+  status: planned
+
+- key: QG-PY-SML-0352
+  name: Hard-to-read code should be simplified
+  languages: [py]
+  category: SML
+  severity: minor
+  effort: 5min
+  tags: [sml, ported]
+  message: This code is harder to read or change than the behaviour requires.
+  summary: The code works but is harder to read or change than the behaviour requires.
+  why: |
+    The intent is buried, duplicated, or spread across places that must stay in sync, so every future
+    change costs more than it should and carries a risk that has nothing to do with the change itself.
+  fix: |
+    Remove what is not used, name what is unclear, and keep one piece of behaviour in one place so the
+    next change touches a single spot.
+  detect:
+    - invocation: [ElasticNet, Lasso, LogisticRegression, MT19937, PCG64, PCG64DXSM, Philox, Ridge, SFC64, SeedSequence]
+      receiver: [_classes, _coordinate_descent, _logistic, _ridge, numpy, random]
+
+- key: QG-PY-SML-0353
+  name: Router prefixes should be declared the way the language intends
+  languages: [py]
+  category: SML
+  severity: minor
+  effort: 2min
+  tags: [declaration, ported]
+  message: This declaration exposes more than it should.
+  summary: A declaration uses modifiers, order or visibility that do not match its purpose.
+  why: |
+    Declarations are the contract other code relies on. A wider visibility than needed makes an internal
+    detail part of the public surface, and unusual modifier combinations hide the intent from readers and
+    tools alike.
+  fix: |
+    Declare the narrowest visibility that works, in the conventional modifier order, and mark as final or
+    read-only whatever is not meant to change.
+  detect:
+    - invocation: [APIRouter, include_router]
+      receiver: [APIRouter, FastAPI, routing]
+
+- key: QG-PY-SEC-0101
+  name: Encryption algorithms should use current cryptographic parameters
+  languages: [py]
+  category: SEC
+  severity: critical
+  effort: 20min
+  tags: [crypto, ported]
+  cwe: [327, 780]
+  message: This cryptographic choice no longer provides the protection it suggests.
+  summary: A cryptographic primitive, mode or key size that is no longer considered safe is used.
+  why: |
+    Broken primitives keep producing output that looks correct, so nothing fails while the protection is
+    already gone. Data encrypted today is often kept for years, which means an algorithm that is merely
+    weak now will be readable later.
+  fix: |
+    Use the algorithms the platform recommends today — authenticated encryption, a modern hash, a key
+    size at or above the current guidance — and keep the choice in one place so it can be raised.
+  detect:
+    - invocation: [Cipher]
+      receiver: [ciphers]
+
+- key: QG-PY-SML-0354
+  name: Python side effects should not be used
+  languages: [py]
+  category: SML
+  severity: minor
+  effort: 5min
+  tags: [avoid_api, ported]
+  message: This API should be replaced by the current alternative.
+  summary: Code calls an API that is unsafe, obsolete or superseded by a better alternative.
+  why: |
+    The API stays available for compatibility, so nothing fails at build time, but it carries behaviour
+    the platform now considers a defect — unchecked input, a weak guarantee, or a cost the replacement
+    avoids. Its presence also spreads: new code copies what it finds nearby.
+  fix: |
+    Replace the call with the current API, and keep the old one only behind a compatibility layer that is
+    documented and dated.
+  detect:
+    - invocation: [append, clear, extend, insert]
+      receiver: [MutableMapping, dict, list, set, tensorflow]
+
+- key: QG-PY-BUG-0225
+  name: @singledispatch and @singledispatchmethod should match the behaviour the code describes
+  languages: [py]
+  category: BUG
+  severity: major
+  effort: 5min
+  tags: [bug, ported]
+  message: This code does not behave the way it reads.
+  summary: The code does not do what its shape suggests, or fails on ordinary input.
+  why: |
+    Written this way the code works by accident or breaks on values that are perfectly normal, and the
+    mistake is easy to miss in review because the intent reads correctly.
+  fix: |
+    Make the intended behaviour explicit — fix the condition, the operator or the order of operations —
+    and cover the case that used to fail with a test.
+  detect:
+    - invocation: [singledispatch, singledispatchmethod, staticmethod]
+      receiver: [builtins, functools]
+
+- key: QG-PY-BUG-0226
+  name: Transformers should match the behaviour the code describes
+  languages: [py]
+  category: BUG
+  severity: major
+  effort: 5min
+  tags: [bug, ported]
+  message: This code does not behave the way it reads.
+  summary: The code does not do what its shape suggests, or fails on ordinary input.
+  why: |
+    Written this way the code works by accident or breaks on values that are perfectly normal, and the
+    mistake is easy to miss in review because the intent reads correctly.
+  fix: |
+    Make the intended behaviour explicit — fix the condition, the operator or the order of operations —
+    and cover the case that used to fail with a test.
+  detect:
+    - invocation: [Pipeline, make_pipeline]
+      receiver: [pipeline]
+
+- key: QG-PY-SML-0355
+  name: Subclasses of Scikit-Learns BaseEstimator should be simplified
+  languages: [py]
+  category: SML
+  severity: minor
+  effort: 5min
+  tags: [sml, ported]
+  message: This code is harder to read or change than the behaviour requires.
+  summary: The code works but is harder to read or change than the behaviour requires.
+  why: |
+    The intent is buried, duplicated, or spread across places that must stay in sync, so every future
+    change costs more than it should and carries a risk that has nothing to do with the change itself.
+  fix: |
+    Remove what is not used, name what is unclear, and keep one piece of behaviour in one place so the
+    next change touches a single spot.
+  detect:
+    - invocation: [BaseEstimator, BiclusterMixin, ClassifierMixin, ClusterMixin, DensityMixin, MetaEstimatorMixin, OneToOneFeatureMixin, OutlierMixin, RegressorMixin, TransformerMixin]
+      receiver: [base]
+
+- key: QG-PY-SML-0356
+  name: Hard-to-read code should be simplified
+  languages: [py]
+  category: SML
+  severity: minor
+  effort: 5min
+  tags: [sml, ported]
+  message: This code is harder to read or change than the behaviour requires.
+  summary: The code works but is harder to read or change than the behaviour requires.
+  why: |
+    The intent is buried, duplicated, or spread across places that must stay in sync, so every future
+    change costs more than it should and carries a risk that has nothing to do with the change itself.
+  fix: |
+    Remove what is not used, name what is unclear, and keep one piece of behaviour in one place so the
+    next change touches a single spot.
+  detect:
+    - invocation: [GridSearchCV, HalvingGridSearchCV, HalvingRandomSearchCV, Pipeline, RandomizedSearchCV, set_params]
+      receiver: [Pipeline, _search, _search_successive_halving, pipeline]
+
+- key: QG-PY-SML-0357
+  name: Memory parameter should be simplified
+  languages: [py]
+  category: SML
+  severity: minor
+  effort: 5min
+  tags: [sml, ported]
+  message: This code is harder to read or change than the behaviour requires.
+  summary: The code works but is harder to read or change than the behaviour requires.
+  why: |
+    The intent is buried, duplicated, or spread across places that must stay in sync, so every future
+    change costs more than it should and carries a risk that has nothing to do with the change itself.
+  fix: |
+    Remove what is not used, name what is unclear, and keep one piece of behaviour in one place so the
+    next change touches a single spot.
+  detect:
+    - invocation: [Pipeline, make_pipeline]
+      receiver: [pipeline]
+
+- key: QG-PY-SML-0358
+  name: Checkpoints should be replaced by the recommended alternative
+  languages: [py]
+  category: SML
+  severity: minor
+  effort: 5min
+  tags: [prefer_api, ported]
+  message: The platform offers a clearer or safer construct for this.
+  summary: A construct is used where the platform offers one that is clearer or safer.
+  why: |
+    The alternative exists because it removes a class of mistake — a conversion, an allocation, an edge
+    case — that the current form leaves to the caller. Using the older form means every reader has to
+    check that the edge case was handled.
+  fix: |
+    Switch to the recommended construct; the behaviour is the same in the normal case and defined in the
+    cases the old form got wrong.
+  detect:
+    - invocation: [sleep]
+      receiver: [anyio, trio]
+
+- key: QG-PY-BUG-0227
+  name: Functions and methods should match the behaviour the code describes
+  languages: [py]
+  category: BUG
+  severity: major
+  effort: 5min
+  tags: [bug, ported]
+  cwe: [394]
+  message: This code does not behave the way it reads.
+  summary: The code does not do what its shape suggests, or fails on ordinary input.
+  why: |
+    Written this way the code works by accident or breaks on values that are perfectly normal, and the
+    mistake is easy to miss in review because the intent reads correctly.
+  fix: |
+    Make the intended behaviour explicit — fix the condition, the operator or the order of operations —
+    and cover the case that used to fail with a test.
+  detect:
+    - invocation: [Dataset]
+      receiver: [data]
+
+- key: QG-PY-SML-0359
+  name: Startswith and endswith calls should be replaced by the recommended alternative
+  languages: [py]
+  category: SML
+  severity: minor
+  effort: 5min
+  tags: [prefer_api, ported]
+  message: The platform offers a clearer or safer construct for this.
+  summary: A construct is used where the platform offers one that is clearer or safer.
+  why: |
+    The alternative exists because it removes a class of mistake — a conversion, an allocation, an edge
+    case — that the current form leaves to the caller. Using the older form means every reader has to
+    check that the edge case was handled.
+  fix: |
+    Switch to the recommended construct; the behaviour is the same in the normal case and defined in the
+    cases the old form got wrong.
+  detect:
+    - invocation: [bytearray, bytes]
+      receiver: [builtins]
+
+- key: QG-PY-SML-0360
+  name: 12-hour format should be replaced by the recommended alternative
+  languages: [py]
+  category: SML
+  severity: minor
+  effort: 5min
+  tags: [prefer_api, ported]
+  message: The platform offers a clearer or safer construct for this.
+  summary: A construct is used where the platform offers one that is clearer or safer.
+  why: |
+    The alternative exists because it removes a class of mistake — a conversion, an allocation, an edge
+    case — that the current form leaves to the caller. Using the older form means every reader has to
+    check that the edge case was handled.
+  fix: |
+    Switch to the recommended construct; the behaviour is the same in the normal case and defined in the
+    cases the old form got wrong.
+  detect:
+    - invocation: [strftime]
+      receiver: [time]
+
+- key: QG-PY-SML-0361
+  name: String formatting should be replaced by the recommended alternative
+  languages: [py]
+  category: SML
+  severity: minor
+  effort: 1min
+  tags: [prefer_api, ported]
+  message: The platform offers a clearer or safer construct for this.
+  summary: A construct is used where the platform offers one that is clearer or safer.
+  why: |
+    The alternative exists because it removes a class of mistake — a conversion, an allocation, an edge
+    case — that the current form leaves to the caller. Using the older form means every reader has to
+    check that the edge case was handled.
+  fix: |
+    Switch to the recommended construct; the behaviour is the same in the normal case and defined in the
+    cases the old form got wrong.
+  status: planned
+
+- key: QG-PY-BUG-0228
+  name: Async functions should be accessed in a thread-safe way
+  languages: [py]
+  category: BUG
+  severity: major
+  effort: 5min
+  tags: [concurrency, ported]
+  message: Shared state is accessed without correct coordination.
+  summary: Shared state is accessed with locking that is missing, too wide, or on the wrong object.
+  why: |
+    Concurrency defects depend on timing, so they pass every test and appear under load in production.
+    Locking on a shared or public object also lets unrelated code block or deadlock this one.
+  fix: |
+    Lock a private object dedicated to the state it protects, keep the critical section short, and prefer
+    the concurrent collections and higher-level primitives the platform provides.
+  status: planned
+
+- key: QG-PY-BUG-0229
+  name: Async functions should be accessed in a thread-safe way
+  languages: [py]
+  category: BUG
+  severity: major
+  effort: 5min
+  tags: [concurrency, ported]
+  message: Shared state is accessed without correct coordination.
+  summary: Shared state is accessed with locking that is missing, too wide, or on the wrong object.
+  why: |
+    Concurrency defects depend on timing, so they pass every test and appear under load in production.
+    Locking on a shared or public object also lets unrelated code block or deadlock this one.
+  fix: |
+    Lock a private object dedicated to the state it protects, keep the critical section short, and prefer
+    the concurrent collections and higher-level primitives the platform provides.
+  status: planned
+
+- key: QG-PY-SML-0362
+  name: TaskGroup/Nursery should not be used
+  languages: [py]
+  category: SML
+  severity: minor
+  effort: 5min
+  tags: [avoid_api, ported]
+  message: This API should be replaced by the current alternative.
+  summary: Code calls an API that is unsafe, obsolete or superseded by a better alternative.
+  why: |
+    The API stays available for compatibility, so nothing fails at build time, but it carries behaviour
+    the platform now considers a defect — unchecked input, a weak guarantee, or a cost the replacement
+    avoids. Its presence also spreads: new code copies what it finds nearby.
+  fix: |
+    Replace the call with the current API, and keep the old one only behind a compatibility layer that is
+    documented and dated.
+  detect:
+    - invocation: [TaskGroup, create_task_group, open_nursery]
+      receiver: [anyio, asyncio, trio]
+
+- key: QG-PY-SML-0363
+  name: Template string processing should be simplified
+  languages: [py]
+  category: SML
+  severity: minor
+  effort: 5min
+  tags: [sml, ported]
+  message: This code is harder to read or change than the behaviour requires.
+  summary: The code works but is harder to read or change than the behaviour requires.
+  why: |
+    The intent is buried, duplicated, or spread across places that must stay in sync, so every future
+    change costs more than it should and carries a risk that has nothing to do with the change itself.
+  fix: |
+    Remove what is not used, name what is unclear, and keep one piece of behaviour in one place so the
+    next change touches a single spot.
+  detect:
+    - invocation: [Interpolation]
+      receiver: [templatelib]
+
+- key: QG-PY-SML-0364
+  name: TestClient requests should be simplified
+  languages: [py]
+  category: SML
+  severity: minor
+  effort: 5min
+  tags: [sml, ported]
+  message: This code is harder to read or change than the behaviour requires.
+  summary: The code works but is harder to read or change than the behaviour requires.
+  why: |
+    The intent is buried, duplicated, or spread across places that must stay in sync, so every future
+    change costs more than it should and carries a risk that has nothing to do with the change itself.
+  fix: |
+    Remove what is not used, name what is unclear, and keep one piece of behaviour in one place so the
+    next change touches a single spot.
+  detect:
+    - invocation: [TestClient]
+      receiver: [testclient]
+
+- key: QG-PY-SML-0365
+  name: Validate_indices argument should be simplified
+  languages: [py]
+  category: SML
+  severity: minor
+  effort: 5min
+  tags: [sml, ported]
+  message: This code is harder to read or change than the behaviour requires.
+  summary: The code works but is harder to read or change than the behaviour requires.
+  why: |
+    The intent is buried, duplicated, or spread across places that must stay in sync, so every future
+    change costs more than it should and carries a risk that has nothing to do with the change itself.
+  fix: |
+    Remove what is not used, name what is unclear, and keep one piece of behaviour in one place so the
+    next change touches a single spot.
+  detect:
+    - invocation: [gather]
+      receiver: [tensorflow]
+
+- key: QG-PY-SML-0366
+  name: Input_shape parameter should be simplified
+  languages: [py]
+  category: SML
+  severity: minor
+  effort: 5min
+  tags: [sml, ported]
+  message: This code is harder to read or change than the behaviour requires.
+  summary: The code works but is harder to read or change than the behaviour requires.
+  why: |
+    The intent is buried, duplicated, or spread across places that must stay in sync, so every future
+    change costs more than it should and carries a risk that has nothing to do with the change itself.
+  fix: |
+    Remove what is not used, name what is unclear, and keep one piece of behaviour in one place so the
+    next change touches a single spot.
+  detect:
+    - invocation: [Model]
+      receiver: [keras]
+
+- key: QG-PY-SML-0367
+  name: Reduction axis/dimension should be simplified
+  languages: [py]
+  category: SML
+  severity: minor
+  effort: 5min
+  tags: [sml, ported]
+  message: This code is harder to read or change than the behaviour requires.
+  summary: The code works but is harder to read or change than the behaviour requires.
+  why: |
+    The intent is buried, duplicated, or spread across places that must stay in sync, so every future
+    change costs more than it should and carries a risk that has nothing to do with the change itself.
+  fix: |
+    Remove what is not used, name what is unclear, and keep one piece of behaviour in one place so the
+    next change touches a single spot.
+  detect:
+    - invocation: [aminmax, argmin, count_nonzero, mode, nanmean, nanquantile, norm, quantile, std_mean, unique]
+      receiver: [torch]
+
+- key: QG-PY-BUG-0230
+  name: Shared state should be accessed in a thread-safe way
+  languages: [py]
+  category: BUG
+  severity: major
+  effort: 5min
+  tags: [concurrency, ported]
+  message: Shared state is accessed without correct coordination.
+  summary: Shared state is accessed with locking that is missing, too wide, or on the wrong object.
+  why: |
+    Concurrency defects depend on timing, so they pass every test and appear under load in production.
+    Locking on a shared or public object also lets unrelated code block or deadlock this one.
+  fix: |
+    Lock a private object dedicated to the state it protects, keep the critical section short, and prefer
+    the concurrent collections and higher-level primitives the platform provides.
+  status: planned
+
+- key: QG-PY-SML-0368
+  name: Timezone-aware datetime objects should be replaced by the recommended alternative
+  languages: [py]
+  category: SML
+  severity: minor
+  effort: 5min
+  tags: [prefer_api, ported]
+  message: The platform offers a clearer or safer construct for this.
+  summary: A construct is used where the platform offers one that is clearer or safer.
+  why: |
+    The alternative exists because it removes a class of mistake — a conversion, an allocation, an edge
+    case — that the current form leaves to the caller. Using the older form means every reader has to
+    check that the edge case was handled.
+  fix: |
+    Switch to the recommended construct; the behaviour is the same in the normal case and defined in the
+    cases the old form got wrong.
+  detect:
+    - invocation: [utcfromtimestamp, utcnow]
+      receiver: [datetime]
+
+- key: QG-PY-SML-0369
+  name: Torch.tensor should be replaced by the recommended alternative
+  languages: [py]
+  category: SML
+  severity: minor
+  effort: 2min
+  tags: [prefer_api, ported]
+  message: The platform offers a clearer or safer construct for this.
+  summary: A construct is used where the platform offers one that is clearer or safer.
+  why: |
+    The alternative exists because it removes a class of mistake — a conversion, an allocation, an edge
+    case — that the current form leaves to the caller. Using the older form means every reader has to
+    check that the edge case was handled.
+  fix: |
+    Switch to the recommended construct; the behaviour is the same in the normal case and defined in the
+    cases the old form got wrong.
+  detect:
+    - invocation: [Variable]
+      receiver: [autograd]
+
+- key: QG-PY-SEC-0102
+  name: Models should not weaken the security of the application
+  languages: [py]
+  category: SEC
+  severity: critical
+  effort: 15min
+  tags: [sec, ported]
+  cwe: [913, 502]
+  message: This construct weakens the security of the application.
+  summary: A construct that attackers routinely target is used without the guard it needs.
+  why: |
+    The pattern either trusts data the program does not control, or relies on a mechanism that no longer
+    offers the protection it appears to offer. Both keep working normally, which is why they survive
+    until someone looks for them.
+  fix: |
+    Validate the incoming value against an allowed set, pass it as data rather than as code or command,
+    and replace weakened mechanisms with the current recommended one.
+  detect:
+    - invocation: [load]
+      receiver: [torch]
+
+- key: QG-PY-BUG-0231
+  name: Subclasses of torch.nn.Module should match the behaviour the code describes
+  languages: [py]
+  category: BUG
+  severity: major
+  effort: 1min
+  tags: [bug, ported]
+  message: This code does not behave the way it reads.
+  summary: The code does not do what its shape suggests, or fails on ordinary input.
+  why: |
+    Written this way the code works by accident or breaks on values that are perfectly normal, and the
+    mistake is easy to miss in review because the intent reads correctly.
+  fix: |
+    Make the intended behaviour explicit — fix the condition, the operator or the order of operations —
+    and cover the case that used to fail with a test.
+  detect:
+    - invocation: [Module]
+      receiver: [module]
+
+- key: QG-PY-BUG-0232
+  name: TypeVars should match the behaviour the code describes
+  languages: [py]
+  category: BUG
+  severity: major
+  effort: 5min
+  tags: [bug, ported]
+  message: This code does not behave the way it reads.
+  summary: The code does not do what its shape suggests, or fails on ordinary input.
+  why: |
+    Written this way the code works by accident or breaks on values that are perfectly normal, and the
+    mistake is easy to miss in review because the intent reads correctly.
+  fix: |
+    Make the intended behaviour explicit — fix the condition, the operator or the order of operations —
+    and cover the case that used to fail with a test.
+  detect:
+    - invocation: [TypeVar]
+      receiver: [typing, typing_extensions]
+
+- key: QG-PY-SML-0370
+  name: TypeVar, ParamSpec, and NewType names should be simplified
+  languages: [py]
+  category: SML
+  severity: minor
+  effort: 5min
+  tags: [sml, ported]
+  message: This code is harder to read or change than the behaviour requires.
+  summary: The code works but is harder to read or change than the behaviour requires.
+  why: |
+    The intent is buried, duplicated, or spread across places that must stay in sync, so every future
+    change costs more than it should and carries a risk that has nothing to do with the change itself.
+  fix: |
+    Remove what is not used, name what is unclear, and keep one piece of behaviour in one place so the
+    next change touches a single spot.
+  detect:
+    - invocation: [NewType, ParamSpec, TypeVar]
+      receiver: [typing, typing_extensions]
+
+- key: QG-PY-BUG-0233
+  name: Only defined names should match the behaviour the code describes
+  languages: [py]
+  category: BUG
+  severity: major
+  effort: 1min
+  tags: [bug, ported]
+  message: This code does not behave the way it reads.
+  summary: The code does not do what its shape suggests, or fails on ordinary input.
+  why: |
+    Written this way the code works by accident or breaks on values that are perfectly normal, and the
+    mistake is easy to miss in review because the intent reads correctly.
+  fix: |
+    Make the intended behaviour explicit — fix the condition, the operator or the order of operations —
+    and cover the case that used to fail with a test.
+  detect:
+    - invocation: [modules]
+      receiver: [sys]
+
+- key: QG-PY-SML-0371
+  name: Union type expressions should be replaced by the recommended alternative
+  languages: [py]
+  category: SML
+  severity: minor
+  effort: 5min
+  tags: [prefer_api, ported]
+  message: The platform offers a clearer or safer construct for this.
+  summary: A construct is used where the platform offers one that is clearer or safer.
+  why: |
+    The alternative exists because it removes a class of mistake — a conversion, an allocation, an edge
+    case — that the current form leaves to the caller. Using the older form means every reader has to
+    check that the edge case was handled.
+  fix: |
+    Switch to the recommended construct; the behaviour is the same in the normal case and defined in the
+    cases the old form got wrong.
+  detect:
+    - invocation: [Union]
+      receiver: [typing]
+
+- key: QG-PY-SML-0372
+  name: Hard-to-read code should be simplified
+  languages: [py]
+  category: SML
+  severity: minor
+  effort: 5min
+  tags: [sml, ported]
+  message: This code is harder to read or change than the behaviour requires.
+  summary: The code works but is harder to read or change than the behaviour requires.
+  why: |
+    The intent is buried, duplicated, or spread across places that must stay in sync, so every future
+    change costs more than it should and carries a risk that has nothing to do with the change itself.
+  fix: |
+    Remove what is not used, name what is unclear, and keep one piece of behaviour in one place so the
+    next change touches a single spot.
+  detect:
+    - invocation: [append, clear, extend, insert, items, keys, popitem, reverse, setdefault, sort]
+      receiver: [MutableMapping, MutableSequence, dict, list]
+
+- key: QG-PY-BUG-0234
+  name: Template strings should match the behaviour the code describes
+  languages: [py]
+  category: BUG
+  severity: major
+  effort: 5min
+  tags: [bug, ported]
+  message: This code does not behave the way it reads.
+  summary: The code does not do what its shape suggests, or fails on ordinary input.
+  why: |
+    Written this way the code works by accident or breaks on values that are perfectly normal, and the
+    mistake is easy to miss in review because the intent reads correctly.
+  fix: |
+    Make the intended behaviour explicit — fix the condition, the operator or the order of operations —
+    and cover the case that used to fail with a test.
+  detect:
+    - invocation: [critical, debug, format, info, join, warning]
+      receiver: [logging, str]
+
+- key: QG-PY-SML-0373
+  name: Any should not be used
+  languages: [py]
+  category: SML
+  severity: minor
+  effort: 5min
+  tags: [avoid_api, ported]
+  message: This API should be replaced by the current alternative.
+  summary: Code calls an API that is unsafe, obsolete or superseded by a better alternative.
+  why: |
+    The API stays available for compatibility, so nothing fails at build time, but it carries behaviour
+    the platform now considers a defect — unchecked input, a weak guarantee, or a cost the replacement
+    avoids. Its presence also spreads: new code copies what it finds nearby.
+  fix: |
+    Replace the call with the current API, and keep the old one only behind a compatibility layer that is
+    documented and dated.
+  detect:
+    - invocation: [overload]
+      receiver: [typing]
+
+- key: QG-PY-BUG-0235
+  name: @receiver (Django) and @route (Flask) decorators should match the behaviour the code describes
+  languages: [py]
+  category: BUG
+  severity: major
+  effort: 5min
+  tags: [bug, ported]
+  message: This code does not behave the way it reads.
+  summary: The code does not do what its shape suggests, or fails on ordinary input.
+  why: |
+    Written this way the code works by accident or breaks on values that are perfectly normal, and the
+    mistake is easy to miss in review because the intent reads correctly.
+  fix: |
+    Make the intended behaviour explicit — fix the condition, the operator or the order of operations —
+    and cover the case that used to fail with a test.
+  detect:
+    - invocation: [receiver, route]
+      receiver: [Blueprint, Flask, dispatch]
+
+- key: QG-PY-SML-0374
+  name: Wildcard imports should not be used
+  languages: [py]
+  category: SML
+  severity: minor
+  effort: 5min
+  tags: [avoid_api, ported]
+  message: This API should be replaced by the current alternative.
+  summary: Code calls an API that is unsafe, obsolete or superseded by a better alternative.
+  why: |
+    The API stays available for compatibility, so nothing fails at build time, but it carries behaviour
+    the platform now considers a defect — unchecked input, a weak guarantee, or a cost the replacement
+    avoids. Its presence also spreads: new code copies what it finds nearby.
+  fix: |
+    Replace the call with the current API, and keep the old one only behind a compatibility layer that is
+    documented and dated.
+  status: planned
+
+- key: QG-PY-SEC-0103
+  name: Amazon EFS file systems should use current cryptographic parameters
+  languages: [py]
+  category: SEC
+  severity: critical
+  effort: 10min
+  tags: [crypto, ported]
+  cwe: [311]
+  message: This cryptographic choice no longer provides the protection it suggests.
+  summary: A cryptographic primitive, mode or key size that is no longer considered safe is used.
+  why: |
+    Broken primitives keep producing output that looks correct, so nothing fails while the protection is
+    already gone. Data encrypted today is often kept for years, which means an algorithm that is merely
+    weak now will be readable later.
+  fix: |
+    Use the algorithms the platform recommends today — authenticated encryption, a modern hash, a key
+    size at or above the current guidance — and keep the choice in one place so it can be raised.
+  detect:
+    - invocation: [CfnFileSystem, FileSystem]
+      receiver: [aws_efs]
+
+- key: QG-PY-SEC-0104
+  name: OpenSearch domains should use current cryptographic parameters
+  languages: [py]
+  category: SEC
+  severity: critical
+  effort: 10min
+  tags: [crypto, ported]
+  cwe: [311]
+  message: This cryptographic choice no longer provides the protection it suggests.
+  summary: A cryptographic primitive, mode or key size that is no longer considered safe is used.
+  why: |
+    Broken primitives keep producing output that looks correct, so nothing fails while the protection is
+    already gone. Data encrypted today is often kept for years, which means an algorithm that is merely
+    weak now will be readable later.
+  fix: |
+    Use the algorithms the platform recommends today — authenticated encryption, a modern hash, a key
+    size at or above the current guidance — and keep the choice in one place so it can be raised.
+  detect:
+    - invocation: [CfnDomain, Domain, EncryptionAtRestOptions, EncryptionAtRestOptionsProperty]
+      receiver: [CfnDomain, aws_elasticsearch, aws_opensearchservice]
+
+- key: QG-PY-SEC-0105
+  name: Amazon RDS resources should use current cryptographic parameters
+  languages: [py]
+  category: SEC
+  severity: critical
+  effort: 10min
+  tags: [crypto, ported]
+  cwe: [311]
+  message: This cryptographic choice no longer provides the protection it suggests.
+  summary: A cryptographic primitive, mode or key size that is no longer considered safe is used.
+  why: |
+    Broken primitives keep producing output that looks correct, so nothing fails while the protection is
+    already gone. Data encrypted today is often kept for years, which means an algorithm that is merely
+    weak now will be readable later.
+  fix: |
+    Use the algorithms the platform recommends today — authenticated encryption, a modern hash, a key
+    size at or above the current guidance — and keep the choice in one place so it can be raised.
+  detect:
+    - invocation: [CfnDBCluster, CfnDBInstance, DatabaseCluster, DatabaseInstance]
+      receiver: [aws_rds]
+
+- key: QG-PY-SEC-0106
+  name: Amazon SNS topics should use current cryptographic parameters
+  languages: [py]
+  category: SEC
+  severity: critical
+  effort: 45min
+  tags: [crypto, ported]
+  cwe: [311]
+  message: This cryptographic choice no longer provides the protection it suggests.
+  summary: A cryptographic primitive, mode or key size that is no longer considered safe is used.
+  why: |
+    Broken primitives keep producing output that looks correct, so nothing fails while the protection is
+    already gone. Data encrypted today is often kept for years, which means an algorithm that is merely
+    weak now will be readable later.
+  fix: |
+    Use the algorithms the platform recommends today — authenticated encryption, a modern hash, a key
+    size at or above the current guidance — and keep the choice in one place so it can be raised.
+  detect:
+    - invocation: [CfnTopic, Topic]
+      receiver: [aws_sns]
+
+- key: QG-PY-SEC-0107
+  name: AWS resource-based policies should not grant more access than needed
+  languages: [py]
+  category: SEC
+  severity: critical
+  effort: 5min
+  tags: [permissions, ported]
+  cwe: [284, 732]
+  message: This grants wider access than the operation needs.
+  summary: A resource is created or shared with permissions wider than the task requires.
+  why: |
+    Every account that can reach the resource can also change it, so a single compromised process is
+    enough to alter data or code the application later trusts. Wide permissions are also invisible at the
+    call site: nothing in the reading code says who else can write.
+  fix: |
+    Grant the narrowest right that works, to the specific identity that needs it, and rely on inherited
+    permissions from a properly secured parent instead of widening the resource itself.
+  detect:
+    - invocation: [AnyPrincipal, ArnPrincipal, StarPrincipal]
+      receiver: [aws_iam]
+
+- key: QG-PY-BUG-0236
+  name: Suspicious code should match the behaviour the code describes
+  languages: [py]
+  category: BUG
+  severity: major
+  effort: 5min
+  tags: [bug, ported]
+  message: This code does not behave the way it reads.
+  summary: The code does not do what its shape suggests, or fails on ordinary input.
+  why: |
+    Written this way the code works by accident or breaks on values that are perfectly normal, and the
+    mistake is easy to miss in review because the intent reads correctly.
+  fix: |
+    Make the intended behaviour explicit — fix the condition, the operator or the order of operations —
+    and cover the case that used to fail with a test.
+  detect:
+    - invocation: [Config, client, resource]
+      receiver: [Session, boto3, config]
+
+- key: QG-PY-SEC-0108
+  name: AWS API Gateway should not weaken the security of the application
+  languages: [py]
+  category: SEC
+  severity: critical
+  effort: 15min
+  tags: [sec, ported]
+  cwe: [306]
+  message: This construct weakens the security of the application.
+  summary: A construct that attackers routinely target is used without the guard it needs.
+  why: |
+    The pattern either trusts data the program does not control, or relies on a mechanism that no longer
+    offers the protection it appears to offer. Both keep working normally, which is why they survive
+    until someone looks for them.
+  fix: |
+    Validate the incoming value against an allowed set, pass it as data rather than as code or command,
+    and replace weakened mechanisms with the current recommended one.
+  detect:
+    - invocation: [CfnMethod, CfnRoute, EndpointConfiguration, NONE, PRIVATE, RestApi, add_method, add_resource]
+      receiver: [AuthorizationType, EndpointType, Resource, aws_apigateway, aws_apigatewayv2]
+
+- key: QG-PY-SEC-0109
+  name: Public network access to cloud resources should not grant more access than needed
+  languages: [py]
+  category: SEC
+  severity: critical
+  effort: 30min
+  tags: [permissions, ported]
+  cwe: [284, 668, 732, 1327]
+  message: This grants wider access than the operation needs.
+  summary: A resource is created or shared with permissions wider than the task requires.
+  why: |
+    Every account that can reach the resource can also change it, so a single compromised process is
+    enough to alter data or code the application later trusts. Wide permissions are also invisible at the
+    call site: nothing in the reading code says who else can write.
+  fix: |
+    Grant the narrowest right that works, to the specific identity that needs it, and rely on inherited
+    permissions from a properly secured parent instead of widening the resource itself.
+  detect:
+    - invocation: [CfnDBInstance, CfnInstance, CfnReplicationInstance, DatabaseInstance, Instance, NetworkInterfaceProperty, PRIVATE_ISOLATED, PRIVATE_WITH_EGRESS, PRIVATE_WITH_NAT, PUBLIC]
+      receiver: [CfnInstance, SubnetType, Vpc, aws_dms, aws_ec2, aws_rds]
+
+- key: QG-PY-SEC-0110
+  name: Amazon S3 bucket public access should not grant more access than needed
+  languages: [py]
+  category: SEC
+  severity: critical
+  effort: 30min
+  tags: [permissions, ported]
+  cwe: [284, 732]
+  message: This grants wider access than the operation needs.
+  summary: A resource is created or shared with permissions wider than the task requires.
+  why: |
+    Every account that can reach the resource can also change it, so a single compromised process is
+    enough to alter data or code the application later trusts. Wide permissions are also invisible at the
+    call site: nothing in the reading code says who else can write.
+  fix: |
+    Grant the narrowest right that works, to the specific identity that needs it, and rely on inherited
+    permissions from a properly secured parent instead of widening the resource itself.
+  detect:
+    - invocation: [BlockPublicAccess]
+      receiver: [aws_s3]
+
+- key: QG-PY-SEC-0111
+  name: S3 buckets should not grant more access than needed
+  languages: [py]
+  category: SEC
+  severity: critical
+  effort: 5min
+  tags: [permissions, ported]
+  cwe: [284, 732]
+  message: This grants wider access than the operation needs.
+  summary: A resource is created or shared with permissions wider than the task requires.
+  why: |
+    Every account that can reach the resource can also change it, so a single compromised process is
+    enough to alter data or code the application later trusts. Wide permissions are also invisible at the
+    call site: nothing in the reading code says who else can write.
+  fix: |
+    Grant the narrowest right that works, to the specific identity that needs it, and rely on inherited
+    permissions from a properly secured parent instead of widening the resource itself.
+  detect:
+    - invocation: [AUTHENTICATED_READ, BucketDeployment, PUBLIC_READ, PUBLIC_READ_WRITE]
+      receiver: [BucketAccessControl, aws_s3_deployment]
+
+- key: QG-PY-SEC-0112
+  name: S3 buckets should use current cryptographic parameters
+  languages: [py]
+  category: SEC
+  severity: critical
+  effort: 10min
+  tags: [crypto, ported]
+  cwe: [319]
+  message: This cryptographic choice no longer provides the protection it suggests.
+  summary: A cryptographic primitive, mode or key size that is no longer considered safe is used.
+  why: |
+    Broken primitives keep producing output that looks correct, so nothing fails while the protection is
+    already gone. Data encrypted today is often kept for years, which means an algorithm that is merely
+    weak now will be readable later.
+  fix: |
+    Use the algorithms the platform recommends today — authenticated encryption, a modern hash, a key
+    size at or above the current guidance — and keep the choice in one place so it can be raised.
+  detect:
+    - invocation: [DENY, PolicyStatement, add_to_resource_policy]
+      receiver: [Effect, aws_iam, bucket]
+
+- key: QG-PY-SEC-0113
+  name: EBS volumes should use current cryptographic parameters
+  languages: [py]
+  category: SEC
+  severity: critical
+  effort: 30min
+  tags: [crypto, ported]
+  cwe: [311]
+  message: This cryptographic choice no longer provides the protection it suggests.
+  summary: A cryptographic primitive, mode or key size that is no longer considered safe is used.
+  why: |
+    Broken primitives keep producing output that looks correct, so nothing fails while the protection is
+    already gone. Data encrypted today is often kept for years, which means an algorithm that is merely
+    weak now will be readable later.
+  fix: |
+    Use the algorithms the platform recommends today — authenticated encryption, a modern hash, a key
+    size at or above the current guidance — and keep the choice in one place so it can be raised.
+  detect:
+    - invocation: [Volume]
+      receiver: [aws_ec2]
+
+- key: QG-PY-SEC-0114
+  name: SageMaker notebook instances should use current cryptographic parameters
+  languages: [py]
+  category: SEC
+  severity: critical
+  effort: 10min
+  tags: [crypto, ported]
+  cwe: [312]
+  message: This cryptographic choice no longer provides the protection it suggests.
+  summary: A cryptographic primitive, mode or key size that is no longer considered safe is used.
+  why: |
+    Broken primitives keep producing output that looks correct, so nothing fails while the protection is
+    already gone. Data encrypted today is often kept for years, which means an algorithm that is merely
+    weak now will be readable later.
+  fix: |
+    Use the algorithms the platform recommends today — authenticated encryption, a modern hash, a key
+    size at or above the current guidance — and keep the choice in one place so it can be raised.
+  detect:
+    - invocation: [CfnNotebookInstance]
+      receiver: [aws_sagemaker]
+
+- key: QG-PY-SEC-0115
+  name: SQS queues should use current cryptographic parameters
+  languages: [py]
+  category: SEC
+  severity: critical
+  effort: 10min
+  tags: [crypto, ported]
+  cwe: [311]
+  message: This cryptographic choice no longer provides the protection it suggests.
+  summary: A cryptographic primitive, mode or key size that is no longer considered safe is used.
+  why: |
+    Broken primitives keep producing output that looks correct, so nothing fails while the protection is
+    already gone. Data encrypted today is often kept for years, which means an algorithm that is merely
+    weak now will be readable later.
+  fix: |
+    Use the algorithms the platform recommends today — authenticated encryption, a modern hash, a key
+    size at or above the current guidance — and keep the choice in one place so it can be raised.
+  detect:
+    - invocation: [CfnQueue]
+      receiver: [aws_sqs]
+
+- key: QG-PY-SEC-0116
+  name: Security groups should not weaken the security of the application
+  languages: [py]
+  category: SEC
+  severity: critical
+  effort: 60min
+  tags: [sec, ported]
+  cwe: [284]
+  message: This construct weakens the security of the application.
+  summary: A construct that attackers routinely target is used without the guard it needs.
+  why: |
+    The pattern either trusts data the program does not control, or relies on a mechanism that no longer
+    offers the protection it appears to offer. Both keep working normally, which is why they survive
+    until someone looks for them.
+  fix: |
+    Validate the incoming value against an allowed set, pass it as data rather than as code or command,
+    and replace weakened mechanisms with the current recommended one.
+  detect:
+    - invocation: [SecurityGroup, from_security_group_id]
+      receiver: [SecurityGroup, aws_ec2]
+
+- key: QG-PY-SML-0375
+  name: Fields of a Django ModelForm should be declared the way the language intends
+  languages: [py]
+  category: SML
+  severity: minor
+  effort: 5min
+  tags: [declaration, ported]
+  message: This declaration exposes more than it should.
+  summary: A declaration uses modifiers, order or visibility that do not match its purpose.
+  why: |
+    Declarations are the contract other code relies on. A wider visibility than needed makes an internal
+    detail part of the public surface, and unusual modifier combinations hide the intent from readers and
+    tools alike.
+  fix: |
+    Declare the narrowest visibility that works, in the conventional modifier order, and mark as final or
+    read-only whatever is not meant to change.
+  detect:
+    - invocation: [ModelForm]
+      receiver: [forms]
+
+- key: QG-PY-SML-0376
+  name: Null=True should not be used
+  languages: [py]
+  category: SML
+  severity: minor
+  effort: 5min
+  tags: [avoid_api, ported]
+  message: This API should be replaced by the current alternative.
+  summary: Code calls an API that is unsafe, obsolete or superseded by a better alternative.
+  why: |
+    The API stays available for compatibility, so nothing fails at build time, but it carries behaviour
+    the platform now considers a defect — unchecked input, a weak guarantee, or a cost the replacement
+    avoids. Its presence also spreads: new code copies what it finds nearby.
+  fix: |
+    Replace the call with the current API, and keep the old one only behind a compatibility layer that is
+    documented and dated.
+  detect:
+    - invocation: [CharField, Model, TextField]
+      receiver: [base, models]
+
+- key: QG-PY-SML-0377
+  name: Django models should be simplified
+  languages: [py]
+  category: SML
+  severity: minor
+  effort: 10min
+  tags: [sml, ported]
+  message: This code is harder to read or change than the behaviour requires.
+  summary: The code works but is harder to read or change than the behaviour requires.
+  why: |
+    The intent is buried, duplicated, or spread across places that must stay in sync, so every future
+    change costs more than it should and carries a risk that has nothing to do with the change itself.
+  fix: |
+    Remove what is not used, name what is unclear, and keep one piece of behaviour in one place so the
+    next change touches a single spot.
+  detect:
+    - invocation: [Model]
+      receiver: [base]
+
+- key: QG-PY-SEC-0117
+  name: GraphQL introspection should not weaken the security of the application
+  languages: [py]
+  category: SEC
+  severity: critical
+  effort: 1h
+  tags: [sec, ported]
+  cwe: [200]
+  message: This construct weakens the security of the application.
+  summary: A construct that attackers routinely target is used without the guard it needs.
+  why: |
+    The pattern either trusts data the program does not control, or relies on a mechanism that no longer
+    offers the protection it appears to offer. Both keep working normally, which is why they survive
+    until someone looks for them.
+  fix: |
+    Validate the incoming value against an allowed set, pass it as data rather than as code or command,
+    and replace weakened mechanisms with the current recommended one.
+  detect:
+    - invocation: [DisableIntrospection, NoSchemaIntrospectionCustomRule]
+      receiver: [validation]
+
+- key: QG-PY-SEC-0118
+  name: Custom cryptographic algorithms should use current cryptographic parameters
+  languages: [py]
+  category: SEC
+  severity: critical
+  effort: 1d
+  tags: [crypto, ported]
+  cwe: [327]
+  message: This cryptographic choice no longer provides the protection it suggests.
+  summary: A cryptographic primitive, mode or key size that is no longer considered safe is used.
+  why: |
+    Broken primitives keep producing output that looks correct, so nothing fails while the protection is
+    already gone. Data encrypted today is often kept for years, which means an algorithm that is merely
+    weak now will be readable later.
+  fix: |
+    Use the algorithms the platform recommends today — authenticated encryption, a modern hash, a key
+    size at or above the current guidance — and keep the choice in one place so it can be raised.
+  detect:
+    - invocation: [BasePasswordHasher, hashers]
+      receiver: [auth, hashers]
+
+- key: QG-PY-SEC-0119
+  name: XML signatures should be verified before use
+  languages: [py]
+  category: SEC
+  severity: critical
+  effort: 15min
+  tags: [verification, ported]
+  cwe: [347]
+  message: This value is accepted without the check that proves it is legitimate.
+  summary: A value or a peer is accepted without the check that proves it is legitimate.
+  why: |
+    Without verification the program trusts whatever it received, so an attacker who can supply or
+    intercept the value decides what happens next. The code keeps working in normal conditions, which is
+    why the missing check is rarely noticed before it is exploited.
+  fix: |
+    Perform the check with the platform API — signature, certificate chain, hostname or token validation
+    — and reject the value when it fails, instead of logging and continuing.
+  detect:
+    - invocation: [HMAC_SHA224, HMAC_SHA256, HMAC_SHA384, HMAC_SHA512, SignatureConfiguration, XMLVerifier]
+      receiver: [SignatureMethod, signxml]
+
+- key: QG-PY-SML-0378
+  name: Names of regular expressions named groups should be replaced by the recommended alternative
+  languages: [py]
+  category: SML
+  severity: minor
+  effort: 10min
+  tags: [prefer_api, ported]
+  message: The platform offers a clearer or safer construct for this.
+  summary: A construct is used where the platform offers one that is clearer or safer.
+  why: |
+    The alternative exists because it removes a class of mistake — a conversion, an allocation, an edge
+    case — that the current form leaves to the caller. Using the older form means every reader has to
+    check that the edge case was handled.
+  fix: |
+    Switch to the recommended construct; the behaviour is the same in the normal case and defined in the
+    cases the old form got wrong.
+  status: planned
+
+- key: QG-PY-BUG-0237
+  name: Tests should assert something
+  languages: [py]
+  category: BUG
+  severity: major
+  effort: 5min
+  tags: [tests, ported]
+  message: This test cannot fail, so it verifies nothing.
+  summary: A test does not assert, is disabled, or cannot fail.
+  why: |
+    A test that cannot fail reports success forever while covering nothing, and the suite keeps its green
+    status. That is worse than having no test at all, because it removes the incentive to write one.
+  fix: |
+    Assert the behaviour the test exists for, re-enable it, and make sure it fails when the behaviour is
+    broken before trusting it again.
+  status: planned
+
+- key: QG-PY-BUG-0238
+  name: Tests should assert something
+  languages: [py]
+  category: BUG
+  severity: major
+  effort: 5min
+  tags: [tests, ported]
+  message: This test cannot fail, so it verifies nothing.
+  summary: A test does not assert, is disabled, or cannot fail.
+  why: |
+    A test that cannot fail reports success forever while covering nothing, and the suite keeps its green
+    status. That is worse than having no test at all, because it removes the incentive to write one.
+  fix: |
+    Assert the behaviour the test exists for, re-enable it, and make sure it fails when the behaviour is
+    broken before trusting it again.
+  detect:
+    - invocation: [AssertionError]
+      receiver: [builtins]
+
+- key: QG-PY-SML-0379
+  name: Dedicated exception assertions should be replaced by the recommended alternative
+  languages: [py]
+  category: SML
+  severity: minor
+  effort: 5min
+  tags: [prefer_api, ported]
+  message: The platform offers a clearer or safer construct for this.
+  summary: A construct is used where the platform offers one that is clearer or safer.
+  why: |
+    The alternative exists because it removes a class of mistake — a conversion, an allocation, an edge
+    case — that the current form leaves to the caller. Using the older form means every reader has to
+    check that the edge case was handled.
+  fix: |
+    Switch to the recommended construct; the behaviour is the same in the normal case and defined in the
+    cases the old form got wrong.
+  status: planned
+
+- key: QG-PY-SML-0380
+  name: Deprecated code should be retired
+  languages: [py]
+  category: SML
+  severity: minor
+  effort: 5min
+  tags: [deprecation, ported]
+  message: This deprecated element still needs to be retired.
+  summary: A deprecated member is declared, used, or marked without an alternative.
+  why: |
+    A deprecation is a promise to remove something; left unattended it becomes permanent, and callers
+    keep appearing because the member still works. Without a documented replacement nobody can migrate
+    even if they want to.
+  fix: |
+    Document the replacement next to the marker, migrate the callers, and delete the member in a planned
+    release rather than leaving the warning in place.
+  detect:
+    - invocation: [yield_fixture]
+      receiver: [pytest]
+
+- key: QG-PY-BUG-0239
+  name: Parametrize decorators should not be left empty
+  languages: [py]
+  category: BUG
+  severity: major
+  effort: 5min
+  tags: [empty, ported]
+  message: This construct is empty, so it does nothing.
+  summary: A construct is declared with no content.
+  why: |
+    An empty body reads as if the case is handled while nothing happens, which is exactly how ignored
+    errors and unimplemented branches survive review. It is also indistinguishable from an accidental
+    deletion.
+  fix: |
+    Implement the behaviour, or remove the construct. When doing nothing is deliberate, say so in a
+    comment so the next reader does not treat it as a gap.
+  status: planned
+
+- key: QG-PY-SML-0381
+  name: Tests should assert something
+  languages: [py]
+  category: SML
+  severity: minor
+  effort: 10min
+  tags: [tests, ported]
+  message: This test cannot fail, so it verifies nothing.
+  summary: A test does not assert, is disabled, or cannot fail.
+  why: |
+    A test that cannot fail reports success forever while covering nothing, and the suite keeps its green
+    status. That is worse than having no test at all, because it removes the incentive to write one.
+  fix: |
+    Assert the behaviour the test exists for, re-enable it, and make sure it fails when the behaviour is
+    broken before trusting it again.
+  detect:
+    - invocation: [NotImplementedError]
+      receiver: [builtins]
+
+- key: QG-PY-SML-0382
+  name: Tests should assert something
+  languages: [py]
+  category: SML
+  severity: minor
+  effort: 2min
+  tags: [tests, ported]
+  message: This test cannot fail, so it verifies nothing.
+  summary: A test does not assert, is disabled, or cannot fail.
+  why: |
+    A test that cannot fail reports success forever while covering nothing, and the suite keeps its green
+    status. That is worse than having no test at all, because it removes the incentive to write one.
+  fix: |
+    Assert the behaviour the test exists for, re-enable it, and make sure it fails when the behaviour is
+    broken before trusting it again.
+  detect:
+    - invocation: [skip]
+      receiver: [pytest]
+
+- key: QG-PY-SML-0383
+  name: Tests should assert something
+  languages: [py]
+  category: SML
+  severity: minor
+  effort: 5min
+  tags: [tests, ported]
+  message: This test cannot fail, so it verifies nothing.
+  summary: A test does not assert, is disabled, or cannot fail.
+  why: |
+    A test that cannot fail reports success forever while covering nothing, and the suite keeps its green
+    status. That is worse than having no test at all, because it removes the incentive to write one.
+  fix: |
+    Assert the behaviour the test exists for, re-enable it, and make sure it fails when the behaviour is
+    broken before trusting it again.
+  status: planned
+
+- key: QG-PY-SML-0384
+  name: Tests should assert something
+  languages: [py]
+  category: SML
+  severity: minor
+  effort: 5min
+  tags: [tests, ported]
+  message: This test cannot fail, so it verifies nothing.
+  summary: A test does not assert, is disabled, or cannot fail.
+  why: |
+    A test that cannot fail reports success forever while covering nothing, and the suite keeps its green
+    status. That is worse than having no test at all, because it removes the incentive to write one.
+  fix: |
+    Assert the behaviour the test exists for, re-enable it, and make sure it fails when the behaviour is
+    broken before trusting it again.
+  detect:
+    - invocation: [AsyncMock, NonCallableMock]
+      receiver: [mock]
+
+- key: QG-PY-SML-0385
+  name: Mocks should be simplified
+  languages: [py]
+  category: SML
+  severity: minor
+  effort: 10min
+  tags: [sml, ported]
+  message: This code is harder to read or change than the behaviour requires.
+  summary: The code works but is harder to read or change than the behaviour requires.
+  why: |
+    The intent is buried, duplicated, or spread across places that must stay in sync, so every future
+    change costs more than it should and carries a risk that has nothing to do with the change itself.
+  fix: |
+    Remove what is not used, name what is unclear, and keep one piece of behaviour in one place so the
+    next change touches a single spot.
+  status: planned
+
+- key: QG-PY-SML-0386
+  name: Tests should assert something
+  languages: [py]
+  category: SML
+  severity: minor
+  effort: 2min
+  tags: [tests, ported]
+  message: This test cannot fail, so it verifies nothing.
+  summary: A test does not assert, is disabled, or cannot fail.
+  why: |
+    A test that cannot fail reports success forever while covering nothing, and the suite keeps its green
+    status. That is worse than having no test at all, because it removes the incentive to write one.
+  fix: |
+    Assert the behaviour the test exists for, re-enable it, and make sure it fails when the behaviour is
+    broken before trusting it again.
+  detect:
+    - invocation: [fixture]
+      receiver: [pytest]
+
+- key: QG-PY-BUG-0240
+  name: Pytest fixtures should match the behaviour the code describes
+  languages: [py]
+  category: BUG
+  severity: major
+  effort: 5min
+  tags: [bug, ported]
+  message: This code does not behave the way it reads.
+  summary: The code does not do what its shape suggests, or fails on ordinary input.
+  why: |
+    Written this way the code works by accident or breaks on values that are perfectly normal, and the
+    mistake is easy to miss in review because the intent reads correctly.
+  fix: |
+    Make the intended behaviour explicit — fix the condition, the operator or the order of operations —
+    and cover the case that used to fail with a test.
+  detect:
+    - invocation: [fixture]
+      receiver: [pytest]
+
+- key: QG-PY-SML-0387
+  name: Pytest fixture and mark decorators should be simplified
+  languages: [py]
+  category: SML
+  severity: minor
+  effort: 1min
+  tags: [sml, ported]
+  message: This code is harder to read or change than the behaviour requires.
+  summary: The code works but is harder to read or change than the behaviour requires.
+  why: |
+    The intent is buried, duplicated, or spread across places that must stay in sync, so every future
+    change costs more than it should and carries a risk that has nothing to do with the change itself.
+  fix: |
+    Remove what is not used, name what is unclear, and keep one piece of behaviour in one place so the
+    next change touches a single spot.
+  status: planned
+
+- key: QG-PY-SML-0388
+  name: Pytest fixtures should be simplified
+  languages: [py]
+  category: SML
+  severity: minor
+  effort: 2min
+  tags: [sml, ported]
+  message: This code is harder to read or change than the behaviour requires.
+  summary: The code works but is harder to read or change than the behaviour requires.
+  why: |
+    The intent is buried, duplicated, or spread across places that must stay in sync, so every future
+    change costs more than it should and carries a risk that has nothing to do with the change itself.
+  fix: |
+    Remove what is not used, name what is unclear, and keep one piece of behaviour in one place so the
+    next change touches a single spot.
+  detect:
+    - invocation: [fixture]
+      receiver: [pytest]
+
+- key: QG-PY-BUG-0241
+  name: Pytest fixtures should match the behaviour the code describes
+  languages: [py]
+  category: BUG
+  severity: major
+  effort: 5min
+  tags: [bug, ported]
+  message: This code does not behave the way it reads.
+  summary: The code does not do what its shape suggests, or fails on ordinary input.
+  why: |
+    Written this way the code works by accident or breaks on values that are perfectly normal, and the
+    mistake is easy to miss in review because the intent reads correctly.
+  fix: |
+    Make the intended behaviour explicit — fix the condition, the operator or the order of operations —
+    and cover the case that used to fail with a test.
+  detect:
+    - invocation: [fixture]
+      receiver: [pytest]
+
+- key: QG-PY-SML-0389
+  name: Pytest fixture options should be simplified
+  languages: [py]
+  category: SML
+  severity: minor
+  effort: 5min
+  tags: [sml, ported]
+  message: This code is harder to read or change than the behaviour requires.
+  summary: The code works but is harder to read or change than the behaviour requires.
+  why: |
+    The intent is buried, duplicated, or spread across places that must stay in sync, so every future
+    change costs more than it should and carries a risk that has nothing to do with the change itself.
+  fix: |
+    Remove what is not used, name what is unclear, and keep one piece of behaviour in one place so the
+    next change touches a single spot.
+  detect:
+    - invocation: [fixture]
+      receiver: [pytest]
+
+- key: QG-PY-SML-0390
+  name: Tests should assert something
+  languages: [py]
+  category: SML
+  severity: minor
+  effort: 5min
+  tags: [tests, ported]
+  message: This test cannot fail, so it verifies nothing.
+  summary: A test does not assert, is disabled, or cannot fail.
+  why: |
+    A test that cannot fail reports success forever while covering nothing, and the suite keeps its green
+    status. That is worse than having no test at all, because it removes the incentive to write one.
+  fix: |
+    Assert the behaviour the test exists for, re-enable it, and make sure it fails when the behaviour is
+    broken before trusting it again.
+  status: planned
+
+- key: QG-PY-SML-0391
+  name: Tests should assert something
+  languages: [py]
+  category: SML
+  severity: minor
+  effort: 5min
+  tags: [tests, ported]
+  message: This test cannot fail, so it verifies nothing.
+  summary: A test does not assert, is disabled, or cannot fail.
+  why: |
+    A test that cannot fail reports success forever while covering nothing, and the suite keeps its green
+    status. That is worse than having no test at all, because it removes the incentive to write one.
+  fix: |
+    Assert the behaviour the test exists for, re-enable it, and make sure it fails when the behaviour is
+    broken before trusting it again.
+  status: planned
+
+- key: QG-PY-SML-0392
+  name: Reason should assert something
+  languages: [py]
+  category: SML
+  severity: minor
+  effort: 2min
+  tags: [tests, ported]
+  message: This test cannot fail, so it verifies nothing.
+  summary: A test does not assert, is disabled, or cannot fail.
+  why: |
+    A test that cannot fail reports success forever while covering nothing, and the suite keeps its green
+    status. That is worse than having no test at all, because it removes the incentive to write one.
+  fix: |
+    Assert the behaviour the test exists for, re-enable it, and make sure it fails when the behaviour is
+    broken before trusting it again.
+  detect:
+    - invocation: [skip]
+      receiver: [case, mark, pytest]
+
+- key: QG-PY-SML-0393
+  name: Pytest marks and usefixtures should be simplified
+  languages: [py]
+  category: SML
+  severity: minor
+  effort: 5min
+  tags: [sml, ported]
+  message: This code is harder to read or change than the behaviour requires.
+  summary: The code works but is harder to read or change than the behaviour requires.
+  why: |
+    The intent is buried, duplicated, or spread across places that must stay in sync, so every future
+    change costs more than it should and carries a risk that has nothing to do with the change itself.
+  fix: |
+    Remove what is not used, name what is unclear, and keep one piece of behaviour in one place so the
+    next change touches a single spot.
+  status: planned
+
+- key: QG-PY-SML-0394
+  name: Tests should assert something
+  languages: [py]
+  category: SML
+  severity: minor
+  effort: 5min
+  tags: [tests, ported]
+  message: This test cannot fail, so it verifies nothing.
+  summary: A test does not assert, is disabled, or cannot fail.
+  why: |
+    A test that cannot fail reports success forever while covering nothing, and the suite keeps its green
+    status. That is worse than having no test at all, because it removes the incentive to write one.
+  fix: |
+    Assert the behaviour the test exists for, re-enable it, and make sure it fails when the behaviour is
+    broken before trusting it again.
+  detect:
+    - invocation: [environ, fixture, list, path]
+      receiver: [builtins, pytest, sys]
+
+- key: QG-PY-SML-0395
+  name: Tests should assert something
+  languages: [py]
+  category: SML
+  severity: minor
+  effort: 5min
+  tags: [tests, ported]
+  message: This test cannot fail, so it verifies nothing.
+  summary: A test does not assert, is disabled, or cannot fail.
+  why: |
+    A test that cannot fail reports success forever while covering nothing, and the suite keeps its green
+    status. That is worse than having no test at all, because it removes the incentive to write one.
+  fix: |
+    Assert the behaviour the test exists for, re-enable it, and make sure it fails when the behaviour is
+    broken before trusting it again.
+  detect:
+    - invocation: [xfail]
+      receiver: [mark]

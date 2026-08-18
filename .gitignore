@@ -34,3 +34,5 @@ artifacts/
 *.log
 *.tmp
 *.swp
+# local tooling: reads the reference catalogues, so it stays out of the repository
+tools/

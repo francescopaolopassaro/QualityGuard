@@ -1,0 +1,2232 @@
+
+- key: QG-JV-BUG-0244
+  name: Math.abs and negation should not be used
+  languages: [java]
+  category: BUG
+  severity: major
+  effort: 5min
+  tags: [avoid_api, ported]
+  message: This API should be replaced by the current alternative.
+  summary: Code calls an API that is unsafe, obsolete or superseded by a better alternative.
+  why: |
+    The API stays available for compatibility, so nothing fails at build time, but it carries behaviour
+    the platform now considers a defect — unchecked input, a weak guarantee, or a cost the replacement
+    avoids. Its presence also spreads: new code copies what it finds nearby.
+  fix: |
+    Replace the call with the current API, and keep the old one only behind a compatibility layer that is
+    documented and dated.
+  detect:
+    - invocation: [compareTo, hashCode, nextInt, nextLong]
+      receiver: [Comparable, Math, Random]
+
+- key: QG-JV-SML-0507
+  name: Arrays.stream should be replaced by the recommended alternative
+  languages: [java]
+  category: SML
+  severity: minor
+  effort: 5min
+  tags: [prefer_api, ported]
+  message: The platform offers a clearer or safer construct for this.
+  summary: A construct is used where the platform offers one that is clearer or safer.
+  why: |
+    The alternative exists because it removes a class of mistake — a conversion, an allocation, an edge
+    case — that the current form leaves to the caller. Using the older form means every reader has to
+    check that the edge case was handled.
+  fix: |
+    Switch to the recommended construct; the behaviour is the same in the normal case and defined in the
+    cases the old form got wrong.
+  status: planned
+
+- key: QG-JV-SML-0508
+  name: High frame rates should not be used
+  languages: [java]
+  category: SML
+  severity: minor
+  effort: 5min
+  tags: [avoid_api, ported]
+  message: This API should be replaced by the current alternative.
+  summary: Code calls an API that is unsafe, obsolete or superseded by a better alternative.
+  why: |
+    The API stays available for compatibility, so nothing fails at build time, but it carries behaviour
+    the platform now considers a defect — unchecked input, a weak guarantee, or a cost the replacement
+    avoids. Its presence also spreads: new code copies what it finds nearby.
+  fix: |
+    Replace the call with the current API, and keep the old one only behind a compatibility layer that is
+    documented and dated.
+  detect:
+    - invocation: [setFrameRate]
+      receiver: [Surface, SurfaceControl]
+
+- key: QG-JV-SML-0509
+  name: Use batch Processing in JDBC should be simplified
+  languages: [java]
+  category: SML
+  severity: minor
+  effort: 5min
+  tags: [sml, ported]
+  message: This code is harder to read or change than the behaviour requires.
+  summary: The code works but is harder to read or change than the behaviour requires.
+  why: |
+    The intent is buried, duplicated, or spread across places that must stay in sync, so every future
+    change costs more than it should and carries a risk that has nothing to do with the change itself.
+  fix: |
+    Remove what is not used, name what is unclear, and keep one piece of behaviour in one place so the
+    next change touches a single spot.
+  detect:
+    - invocation: [execute, executeQuery, executeUpdate, forEach]
+      receiver: [Iterable, Map, Statement, Stream]
+
+- key: QG-JV-BUG-0245
+  name: Virtual threads should be replaced by the recommended alternative
+  languages: [java]
+  category: BUG
+  severity: major
+  effort: 5min
+  tags: [prefer_api, ported]
+  message: The platform offers a clearer or safer construct for this.
+  summary: A construct is used where the platform offers one that is clearer or safer.
+  why: |
+    The alternative exists because it removes a class of mistake — a conversion, an allocation, an edge
+    case — that the current form leaves to the caller. Using the older form means every reader has to
+    check that the edge case was handled.
+  fix: |
+    Switch to the recommended construct; the behaviour is the same in the normal case and defined in the
+    cases the old form got wrong.
+  detect:
+    - invocation: [getResponseCode, getResponseMessage, sleep, start, unstarted]
+      receiver: [HttpURLConnection, URLConnection]
+
+- key: QG-JV-SML-0510
+  name: Bluetooth should be simplified
+  languages: [java]
+  category: SML
+  severity: minor
+  effort: 5min
+  tags: [sml, ported]
+  message: This code is harder to read or change than the behaviour requires.
+  summary: The code works but is harder to read or change than the behaviour requires.
+  why: |
+    The intent is buried, duplicated, or spread across places that must stay in sync, so every future
+    change costs more than it should and carries a risk that has nothing to do with the change itself.
+  fix: |
+    Remove what is not used, name what is unclear, and keep one piece of behaviour in one place so the
+    next change touches a single spot.
+  detect:
+    - invocation: [requestConnectionPriority, setAdvertiseMode]
+      receiver: [AdvertiseSettings$Builder, BluetoothGatt]
+
+- key: QG-JV-SML-0511
+  name: Hard-to-read code should be simplified
+  languages: [java]
+  category: SML
+  severity: minor
+  effort: 5min
+  tags: [sml, ported]
+  message: This code is harder to read or change than the behaviour requires.
+  summary: The code works but is harder to read or change than the behaviour requires.
+  why: |
+    The intent is buried, duplicated, or spread across places that must stay in sync, so every future
+    change costs more than it should and carries a risk that has nothing to do with the change itself.
+  fix: |
+    Remove what is not used, name what is unclear, and keep one piece of behaviour in one place so the
+    next change touches a single spot.
+  detect:
+    - invocation: [filter, flatMap, ifPresent, ifPresentOrElse, orElse]
+      receiver: [Optional]
+
+- key: QG-JV-SML-0512
+  name: DeleteOnExit should not be used
+  languages: [java]
+  category: SML
+  severity: minor
+  effort: 30min
+  tags: [avoid_api, ported]
+  message: This API should be replaced by the current alternative.
+  summary: Code calls an API that is unsafe, obsolete or superseded by a better alternative.
+  why: |
+    The API stays available for compatibility, so nothing fails at build time, but it carries behaviour
+    the platform now considers a defect — unchecked input, a weak guarantee, or a cost the replacement
+    avoids. Its presence also spreads: new code copies what it finds nearby.
+  fix: |
+    Replace the call with the current API, and keep the old one only behind a compatibility layer that is
+    documented and dated.
+  detect:
+    - invocation: [deleteOnExit]
+      receiver: [File]
+
+- key: QG-JV-SML-0513
+  name: ClassBuilder.withMethodBody should be replaced by the recommended alternative
+  languages: [java]
+  category: SML
+  severity: minor
+  effort: 5min
+  tags: [prefer_api, ported]
+  message: The platform offers a clearer or safer construct for this.
+  summary: A construct is used where the platform offers one that is clearer or safer.
+  why: |
+    The alternative exists because it removes a class of mistake — a conversion, an allocation, an edge
+    case — that the current form leaves to the caller. Using the older form means every reader has to
+    check that the edge case was handled.
+  fix: |
+    Switch to the recommended construct; the behaviour is the same in the normal case and defined in the
+    cases the old form got wrong.
+  detect:
+    - invocation: [withCode, withMethod]
+      receiver: [ClassBuilder, MethodBuilder]
+
+- key: QG-JV-SML-0514
+  name: Class name should be simplified
+  languages: [java]
+  category: SML
+  severity: minor
+  effort: 5min
+  tags: [sml, ported]
+  message: This code is harder to read or change than the behaviour requires.
+  summary: The code works but is harder to read or change than the behaviour requires.
+  why: |
+    The intent is buried, duplicated, or spread across places that must stay in sync, so every future
+    change costs more than it should and carries a risk that has nothing to do with the change itself.
+  fix: |
+    Remove what is not used, name what is unclear, and keep one piece of behaviour in one place so the
+    next change touches a single spot.
+  detect:
+    - invocation: [asInternalName, asSymbol, descriptorString, ofDescriptor, ofInternalName, stringValue, thisClass, transformClass]
+      receiver: [ClassFile, Utf8Entry]
+
+- key: QG-JV-SML-0515
+  name: Collect should be replaced by the recommended alternative
+  languages: [java]
+  category: SML
+  severity: minor
+  effort: 15min
+  tags: [prefer_api, ported]
+  message: The platform offers a clearer or safer construct for this.
+  summary: A construct is used where the platform offers one that is clearer or safer.
+  why: |
+    The alternative exists because it removes a class of mistake — a conversion, an allocation, an edge
+    case — that the current form leaves to the caller. Using the older form means every reader has to
+    check that the edge case was handled.
+  fix: |
+    Switch to the recommended construct; the behaviour is the same in the normal case and defined in the
+    cases the old form got wrong.
+  detect:
+    - invocation: [forEach]
+      receiver: [List, Stream]
+
+- key: QG-JV-SML-0517
+  name: Stream.toList() method should be replaced by the recommended alternative
+  languages: [java]
+  category: SML
+  severity: minor
+  effort: 5min
+  tags: [prefer_api, ported]
+  message: The platform offers a clearer or safer construct for this.
+  summary: A construct is used where the platform offers one that is clearer or safer.
+  why: |
+    The alternative exists because it removes a class of mistake — a conversion, an allocation, an edge
+    case — that the current form leaves to the caller. Using the older form means every reader has to
+    check that the edge case was handled.
+  fix: |
+    Switch to the recommended construct; the behaviour is the same in the normal case and defined in the
+    cases the old form got wrong.
+  status: planned
+
+- key: QG-JV-BUG-0246
+  name: CompareTo results should match the behaviour the code describes
+  languages: [java]
+  category: BUG
+  severity: major
+  effort: 5min
+  tags: [bug, ported]
+  message: This code does not behave the way it reads.
+  summary: The code does not do what its shape suggests, or fails on ordinary input.
+  why: |
+    Written this way the code works by accident or breaks on values that are perfectly normal, and the
+    mistake is easy to miss in review because the intent reads correctly.
+  fix: |
+    Make the intended behaviour explicit — fix the condition, the operator or the order of operations —
+    and cover the case that used to fail with a test.
+  detect:
+    - invocation: [compareTo]
+      receiver: [Comparable]
+
+- key: QG-JV-SML-0518
+  name: Vararg method arguments should be simplified
+  languages: [java]
+  category: SML
+  severity: minor
+  effort: 5min
+  tags: [sml, ported]
+  message: This code is harder to read or change than the behaviour requires.
+  summary: The code works but is harder to read or change than the behaviour requires.
+  why: |
+    The intent is buried, duplicated, or spread across places that must stay in sync, so every future
+    change costs more than it should and carries a risk that has nothing to do with the change itself.
+  fix: |
+    Remove what is not used, name what is unclear, and keep one piece of behaviour in one place so the
+    next change touches a single spot.
+  status: planned
+
+- key: QG-JV-SML-0519
+  name: Java.time classes should be replaced by the recommended alternative
+  languages: [java]
+  category: SML
+  severity: minor
+  effort: 15min
+  tags: [prefer_api, ported]
+  message: The platform offers a clearer or safer construct for this.
+  summary: A construct is used where the platform offers one that is clearer or safer.
+  why: |
+    The alternative exists because it removes a class of mistake — a conversion, an allocation, an edge
+    case — that the current form leaves to the caller. Using the older form means every reader has to
+    check that the edge case was handled.
+  fix: |
+    Switch to the recommended construct; the behaviour is the same in the normal case and defined in the
+    cases the old form got wrong.
+  detect:
+    - invocation: [getInstance]
+      receiver: [Calendar]
+
+- key: QG-JV-SML-0520
+  name: Month and DayOfWeek enums should be replaced by the recommended alternative
+  languages: [java]
+  category: SML
+  severity: minor
+  effort: 5min
+  tags: [prefer_api, ported]
+  message: The platform offers a clearer or safer construct for this.
+  summary: A construct is used where the platform offers one that is clearer or safer.
+  why: |
+    The alternative exists because it removes a class of mistake — a conversion, an allocation, an edge
+    case — that the current form leaves to the caller. Using the older form means every reader has to
+    check that the edge case was handled.
+  fix: |
+    Switch to the recommended construct; the behaviour is the same in the normal case and defined in the
+    cases the old form got wrong.
+  detect:
+    - invocation: [getMonthValue, getValue]
+      receiver: [OffsetDateTime, ZonedDateTime]
+
+- key: QG-JV-BUG-0247
+  name: Time zone-aware types should be replaced by the recommended alternative
+  languages: [java]
+  category: BUG
+  severity: major
+  effort: 5min
+  tags: [prefer_api, ported]
+  message: The platform offers a clearer or safer construct for this.
+  summary: A construct is used where the platform offers one that is clearer or safer.
+  why: |
+    The alternative exists because it removes a class of mistake — a conversion, an allocation, an edge
+    case — that the current form leaves to the caller. Using the older form means every reader has to
+    check that the edge case was handled.
+  fix: |
+    Switch to the recommended construct; the behaviour is the same in the normal case and defined in the
+    cases the old form got wrong.
+  detect:
+    - invocation: [between]
+      receiver: [ChronoUnit, Duration]
+
+- key: QG-JV-BUG-0248
+  name: DateTimeFormatters should match the behaviour the code describes
+  languages: [java]
+  category: BUG
+  severity: major
+  effort: 10min
+  tags: [bug, ported]
+  message: This code does not behave the way it reads.
+  summary: The code does not do what its shape suggests, or fails on ordinary input.
+  why: |
+    Written this way the code works by accident or breaks on values that are perfectly normal, and the
+    mistake is easy to miss in review because the intent reads correctly.
+  fix: |
+    Make the intended behaviour explicit — fix the condition, the operator or the order of operations —
+    and cover the case that used to fail with a test.
+  detect:
+    - invocation: [appendValue, weekBasedYear, weekOfWeekBasedYear]
+      receiver: [DateTimeFormatterBuilder, WeekFields]
+
+- key: QG-JV-SML-0521
+  name: DateUtils.truncate from Apache Commons Lang library should not be used
+  languages: [java]
+  category: SML
+  severity: minor
+  effort: 10min
+  tags: [avoid_api, ported]
+  message: This API should be replaced by the current alternative.
+  summary: Code calls an API that is unsafe, obsolete or superseded by a better alternative.
+  why: |
+    The API stays available for compatibility, so nothing fails at build time, but it carries behaviour
+    the platform now considers a defect — unchecked input, a weak guarantee, or a cost the replacement
+    avoids. Its presence also spreads: new code copies what it finds nearby.
+  fix: |
+    Replace the call with the current API, and keep the old one only behind a compatibility layer that is
+    documented and dated.
+  detect:
+    - invocation: [truncate]
+      receiver: [DateUtils]
+
+- key: QG-JV-SML-0522
+  name: Hard-to-read code should be simplified
+  languages: [java]
+  category: SML
+  severity: minor
+  effort: 5min
+  tags: [sml, ported]
+  message: This code is harder to read or change than the behaviour requires.
+  summary: The code works but is harder to read or change than the behaviour requires.
+  why: |
+    The intent is buried, duplicated, or spread across places that must stay in sync, so every future
+    change costs more than it should and carries a risk that has nothing to do with the change itself.
+  fix: |
+    Remove what is not used, name what is unclear, and keep one piece of behaviour in one place so the
+    next change touches a single spot.
+  detect:
+    - invocation: [defaultFinisher, ofSequential]
+      receiver: [Gatherer]
+
+- key: QG-JV-SML-0523
+  name: Disallowed classes should be resolved rather than left in the code
+  languages: [java]
+  category: SML
+  severity: minor
+  effort: 0min
+  tags: [marker, ported]
+  message: This marker records work that was left open.
+  summary: A marker in the source records work or a decision that was left open.
+  why: |
+    Markers are written for a future reader who never comes back to them. Nobody can tell whether the
+    note is still relevant, who owns it, or whether the missing work has since become a defect.
+  fix: |
+    Do the work, or move it to the issue tracker and reference the ticket in the marker so the deadline
+    lives somewhere that gets reviewed.
+  status: planned
+
+- key: QG-JV-BUG-0249
+  name: Return value of EntityManager.merge() should be replaced by the recommended alternative
+  languages: [java]
+  category: BUG
+  severity: major
+  effort: 5min
+  tags: [prefer_api, ported]
+  message: The platform offers a clearer or safer construct for this.
+  summary: A construct is used where the platform offers one that is clearer or safer.
+  why: |
+    The alternative exists because it removes a class of mistake — a conversion, an allocation, an edge
+    case — that the current form leaves to the caller. Using the older form means every reader has to
+    check that the edge case was handled.
+  fix: |
+    Switch to the recommended construct; the behaviour is the same in the normal case and defined in the
+    cases the old form got wrong.
+  detect:
+    - invocation: [merge]
+      receiver: [EntityManager]
+
+- key: QG-JV-SML-0524
+  name: Hard-to-read code should be simplified
+  languages: [java]
+  category: SML
+  severity: minor
+  effort: 5min
+  tags: [sml, ported]
+  message: This code is harder to read or change than the behaviour requires.
+  summary: The code works but is harder to read or change than the behaviour requires.
+  why: |
+    The intent is buried, duplicated, or spread across places that must stay in sync, so every future
+    change costs more than it should and carries a risk that has nothing to do with the change itself.
+  fix: |
+    Remove what is not used, name what is unclear, and keep one piece of behaviour in one place so the
+    next change touches a single spot.
+  detect:
+    - invocation: [unmodifiableSet]
+      receiver: [Collections, ImmutableSet, Set]
+
+- key: QG-JV-BUG-0250
+  name: .equals() should not be used
+  languages: [java]
+  category: BUG
+  severity: major
+  effort: 5min
+  tags: [avoid_api, ported]
+  message: This API should be replaced by the current alternative.
+  summary: Code calls an API that is unsafe, obsolete or superseded by a better alternative.
+  why: |
+    The API stays available for compatibility, so nothing fails at build time, but it carries behaviour
+    the platform now considers a defect — unchecked input, a weak guarantee, or a cost the replacement
+    avoids. Its presence also spreads: new code copies what it finds nearby.
+  fix: |
+    Replace the call with the current API, and keep the old one only behind a compatibility layer that is
+    documented and dated.
+  detect:
+    - invocation: [equals]
+      receiver: [AtomicBoolean, AtomicInteger, AtomicLong]
+
+- key: QG-JV-SML-0525
+  name: Validation logic should be simplified
+  languages: [java]
+  category: SML
+  severity: minor
+  effort: 5min
+  tags: [sml, ported]
+  message: This code is harder to read or change than the behaviour requires.
+  summary: The code works but is harder to read or change than the behaviour requires.
+  why: |
+    The intent is buried, duplicated, or spread across places that must stay in sync, so every future
+    change costs more than it should and carries a risk that has nothing to do with the change itself.
+  fix: |
+    Remove what is not used, name what is unclear, and keep one piece of behaviour in one place so the
+    next change touches a single spot.
+  detect:
+    - invocation: [checkArgument, checkFromIndexSize, checkFromToIndex, checkIndex, checkNotNull, checkState, hasLength, hasText]
+      receiver: [Assert, Objects, Preconditions, Validate]
+
+- key: QG-JV-BUG-0251
+  name: Float.compare or Double.compare should be replaced by the recommended alternative
+  languages: [java]
+  category: BUG
+  severity: major
+  effort: 5min
+  tags: [prefer_api, ported]
+  message: The platform offers a clearer or safer construct for this.
+  summary: A construct is used where the platform offers one that is clearer or safer.
+  why: |
+    The alternative exists because it removes a class of mistake — a conversion, an allocation, an edge
+    case — that the current form leaves to the caller. Using the older form means every reader has to
+    check that the edge case was handled.
+  fix: |
+    Switch to the recommended construct; the behaviour is the same in the normal case and defined in the
+    cases the old form got wrong.
+  detect:
+    - invocation: [compare, compareTo]
+      receiver: [Comparable, Comparator]
+
+- key: QG-JV-SML-0526
+  name: Hard-to-read code should be simplified
+  languages: [java]
+  category: SML
+  severity: minor
+  effort: 5min
+  tags: [sml, ported]
+  message: This code is harder to read or change than the behaviour requires.
+  summary: The code works but is harder to read or change than the behaviour requires.
+  why: |
+    The intent is buried, duplicated, or spread across places that must stay in sync, so every future
+    change costs more than it should and carries a risk that has nothing to do with the change itself.
+  fix: |
+    Remove what is not used, name what is unclear, and keep one piece of behaviour in one place so the
+    next change touches a single spot.
+  detect:
+    - invocation: [defaultInitializer, empty, ofSequential]
+      receiver: [Optional]
+
+- key: QG-JV-SML-0527
+  name: Execution of the Garbage Collector should be simplified
+  languages: [java]
+  category: SML
+  severity: minor
+  effort: 30min
+  tags: [sml, ported]
+  message: This code is harder to read or change than the behaviour requires.
+  summary: The code works but is harder to read or change than the behaviour requires.
+  why: |
+    The intent is buried, duplicated, or spread across places that must stay in sync, so every future
+    change costs more than it should and carries a risk that has nothing to do with the change itself.
+  fix: |
+    Remove what is not used, name what is unclear, and keep one piece of behaviour in one place so the
+    next change touches a single spot.
+  detect:
+    - invocation: [runFinalization]
+      receiver: [Runtime, System]
+
+- key: QG-JV-BUG-0252
+  name: JEE applications should match the behaviour the code describes
+  languages: [java]
+  category: BUG
+  severity: major
+  effort: 5min
+  tags: [bug, ported]
+  message: This code does not behave the way it reads.
+  summary: The code does not do what its shape suggests, or fails on ordinary input.
+  why: |
+    Written this way the code works by accident or breaks on values that are perfectly normal, and the
+    mistake is easy to miss in review because the intent reads correctly.
+  fix: |
+    Make the intended behaviour explicit — fix the condition, the operator or the order of operations —
+    and cover the case that used to fail with a test.
+  detect:
+    - invocation: [getClassLoader]
+      receiver: [Class]
+
+- key: QG-JV-SEC-0073
+  name: HttpServletRequest.getRequestedSessionId() should not be used
+  languages: [java]
+  category: SEC
+  severity: critical
+  effort: 10min
+  tags: [avoid_api, ported]
+  cwe: [807]
+  message: This API should be replaced by the current alternative.
+  summary: Code calls an API that is unsafe, obsolete or superseded by a better alternative.
+  why: |
+    The API stays available for compatibility, so nothing fails at build time, but it carries behaviour
+    the platform now considers a defect — unchecked input, a weak guarantee, or a cost the replacement
+    avoids. Its presence also spreads: new code copies what it finds nearby.
+  fix: |
+    Replace the call with the current API, and keep the old one only behind a compatibility layer that is
+    documented and dated.
+  detect:
+    - invocation: [getRequestedSessionId]
+      receiver: [HttpServletRequest]
+
+- key: QG-JV-BUG-0253
+  name: Return values should match the behaviour the code describes
+  languages: [java]
+  category: BUG
+  severity: major
+  effort: 15min
+  tags: [bug, ported]
+  cwe: [754]
+  message: This code does not behave the way it reads.
+  summary: The code does not do what its shape suggests, or fails on ordinary input.
+  why: |
+    Written this way the code works by accident or breaks on values that are perfectly normal, and the
+    mistake is easy to miss in review because the intent reads correctly.
+  fix: |
+    Make the intended behaviour explicit — fix the condition, the operator or the order of operations —
+    and cover the case that used to fail with a test.
+  status: planned
+
+- key: QG-JV-BUG-0254
+  name: Inappropriate regular expressions should not be used
+  languages: [java]
+  category: BUG
+  severity: major
+  effort: 15min
+  tags: [avoid_api, ported]
+  message: This API should be replaced by the current alternative.
+  summary: Code calls an API that is unsafe, obsolete or superseded by a better alternative.
+  why: |
+    The API stays available for compatibility, so nothing fails at build time, but it carries behaviour
+    the platform now considers a defect — unchecked input, a weak guarantee, or a cost the replacement
+    avoids. Its presence also spreads: new code copies what it finds nearby.
+  fix: |
+    Replace the call with the current API, and keep the old one only behind a compatibility layer that is
+    documented and dated.
+  detect:
+    - invocation: [replaceAll, replaceFirst]
+      receiver: [String]
+
+- key: QG-JV-BUG-0255
+  name: InputSteam.read() implementation should match the behaviour the code describes
+  languages: [java]
+  category: BUG
+  severity: major
+  effort: 10min
+  tags: [bug, ported]
+  message: This code does not behave the way it reads.
+  summary: The code does not do what its shape suggests, or fails on ordinary input.
+  why: |
+    Written this way the code works by accident or breaks on values that are perfectly normal, and the
+    mistake is easy to miss in review because the intent reads correctly.
+  fix: |
+    Make the intended behaviour explicit — fix the condition, the operator or the order of operations —
+    and cover the case that used to fail with a test.
+  detect:
+    - invocation: [read]
+      receiver: [InputStream]
+
+- key: QG-JV-BUG-0256
+  name: InterruptedException and ThreadDeath should make failure handling explicit
+  languages: [java]
+  category: BUG
+  severity: major
+  effort: 15min
+  tags: [exception, ported]
+  cwe: [391]
+  message: This handling hides the failure instead of dealing with it.
+  summary: An exception is thrown, caught or propagated in a way that hides the failure.
+  why: |
+    Handlers that are too broad, empty, or that replace the original error remove the information needed
+    to diagnose the incident, and let the program continue in a state nobody designed for. The symptom
+    then appears far from the cause.
+  fix: |
+    Catch the specific failures this code can recover from, keep the original exception as the cause when
+    wrapping, and let everything else reach the boundary handler.
+  detect:
+    - invocation: [interrupt]
+      receiver: [Thread]
+
+- key: QG-JV-SML-0528
+  name: Operator instanceof should be replaced by the recommended alternative
+  languages: [java]
+  category: SML
+  severity: minor
+  effort: 5min
+  tags: [prefer_api, ported]
+  message: The platform offers a clearer or safer construct for this.
+  summary: A construct is used where the platform offers one that is clearer or safer.
+  why: |
+    The alternative exists because it removes a class of mistake — a conversion, an allocation, an edge
+    case — that the current form leaves to the caller. Using the older form means every reader has to
+    check that the edge case was handled.
+  fix: |
+    Switch to the recommended construct; the behaviour is the same in the normal case and defined in the
+    cases the old form got wrong.
+  detect:
+    - invocation: [isInstance]
+      receiver: [Class]
+
+- key: QG-JV-SML-0529
+  name: Class.forName() should be simplified
+  languages: [java]
+  category: SML
+  severity: minor
+  effort: 5min
+  tags: [sml, ported]
+  message: This code is harder to read or change than the behaviour requires.
+  summary: The code works but is harder to read or change than the behaviour requires.
+  why: |
+    The intent is buried, duplicated, or spread across places that must stay in sync, so every future
+    change costs more than it should and carries a risk that has nothing to do with the change itself.
+  fix: |
+    Remove what is not used, name what is unclear, and keep one piece of behaviour in one place so the
+    next change touches a single spot.
+  status: planned
+
+- key: QG-JV-SML-0530
+  name: EntrySet() should be simplified
+  languages: [java]
+  category: SML
+  severity: minor
+  effort: 5min
+  tags: [sml, ported]
+  message: This code is harder to read or change than the behaviour requires.
+  summary: The code works but is harder to read or change than the behaviour requires.
+  why: |
+    The intent is buried, duplicated, or spread across places that must stay in sync, so every future
+    change costs more than it should and carries a risk that has nothing to do with the change itself.
+  fix: |
+    Remove what is not used, name what is unclear, and keep one piece of behaviour in one place so the
+    next change touches a single spot.
+  status: planned
+
+- key: QG-JV-SML-0531
+  name: Loggers should follow the naming convention of the codebase
+  languages: [java]
+  category: SML
+  severity: minor
+  effort: 5min
+  tags: [naming, ported]
+  message: This identifier does not follow the naming convention of the codebase.
+  summary: An identifier does not follow the convention used by the rest of the code.
+  why: |
+    Conventions let a reader infer the kind of an identifier from its shape alone. A deviation costs a
+    lookup every time, and makes automated searches and refactorings less reliable.
+  fix: |
+    Rename the identifier to match the convention, and let the editor propagate the change so callers
+    stay in sync.
+  detect:
+    - invocation: [getLog, getLogger, getName]
+      receiver: [LogFactory, Loggers]
+
+- key: QG-JV-BUG-0257
+  name: Double.longBitsToDouble should match the behaviour the code describes
+  languages: [java]
+  category: BUG
+  severity: major
+  effort: 15min
+  tags: [bug, ported]
+  message: This code does not behave the way it reads.
+  summary: The code does not do what its shape suggests, or fails on ordinary input.
+  why: |
+    Written this way the code works by accident or breaks on values that are perfectly normal, and the
+    mistake is easy to miss in review because the intent reads correctly.
+  fix: |
+    Make the intended behaviour explicit — fix the condition, the operator or the order of operations —
+    and cover the case that used to fail with a test.
+  detect:
+    - invocation: [longBitsToDouble]
+      receiver: [Double]
+
+- key: QG-JV-BUG-0258
+  name: Math.clamp should be replaced by the recommended alternative
+  languages: [java]
+  category: BUG
+  severity: major
+  effort: 5min
+  tags: [prefer_api, ported]
+  message: The platform offers a clearer or safer construct for this.
+  summary: A construct is used where the platform offers one that is clearer or safer.
+  why: |
+    The alternative exists because it removes a class of mistake — a conversion, an allocation, an edge
+    case — that the current form leaves to the caller. Using the older form means every reader has to
+    check that the edge case was handled.
+  fix: |
+    Switch to the recommended construct; the behaviour is the same in the normal case and defined in the
+    cases the old form got wrong.
+  detect:
+    - invocation: [clamp]
+      receiver: [Math]
+
+- key: QG-JV-SML-0532
+  name: Private mutable members should be simplified
+  languages: [java]
+  category: SML
+  severity: minor
+  effort: 5min
+  tags: [sml, ported]
+  cwe: [375, 374]
+  message: This code is harder to read or change than the behaviour requires.
+  summary: The code works but is harder to read or change than the behaviour requires.
+  why: |
+    The intent is buried, duplicated, or spread across places that must stay in sync, so every future
+    change costs more than it should and carries a risk that has nothing to do with the change itself.
+  fix: |
+    Remove what is not used, name what is unclear, and keep one piece of behaviour in one place so the
+    next change touches a single spot.
+  detect:
+    - invocation: [asList, copyOf, difference, intersection, symmetricDifference, union]
+      receiver: [List, Lists, Set, Sets]
+
+- key: QG-JV-BUG-0259
+  name: Map computeIfAbsent() and computeIfPresent() should not be used
+  languages: [java]
+  category: BUG
+  severity: major
+  effort: 10min
+  tags: [avoid_api, ported]
+  message: This API should be replaced by the current alternative.
+  summary: Code calls an API that is unsafe, obsolete or superseded by a better alternative.
+  why: |
+    The API stays available for compatibility, so nothing fails at build time, but it carries behaviour
+    the platform now considers a defect — unchecked input, a weak guarantee, or a cost the replacement
+    avoids. Its presence also spreads: new code copies what it finds nearby.
+  fix: |
+    Replace the call with the current API, and keep the old one only behind a compatibility layer that is
+    documented and dated.
+  detect:
+    - invocation: [computeIfAbsent, computeIfPresent]
+      receiver: [Map]
+
+- key: QG-JV-SML-0535
+  name: Stream call chains should be simplified
+  languages: [java]
+  category: SML
+  severity: minor
+  effort: 2min
+  tags: [sml, ported]
+  message: This code is harder to read or change than the behaviour requires.
+  summary: The code works but is harder to read or change than the behaviour requires.
+  why: |
+    The intent is buried, duplicated, or spread across places that must stay in sync, so every future
+    change costs more than it should and carries a risk that has nothing to do with the change itself.
+  fix: |
+    Remove what is not used, name what is unclear, and keep one piece of behaviour in one place so the
+    next change touches a single spot.
+  detect:
+    - invocation: [anyMatch, booleanValue, filter, findAny, findFirst, isPresent]
+      receiver: [Boolean, Optional, OptionalDouble, OptionalInt, OptionalLong]
+
+- key: QG-JV-SML-0536
+  name: Unsafe APIs should not be used
+  languages: [java]
+  category: SML
+  severity: minor
+  effort: 5min
+  tags: [avoid_api, ported]
+  message: This API should be replaced by the current alternative.
+  summary: Code calls an API that is unsafe, obsolete or superseded by a better alternative.
+  why: |
+    The API stays available for compatibility, so nothing fails at build time, but it carries behaviour
+    the platform now considers a defect — unchecked input, a weak guarantee, or a cost the replacement
+    avoids. Its presence also spreads: new code copies what it finds nearby.
+  fix: |
+    Replace the call with the current API, and keep the old one only behind a compatibility layer that is
+    documented and dated.
+  detect:
+    - invocation: [random]
+      receiver: [JVMRandom, Math, Random, RandomUtils, ThreadLocalRandom]
+
+- key: QG-JV-SML-0537
+  name: Hard-to-read code should be simplified
+  languages: [java]
+  category: SML
+  severity: minor
+  effort: 5min
+  tags: [sml, ported]
+  message: This code is harder to read or change than the behaviour requires.
+  summary: The code works but is harder to read or change than the behaviour requires.
+  why: |
+    The intent is buried, duplicated, or spread across places that must stay in sync, so every future
+    change costs more than it should and carries a risk that has nothing to do with the change itself.
+  fix: |
+    Remove what is not used, name what is unclear, and keep one piece of behaviour in one place so the
+    next change touches a single spot.
+  detect:
+    - invocation: [print, println, readln]
+      receiver: [IO]
+
+- key: QG-JV-SML-0538
+  name: Close() calls should be simplified
+  languages: [java]
+  category: SML
+  severity: minor
+  effort: 2min
+  tags: [sml, ported]
+  message: This code is harder to read or change than the behaviour requires.
+  summary: The code works but is harder to read or change than the behaviour requires.
+  why: |
+    The intent is buried, duplicated, or spread across places that must stay in sync, so every future
+    change costs more than it should and carries a risk that has nothing to do with the change itself.
+  fix: |
+    Remove what is not used, name what is unclear, and keep one piece of behaviour in one place so the
+    next change touches a single spot.
+  detect:
+    - invocation: [close]
+      receiver: [AutoCloseable]
+
+- key: QG-JV-BUG-0261
+  name: Reflection should not be used
+  languages: [java]
+  category: BUG
+  severity: major
+  effort: 15min
+  tags: [avoid_api, ported]
+  message: This API should be replaced by the current alternative.
+  summary: Code calls an API that is unsafe, obsolete or superseded by a better alternative.
+  why: |
+    The API stays available for compatibility, so nothing fails at build time, but it carries behaviour
+    the platform now considers a defect — unchecked input, a weak guarantee, or a cost the replacement
+    avoids. Its presence also spreads: new code copies what it finds nearby.
+  fix: |
+    Replace the call with the current API, and keep the old one only behind a compatibility layer that is
+    documented and dated.
+  detect:
+    - invocation: [isAnnotationPresent]
+      receiver: [AnnotatedElement]
+
+- key: QG-JV-SML-0539
+  name: ResultSet.isLast() should not be used
+  languages: [java]
+  category: SML
+  severity: minor
+  effort: 10min
+  tags: [avoid_api, ported]
+  message: This API should be replaced by the current alternative.
+  summary: Code calls an API that is unsafe, obsolete or superseded by a better alternative.
+  why: |
+    The API stays available for compatibility, so nothing fails at build time, but it carries behaviour
+    the platform now considers a defect — unchecked input, a weak guarantee, or a cost the replacement
+    avoids. Its presence also spreads: new code copies what it finds nearby.
+  fix: |
+    Replace the call with the current API, and keep the old one only behind a compatibility layer that is
+    documented and dated.
+  detect:
+    - invocation: [isLast]
+      receiver: [ResultSet]
+
+- key: QG-JV-SML-0540
+  name: Reverse iteration should be simplified
+  languages: [java]
+  category: SML
+  severity: minor
+  effort: 5min
+  tags: [sml, ported]
+  message: This code is harder to read or change than the behaviour requires.
+  summary: The code works but is harder to read or change than the behaviour requires.
+  why: |
+    The intent is buried, duplicated, or spread across places that must stay in sync, so every future
+    change costs more than it should and carries a risk that has nothing to do with the change itself.
+  fix: |
+    Remove what is not used, name what is unclear, and keep one piece of behaviour in one place so the
+    next change touches a single spot.
+  detect:
+    - invocation: [hasPrevious, listIterator]
+      receiver: [List, ListIterator]
+
+- key: QG-JV-SML-0541
+  name: Reverse view should be replaced by the recommended alternative
+  languages: [java]
+  category: SML
+  severity: minor
+  effort: 5min
+  tags: [prefer_api, ported]
+  message: The platform offers a clearer or safer construct for this.
+  summary: A construct is used where the platform offers one that is clearer or safer.
+  why: |
+    The alternative exists because it removes a class of mistake — a conversion, an allocation, an edge
+    case — that the current form leaves to the caller. Using the older form means every reader has to
+    check that the edge case was handled.
+  fix: |
+    Switch to the recommended construct; the behaviour is the same in the normal case and defined in the
+    cases the old form got wrong.
+  status: planned
+
+- key: QG-JV-BUG-0262
+  name: RunFinalizersOnExit should not be used
+  languages: [java]
+  category: BUG
+  severity: major
+  effort: 20min
+  tags: [avoid_api, ported]
+  message: This API should be replaced by the current alternative.
+  summary: Code calls an API that is unsafe, obsolete or superseded by a better alternative.
+  why: |
+    The API stays available for compatibility, so nothing fails at build time, but it carries behaviour
+    the platform now considers a defect — unchecked input, a weak guarantee, or a cost the replacement
+    avoids. Its presence also spreads: new code copies what it finds nearby.
+  fix: |
+    Replace the call with the current API, and keep the old one only behind a compatibility layer that is
+    documented and dated.
+  detect:
+    - invocation: [runFinalizersOnExit]
+      receiver: [Runtime, System]
+
+- key: QG-JV-SML-0542
+  name: ScheduledThreadPoolExecutor.setMaximumPoolSize should not be used
+  languages: [java]
+  category: SML
+  severity: minor
+  effort: 5min
+  tags: [avoid_api, ported]
+  message: This API should be replaced by the current alternative.
+  summary: Code calls an API that is unsafe, obsolete or superseded by a better alternative.
+  why: |
+    The API stays available for compatibility, so nothing fails at build time, but it carries behaviour
+    the platform now considers a defect — unchecked input, a weak guarantee, or a cost the replacement
+    avoids. Its presence also spreads: new code copies what it finds nearby.
+  fix: |
+    Replace the call with the current API, and keep the old one only behind a compatibility layer that is
+    documented and dated.
+  detect:
+    - invocation: [setMaximumPoolSize]
+      receiver: [ScheduledThreadPoolExecutor]
+
+- key: QG-JV-BUG-0263
+  name: ScheduledThreadPoolExecutor should be accessed in a thread-safe way
+  languages: [java]
+  category: BUG
+  severity: major
+  effort: 20min
+  tags: [concurrency, ported]
+  message: Shared state is accessed without correct coordination.
+  summary: Shared state is accessed with locking that is missing, too wide, or on the wrong object.
+  why: |
+    Concurrency defects depend on timing, so they pass every test and appear under load in production.
+    Locking on a shared or public object also lets unrelated code block or deadlock this one.
+  fix: |
+    Lock a private object dedicated to the state it protects, keep the critical section short, and prefer
+    the concurrent collections and higher-level primitives the platform provides.
+  detect:
+    - invocation: [setCorePoolSize]
+      receiver: [ThreadPoolExecutor]
+
+- key: QG-JV-BUG-0264
+  name: ScopedValue instances should match the behaviour the code describes
+  languages: [java]
+  category: BUG
+  severity: major
+  effort: 5min
+  tags: [bug, ported]
+  message: This code does not behave the way it reads.
+  summary: The code does not do what its shape suggests, or fails on ordinary input.
+  why: |
+    Written this way the code works by accident or breaks on values that are perfectly normal, and the
+    mistake is easy to miss in review because the intent reads correctly.
+  fix: |
+    Make the intended behaviour explicit — fix the condition, the operator or the order of operations —
+    and cover the case that used to fail with a test.
+  detect:
+    - invocation: [newInstance, where]
+      receiver: [ScopedValue, ScopedValue$Carrier]
+
+- key: QG-JV-BUG-0265
+  name: Servlets should match the behaviour the code describes
+  languages: [java]
+  category: BUG
+  severity: major
+  effort: 30min
+  tags: [bug, ported]
+  message: This code does not behave the way it reads.
+  summary: The code does not do what its shape suggests, or fails on ordinary input.
+  why: |
+    Written this way the code works by accident or breaks on values that are perfectly normal, and the
+    mistake is easy to miss in review because the intent reads correctly.
+  fix: |
+    Make the intended behaviour explicit — fix the condition, the operator or the order of operations —
+    and cover the case that used to fail with a test.
+  detect:
+    - invocation: [init]
+      receiver: [GenericServlet, Servlet]
+
+- key: QG-JV-SML-0543
+  name: Redundant time instantiation patterns should be simplified
+  languages: [java]
+  category: SML
+  severity: minor
+  effort: 5min
+  tags: [sml, ported]
+  message: This code is harder to read or change than the behaviour requires.
+  summary: The code works but is harder to read or change than the behaviour requires.
+  why: |
+    The intent is buried, duplicated, or spread across places that must stay in sync, so every future
+    change costs more than it should and carries a risk that has nothing to do with the change itself.
+  fix: |
+    Remove what is not used, name what is unclear, and keep one piece of behaviour in one place so the
+    next change touches a single spot.
+  detect:
+    - invocation: [atZone, from]
+      receiver: [Instant, LocalDate, LocalTime, OffsetDateTime, Year, YearMonth]
+
+- key: QG-JV-SML-0544
+  name: Lazy initialization of static fields should be accessed in a thread-safe way
+  languages: [java]
+  category: SML
+  severity: minor
+  effort: 30min
+  tags: [concurrency, ported]
+  message: Shared state is accessed without correct coordination.
+  summary: Shared state is accessed with locking that is missing, too wide, or on the wrong object.
+  why: |
+    Concurrency defects depend on timing, so they pass every test and appear under load in production.
+    Locking on a shared or public object also lets unrelated code block or deadlock this one.
+  fix: |
+    Lock a private object dedicated to the state it protects, keep the critical section short, and prefer
+    the concurrent collections and higher-level primitives the platform provides.
+  detect:
+    - invocation: [lock, tryLock]
+      receiver: [Lock]
+
+- key: QG-JV-SML-0546
+  name: Stream should not be used
+  languages: [java]
+  category: SML
+  severity: minor
+  effort: 2min
+  tags: [avoid_api, ported]
+  message: This API should be replaced by the current alternative.
+  summary: Code calls an API that is unsafe, obsolete or superseded by a better alternative.
+  why: |
+    The API stays available for compatibility, so nothing fails at build time, but it carries behaviour
+    the platform now considers a defect — unchecked input, a weak guarantee, or a cost the replacement
+    avoids. Its presence also spreads: new code copies what it finds nearby.
+  fix: |
+    Replace the call with the current API, and keep the old one only behind a compatibility layer that is
+    documented and dated.
+  detect:
+    - invocation: [forEach, stream]
+      receiver: [Collection, Stream]
+
+- key: QG-JV-SML-0547
+  name: Stream.peek should be replaced by the recommended alternative
+  languages: [java]
+  category: SML
+  severity: minor
+  effort: 5min
+  tags: [prefer_api, ported]
+  message: The platform offers a clearer or safer construct for this.
+  summary: A construct is used where the platform offers one that is clearer or safer.
+  why: |
+    The alternative exists because it removes a class of mistake — a conversion, an allocation, an edge
+    case — that the current form leaves to the caller. Using the older form means every reader has to
+    check that the edge case was handled.
+  fix: |
+    Switch to the recommended construct; the behaviour is the same in the normal case and defined in the
+    cases the old form got wrong.
+  detect:
+    - invocation: [peek]
+      receiver: [DoubleStream, IntStream, LongStream, Stream]
+
+- key: QG-JV-SML-0548
+  name: Arguments to append should be simplified
+  languages: [java]
+  category: SML
+  severity: minor
+  effort: 2min
+  tags: [sml, ported]
+  message: This code is harder to read or change than the behaviour requires.
+  summary: The code works but is harder to read or change than the behaviour requires.
+  why: |
+    The intent is buried, duplicated, or spread across places that must stay in sync, so every future
+    change costs more than it should and carries a risk that has nothing to do with the change itself.
+  fix: |
+    Remove what is not used, name what is unclear, and keep one piece of behaviour in one place so the
+    next change touches a single spot.
+  status: planned
+
+- key: QG-JV-SML-0550
+  name: Parsing should be replaced by the recommended alternative
+  languages: [java]
+  category: SML
+  severity: minor
+  effort: 5min
+  tags: [prefer_api, ported]
+  message: The platform offers a clearer or safer construct for this.
+  summary: A construct is used where the platform offers one that is clearer or safer.
+  why: |
+    The alternative exists because it removes a class of mistake — a conversion, an allocation, an edge
+    case — that the current form leaves to the caller. Using the older form means every reader has to
+    check that the edge case was handled.
+  fix: |
+    Switch to the recommended construct; the behaviour is the same in the normal case and defined in the
+    cases the old form got wrong.
+  status: planned
+
+- key: QG-JV-BUG-0266
+  name: Wait(...) should be replaced by the recommended alternative
+  languages: [java]
+  category: BUG
+  severity: major
+  effort: 5min
+  tags: [prefer_api, ported]
+  message: The platform offers a clearer or safer construct for this.
+  summary: A construct is used where the platform offers one that is clearer or safer.
+  why: |
+    The alternative exists because it removes a class of mistake — a conversion, an allocation, an edge
+    case — that the current form leaves to the caller. Using the older form means every reader has to
+    check that the edge case was handled.
+  fix: |
+    Switch to the recommended construct; the behaviour is the same in the normal case and defined in the
+    cases the old form got wrong.
+  detect:
+    - invocation: [sleep]
+      receiver: [Thread]
+
+- key: QG-JV-BUG-0267
+  name: Methods wait(...), notify() and notifyAll() should not be used
+  languages: [java]
+  category: BUG
+  severity: major
+  effort: 30min
+  tags: [avoid_api, ported]
+  message: This API should be replaced by the current alternative.
+  summary: Code calls an API that is unsafe, obsolete or superseded by a better alternative.
+  why: |
+    The API stays available for compatibility, so nothing fails at build time, but it carries behaviour
+    the platform now considers a defect — unchecked input, a weak guarantee, or a cost the replacement
+    avoids. Its presence also spreads: new code copies what it finds nearby.
+  fix: |
+    Replace the call with the current API, and keep the old one only behind a compatibility layer that is
+    documented and dated.
+  detect:
+    - invocation: [notify, notifyAll, wait]
+      receiver: [Thread]
+
+- key: QG-JV-BUG-0268
+  name: Collection.toArray() should match the behaviour the code describes
+  languages: [java]
+  category: BUG
+  severity: major
+  effort: 5min
+  tags: [bug, ported]
+  message: This code does not behave the way it reads.
+  summary: The code does not do what its shape suggests, or fails on ordinary input.
+  why: |
+    Written this way the code works by accident or breaks on values that are perfectly normal, and the
+    mistake is easy to miss in review because the intent reads correctly.
+  fix: |
+    Make the intended behaviour explicit — fix the condition, the operator or the order of operations —
+    and cover the case that used to fail with a test.
+  detect:
+    - invocation: [toArray]
+      receiver: [Collection]
+
+- key: QG-JV-SML-0552
+  name: Try-with-resources should be replaced by the recommended alternative
+  languages: [java]
+  category: SML
+  severity: minor
+  effort: 15min
+  tags: [prefer_api, ported]
+  message: The platform offers a clearer or safer construct for this.
+  summary: A construct is used where the platform offers one that is clearer or safer.
+  why: |
+    The alternative exists because it removes a class of mistake — a conversion, an allocation, an edge
+    case — that the current form leaves to the caller. Using the older form means every reader has to
+    check that the edge case was handled.
+  fix: |
+    Switch to the recommended construct; the behaviour is the same in the normal case and defined in the
+    cases the old form got wrong.
+  detect:
+    - invocation: [build, createArrayOf, createBlob, createClob, createNClob, createSQLXML, exec, getArray]
+      receiver: [CallableStatement, Connection, HttpClient, HttpClient$Builder, ProcessBuilder, Reader]
+
+- key: QG-JV-SML-0553
+  name: Motion Sensor should be simplified
+  languages: [java]
+  category: SML
+  severity: minor
+  effort: 5min
+  tags: [sml, ported]
+  message: This code is harder to read or change than the behaviour requires.
+  summary: The code works but is harder to read or change than the behaviour requires.
+  why: |
+    The intent is buried, duplicated, or spread across places that must stay in sync, so every future
+    change costs more than it should and carries a risk that has nothing to do with the change itself.
+  fix: |
+    Remove what is not used, name what is unclear, and keep one piece of behaviour in one place so the
+    next change touches a single spot.
+  detect:
+    - invocation: [getDefaultSensor]
+      receiver: [SensorManager]
+
+- key: QG-JV-SML-0554
+  name: TransformClass method should be replaced by the recommended alternative
+  languages: [java]
+  category: SML
+  severity: minor
+  effort: 5min
+  tags: [prefer_api, ported]
+  message: The platform offers a clearer or safer construct for this.
+  summary: A construct is used where the platform offers one that is clearer or safer.
+  why: |
+    The alternative exists because it removes a class of mistake — a conversion, an allocation, an edge
+    case — that the current form leaves to the caller. Using the older form means every reader has to
+    check that the edge case was handled.
+  fix: |
+    Switch to the recommended construct; the behaviour is the same in the normal case and defined in the
+    cases the old form got wrong.
+  detect:
+    - invocation: [build]
+      receiver: [ClassFile]
+
+- key: QG-JV-BUG-0269
+  name: Value-based classes should match the behaviour the code describes
+  languages: [java]
+  category: BUG
+  severity: major
+  effort: 5min
+  tags: [bug, ported]
+  message: This code does not behave the way it reads.
+  summary: The code does not do what its shape suggests, or fails on ordinary input.
+  why: |
+    Written this way the code works by accident or breaks on values that are perfectly normal, and the
+    mistake is easy to miss in review because the intent reads correctly.
+  fix: |
+    Make the intended behaviour explicit — fix the condition, the operator or the order of operations —
+    and cover the case that used to fail with a test.
+  detect:
+    - invocation: [identityHashCode]
+      receiver: [System]
+
+- key: QG-JV-BUG-0270
+  name: Virtual threads should be accessed in a thread-safe way
+  languages: [java]
+  category: BUG
+  severity: major
+  effort: 5min
+  tags: [concurrency, ported]
+  message: Shared state is accessed without correct coordination.
+  summary: Shared state is accessed with locking that is missing, too wide, or on the wrong object.
+  why: |
+    Concurrency defects depend on timing, so they pass every test and appear under load in production.
+    Locking on a shared or public object also lets unrelated code block or deadlock this one.
+  fix: |
+    Lock a private object dedicated to the state it protects, keep the critical section short, and prefer
+    the concurrent collections and higher-level primitives the platform provides.
+  detect:
+    - invocation: [execute, newVirtualThreadPerTaskExecutor, start, startVirtualThread, submit, unstarted]
+      receiver: [ExecutorService, Executors, Thread, Thread$Builder]
+
+- key: QG-JV-BUG-0271
+  name: SetDaemon, setPriority and getThreadGroup should not be used
+  languages: [java]
+  category: BUG
+  severity: major
+  effort: 5min
+  tags: [avoid_api, ported]
+  message: This API should be replaced by the current alternative.
+  summary: Code calls an API that is unsafe, obsolete or superseded by a better alternative.
+  why: |
+    The API stays available for compatibility, so nothing fails at build time, but it carries behaviour
+    the platform now considers a defect — unchecked input, a weak guarantee, or a cost the replacement
+    avoids. Its presence also spreads: new code copies what it finds nearby.
+  fix: |
+    Replace the call with the current API, and keep the old one only behind a compatibility layer that is
+    documented and dated.
+  detect:
+    - invocation: [getThreadGroup, setDaemon, setPriority, start, startVirtualThread, unstarted]
+      receiver: [Thread, Thread$Builder$OfVirtual]
+
+- key: QG-JV-SML-0555
+  name: Object.wait should not be used
+  languages: [java]
+  category: SML
+  severity: minor
+  effort: 20min
+  tags: [avoid_api, ported]
+  message: This API should be replaced by the current alternative.
+  summary: Code calls an API that is unsafe, obsolete or superseded by a better alternative.
+  why: |
+    The API stays available for compatibility, so nothing fails at build time, but it carries behaviour
+    the platform now considers a defect — unchecked input, a weak guarantee, or a cost the replacement
+    avoids. Its presence also spreads: new code copies what it finds nearby.
+  fix: |
+    Replace the call with the current API, and keep the old one only behind a compatibility layer that is
+    documented and dated.
+  detect:
+    - invocation: [wait]
+      receiver: [Condition]
+
+- key: QG-JV-SML-0556
+  name: Regular expressions should be safe and correct
+  languages: [java]
+  category: SML
+  severity: minor
+  effort: 3min
+  tags: [regex, ported]
+  message: This pattern is unsafe or incorrect as written.
+  summary: A regular expression is malformed, ambiguous, or able to backtrack catastrophically.
+  why: |
+    A pattern is only validated when it first runs, so a mistake surfaces on the path that uses it —
+    often an error path. Patterns with nested quantifiers can also take exponential time on crafted
+    input, which turns one request into a stalled CPU core.
+  fix: |
+    Simplify the pattern so no quantifier can match the same text in several ways, add a matching timeout
+    for input that comes from outside, and cover the pattern with a test.
+  detect:
+    - invocation: [matches, replaceAll, replaceFirst]
+      receiver: [Pattern]
+
+- key: QG-JV-SML-0557
+  name: Empty lines should not be left empty
+  languages: [java]
+  category: SML
+  severity: minor
+  effort: 15min
+  tags: [empty, ported]
+  message: This construct is empty, so it does nothing.
+  summary: A construct is declared with no content.
+  why: |
+    An empty body reads as if the case is handled while nothing happens, which is exactly how ignored
+    errors and unimplemented branches survive review. It is also indistinguishable from an accidental
+    deletion.
+  fix: |
+    Implement the behaviour, or remove the construct. When doing nothing is deliberate, say so in a
+    comment so the next reader does not treat it as a gap.
+  detect:
+    - invocation: [compile, find, isEmpty, matcher, replaceAll, replaceFirst]
+      receiver: [Matcher]
+
+- key: QG-JV-SEC-0074
+  name: Biometric authentication should use current cryptographic parameters
+  languages: [java]
+  category: SEC
+  severity: critical
+  effort: 5min
+  tags: [crypto, ported]
+  cwe: [1390]
+  message: This cryptographic choice no longer provides the protection it suggests.
+  summary: A cryptographic primitive, mode or key size that is no longer considered safe is used.
+  why: |
+    Broken primitives keep producing output that looks correct, so nothing fails while the protection is
+    already gone. Data encrypted today is often kept for years, which means an algorithm that is merely
+    weak now will be readable later.
+  fix: |
+    Use the algorithms the platform recommends today — authenticated encryption, a modern hash, a key
+    size at or above the current guidance — and keep the choice in one place so it can be raised.
+  detect:
+    - invocation: [authenticate]
+      receiver: [BiometricPrompt]
+
+- key: QG-JV-SEC-0075
+  name: Mobile database encryption keys should not be committed with the source
+  languages: [java]
+  category: SEC
+  severity: critical
+  effort: 10min
+  tags: [secret, ported]
+  cwe: [311, 321]
+  message: This value looks like a credential committed with the source.
+  summary: A credential, key or token appears directly in the source instead of coming from a secret store.
+  why: |
+    Anything committed with the code is readable by everyone who can clone the repository, and it
+    survives in the history even after being deleted. Scanners find these values within minutes of a
+    repository becoming reachable, and rotating them means editing and redeploying every copy.
+  fix: |
+    Read the value at run time from the platform secret store or the environment, fail fast when it is
+    missing, and treat the committed value as compromised: rotate it before removing it.
+  detect:
+    - invocation: [changePassword, create, encryptionKey, getBytes, openDatabase, openOrCreateDatabase, toCharArray]
+      receiver: [RealmConfiguration$Builder, SQLiteDatabase]
+
+- key: QG-JV-SEC-0076
+  name: Persistent unique identifiers should not weaken the security of the application
+  languages: [java]
+  category: SEC
+  severity: critical
+  effort: 5min
+  tags: [sec, ported]
+  cwe: [213]
+  message: This construct weakens the security of the application.
+  summary: A construct that attackers routinely target is used without the guard it needs.
+  why: |
+    The pattern either trusts data the program does not control, or relies on a mechanism that no longer
+    offers the protection it appears to offer. Both keep working normally, which is why they survive
+    until someone looks for them.
+  fix: |
+    Validate the incoming value against an allowed set, pass it as data rather than as code or command,
+    and replace weakened mechanisms with the current recommended one.
+  detect:
+    - invocation: [getAddress, getDeviceId, getId, getImei, getLine1Number, getMacAddress, getMeid, getPhoneNumber]
+      receiver: [AdvertisingIdClient$Info, AdvertisingIdInfo, BluetoothAdapter, Settings$Secure, SubscriptionManager, TelephonyManager]
+
+- key: QG-JV-SEC-0077
+  name: Authorizations should not weaken the security of the application
+  languages: [java]
+  category: SEC
+  severity: critical
+  effort: 30min
+  tags: [sec, ported]
+  cwe: [285]
+  message: This construct weakens the security of the application.
+  summary: A construct that attackers routinely target is used without the guard it needs.
+  why: |
+    The pattern either trusts data the program does not control, or relies on a mechanism that no longer
+    offers the protection it appears to offer. Both keep working normally, which is why they survive
+    until someone looks for them.
+  fix: |
+    Validate the incoming value against an allowed set, pass it as data rather than as code or command,
+    and replace weakened mechanisms with the current recommended one.
+  detect:
+    - invocation: [hasPermission, vote]
+      receiver: [AccessDecisionVoter, PermissionEvaluator]
+
+- key: QG-JV-SEC-0078
+  name: Cipher Block Chaining IVs should use current cryptographic parameters
+  languages: [java]
+  category: SEC
+  severity: critical
+  effort: 15min
+  tags: [crypto, ported]
+  cwe: [327, 780]
+  message: This cryptographic choice no longer provides the protection it suggests.
+  summary: A cryptographic primitive, mode or key size that is no longer considered safe is used.
+  why: |
+    Broken primitives keep producing output that looks correct, so nothing fails while the protection is
+    already gone. Data encrypted today is often kept for years, which means an algorithm that is merely
+    weak now will be readable later.
+  fix: |
+    Use the algorithms the platform recommends today — authenticated encryption, a modern hash, a key
+    size at or above the current guidance — and keep the choice in one place so it can be raised.
+  detect:
+    - invocation: [generateSeed, init, nextBytes]
+      receiver: [ByteBuffer, Cipher, SecureRandom]
+
+- key: QG-JV-SEC-0079
+  name: Debugging features should not weaken the security of the application
+  languages: [java]
+  category: SEC
+  severity: critical
+  effort: 1min
+  tags: [sec, ported]
+  cwe: [489, 215]
+  message: This construct weakens the security of the application.
+  summary: A construct that attackers routinely target is used without the guard it needs.
+  why: |
+    The pattern either trusts data the program does not control, or relies on a mechanism that no longer
+    offers the protection it appears to offer. Both keep working normally, which is why they survive
+    until someone looks for them.
+  fix: |
+    Validate the incoming value against an allowed set, pass it as data rather than as code or command,
+    and replace weakened mechanisms with the current recommended one.
+  detect:
+    - invocation: [debug, printStackTrace, setWebContentsDebuggingEnabled]
+      receiver: [Throwable, WebSecurity, WebView, WebViewFactoryProvider$Statics]
+
+- key: QG-JV-SEC-0080
+  name: Web application technologies should not weaken the security of the application
+  languages: [java]
+  category: SEC
+  severity: critical
+  effort: 5min
+  tags: [sec, ported]
+  cwe: [200]
+  message: This construct weakens the security of the application.
+  summary: A construct that attackers routinely target is used without the guard it needs.
+  why: |
+    The pattern either trusts data the program does not control, or relies on a mechanism that no longer
+    offers the protection it appears to offer. Both keep working normally, which is why they survive
+    until someone looks for them.
+  fix: |
+    Validate the incoming value against an allowed set, pass it as data rather than as code or command,
+    and replace weakened mechanisms with the current recommended one.
+  detect:
+    - invocation: [addHeader, header, setHeader]
+      receiver: [BufferedWebResponse, HttpHeaders, HttpServletResponse, HttpServletResponseWrapper, Resp, ResponseEntity$HeadersBuilder]
+
+- key: QG-JV-SEC-0081
+  name: Secure password should be replaced by the recommended alternative
+  languages: [java]
+  category: SEC
+  severity: critical
+  effort: 45min
+  tags: [prefer_api, ported]
+  cwe: [521]
+  message: The platform offers a clearer or safer construct for this.
+  summary: A construct is used where the platform offers one that is clearer or safer.
+  why: |
+    The alternative exists because it removes a class of mistake — a conversion, an allocation, an edge
+    case — that the current form leaves to the caller. Using the older form means every reader has to
+    check that the edge case was handled.
+  fix: |
+    Switch to the recommended construct; the behaviour is the same in the normal case and defined in the
+    cases the old form got wrong.
+  detect:
+    - invocation: [getConnection]
+      receiver: [DriverManager]
+
+- key: QG-JV-SEC-0082
+  name: Encryption algorithms should use current cryptographic parameters
+  languages: [java]
+  category: SEC
+  severity: critical
+  effort: 20min
+  tags: [crypto, ported]
+  cwe: [327, 780]
+  message: This cryptographic choice no longer provides the protection it suggests.
+  summary: A cryptographic primitive, mode or key size that is no longer considered safe is used.
+  why: |
+    Broken primitives keep producing output that looks correct, so nothing fails while the protection is
+    already gone. Data encrypted today is often kept for years, which means an algorithm that is merely
+    weak now will be readable later.
+  fix: |
+    Use the algorithms the platform recommends today — authenticated encryption, a modern hash, a key
+    size at or above the current guidance — and keep the choice in one place so it can be raised.
+  detect:
+    - invocation: [getInstance]
+      receiver: [Cipher]
+
+- key: QG-JV-SML-0558
+  name: Integer.toHexString should not be used
+  languages: [java]
+  category: SML
+  severity: minor
+  effort: 2min
+  tags: [avoid_api, ported]
+  cwe: [704]
+  message: This API should be replaced by the current alternative.
+  summary: Code calls an API that is unsafe, obsolete or superseded by a better alternative.
+  why: |
+    The API stays available for compatibility, so nothing fails at build time, but it carries behaviour
+    the platform now considers a defect — unchecked input, a weak guarantee, or a cost the replacement
+    avoids. Its presence also spreads: new code copies what it finds nearby.
+  fix: |
+    Replace the call with the current API, and keep the old one only behind a compatibility layer that is
+    documented and dated.
+  detect:
+    - invocation: [append, print, toHexString]
+      receiver: [AbstractStringBuilder, Integer, PrintStream, StringJoiner]
+
+- key: QG-JV-SEC-0083
+  name: JWT should use current cryptographic parameters
+  languages: [java]
+  category: SEC
+  severity: critical
+  effort: 30min
+  tags: [crypto, ported]
+  cwe: [347]
+  message: This cryptographic choice no longer provides the protection it suggests.
+  summary: A cryptographic primitive, mode or key size that is no longer considered safe is used.
+  why: |
+    Broken primitives keep producing output that looks correct, so nothing fails while the protection is
+    already gone. Data encrypted today is often kept for years, which means an algorithm that is merely
+    weak now will be readable later.
+  fix: |
+    Use the algorithms the platform recommends today — authenticated encryption, a modern hash, a key
+    size at or above the current guidance — and keep the choice in one place so it can be raised.
+  detect:
+    - invocation: [builder, compact, parse, require, sign, signWith]
+      receiver: [JWT, JWTCreator$Builder, JwtBuilder, JwtParser, Jwts]
+
+- key: QG-JV-SEC-0084
+  name: OpenSAML2 should not weaken the security of the application
+  languages: [java]
+  category: SEC
+  severity: critical
+  effort: 10min
+  tags: [sec, ported]
+  cwe: [287]
+  message: This construct weakens the security of the application.
+  summary: A construct that attackers routinely target is used without the guard it needs.
+  why: |
+    The pattern either trusts data the program does not control, or relies on a mechanism that no longer
+    offers the protection it appears to offer. Both keep working normally, which is why they survive
+    until someone looks for them.
+  fix: |
+    Validate the incoming value against an allowed set, pass it as data rather than as code or command,
+    and replace weakened mechanisms with the current recommended one.
+  detect:
+    - invocation: [setIgnoreComments]
+      receiver: [BasicParserPool, StaticBasicParserPool]
+
+- key: QG-JV-SEC-0085
+  name: Android broadcast receivers should not grant more access than needed
+  languages: [java]
+  category: SEC
+  severity: critical
+  effort: 15min
+  tags: [permissions, ported]
+  cwe: [925, 926]
+  message: This grants wider access than the operation needs.
+  summary: A resource is created or shared with permissions wider than the task requires.
+  why: |
+    Every account that can reach the resource can also change it, so a single compromised process is
+    enough to alter data or code the application later trusts. Wide permissions are also invisible at the
+    call site: nothing in the reading code says who else can write.
+  fix: |
+    Grant the narrowest right that works, to the specific identity that needs it, and rely on inherited
+    permissions from a properly secured parent instead of widening the resource itself.
+  detect:
+    - invocation: [registerReceiver]
+      receiver: [Context]
+
+- key: QG-JV-SEC-0086
+  name: Cookies should not weaken the security of the application
+  languages: [java]
+  category: SEC
+  severity: critical
+  effort: 5min
+  tags: [sec, ported]
+  cwe: [614, 311, 315]
+  message: This construct weakens the security of the application.
+  summary: A construct that attackers routinely target is used without the guard it needs.
+  why: |
+    The pattern either trusts data the program does not control, or relies on a mechanism that no longer
+    offers the protection it appears to offer. Both keep working normally, which is why they survive
+    until someone looks for them.
+  fix: |
+    Validate the incoming value against an allowed set, pass it as data rather than as code or command,
+    and replace weakened mechanisms with the current recommended one.
+  detect:
+    - invocation: [from, maxAge]
+      receiver: [ResponseCookie]
+
+- key: QG-JV-SEC-0087
+  name: Password hashing functions should use current cryptographic parameters
+  languages: [java]
+  category: SEC
+  severity: critical
+  effort: 30min
+  tags: [crypto, ported]
+  cwe: [759, 760]
+  message: This cryptographic choice no longer provides the protection it suggests.
+  summary: A cryptographic primitive, mode or key size that is no longer considered safe is used.
+  why: |
+    Broken primitives keep producing output that looks correct, so nothing fails while the protection is
+    already gone. Data encrypted today is often kept for years, which means an algorithm that is merely
+    weak now will be readable later.
+  fix: |
+    Use the algorithms the platform recommends today — authenticated encryption, a modern hash, a key
+    size at or above the current guidance — and keep the choice in one place so it can be raised.
+  detect:
+    - invocation: [getBytes]
+      receiver: [String]
+
+- key: QG-JV-SEC-0088
+  name: Native methods should not weaken the security of the application
+  languages: [java]
+  category: SEC
+  severity: critical
+  effort: 30min
+  tags: [sec, ported]
+  cwe: [749]
+  message: This construct weakens the security of the application.
+  summary: A construct that attackers routinely target is used without the guard it needs.
+  why: |
+    The pattern either trusts data the program does not control, or relies on a mechanism that no longer
+    offers the protection it appears to offer. Both keep working normally, which is why they survive
+    until someone looks for them.
+  fix: |
+    Validate the incoming value against an allowed set, pass it as data rather than as code or command,
+    and replace weakened mechanisms with the current recommended one.
+  detect:
+    - invocation: [addJavascriptInterface]
+      receiver: [WebView]
+
+- key: QG-JV-SEC-0089
+  name: WebViews should not grant more access than needed
+  languages: [java]
+  category: SEC
+  severity: critical
+  effort: 5min
+  tags: [permissions, ported]
+  cwe: [79]
+  message: This grants wider access than the operation needs.
+  summary: A resource is created or shared with permissions wider than the task requires.
+  why: |
+    Every account that can reach the resource can also change it, so a single compromised process is
+    enough to alter data or code the application later trusts. Wide permissions are also invisible at the
+    call site: nothing in the reading code says who else can write.
+  fix: |
+    Grant the narrowest right that works, to the specific identity that needs it, and rely on inherited
+    permissions from a properly secured parent instead of widening the resource itself.
+  detect:
+    - invocation: [setAllowContentAccess, setAllowFileAccess, setAllowFileAccessFromFileURLs, setAllowUniversalAccessFromFileURLs]
+      receiver: [WebSettings]
+
+- key: QG-JV-SEC-0090
+  name: Apache XML RPC extensions should not weaken the security of the application
+  languages: [java]
+  category: SEC
+  severity: critical
+  effort: 5min
+  tags: [sec, ported]
+  cwe: [502]
+  message: This construct weakens the security of the application.
+  summary: A construct that attackers routinely target is used without the guard it needs.
+  why: |
+    The pattern either trusts data the program does not control, or relies on a mechanism that no longer
+    offers the protection it appears to offer. Both keep working normally, which is why they survive
+    until someone looks for them.
+  fix: |
+    Validate the incoming value against an allowed set, pass it as data rather than as code or command,
+    and replace weakened mechanisms with the current recommended one.
+  detect:
+    - invocation: [setEnabledForExtensions]
+      receiver: [XmlRpcConfigImpl]
+
+- key: QG-JV-BUG-0272
+  name: Suspicious code should match the behaviour the code describes
+  languages: [java]
+  category: BUG
+  severity: major
+  effort: 15min
+  tags: [bug, ported]
+  message: This code does not behave the way it reads.
+  summary: The code does not do what its shape suggests, or fails on ordinary input.
+  why: |
+    Written this way the code works by accident or breaks on values that are perfectly normal, and the
+    mistake is easy to miss in review because the intent reads correctly.
+  fix: |
+    Make the intended behaviour explicit — fix the condition, the operator or the order of operations —
+    and cover the case that used to fail with a test.
+  detect:
+    - invocation: [writeObject]
+      receiver: [ObjectOutputStream]
+
+- key: QG-JV-BUG-0273
+  name: Non-serializable objects should match the behaviour the code describes
+  languages: [java]
+  category: BUG
+  severity: major
+  effort: 20min
+  tags: [bug, ported]
+  cwe: [579]
+  message: This code does not behave the way it reads.
+  summary: The code does not do what its shape suggests, or fails on ordinary input.
+  why: |
+    Written this way the code works by accident or breaks on values that are perfectly normal, and the
+    mistake is easy to miss in review because the intent reads correctly.
+  fix: |
+    Make the intended behaviour explicit — fix the condition, the operator or the order of operations —
+    and cover the case that used to fail with a test.
+  detect:
+    - invocation: [setAttribute]
+      receiver: []
+
+- key: QG-JV-BUG-0274
+  name: Suspicious code should match the behaviour the code describes
+  languages: [java]
+  category: BUG
+  severity: major
+  effort: 15min
+  tags: [bug, ported]
+  message: This code does not behave the way it reads.
+  summary: The code does not do what its shape suggests, or fails on ordinary input.
+  why: |
+    Written this way the code works by accident or breaks on values that are perfectly normal, and the
+    mistake is easy to miss in review because the intent reads correctly.
+  fix: |
+    Make the intended behaviour explicit — fix the condition, the operator or the order of operations —
+    and cover the case that used to fail with a test.
+  detect:
+    - invocation: [setComplete]
+      receiver: [SessionStatus]
+
+- key: QG-JV-BUG-0275
+  name: Model attributes should follow the naming convention of the codebase
+  languages: [java]
+  category: BUG
+  severity: major
+  effort: 5min
+  tags: [naming, ported]
+  message: This identifier does not follow the naming convention of the codebase.
+  summary: An identifier does not follow the convention used by the rest of the code.
+  why: |
+    Conventions let a reader infer the kind of an identifier from its shape alone. A deviation costs a
+    lookup every time, and makes automated searches and refactorings less reliable.
+  fix: |
+    Rename the identifier to match the convention, and let the editor propagate the change so callers
+    stay in sync.
+  detect:
+    - invocation: [addAllAttributes, addAttribute, entry, ofEntries]
+      receiver: [Map, Model]
+
+- key: QG-JV-SEC-0091
+  name: HttpSecurity URL patterns should not weaken the security of the application
+  languages: [java]
+  category: SEC
+  severity: critical
+  effort: 10min
+  tags: [sec, ported]
+  cwe: [285, 287]
+  message: This construct weakens the security of the application.
+  summary: A construct that attackers routinely target is used without the guard it needs.
+  why: |
+    The pattern either trusts data the program does not control, or relies on a mechanism that no longer
+    offers the protection it appears to offer. Both keep working normally, which is why they survive
+    until someone looks for them.
+  fix: |
+    Validate the incoming value against an allowed set, pass it as data rather than as code or command,
+    and replace weakened mechanisms with the current recommended one.
+  detect:
+    - invocation: [antMatchers, authorizeRequests]
+      receiver: [AbstractRequestMatcherRegistry, HttpSecurity]
+
+- key: QG-JV-SML-0559
+  name: Hard-to-read code should be simplified
+  languages: [java]
+  category: SML
+  severity: minor
+  effort: 15min
+  tags: [sml, ported]
+  message: This code is harder to read or change than the behaviour requires.
+  summary: The code works but is harder to read or change than the behaviour requires.
+  why: |
+    The intent is buried, duplicated, or spread across places that must stay in sync, so every future
+    change costs more than it should and carries a risk that has nothing to do with the change itself.
+  fix: |
+    Remove what is not used, name what is unclear, and keep one piece of behaviour in one place so the
+    next change touches a single spot.
+  detect:
+    - invocation: [getSystemService]
+      receiver: [Context]
+
+- key: QG-JV-SML-0560
+  name: Tests should assert something
+  languages: [java]
+  category: SML
+  severity: minor
+  effort: 5min
+  tags: [tests, ported]
+  message: This test cannot fail, so it verifies nothing.
+  summary: A test does not assert, is disabled, or cannot fail.
+  why: |
+    A test that cannot fail reports success forever while covering nothing, and the suite keeps its green
+    status. That is worse than having no test at all, because it removes the incentive to write one.
+  fix: |
+    Assert the behaviour the test exists for, re-enable it, and make sure it fails when the behaviour is
+    broken before trusting it again.
+  detect:
+    - invocation: [assertThat, assertThatObject, describedAs, overridingErrorMessage, withFailMessage]
+      receiver: [Assertions, AssertionsForClassTypes, AssertionsForInterfaceTypes]
+
+- key: QG-JV-SML-0561
+  name: Tests should assert something
+  languages: [java]
+  category: SML
+  severity: minor
+  effort: 5min
+  tags: [tests, ported]
+  message: This test cannot fail, so it verifies nothing.
+  summary: A test does not assert, is disabled, or cannot fail.
+  why: |
+    A test that cannot fail reports success forever while covering nothing, and the suite keeps its green
+    status. That is worse than having no test at all, because it removes the incentive to write one.
+  fix: |
+    Assert the behaviour the test exists for, re-enable it, and make sure it fails when the behaviour is
+    broken before trusting it again.
+  detect:
+    - invocation: [assertThat, assertThatObject, describedAs, overridingErrorMessage, withFailMessage]
+      receiver: [AbstractAssert, Assertions, AssertionsForClassTypes, AssertionsForInterfaceTypes]
+
+- key: QG-JV-SML-0562
+  name: Tests should assert something
+  languages: [java]
+  category: SML
+  severity: minor
+  effort: 5min
+  tags: [tests, ported]
+  message: This test cannot fail, so it verifies nothing.
+  summary: A test does not assert, is disabled, or cannot fail.
+  why: |
+    A test that cannot fail reports success forever while covering nothing, and the suite keeps its green
+    status. That is worse than having no test at all, because it removes the incentive to write one.
+  fix: |
+    Assert the behaviour the test exists for, re-enable it, and make sure it fails when the behaviour is
+    broken before trusting it again.
+  detect:
+    - invocation: [assertThat]
+      receiver: [Assert, Assertions]
+
+- key: QG-JV-BUG-0276
+  name: Tests should assert something
+  languages: [java]
+  category: BUG
+  severity: major
+  effort: 5min
+  tags: [tests, ported]
+  message: This test cannot fail, so it verifies nothing.
+  summary: A test does not assert, is disabled, or cannot fail.
+  why: |
+    A test that cannot fail reports success forever while covering nothing, and the suite keeps its green
+    status. That is worse than having no test at all, because it removes the incentive to write one.
+  fix: |
+    Assert the behaviour the test exists for, re-enable it, and make sure it fails when the behaviour is
+    broken before trusting it again.
+  detect:
+    - invocation: [allMatch, allSatisfy, assertThat, assertThatObject, doesNotContain, doesNotContainAnyElementsOf, doesNotContainSequence, doesNotContainSubsequence]
+      receiver: [AbstractIterableAssert, Assertions, AssertionsForClassTypes, AssertionsForInterfaceTypes]
+
+- key: QG-JV-SML-0563
+  name: AssertJ assertThatThrownBy should not be used
+  languages: [java]
+  category: SML
+  severity: minor
+  effort: 5min
+  tags: [avoid_api, ported]
+  message: This API should be replaced by the current alternative.
+  summary: Code calls an API that is unsafe, obsolete or superseded by a better alternative.
+  why: |
+    The API stays available for compatibility, so nothing fails at build time, but it carries behaviour
+    the platform now considers a defect — unchecked input, a weak guarantee, or a cost the replacement
+    avoids. Its presence also spreads: new code copies what it finds nearby.
+  fix: |
+    Replace the call with the current API, and keep the old one only behind a compatibility layer that is
+    documented and dated.
+  detect:
+    - invocation: [assertThatThrownBy]
+      receiver: [Assertions]
+
+- key: QG-JV-SML-0564
+  name: Tests should assert something
+  languages: [java]
+  category: SML
+  severity: minor
+  effort: 10min
+  tags: [tests, ported]
+  message: This test cannot fail, so it verifies nothing.
+  summary: A test does not assert, is disabled, or cannot fail.
+  why: |
+    A test that cannot fail reports success forever while covering nothing, and the suite keeps its green
+    status. That is worse than having no test at all, because it removes the incentive to write one.
+  fix: |
+    Assert the behaviour the test exists for, re-enable it, and make sure it fails when the behaviour is
+    broken before trusting it again.
+  detect:
+    - invocation: [expect]
+      receiver: [ExpectedException]
+
+- key: QG-JV-SML-0565
+  name: Mock fields should be simplified
+  languages: [java]
+  category: SML
+  severity: minor
+  effort: 5min
+  tags: [sml, ported]
+  message: This code is harder to read or change than the behaviour requires.
+  summary: The code works but is harder to read or change than the behaviour requires.
+  why: |
+    The intent is buried, duplicated, or spread across places that must stay in sync, so every future
+    change costs more than it should and carries a risk that has nothing to do with the change itself.
+  fix: |
+    Remove what is not used, name what is unclear, and keep one piece of behaviour in one place so the
+    next change touches a single spot.
+  detect:
+    - invocation: [mock]
+      receiver: [Mockito]
+
+- key: QG-JV-BUG-0277
+  name: Annotated Mockito objects should match the behaviour the code describes
+  languages: [java]
+  category: BUG
+  severity: major
+  effort: 2min
+  tags: [bug, ported]
+  message: This code does not behave the way it reads.
+  summary: The code does not do what its shape suggests, or fails on ordinary input.
+  why: |
+    Written this way the code works by accident or breaks on values that are perfectly normal, and the
+    mistake is easy to miss in review because the intent reads correctly.
+  fix: |
+    Make the intended behaviour explicit — fix the condition, the operator or the order of operations —
+    and cover the case that used to fail with a test.
+  detect:
+    - invocation: [initMocks, openMocks, rule]
+      receiver: [MockitoAnnotations, MockitoJUnit]
+
+- key: QG-JV-SML-0568
+  name: @InjectMocks should be replaced by the recommended alternative
+  languages: [java]
+  category: SML
+  severity: minor
+  effort: 5min
+  tags: [prefer_api, ported]
+  message: The platform offers a clearer or safer construct for this.
+  summary: A construct is used where the platform offers one that is clearer or safer.
+  why: |
+    The alternative exists because it removes a class of mistake — a conversion, an allocation, an edge
+    case — that the current form leaves to the caller. Using the older form means every reader has to
+    check that the edge case was handled.
+  fix: |
+    Switch to the recommended construct; the behaviour is the same in the normal case and defined in the
+    cases the old form got wrong.
+  detect:
+    - invocation: [initMocks, openMocks]
+      receiver: [MockitoAnnotations]
+
+- key: QG-JV-SML-0569
+  name: Mock objects should be simplified
+  languages: [java]
+  category: SML
+  severity: minor
+  effort: 5min
+  tags: [sml, ported]
+  message: This code is harder to read or change than the behaviour requires.
+  summary: The code works but is harder to read or change than the behaviour requires.
+  why: |
+    The intent is buried, duplicated, or spread across places that must stay in sync, so every future
+    change costs more than it should and carries a risk that has nothing to do with the change itself.
+  fix: |
+    Remove what is not used, name what is unclear, and keep one piece of behaviour in one place so the
+    next change touches a single spot.
+  detect:
+    - invocation: [mock, thenReturn]
+      receiver: [Mockito, OngoingStubbing]
+
+- key: QG-JV-BUG-0278
+  name: Mockito stubbing chains should match the behaviour the code describes
+  languages: [java]
+  category: BUG
+  severity: major
+  effort: 5min
+  tags: [bug, ported]
+  message: This code does not behave the way it reads.
+  summary: The code does not do what its shape suggests, or fails on ordinary input.
+  why: |
+    Written this way the code works by accident or breaks on values that are perfectly normal, and the
+    mistake is easy to miss in review because the intent reads correctly.
+  fix: |
+    Make the intended behaviour explicit — fix the condition, the operator or the order of operations —
+    and cover the case that used to fail with a test.
+  detect:
+    - invocation: [doAnswer, doCallRealMethod, doNothing, doReturn, doThrow]
+      receiver: [Mockito, Stubber]
+
+- key: QG-JV-SML-0570
+  name: Tests should assert something
+  languages: [java]
+  category: SML
+  severity: minor
+  effort: 5min
+  tags: [tests, ported]
+  message: This test cannot fail, so it verifies nothing.
+  summary: A test does not assert, is disabled, or cannot fail.
+  why: |
+    A test that cannot fail reports success forever while covering nothing, and the suite keeps its green
+    status. That is worse than having no test at all, because it removes the incentive to write one.
+  fix: |
+    Assert the behaviour the test exists for, re-enable it, and make sure it fails when the behaviour is
+    broken before trusting it again.
+  status: planned
+
+- key: QG-JV-SML-0571
+  name: Tests should be replaced by the recommended alternative
+  languages: [java]
+  category: SML
+  severity: minor
+  effort: 10min
+  tags: [prefer_api, ported]
+  message: The platform offers a clearer or safer construct for this.
+  summary: A construct is used where the platform offers one that is clearer or safer.
+  why: |
+    The alternative exists because it removes a class of mistake — a conversion, an allocation, an edge
+    case — that the current form leaves to the caller. Using the older form means every reader has to
+    check that the edge case was handled.
+  fix: |
+    Switch to the recommended construct; the behaviour is the same in the normal case and defined in the
+    cases the old form got wrong.
+  detect:
+    - invocation: [randomUUID]
+      receiver: [UUID]
+
+- key: QG-JV-SML-0572
+  name: Springs ModelAndViewAssert assertions should be replaced by the recommended alternative
+  languages: [java]
+  category: SML
+  severity: minor
+  effort: 5min
+  tags: [prefer_api, ported]
+  message: The platform offers a clearer or safer construct for this.
+  summary: A construct is used where the platform offers one that is clearer or safer.
+  why: |
+    The alternative exists because it removes a class of mistake — a conversion, an allocation, an edge
+    case — that the current form leaves to the caller. Using the older form means every reader has to
+    check that the edge case was handled.
+  fix: |
+    Switch to the recommended construct; the behaviour is the same in the normal case and defined in the
+    cases the old form got wrong.
+  detect:
+    - invocation: [assertEquals, assertFalse, assertThat, assertTrue, getViewName, isEqualTo, isFalse, isTrue]
+      receiver: [Assertions, ModelAndView, ModelMap]
+
+- key: QG-JV-SML-0573
+  name: System clock should not be used
+  languages: [java]
+  category: SML
+  severity: minor
+  effort: 1h
+  tags: [avoid_api, ported]
+  message: This API should be replaced by the current alternative.
+  summary: Code calls an API that is unsafe, obsolete or superseded by a better alternative.
+  why: |
+    The API stays available for compatibility, so nothing fails at build time, but it carries behaviour
+    the platform now considers a defect — unchecked input, a weak guarantee, or a cost the replacement
+    avoids. Its presence also spreads: new code copies what it finds nearby.
+  fix: |
+    Replace the call with the current API, and keep the old one only behind a compatibility layer that is
+    documented and dated.
+  detect:
+    - invocation: [getInstance, system, systemDefaultZone, systemUTC]
+      receiver: [Calendar, Clock, Instant, LocalDate, LocalDateTime, LocalTime]
+
+- key: QG-JV-SML-0574
+  name: Thread.sleep should not be used
+  languages: [java]
+  category: SML
+  severity: minor
+  effort: 20min
+  tags: [avoid_api, ported]
+  message: This API should be replaced by the current alternative.
+  summary: Code calls an API that is unsafe, obsolete or superseded by a better alternative.
+  why: |
+    The API stays available for compatibility, so nothing fails at build time, but it carries behaviour
+    the platform now considers a defect — unchecked input, a weak guarantee, or a cost the replacement
+    avoids. Its presence also spreads: new code copies what it finds nearby.
+  fix: |
+    Replace the call with the current API, and keep the old one only behind a compatibility layer that is
+    documented and dated.
+  detect:
+    - invocation: [sleep]
+      receiver: [Thread, TimeUnit]
+
+- key: QG-JV-BUG-0279
+  name: Read and readLine return values should be replaced by the recommended alternative
+  languages: [java]
+  category: BUG
+  severity: major
+  effort: 5min
+  tags: [prefer_api, ported]
+  message: The platform offers a clearer or safer construct for this.
+  summary: A construct is used where the platform offers one that is clearer or safer.
+  why: |
+    The alternative exists because it removes a class of mistake — a conversion, an allocation, an edge
+    case — that the current form leaves to the caller. Using the older form means every reader has to
+    check that the edge case was handled.
+  fix: |
+    Switch to the recommended construct; the behaviour is the same in the normal case and defined in the
+    cases the old form got wrong.
+  detect:
+    - invocation: [read, readLine]
+      receiver: [BufferedReader, Reader]
