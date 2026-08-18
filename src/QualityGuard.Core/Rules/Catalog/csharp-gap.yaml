@@ -254,3 +254,34 @@
     language. A line added later at the same depth joins the inner loop without anyone noticing.
   fix: |
     Put the braces in, on both loops.
+
+- key: QG-CS-SML-0495
+  name: A function that answers should have its answer read
+  languages: [cs]
+  category: SML
+  severity: major
+  effort: 10min
+  tags: [suspicious]
+  summary: Every caller of a function discards the value it returns.
+  why: |
+    The function computes something nobody looks at. Either a caller was supposed to use it and does
+    not — which is a defect hiding in plain sight — or the return value is left over from an earlier
+    shape of the code and the signature now says something untrue.
+  fix: |
+    Read the answer where it matters, or make the function return nothing.
+
+- key: QG-CS-BUG-0148
+  name: A bound value cannot tell absent from default
+  languages: [cs]
+  category: BUG
+  severity: major
+  effort: 10min
+  tags: [aspnet, api, suspicious]
+  summary: A request model exposes a non-nullable value type with no requirement on it.
+  why: |
+    A request that leaves the field out arrives with the default — zero, false, the empty identifier —
+    and the code cannot tell that apart from a caller who really sent it. Validation that checks for
+    a value then passes, and the wrong number is stored.
+  fix: |
+    Make the property nullable so absence is visible, or mark it required so the binder rejects the
+    request.

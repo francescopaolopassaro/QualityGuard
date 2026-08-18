@@ -106,11 +106,13 @@ public sealed class QueryInsideLoopRule : OrmRuleBase
                 if (!LooksLikeQuery(call))
                     continue;
 
-                context.Report($"'{name}' runs inside a loop, so the database is asked once for every "
-                               + "item instead of once for all of them. On a hundred items that is a "
-                               + "hundred round trips, and the cost grows with the data rather than "
-                               + "with the code. Fetch what the loop needs in one query before it "
-                               + "starts.", call.Range.StartLine);
+                // the finding belongs on the loop: that is what has to change, and it is where the
+                // reader is when the shape becomes visible
+                context.Report($"'{name}' runs inside this loop, so the database is asked once for "
+                               + "every item instead of once for all of them. On a hundred items "
+                               + "that is a hundred round trips, and the cost grows with the data "
+                               + "rather than with the code. Fetch what the loop needs in one query "
+                               + "before it starts.", loop.Range.StartLine);
                 break;
             }
         }

@@ -28,7 +28,9 @@ public static class CSharpGapRuleSet
         new CsStaticConstructorRule(),
         new CsLogAndRethrowRule(),
         new CsUnassignedAutoPropertyRule(),
-        new CsNestedLoopWithoutBracesRule()
+        new CsNestedLoopWithoutBracesRule(),
+        new CsIgnoredLocalFunctionResultRule(),
+        new CsBoundModelValueTypeRule()
     ];
 }
 
@@ -869,6 +871,112 @@ public sealed class CsNestedLoopWithoutBracesRule : CSharpGapRuleBase
                                  + "to which is decided by the indentation — and a statement added "
                                  + "later at the same depth joins the inner loop silently. Put the "
                                  + "braces in.");
+        }
+    }
+}
+
+public sealed class CsIgnoredLocalFunctionResultRule : CSharpGapRuleBase
+{
+    public override string Key => "QG-CS-SML-0495";
+    public override string Name => "A function that answers should have its answer read";
+    public override Severity Severity => Severity.Major;
+    public override string RemediationEffort => "10min";
+
+    public override void Execute(IRuleContext context)
+    {
+        if (!HasTree(context))
+            return;
+
+        foreach (var function in context.Root.OfKind(NodeKind.LocalFunction, NodeKind.FunctionDeclaration))
+        {
+            var name = function.Text;
+            if (name.Length == 0)
+                continue;
+            // only a local function is fully visible here: a method can be called from anywhere
+            if (function.Kind == NodeKind.FunctionDeclaration
+                && !function.ChildrenOf(NodeKind.Modifier).Any(m => m.Text == "private"))
+                continue;
+
+            var returned = function.FirstChild(NodeKind.TypeReference)?.Text;
+            if (returned is null or "void" or "Task" or "ValueTask")
+                continue;
+            // A method that hands back the type it was given is a step in a chain: returning the
+            // subject is how a builder lets the next call follow, and ignoring it is the normal way
+            // to write one of them on its own line.
+            var first = SyntaxQuery.Parameters(function).FirstOrDefault();
+            var takes = first?.FirstChild(NodeKind.TypeReference)?.Text;
+            if (takes != null && takes == returned)
+                continue;
+
+            var calls = SyntaxQuery.Invocations(context.Root)
+                .Where(c => SyntaxQuery.InvokedName(c) == name)
+                .ToList();
+            if (calls.Count == 0)
+                continue;
+            // every call throws the answer away: the value the function computes reaches nobody
+            if (!calls.All(c => c.Parent is { Kind: NodeKind.ExpressionStatement }))
+                continue;
+
+            context.Report(function, $"'{name}' works out a {returned} and "
+                                     + (calls.Count == 1
+                                         ? "its only caller throws it away. "
+                                         : $"all {calls.Count} of its callers throw it away. ")
+                                     + "Either the answer matters and somebody should be reading it, "
+                                     + "or the function should say that it only has an effect.");
+        }
+    }
+}
+
+public sealed class CsBoundModelValueTypeRule : CSharpGapRuleBase
+{
+    /// <summary>Value types whose default is indistinguishable from a value the caller sent.</summary>
+    private static readonly string[] Silent =
+        ["int", "long", "short", "byte", "float", "double", "decimal", "bool", "Guid", "DateTime",
+         "DateTimeOffset", "TimeSpan", "JsonElement"];
+
+    public override string Key => "QG-CS-BUG-0148";
+    public override string Name => "A bound value cannot tell absent from default";
+    public override IssueKind Kind => IssueKind.Bug;
+    public override Severity Severity => Severity.Major;
+    public override string RemediationEffort => "10min";
+
+    public override void Execute(IRuleContext context)
+    {
+        if (!HasTree(context))
+            return;
+        // the shape only means something where a request is bound to a model
+        if (!context.File.Content.Contains("Controller", StringComparison.Ordinal)
+            && !context.File.Content.Contains("FromBody", StringComparison.Ordinal))
+            return;
+
+        foreach (var type in context.Root.OfKind(NodeKind.ClassDeclaration))
+        {
+            if (!type.Text.EndsWith("Request", StringComparison.Ordinal)
+                && !type.Text.EndsWith("Model", StringComparison.Ordinal)
+                && !type.Text.EndsWith("Dto", StringComparison.Ordinal))
+                continue;
+            var body = type.FirstChild(NodeKind.Block);
+            if (body == null)
+                continue;
+
+            foreach (var property in body.ChildrenOf(NodeKind.PropertyDeclaration))
+            {
+                var modifiers = property.ChildrenOf(NodeKind.Modifier).Select(m => m.Text).ToArray();
+                if (!modifiers.Contains("public") || modifiers.Contains("required"))
+                    continue;
+                var declared = property.FirstChild(NodeKind.TypeReference)?.Text;
+                if (declared is null || declared.EndsWith('?'))
+                    continue;
+                if (!Silent.Contains(declared, StringComparer.Ordinal))
+                    continue;
+                if (property.ChildrenOf(NodeKind.Attribute).Any())
+                    continue; // an attribute can already say the value is required
+
+                context.Report(property, $"'{property.Text}' is a {declared}, so a request that "
+                                         + "leaves it out arrives with the default and the code "
+                                         + "cannot tell that apart from a caller who really sent it. "
+                                         + "Make it nullable, or mark it required.");
+            }
         }
     }
 }
