@@ -13,7 +13,6 @@ public static class JsTsUsageRuleSet
 {
     public static IReadOnlyList<IRule> All { get; } =
     [
-        new JsIgnoredStringResultRule(),
         // QG-JS-BUG-0136 was "a constant should not be assigned again". Deciding it needs the
         // scope a name belongs to: the same identifier is const in one function and let in
         // another, and matching by name reported 151 of those on a real corpus. The compiler and

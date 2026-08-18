@@ -708,6 +708,11 @@ public abstract class DiscardedPureResultRule : CorrectnessRuleBase
             var name = SyntaxQuery.InvokedName(call);
             if (!PureNames.Contains(name, StringComparer.Ordinal))
                 continue;
+            // An optional chain is split by the parser and its tail arrives looking like a statement
+            // of its own — 'a?.b?.[0]?.trim()' assigned to a name reached here as a bare call. The
+            // tokens still carry the '?.', which the real statement form never does.
+            if (call.Tokens.Any(t => t.Text == "?."))
+                continue;
             // an in-place variant exists in some libraries: only report when there is a receiver to keep
             if (SyntaxQuery.Receiver(call).Length == 0)
                 continue;

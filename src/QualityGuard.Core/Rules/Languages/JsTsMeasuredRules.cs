@@ -36,7 +36,10 @@ public static class JsTsMeasuredRuleSet
         new JsCookieWithoutSecureRule(),
         new JsCookieWithoutHttpOnlyRule(),
         new JsCsrfProtectionSkippedRule(),
-        new JsUnboundedUploadRule()
+        new JsUnboundedUploadRule(),
+        // Braces and shorthand are house style, not defects: neither is switched on in the
+        // reference's own default profile, and running them added three hundred findings to one
+        // small project. They stay written, and off, until a profile mechanism can offer them.
     ];
 }
 
@@ -1227,5 +1230,108 @@ public sealed class JsUnboundedUploadRule : JsTsMeasuredRuleBase
         // a size is often written with separators, or as a product: only a plain number is read
         var text = node.Text.Replace("_", string.Empty).Replace("'", string.Empty);
         return long.TryParse(text, out var number) ? number : Sensible;
+    }
+}
+
+
+/// <summary>
+/// A control structure whose body is a single statement written without braces. The next person to
+/// add a line to it adds it outside the structure, and the indentation says otherwise — which is how
+/// a guard clause quietly stops guarding.
+/// </summary>
+public sealed class JsBodyWithoutBracesRule : JsTsMeasuredRuleBase
+{
+    public override string Key => "QG-JS-CNV-0011";
+    public override string Name => "A control structure should keep its braces";
+    public override Severity Severity => Severity.Minor;
+    public override string RemediationEffort => "5min";
+
+    public override void Execute(IRuleContext context)
+    {
+        if (!HasTree(context))
+            return;
+
+        foreach (var node in context.Root.DescendantsAndSelf())
+        {
+            if (node.Kind is not (NodeKind.If or NodeKind.Loop or NodeKind.Else))
+                continue;
+            // the parser wraps a braceless body in a block of its own and marks it 'implicit',
+            // which is exactly the distinction this rule is about
+            var body = Body(node);
+            if (body is null || (body.Kind == NodeKind.Block && body.Text != "implicit"))
+                continue;
+            // 'else if' chains the next test rather than opening a body of its own
+            if (node.Kind == NodeKind.Else && body.Kind == NodeKind.If)
+                continue;
+
+            context.Report(node, "The body of this structure is one statement without braces. Adding "
+                                 + "a second line puts it outside the structure while the indentation "
+                                 + "still says it belongs — which is how a check stops checking.");
+        }
+    }
+
+    /// <summary>What the structure runs: the last child that is not part of its condition.</summary>
+    private static SyntaxNode? Body(SyntaxNode node)
+    {
+        var children = node.Children;
+        for (var i = children.Count - 1; i >= 0; i--)
+        {
+            if (children[i].Kind is NodeKind.Else or NodeKind.Catch or NodeKind.Finally)
+                continue;
+            return children[i];
+        }
+        return null;
+    }
+}
+
+/// <summary>
+/// An object property whose name and value are the same identifier. The language writes that as the
+/// name alone, and spelling it twice invites the pair to drift apart under renaming.
+/// </summary>
+public sealed class JsLonghandPropertyRule : JsTsMeasuredRuleBase
+{
+    public override string Key => "QG-JS-CNV-0012";
+    public override string Name => "A property that repeats its own name should be written once";
+    public override Severity Severity => Severity.Minor;
+    public override string RemediationEffort => "2min";
+
+    public override void Execute(IRuleContext context)
+    {
+        if (!HasTree(context))
+            return;
+
+        foreach (var literal in context.Root.OfKind(NodeKind.ListLiteral))
+        {
+            foreach (var property in literal.ChildrenOf(NodeKind.Assignment))
+            {
+                if (property.Text != ":")
+                    continue;
+                var name = property.ChildAt(0);
+                var value = property.ChildAt(1);
+                if (name is not { Kind: NodeKind.Identifier } || name.Text.Length == 0)
+                    continue;
+
+                // 'name: function () { }' is a method, and the language writes it as 'name() { }'.
+                // That is the commoner half of this by a wide margin: an object of behaviour is
+                // nothing but those.
+                if (value is { Kind: NodeKind.Lambda } or { Kind: NodeKind.LocalFunction }
+                    or { Kind: NodeKind.FunctionDeclaration })
+                {
+                    if (value.Text.Length != 0 && value.Text != name.Text)
+                        continue;               // a named function expression is deliberate
+                    context.Report(property, $"'{name.Text}' is a function written as a property. The "
+                                             + "method shorthand states the same thing with less "
+                                             + "punctuation, and keeps the name attached to it.");
+                    continue;
+                }
+
+                if (value is not { Kind: NodeKind.Identifier } || name.Text != value.Text)
+                    continue;
+
+                context.Report(property, $"'{name.Text}' is written on both sides of the colon. The "
+                                         + "shorthand says it once, so a rename cannot leave the two "
+                                         + "halves disagreeing.");
+            }
+        }
     }
 }

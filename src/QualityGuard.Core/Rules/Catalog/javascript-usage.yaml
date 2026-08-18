@@ -3,6 +3,8 @@
 # reasoning and the fix shown in the report.
 
 - key: QG-JS-BUG-0135
+  status: superseded
+  superseded_by: QG-JS-BUG-0166
   name: The result of a string operation should be used
   languages: [js, ts]
   category: BUG

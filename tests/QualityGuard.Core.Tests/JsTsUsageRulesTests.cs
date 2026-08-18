@@ -15,8 +15,8 @@ public class JsTsUsageRulesTests
     [Fact]
     public void A_discarded_string_result_is_reported()
     {
-        Assert.NotEmpty(Lines("function go(text) {\n  text.trim();\n}\n", "QG-JS-BUG-0135"));
-        Assert.Empty(Lines("function go(text) {\n  return text.trim();\n}\n", "QG-JS-BUG-0135"));
+        Assert.NotEmpty(Lines("function go(text) {\n  text.trim();\n}\n", "QG-JS-BUG-0166"));
+        Assert.Empty(Lines("function go(text) {\n  return text.trim();\n}\n", "QG-JS-BUG-0166"));
     }
 
     [Fact]
@@ -29,7 +29,7 @@ public class JsTsUsageRulesTests
               return justification;
             }
             """;
-        Assert.Empty(Lines(code, "QG-JS-BUG-0135"));
+        Assert.Empty(Lines(code, "QG-JS-BUG-0166"));
     }
 
     [Fact]
