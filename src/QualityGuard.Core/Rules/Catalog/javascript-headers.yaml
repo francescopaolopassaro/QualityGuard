@@ -129,3 +129,42 @@
   fix: |
     Set the flag when the cookie is created. Code that legitimately needs the value should be given
     it by the server in the response body, not through the cookie jar.
+
+- key: QG-JS-SEC-0098
+  name: Request forgery protection should cover what changes state
+  languages: [js, ts]
+  category: SEC
+  severity: critical
+  effort: 20min
+  cwe: [352]
+  owasp: [A1]
+  tags: [csrf, sast]
+  message: A method that changes state is listed as not needing the request token.
+  summary: The request forgery middleware is told to skip a state-changing method.
+  why: |
+    The token exists to prove that a request which changes something came from a page this site
+    served. Methods that only read are exempt already. Naming any other one means a page on another
+    site can make the visitor's browser send that request, with their session attached, and the
+    server will carry it out.
+  fix: |
+    Leave the list at the methods that only read. Where a specific endpoint genuinely cannot carry a
+    token, exempt that route rather than the whole method.
+
+- key: QG-JS-SEC-0099
+  name: An upload should have a size it cannot exceed
+  languages: [js, ts]
+  category: SEC
+  severity: major
+  effort: 15min
+  cwe: [400, 770]
+  owasp: [A6]
+  tags: [upload, availability]
+  message: This upload parser accepts a file with no workable ceiling on its size.
+  summary: An upload is parsed without a size limit, or with one far above what the endpoint needs.
+  why: |
+    Left to their defaults these parsers accept hundreds of megabytes, or refuse nothing at all. A
+    caller who sends a few large uploads at once decides how much disk and how much memory the
+    process spends, and the service stops answering anyone.
+  fix: |
+    Set a ceiling that matches what the endpoint is actually for, and reject anything larger before
+    it is written anywhere.

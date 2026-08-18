@@ -34,7 +34,9 @@ public static class JsTsMeasuredRuleSet
         new JsStrictTransportSecurityOffRule(),
         new JsPoweredByDisclosedRule(),
         new JsCookieWithoutSecureRule(),
-        new JsCookieWithoutHttpOnlyRule()
+        new JsCookieWithoutHttpOnlyRule(),
+        new JsCsrfProtectionSkippedRule(),
+        new JsUnboundedUploadRule()
     ];
 }
 
@@ -1114,4 +1116,116 @@ public sealed class JsCookieWithoutHttpOnlyRule : JsCookieFlagRule
         "This cookie is created without the flag that hides it from script, so anything running on "
         + "the page can read it. That turns a single scripting flaw anywhere on the site into a "
         + "stolen session.";
+}
+
+
+/// <summary>
+/// Cross-site request forgery protection told to skip a method that changes something. The point of
+/// the check is to prove that a state-changing request came from this site's own pages; the methods
+/// that only read are exempt already, so naming any other one gives the protection away.
+/// </summary>
+public sealed class JsCsrfProtectionSkippedRule : JsTsMeasuredRuleBase
+{
+    private static readonly string[] ReadOnly = ["GET", "HEAD", "OPTIONS"];
+
+    public override string Key => "QG-JS-SEC-0098";
+    public override string Name => "Request forgery protection should cover what changes state";
+    public override IssueKind Kind => IssueKind.Vulnerability;
+    public override Severity Severity => Severity.Critical;
+    public override string RemediationEffort => "20min";
+
+    public override void Execute(IRuleContext context)
+    {
+        if (!HasTree(context))
+            return;
+
+        foreach (var call in SyntaxQuery.Invocations(context.Root))
+        {
+            if (SyntaxQuery.InvokedName(call) != "csurf")
+                continue;
+
+            foreach (var options in SyntaxQuery.Arguments(call).Where(a => a.Kind == NodeKind.ListLiteral))
+            {
+                var skipped = options.ChildrenOf(NodeKind.Assignment)
+                    .FirstOrDefault(p => p.ChildAt(0)?.Text == "ignoreMethods")?.ChildAt(1);
+                if (skipped is not { Kind: NodeKind.ListLiteral })
+                    continue;
+
+                // the parser records an array as a single node and keeps its tokens rather than
+                // building one child per element, so the methods are read off the tokens
+                var unsafeOnes = skipped.Tokens
+                    .Where(t => t.Kind == Tokenization.TokenKind.String)
+                    .Select(t => t.Text.Trim('"', '\'').ToUpperInvariant())
+                    .Where(m => !ReadOnly.Contains(m, StringComparer.Ordinal))
+                    .Distinct()
+                    .ToList();
+                if (unsafeOnes.Count == 0)
+                    continue;
+
+                context.Report(skipped, $"{string.Join(" and ", unsafeOnes)} change something, and "
+                                        + "they are listed as not needing the token. A page on another "
+                                        + "site can then make the visitor's browser send one of those "
+                                        + "requests, with their session attached.");
+            }
+        }
+    }
+}
+
+/// <summary>
+/// An upload accepted with no ceiling on its size. Both of the common parsers default to something
+/// enormous or to nothing at all, so the caller decides how much disk and memory the process gives
+/// them.
+/// </summary>
+public sealed class JsUnboundedUploadRule : JsTsMeasuredRuleBase
+{
+    private const long Sensible = 2_000_000;
+
+    public override string Key => "QG-JS-SEC-0099";
+    public override string Name => "An upload should have a size it cannot exceed";
+    public override IssueKind Kind => IssueKind.Vulnerability;
+    public override Severity Severity => Severity.Major;
+    public override string RemediationEffort => "15min";
+
+    public override void Execute(IRuleContext context)
+    {
+        if (!HasTree(context) || LanguageRuleSupport.IsTestFile(context.File.Path, context.File.FileName))
+            return;
+
+        foreach (var call in SyntaxQuery.Invocations(context.Root))
+        {
+            var name = SyntaxQuery.InvokedName(call);
+            if (name is not ("formidable" or "multer" or "IncomingForm"))
+                continue;
+
+            var options = SyntaxQuery.Arguments(call).FirstOrDefault(a => a.Kind == NodeKind.ListLiteral);
+            var ceiling = name == "multer"
+                ? Value(Nested(options, "limits"), "fileSize")
+                : Value(options, "maxFileSize");
+
+            if (ceiling is not null && ceiling <= Sensible)
+                continue;
+
+            context.Report(options ?? call,
+                ceiling is null
+                    ? "No ceiling is set on the size of an upload, so the default applies — which is "
+                      + "hundreds of megabytes, or nothing at all. A caller can fill the disk, or the "
+                      + "memory, at will."
+                    : $"An upload may be up to {ceiling} bytes. A caller sending several of those at "
+                      + "once decides how much disk and memory this process spends.");
+        }
+    }
+
+    private static SyntaxNode? Nested(SyntaxNode? literal, string name)
+        => literal?.ChildrenOf(NodeKind.Assignment)
+            .FirstOrDefault(p => p.ChildAt(0)?.Text == name)?.ChildAt(1);
+
+    private static long? Value(SyntaxNode? literal, string name)
+    {
+        var node = Nested(literal, name);
+        if (node is null)
+            return null;
+        // a size is often written with separators, or as a product: only a plain number is read
+        var text = node.Text.Replace("_", string.Empty).Replace("'", string.Empty);
+        return long.TryParse(text, out var number) ? number : Sensible;
+    }
 }

@@ -61,7 +61,9 @@ public static class PythonRuleSet
         new PythonRemoveDuringIterationRule(),
         new PythonFunctionNamingRule(),
         new PythonClassNameConventionRule(),
-        new PythonConstantNamingRule()
+        new PythonConstantNamingRule(),
+        new PythonCookieWithoutSecureRule(),
+        new PythonCookieWithoutHttpOnlyRule()
     ];
 
     internal static readonly string[] CredentialNames =
@@ -1521,4 +1523,88 @@ public sealed class PythonConstantNamingRule : PatternRuleBase
             || value.StartsWith("False", StringComparison.Ordinal)
             || value.StartsWith("None", StringComparison.Ordinal);
     }
+}
+
+/// <summary>
+/// A cookie set on a response without one of the two flags that keep it out of reach. Unlike the
+/// JavaScript middleware, the Python frameworks default both of these to off, so an argument that
+/// is simply not there is as much a decision as one written as False.
+/// </summary>
+public abstract class PythonCookieFlagRule : PatternRuleBase
+{
+    private static readonly string[] Setters = ["set_cookie", "set_signed_cookie"];
+
+    public override IssueKind Kind => IssueKind.Vulnerability;
+    public override Severity Severity => Severity.Major;
+    public override string RemediationEffort => "10min";
+    public override string[] Languages => ["py"];
+
+    /// <summary>The keyword argument this rule insists on.</summary>
+    protected abstract string Flag { get; }
+
+    public override void Execute(IRuleContext context)
+    {
+        if (!context.Tree.HasDedicatedParser
+            || LanguageRuleSupport.IsTestFile(context.File.Path, context.File.FileName))
+            return;
+
+        foreach (var call in SyntaxQuery.Invocations(context.Root))
+        {
+            var name = SyntaxQuery.InvokedName(call);
+            if (!Setters.Contains(name, StringComparer.Ordinal))
+                continue;
+
+            var arguments = SyntaxQuery.Arguments(call);
+            // 'set_cookie(cookie)' on a cookie jar takes the whole cookie and has no flags to give;
+            // the response API this rule is about is called with a name and a value. Without the
+            // type of the receiver the shape is what tells them apart, and reading every call
+            // reported a client library's own jar a dozen times.
+            if (arguments.Count(a => a.Kind != NodeKind.NamedArgument) < 2)
+                continue;
+            // arguments forwarded from elsewhere say nothing about what was actually passed
+            if (arguments.Any(a => a.Text.StartsWith('*')))
+                continue;
+
+            var given = arguments
+                .FirstOrDefault(a => a.Kind == NodeKind.NamedArgument && a.Text == Flag);
+            // absent means the framework default applies, and that default is off
+            if (given is not null && !IsOff(given))
+                continue;
+
+            context.Report(call, Advice);
+        }
+    }
+
+    /// <summary>Whether the value given to the flag leaves the protection off.</summary>
+    private static bool IsOff(SyntaxNode argument)
+    {
+        var value = argument.Children.LastOrDefault();
+        return value is not null && value.Text is "False" or "None" or "0" or "\"\"";
+    }
+
+    protected abstract string Advice { get; }
+}
+
+public sealed class PythonCookieWithoutSecureRule : PythonCookieFlagRule
+{
+    public override string Key => "QG-PY-SEC-0093";
+    public override string Name => "A cookie should not travel in the clear";
+    protected override string Flag => "secure";
+
+    protected override string Advice =>
+        "This cookie is set without asking for the flag that keeps it off plain connections, and the "
+        + "framework leaves that off by default. The browser will then send it over HTTP as readily "
+        + "as HTTPS, where anyone on the path can read it.";
+}
+
+public sealed class PythonCookieWithoutHttpOnlyRule : PythonCookieFlagRule
+{
+    public override string Key => "QG-PY-SEC-0094";
+    public override string Name => "A cookie should be out of reach of script";
+    protected override string Flag => "httponly";
+
+    protected override string Advice =>
+        "This cookie is set without asking for the flag that hides it from script, and the framework "
+        + "leaves that off by default. Anything running on the page can then read it, so one "
+        + "scripting flaw anywhere on the site takes the session with it.";
 }

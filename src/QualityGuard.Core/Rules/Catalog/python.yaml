@@ -376,3 +376,43 @@
     line at a time.
   fix: |
     Document the public surface where the reader needs it.
+
+- key: QG-PY-SEC-0093
+  name: A cookie should not travel in the clear
+  languages: [py]
+  scope: main
+  category: SEC
+  severity: major
+  effort: 10min
+  cwe: [614, 311]
+  owasp: [A3]
+  tags: [cookie, sast]
+  message: This cookie is set without asking for the flag that keeps it off plain connections.
+  summary: A response sets a cookie without the secure flag.
+  why: |
+    The web frameworks leave this flag off unless it is asked for, so a cookie set without it will be
+    attached to plain requests as readily as encrypted ones. One request made on an untrusted network
+    hands the session to whoever is watching.
+  fix: |
+    Pass the flag when the cookie is set. Where development really runs without encryption, decide it
+    from the environment rather than leaving it out.
+
+- key: QG-PY-SEC-0094
+  name: A cookie should be out of reach of script
+  languages: [py]
+  scope: main
+  category: SEC
+  severity: major
+  effort: 10min
+  cwe: [1004]
+  owasp: [A3]
+  tags: [cookie, sast]
+  message: This cookie is set without asking for the flag that hides it from script.
+  summary: A response sets a cookie without the httponly flag.
+  why: |
+    The frameworks leave this off unless it is asked for, so anything running on the page can read
+    the cookie — including a third-party script the page loads. One scripting flaw anywhere on the
+    site is then enough to take the session away with it.
+  fix: |
+    Pass the flag when the cookie is set. Code that legitimately needs the value should receive it in
+    the response body instead.
