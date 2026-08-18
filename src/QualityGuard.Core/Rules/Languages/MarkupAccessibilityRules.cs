@@ -16,15 +16,15 @@ public static class MarkupAccessibilityRuleSet
 {
     public static IReadOnlyList<IRule> All { get; } =
     [
+        new LinkWithoutDestinationRule(),
+        new ImageWithoutDimensionsRule(),
+        new SkippedHeadingLevelRule(),
         new DocumentWithoutDoctypeRule(),
         new DocumentWithoutTitleRule(),
-        new InlineStyleAttributeRule(),
         new MetaRefreshRule(),
-        new LinkWithoutDestinationRule(),
         new FieldsetWithoutLegendRule(),
         new LegendOutsideFieldsetRule(),
         new ListItemOutsideListRule(),
-        new SkippedHeadingLevelRule(),
         new EmptyHeadingRule(),
         new EmptyAnchorRule(),
         new PositiveTabIndexRule(),
@@ -38,7 +38,6 @@ public static class MarkupAccessibilityRuleSet
         new VideoWithoutCaptionsRule(),
         new MouseEventWithoutKeyboardEventRule(),
         new ObjectWithoutFallbackRule(),
-        new ImageWithoutDimensionsRule(),
         new DeprecatedAttributeRule(),
         new ServerSideImageMapRule(),
         new NestedScriptRule(),

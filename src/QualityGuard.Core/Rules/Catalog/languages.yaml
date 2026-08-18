@@ -533,6 +533,7 @@
   name: Console output should not be left in shipped code
   languages: [js, ts]
   category: SML
+  status: planned
   severity: minor
   effort: 5min
   tags: [logging]

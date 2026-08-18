@@ -20,7 +20,7 @@ public static partial class CleartextProtocols
         ("gopher", "https"), ("tftp", "sftp"), ("smtp", "smtps"), ("ldap", "ldaps"),
         ("imap", "imaps"), ("pop3", "pop3s"), ("amqp", "amqps"), ("mqtt", "mqtts"),
         ("sip", "sips"), ("rtmp", "rtmps"), ("irc", "ircs"), ("nntp", "nntps"),
-        ("stomp", "stomps"),
+        ("stomp", "stomps")
     ];
 
     /// <summary>

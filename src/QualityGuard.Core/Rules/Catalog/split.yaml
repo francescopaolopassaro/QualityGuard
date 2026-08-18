@@ -195,6 +195,7 @@
   name: Numbers should be named when their meaning is not obvious
   languages: [cs, vb]
   category: SML
+  status: planned
   severity: minor
   effort: 10min
   tags: [readability]
@@ -227,6 +228,7 @@
   name: Numbers should be named when their meaning is not obvious
   languages: [js, ts]
   category: SML
+  status: planned
   severity: minor
   effort: 10min
   tags: [readability]
@@ -387,6 +389,7 @@
   name: One statement per line
   languages: [cs, vb]
   category: CNV
+  status: planned
   severity: minor
   effort: 5min
   tags: [convention, readability]
@@ -415,6 +418,7 @@
   name: One statement per line
   languages: [js, ts]
   category: CNV
+  status: planned
   severity: minor
   effort: 5min
   tags: [convention, readability]
@@ -443,6 +447,7 @@
   name: One statement per line
   languages: [php]
   category: CNV
+  status: planned
   severity: minor
   effort: 5min
   tags: [convention, readability]
@@ -457,6 +462,7 @@
   name: One statement per line
   languages: [go]
   category: CNV
+  status: planned
   severity: minor
   effort: 5min
   tags: [convention, readability]
@@ -1959,6 +1965,7 @@
   name: Regular expressions should be syntactically valid
   languages: [py]
   category: BUG
+  status: planned
   severity: blocker
   effort: 15min
   tags: [regex, suspicious]
@@ -5879,6 +5886,7 @@
   name: Lines should not be too long
   languages: [cs, vb]
   category: CNV
+  status: planned
   severity: major
   effort: 10min
   tags: [convention, readability]
@@ -5907,6 +5915,7 @@
   name: Lines should not be too long
   languages: [kt]
   category: CNV
+  status: planned
   severity: major
   effort: 10min
   tags: [convention, readability]
@@ -5935,6 +5944,7 @@
   name: Lines should not be too long
   languages: [py]
   category: CNV
+  status: planned
   severity: major
   effort: 10min
   tags: [convention, readability]
@@ -5949,6 +5959,7 @@
   name: Lines should not be too long
   languages: [php]
   category: CNV
+  status: planned
   severity: major
   effort: 10min
   tags: [convention, readability]
@@ -5963,6 +5974,7 @@
   name: Lines should not be too long
   languages: [go]
   category: CNV
+  status: planned
   severity: major
   effort: 10min
   tags: [convention, readability]
@@ -6714,6 +6726,7 @@
   name: Functions should not be too long
   languages: [cs, vb]
   category: SML
+  status: planned
   severity: major
   effort: 30min
   tags: [design]
@@ -6746,6 +6759,7 @@
   name: Functions should not be too long
   languages: [kt]
   category: SML
+  status: planned
   severity: major
   effort: 30min
   tags: [design]
@@ -6778,6 +6792,7 @@
   name: Functions should not be too long
   languages: [py]
   category: SML
+  status: planned
   severity: major
   effort: 30min
   tags: [design]
@@ -6794,6 +6809,7 @@
   name: Functions should not be too long
   languages: [php]
   category: SML
+  status: planned
   severity: major
   effort: 30min
   tags: [design]
@@ -6810,6 +6826,7 @@
   name: Functions should not be too long
   languages: [go]
   category: SML
+  status: planned
   severity: major
   effort: 30min
   tags: [design]
@@ -6842,6 +6859,7 @@
   name: Control structures should not be nested too deeply
   languages: [cs, vb]
   category: SML
+  status: planned
   severity: major
   effort: 20min
   tags: [design, complexity]
@@ -6884,6 +6902,7 @@
   name: Control structures should not be nested too deeply
   languages: [kt]
   category: SML
+  status: planned
   severity: major
   effort: 20min
   tags: [design, complexity]
@@ -6968,6 +6987,7 @@
   name: Control structures should not be nested too deeply
   languages: [go]
   category: SML
+  status: planned
   severity: major
   effort: 20min
   tags: [design, complexity]
@@ -7010,6 +7030,7 @@
   name: Multi-way branches should handle the unexpected value
   languages: [cs, vb]
   category: SML
+  status: planned
   severity: major
   effort: 10min
   tags: [design, suspicious]
@@ -7626,6 +7647,7 @@
   name: Condition chains should end with a final branch
   languages: [cs, vb]
   category: SML
+  status: planned
   severity: major
   effort: 10min
   tags: [suspicious, design]
@@ -7658,6 +7680,7 @@
   name: Condition chains should end with a final branch
   languages: [kt]
   category: SML
+  status: planned
   severity: major
   effort: 10min
   tags: [suspicious, design]
@@ -7722,6 +7745,7 @@
   name: Condition chains should end with a final branch
   languages: [go]
   category: SML
+  status: planned
   severity: major
   effort: 10min
   tags: [suspicious, design]
@@ -7978,6 +8002,7 @@
   name: Multi-way branches should not be nested
   languages: [go]
   category: SML
+  status: planned
   severity: major
   effort: 25min
   tags: [complexity]
@@ -8546,6 +8571,7 @@
   name: Catch clauses should name the failures they handle
   languages: [cs, vb]
   category: SML
+  status: planned
   severity: major
   effort: 15min
   tags: [exception]
@@ -9191,6 +9217,7 @@
   name: Commented-out code should be deleted
   languages: [js, ts]
   category: SML
+  status: planned
   severity: major
   effort: 5min
   tags: [dead-code]
@@ -11215,6 +11242,7 @@
   name: A local should not be declared only to be returned on the next line
   languages: [js, ts]
   category: SML
+  status: planned
   severity: minor
   effort: 5min
   tags: [readability]

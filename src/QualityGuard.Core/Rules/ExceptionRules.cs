@@ -69,7 +69,6 @@ public static class ExceptionRuleSet
         new LocalReturnedImmediatelyRuleCs(),
         new LocalReturnedImmediatelyRuleJava(),
         new LocalReturnedImmediatelyRuleKotlin(),
-        new LocalReturnedImmediatelyRuleJs(),
         new LocalReturnedImmediatelyRulePython(),
         new LocalReturnedImmediatelyRulePhp(),
         new LocalReturnedImmediatelyRuleGo(),

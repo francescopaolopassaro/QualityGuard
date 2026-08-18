@@ -145,6 +145,7 @@
   name: Hidden files should not be served by static handlers
   languages: [js, ts]
   category: SEC
+  status: planned
   severity: major
   effort: 15min
   cwe: [538]
@@ -158,8 +159,6 @@
   fix: |
     Leave the dotfiles option at its default of ignoring them, and keep sensitive files outside the
     served directory altogether.
-  detect:
-    - line: "dotfiles\\s*:\\s*[\"']allow"
 
 - key: QG-JS-SEC-0032
   name: Confidential values should not be logged

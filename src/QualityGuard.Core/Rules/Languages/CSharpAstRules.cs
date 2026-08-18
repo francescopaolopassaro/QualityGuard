@@ -11,7 +11,6 @@ public static class CSharpAstRuleSet
 {
     public static IReadOnlyList<IRule> All { get; } =
     [
-        new CsOneDeclarationPerStatementRule(),
         new CsEmptyStatementRule(),
         new CsLoopDirectionRule(),
         new CsUnusedPrivateFieldRule(),

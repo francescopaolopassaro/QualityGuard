@@ -26,6 +26,7 @@
   name: Asynchronous methods should be named accordingly
   languages: [cs]
   category: SML
+  status: planned
   severity: minor
   effort: 10min
   tags: [async, naming]
@@ -342,6 +343,7 @@
   name: Diagnostics should not go through the trace API
   languages: [cs, vb]
   category: SML
+  status: planned
   severity: minor
   effort: 15min
   tags: [logging]

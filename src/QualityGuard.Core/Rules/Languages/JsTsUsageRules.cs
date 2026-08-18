@@ -17,6 +17,8 @@ public static class JsTsUsageRuleSet
         // scope a name belongs to: the same identifier is const in one function and let in
         // another, and matching by name reported 151 of those on a real corpus. The compiler and
         // every bundler already refuse a real one, so the rule is gone and its number stays retired.
+        new JsObjectShorthandRule(),
+        new JsConcatenationInsteadOfTemplateRule(),
         new JsInvalidTypeofComparisonRule(),
         new JsForInOverArrayRule(),
         new JsSparseArrayRule(),
@@ -24,8 +26,6 @@ public static class JsTsUsageRuleSet
         new JsRedeclaredVariableRule(),
         new JsFunctionConstructorRule(),
         new JsDuplicateUnionMemberRule(),
-        new JsObjectShorthandRule(),
-        new JsConcatenationInsteadOfTemplateRule(),
         new JsArgumentsObjectRule(),
         new JsNestedTemplateRule(),
         new JsSplitImportRule(),

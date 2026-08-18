@@ -29,7 +29,6 @@ public static class PythonRuleSet
         new PythonWhileTrueRule(),
         new PythonWildcardImportRule(),
         new PythonSsrfRule(),
-        new PythonPathTraversalRule(),
         new PythonTemplateInjectionRule(),
         new PythonShelveOpenRule(),
         new PythonRangeLenRule(),

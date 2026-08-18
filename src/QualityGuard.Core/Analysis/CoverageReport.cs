@@ -190,6 +190,65 @@ public sealed partial class CoverageReport
         => new([.. Files.Where(f => !TestFileDetector.IsTestFile(f.Path))]);
 
     /// <summary>
+    /// Drops the lines the sources themselves marked as not to be measured — an attribute on a
+    /// member, a pragma in a comment, an ignore-the-next marker, a whole-file marker. An excluded
+    /// line stops counting on both sides of the ratio, so the percentage is the one the coverage
+    /// tooling already reports, and a file the markers removed entirely disappears. The dictionary
+    /// keys must be the report's own file paths.
+    /// </summary>
+    public CoverageReport ExcludingLines(IReadOnlyDictionary<string, FileExclusions> byPath)
+    {
+        var files = new List<FileCoverage>();
+        foreach (var file in Files)
+        {
+            if (!byPath.TryGetValue(file.Path, out var exclusions)
+                || exclusions.IsEmpty)
+            {
+                files.Add(file);
+                continue;
+            }
+            if (exclusions.ExcludeFile)
+                continue;
+            var kept = new FileCoverage(file.Path);
+            foreach (var line in file.Lines.Values)
+            {
+                if (exclusions.Lines.Contains(line.Number))
+                    continue;
+                var target = kept.Line(line.Number);
+                target.Hits = line.Hits;
+                target.Conditions = line.Conditions;
+                target.CoveredConditions = line.CoveredConditions;
+            }
+            if (kept.Lines.Count > 0)
+                files.Add(kept);
+        }
+        return new CoverageReport(files);
+    }
+
+    /// <summary>
+    /// Reads the exclusion markers from the analysed sources and applies them to the report, matching
+    /// the report's paths to the scanned files the same way the rest of the engine does. A single
+    /// call for the CLI, which has both side by side.
+    /// </summary>
+    public CoverageReport ExcludingFromSource(IEnumerable<FileAnalysis> analyses)
+    {
+        var exclusions = Analysis.CoverageExclusions.Compute(analyses);
+        if (exclusions.Count == 0)
+            return this;
+        var resolver = new CoveragePathResolver(
+            analyses.Select(a => System.IO.Path.GetFullPath(a.File.Path)));
+        var byPath = new Dictionary<string, FileExclusions>(StringComparer.OrdinalIgnoreCase);
+        foreach (var file in Files)
+        {
+            if (resolver.Resolve(file.Path) is { } scanned
+                && exclusions.TryGetValue(scanned, out var excluded)
+                && !excluded.IsEmpty)
+                byPath[file.Path] = excluded;
+        }
+        return byPath.Count == 0 ? this : ExcludingLines(byPath);
+    }
+
+    /// <summary>
     /// Measures only the new code — the lines the current branch added or rewrote — so a small change
     /// is judged on the lines it actually touches instead of on the whole file. A line counts only if
     /// its number is in the new-line set of its file, and a file with no entry contributes nothing.

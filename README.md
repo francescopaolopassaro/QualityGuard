@@ -444,12 +444,34 @@ dotnet run --project src/QualityGuard.Cli -- \
 | `--sarif <out.json>` | Export findings and gate state as SARIF 2.1.0. |
 | `--sarif-in <file>` | Read metrics from an existing SARIF report instead of scanning. |
 | `--new-code` | Map finding counts into the `new_*` rating metrics before evaluating the gate. |
-| `--coverage <file>` | Read a coverage report (LCOV, Cobertura or JaCoCo) and feed the gate `coverage`, `line_coverage`, `branch_coverage` and the line/condition counts. Repeatable: reports from every test shard are merged; the tests' own files are left out. |
+| `--coverage <file>` | Read a coverage report (LCOV, Cobertura or JaCoCo) and feed the gate `coverage`, `line_coverage`, `branch_coverage` and the line/condition counts. Repeatable: reports from every test shard are merged; the tests' own files are left out, and the lines the sources themselves mark as not to be measured (see below) are removed. |
 | `--base <ref>` | Base branch, tag or commit to measure new code against. With `--coverage`, git supplies the lines the current change added or rewrote and the `new_*` coverage metrics are computed on exactly those lines. Without it `new_coverage` stays unset, which the gate treats as passed. |
 | `--fix-hints` | Print the remediation steps under every finding. |
 | `--verbose` | Per-file metrics, taint flow steps and what the scan skipped. |
 | `--rules` | List loaded rules and description coverage. |
 | `--dump-ast` | Print the syntax tree of one file. |
+
+### Coverage exclusions
+
+A line the team has explicitly told its coverage tooling to skip must not then count against the
+gate, or the engine would argue with every other tool reading the same files. The same markers the
+instrumented runners understand are read from the scanned sources and applied to the report before
+the percentages are computed:
+
+| How a line is marked out | Languages |
+|---|---|
+| `[ExcludeFromCodeCoverage]` / `[GeneratedCode(...)]` member attribute | C# |
+| `@Generated` annotation | Java, Kotlin |
+| `# pragma: no cover` | Python |
+| `/* istanbul ignore next */` (also `c8`, `v8`), `/* istanbul ignore file */` | JavaScript, TypeScript |
+| `# :nocov:` … `# :nocov:` | Ruby |
+| `/** @codeCoverageIgnore */` (also `…Start` / `…End`) | PHP |
+| `// LCOV_EXCL_LINE`, `// LCOV_EXCL_START` … `// LCOV_EXCL_STOP` (also `GCOVR_*`), `// coverage:ignore-line` / `-start` / `-stop` / `-file` | every language |
+
+An attribute on a member removes every line the member occupies; `ignore file` removes the file
+from the report altogether; a `START`/`STOP` (or `:nocov:`) pair removes the region between the
+markers. `LCOV_EXCL_*` and `coverage:ignore-*` work in any language because the engine reads them
+from the tokenizer's comment tokens, so a marker spelled inside a string literal never matches.
 
 ### Exit codes
 

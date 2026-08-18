@@ -14,14 +14,14 @@ public static class PhpAstRuleSet
 {
     public static IReadOnlyList<IRule> All { get; } =
     [
+        new PhpAssignmentInConditionRule(),
+        new PhpRepeatedArgumentRule(),
         new PhpVariableVariableRule(),
         new PhpDeprecatedPredefinedVariableRule(),
         new PhpLegacyConstructorRule(),
         new PhpThisInStaticContextRule(),
         new PhpUnreachableCatchRule(),
         new PhpConstantConditionRule(),
-        new PhpRepeatedArgumentRule(),
-        new PhpAssignmentInConditionRule(),
         new PhpThrowNonThrowableRule(),
         new PhpForeachReferenceRule(),
         new PhpRedefinedConstantRule(),

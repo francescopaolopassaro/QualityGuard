@@ -36,6 +36,7 @@
   name: Presentation should live in a stylesheet
   languages: [html]
   category: SML
+  status: planned
   severity: minor
   effort: 10min
   tags: [maintainability]

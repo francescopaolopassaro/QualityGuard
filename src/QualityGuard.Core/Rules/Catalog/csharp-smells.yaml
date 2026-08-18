@@ -214,6 +214,7 @@
   name: One declaration per line
   languages: [cs, vb]
   category: SML
+  status: planned
   severity: minor
   effort: 5min
   tags: [readability]
@@ -230,6 +231,7 @@
   name: Public constants should be static readonly
   languages: [cs]
   category: SML
+  status: planned
   severity: major
   effort: 15min
   tags: [api, versioning]
@@ -242,8 +244,6 @@
   fix: |
     Expose the value as static readonly, which is read from the defining assembly at run time. Keep
     const for values that can never change, such as mathematical constants.
-  detect:
-    - line: "public\\s+const\\s+"
 
 - key: QG-CS-SML-0039
   name: Enum names should not repeat their kind

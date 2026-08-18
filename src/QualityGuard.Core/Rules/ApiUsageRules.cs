@@ -48,8 +48,6 @@ public static class ApiUsageRuleSet
         new ProcessExitInLibraryRuleKubernetes(),
         new ProcessExitInLibraryRuleCloudFormation(),
         new ProcessExitInLibraryRuleJson(),
-        new CsStandardOutputForLoggingRule(),
-        new JsStandardOutputForLoggingRule(),
         new JavaStandardOutputForLoggingRule(),
         new GoStandardOutputForLoggingRule(),
         new StandardOutputForLoggingRuleRuby(),

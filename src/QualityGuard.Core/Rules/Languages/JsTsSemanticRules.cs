@@ -15,6 +15,7 @@ public static class JsTsSemanticRuleSet
     public static IReadOnlyList<IRule> All { get; } =
     [
         new JsSwitchLabelRule(),
+        new JsThisAliasRule(),
         new JsBitwiseInConditionRule(),
         new JsAssignmentToSpecialIdentifierRule(),
         new JsBuiltInOverrideRule(),
@@ -32,8 +33,7 @@ public static class JsTsSemanticRuleSet
         // as a name and a colon, which in TypeScript is also a destructuring rename, a type
         // annotation and a generic argument list broken over lines. It reported all three on a real
         // corpus, so the rule is gone and its number stays retired.
-        new JsObjectConstructorRule(),
-        new JsThisAliasRule()
+        new JsObjectConstructorRule()
     ];
 }
 

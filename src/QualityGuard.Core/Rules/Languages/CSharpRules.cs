@@ -8,6 +8,7 @@ public static class CSharpRuleSet
 {
     public static IReadOnlyList<IRule> All { get; } =
     [
+        new CsPathTraversalRule(),
         new CsUploadedFileNameRule(),
         new CsMutableCollectionPropertyRule(),
         new CsProcessExecutionRule(),
@@ -28,7 +29,6 @@ public static class CSharpRuleSet
         new CsDateTimeNowRule(),
         new CsAsyncVoidRule(),
         new CsSsrRule(),
-        new CsPathTraversalRule(),
         new CsLdapInjectionRule(),
         new CsHeaderInjectionRule(),
         new CsCorsWildcardRule(),

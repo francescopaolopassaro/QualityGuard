@@ -84,6 +84,7 @@ try
     var coverage = ReadCoverage(coverageFiles);
     if (coverage is not null)
     {
+        coverage = coverage.ExcludingFromSource(analyses);
         ApplyCoverageMetrics(metrics, coverage);
         if (newCodeBase is not null)
             ApplyNewCodeCoverage(metrics, coverage, newCodeBase, analyses);
