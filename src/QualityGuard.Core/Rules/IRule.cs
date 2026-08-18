@@ -122,12 +122,30 @@ internal sealed class RuleContext(SourceFile file, FileAnalysis analysis) : IRul
         => Add(message, node.Line, withFlow ? _analysis.Taint?.FlowTo(node) : null);
 
     private readonly HashSet<(string Rule, int Line)> _reported = [];
+    private readonly Dictionary<string, int> _perRule = [];
+
+    /// <summary>
+    /// How many times one rule may speak about one file. A generated documentation page produced
+    /// four hundred and seventy-five findings from a single rule about a retired markup tag — all
+    /// true, and past the first few, all noise: the reader learns nothing from the four hundredth.
+    /// The last one carries the total, so nothing is hidden.
+    /// </summary>
+    private const int PerFileLimit = 20;
 
     private void Add(string message, int? line, IReadOnlyList<FlowStep>? flow, string? effort = null)
     {
         // several clauses of the same rule can match one line; report it once
         if (!_reported.Add((CurrentRule.Key, line ?? 0)))
             return;
+
+        var seen = _perRule.TryGetValue(CurrentRule.Key, out var count) ? count : 0;
+        _perRule[CurrentRule.Key] = seen + 1;
+        if (seen > PerFileLimit)
+            return;
+        if (seen == PerFileLimit)
+            message += $" This file holds more of these; only the first {PerFileLimit} are listed, "
+                       + "because the rest say the same thing.";
+
         _analysis.Issues.Add(new Issue(CurrentRule.Key, message, CurrentRule.Severity, CurrentRule.Kind,
             File.Path, line, effort ?? CurrentRule.RemediationEffort,
             howToFix: CurrentRule.Description.HowToFix, flow: flow));
