@@ -52,7 +52,15 @@ public sealed class SourceTokenizer
             {
                 var startLine = line;
                 var startColumn = column;
-                i = ReadString(i + delim.Start.Length, delim, ref line, ref column, out var value);
+                // '$"a {(b ? $"\"{c}\"" : "d")} e"' holds a whole expression between the braces,
+                // quotes included. Reading the first inner quote as the end of the literal left the
+                // rest of the file as code, which cost every rule below that line.
+                i = ReadString(i + delim.Start.Length, delim, ref line, ref column, out var value,
+                    delim.IsInterpolated);
+                // the parser knows an interpolated literal by the '$' in front of it, so the prefix
+                // stays a token of its own even though the delimiter now carries it
+                if (delim.IsInterpolated)
+                    _tokens.Add(DirectToken(TokenKind.Symbol, "$", startLine, startColumn));
                 _tokens.Add(DirectToken(TokenKind.String, value, startLine, startColumn));
                 continue;
             }
@@ -319,12 +327,32 @@ public sealed class SourceTokenizer
         return i;
     }
 
-    private int ReadString(int i, StringDelimiter delim, ref int line, ref int column, out string value)
+    private int ReadString(int i, StringDelimiter delim, ref int line, ref int column, out string value,
+        bool interpolated = false)
     {
         var sb = new System.Text.StringBuilder();
+        var hole = 0;
         while (i < _source.Length)
         {
-            if (i + delim.End.Length <= _source.Length && _source.Substring(i, delim.End.Length) == delim.End)
+            if (interpolated && _source[i] == '{')
+            {
+                // '{{' is a brace the string prints, not a hole it opens
+                if (i + 1 < _source.Length && _source[i + 1] == '{')
+                {
+                    sb.Append("{{");
+                    i += 2;
+                    column += 2;
+                    continue;
+                }
+                hole++;
+            }
+            else if (interpolated && _source[i] == '}' && hole > 0)
+            {
+                hole--;
+            }
+
+            if (hole == 0
+                && i + delim.End.Length <= _source.Length && _source.Substring(i, delim.End.Length) == delim.End)
             {
                 // VB, SQL and Pascal escape the delimiter by doubling it: "URL=([^""]+)" holds one
                 // quote, not the end of the string. Reading it as the end cut the literal in half and

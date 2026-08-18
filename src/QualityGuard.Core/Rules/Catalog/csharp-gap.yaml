@@ -184,3 +184,59 @@
     them was meant to produce something else and the change was never finished.
   fix: |
     Give the branch the value it was written for, or remove the switch.
+
+- key: QG-CS-SML-0490
+  name: A branch that answers with its own label decides nothing
+  languages: [cs]
+  category: SML
+  severity: minor
+  effort: 10min
+  tags: [suspicious]
+  summary: Every arm of a switch produces the value it just matched.
+  why: |
+    The expression hands back what it was given, so the branches decide nothing. Usually one arm was
+    meant to produce something else and the change was never finished.
+  fix: |
+    Give the arm the value it was written for, or remove the switch.
+
+- key: QG-CS-SML-0491
+  name: A static field should be initialised where it is declared
+  languages: [cs]
+  category: SML
+  severity: minor
+  effort: 10min
+  tags: [performance]
+  summary: A static constructor does nothing but assign fields.
+  why: |
+    Its presence makes the type initialise lazily, and the runtime then checks before every access
+    whether that has happened. Fields given their values inline avoid the check entirely.
+  fix: |
+    Move each assignment to the declaration and delete the static constructor.
+
+- key: QG-CS-SML-0492
+  name: A failure should be logged once
+  languages: [cs]
+  category: SML
+  severity: major
+  effort: 10min
+  tags: [logging, exceptions]
+  summary: A catch block writes the exception to the log and throws it on.
+  why: |
+    Whoever catches it next logs it again, so one incident appears several times with a different
+    stack each time, and the reader of the log cannot tell how many things went wrong.
+  fix: |
+    Log where the failure is handled, and let it travel untouched everywhere else.
+
+- key: QG-CS-SML-0493
+  name: A property nothing writes always answers with nothing
+  languages: [cs]
+  category: SML
+  severity: major
+  effort: 10min
+  tags: [suspicious]
+  summary: An auto-property of a private type is never assigned anywhere.
+  why: |
+    Every read gets the default value, whatever the code around it assumes. The type is private, so
+    nothing outside can fill it either: the property was meant to be set and never is.
+  fix: |
+    Assign it where the value is known, or remove it.

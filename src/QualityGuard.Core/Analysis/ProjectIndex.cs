@@ -108,6 +108,15 @@ public sealed class ProjectIndex
     /// </summary>
     public bool SawTemplates { get; private set; }
 
+    private readonly Dictionary<string, int> _templateNames = new(StringComparer.Ordinal);
+
+    /// <summary>
+    /// How many times a template mentions the name. A rule about reachability needs this on its own:
+    /// counting every identifier in the project instead means a common field name like '_mapper'
+    /// looks referenced because another class has one too.
+    /// </summary>
+    public int TemplateReferenceCount(string name) => _templateNames.GetValueOrDefault(name);
+
     private void AddTemplateReferences(FileAnalysis analysis)
     {
         if (analysis.Tree.HasDedicatedParser)
@@ -122,7 +131,10 @@ public sealed class ProjectIndex
             if (token.Kind is not (Tokenization.TokenKind.Identifier or Tokenization.TokenKind.String))
                 continue;
             foreach (var word in Words(token.Text))
+            {
                 _referenced[word] = _referenced.GetValueOrDefault(word) + 1;
+                _templateNames[word] = _templateNames.GetValueOrDefault(word) + 1;
+            }
         }
     }
 

@@ -18,7 +18,7 @@ public static class BuiltInLanguages
             "while", "async", "await", "record", "init", "required", "var"],
         ["if", "else", "for", "foreach", "while", "do", "case", "switch", "catch", "&&", "||", "??", "?"],
         "//", "/*", "*/",
-        [new("\"", "\""), new("@\"", "\""), new("$@\"", "\""), new("@$\"", "\""), new("'", "'"), new("\"\"\"", "\"\"\"")],
+        [new("\"", "\""), new("@\"", "\""), new("$\"", "\""), new("$@\"", "\""), new("@$\"", "\""), new("'", "'"), new("\"\"\"", "\"\"\"")],
         HashComments: false, NestingBlockComments: false);
 
     public static readonly LanguageInfo Java = new(

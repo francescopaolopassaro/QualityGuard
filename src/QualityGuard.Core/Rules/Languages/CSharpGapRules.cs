@@ -23,7 +23,11 @@ public static class CSharpGapRuleSet
         new CsUnusedPrivateMemberRule(),
         new CsLoopThatOnlyFiltersRule(),
         new CsDisposePatternRule(),
-        new CsBranchesReturningTheSubjectRule()
+        new CsBranchesReturningTheSubjectRule(),
+        new CsArmReturningItsOwnLabelRule(),
+        new CsStaticConstructorRule(),
+        new CsLogAndRethrowRule(),
+        new CsUnassignedAutoPropertyRule()
     ];
 }
 
@@ -387,11 +391,17 @@ public sealed class CsFieldUsedInOneMethodRule : CSharpGapRuleBase
                 if (name.Length == 0)
                     continue;
 
+                // the constructor counts: a field it fills and reads, with nobody else looking,
+                // is a value that never needed to leave the constructor
                 var users = methods
-                    .Where(m => m.Kind != NodeKind.ConstructorDeclaration
-                                && m.OfKind(NodeKind.Identifier).Any(i => i.Text == name))
+                    .Where(m => m.OfKind(NodeKind.Identifier).Any(i => i.Text == name))
                     .ToList();
                 if (users.Count != 1)
+                    continue;
+                // written and never read there is a different defect, and another rule says it
+                var reads = users[0].OfKind(NodeKind.Identifier)
+                    .Count(i => i.Text == name && !WritesTo(i));
+                if (reads == 0)
                     continue;
                 // A field read before it is written carries state from the previous call — that is
                 // what '_disposed' and '_initialized' are for, and they belong to the object. Only a
@@ -399,8 +409,7 @@ public sealed class CsFieldUsedInOneMethodRule : CSharpGapRuleBase
                 if (!modifiers.Contains("readonly") && !WrittenBeforeRead(users[0], name))
                     continue;
                 // a template beside this file can bind the name, and the markup is not a method
-                var inFile = type.OfKind(NodeKind.Identifier).Count(i => i.Text == name);
-                if (context.Project.ReferenceCount(name) > inFile)
+                if (context.Project.TemplateReferenceCount(name) > 0)
                     continue;
 
 
@@ -409,6 +418,17 @@ public sealed class CsFieldUsedInOneMethodRule : CSharpGapRuleBase
                                       + "second call sees what the first one left. Make it a local.");
             }
         }
+    }
+
+    /// <summary>Whether this appearance of the name is the target of an assignment.</summary>
+    private static bool WritesTo(SyntaxNode identifier)
+    {
+        var parent = identifier.Parent;
+        if (parent is { Kind: NodeKind.MemberSelect })
+            parent = parent.Parent;
+        return parent is { Kind: NodeKind.Assignment }
+               && parent.Children.FirstOrDefault() is { } left
+               && left.DescendantsAndSelf().Contains(identifier);
     }
 
     /// <summary>
@@ -461,15 +481,25 @@ public sealed class CsUnusedPrivateMemberRule : CSharpGapRuleBase
                 if (name.Length == 0)
                     continue;
 
-                // an assignment is not a read: a field the constructor fills and nobody looks at is
-                // still a field nobody looks at
-                var reads = body.OfKind(NodeKind.Identifier)
-                    .Count(i => i.Text == name && !IsAssignmentTarget(i));
+                // The tokens are the honest count: a name can be read in places the tree does not
+                // record as an identifier — a case label, an attribute argument, a name in a
+                // pattern — and a rule that says "delete this" must not be wrong about that.
+                // The file's tokens are the honest count: a name can be read where the tree records
+                // no identifier — a case label, an attribute argument, a name inside a pattern — and
+                // a rule that says "delete this" must not be wrong about that. One mention is the
+                // declaration itself; a write is not a read.
+                var mentions = context.Tokens.Count(t => t.Text == name);
+                // the initialiser on the declaration is part of the declaration, not a write
                 var own = member.OfKind(NodeKind.Identifier).Count(i => i.Text == name);
-                if (reads > own)
+                var writes = body.OfKind(NodeKind.Identifier)
+                    .Count(i => i.Text == name && IsAssignmentTarget(i)
+                                && !member.DescendantsAndSelf().Contains(i));
+                if (mentions - Math.Max(1, own) - writes > 0)
                     continue;
-                // the same name may be bound from a template, which no method contains
-                if (context.Project.ReferenceCount(name) > reads)
+                // The same name may be bound from a template, which no method contains. The
+                // comparison has to be against every mention in this file, assignments included,
+                // or the write that fills the field looks like a use somewhere else.
+                if (context.Project.TemplateReferenceCount(name) > 0)
                     continue;
 
                 context.Report(member, $"Nothing in '{type.Text}' reads '{name}'. It is private, so "
@@ -599,5 +629,162 @@ public sealed class CsBranchesReturningTheSubjectRule : CSharpGapRuleBase
     {
         var value = section.Children.LastOrDefault();
         return value == null ? string.Empty : SyntaxQuery.DottedName(value);
+    }
+}
+
+public sealed class CsArmReturningItsOwnLabelRule : CSharpGapRuleBase
+{
+    public override string Key => "QG-CS-SML-0490";
+    public override string Name => "A branch that answers with its own label decides nothing";
+    public override string RemediationEffort => "10min";
+
+    public override void Execute(IRuleContext context)
+    {
+        if (!HasTree(context))
+            return;
+
+        foreach (var match in context.Root.OfKind(NodeKind.SwitchExpression, NodeKind.Match))
+        {
+            // a switch expression carries its arms directly; a switch statement wraps them in a block
+            var sections = match.ChildrenOf(NodeKind.SwitchSection).ToList();
+            if (sections.Count == 0 && match.FirstChild(NodeKind.Block) is { } block)
+                sections = block.ChildrenOf(NodeKind.SwitchSection).ToList();
+            if (sections.Count < 2)
+                continue;
+
+            // an arm that answers with the very value it matched changes nothing: the default
+            // covers it, and writing it out suggests a mapping that was meant to be different
+            foreach (var section in sections.Where(Mirrors))
+            {
+                context.Report(section, $"This branch answers with '{section.Text}', the value it "
+                                        + "just matched, so it changes nothing that the default "
+                                        + "would not. Either it was meant to produce something "
+                                        + "else, or it can go.");
+            }
+        }
+    }
+
+    private static bool Mirrors(SyntaxNode section)
+    {
+        // the arm keeps its label in its own text and its answer as the child
+        var label = section.Text;
+        var answer = section.Children.Count > 0
+            ? SyntaxQuery.DottedName(section.Children[^1])
+            : string.Empty;
+        return label.Length > 0 && label != "_" && label == answer;
+    }
+}
+
+public sealed class CsStaticConstructorRule : CSharpGapRuleBase
+{
+    public override string Key => "QG-CS-SML-0491";
+    public override string Name => "A static field should be initialised where it is declared";
+    public override string RemediationEffort => "10min";
+
+    public override void Execute(IRuleContext context)
+    {
+        if (!HasTree(context))
+            return;
+
+        foreach (var constructor in context.Root.OfKind(NodeKind.ConstructorDeclaration))
+        {
+            if (!constructor.ChildrenOf(NodeKind.Modifier).Any(m => m.Text == "static"))
+                continue;
+            var body = SyntaxQuery.Body(constructor);
+            if (body == null || body.Children.Count == 0)
+                continue;
+            // a static constructor that does real work has a reason to exist
+            if (body.Children.Any(c => c.Kind is not (NodeKind.ExpressionStatement or NodeKind.VariableDeclaration)))
+                continue;
+            if (!body.Children.All(c => c.OfKind(NodeKind.Assignment).Any()))
+                continue;
+
+            context.Report(constructor, "A static constructor that only assigns fields makes the type "
+                                        + "initialise lazily, and the runtime then checks on every "
+                                        + "access whether that has happened yet. Give the fields "
+                                        + "their values where they are declared.");
+        }
+    }
+}
+
+public sealed class CsLogAndRethrowRule : CSharpGapRuleBase
+{
+    private static readonly string[] Logging = ["Log", "LogError", "Error", "Warn", "Fatal", "Write"];
+
+    public override string Key => "QG-CS-SML-0492";
+    public override string Name => "A failure should be logged once";
+    public override Severity Severity => Severity.Major;
+    public override string RemediationEffort => "10min";
+
+    public override void Execute(IRuleContext context)
+    {
+        if (!HasTree(context))
+            return;
+
+        foreach (var clause in context.Root.OfKind(NodeKind.Catch))
+        {
+            var body = clause.FirstChild(NodeKind.Block);
+            if (body == null)
+                continue;
+
+            var logs = body.OfKind(NodeKind.Invocation)
+                .Any(c => Logging.Contains(SyntaxQuery.InvokedName(c), StringComparer.Ordinal));
+            if (!logs)
+                continue;
+            var rethrows = body.OfKind(NodeKind.Jump).Any(j => j.Text == "throw");
+            if (!rethrows)
+                continue;
+
+            context.Report(clause, "The failure is written to the log here and thrown on, so whoever "
+                                   + "catches it next logs it again. One incident then appears "
+                                   + "several times, with a different stack each time. Either handle "
+                                   + "it here or let it travel, not both.");
+        }
+    }
+}
+
+public sealed class CsUnassignedAutoPropertyRule : CSharpGapRuleBase
+{
+    public override string Key => "QG-CS-SML-0493";
+    public override string Name => "A property nothing writes always answers with nothing";
+    public override Severity Severity => Severity.Major;
+    public override string RemediationEffort => "10min";
+
+    public override void Execute(IRuleContext context)
+    {
+        if (!HasTree(context))
+            return;
+
+        foreach (var type in context.Root.OfKind(NodeKind.ClassDeclaration))
+        {
+            var body = type.FirstChild(NodeKind.Block);
+            if (body == null)
+                continue;
+            var typeIsPrivate = type.ChildrenOf(NodeKind.Modifier).Any(m => m.Text == "private");
+            if (!typeIsPrivate)
+                continue; // a public type is filled from outside, and this file cannot see where
+
+            foreach (var property in body.ChildrenOf(NodeKind.PropertyDeclaration))
+            {
+                var name = property.Text;
+                if (name.Length == 0 || property.ChildrenOf(NodeKind.Attribute).Any())
+                    continue;
+                // an auto-property with a setter and nothing that uses it
+                if (property.OfKind(NodeKind.Accessor).All(a => a.Text != "set"))
+                    continue;
+                // the accessor list is itself a block, so the test has to be whether an accessor
+                // has a body of its own: a computed property answers from something else
+                if (property.OfKind(NodeKind.Accessor).Any(a => a.FirstChild(NodeKind.Block) != null))
+                    continue;
+
+                var mentions = type.OfKind(NodeKind.Identifier).Count(i => i.Text == name);
+                if (mentions > 0 || context.Project.ReferenceCount(name) > 0)
+                    continue;
+
+                context.Report(property, $"Nothing in this file writes '{name}', and the type is "
+                                         + "private, so nothing outside can either. Every read gets "
+                                         + "the default value, whatever the code around it assumes.");
+            }
+        }
     }
 }

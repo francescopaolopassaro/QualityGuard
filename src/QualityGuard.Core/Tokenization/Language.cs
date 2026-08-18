@@ -2,7 +2,17 @@ namespace QualityGuard.Core.Tokenization;
 
 public sealed record StringDelimiter(string Start, string End)
 {
-    public bool IsVerbatim => Start.Length > 1;
+    /// <summary>
+    /// A verbatim literal takes its content as written: no backslash escapes. That is the '@' form,
+    /// not simply any prefix — '$"..."' is prefixed and still escapes.
+    /// </summary>
+    public bool IsVerbatim => Start.Contains('@');
+
+    /// <summary>
+    /// An interpolated literal carries expressions between braces, and those expressions can contain
+    /// quotes of their own. The reader has to follow the braces to know where the literal ends.
+    /// </summary>
+    public bool IsInterpolated => Start.Contains('$');
 }
 
 public static class LanguageKeys

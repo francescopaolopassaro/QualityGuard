@@ -8,7 +8,7 @@ a configurable Quality Gate and exits with `PASSED` or `FAILED` — no server, n
 dotnet run --project src/QualityGuard.Cli -- --path ./src --by-folder
 ```
 
-**1318 rules** across 26 languages, on a real syntax tree with a semantic model, a project index and
+**1330 rules** across 26 languages, on a real syntax tree with a semantic model, a project index and
 interprocedural taint analysis. The bar the engine is held to is precision: every rule is measured on
 a production codebase in its own language before it is kept, and a rule that produces noise is
 rewritten or removed — see [§8](#8-quality-bar).
@@ -141,7 +141,7 @@ Severity and issue kind follow the category: `SEC` → vulnerability (major or a
 
 ## 5. Rules
 
-**1318 rules are loaded and executable**, backed by **2636 catalog entries** (a catalog entry either
+**1330 rules are loaded and executable**, backed by **2653 catalog entries** (a catalog entry either
 carries its own detection or documents a rule implemented in code).
 
 Coverage is tracked honestly in `rules-tracker.tsv`: **3256 catalogued rules are mapped, 1515 of them
@@ -583,6 +583,91 @@ looked for the text `0px`, which is inside `40px` and `1280px`; more than half i
 ordinary lengths. And "a selector should be defined once" compared the text of a selector without the
 blocks it is nested in, so every `&.hidden` in a stylesheet looked like a duplicate of every other
 one — seventy findings, all of them wrong.
+
+### One line of C# that hid a whole file
+
+Chasing the last few lines of that gap turned up something worth more than the lines. A finding the
+reference reported sat in a `catch` block this engine could not see — and the reason was that the
+file had no `catch` in its tree at all. Nor a `try`. From one line onwards the parser was reading
+Italian prose as code, because the tokenizer had lost its place:
+
+```csharp
+$"(fase corrente: {(faseCorrenteNome is not null ? $"\"{faseCorrenteNome}\"" : "sconosciuta")})"
+```
+
+An interpolated string, holding an expression, holding another interpolated string, holding escaped
+quotes. The tokenizer ended the outer literal at the first quote inside the braces and read the rest
+of the file as source. Every rule below that line was blind, in every file that contains such a
+construct — and one is enough.
+
+Two things were wrong underneath. `$"` was not in the list of C# string forms at all, so it was read
+as a `$` symbol followed by an ordinary literal; and `IsVerbatim` was defined as "the prefix is
+longer than one character", which made `$@"` verbatim — correct — but would have made `$"` verbatim
+too, which is not. A verbatim literal takes backslashes literally; an interpolated one does not.
+
+Now the reader follows the braces: inside a hole the quotes belong to the expression, and the literal
+ends where the braces are balanced again. `{{` still prints a brace rather than opening a hole. The
+`$` is still emitted as its own token, because that is how the parser recognises an interpolated
+string, and the tests that pin that behaviour keep passing.
+
+The file that produced nothing now parses, and the complexity this engine measures for that project
+went up by a hundred points — code that was there all along and was never read.
+
+### Running the other analyzer on the same code
+
+The two instruments above measure against a catalogue and against a reader. The third one measures
+against the other analyzer, on the same source, and it is the only one that answers "are we there
+yet" directly.
+
+SonarSource ships its .NET rules as a Roslyn package, so they can be run without a server: copy the
+project, add `SonarAnalyzer.CSharp` through a `Directory.Build.props`, build, and collect the `S####`
+warnings. Then run this engine over the same projects and compare where the two land.
+
+Two things have to be checked before the numbers mean anything, and both changed the answer:
+
+- **The package is not the whole profile.** The security-hotspot rules are not in it: `new Random()`,
+  `MD5.Create()` and a cookie without `Secure` produce nothing, and they still produce nothing when
+  the `.editorconfig` enables them by id. So the comparison covers bugs and code smells, and says
+  nothing about the security families.
+- **The two sides do not see the same files.** Of 292 source files in those projects the engine reads
+  205: it refuses generated migrations and designer files, which the compiler happily analyses. Nine
+  of the findings that looked like a gap were in exactly those.
+
+With both accounted for, on six production projects of one application:
+
+| | SonarAnalyzer | QualityGuard |
+| --- | --- | --- |
+| findings | 142 | 351 |
+| distinct lines | 134 | 335 |
+| files touched | 43 | 69 |
+| distinct rules that fired | 39 | 55 |
+
+**82% of the lines SonarAnalyzer reports are reported here too**, up from 42% when the comparison was
+first run. The number is sensitive to how close two findings have to be to count as the same place —
+70% at the exact line, 82% within one, 87% within three — so one line is the figure quoted, and the
+sensitivity is quoted with it.
+
+Closing that gap produced nineteen rules, each written after reading what the other analyzer saw and
+this one did not: type names with an acronym buried in the middle, `new Guid("0000…")`, a private
+class that is not sealed, a derived type that adds nothing, `First()` on an indexed collection,
+overloads written apart, a host started with a blocking call, an action that returns a value while
+declaring `IActionResult`, a field that is really a local, a private member nothing reads, a loop
+whose body is one condition, an incomplete disposable, a switch whose arms hand back what they
+matched, a static constructor that only assigns, a failure logged and rethrown, a property nothing
+writes.
+
+It also found gaps in rules that already existed. The dead-store rule only knew about two writes in a
+row; widened to cover a value written and never read again, it immediately found a real defect — a
+seeder whose `else` branch loads four records from the database and never uses them, because the code
+that would use them is in the other branch. And the rule about awaiting a query never fired on
+`context.Comuni.ToList()`, because it looked for `_context` with an underscore; it now reads the root
+of the chain, which tells `context.Comuni.ToList()` apart from `items.Select(…).ToList()`.
+
+**One place where this engine deliberately differs.** The reference reports a name like
+`AffissioneDatiDTO`; this one does not. An acronym at the end of a name hides nothing, and naming
+DTOs that way is a decision a codebase makes once — it was 130 findings on one project. An acronym in
+the middle is still reported, because `DocDocumentiWKFModelliFasi` does have to be read twice. That
+choice costs a point of the coverage figure and is worth it.
 
 ### Two questions, two instruments
 
