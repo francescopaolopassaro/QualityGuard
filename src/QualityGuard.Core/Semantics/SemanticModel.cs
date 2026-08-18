@@ -149,6 +149,19 @@ public sealed class SemanticModel
                              ?? declaration;
             identifier.Symbol = symbol;
             symbol.Usages.Add(new Usage(identifier, value, UsageKind.Declaration));
+
+            // 'Comune roma, milano, firenze;' declares three names and the node carries one. The
+            // others were never declared, so nothing that followed them was tracked: every rule
+            // about a variable's life saw only the first of the group.
+            foreach (var extra in declaration.ChildrenOf(NodeKind.Identifier))
+            {
+                if (extra == identifier || extra.Text.Length == 0 || extra.Text == name)
+                    continue;
+                var other = scope.Declare(extra.Text, InferType(declaration, null));
+                other.IsExplicitlyDeclared = true;
+                extra.Symbol = other;
+                other.Usages.Add(new Usage(extra, null, UsageKind.Declaration));
+            }
         }
 
         private void RecordAssignment(SyntaxNode assignment, Scope scope)

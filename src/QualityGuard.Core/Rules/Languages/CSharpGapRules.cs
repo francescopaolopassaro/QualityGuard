@@ -27,7 +27,8 @@ public static class CSharpGapRuleSet
         new CsArmReturningItsOwnLabelRule(),
         new CsStaticConstructorRule(),
         new CsLogAndRethrowRule(),
-        new CsUnassignedAutoPropertyRule()
+        new CsUnassignedAutoPropertyRule(),
+        new CsNestedLoopWithoutBracesRule()
     ];
 }
 
@@ -219,17 +220,43 @@ public sealed class CsIndexInsteadOfFirstRule : CSharpGapRuleBase
             var receiver = call.ChildAt(0);
             var target = receiver is { Kind: NodeKind.MemberSelect } ? receiver.ChildAt(0) : receiver;
             var type = context.Types.TypeOf(target);
-            if (type is not { Length: > 0 })
+            var indexable = type is { Length: > 0 }
+                            && Indexable.Contains(type.Split('<')[0].Split('.').Last().TrimEnd('[', ']'),
+                                StringComparer.Ordinal);
+            // the type of a value read from a query is rarely resolvable, and it is always a list:
+            // that is what the call that produced it returns
+            if (!indexable && !ReadIntoAList(context, target))
                 continue;
-            var bare = type.Split('<')[0].Split('.').Last().TrimEnd('[', ']');
-            if (!Indexable.Contains(bare, StringComparer.Ordinal))
-                continue;
+            var bare = indexable
+                ? type!.Split('<')[0].Split('.').Last().TrimEnd('[', ']')
+                : "list";
 
             var name = SyntaxQuery.InvokedName(call);
             context.Report(call, $"'{bare}' is indexed, so '{name}()' sets up an enumerator to reach "
                                  + $"something the collection can hand over directly. Use "
                                  + (name == "First" ? "'[0]'." : "'[^1]'."));
         }
+    }
+
+    /// <summary>
+    /// Whether the name was given the result of a call that materialises a sequence. The declaration
+    /// says what it holds even when the type does not.
+    /// </summary>
+    private static bool ReadIntoAList(IRuleContext context, SyntaxNode? target)
+    {
+        var name = target == null ? string.Empty : SyntaxQuery.SimpleName(target);
+        if (name.Length == 0)
+            return false;
+
+        foreach (var declaration in context.Root.OfKind(NodeKind.VariableDeclaration))
+        {
+            if (declaration.Text != name)
+                continue;
+            return declaration.OfKind(NodeKind.Invocation).Any(call =>
+                SyntaxQuery.InvokedName(call) is "ToList" or "ToListAsync" or "ToArray"
+                    or "ToArrayAsync");
+        }
+        return false;
     }
 }
 
@@ -396,7 +423,12 @@ public sealed class CsFieldUsedInOneMethodRule : CSharpGapRuleBase
                 var users = methods
                     .Where(m => m.OfKind(NodeKind.Identifier).Any(i => i.Text == name))
                     .ToList();
-                if (users.Count != 1)
+                // One user is the plain case. Several are the same case when each of them writes the
+                // field before reading it: no call ever sees what another one left, so the value
+                // never had to live on the object.
+                if (users.Count == 0)
+                    continue;
+                if (users.Count > 1 && !users.All(m => WrittenBeforeRead(m, name)))
                     continue;
                 // written and never read there is a different defect, and another rule says it
                 var reads = users[0].OfKind(NodeKind.Identifier)
@@ -565,8 +597,16 @@ public sealed class CsDisposePatternRule : CSharpGapRuleBase
 
         foreach (var type in context.Root.OfKind(NodeKind.ClassDeclaration))
         {
-            var info = context.Project.FindTypes(type.Text).FirstOrDefault(t => t.Node == type);
-            if (info is null || !info.BaseNames.Any(b => b is "IDisposable" or "IAsyncDisposable"))
+            // The base list is not always readable: a generic type carries its parameters in the
+            // name, and an interface can extend IDisposable somewhere this scan never sees. What is
+            // always visible is the method: a type with Dispose() releases something.
+            var body0 = type.FirstChild(NodeKind.Block);
+            if (body0 == null)
+                continue;
+            var disposes = body0.ChildrenOf(NodeKind.FunctionDeclaration)
+                .Any(m => m.Text is "Dispose" or "DisposeAsync"
+                          && !SyntaxQuery.Parameters(m).Any());
+            if (!disposes)
                 continue;
             var modifiers = type.ChildrenOf(NodeKind.Modifier).Select(m => m.Text).ToArray();
             if (modifiers.Contains("sealed"))
@@ -777,14 +817,58 @@ public sealed class CsUnassignedAutoPropertyRule : CSharpGapRuleBase
                 if (property.OfKind(NodeKind.Accessor).Any(a => a.FirstChild(NodeKind.Block) != null))
                     continue;
 
-                var mentions = type.OfKind(NodeKind.Identifier).Count(i => i.Text == name);
-                if (mentions > 0 || context.Project.ReferenceCount(name) > 0)
+                // the question is who writes it, not who reads it: a property read everywhere and
+                // assigned nowhere answers with the default every time
+                var written = context.Root.OfKind(NodeKind.Assignment).Any(a =>
+                {
+                    var target = a.ChildAt(0);
+                    if (target == null)
+                        return false;
+                    var dotted = SyntaxQuery.DottedName(target);
+                    return dotted == name || dotted.EndsWith("." + name, StringComparison.Ordinal);
+                });
+                if (written || context.Project.TemplateReferenceCount(name) > 0)
                     continue;
 
                 context.Report(property, $"Nothing in this file writes '{name}', and the type is "
                                          + "private, so nothing outside can either. Every read gets "
                                          + "the default value, whatever the code around it assumes.");
             }
+        }
+    }
+}
+
+public sealed class CsNestedLoopWithoutBracesRule : CSharpGapRuleBase
+{
+    public override string Key => "QG-CS-SML-0494";
+    public override string Name => "A loop inside a loop should say where its body ends";
+    public override Severity Severity => Severity.Major;
+    public override string RemediationEffort => "5min";
+
+    public override void Execute(IRuleContext context)
+    {
+        if (!HasTree(context))
+            return;
+
+        foreach (var loop in context.Root.OfKind(NodeKind.Loop))
+        {
+            // a loop whose body is another loop, with neither of them braced: the indentation is the
+            // only thing saying which statements belong to which, and indentation is not the language
+            // the parser wraps an unbraced body in a block it marks as implicit, so that is the
+            // thing to look for rather than the absence of a block
+            var body = loop.FirstChild(NodeKind.Block);
+            if (body is not { Text: "implicit" })
+                continue;
+            var inner = body.Children.LastOrDefault();
+            if (inner is not { Kind: NodeKind.Loop })
+                continue;
+            if (inner.FirstChild(NodeKind.Block) is not { Text: "implicit" })
+                continue;
+
+            context.Report(loop, "Neither this loop nor the one inside it is braced, so what belongs "
+                                 + "to which is decided by the indentation — and a statement added "
+                                 + "later at the same depth joins the inner loop silently. Put the "
+                                 + "braces in.");
         }
     }
 }

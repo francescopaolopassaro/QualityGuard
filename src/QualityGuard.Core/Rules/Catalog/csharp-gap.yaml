@@ -240,3 +240,17 @@
     nothing outside can fill it either: the property was meant to be set and never is.
   fix: |
     Assign it where the value is known, or remove it.
+
+- key: QG-CS-SML-0494
+  name: A loop inside a loop should say where its body ends
+  languages: [cs]
+  category: SML
+  severity: major
+  effort: 5min
+  tags: [suspicious, readability]
+  summary: Two nested loops are written without braces.
+  why: |
+    Which statements belong to which loop is decided by the indentation, and indentation is not the
+    language. A line added later at the same depth joins the inner loop without anyone noticing.
+  fix: |
+    Put the braces in, on both loops.
