@@ -215,3 +215,21 @@
     Call asSequence before the chain and toList after it, so only the final result is materialised.
   detect:
     - line: "\\.(map|filter|flatMap)\\s*\\{[^}]*\\}\\s*\\.(map|filter|flatMap)\\s*\\{[^}]*\\}\\s*\\.(map|filter|flatMap|sorted|toList)"
+
+- key: QG-KT-SML-0002
+  name: Avoid the not-null assertion operator
+  status: superseded
+  superseded_by: QG-KT-SML-0113
+  languages: [kt]
+  category: SML
+  severity: minor
+  effort: 10min
+  tags: [nullability]
+  message: Avoid using the not-null assertion operator.
+  summary: A nullable value is asserted to be present.
+  why: |
+    The operator is worth avoiding, but the reference catalogues do not carry the rule — it belongs to
+    a separate linter whose results they merely read. Ours produced six hundred findings on one
+    project, most of them in tests where the value is known to be there because the test put it there.
+  fix: |
+    Where the check matters, a linter configured by the team is the right place for it.

@@ -1484,6 +1484,11 @@ public abstract class SelfAssignmentRule : StructuralRuleBase
             if (assignment.Ancestor(NodeKind.ObjectCreation, NodeKind.ListLiteral,
                     NodeKind.ArrayCreation, NodeKind.Attribute) != null)
                 continue;
+            // A named argument reads the same way — 'type = type' passes the local 'type' to the
+            // parameter called 'type', which is the ordinary shape wherever named arguments exist.
+            // The two sides live in different places and only look alike.
+            if (assignment.Ancestor(NodeKind.ArgumentList, NodeKind.NamedArgument) != null)
+                continue;
             if (assignment.Parent is { Kind: NodeKind.VariableDeclaration or NodeKind.FieldDeclaration })
                 continue;
 
@@ -2611,7 +2616,21 @@ public abstract class DuplicatedStringLiteralRule : StructuralRuleBase
     private static bool Nameable(string text)
     {
         var trimmed = text.Trim();
-        return trimmed.Length >= MinLength && trimmed.Any(char.IsLetter);
+        if (trimmed.Length < MinLength || !trimmed.Any(char.IsLetter))
+            return false;
+
+        // A literal made of nothing but word characters is a name — a key, an identifier, an
+        // encoding — and naming a name twice buys nothing. So is a format skeleton, and so is a
+        // colour. Reporting those three was most of what this rule said on a Python project.
+        if (trimmed.All(c => char.IsLetterOrDigit(c) || c is '_' or '-'))
+            return false;
+        if (trimmed.All(c => char.IsDigit(c) || "{} .-_%:dfrsymhYMHS<>".Contains(c)))
+            return false;
+        if (trimmed.Length == 7 && trimmed[0] == '#'
+            && trimmed[1..].All(Uri.IsHexDigit))
+            return false;
+
+        return true;
     }
 
     /// <summary>
@@ -2827,8 +2846,30 @@ public abstract class DeadStoreRule : StructuralRuleBase
     /// The object outlives the statement and is read through its own name, which this rule cannot
     /// follow.
     /// </summary>
+    /// <summary>Scope functions whose block writes to the receiver rather than to a local.</summary>
+    private static readonly string[] ReceiverBlocks = ["apply", "also", "run", "with", "let"];
+
     private static bool SetsAMember(SyntaxNode identifier)
-        => identifier.Parent?.Kind == NodeKind.MemberSelect;
+    {
+        if (identifier.Parent?.Kind == NodeKind.MemberSelect)
+            return true;
+
+        // Inside 'apply { pingInterval = ... }' the bare name is a property of the object the block
+        // was given, not a local of the enclosing function. Reading it as a local made every builder
+        // written in that style look like a value assigned and dropped.
+        for (var node = identifier.Parent; node != null; node = node.Parent)
+        {
+            if (node.Kind is NodeKind.FunctionDeclaration or NodeKind.ClassDeclaration)
+                break;
+            if (node.Kind != NodeKind.Lambda)
+                continue;
+            var call = node.Ancestor(NodeKind.Invocation);
+            if (call != null
+                && ReceiverBlocks.Contains(SyntaxQuery.InvokedName(call), StringComparer.Ordinal))
+                return true;
+        }
+        return false;
+    }
 
     /// <summary>Whether the write sets a member of an object being constructed.</summary>
     /// <summary>
@@ -3026,6 +3067,12 @@ public abstract class UnusedLocalVariableRule : StructuralRuleBase
             var declaration = symbol.Usages.FirstOrDefault(u => u.Kind == UsageKind.Declaration);
             if (declaration == null || symbol.Name.StartsWith('_'))
                 continue;
+            // Go says what leaves the package with a capital letter. A constant declared at the top
+            // of a library and named that way is read by whoever imports it, and this scan cannot
+            // see them — every exported MIME type in a web framework was reported as unread.
+            if (context.Language.LanguageKey is "go" && char.IsUpper(symbol.Name[0])
+                && symbol.Scope.Kind != ScopeKind.Function)
+                continue;
             context.Report(declaration.Identifier, $"'{symbol.Name}' is assigned but never read; "
                                                    + "remove it or use the value it holds.");
         }
@@ -3153,6 +3200,13 @@ public abstract class EmptyFunctionRule : StructuralRuleBase
         {
             if (function.Kind == NodeKind.ConstructorDeclaration)
                 continue; // an empty constructor is how a class says it takes no setup
+            // A signature declared for the type checker alone carries no body by design: that is
+            // what '@overload' and '@abstractmethod' mean, and asking them to be implemented asks
+            // for the opposite of what they say.
+            if (function.ChildrenOf(NodeKind.Attribute).Any(a =>
+                    a.Text.Contains("overload", StringComparison.OrdinalIgnoreCase)
+                    || a.Text.Contains("abstract", StringComparison.OrdinalIgnoreCase)))
+                continue;
             var body = SyntaxQuery.Body(function);
             if (body is not { Children.Count: 0 })
                 continue;
@@ -5634,7 +5688,11 @@ public abstract class TestWithoutAssertionRule : StructuralRuleBase
         "assertnotnull", "expect", "should", "verify", "check", "mustbe", "throws", "assertion",
         // a test can state its expectation without the word: these throw when it does not hold
         "ensuresuccessstatuscode", "received", "musthavehappened", "shouldbe", "shouldsatisfy",
-        "matchsnapshot", "approve", "isvalid", "haveoccurred"
+        "matchsnapshot", "approve", "isvalid", "haveoccurred",
+        // Go states a failure rather than asserting a success: 't.Error', 't.Fatal' and the helpers
+        // built on them are how every test in the language says the expectation did not hold
+        "t.error", "t.errorf", "t.fatal", "t.fatalf", "t.fail", "t.failnow", "b.error", "b.fatal",
+        "require", "equal", "nooerror", "noerror", "notnil", "notempty", "len"
     ];
     public override string Name => "Tests should verify something";
     public override Severity Severity => Severity.Major;
@@ -7996,6 +8054,11 @@ public abstract class EmptyTypeRule : StructuralRuleBase
                 continue;
             if (type.BaseCount(context) > 0)
                 continue; // an empty subclass can be a deliberate marker or a specialised exception
+            // An annotated class carries its behaviour in the annotation: a module, an entity or a
+            // configuration is declared entirely by what is attached to it, and the empty body is
+            // the point rather than an oversight.
+            if (type.ChildrenOf(NodeKind.Attribute).Any())
+                continue;
             context.Report(type, $"'{type.Text}' declares no members; "
                                  + "give it behaviour or remove it.");
         }
@@ -8136,7 +8199,13 @@ public abstract class FieldCouldBeReadOnlyRule : StructuralRuleBase
                 if (field.Ancestor(NodeKind.ClassDeclaration) != type || field.Text.Length == 0)
                     continue;
                 var modifiers = field.ChildrenOf(NodeKind.Modifier).Select(m => m.Text).ToArray();
-                if (modifiers.Any(m => m is "readonly" or "const" or "final" or "static" or "volatile"))
+                // 'val' is how Kotlin and Scala spell it, and 'let' is Swift's: a declaration that
+                // already cannot be reassigned was being told to become read-only, four hundred and
+                // fifty times on one project.
+                if (modifiers.Any(m => m is "readonly" or "const" or "final" or "static" or "volatile"
+                        or "val" or "let")
+                    || field.Text is "val" or "let"
+                    || field.Tokens.Any(t => t.Text is "val" or "let"))
                     continue;
                 if (!modifiers.Contains("private"))
                     continue;

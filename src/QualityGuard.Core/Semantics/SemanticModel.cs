@@ -132,6 +132,13 @@ public sealed class SemanticModel
 
         private void DeclareVariable(SyntaxNode declaration, Scope scope)
         {
+            // A language that marks its blocks by indentation does not open a scope for them: a name
+            // first assigned inside a 'with', an 'if' or a 'for' belongs to the function, and is
+            // still there afterwards. Declaring it in the block made the read that followed look
+            // like a different name, so the assignment appeared to be one nobody ever used.
+            if (profile.Style != StructureStyle.Braces)
+                scope = scope.FunctionScope();
+
             var name = declaration.Text;
             var assignment = declaration.Descendants().FirstOrDefault(d => d.Kind == NodeKind.Assignment);
             var value = assignment?.ChildAt(1);

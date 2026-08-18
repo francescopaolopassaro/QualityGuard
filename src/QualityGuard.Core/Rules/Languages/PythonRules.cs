@@ -1035,11 +1035,26 @@ public sealed class PythonUnusedImportRule : PatternRuleBase
     public override string FixAdvice => "Remove imports that are never referenced in the module.";
     public override string[] Languages => ["py"];
 
+    /// <summary>
+    /// Modules whose import is the point. 'from __future__ import annotations' changes how the file
+    /// is compiled and is never named again; the typing modules are imported for annotations that a
+    /// checker reads and the interpreter does not.
+    /// </summary>
+    private static readonly string[] ImportedForEffect =
+        ["__future__", "typing", "typing_extensions", "sklearn.experimental"];
+
     public override void Execute(IRuleContext context)
     {
+        // a package initialiser exists to re-export what it imports
+        if (context.File.FileName.Equals("__init__.py", StringComparison.OrdinalIgnoreCase))
+            return;
+
         var lines = PythonRuleSet.Lines(context);
         for (var i = 0; i < lines.Length; i++)
         {
+            if (ImportedForEffect.Any(m => lines[i].Contains(m, StringComparison.Ordinal)))
+                continue;
+
             var names = ImportedNames(lines[i]);
             foreach (var name in names)
             {
@@ -1050,6 +1065,9 @@ public sealed class PythonUnusedImportRule : PatternRuleBase
                 {
                     if (j == i)
                         continue;
+                    // a name that appears in a comment or inside a string is used: annotations are
+                    // written as strings when the type would otherwise be a forward reference, and
+                    // a docstring example names what it demonstrates
                     if (LanguageRuleSupport.ContainsWord(lines[j], name))
                         used = true;
                 }
@@ -1509,6 +1527,12 @@ public sealed class PythonConstantNamingRule : PatternRuleBase
             if (name.Contains(' ') || name.Contains('(') || name.Length < 2)
                 continue;
             if (name.Any(char.IsUpper) || !name.Any(char.IsLower))
+                continue;
+            // '__title__', '__version__' and their kind are module metadata, and the surrounding
+            // underscores are the convention that names them. Asking for upper case there asks a
+            // module to break the shape every tool reads it by.
+            if (name.StartsWith("__", StringComparison.Ordinal)
+                && name.EndsWith("__", StringComparison.Ordinal))
                 continue;
             var value = trimmed[(eq + 1)..].TrimStart();
             if (!IsLiteralValue(value))

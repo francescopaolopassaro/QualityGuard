@@ -104,7 +104,7 @@
   effort: 15min
   tags: [marker, generated]
   generated: true
-  status: planned
+
   message: This marker records work that was left open.
   summary: A marker in the source records work or a decision that was left open.
   why: |
@@ -113,6 +113,8 @@
   fix: |
     Do the work, or move it to the issue tracker and reference the ticket in the marker so the deadline
     lives somewhere that gets reviewed.
+  detect:
+    - invocation: [legalCommentPattern]
 
 - key: QG-CS-SML-0376
   name: Copyright and license headers should be resolved rather than left in the code
@@ -122,7 +124,7 @@
   effort: 15min
   tags: [marker, generated]
   generated: true
-  status: planned
+
   message: This marker records work that was left open.
   summary: A marker in the source records work or a decision that was left open.
   why: |
@@ -131,6 +133,8 @@
   fix: |
     Do the work, or move it to the issue tracker and reference the ticket in the marker so the deadline
     lives somewhere that gets reviewed.
+  detect:
+    - invocation: [headerFormat, isRegularExpression]
 
 - key: QG-CS-SML-0377
   name: Hard-to-read code should be simplified
@@ -140,7 +144,7 @@
   effort: 15min
   tags: [sml, generated]
   generated: true
-  status: planned
+
   message: This code is harder to read or change than the behaviour requires.
   summary: The code works but is harder to read or change than the behaviour requires.
   why: |
@@ -149,6 +153,8 @@
   fix: |
     Remove what is not used, name what is unclear, and keep one piece of behaviour in one place so the
     next change touches a single spot.
+  detect:
+    - invocation: [maximum]
 
 - key: QG-CS-SML-0378
   name: & operator should be replaced by the recommended alternative
@@ -158,7 +164,7 @@
   effort: 15min
   tags: [prefer_api, generated]
   generated: true
-  status: planned
+
   message: The platform offers a clearer or safer construct for this.
   summary: A construct is used where the platform offers one that is clearer or safer.
   why: |
@@ -168,6 +174,9 @@
   fix: |
     Switch to the recommended construct; the behaviour is the same in the normal case and defined in the
     cases the old form got wrong.
+  detect:
+    - invocation: [op_Addition]
+      receiver: [String]
 
 - key: QG-CS-SML-0380
   name: Select Case statements should not be nested inside another one
@@ -381,7 +390,7 @@
   effort: 15min
   tags: [sml, generated]
   generated: true
-  status: planned
+
   message: This code is harder to read or change than the behaviour requires.
   summary: The code works but is harder to read or change than the behaviour requires.
   why: |
@@ -390,6 +399,8 @@
   fix: |
     Remove what is not used, name what is unclear, and keep one piece of behaviour in one place so the
     next change touches a single spot.
+  detect:
+    - invocation: [after, before, prefix, suffix]
 
 - key: QG-CS-SML-0391
   name: Unsafe APIs should not be used
@@ -515,7 +526,7 @@
   effort: 15min
   tags: [naming, generated]
   generated: true
-  status: planned
+
   message: This identifier does not follow the naming convention of the codebase.
   summary: An identifier does not follow the convention used by the rest of the code.
   why: |
@@ -524,6 +535,8 @@
   fix: |
     Rename the identifier to match the convention, and let the editor propagate the change so callers
     stay in sync.
+  detect:
+    - invocation: [format]
 
 - key: QG-CS-SML-0399
   name: Properties should be simplified
@@ -569,7 +582,7 @@
   effort: 15min
   tags: [naming, generated]
   generated: true
-  status: planned
+
   message: This identifier does not follow the naming convention of the codebase.
   summary: An identifier does not follow the convention used by the rest of the code.
   why: |
@@ -578,6 +591,8 @@
   fix: |
     Rename the identifier to match the convention, and let the editor propagate the change so callers
     stay in sync.
+  detect:
+    - invocation: [format]
 
 - key: QG-CS-SML-0403
   name: Signed types should be replaced by the recommended alternative
@@ -587,7 +602,7 @@
   effort: 15min
   tags: [prefer_api, generated]
   generated: true
-  status: planned
+
   message: The platform offers a clearer or safer construct for this.
   summary: A construct is used where the platform offers one that is clearer or safer.
   why: |
@@ -597,6 +612,9 @@
   fix: |
     Switch to the recommended construct; the behaviour is the same in the normal case and defined in the
     cases the old form got wrong.
+  detect:
+    - invocation: [Integer, Short]
+      receiver: [UnsignedIntegers]
 
 - key: QG-CS-SML-0404
   name: With statements should be replaced by the recommended alternative
@@ -606,7 +624,7 @@
   effort: 15min
   tags: [prefer_api, generated]
   generated: true
-  status: planned
+
   message: The platform offers a clearer or safer construct for this.
   summary: A construct is used where the platform offers one that is clearer or safer.
   why: |
@@ -616,6 +634,8 @@
   fix: |
     Switch to the recommended construct; the behaviour is the same in the normal case and defined in the
     cases the old form got wrong.
+  detect:
+    - invocation: [minimumSeriesLength]
 
 - key: QG-CS-SML-0407
   name: Arrays should be simplified
@@ -643,7 +663,7 @@
   effort: 15min
   tags: [sml, generated]
   generated: true
-  status: planned
+
   message: This code is harder to read or change than the behaviour requires.
   summary: The code works but is harder to read or change than the behaviour requires.
   why: |
@@ -652,6 +672,8 @@
   fix: |
     Remove what is not used, name what is unclear, and keep one piece of behaviour in one place so the
     next change touches a single spot.
+  detect:
+    - invocation: [IsReportingOnLeft]
 
 - key: QG-CS-BUG-0115
   name: Not boolean operator should match the behaviour the code describes
@@ -721,7 +743,7 @@
   effort: 15min
   tags: [avoid_api, generated]
   generated: true
-  status: planned
+
   message: This API should be replaced by the current alternative.
   summary: Code calls an API that is unsafe, obsolete or superseded by a better alternative.
   why: |
@@ -731,6 +753,9 @@
   fix: |
     Replace the call with the current API, and keep the old one only behind a compatibility layer that is
     documented and dated.
+  detect:
+    - invocation: [NonPublic]
+      receiver: [BindingFlags]
 
 - key: QG-CS-SML-0414
   name: StringBuilder data should be replaced by the recommended alternative
@@ -798,7 +823,7 @@
   effort: 15min
   tags: [avoid_api, generated]
   generated: true
-  status: planned
+
   message: This API should be replaced by the current alternative.
   summary: Code calls an API that is unsafe, obsolete or superseded by a better alternative.
   why: |
@@ -808,6 +833,9 @@
   fix: |
     Replace the call with the current API, and keep the old one only behind a compatibility layer that is
     documented and dated.
+  detect:
+    - invocation: [Attribute]
+      receiver: [DateOnly, DateTime, DateTimeOffset, DbContext, KeyAttribute, TimeOnly]
 
 - key: QG-CS-SML-0416
   name: Exit statements should not be used
@@ -929,7 +957,7 @@
   effort: 15min
   tags: [bug, generated]
   generated: true
-  status: planned
+
   message: This code does not behave the way it reads.
   summary: The code does not do what its shape suggests, or fails on ordinary input.
   why: |
@@ -938,6 +966,9 @@
   fix: |
     Make the intended behaviour explicit — fix the condition, the operator or the order of operations —
     and cover the case that used to fail with a test.
+  detect:
+    - invocation: [AsyncPattern, IsOneWay]
+      receiver: [OperationContractAttribute]
 
 - key: QG-CS-BUG-0122
   name: Methods with Pure attribute should match the behaviour the code describes
@@ -1380,7 +1411,7 @@
   effort: 15min
   tags: [bug, generated]
   generated: true
-  status: planned
+
   message: This code does not behave the way it reads.
   summary: The code does not do what its shape suggests, or fails on ordinary input.
   why: |
@@ -1389,6 +1420,9 @@
   fix: |
     Make the intended behaviour explicit — fix the condition, the operator or the order of operations —
     and cover the case that used to fail with a test.
+  detect:
+    - invocation: [Implement, contractType]
+      receiver: [ExportAttribute, InheritedExportAttribute]
 
 - key: QG-CS-BUG-0132
   name: Windows Forms entry points should be accessed in a thread-safe way
@@ -1398,7 +1432,7 @@
   effort: 15min
   tags: [concurrency, generated]
   generated: true
-  status: planned
+
   message: Shared state is accessed without correct coordination.
   summary: Shared state is accessed with locking that is missing, too wide, or on the wrong object.
   why: |
@@ -1407,6 +1441,9 @@
   fix: |
     Lock a private object dedicated to the state it protects, keep the critical section short, and prefer
     the concurrent collections and higher-level primitives the platform provides.
+  detect:
+    - invocation: [Forms]
+      receiver: [MTAThreadAttribute, STAThreadAttribute, Windows]
 
 - key: QG-CS-SML-0433
   name: Extension methods should be simplified
@@ -1452,7 +1489,7 @@
   effort: 15min
   tags: [bug, generated]
   generated: true
-  status: planned
+
   message: This code does not behave the way it reads.
   summary: The code does not do what its shape suggests, or fails on ordinary input.
   why: |
@@ -1461,6 +1498,8 @@
   fix: |
     Make the intended behaviour explicit — fix the condition, the operator or the order of operations —
     and cover the case that used to fail with a test.
+  detect:
+    - invocation: [getter, setter]
 
 - key: QG-CS-BUG-0135
   name: Shared parts should match the behaviour the code describes
@@ -1510,7 +1549,7 @@
   effort: 15min
   tags: [sec, generated]
   generated: true
-  status: planned
+
   message: This construct weakens the security of the application.
   summary: A construct that attackers routinely target is used without the guard it needs.
   why: |
@@ -1520,6 +1559,9 @@
   fix: |
     Validate the incoming value against an allowed set, pass it as data rather than as code or command,
     and replace weakened mechanisms with the current recommended one.
+  detect:
+    - invocation: [IsDevelopment, StartupDevelopment, UseDatabaseErrorPage, UseDeveloperExceptionPage]
+      receiver: [DatabaseErrorPageExtensions, DeveloperExceptionPageExtensions, HostEnvironmentEnvExtensions, HostingEnvironmentExtensions]
 
 - key: QG-CS-SML-0434
   name: DebuggerDisplayAttribute strings should be simplified
@@ -1547,7 +1589,7 @@
   effort: 15min
   tags: [bug, generated]
   generated: true
-  status: planned
+
   message: This code does not behave the way it reads.
   summary: The code does not do what its shape suggests, or fails on ordinary input.
   why: |
@@ -1556,6 +1598,8 @@
   fix: |
     Make the intended behaviour explicit — fix the condition, the operator or the order of operations —
     and cover the case that used to fail with a test.
+  detect:
+    - invocation: [BeginInvoke, EndInvoke]
 
 - key: QG-CS-BUG-0138
   name: Non-async Task/Task<T> methods should be handled explicitly when absent
@@ -1602,7 +1646,7 @@
   effort: 15min
   tags: [crypto, generated]
   generated: true
-  status: planned
+
   message: This cryptographic choice no longer provides the protection it suggests.
   summary: A cryptographic primitive, mode or key size that is no longer considered safe is used.
   why: |
@@ -1612,6 +1656,9 @@
   fix: |
     Use the algorithms the platform recommends today — authenticated encryption, a modern hash, a key
     size at or above the current guidance — and keep the choice in one place so it can be raised.
+  detect:
+    - invocation: [Encrypt, TryEncrypt, fOAEP]
+      receiver: [AesManaged]
 
 - key: QG-CS-SEC-0090
   name: JWT should use current cryptographic parameters
@@ -1621,7 +1668,7 @@
   effort: 15min
   tags: [crypto, generated]
   generated: true
-  status: planned
+
   message: This cryptographic choice no longer provides the protection it suggests.
   summary: A cryptographic primitive, mode or key size that is no longer considered safe is used.
   why: |
@@ -1631,6 +1678,9 @@
   fix: |
     Use the algorithms the platform recommends today — authenticated encryption, a modern hash, a key
     size at or above the current guidance — and keep the choice in one place so it can be raised.
+  detect:
+    - invocation: [Decode, DecodeToObject, DoNotVerifySignature, MustVerifySignature, WithVerifySignature, verify]
+      receiver: [IJwtDecoder, JwtBuilder, JwtDecoderExtensions]
 
 - key: QG-CS-SEC-0091
   name: HTTP request content length should not weaken the security of the application
@@ -1640,7 +1690,7 @@
   effort: 15min
   tags: [sec, generated]
   generated: true
-  status: planned
+
   message: This construct weakens the security of the application.
   summary: A construct that attackers routinely target is used without the guard it needs.
   why: |
@@ -1650,6 +1700,9 @@
   fix: |
     Validate the incoming value against an allowed set, pass it as data rather than as code or command,
     and replace weakened mechanisms with the current recommended one.
+  detect:
+    - invocation: [Attribute, DisableRequestSizeLimit, MultipartBodyLengthLimit, RequestFormLimits, RequestSizeLimit, fileUploadSizeLimit, maxAllowedContentLength, maxRequestLength]
+      receiver: [DisableRequestSizeLimitAttribute]
 
 - key: QG-CS-SEC-0092
   name: ASP.NET Request Validation should keep the platform protection enabled
@@ -1659,7 +1712,7 @@
   effort: 15min
   tags: [protection_off, generated]
   generated: true
-  status: planned
+
   message: A protection provided by the platform is switched off here.
   summary: A safety mechanism the platform provides is switched off.
   why: |
@@ -1669,6 +1722,9 @@
   fix: |
     Restore the default and solve the original problem in a narrower way — scope the exception to the
     single endpoint or value that needs it, and document why it is safe there.
+  detect:
+    - invocation: [requestValidationMode, validateRequest]
+      receiver: [ValidateInputAttribute]
 
 - key: QG-CS-SML-0437
   name: Return statements should be replaced by the recommended alternative
@@ -1753,7 +1809,7 @@
   effort: 15min
   tags: [sml, generated]
   generated: true
-  status: planned
+
   message: This code is harder to read or change than the behaviour requires.
   summary: The code works but is harder to read or change than the behaviour requires.
   why: |
@@ -1762,6 +1818,9 @@
   fix: |
     Remove what is not used, name what is unclear, and keep one piece of behaviour in one place so the
     next change touches a single spot.
+  detect:
+    - invocation: [Justification]
+      receiver: [ExcludeFromCodeCoverageAttribute]
 
 - key: QG-CS-SML-0443
   name: Hard-to-read code should be simplified
@@ -1811,7 +1870,7 @@
   effort: 15min
   tags: [sml, generated]
   generated: true
-  status: planned
+
   message: This code is harder to read or change than the behaviour requires.
   summary: The code works but is harder to read or change than the behaviour requires.
   why: |
@@ -1820,6 +1879,9 @@
   fix: |
     Remove what is not used, name what is unclear, and keep one piece of behaviour in one place so the
     next change touches a single spot.
+  detect:
+    - invocation: [IanaToWindows, TryIanaToWindows, TryWindowsToIana, WindowsToIana]
+      receiver: [TZConvert, TimeOnly]
 
 - key: QG-CS-SML-0447
   name: Hard-to-read code should be simplified
@@ -1829,7 +1891,7 @@
   effort: 15min
   tags: [sml, generated]
   generated: true
-  status: planned
+
   message: This code is harder to read or change than the behaviour requires.
   summary: The code works but is harder to read or change than the behaviour requires.
   why: |
@@ -1838,6 +1900,9 @@
   fix: |
     Remove what is not used, name what is unclear, and keep one piece of behaviour in one place so the
     next change touches a single spot.
+  detect:
+    - invocation: [formatProvider, provider]
+      receiver: [DateOnly, DateTime, DateTimeOffset, TimeOnly, TimeSpan]
 
 - key: QG-CS-SML-0448
   name: Hard-to-read code should be simplified
@@ -1847,7 +1912,7 @@
   effort: 15min
   tags: [sml, generated]
   generated: true
-  status: planned
+
   message: This code is harder to read or change than the behaviour requires.
   summary: The code works but is harder to read or change than the behaviour requires.
   why: |
@@ -1856,6 +1921,9 @@
   fix: |
     Remove what is not used, name what is unclear, and keep one piece of behaviour in one place so the
     next change touches a single spot.
+  detect:
+    - invocation: [ToString]
+      receiver: [DateOnly, DateTime, DateTimeOffset, TimeOnly, TimeSpan]
 
 - key: QG-CS-SML-0449
   name: Outdated constructs should be replaced by the recommended alternative
@@ -1952,7 +2020,7 @@
   effort: 15min
   tags: [sml, generated]
   generated: true
-  status: planned
+
   message: This code is harder to read or change than the behaviour requires.
   summary: The code works but is harder to read or change than the behaviour requires.
   why: |
@@ -1961,6 +2029,8 @@
   fix: |
     Remove what is not used, name what is unclear, and keep one piece of behaviour in one place so the
     next change touches a single spot.
+  detect:
+    - invocation: [OrderBy, OrderByDescending, Where]
 
 - key: QG-CS-SML-0454
   name: Outdated constructs should be replaced by the recommended alternative
@@ -2100,7 +2170,7 @@
   effort: 15min
   tags: [bug, generated]
   generated: true
-  status: planned
+
   message: This code does not behave the way it reads.
   summary: The code does not do what its shape suggests, or fails on ordinary input.
   why: |
@@ -2109,6 +2179,9 @@
   fix: |
     Make the intended behaviour explicit — fix the condition, the operator or the order of operations —
     and cover the case that used to fail with a test.
+  detect:
+    - invocation: [Route, regex, syntax, template]
+      receiver: [HttpMethodAttribute, RouteAttributes, StringSyntaxAttribute]
 
 - key: QG-CS-SML-0460
   name: ASP.NET controller actions should be simplified

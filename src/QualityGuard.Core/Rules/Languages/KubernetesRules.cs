@@ -7,12 +7,9 @@ public static class KubernetesRuleSet
 {
     public static IReadOnlyList<IRule> All { get; } =
     [
-        new KubernetesMissingSecurityContextRule(),
         new KubernetesAddCapabilitiesRule(),
         new KubernetesSecretsInEnvRule(),
-        new KubernetesAutomountTokenRule(),
-        new KubernetesMissingProbesRule(),
-        new KubernetesMissingAppLabelRule()
+        new KubernetesAutomountTokenRule()
     ];
 }
 

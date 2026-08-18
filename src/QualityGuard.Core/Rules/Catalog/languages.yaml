@@ -566,6 +566,8 @@
     only common exception is comparing with null to cover undefined as well.
 
 - key: QG-TS-SML-0003
+  status: superseded
+  superseded_by: QG-JS-SML-0369
   name: The any type should not be used
   languages: [ts]
   category: SML
@@ -588,8 +590,6 @@
       if (isOrder(payload)) return payload.id;
       throw new Error("unexpected payload");
     }
-  detect:
-    - line: ":\\s*any\\b"
 
 - key: QG-GO-SEC-0012
   name: TLS verification should not be skipped

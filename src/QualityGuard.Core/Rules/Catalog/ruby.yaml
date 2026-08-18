@@ -162,3 +162,21 @@
     is scoped to the file that asks for it.
   detect:
     - line: "^\\s*class\\s+(String|Array|Hash|Integer|Float|Object|Kernel|Symbol|Time)\\s*$"
+
+- key: QG-RB-CNV-0001
+  name: Double quotes used without interpolation
+  status: superseded
+  superseded_by: QG-RB-SML-0001
+  languages: [rb]
+  category: CNV
+  severity: minor
+  effort: 2min
+  tags: [style]
+  message: Prefer single quotes for strings without interpolation.
+  summary: A string that interpolates nothing is written with double quotes.
+  why: |
+    Which quote a string carries is a house preference, not a defect, and no reference catalogue
+    carries the rule. It produced six hundred findings on one small project — more than every real
+    finding on that project put together — and a reader who has to scroll past those stops reading.
+  fix: |
+    Decide it in the formatter, where a preference belongs.

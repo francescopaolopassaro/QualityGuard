@@ -28,7 +28,6 @@ public static class JsTsUsageRuleSet
         new JsConcatenationInsteadOfTemplateRule(),
         new JsArgumentsObjectRule(),
         new JsNestedTemplateRule(),
-        new JsAnyTypeRule(),
         new JsSplitImportRule(),
         new JsLoneAccessorRule()
     ];

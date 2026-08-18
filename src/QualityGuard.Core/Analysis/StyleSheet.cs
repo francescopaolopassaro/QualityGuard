@@ -114,6 +114,28 @@ public static class StyleSheet
                 i = end - 1;
                 continue;
             }
+            // Sass writes a value into a name with '#{...}'. The braces inside it are not the ones
+            // that open and close a rule, and reading them as such split one declaration into a
+            // selector with nothing in it — seven hundred of those on a single stylesheet.
+            if (c == '#' && i + 1 < content.Length && content[i + 1] == '{')
+            {
+                var depth = 0;
+                var stop = i + 1;
+                while (stop < content.Length)
+                {
+                    if (content[stop] == '{')
+                        depth++;
+                    else if (content[stop] == '}' && --depth == 0)
+                        break;
+                    else if (content[stop] == '\n')
+                        line++;
+                    stop++;
+                }
+                buffer.Append(content[i..Math.Min(stop + 1, content.Length)]);
+                i = Math.Min(stop, content.Length - 1);
+                continue;
+            }
+
             if (c is '"' or '\'')
             {
                 var quote = c;

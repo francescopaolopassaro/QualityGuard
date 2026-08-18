@@ -103,3 +103,59 @@
   fix: |
     Name the resources and the verbs the workload uses. Start from what it does today and add to the
     list when something legitimately fails.
+
+- key: QG-K8-SML-0003
+  name: Workload has no liveness or readiness probes
+  status: superseded
+  superseded_by: QG-K8-SEC-0006
+  languages: [k8]
+  category: SML
+  severity: minor
+  effort: 15min
+  tags: [kubernetes]
+  message: Define liveness and readiness probes for the container.
+  summary: A container is declared without health probes.
+  why: |
+    Probes are good practice, and no reference catalogue carries the rule — theirs cover the limits a
+    container must declare, not its health checks. Ours fired once per container, thirteen times per
+    thousand lines on a repository of deployment examples, which buries the findings that are defects.
+  fix: |
+    Where a team wants probes enforced, an admission policy is the place that can actually refuse a
+    deployment without them.
+
+- key: QG-K8-CNV-0001
+  name: Workload has no app label
+  status: superseded
+  superseded_by: QG-K8-SEC-0006
+  languages: [k8]
+  category: CNV
+  severity: minor
+  effort: 10min
+  tags: [kubernetes]
+  message: Add an app label that identifies the workload.
+  summary: A workload is declared without an app label.
+  why: |
+    Labelling conventions differ between clusters and no reference catalogue carries this rule. It
+    reported once per workload on every example manifest.
+  fix: |
+    Agree the labels in the cluster's own conventions.
+
+- key: QG-K8-SEC-0005
+  name: Container has no security context
+  status: superseded
+  superseded_by: QG-K8-SEC-0006
+  languages: [k8]
+  category: SEC
+  severity: major
+  effort: 20min
+  tags: [kubernetes]
+  message: Define a securityContext for containers.
+  summary: A container is declared without a security context.
+  why: |
+    The reference catalogues name the specific settings that matter — a privileged container, a
+    writable root filesystem, a mounted service account token — and each of those is a finding a
+    reader can act on. Asking for a security context in general fired on every container and told
+    nobody what to put in it.
+  fix: |
+    The specific rules on privilege, on the root filesystem and on token mounting cover this ground
+    and say what to change.

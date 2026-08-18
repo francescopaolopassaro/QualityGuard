@@ -173,7 +173,18 @@ public sealed class ProjectIndex
             if (member.Ancestor(NodeKind.ClassDeclaration) != type || member.Text.Length == 0)
                 continue;
             var declared = member.FirstChild(NodeKind.TypeReference)?.Text;
-            if (!string.IsNullOrEmpty(declared))
+            if (string.IsNullOrEmpty(declared))
+                continue;
+            // Overloads share a name and need not share a return type: Gson declares both a
+            // 'toJson' that answers with a string and one that writes and answers with nothing.
+            // Recording whichever came last made every call to the first look like a use of a void
+            // result. When they disagree the type of the name is not knowable from the name.
+            if (types.TryGetValue(member.Text, out var already) && already != declared)
+            {
+                types[member.Text] = string.Empty;
+                continue;
+            }
+            if (!types.ContainsKey(member.Text) || types[member.Text].Length > 0)
                 types[member.Text] = declared;
         }
         return types;

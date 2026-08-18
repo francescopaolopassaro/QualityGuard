@@ -23,6 +23,7 @@
   name: Arguments given to functions should be simplified
   languages: [py]
   category: SML
+  status: planned
   severity: minor
   effort: 20min
   tags: [sml, ported]
@@ -34,8 +35,6 @@
   fix: |
     Remove what is not used, name what is unclear, and keep one piece of behaviour in one place so the
     next change touches a single spot.
-  status: planned
-
 - key: QG-PY-BUG-0195
   name: Asyncio tasks should match the behaviour the code describes
   languages: [py]
@@ -177,6 +176,7 @@
   name: AWS Lambda handlers should match the behaviour the code describes
   languages: [py]
   category: BUG
+  status: planned
   severity: major
   effort: 5min
   tags: [bug, ported]
@@ -188,8 +188,6 @@
   fix: |
     Make the intended behaviour explicit — fix the condition, the operator or the order of operations —
     and cover the case that used to fail with a test.
-  status: planned
-
 - key: QG-PY-SML-0308
   name: Hard-to-read code should be simplified
   languages: [py]
@@ -311,6 +309,7 @@
   name: Events should be replaced by the recommended alternative
   languages: [py]
   category: SML
+  status: planned
   severity: minor
   effort: 10min
   tags: [prefer_api, ported]
@@ -323,8 +322,6 @@
   fix: |
     Switch to the recommended construct; the behaviour is the same in the normal case and defined in the
     cases the old form got wrong.
-  status: planned
-
 - key: QG-PY-BUG-0199
   name: Cancellation exceptions should make failure handling explicit
   languages: [py]
@@ -349,6 +346,7 @@
   name: Cancellation scopes should match the behaviour the code describes
   languages: [py]
   category: BUG
+  status: planned
   severity: major
   effort: 5min
   tags: [bug, ported]
@@ -360,8 +358,6 @@
   fix: |
     Make the intended behaviour explicit — fix the condition, the operator or the order of operations —
     and cover the case that used to fail with a test.
-  status: planned
-
 - key: QG-PY-SML-0313
   name: Method overrides should be simplified
   languages: [py]
@@ -795,6 +791,7 @@
   name: Flask error handlers should match the behaviour the code describes
   languages: [py]
   category: BUG
+  status: planned
   severity: major
   effort: 5min
   tags: [bug, ported]
@@ -806,8 +803,6 @@
   fix: |
     Make the intended behaviour explicit — fix the condition, the operator or the order of operations —
     and cover the case that used to fail with a test.
-  status: planned
-
 - key: QG-PY-SEC-0099
   name: Flask secret keys should not be committed with the source
   languages: [py]
@@ -911,6 +906,7 @@
   name: Send_file should match the behaviour the code describes
   languages: [py]
   category: BUG
+  status: planned
   severity: major
   effort: 5min
   tags: [bug, ported]
@@ -922,8 +918,6 @@
   fix: |
     Make the intended behaviour explicit — fix the condition, the operator or the order of operations —
     and cover the case that used to fail with a test.
-  status: planned
-
 - key: QG-PY-BUG-0212
   name: Flask class-based view decorators should match the behaviour the code describes
   languages: [py]
@@ -1066,6 +1060,7 @@
   name: SystemExit should be simplified
   languages: [py]
   category: SML
+  status: planned
   severity: minor
   effort: 5min
   tags: [sml, ported]
@@ -1077,8 +1072,6 @@
   fix: |
     Remove what is not used, name what is unclear, and keep one piece of behaviour in one place so the
     next change touches a single spot.
-  status: planned
-
 - key: QG-PY-SML-0331
   name: Comparison methods should be declared the way the language intends
   languages: [py]
@@ -1122,6 +1115,7 @@
   name: Hard-to-read code should be simplified
   languages: [py]
   category: SML
+  status: planned
   severity: minor
   effort: 5min
   tags: [sml, ported]
@@ -1133,8 +1127,6 @@
   fix: |
     Remove what is not used, name what is unclear, and keep one piece of behaviour in one place so the
     next change touches a single spot.
-  status: planned
-
 - key: QG-PY-BUG-0215
   name: Suspicious code should match the behaviour the code describes
   languages: [py]
@@ -1215,6 +1207,7 @@
   name: Logging.exception() should be replaced by the recommended alternative
   languages: [py]
   category: SML
+  status: planned
   severity: minor
   effort: 5min
   tags: [prefer_api, ported]
@@ -1227,8 +1220,6 @@
   fix: |
     Switch to the recommended construct; the behaviour is the same in the normal case and defined in the
     cases the old form got wrong.
-  status: planned
-
 - key: QG-PY-SML-0337
   name: Function returns should be simplified
   languages: [py]
@@ -1659,6 +1650,7 @@
   name: Pytz.timezone should be simplified
   languages: [py]
   category: SML
+  status: planned
   severity: minor
   effort: 5min
   tags: [sml, ported]
@@ -1670,8 +1662,6 @@
   fix: |
     Remove what is not used, name what is unclear, and keep one piece of behaviour in one place so the
     next change touches a single spot.
-  status: planned
-
 - key: QG-PY-SML-0352
   name: Hard-to-read code should be simplified
   languages: [py]
@@ -1931,6 +1921,7 @@
   name: String formatting should be replaced by the recommended alternative
   languages: [py]
   category: SML
+  status: planned
   severity: minor
   effort: 1min
   tags: [prefer_api, ported]
@@ -1943,12 +1934,11 @@
   fix: |
     Switch to the recommended construct; the behaviour is the same in the normal case and defined in the
     cases the old form got wrong.
-  status: planned
-
 - key: QG-PY-BUG-0228
   name: Async functions should be accessed in a thread-safe way
   languages: [py]
   category: BUG
+  status: planned
   severity: major
   effort: 5min
   tags: [concurrency, ported]
@@ -1960,12 +1950,11 @@
   fix: |
     Lock a private object dedicated to the state it protects, keep the critical section short, and prefer
     the concurrent collections and higher-level primitives the platform provides.
-  status: planned
-
 - key: QG-PY-BUG-0229
   name: Async functions should be accessed in a thread-safe way
   languages: [py]
   category: BUG
+  status: planned
   severity: major
   effort: 5min
   tags: [concurrency, ported]
@@ -1977,8 +1966,6 @@
   fix: |
     Lock a private object dedicated to the state it protects, keep the critical section short, and prefer
     the concurrent collections and higher-level primitives the platform provides.
-  status: planned
-
 - key: QG-PY-SML-0362
   name: TaskGroup/Nursery should not be used
   languages: [py]
@@ -2098,6 +2085,7 @@
   name: Shared state should be accessed in a thread-safe way
   languages: [py]
   category: BUG
+  status: planned
   severity: major
   effort: 5min
   tags: [concurrency, ported]
@@ -2109,8 +2097,6 @@
   fix: |
     Lock a private object dedicated to the state it protects, keep the critical section short, and prefer
     the concurrent collections and higher-level primitives the platform provides.
-  status: planned
-
 - key: QG-PY-SML-0368
   name: Timezone-aware datetime objects should be replaced by the recommended alternative
   languages: [py]
@@ -2349,6 +2335,7 @@
   name: Wildcard imports should not be used
   languages: [py]
   category: SML
+  status: planned
   severity: minor
   effort: 5min
   tags: [avoid_api, ported]
@@ -2361,8 +2348,6 @@
   fix: |
     Replace the call with the current API, and keep the old one only behind a compatibility layer that is
     documented and dated.
-  status: planned
-
 - key: QG-PY-SEC-0103
   name: Amazon EFS file systems should use current cryptographic parameters
   languages: [py]
@@ -2802,6 +2787,7 @@
   name: Names of regular expressions named groups should be replaced by the recommended alternative
   languages: [py]
   category: SML
+  status: planned
   severity: minor
   effort: 10min
   tags: [prefer_api, ported]
@@ -2814,12 +2800,11 @@
   fix: |
     Switch to the recommended construct; the behaviour is the same in the normal case and defined in the
     cases the old form got wrong.
-  status: planned
-
 - key: QG-PY-BUG-0237
   name: Tests should assert something
   languages: [py]
   category: BUG
+  status: planned
   severity: major
   effort: 5min
   tags: [tests, ported]
@@ -2831,8 +2816,6 @@
   fix: |
     Assert the behaviour the test exists for, re-enable it, and make sure it fails when the behaviour is
     broken before trusting it again.
-  status: planned
-
 - key: QG-PY-BUG-0238
   name: Tests should assert something
   languages: [py]
@@ -2856,6 +2839,7 @@
   name: Dedicated exception assertions should be replaced by the recommended alternative
   languages: [py]
   category: SML
+  status: planned
   severity: minor
   effort: 5min
   tags: [prefer_api, ported]
@@ -2868,8 +2852,6 @@
   fix: |
     Switch to the recommended construct; the behaviour is the same in the normal case and defined in the
     cases the old form got wrong.
-  status: planned
-
 - key: QG-PY-SML-0380
   name: Deprecated code should be retired
   languages: [py]
@@ -2894,6 +2876,7 @@
   name: Parametrize decorators should not be left empty
   languages: [py]
   category: BUG
+  status: planned
   severity: major
   effort: 5min
   tags: [empty, ported]
@@ -2906,8 +2889,6 @@
   fix: |
     Implement the behaviour, or remove the construct. When doing nothing is deliberate, say so in a
     comment so the next reader does not treat it as a gap.
-  status: planned
-
 - key: QG-PY-SML-0381
   name: Tests should assert something
   languages: [py]
@@ -2950,6 +2931,7 @@
   name: Tests should assert something
   languages: [py]
   category: SML
+  status: planned
   severity: minor
   effort: 5min
   tags: [tests, ported]
@@ -2961,8 +2943,6 @@
   fix: |
     Assert the behaviour the test exists for, re-enable it, and make sure it fails when the behaviour is
     broken before trusting it again.
-  status: planned
-
 - key: QG-PY-SML-0384
   name: Tests should assert something
   languages: [py]
@@ -2986,6 +2966,7 @@
   name: Mocks should be simplified
   languages: [py]
   category: SML
+  status: planned
   severity: minor
   effort: 10min
   tags: [sml, ported]
@@ -2997,8 +2978,6 @@
   fix: |
     Remove what is not used, name what is unclear, and keep one piece of behaviour in one place so the
     next change touches a single spot.
-  status: planned
-
 - key: QG-PY-SML-0386
   name: Tests should assert something
   languages: [py]
@@ -3041,6 +3020,7 @@
   name: Pytest fixture and mark decorators should be simplified
   languages: [py]
   category: SML
+  status: planned
   severity: minor
   effort: 1min
   tags: [sml, ported]
@@ -3052,8 +3032,6 @@
   fix: |
     Remove what is not used, name what is unclear, and keep one piece of behaviour in one place so the
     next change touches a single spot.
-  status: planned
-
 - key: QG-PY-SML-0388
   name: Pytest fixtures should be simplified
   languages: [py]
@@ -3115,6 +3093,7 @@
   name: Tests should assert something
   languages: [py]
   category: SML
+  status: planned
   severity: minor
   effort: 5min
   tags: [tests, ported]
@@ -3126,12 +3105,11 @@
   fix: |
     Assert the behaviour the test exists for, re-enable it, and make sure it fails when the behaviour is
     broken before trusting it again.
-  status: planned
-
 - key: QG-PY-SML-0391
   name: Tests should assert something
   languages: [py]
   category: SML
+  status: planned
   severity: minor
   effort: 5min
   tags: [tests, ported]
@@ -3143,8 +3121,6 @@
   fix: |
     Assert the behaviour the test exists for, re-enable it, and make sure it fails when the behaviour is
     broken before trusting it again.
-  status: planned
-
 - key: QG-PY-SML-0392
   name: Reason should assert something
   languages: [py]
@@ -3168,6 +3144,7 @@
   name: Pytest marks and usefixtures should be simplified
   languages: [py]
   category: SML
+  status: planned
   severity: minor
   effort: 5min
   tags: [sml, ported]
@@ -3179,8 +3156,6 @@
   fix: |
     Remove what is not used, name what is unclear, and keep one piece of behaviour in one place so the
     next change touches a single spot.
-  status: planned
-
 - key: QG-PY-SML-0394
   name: Tests should assert something
   languages: [py]

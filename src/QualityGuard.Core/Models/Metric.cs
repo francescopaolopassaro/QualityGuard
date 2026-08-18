@@ -18,6 +18,7 @@ public sealed class Metric
 
 public static class CoreMetrics
 {
+    public const string Coverage = "coverage";
     public const string NewCoverage = "new_coverage";
     public const string NewDuplicatedLinesDensity = "new_duplicated_lines_density";
     public const string NewSecurityRating = "new_security_rating";
@@ -51,6 +52,7 @@ public static class CoreMetrics
 
     public static readonly IReadOnlyList<Metric> All =
     [
+        new Metric(Coverage, "Coverage", "Share of lines the tests reach, read from the runner's report"),
         new Metric(NewCoverage, "Coverage on New Code", "Coverage of new/changed code"),
         new Metric(NewDuplicatedLinesDensity, "Duplicated Lines on New Code", "Duplicated lines on new code"),
         new Metric(NewSecurityRating, "Security Rating on New Code", "Security rating of new code"),

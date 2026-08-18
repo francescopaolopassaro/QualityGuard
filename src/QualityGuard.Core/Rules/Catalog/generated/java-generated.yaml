@@ -27,7 +27,7 @@
   effort: 15min
   tags: [hardcoded_value, generated]
   generated: true
-  status: planned
+
   message: This value is fixed in the source and cannot be changed without a rebuild.
   summary: An address, path or other deployment-specific value is written into the code.
   why: |
@@ -37,6 +37,9 @@
   fix: |
     Move the value to configuration, read it at start-up, and fail with a clear message when it is
     missing so a misconfigured deployment stops before it does anything.
+  detect:
+    - invocation: [String]
+      receiver: [lang]
 
 - key: QG-JV-BUG-0022
   name: Object.finalize() method should not be used
@@ -69,7 +72,7 @@
   effort: 15min
   tags: [bug, generated]
   generated: true
-  status: planned
+
   message: This code does not behave the way it reads.
   summary: The code does not do what its shape suggests, or fails on ordinary input.
   why: |
@@ -78,6 +81,9 @@
   fix: |
     Make the intended behaviour explicit — fix the condition, the operator or the order of operations —
     and cover the case that used to fail with a test.
+  detect:
+    - invocation: [Object, finalize, squid, super]
+      receiver: [lang]
 
 - key: QG-JV-SML-0038
   name: Source code should be simplified
@@ -87,7 +93,7 @@
   effort: 15min
   tags: [sml, generated]
   generated: true
-  status: planned
+
   message: This code is harder to read or change than the behaviour requires.
   summary: The code works but is harder to read or change than the behaviour requires.
   why: |
@@ -96,6 +102,8 @@
   fix: |
     Remove what is not used, name what is unclear, and keep one piece of behaviour in one place so the
     next change touches a single spot.
+  detect:
+    - invocation: [IndentationCheck, indentationLevel, squid]
 
 - key: QG-JV-SML-0039
   name: Assignments should be simplified
@@ -105,7 +113,7 @@
   effort: 15min
   tags: [sml, generated]
   generated: true
-  status: planned
+
   message: This code is harder to read or change than the behaviour requires.
   summary: The code works but is harder to read or change than the behaviour requires.
   why: |
@@ -114,6 +122,8 @@
   fix: |
     Remove what is not used, name what is unclear, and keep one piece of behaviour in one place so the
     next change touches a single spot.
+  detect:
+    - invocation: [AssignmentInSubExpressionCheck, squid]
 
 - key: QG-JV-SML-0041
   name: Modifiers should be declared the way the language intends
@@ -123,7 +133,7 @@
   effort: 15min
   tags: [declaration, generated]
   generated: true
-  status: planned
+
   message: This declaration exposes more than it should.
   summary: A declaration uses modifiers, order or visibility that do not match its purpose.
   why: |
@@ -133,6 +143,8 @@
   fix: |
     Declare the narrowest visibility that works, in the conventional modifier order, and mark as final or
     read-only whatever is not meant to change.
+  detect:
+    - invocation: [ModifiersOrderCheck, squid]
 
 - key: QG-JV-SML-0044
   name: Files should be simplified
@@ -160,7 +172,7 @@
   effort: 15min
   tags: [exception, generated]
   generated: true
-  status: planned
+
   message: This handling hides the failure instead of dealing with it.
   summary: An exception is thrown, caught or propagated in a way that hides the failure.
   why: |
@@ -170,6 +182,9 @@
   fix: |
     Catch the specific failures this code can recover from, keep the original exception as the cause when
     wrapping, and let everything else reach the boundary handler.
+  detect:
+    - invocation: [Exception, RedundantThrowsDeclarationCheck, RuntimeException, close, constructor, method, squid, throws]
+      receiver: [lang]
 
 - key: QG-JV-SML-0050
   name: Unsafe APIs should not be used
@@ -199,7 +214,7 @@
   effort: 15min
   tags: [sml, generated]
   generated: true
-  status: planned
+
   message: This code is harder to read or change than the behaviour requires.
   summary: The code works but is harder to read or change than the behaviour requires.
   why: |
@@ -208,6 +223,8 @@
   fix: |
     Remove what is not used, name what is unclear, and keep one piece of behaviour in one place so the
     next change touches a single spot.
+  detect:
+    - invocation: [Enumeration]
 
 - key: QG-JV-SML-0053
   name: Collection.isEmpty() should be replaced by the recommended alternative
@@ -240,7 +257,7 @@
   effort: 15min
   tags: [exception, generated]
   generated: true
-  status: planned
+
   message: This handling hides the failure instead of dealing with it.
   summary: An exception is thrown, caught or propagated in a way that hides the failure.
   why: |
@@ -250,6 +267,9 @@
   fix: |
     Catch the specific failures this code can recover from, keep the original exception as the cause when
     wrapping, and let everything else reach the boundary handler.
+  detect:
+    - invocation: [RuntimeException]
+      receiver: [lang]
 
 - key: QG-JV-SML-0057
   name: @Override should be replaced by the recommended alternative
@@ -259,7 +279,7 @@
   effort: 15min
   tags: [prefer_api, generated]
   generated: true
-  status: planned
+
   message: The platform offers a clearer or safer construct for this.
   summary: A construct is used where the platform offers one that is clearer or safer.
   why: |
@@ -269,6 +289,9 @@
   fix: |
     Switch to the recommended construct; the behaviour is the same in the normal case and defined in the
     cases the old form got wrong.
+  detect:
+    - invocation: [Object, Override]
+      receiver: [lang]
 
 - key: QG-JV-SML-0058
   name: Checked exceptions should make failure handling explicit
@@ -278,7 +301,7 @@
   effort: 15min
   tags: [exception, generated]
   generated: true
-  status: planned
+
   message: This handling hides the failure instead of dealing with it.
   summary: An exception is thrown, caught or propagated in a way that hides the failure.
   why: |
@@ -288,6 +311,9 @@
   fix: |
     Catch the specific failures this code can recover from, keep the original exception as the cause when
     wrapping, and let everything else reach the boundary handler.
+  detect:
+    - invocation: [Exception, RuntimeException]
+      receiver: [lang]
 
 - key: QG-JV-SML-0060
   name: Exception classes should make failure handling explicit
@@ -297,7 +323,7 @@
   effort: 15min
   tags: [exception, generated]
   generated: true
-  status: planned
+
   message: This handling hides the failure instead of dealing with it.
   summary: An exception is thrown, caught or propagated in a way that hides the failure.
   why: |
@@ -307,6 +333,9 @@
   fix: |
     Catch the specific failures this code can recover from, keep the original exception as the cause when
     wrapping, and let everything else reach the boundary handler.
+  detect:
+    - invocation: [Throwable]
+      receiver: [lang]
 
 - key: QG-JV-SML-0062
   name: Empty arrays and collections should be replaced by the recommended alternative
@@ -316,7 +345,7 @@
   effort: 15min
   tags: [prefer_api, generated]
   generated: true
-  status: planned
+
   message: The platform offers a clearer or safer construct for this.
   summary: A construct is used where the platform offers one that is clearer or safer.
   why: |
@@ -326,6 +355,9 @@
   fix: |
     Switch to the recommended construct; the behaviour is the same in the normal case and defined in the
     cases the old form got wrong.
+  detect:
+    - invocation: [ArrayList, Collection, Collections, HashMap, HashSet, LinkedList, NavigableMap, NavigableSet]
+      receiver: [util]
 
 - key: QG-JV-SML-0064
   name: Only static class initializers should be replaced by the recommended alternative
@@ -354,7 +386,7 @@
   effort: 15min
   tags: [sml, generated]
   generated: true
-  status: planned
+
   message: This code is harder to read or change than the behaviour requires.
   summary: The code works but is harder to read or change than the behaviour requires.
   why: |
@@ -363,6 +395,8 @@
   fix: |
     Remove what is not used, name what is unclear, and keep one piece of behaviour in one place so the
     next change touches a single spot.
+  detect:
+    - invocation: [finalize]
 
 - key: QG-JV-BUG-0024
   name: Signature of finalize() should match the behaviour the code describes
@@ -372,7 +406,7 @@
   effort: 15min
   tags: [bug, generated]
   generated: true
-  status: planned
+
   message: This code does not behave the way it reads.
   summary: The code does not do what its shape suggests, or fails on ordinary input.
   why: |
@@ -381,6 +415,8 @@
   fix: |
     Make the intended behaviour explicit — fix the condition, the operator or the order of operations —
     and cover the case that used to fail with a test.
+  detect:
+    - invocation: [finalize]
 
 - key: QG-JV-SML-0066
   name: Public types, methods and fields (API) should be simplified
@@ -390,7 +426,7 @@
   effort: 15min
   tags: [sml, generated]
   generated: true
-  status: planned
+
   message: This code is harder to read or change than the behaviour requires.
   summary: The code works but is harder to read or change than the behaviour requires.
   why: |
@@ -399,6 +435,9 @@
   fix: |
     Remove what is not used, name what is unclear, and keep one piece of behaviour in one place so the
     next change touches a single spot.
+  detect:
+    - invocation: [Deprecated, UndocumentedApi, VisibleForTesting, annotation, constructor, exclusion, field, forClasses]
+      receiver: [annotations, lang, util]
 
 - key: QG-JV-SML-0068
   name: Hard-to-read code should be simplified
@@ -500,7 +539,7 @@
   effort: 15min
   tags: [bug, generated]
   generated: true
-  status: planned
+
   message: This code does not behave the way it reads.
   summary: The code does not do what its shape suggests, or fails on ordinary input.
   why: |
@@ -509,6 +548,9 @@
   fix: |
     Make the intended behaviour explicit — fix the condition, the operator or the order of operations —
     and cover the case that used to fail with a test.
+  detect:
+    - invocation: [Object, equals]
+      receiver: [lang]
 
 - key: QG-JV-SML-0077
   name: Equals(Object obj) should be simplified
@@ -518,7 +560,7 @@
   effort: 15min
   tags: [sml, generated]
   generated: true
-  status: planned
+
   message: This code is harder to read or change than the behaviour requires.
   summary: The code works but is harder to read or change than the behaviour requires.
   why: |
@@ -527,6 +569,9 @@
   fix: |
     Remove what is not used, name what is unclear, and keep one piece of behaviour in one place so the
     next change touches a single spot.
+  detect:
+    - invocation: [Comparable, compareTo]
+      receiver: [lang]
 
 - key: QG-JV-SML-0078
   name: Hard-to-read code should be simplified
@@ -536,7 +581,7 @@
   effort: 15min
   tags: [sml, generated]
   generated: true
-  status: planned
+
   message: This code is harder to read or change than the behaviour requires.
   summary: The code works but is harder to read or change than the behaviour requires.
   why: |
@@ -545,6 +590,8 @@
   fix: |
     Remove what is not used, name what is unclear, and keep one piece of behaviour in one place so the
     next change touches a single spot.
+  detect:
+    - invocation: [constructor, method, variable]
 
 - key: QG-JV-SML-0079
   name: Interfaces should be simplified
@@ -627,7 +674,7 @@
   effort: 15min
   tags: [regex, generated]
   generated: true
-  status: planned
+
   message: This pattern is unsafe or incorrect as written.
   summary: A regular expression is malformed, ambiguous, or able to backtrack catastrophically.
   why: |
@@ -637,6 +684,8 @@
   fix: |
     Simplify the pattern so no quantifier can match the same text in several ways, add a matching timeout
     for input that comes from outside, and cover the pattern with a test.
+  detect:
+    - invocation: [regularExpression]
 
 - key: QG-JV-SML-0086
   name: Classes and enums with private members should be simplified
@@ -646,7 +695,7 @@
   effort: 15min
   tags: [sml, generated]
   generated: true
-  status: planned
+
   message: This code is harder to read or change than the behaviour requires.
   summary: The code works but is harder to read or change than the behaviour requires.
   why: |
@@ -655,6 +704,9 @@
   fix: |
     Remove what is not used, name what is unclear, and keep one piece of behaviour in one place so the
     next change touches a single spot.
+  detect:
+    - invocation: [Builder, Component, Configuration, Inject, ManagedBean, MessageDriven, Parameter, Requirement]
+      receiver: [annotation, annotations, inject, lombok]
 
 - key: QG-JV-SML-0087
   name: While loop should be replaced by the recommended alternative
@@ -683,7 +735,7 @@
   effort: 15min
   tags: [sml, generated]
   generated: true
-  status: planned
+
   message: This code is harder to read or change than the behaviour requires.
   summary: The code works but is harder to read or change than the behaviour requires.
   why: |
@@ -692,6 +744,8 @@
   fix: |
     Remove what is not used, name what is unclear, and keep one piece of behaviour in one place so the
     next change touches a single spot.
+  detect:
+    - invocation: [ForLoopCounterChangedCheck, squid]
 
 - key: QG-JV-SML-0089
   name: Switch cases should be simplified
@@ -719,7 +773,7 @@
   effort: 15min
   tags: [sml, generated]
   generated: true
-  status: planned
+
   message: This code is harder to read or change than the behaviour requires.
   summary: The code works but is harder to read or change than the behaviour requires.
   why: |
@@ -728,6 +782,8 @@
   fix: |
     Remove what is not used, name what is unclear, and keep one piece of behaviour in one place so the
     next change touches a single spot.
+  detect:
+    - invocation: [Monday, Tuesday]
 
 - key: QG-JV-SML-0091
   name: @SuppressWarnings annotations should be resolved rather than left in the code
@@ -737,7 +793,7 @@
   effort: 15min
   tags: [marker, generated]
   generated: true
-  status: planned
+
   message: This marker records work that was left open.
   summary: A marker in the source records work or a decision that was left open.
   why: |
@@ -746,6 +802,9 @@
   fix: |
     Do the work, or move it to the issue tracker and reference the ticket in the marker so the deadline
     lives somewhere that gets reviewed.
+  detect:
+    - invocation: [SuppressWarnings, listOfWarnings]
+      receiver: [lang]
 
 - key: QG-JV-SML-0092
   name: NOPMD suppression comments should be resolved rather than left in the code
@@ -769,11 +828,12 @@
   name: Loggers should follow the naming convention of the codebase
   languages: [java]
   category: SML
+  status: planned
   severity: minor
   effort: 15min
   tags: [naming, generated]
   generated: true
-  status: planned
+
   message: This identifier does not follow the naming convention of the codebase.
   summary: An identifier does not follow the convention used by the rest of the code.
   why: |
@@ -782,7 +842,6 @@
   fix: |
     Rename the identifier to match the convention, and let the editor propagate the change so callers
     stay in sync.
-
 - key: QG-JV-SML-0094
   name: IP addresses should not be hardcoded in the source
   languages: [java]
@@ -828,7 +887,7 @@
   effort: 15min
   tags: [sml, generated]
   generated: true
-  status: planned
+
   message: This code is harder to read or change than the behaviour requires.
   summary: The code works but is harder to read or change than the behaviour requires.
   why: |
@@ -837,6 +896,9 @@
   fix: |
     Remove what is not used, name what is unclear, and keep one piece of behaviour in one place so the
     next change touches a single spot.
+  detect:
+    - invocation: [AbstractList, AbstractMap, AbstractQueue, AbstractSequentialList, AbstractSet, ArrayDeque, ArrayList, ConcurrentHashMap]
+      receiver: [concurrent, util]
 
 - key: QG-JV-SML-0098
   name: Loops should be simplified
@@ -883,7 +945,7 @@
   effort: 15min
   tags: [marker, generated]
   generated: true
-  status: planned
+
   message: This marker records work that was left open.
   summary: A marker in the source records work or a decision that was left open.
   why: |
@@ -892,6 +954,8 @@
   fix: |
     Do the work, or move it to the issue tracker and reference the ticket in the marker so the deadline
     lives somewhere that gets reviewed.
+  detect:
+    - invocation: [TrailingCommentCheck, legalTrailingCommentPattern, squid]
 
 - key: QG-JV-SML-0103
   name: Copyright and license headers should be resolved rather than left in the code
@@ -901,7 +965,7 @@
   effort: 15min
   tags: [marker, generated]
   generated: true
-  status: planned
+
   message: This marker records work that was left open.
   summary: A marker in the source records work or a decision that was left open.
   why: |
@@ -910,6 +974,8 @@
   fix: |
     Do the work, or move it to the issue tracker and reference the ticket in the marker so the deadline
     lives somewhere that gets reviewed.
+  detect:
+    - invocation: [headerFormat, isRegularExpression]
 
 - key: QG-JV-SML-0104
   name: Switch statements should stay within a size that can be reviewed
@@ -919,7 +985,7 @@
   effort: 15min
   tags: [threshold, generated]
   generated: true
-  status: planned
+
   message: This construct is larger or more complex than the limit allows.
   summary: A construct exceeds the size or complexity a reader can follow at once.
   why: |
@@ -929,6 +995,8 @@
   fix: |
     Split along the responsibilities the code has accumulated: extract the sections that already have a
     name, and keep the original as the sequence of those steps.
+  detect:
+    - invocation: [maximum]
 
 - key: QG-JV-SML-0106
   name: Collections.EMPTY_LIST, EMPTY_MAP, and EMPTY_SET should not be used
@@ -979,7 +1047,7 @@
   effort: 15min
   tags: [sml, generated]
   generated: true
-  status: planned
+
   message: This code is harder to read or change than the behaviour requires.
   summary: The code works but is harder to read or change than the behaviour requires.
   why: |
@@ -988,6 +1056,9 @@
   fix: |
     Remove what is not used, name what is unclear, and keep one piece of behaviour in one place so the
     next change touches a single spot.
+  detect:
+    - invocation: [Object, Override]
+      receiver: [lang]
 
 - key: QG-JV-SML-0110
   name: JUnit4 @Ignored and JUnit5 @Disabled annotations should be replaced by the recommended alternative
@@ -1071,7 +1142,7 @@
   effort: 15min
   tags: [sml, generated]
   generated: true
-  status: planned
+
   message: This code is harder to read or change than the behaviour requires.
   summary: The code works but is harder to read or change than the behaviour requires.
   why: |
@@ -1080,6 +1151,9 @@
   fix: |
     Remove what is not used, name what is unclear, and keep one piece of behaviour in one place so the
     next change touches a single spot.
+  detect:
+    - invocation: [HashMap, LinkedHashMap]
+      receiver: [util]
 
 - key: QG-JV-SML-0115
   name: Hard-to-read code should be simplified
@@ -1107,7 +1181,7 @@
   effort: 15min
   tags: [sml, generated]
   generated: true
-  status: planned
+
   message: This code is harder to read or change than the behaviour requires.
   summary: The code works but is harder to read or change than the behaviour requires.
   why: |
@@ -1116,6 +1190,9 @@
   fix: |
     Remove what is not used, name what is unclear, and keep one piece of behaviour in one place so the
     next change touches a single spot.
+  detect:
+    - invocation: [Object]
+      receiver: [lang]
 
 - key: QG-JV-SML-0118
   name: NullPointerException should make failure handling explicit
@@ -1167,7 +1244,7 @@
   effort: 15min
   tags: [avoid_api, generated]
   generated: true
-  status: planned
+
   message: This API should be replaced by the current alternative.
   summary: Code calls an API that is unsafe, obsolete or superseded by a better alternative.
   why: |
@@ -1177,6 +1254,9 @@
   fix: |
     Replace the call with the current API, and keep the old one only behind a compatibility layer that is
     documented and dated.
+  detect:
+    - invocation: [Class, Object, equals]
+      receiver: [lang]
 
 - key: QG-JV-SML-0121
   name: Constructors should be simplified
@@ -1222,7 +1302,7 @@
   effort: 15min
   tags: [sml, generated]
   generated: true
-  status: planned
+
   message: This code is harder to read or change than the behaviour requires.
   summary: The code works but is harder to read or change than the behaviour requires.
   why: |
@@ -1231,6 +1311,9 @@
   fix: |
     Remove what is not used, name what is unclear, and keep one piece of behaviour in one place so the
     next change touches a single spot.
+  detect:
+    - invocation: [Repeatable]
+      receiver: [annotation]
 
 - key: QG-JV-SML-0124
   name: Standard functional interfaces should be simplified
@@ -1240,7 +1323,7 @@
   effort: 15min
   tags: [sml, generated]
   generated: true
-  status: planned
+
   message: This code is harder to read or change than the behaviour requires.
   summary: The code works but is harder to read or change than the behaviour requires.
   why: |
@@ -1249,6 +1332,9 @@
   fix: |
     Remove what is not used, name what is unclear, and keep one piece of behaviour in one place so the
     next change touches a single spot.
+  detect:
+    - invocation: [BooleanSupplier, DoubleBinaryOperator, DoubleConsumer, DoublePredicate, DoubleSupplier, DoubleToIntFunction, DoubleToLongFunction, DoubleUnaryOperator]
+      receiver: [function, lang]
 
 - key: QG-JV-SML-0125
   name: Ternary operator should not be used
@@ -1299,11 +1385,12 @@
   name: Methods and field names should be simplified
   languages: [java]
   category: SML
+  status: planned
   severity: minor
   effort: 15min
   tags: [sml, generated]
   generated: true
-  status: planned
+
   message: This code is harder to read or change than the behaviour requires.
   summary: The code works but is harder to read or change than the behaviour requires.
   why: |
@@ -1312,16 +1399,16 @@
   fix: |
     Remove what is not used, name what is unclear, and keep one piece of behaviour in one place so the
     next change touches a single spot.
-
 - key: QG-JV-SML-0131
   name: Redundant casts should not be used
   languages: [java]
   category: SML
+  status: planned
   severity: minor
   effort: 15min
   tags: [avoid_api, generated]
   generated: true
-  status: planned
+
   message: This API should be replaced by the current alternative.
   summary: Code calls an API that is unsafe, obsolete or superseded by a better alternative.
   why: |
@@ -1331,7 +1418,6 @@
   fix: |
     Replace the call with the current API, and keep the old one only behind a compatibility layer that is
     documented and dated.
-
 - key: QG-JV-SML-0132
   name: Extensions and implementations should be simplified
   languages: [java]
@@ -1340,7 +1426,7 @@
   effort: 15min
   tags: [sml, generated]
   generated: true
-  status: planned
+
   message: This code is harder to read or change than the behaviour requires.
   summary: The code works but is harder to read or change than the behaviour requires.
   why: |
@@ -1349,6 +1435,9 @@
   fix: |
     Remove what is not used, name what is unclear, and keep one piece of behaviour in one place so the
     next change touches a single spot.
+  detect:
+    - invocation: [Object]
+      receiver: [lang]
 
 - key: QG-JV-SML-0134
   name: Variables should be simplified
@@ -1358,7 +1447,7 @@
   effort: 15min
   tags: [sml, generated]
   generated: true
-  status: planned
+
   message: This code is harder to read or change than the behaviour requires.
   summary: The code works but is harder to read or change than the behaviour requires.
   why: |
@@ -1367,6 +1456,8 @@
   fix: |
     Remove what is not used, name what is unclear, and keep one piece of behaviour in one place so the
     next change touches a single spot.
+  detect:
+    - invocation: [Unknown]
 
 - key: QG-JV-SML-0135
   name: Simple class names should be replaced by the recommended alternative
@@ -1395,7 +1486,7 @@
   effort: 15min
   tags: [sml, generated]
   generated: true
-  status: planned
+
   message: This code is harder to read or change than the behaviour requires.
   summary: The code works but is harder to read or change than the behaviour requires.
   why: |
@@ -1404,6 +1495,9 @@
   fix: |
     Remove what is not used, name what is unclear, and keep one piece of behaviour in one place so the
     next change touches a single spot.
+  detect:
+    - invocation: [Collection, HttpServlet, Inject, Resource, Serializable, SpringBean]
+      receiver: [annot, annotation, http, inject, util]
 
 - key: QG-JV-SML-0138
   name: For loop increment clauses should be simplified
@@ -1449,7 +1543,7 @@
   effort: 15min
   tags: [sml, generated]
   generated: true
-  status: planned
+
   message: This code is harder to read or change than the behaviour requires.
   summary: The code works but is harder to read or change than the behaviour requires.
   why: |
@@ -1458,6 +1552,8 @@
   fix: |
     Remove what is not used, name what is unclear, and keep one piece of behaviour in one place so the
     next change touches a single spot.
+  detect:
+    - invocation: [VisibleForTesting, modifier]
 
 - key: QG-JV-SML-0141
   name: Hard-to-read code should be simplified
@@ -1467,7 +1563,7 @@
   effort: 15min
   tags: [sml, generated]
   generated: true
-  status: planned
+
   message: This code is harder to read or change than the behaviour requires.
   summary: The code works but is harder to read or change than the behaviour requires.
   why: |
@@ -1476,6 +1572,8 @@
   fix: |
     Remove what is not used, name what is unclear, and keep one piece of behaviour in one place so the
     next change touches a single spot.
+  detect:
+    - invocation: [getBoolean]
 
 - key: QG-JV-SEC-0036
   name: Password hashing functions should use current cryptographic parameters
@@ -1504,7 +1602,7 @@
   effort: 15min
   tags: [bug, generated]
   generated: true
-  status: planned
+
   message: This code does not behave the way it reads.
   summary: The code does not do what its shape suggests, or fails on ordinary input.
   why: |
@@ -1513,6 +1611,9 @@
   fix: |
     Make the intended behaviour explicit — fix the condition, the operator or the order of operations —
     and cover the case that used to fail with a test.
+  detect:
+    - invocation: [NoArgsConstructor, Serializable, access, writeReplace]
+      receiver: [lombok]
 
 - key: QG-JV-SML-0142
   name: Serializable classes should be simplified
@@ -1522,7 +1623,7 @@
   effort: 15min
   tags: [sml, generated]
   generated: true
-  status: planned
+
   message: This code is harder to read or change than the behaviour requires.
   summary: The code works but is harder to read or change than the behaviour requires.
   why: |
@@ -1531,6 +1632,9 @@
   fix: |
     Remove what is not used, name what is unclear, and keep one piece of behaviour in one place so the
     next change touches a single spot.
+  detect:
+    - invocation: [Serializable, Throwable, serialVersionUID]
+      receiver: [lang]
 
 - key: QG-JV-BUG-0034
   name: Externalizable classes should match the behaviour the code describes
@@ -1540,7 +1644,7 @@
   effort: 15min
   tags: [bug, generated]
   generated: true
-  status: planned
+
   message: This code does not behave the way it reads.
   summary: The code does not do what its shape suggests, or fails on ordinary input.
   why: |
@@ -1549,6 +1653,8 @@
   fix: |
     Make the intended behaviour explicit — fix the condition, the operator or the order of operations —
     and cover the case that used to fail with a test.
+  detect:
+    - invocation: [Externalizable]
 
 - key: QG-JV-BUG-0035
   name: Custom serialization methods should match the behaviour the code describes
@@ -1558,7 +1664,7 @@
   effort: 15min
   tags: [bug, generated]
   generated: true
-  status: planned
+
   message: This code does not behave the way it reads.
   summary: The code does not do what its shape suggests, or fails on ordinary input.
   why: |
@@ -1567,6 +1673,9 @@
   fix: |
     Make the intended behaviour explicit — fix the condition, the operator or the order of operations —
     and cover the case that used to fail with a test.
+  detect:
+    - invocation: [Object, ObjectInputStream, ObjectOutputStream, Serializable, readObject, readObjectNoData, readResolve, writeObject]
+      receiver: [lang]
 
 - key: QG-JV-SML-0143
   name: ReadResolve methods should be simplified
@@ -1576,7 +1685,7 @@
   effort: 15min
   tags: [sml, generated]
   generated: true
-  status: planned
+
   message: This code is harder to read or change than the behaviour requires.
   summary: The code works but is harder to read or change than the behaviour requires.
   why: |
@@ -1585,6 +1694,8 @@
   fix: |
     Remove what is not used, name what is unclear, and keep one piece of behaviour in one place so the
     next change touches a single spot.
+  detect:
+    - invocation: [Serializable, readResolve]
 
 - key: QG-JV-SML-0144
   name: Comparators should be simplified
@@ -1594,7 +1705,7 @@
   effort: 15min
   tags: [sml, generated]
   generated: true
-  status: planned
+
   message: This code is harder to read or change than the behaviour requires.
   summary: The code works but is harder to read or change than the behaviour requires.
   why: |
@@ -1603,6 +1714,9 @@
   fix: |
     Remove what is not used, name what is unclear, and keep one piece of behaviour in one place so the
     next change touches a single spot.
+  detect:
+    - invocation: [Comparator, Serializable]
+      receiver: [util]
 
 - key: QG-JV-SML-0145
   name: Fields in non-serializable classes should be simplified
@@ -1612,7 +1726,7 @@
   effort: 15min
   tags: [sml, generated]
   generated: true
-  status: planned
+
   message: This code is harder to read or change than the behaviour requires.
   summary: The code works but is harder to read or change than the behaviour requires.
   why: |
@@ -1621,6 +1735,8 @@
   fix: |
     Remove what is not used, name what is unclear, and keep one piece of behaviour in one place so the
     next change touches a single spot.
+  detect:
+    - invocation: [Serializable]
 
 - key: QG-JV-SEC-0037
   name: Cookies should not weaken the security of the application
@@ -1670,7 +1786,7 @@
   effort: 15min
   tags: [tests, generated]
   generated: true
-  status: planned
+
   message: This test cannot fail, so it verifies nothing.
   summary: A test does not assert, is disabled, or cannot fail.
   why: |
@@ -1679,6 +1795,9 @@
   fix: |
     Assert the behaviour the test exists for, re-enable it, and make sure it fails when the behaviour is
     broken before trusting it again.
+  detect:
+    - invocation: [Object, equals, getClass]
+      receiver: [lang]
 
 - key: QG-JV-BUG-0037
   name: Reflection should not be used
@@ -1745,7 +1864,7 @@
   effort: 15min
   tags: [avoid_api, generated]
   generated: true
-  status: planned
+
   message: This API should be replaced by the current alternative.
   summary: Code calls an API that is unsafe, obsolete or superseded by a better alternative.
   why: |
@@ -1755,6 +1874,9 @@
   fix: |
     Replace the call with the current API, and keep the old one only behind a compatibility layer that is
     documented and dated.
+  detect:
+    - invocation: [Arrays, hashCode, toString]
+      receiver: [util]
 
 - key: QG-JV-BUG-0042
   name: Suspicious code should match the behaviour the code describes
@@ -1782,7 +1904,7 @@
   effort: 15min
   tags: [bug, generated]
   generated: true
-  status: planned
+
   message: This code does not behave the way it reads.
   summary: The code does not do what its shape suggests, or fails on ordinary input.
   why: |
@@ -1791,6 +1913,9 @@
   fix: |
     Make the intended behaviour explicit — fix the condition, the operator or the order of operations —
     and cover the case that used to fail with a test.
+  detect:
+    - invocation: [Random]
+      receiver: [util]
 
 - key: QG-JV-BUG-0044
   name: String operations with predictable outcomes should match the behaviour the code describes
@@ -1800,7 +1925,7 @@
   effort: 15min
   tags: [bug, generated]
   generated: true
-  status: planned
+
   message: This code does not behave the way it reads.
   summary: The code does not do what its shape suggests, or fails on ordinary input.
   why: |
@@ -1809,6 +1934,9 @@
   fix: |
     Make the intended behaviour explicit — fix the condition, the operator or the order of operations —
     and cover the case that used to fail with a test.
+  detect:
+    - invocation: [CharSequence, String, compareTo, compareToIgnoreCase, contains, endsWith, indexOf, lastIndexOf]
+      receiver: [lang]
 
 - key: QG-JV-BUG-0045
   name: ScheduledThreadPoolExecutor should be accessed in a thread-safe way
@@ -1852,11 +1980,11 @@
   name: Constructors should not be used
   languages: [java]
   category: SML
+  status: planned
   severity: minor
   effort: 15min
   tags: [avoid_api, generated]
   generated: true
-  status: ready
   message: This API should be replaced by the current alternative.
   summary: Code calls an API that is unsafe, obsolete or superseded by a better alternative.
   why: |
@@ -1866,10 +1994,6 @@
   fix: |
     Replace the call with the current API, and keep the old one only behind a compatibility layer that is
     documented and dated.
-  detect:
-    - creation: [BigInteger]
-    - creation: [BigDecimal]
-
 - key: QG-JV-SML-0151
   name: Parsing should be replaced by the recommended alternative
   languages: [java]
@@ -1899,7 +2023,7 @@
   effort: 15min
   tags: [sml, generated]
   generated: true
-  status: planned
+
   message: This code is harder to read or change than the behaviour requires.
   summary: The code works but is harder to read or change than the behaviour requires.
   why: |
@@ -1908,6 +2032,9 @@
   fix: |
     Remove what is not used, name what is unclear, and keep one piece of behaviour in one place so the
     next change touches a single spot.
+  detect:
+    - invocation: [Boolean, Character, Double, Float, Integer, Short, toString, valueOf]
+      receiver: [lang]
 
 - key: QG-JV-BUG-0048
   name: Classes extending java.lang.Thread should be accessed in a thread-safe way
@@ -1917,7 +2044,7 @@
   effort: 15min
   tags: [concurrency, generated]
   generated: true
-  status: planned
+
   message: Shared state is accessed without correct coordination.
   summary: Shared state is accessed with locking that is missing, too wide, or on the wrong object.
   why: |
@@ -1926,6 +2053,9 @@
   fix: |
     Lock a private object dedicated to the state it protects, keep the critical section short, and prefer
     the concurrent collections and higher-level primitives the platform provides.
+  detect:
+    - invocation: [Runnable, Thread]
+      receiver: [lang]
 
 - key: QG-JV-SML-0153
   name: Unsafe APIs should not be used
@@ -1955,7 +2085,7 @@
   effort: 15min
   tags: [avoid_api, generated]
   generated: true
-  status: planned
+
   message: This API should be replaced by the current alternative.
   summary: Code calls an API that is unsafe, obsolete or superseded by a better alternative.
   why: |
@@ -1965,6 +2095,9 @@
   fix: |
     Replace the call with the current API, and keep the old one only behind a compatibility layer that is
     documented and dated.
+  detect:
+    - invocation: [HashMap, HashSet, Hashtable, Object, equals, hashCode]
+      receiver: [lang, util]
 
 - key: QG-JV-BUG-0050
   name: InterruptedException and ThreadDeath should make failure handling explicit
@@ -2038,7 +2171,7 @@
   effort: 15min
   tags: [prefer_api, generated]
   generated: true
-  status: planned
+
   message: The platform offers a clearer or safer construct for this.
   summary: A construct is used where the platform offers one that is clearer or safer.
   why: |
@@ -2048,6 +2181,8 @@
   fix: |
     Switch to the recommended construct; the behaviour is the same in the normal case and defined in the
     cases the old form got wrong.
+  detect:
+    - invocation: [serialVersionUID]
 
 - key: QG-JV-BUG-0051
   name: RunFinalizersOnExit should not be used
@@ -2078,7 +2213,7 @@
   effort: 15min
   tags: [bug, generated]
   generated: true
-  status: planned
+
   message: This code does not behave the way it reads.
   summary: The code does not do what its shape suggests, or fails on ordinary input.
   why: |
@@ -2087,6 +2222,9 @@
   fix: |
     Make the intended behaviour explicit — fix the condition, the operator or the order of operations —
     and cover the case that used to fail with a test.
+  detect:
+    - invocation: [Boolean, Character, Double, Float, Integer, Number, Short, Value]
+      receiver: [lang]
 
 - key: QG-JV-BUG-0053
   name: Dissimilar primitive wrappers should not be used
@@ -2115,7 +2253,7 @@
   effort: 15min
   tags: [sml, generated]
   generated: true
-  status: planned
+
   message: This code is harder to read or change than the behaviour requires.
   summary: The code works but is harder to read or change than the behaviour requires.
   why: |
@@ -2124,6 +2262,8 @@
   fix: |
     Remove what is not used, name what is unclear, and keep one piece of behaviour in one place so the
     next change touches a single spot.
+  detect:
+    - invocation: [VisibleForTesting]
 
 - key: QG-JV-SML-0158
   name: Cloneables should be simplified
@@ -2133,7 +2273,7 @@
   effort: 15min
   tags: [sml, generated]
   generated: true
-  status: planned
+
   message: This code is harder to read or change than the behaviour requires.
   summary: The code works but is harder to read or change than the behaviour requires.
   why: |
@@ -2142,6 +2282,9 @@
   fix: |
     Remove what is not used, name what is unclear, and keep one piece of behaviour in one place so the
     next change touches a single spot.
+  detect:
+    - invocation: [Cloneable, clone]
+      receiver: [lang]
 
 - key: QG-JV-BUG-0054
   name: Unnecessary equality checks should match the behaviour the code describes
@@ -2151,7 +2294,7 @@
   effort: 15min
   tags: [bug, generated]
   generated: true
-  status: planned
+
   message: This code does not behave the way it reads.
   summary: The code does not do what its shape suggests, or fails on ordinary input.
   why: |
@@ -2160,6 +2303,9 @@
   fix: |
     Make the intended behaviour explicit — fix the condition, the operator or the order of operations —
     and cover the case that used to fail with a test.
+  detect:
+    - invocation: [Object, equals]
+      receiver: [lang]
 
 - key: QG-JV-BUG-0055
   name: Equals methods should match the behaviour the code describes
@@ -2187,7 +2333,7 @@
   effort: 15min
   tags: [bug, generated]
   generated: true
-  status: planned
+
   message: This code does not behave the way it reads.
   summary: The code does not do what its shape suggests, or fails on ordinary input.
   why: |
@@ -2196,6 +2342,9 @@
   fix: |
     Make the intended behaviour explicit — fix the condition, the operator or the order of operations —
     and cover the case that used to fail with a test.
+  detect:
+    - invocation: [String, float]
+      receiver: [lang]
 
 - key: QG-JV-SML-0159
   name: Finalize should be handled explicitly when absent
@@ -2224,7 +2373,7 @@
   effort: 15min
   tags: [bug, generated]
   generated: true
-  status: planned
+
   message: This code does not behave the way it reads.
   summary: The code does not do what its shape suggests, or fails on ordinary input.
   why: |
@@ -2233,6 +2382,9 @@
   fix: |
     Make the intended behaviour explicit — fix the condition, the operator or the order of operations —
     and cover the case that used to fail with a test.
+  detect:
+    - invocation: [Integer, compareTo]
+      receiver: [lang]
 
 - key: QG-JV-BUG-0058
   name: Inappropriate Collection calls should match the behaviour the code describes
@@ -2242,7 +2394,7 @@
   effort: 15min
   tags: [bug, generated]
   generated: true
-  status: planned
+
   message: This code does not behave the way it reads.
   summary: The code does not do what its shape suggests, or fails on ordinary input.
   why: |
@@ -2251,16 +2403,20 @@
   fix: |
     Make the intended behaviour explicit — fix the condition, the operator or the order of operations —
     and cover the case that used to fail with a test.
+  detect:
+    - invocation: [Collection, Object, contains, containsKey, containsValue, getOrDefault, indexOf, lastIndexOf]
+      receiver: [lang, util]
 
 - key: QG-JV-BUG-0059
   name: Suspicious code should match the behaviour the code describes
   languages: [java]
   category: BUG
+  status: planned
   severity: major
   effort: 15min
   tags: [bug, generated]
   generated: true
-  status: planned
+
   message: This code does not behave the way it reads.
   summary: The code does not do what its shape suggests, or fails on ordinary input.
   why: |
@@ -2269,7 +2425,6 @@
   fix: |
     Make the intended behaviour explicit — fix the condition, the operator or the order of operations —
     and cover the case that used to fail with a test.
-
 - key: QG-JV-SML-0162
   name: Perform unnecessary mathematical operations should be simplified
   languages: [java]
@@ -2278,7 +2433,7 @@
   effort: 15min
   tags: [sml, generated]
   generated: true
-  status: planned
+
   message: This code is harder to read or change than the behaviour requires.
   summary: The code works but is harder to read or change than the behaviour requires.
   why: |
@@ -2287,6 +2442,9 @@
   fix: |
     Remove what is not used, name what is unclear, and keep one piece of behaviour in one place so the
     next change touches a single spot.
+  detect:
+    - invocation: [atan2, double, expm1, float, floor]
+      receiver: [lang]
 
 - key: QG-JV-SML-0163
   name: JUnit assertions should not be used
@@ -2333,7 +2491,7 @@
   effort: 15min
   tags: [prefer_api, generated]
   generated: true
-  status: planned
+
   message: The platform offers a clearer or safer construct for this.
   summary: A construct is used where the platform offers one that is clearer or safer.
   why: |
@@ -2343,6 +2501,9 @@
   fix: |
     Switch to the recommended construct; the behaviour is the same in the normal case and defined in the
     cases the old form got wrong.
+  detect:
+    - invocation: [String, equals]
+      receiver: [lang]
 
 - key: QG-JV-SML-0167
   name: Modulus results should be simplified
@@ -2352,7 +2513,7 @@
   effort: 15min
   tags: [sml, generated]
   generated: true
-  status: planned
+
   message: This code is harder to read or change than the behaviour requires.
   summary: The code works but is harder to read or change than the behaviour requires.
   why: |
@@ -2361,6 +2522,9 @@
   fix: |
     Remove what is not used, name what is unclear, and keep one piece of behaviour in one place so the
     next change touches a single spot.
+  detect:
+    - invocation: [Collection, String, negative, positive]
+      receiver: [lang, util]
 
 - key: QG-JV-BUG-0062
   name: CompareTo results should match the behaviour the code describes
@@ -2427,7 +2591,7 @@
   effort: 15min
   tags: [marker, generated]
   generated: true
-  status: planned
+
   message: This marker records work that was left open.
   summary: A marker in the source records work or a decision that was left open.
   why: |
@@ -2436,6 +2600,9 @@
   fix: |
     Do the work, or move it to the issue tracker and reference the ticket in the marker so the deadline
     lives somewhere that gets reviewed.
+  detect:
+    - invocation: [Access, Basic, Column, ElementCollection, Embeddable, Embedded, EmbeddedId, Entity]
+      receiver: [jakarta, javax, persistence]
 
 - key: QG-JV-SML-0171
   name: Static members should be simplified
@@ -2602,7 +2769,7 @@
   effort: 15min
   tags: [prefer_api, generated]
   generated: true
-  status: planned
+
   message: The platform offers a clearer or safer construct for this.
   summary: A construct is used where the platform offers one that is clearer or safer.
   why: |
@@ -2612,6 +2779,9 @@
   fix: |
     Switch to the recommended construct; the behaviour is the same in the normal case and defined in the
     cases the old form got wrong.
+  detect:
+    - invocation: [ArrayList, Collection, ConcurrentLinkedDeque, ConcurrentLinkedQueue, CopyOnWriteArrayList, CopyOnWriteArraySet, LinkedList, Object]
+      receiver: [concurrent, lang, util]
 
 - key: QG-JV-BUG-0071
   name: Loop conditions should match the behaviour the code describes
@@ -2639,7 +2809,7 @@
   effort: 15min
   tags: [marker, generated]
   generated: true
-  status: planned
+
   message: This marker records work that was left open.
   summary: A marker in the source records work or a decision that was left open.
   why: |
@@ -2648,6 +2818,8 @@
   fix: |
     Do the work, or move it to the issue tracker and reference the ticket in the marker so the deadline
     lives somewhere that gets reviewed.
+  detect:
+    - invocation: [allOverloads, argumentTypes, className, methodName]
 
 - key: QG-JV-SEC-0039
   name: HttpServletRequest.getRequestedSessionId() should not be used
@@ -2680,7 +2852,7 @@
   effort: 15min
   tags: [crypto, generated]
   generated: true
-  status: planned
+
   message: This cryptographic choice no longer provides the protection it suggests.
   summary: A cryptographic primitive, mode or key size that is no longer considered safe is used.
   why: |
@@ -2690,6 +2862,9 @@
   fix: |
     Use the algorithms the platform recommends today — authenticated encryption, a modern hash, a key
     size at or above the current guidance — and keep the choice in one place so it can be raised.
+  detect:
+    - invocation: [MessageDigest]
+      receiver: [security]
 
 - key: QG-JV-SML-0179
   name: Java parser failure should be simplified
@@ -2699,7 +2874,7 @@
   effort: 15min
   tags: [sml, generated]
   generated: true
-  status: planned
+
   message: This code is harder to read or change than the behaviour requires.
   summary: The code works but is harder to read or change than the behaviour requires.
   why: |
@@ -2708,6 +2883,8 @@
   fix: |
     Remove what is not used, name what is unclear, and keep one piece of behaviour in one place so the
     next change touches a single spot.
+  detect:
+    - invocation: [ParsingError, squid]
 
 - key: QG-JV-BUG-0073
   name: Object.wait(), Object.notify() and Object.notifyAll() should be accessed in a thread-safe way
@@ -2822,7 +2999,7 @@
   effort: 15min
   tags: [empty, generated]
   generated: true
-  status: planned
+
   message: This construct is empty, so it does nothing.
   summary: A construct is declared with no content.
   why: |
@@ -2832,6 +3009,8 @@
   fix: |
     Implement the behaviour, or remove the construct. When doing nothing is deliberate, say so in a
     comment so the next reader does not treat it as a gap.
+  detect:
+    - invocation: [EmptyFile, squid]
 
 - key: QG-JV-SML-0188
   name: Private mutable members should be simplified
@@ -3032,7 +3211,7 @@
   effort: 15min
   tags: [avoid_api, generated]
   generated: true
-  status: planned
+
   message: This API should be replaced by the current alternative.
   summary: Code calls an API that is unsafe, obsolete or superseded by a better alternative.
   why: |
@@ -3042,6 +3221,9 @@
   fix: |
     Replace the call with the current API, and keep the old one only behind a compatibility layer that is
     documented and dated.
+  detect:
+    - invocation: [AbstractHttpMessage, Authorization, Basic, BasicHeader, String, URLConnection, addHeader, addRequestProperty]
+      receiver: [lang, message]
 
 - key: QG-JV-SEC-0042
   name: Classes should not weaken the security of the application
@@ -3051,7 +3233,7 @@
   effort: 15min
   tags: [sec, generated]
   generated: true
-  status: planned
+
   message: This construct weakens the security of the application.
   summary: A construct that attackers routinely target is used without the guard it needs.
   why: |
@@ -3061,6 +3243,9 @@
   fix: |
     Validate the incoming value against an allowed set, pass it as data rather than as code or command,
     and replace weakened mechanisms with the current recommended one.
+  detect:
+    - invocation: [Class, ClassLoader, forName, loadClass]
+      receiver: [lang]
 
 - key: QG-JV-SML-0200
   name: ReadObject should be accessed in a thread-safe way
@@ -3215,7 +3400,7 @@
   effort: 15min
   tags: [sml, generated]
   generated: true
-  status: planned
+
   message: This code is harder to read or change than the behaviour requires.
   summary: The code works but is harder to read or change than the behaviour requires.
   why: |
@@ -3224,6 +3409,9 @@
   fix: |
     Remove what is not used, name what is unclear, and keep one piece of behaviour in one place so the
     next change touches a single spot.
+  detect:
+    - invocation: [Object, keySet, super]
+      receiver: [lang]
 
 - key: QG-JV-BUG-0088
   name: Getters and setters should be accessed in a thread-safe way
@@ -3388,7 +3576,7 @@
   effort: 15min
   tags: [sml, generated]
   generated: true
-  status: planned
+
   message: This code is harder to read or change than the behaviour requires.
   summary: The code works but is harder to read or change than the behaviour requires.
   why: |
@@ -3397,6 +3585,9 @@
   fix: |
     Remove what is not used, name what is unclear, and keep one piece of behaviour in one place so the
     next change touches a single spot.
+  detect:
+    - invocation: [String, StringBuffer, StringBuilder, append, text1, text2]
+      receiver: [lang]
 
 - key: QG-JV-BUG-0090
   name: JEE applications should match the behaviour the code describes
@@ -3445,7 +3636,7 @@
   effort: 15min
   tags: [sml, generated]
   generated: true
-  status: planned
+
   message: This code is harder to read or change than the behaviour requires.
   summary: The code works but is harder to read or change than the behaviour requires.
   why: |
@@ -3454,6 +3645,9 @@
   fix: |
     Remove what is not used, name what is unclear, and keep one piece of behaviour in one place so the
     next change touches a single spot.
+  detect:
+    - invocation: [Override]
+      receiver: [lang]
 
 - key: QG-JV-BUG-0092
   name: Indexes to passed to String operations should match the behaviour the code describes
@@ -3463,7 +3657,7 @@
   effort: 15min
   tags: [bug, generated]
   generated: true
-  status: planned
+
   message: This code does not behave the way it reads.
   summary: The code does not do what its shape suggests, or fails on ordinary input.
   why: |
@@ -3472,6 +3666,9 @@
   fix: |
     Make the intended behaviour explicit — fix the condition, the operator or the order of operations —
     and cover the case that used to fail with a test.
+  detect:
+    - invocation: [String, charAt, codePointAt, codePointBefore, codePointCount, getChars, offsetByCodePoints, subSequence]
+      receiver: [lang]
 
 - key: QG-JV-SML-0223
   name: WriteObject should be accessed in a thread-safe way
@@ -3555,11 +3752,11 @@
   name: StringBuilder data should be replaced by the recommended alternative
   languages: [java]
   category: SML
+  status: planned
   severity: minor
   effort: 15min
   tags: [prefer_api, generated]
   generated: true
-  status: ready
   message: The platform offers a clearer or safer construct for this.
   summary: A construct is used where the platform offers one that is clearer or safer.
   why: |
@@ -3569,9 +3766,6 @@
   fix: |
     Switch to the recommended construct; the behaviour is the same in the normal case and defined in the
     cases the old form got wrong.
-  detect:
-    - creation: [StringBuilder]
-
 - key: QG-JV-BUG-0094
   name: Assignment of lazy-initialized members should be accessed in a thread-safe way
   languages: [java]
@@ -3598,7 +3792,7 @@
   effort: 15min
   tags: [sml, generated]
   generated: true
-  status: planned
+
   message: This code is harder to read or change than the behaviour requires.
   summary: The code works but is harder to read or change than the behaviour requires.
   why: |
@@ -3607,16 +3801,19 @@
   fix: |
     Remove what is not used, name what is unclear, and keep one piece of behaviour in one place so the
     next change touches a single spot.
+  detect:
+    - invocation: [Collection, ImmutableCollection]
+      receiver: [collect, util]
 
 - key: QG-JV-BUG-0095
   name: GetClass should not be used
   languages: [java]
   category: BUG
+  status: planned
   severity: major
   effort: 15min
   tags: [avoid_api, generated]
   generated: true
-  status: ready
   message: This API should be replaced by the current alternative.
   summary: Code calls an API that is unsafe, obsolete or superseded by a better alternative.
   why: |
@@ -3626,9 +3823,6 @@
   fix: |
     Replace the call with the current API, and keep the old one only behind a compatibility layer that is
     documented and dated.
-  detect:
-    - invocation: [getClass]
-
 - key: QG-JV-BUG-0096
   name: Non-primitive fields should match the behaviour the code describes
   languages: [java]
@@ -3637,7 +3831,7 @@
   effort: 15min
   tags: [bug, generated]
   generated: true
-  status: planned
+
   message: This code does not behave the way it reads.
   summary: The code does not do what its shape suggests, or fails on ordinary input.
   why: |
@@ -3646,6 +3840,9 @@
   fix: |
     Make the intended behaviour explicit — fix the condition, the operator or the order of operations —
     and cover the case that used to fail with a test.
+  detect:
+    - invocation: [BigDecimal, BigInteger, Boolean, Character, Clock, Color, Cursor, Double]
+      receiver: [concurrent, lang, math, time, util]
 
 - key: QG-JV-BUG-0097
   name: Volatile variables should not be used
@@ -3676,7 +3873,7 @@
   effort: 15min
   tags: [sml, generated]
   generated: true
-  status: planned
+
   message: This code is harder to read or change than the behaviour requires.
   summary: The code works but is harder to read or change than the behaviour requires.
   why: |
@@ -3685,6 +3882,9 @@
   fix: |
     Remove what is not used, name what is unclear, and keep one piece of behaviour in one place so the
     next change touches a single spot.
+  detect:
+    - invocation: [PanacheEntityBase, PanacheMongoEntityBase]
+      receiver: [panache, util]
 
 - key: QG-JV-SML-0230
   name: Default annotation parameter values should be simplified
@@ -3712,7 +3912,7 @@
   effort: 15min
   tags: [prefer_api, generated]
   generated: true
-  status: planned
+
   message: The platform offers a clearer or safer construct for this.
   summary: A construct is used where the platform offers one that is clearer or safer.
   why: |
@@ -3722,6 +3922,9 @@
   fix: |
     Switch to the recommended construct; the behaviour is the same in the normal case and defined in the
     cases the old form got wrong.
+  detect:
+    - invocation: [Inject, required]
+      receiver: [inject]
 
 - key: QG-JV-BUG-0098
   name: Constructor injection should be replaced by the recommended alternative
@@ -3731,7 +3934,7 @@
   effort: 15min
   tags: [prefer_api, generated]
   generated: true
-  status: planned
+
   message: The platform offers a clearer or safer construct for this.
   summary: A construct is used where the platform offers one that is clearer or safer.
   why: |
@@ -3741,6 +3944,9 @@
   fix: |
     Switch to the recommended construct; the behaviour is the same in the normal case and defined in the
     cases the old form got wrong.
+  detect:
+    - invocation: [Inject]
+      receiver: [inject]
 
 - key: QG-JV-SEC-0043
   name: Cipher Block Chaining IVs should use current cryptographic parameters
@@ -3882,7 +4088,7 @@
   effort: 15min
   tags: [sml, generated]
   generated: true
-  status: planned
+
   message: This code is harder to read or change than the behaviour requires.
   summary: The code works but is harder to read or change than the behaviour requires.
   why: |
@@ -3891,6 +4097,9 @@
   fix: |
     Remove what is not used, name what is unclear, and keep one piece of behaviour in one place so the
     next change touches a single spot.
+  detect:
+    - invocation: [Collection, Serializable]
+      receiver: [util]
 
 - key: QG-JV-SML-0239
   name: Format strings should be replaced by the recommended alternative
@@ -3900,7 +4109,7 @@
   effort: 15min
   tags: [prefer_api, generated]
   generated: true
-  status: planned
+
   message: The platform offers a clearer or safer construct for this.
   summary: A construct is used where the platform offers one that is clearer or safer.
   why: |
@@ -3910,6 +4119,9 @@
   fix: |
     Switch to the recommended construct; the behaviour is the same in the normal case and defined in the
     cases the old form got wrong.
+  detect:
+    - invocation: [Boolean, Level, Logger, first, getAnonymousLogger, getLogger, toString]
+      receiver: [lang, logging, slf4j]
 
 - key: QG-JV-SML-0240
   name: Optional should not be used
@@ -3981,7 +4193,7 @@
   effort: 15min
   tags: [marker, generated]
   generated: true
-  status: planned
+
   message: This marker records work that was left open.
   summary: A marker in the source records work or a decision that was left open.
   why: |
@@ -3990,6 +4202,9 @@
   fix: |
     Do the work, or move it to the issue tracker and reference the ticket in the marker so the deadline
     lives somewhere that gets reviewed.
+  detect:
+    - invocation: [Class, String, className, forName]
+      receiver: [lang]
 
 - key: QG-JV-SML-0245
   name: Stream should not be used
@@ -4060,7 +4275,7 @@
   effort: 15min
   tags: [sml, generated]
   generated: true
-  status: planned
+
   message: This code is harder to read or change than the behaviour requires.
   summary: The code works but is harder to read or change than the behaviour requires.
   why: |
@@ -4069,6 +4284,9 @@
   fix: |
     Remove what is not used, name what is unclear, and keep one piece of behaviour in one place so the
     next change touches a single spot.
+  detect:
+    - invocation: [AllArgsConstructor, Inject, NonNull, PersistenceContext, RequiredArgsConstructor, Resource, customInjectionAnnotations]
+      receiver: [annotation, inject, lombok, persistence]
 
 - key: QG-JV-BUG-0103
   name: Spring @Controller classes should match the behaviour the code describes
@@ -4096,7 +4314,7 @@
   effort: 15min
   tags: [sml, generated]
   generated: true
-  status: planned
+
   message: This code is harder to read or change than the behaviour requires.
   summary: The code works but is harder to read or change than the behaviour requires.
   why: |
@@ -4105,6 +4323,9 @@
   fix: |
     Remove what is not used, name what is unclear, and keep one piece of behaviour in one place so the
     next change touches a single spot.
+  detect:
+    - invocation: [DeleteMapping, GetMapping, PatchMapping, PostMapping, PutMapping, RequestMapping]
+      receiver: [annotation]
 
 - key: QG-JV-BUG-0104
   name: Suspicious code should match the behaviour the code describes
@@ -4227,7 +4448,7 @@
   effort: 15min
   tags: [marker, generated]
   generated: true
-  status: planned
+
   message: This marker records work that was left open.
   summary: A marker in the source records work or a decision that was left open.
   why: |
@@ -4236,6 +4457,8 @@
   fix: |
     Do the work, or move it to the issue tracker and reference the ticket in the marker so the deadline
     lives somewhere that gets reviewed.
+  detect:
+    - invocation: [allOverloads, argumentTypes, className]
 
 - key: QG-JV-SML-0257
   name: Collection contents should be replaced by the recommended alternative
@@ -4245,7 +4468,7 @@
   effort: 15min
   tags: [prefer_api, generated]
   generated: true
-  status: planned
+
   message: The platform offers a clearer or safer construct for this.
   summary: A construct is used where the platform offers one that is clearer or safer.
   why: |
@@ -4255,6 +4478,9 @@
   fix: |
     Switch to the recommended construct; the behaviour is the same in the normal case and defined in the
     cases the old form got wrong.
+  detect:
+    - invocation: [Collection, addAll, clear, remove, removeAll, removeIf, retainAll]
+      receiver: [util]
 
 - key: QG-JV-SML-0259
   name: Stream call chains should be simplified
@@ -4397,7 +4623,7 @@
   effort: 15min
   tags: [regex, generated]
   generated: true
-  status: planned
+
   message: This pattern is unsafe or incorrect as written.
   summary: A regular expression is malformed, ambiguous, or able to backtrack catastrophically.
   why: |
@@ -4407,6 +4633,9 @@
   fix: |
     Simplify the pattern so no quantifier can match the same text in several ways, add a matching timeout
     for input that comes from outside, and cover the pattern with a test.
+  detect:
+    - invocation: [Pattern, String, compile, matches, replaceAll, replaceFirst, split]
+      receiver: [lang, regex]
 
 - key: QG-JV-SML-0266
   name: Stream.collect() calls should be simplified
@@ -4416,7 +4645,7 @@
   effort: 15min
   tags: [sml, generated]
   generated: true
-  status: planned
+
   message: This code is harder to read or change than the behaviour requires.
   summary: The code works but is harder to read or change than the behaviour requires.
   why: |
@@ -4425,6 +4654,9 @@
   fix: |
     Remove what is not used, name what is unclear, and keep one piece of behaviour in one place so the
     next change touches a single spot.
+  detect:
+    - invocation: [Collector, Collectors, DoubleStream, IntStream, LongStream, Stream, collect, counting]
+      receiver: [stream]
 
 - key: QG-JV-SML-0267
   name: Asserts should not be used
@@ -4471,7 +4703,7 @@
   effort: 15min
   tags: [sml, generated]
   generated: true
-  status: planned
+
   message: This code is harder to read or change than the behaviour requires.
   summary: The code works but is harder to read or change than the behaviour requires.
   why: |
@@ -4480,6 +4712,9 @@
   fix: |
     Remove what is not used, name what is unclear, and keep one piece of behaviour in one place so the
     next change touches a single spot.
+  detect:
+    - invocation: [BiConsumer, BiFunction, BinaryOperator, Boolean, BooleanSupplier, Consumer, Double, Function]
+      receiver: [function, lang]
 
 - key: QG-JV-SML-0269
   name: Spring components should be simplified
@@ -4503,11 +4738,12 @@
   name: Write(byte[],int,int) should be simplified
   languages: [java]
   category: SML
+  status: planned
   severity: minor
   effort: 15min
   tags: [sml, generated]
   generated: true
-  status: planned
+
   message: This code is harder to read or change than the behaviour requires.
   summary: The code works but is harder to read or change than the behaviour requires.
   why: |
@@ -4516,7 +4752,6 @@
   fix: |
     Remove what is not used, name what is unclear, and keep one piece of behaviour in one place so the
     next change touches a single spot.
-
 - key: QG-JV-SML-0271
   name: Integer.toHexString should not be used
   languages: [java]
@@ -4566,7 +4801,7 @@
   effort: 15min
   tags: [prefer_api, generated]
   generated: true
-  status: planned
+
   message: The platform offers a clearer or safer construct for this.
   summary: A construct is used where the platform offers one that is clearer or safer.
   why: |
@@ -4576,6 +4811,9 @@
   fix: |
     Switch to the recommended construct; the behaviour is the same in the normal case and defined in the
     cases the old form got wrong.
+  detect:
+    - invocation: [RequestMapping, RequestMethod, method]
+      receiver: [annotation]
 
 - key: QG-JV-SEC-0046
   name: Debugging features should not weaken the security of the application
@@ -4622,7 +4860,7 @@
   effort: 15min
   tags: [sml, generated]
   generated: true
-  status: planned
+
   message: This code is harder to read or change than the behaviour requires.
   summary: The code works but is harder to read or change than the behaviour requires.
   why: |
@@ -4631,6 +4869,9 @@
   fix: |
     Remove what is not used, name what is unclear, and keep one piece of behaviour in one place so the
     next change touches a single spot.
+  detect:
+    - invocation: [Object, equals]
+      receiver: [lang]
 
 - key: QG-JV-SEC-0047
   name: HttpSecurity URL patterns should not weaken the security of the application
@@ -4661,7 +4902,7 @@
   effort: 15min
   tags: [avoid_api, generated]
   generated: true
-  status: planned
+
   message: This API should be replaced by the current alternative.
   summary: Code calls an API that is unsafe, obsolete or superseded by a better alternative.
   why: |
@@ -4671,6 +4912,9 @@
   fix: |
     Replace the call with the current API, and keep the old one only behind a compatibility layer that is
     documented and dated.
+  detect:
+    - invocation: [ComponentScan, ServletComponentScan, SpringBootApplication, basePackageClasses, basePackages, scanBasePackageClasses, scanBasePackages]
+      receiver: [annotation, autoconfigure, servlet]
 
 - key: QG-JV-SML-0275
   name: @EnableAutoConfiguration should be simplified
@@ -4680,7 +4924,7 @@
   effort: 15min
   tags: [sml, generated]
   generated: true
-  status: planned
+
   message: This code is harder to read or change than the behaviour requires.
   summary: The code works but is harder to read or change than the behaviour requires.
   why: |
@@ -4689,6 +4933,9 @@
   fix: |
     Remove what is not used, name what is unclear, and keep one piece of behaviour in one place so the
     next change touches a single spot.
+  detect:
+    - invocation: [SpringBootApplication, exclude, excludeName]
+      receiver: [autoconfigure]
 
 - key: QG-JV-SML-0276
   name: Spring beans should be simplified
@@ -4698,7 +4945,7 @@
   effort: 15min
   tags: [sml, generated]
   generated: true
-  status: planned
+
   message: This code is harder to read or change than the behaviour requires.
   summary: The code works but is harder to read or change than the behaviour requires.
   why: |
@@ -4707,6 +4954,9 @@
   fix: |
     Remove what is not used, name what is unclear, and keep one piece of behaviour in one place so the
     next change touches a single spot.
+  detect:
+    - invocation: [ComponentScan, basePackageClasses, basePackages, direct, scanBasePackageClasses, scanBasePackages]
+      receiver: [annotation]
 
 - key: QG-JV-SML-0277
   name: String offset-based methods should be replaced by the recommended alternative
@@ -4716,7 +4966,7 @@
   effort: 15min
   tags: [prefer_api, generated]
   generated: true
-  status: planned
+
   message: The platform offers a clearer or safer construct for this.
   summary: A construct is used where the platform offers one that is clearer or safer.
   why: |
@@ -4726,6 +4976,9 @@
   fix: |
     Switch to the recommended construct; the behaviour is the same in the normal case and defined in the
     cases the old form got wrong.
+  detect:
+    - invocation: [String, indexOf, lastIndexOf, startsWith, substring]
+      receiver: [lang]
 
 - key: QG-JV-SML-0278
   name: @CheckForNull or @Nullable should not be used
@@ -4735,7 +4988,7 @@
   effort: 15min
   tags: [avoid_api, generated]
   generated: true
-  status: planned
+
   message: This API should be replaced by the current alternative.
   summary: Code calls an API that is unsafe, obsolete or superseded by a better alternative.
   why: |
@@ -4745,6 +4998,8 @@
   fix: |
     Replace the call with the current API, and keep the old one only behind a compatibility layer that is
     documented and dated.
+  detect:
+    - invocation: [annotation, declaration]
 
 - key: QG-JV-SEC-0048
   name: Database Operations should not weaken the security of the application
@@ -4754,7 +5009,7 @@
   effort: 15min
   tags: [sec, generated]
   generated: true
-  status: planned
+
   message: This construct weakens the security of the application.
   summary: A construct that attackers routinely target is used without the guard it needs.
   why: |
@@ -4764,6 +5019,9 @@
   fix: |
     Validate the incoming value against an allowed set, pass it as data rather than as code or command,
     and replace weakened mechanisms with the current recommended one.
+  detect:
+    - invocation: [DeleteMapping, Document, Entity, GetMapping, JsonCreator, PatchMapping, PathVariable, PostMapping]
+      receiver: [annotation, annotations, mapping, persistence]
 
 - key: QG-JV-SML-0279
   name: StandardCharsets constants should be replaced by the recommended alternative
@@ -4794,7 +5052,7 @@
   effort: 15min
   tags: [prefer_api, generated]
   generated: true
-  status: planned
+
   message: The platform offers a clearer or safer construct for this.
   summary: A construct is used where the platform offers one that is clearer or safer.
   why: |
@@ -4804,6 +5062,9 @@
   fix: |
     Switch to the recommended construct; the behaviour is the same in the normal case and defined in the
     cases the old form got wrong.
+  detect:
+    - invocation: [Base64, BaseEncoding, Files, Function, ImmutableList, Optional, Predicate, Supplier]
+      receiver: [Files, base, collect, function, util]
 
 - key: QG-JV-SML-0281
   name: Class.forName() should be simplified
@@ -4813,7 +5074,7 @@
   effort: 15min
   tags: [sml, generated]
   generated: true
-  status: planned
+
   message: This code is harder to read or change than the behaviour requires.
   summary: The code works but is harder to read or change than the behaviour requires.
   why: |
@@ -4822,6 +5083,9 @@
   fix: |
     Remove what is not used, name what is unclear, and keep one piece of behaviour in one place so the
     next change touches a single spot.
+  detect:
+    - invocation: [Class, DB2Driver, Driver, FBDriver, JDBCDriver, JdbcOdbcDriver, OracleDriver, SQLServerDriver]
+      receiver: [driver, jdbc, lang, odbc]
 
 - key: QG-JV-SML-0282
   name: SerialVersionUID should be simplified
@@ -4831,7 +5095,7 @@
   effort: 15min
   tags: [sml, generated]
   generated: true
-  status: planned
+
   message: This code is harder to read or change than the behaviour requires.
   summary: The code works but is harder to read or change than the behaviour requires.
   why: |
@@ -4840,6 +5104,8 @@
   fix: |
     Remove what is not used, name what is unclear, and keep one piece of behaviour in one place so the
     next change touches a single spot.
+  detect:
+    - invocation: [Serializable, serialVersionUID]
 
 - key: QG-JV-SML-0283
   name: Read(byte[],int,int) should be simplified
@@ -4849,7 +5115,7 @@
   effort: 15min
   tags: [sml, generated]
   generated: true
-  status: planned
+
   message: This code is harder to read or change than the behaviour requires.
   summary: The code works but is harder to read or change than the behaviour requires.
   why: |
@@ -4858,6 +5124,8 @@
   fix: |
     Remove what is not used, name what is unclear, and keep one piece of behaviour in one place so the
     next change touches a single spot.
+  detect:
+    - invocation: [FilterInputStream, InputStream]
 
 - key: QG-JV-SML-0284
   name: Hard-to-read code should be simplified
@@ -4904,7 +5172,7 @@
   effort: 15min
   tags: [sml, generated]
   generated: true
-  status: planned
+
   message: This code is harder to read or change than the behaviour requires.
   summary: The code works but is harder to read or change than the behaviour requires.
   why: |
@@ -4913,6 +5181,9 @@
   fix: |
     Remove what is not used, name what is unclear, and keep one piece of behaviour in one place so the
     next change touches a single spot.
+  detect:
+    - invocation: [Constraint, ConstraintValidator, Valid]
+      receiver: [validation]
 
 - key: QG-JV-BUG-0113
   name: ThreadLocal variables should be accessed in a thread-safe way
@@ -4999,7 +5270,7 @@
   effort: 15min
   tags: [permissions, generated]
   generated: true
-  status: planned
+
   message: This grants wider access than the operation needs.
   summary: A resource is created or shared with permissions wider than the task requires.
   why: |
@@ -5009,6 +5280,9 @@
   fix: |
     Grant the narrowest right that works, to the specific identity that needs it, and rely on inherited
     permissions from a properly secured parent instead of widening the resource itself.
+  detect:
+    - invocation: [Context, sendBroadcast, sendBroadcastAsUser, sendOrderedBroadcast, sendOrderedBroadcastAsUser, sendStickyBroadcast, sendStickyBroadcastAsUser, sendStickyOrderedBroadcast]
+      receiver: [content]
 
 - key: QG-JV-SEC-0051
   name: Android broadcast receivers should not grant more access than needed
@@ -5037,7 +5311,7 @@
   effort: 15min
   tags: [avoid_api, generated]
   generated: true
-  status: planned
+
   message: This API should be replaced by the current alternative.
   summary: Code calls an API that is unsafe, obsolete or superseded by a better alternative.
   why: |
@@ -5047,6 +5321,9 @@
   fix: |
     Replace the call with the current API, and keep the old one only behind a compatibility layer that is
     documented and dated.
+  detect:
+    - invocation: [ArrayList, Function, HashMap, HashSet, Hashtable, IdentityHashMap, LinkedHashMap, LinkedHashSet]
+      receiver: [function, util]
 
 - key: QG-JV-SML-0291
   name: String#replace should be replaced by the recommended alternative
@@ -5056,7 +5333,7 @@
   effort: 15min
   tags: [prefer_api, generated]
   generated: true
-  status: planned
+
   message: The platform offers a clearer or safer construct for this.
   summary: A construct is used where the platform offers one that is clearer or safer.
   why: |
@@ -5066,6 +5343,9 @@
   fix: |
     Switch to the recommended construct; the behaviour is the same in the normal case and defined in the
     cases the old form got wrong.
+  detect:
+    - invocation: [String, replaceAll]
+      receiver: [lang]
 
 - key: QG-JV-SML-0292
   name: Hard-to-read code should be simplified
@@ -5093,7 +5373,7 @@
   effort: 15min
   tags: [avoid_api, generated]
   generated: true
-  status: planned
+
   message: This API should be replaced by the current alternative.
   summary: Code calls an API that is unsafe, obsolete or superseded by a better alternative.
   why: |
@@ -5103,6 +5383,9 @@
   fix: |
     Replace the call with the current API, and keep the old one only behind a compatibility layer that is
     documented and dated.
+  detect:
+    - invocation: [remove]
+      receiver: [util]
 
 - key: QG-JV-SEC-0052
   name: Encryption algorithms should use current cryptographic parameters
@@ -5229,7 +5512,7 @@
   effort: 15min
   tags: [sml, generated]
   generated: true
-  status: planned
+
   message: This code is harder to read or change than the behaviour requires.
   summary: The code works but is harder to read or change than the behaviour requires.
   why: |
@@ -5238,6 +5521,9 @@
   fix: |
     Remove what is not used, name what is unclear, and keep one piece of behaviour in one place so the
     next change touches a single spot.
+  detect:
+    - invocation: [Class, Constructor, Method, Object, String, getConstructor, getDeclaredConstructor, getDeclaredMethod]
+      receiver: [lang, reflect]
 
 - key: QG-JV-SML-0299
   name: Spring components should be simplified
@@ -5247,7 +5533,7 @@
   effort: 15min
   tags: [sml, generated]
   generated: true
-  status: planned
+
   message: This code is harder to read or change than the behaviour requires.
   summary: The code works but is harder to read or change than the behaviour requires.
   why: |
@@ -5256,6 +5542,8 @@
   fix: |
     Remove what is not used, name what is unclear, and keep one piece of behaviour in one place so the
     next change touches a single spot.
+  detect:
+    - invocation: [Controller, ControllerImpl, Repository, RepositoryImpl, RestController, RestControllerImpl, Service, ServiceFacade]
 
 - key: QG-JV-SEC-0054
   name: OpenSAML2 should not weaken the security of the application
@@ -5303,7 +5591,7 @@
   effort: 15min
   tags: [sec, generated]
   generated: true
-  status: planned
+
   message: This construct weakens the security of the application.
   summary: A construct that attackers routinely target is used without the guard it needs.
   why: |
@@ -5313,6 +5601,9 @@
   fix: |
     Validate the incoming value against an allowed set, pass it as data rather than as code or command,
     and replace weakened mechanisms with the current recommended one.
+  detect:
+    - invocation: [CharSequence, DataSize, DataUnit, MultipartConfigFactory, String, fileUploadSizeLimit, parse, setMaxFileSize]
+      receiver: [lang, servlet, unit]
 
 - key: QG-JV-SML-0301
   name: Tests should assert something
@@ -5485,7 +5776,7 @@
   effort: 15min
   tags: [sec, generated]
   generated: true
-  status: planned
+
   message: This construct weakens the security of the application.
   summary: A construct that attackers routinely target is used without the guard it needs.
   why: |
@@ -5495,6 +5786,9 @@
   fix: |
     Validate the incoming value against an allowed set, pass it as data rather than as code or command,
     and replace weakened mechanisms with the current recommended one.
+  detect:
+    - invocation: [String, Throwable, loadUserByUsername, setHideUserNotFoundExceptions]
+      receiver: [lang]
 
 - key: QG-JV-SEC-0058
   name: Authorizations should not weaken the security of the application
@@ -5649,7 +5943,7 @@
   effort: 15min
   tags: [regex, generated]
   generated: true
-  status: planned
+
   message: This pattern is unsafe or incorrect as written.
   summary: A regular expression is malformed, ambiguous, or able to backtrack catastrophically.
   why: |
@@ -5659,6 +5953,8 @@
   fix: |
     Simplify the pattern so no quantifier can match the same text in several ways, add a matching timeout
     for input that comes from outside, and cover the pattern with a test.
+  detect:
+    - invocation: [checkRegex, maxComplexity]
 
 - key: QG-JV-SML-0311
   name: Empty lines should not be left empty
@@ -5742,7 +6038,7 @@
   effort: 15min
   tags: [prefer_api, generated]
   generated: true
-  status: planned
+
   message: The platform offers a clearer or safer construct for this.
   summary: A construct is used where the platform offers one that is clearer or safer.
   why: |
@@ -5752,6 +6048,9 @@
   fix: |
     Switch to the recommended construct; the behaviour is the same in the normal case and defined in the
     cases the old form got wrong.
+  detect:
+    - invocation: [Matcher, appendReplacement, group, replaceAll, replaceFirst, start]
+      receiver: [regex]
 
 - key: QG-JV-BUG-0126
   name: Regular expressions should be safe and correct
@@ -5873,7 +6172,7 @@
   effort: 15min
   tags: [avoid_api, generated]
   generated: true
-  status: planned
+
   message: This API should be replaced by the current alternative.
   summary: Code calls an API that is unsafe, obsolete or superseded by a better alternative.
   why: |
@@ -5883,6 +6182,8 @@
   fix: |
     Replace the call with the current API, and keep the old one only behind a compatibility layer that is
     documented and dated.
+  detect:
+    - invocation: [Assertion]
 
 - key: QG-JV-SML-0319
   name: Test methods should stay within a size that can be reviewed
@@ -6076,7 +6377,7 @@
   effort: 15min
   tags: [regex, generated]
   generated: true
-  status: planned
+
   message: This pattern is unsafe or incorrect as written.
   summary: A regular expression is malformed, ambiguous, or able to backtrack catastrophically.
   why: |
@@ -6086,6 +6387,8 @@
   fix: |
     Simplify the pattern so no quantifier can match the same text in several ways, add a matching timeout
     for input that comes from outside, and cover the pattern with a test.
+  detect:
+    - invocation: [maxStackConsumptionFactor]
 
 - key: QG-JV-BUG-0136
   name: Regular expressions should be safe and correct
@@ -6268,7 +6571,7 @@
   effort: 15min
   tags: [avoid_api, generated]
   generated: true
-  status: planned
+
   message: This API should be replaced by the current alternative.
   summary: Code calls an API that is unsafe, obsolete or superseded by a better alternative.
   why: |
@@ -6278,6 +6581,8 @@
   fix: |
     Replace the call with the current API, and keep the old one only behind a compatibility layer that is
     documented and dated.
+  detect:
+    - invocation: [MaximumNumberOfLines]
 
 - key: QG-JV-SML-0333
   name: Stream.toList() method should be replaced by the recommended alternative
@@ -6287,7 +6592,7 @@
   effort: 15min
   tags: [prefer_api, generated]
   generated: true
-  status: planned
+
   message: The platform offers a clearer or safer construct for this.
   summary: A construct is used where the platform offers one that is clearer or safer.
   why: |
@@ -6297,6 +6602,10 @@
   fix: |
     Switch to the recommended construct; the behaviour is the same in the normal case and defined in the
     cases the old form got wrong.
+  detect:
+    - invocation: [Collections, Collector, Collectors, Stream, addAll, addFirst, addLast, clear]
+      receiver: [stream, util]
+
 - key: QG-JV-SML-0334
   name: Switch arrow labels should be simplified
   languages: [java]
@@ -6323,7 +6632,7 @@
   effort: 15min
   tags: [prefer_api, generated]
   generated: true
-  status: planned
+
   message: The platform offers a clearer or safer construct for this.
   summary: A construct is used where the platform offers one that is clearer or safer.
   why: |
@@ -6333,6 +6642,8 @@
   fix: |
     Switch to the recommended construct; the behaviour is the same in the normal case and defined in the
     cases the old form got wrong.
+  detect:
+    - invocation: [ObjectInput, ObjectInputStream, ObjectOutput, ObjectOutputStream, Serializable, readExternal, readObject, readObjectNoData]
 
 - key: QG-JV-SML-0336
   name: Redundant constructors/methods should be simplified
@@ -6379,7 +6690,7 @@
   effort: 15min
   tags: [avoid_api, generated]
   generated: true
-  status: planned
+
   message: This API should be replaced by the current alternative.
   summary: Code calls an API that is unsafe, obsolete or superseded by a better alternative.
   why: |
@@ -6389,6 +6700,8 @@
   fix: |
     Replace the call with the current API, and keep the old one only behind a compatibility layer that is
     documented and dated.
+  detect:
+    - invocation: [External, Object, ObjectInput, ObjectInputStream, ObjectOutput, ObjectOutputStream, field, method]
 
 - key: QG-JV-SML-0338
   name: Custom getter method should not be used
@@ -6436,7 +6749,7 @@
   effort: 15min
   tags: [avoid_api, generated]
   generated: true
-  status: planned
+
   message: This API should be replaced by the current alternative.
   summary: Code calls an API that is unsafe, obsolete or superseded by a better alternative.
   why: |
@@ -6446,6 +6759,8 @@
   fix: |
     Replace the call with the current API, and keep the old one only behind a compatibility layer that is
     documented and dated.
+  detect:
+    - invocation: [method, variable, yield]
 
 - key: QG-JV-BUG-0142
   name: Reflection should not be used
@@ -6492,7 +6807,7 @@
   effort: 15min
   tags: [bug, generated]
   generated: true
-  status: planned
+
   message: This code does not behave the way it reads.
   summary: The code does not do what its shape suggests, or fails on ordinary input.
   why: |
@@ -6501,6 +6816,9 @@
   fix: |
     Make the intended behaviour explicit — fix the condition, the operator or the order of operations —
     and cover the case that used to fail with a test.
+  detect:
+    - invocation: [Array, Object, equals, hashCode, toString]
+      receiver: [lang]
 
 - key: QG-JV-SML-0342
   name: SerialVersionUID field should be simplified
@@ -6510,7 +6828,7 @@
   effort: 15min
   tags: [sml, generated]
   generated: true
-  status: planned
+
   message: This code is harder to read or change than the behaviour requires.
   summary: The code works but is harder to read or change than the behaviour requires.
   why: |
@@ -6519,6 +6837,8 @@
   fix: |
     Remove what is not used, name what is unclear, and keep one piece of behaviour in one place so the
     next change touches a single spot.
+  detect:
+    - invocation: [Serializable, serialVersionUID]
 
 - key: QG-JV-SML-0343
   name: Region should be simplified
@@ -6634,11 +6954,12 @@
   name: Android KeyStore keys should not weaken the security of the application
   languages: [java]
   category: SEC
+  status: planned
   severity: critical
   effort: 15min
   tags: [sec, generated]
   generated: true
-  status: planned
+
   message: This construct weakens the security of the application.
   summary: A construct that attackers routinely target is used without the guard it needs.
   why: |
@@ -6648,7 +6969,6 @@
   fix: |
     Validate the incoming value against an allowed set, pass it as data rather than as code or command,
     and replace weakened mechanisms with the current recommended one.
-
 - key: QG-JV-SEC-0061
   name: Biometric authentication should use current cryptographic parameters
   languages: [java]
@@ -6733,7 +7053,7 @@
   effort: 15min
   tags: [sec, generated]
   generated: true
-  status: planned
+
   message: This construct weakens the security of the application.
   summary: A construct that attackers routinely target is used without the guard it needs.
   why: |
@@ -6743,6 +7063,9 @@
   fix: |
     Validate the incoming value against an allowed set, pass it as data rather than as code or command,
     and replace weakened mechanisms with the current recommended one.
+  detect:
+    - invocation: [WebSettings, setJavaScriptEnabled]
+      receiver: [webkit]
 
 - key: QG-JV-SEC-0064
   name: WebViews should not grant more access than needed
@@ -6790,7 +7113,7 @@
   effort: 15min
   tags: [sml, generated]
   generated: true
-  status: planned
+
   message: This code is harder to read or change than the behaviour requires.
   summary: The code works but is harder to read or change than the behaviour requires.
   why: |
@@ -6799,6 +7122,9 @@
   fix: |
     Remove what is not used, name what is unclear, and keep one piece of behaviour in one place so the
     next change touches a single spot.
+  detect:
+    - invocation: [Comparable]
+      receiver: [lang]
 
 - key: QG-JV-SML-0356
   name: Hash-based collections with known capacity should be simplified
@@ -6808,7 +7134,7 @@
   effort: 15min
   tags: [sml, generated]
   generated: true
-  status: planned
+
   message: This code is harder to read or change than the behaviour requires.
   summary: The code works but is harder to read or change than the behaviour requires.
   why: |
@@ -6817,6 +7143,9 @@
   fix: |
     Remove what is not used, name what is unclear, and keep one piece of behaviour in one place so the
     next change touches a single spot.
+  detect:
+    - invocation: [HashMap, HashSet, LinkedHashMap, LinkedHashSet, WeakHashMap]
+      receiver: [util]
 
 - key: QG-JV-SML-0357
   name: Classes should be simplified
@@ -6826,7 +7155,7 @@
   effort: 15min
   tags: [sml, generated]
   generated: true
-  status: planned
+
   message: This code is harder to read or change than the behaviour requires.
   summary: The code works but is harder to read or change than the behaviour requires.
   why: |
@@ -6835,6 +7164,8 @@
   fix: |
     Remove what is not used, name what is unclear, and keep one piece of behaviour in one place so the
     next change touches a single spot.
+  detect:
+    - invocation: [couplingThreshold]
 
 - key: QG-JV-SML-0358
   name: Methods should stay within a size that can be reviewed
@@ -6844,7 +7175,7 @@
   effort: 15min
   tags: [threshold, generated]
   generated: true
-  status: planned
+
   message: This construct is larger or more complex than the limit allows.
   summary: A construct exceeds the size or complexity a reader can follow at once.
   why: |
@@ -6854,6 +7185,8 @@
   fix: |
     Split along the responsibilities the code has accumulated: extract the sections that already have a
     name, and keep the original as the sequence of those steps.
+  detect:
+    - invocation: [cyclomaticThreshold, locThreshold, nestingThreshold, nodvThreshold]
 
 - key: QG-JV-SML-0359
   name: Singleton design pattern should be replaced by the recommended alternative
@@ -6918,7 +7251,7 @@
   effort: 15min
   tags: [avoid_api, generated]
   generated: true
-  status: planned
+
   message: This API should be replaced by the current alternative.
   summary: Code calls an API that is unsafe, obsolete or superseded by a better alternative.
   why: |
@@ -6928,6 +7261,9 @@
   fix: |
     Replace the call with the current API, and keep the old one only behind a compatibility layer that is
     documented and dated.
+  detect:
+    - invocation: [Cacheable, async, cacheable, transactional]
+      receiver: [annotation]
 
 - key: QG-JV-SML-0363
   name: Field dependency injection should be simplified
@@ -6937,7 +7273,7 @@
   effort: 15min
   tags: [sml, generated]
   generated: true
-  status: planned
+
   message: This code is harder to read or change than the behaviour requires.
   summary: The code works but is harder to read or change than the behaviour requires.
   why: |
@@ -6946,6 +7282,9 @@
   fix: |
     Remove what is not used, name what is unclear, and keep one piece of behaviour in one place so the
     next change touches a single spot.
+  detect:
+    - invocation: [Inject]
+      receiver: [inject]
 
 - key: QG-JV-SML-0364
   name: Optional REST parameters should be simplified
@@ -6955,7 +7294,7 @@
   effort: 15min
   tags: [sml, generated]
   generated: true
-  status: planned
+
   message: This code is harder to read or change than the behaviour requires.
   summary: The code works but is harder to read or change than the behaviour requires.
   why: |
@@ -6964,6 +7303,9 @@
   fix: |
     Remove what is not used, name what is unclear, and keep one piece of behaviour in one place so the
     next change touches a single spot.
+  detect:
+    - invocation: [PathVariable, RequestParam, defaultValue, required]
+      receiver: [annotation]
 
 - key: QG-JV-BUG-0145
   name: Nullable injected fields and parameters should be handled explicitly when absent
@@ -7046,7 +7388,7 @@
   effort: 15min
   tags: [naming, generated]
   generated: true
-  status: planned
+
   message: This identifier does not follow the naming convention of the codebase.
   summary: An identifier does not follow the convention used by the rest of the code.
   why: |
@@ -7055,6 +7397,9 @@
   fix: |
     Rename the identifier to match the convention, and let the editor propagate the change so callers
     stay in sync.
+  detect:
+    - invocation: [Qualifier]
+      receiver: [annotation]
 
 - key: QG-JV-BUG-0148
   name: @Qualifier should not be used
@@ -7064,7 +7409,7 @@
   effort: 15min
   tags: [avoid_api, generated]
   generated: true
-  status: planned
+
   message: This API should be replaced by the current alternative.
   summary: Code calls an API that is unsafe, obsolete or superseded by a better alternative.
   why: |
@@ -7074,6 +7419,9 @@
   fix: |
     Replace the call with the current API, and keep the old one only behind a compatibility layer that is
     documented and dated.
+  detect:
+    - invocation: [Qualifier]
+      receiver: [annotation]
 
 - key: QG-JV-SML-0367
   name: Non-singleton Spring beans should be simplified
@@ -7083,7 +7431,7 @@
   effort: 15min
   tags: [sml, generated]
   generated: true
-  status: planned
+
   message: This code is harder to read or change than the behaviour requires.
   summary: The code works but is harder to read or change than the behaviour requires.
   why: |
@@ -7092,6 +7440,9 @@
   fix: |
     Remove what is not used, name what is unclear, and keep one piece of behaviour in one place so the
     next change touches a single spot.
+  detect:
+    - invocation: [Inject, scopeName, singleton]
+      receiver: [inject]
 
 - key: QG-JV-SML-0368
   name: @Controller should be simplified
@@ -7101,7 +7452,7 @@
   effort: 15min
   tags: [sml, generated]
   generated: true
-  status: planned
+
   message: This code is harder to read or change than the behaviour requires.
   summary: The code works but is harder to read or change than the behaviour requires.
   why: |
@@ -7110,6 +7461,9 @@
   fix: |
     Remove what is not used, name what is unclear, and keep one piece of behaviour in one place so the
     next change touches a single spot.
+  detect:
+    - invocation: [DeleteMapping, GetMapping, PatchMapping, PostMapping, PutMapping, RequestMapping, ResponseBody]
+      receiver: [annotation]
 
 - key: QG-JV-BUG-0149
   name: @Bean methods for Singleton should not be used
@@ -7119,7 +7473,7 @@
   effort: 15min
   tags: [avoid_api, generated]
   generated: true
-  status: planned
+
   message: This API should be replaced by the current alternative.
   summary: Code calls an API that is unsafe, obsolete or superseded by a better alternative.
   why: |
@@ -7129,6 +7483,8 @@
   fix: |
     Replace the call with the current API, and keep the old one only behind a compatibility layer that is
     documented and dated.
+  detect:
+    - invocation: [prototype, proxyBeanMethods, scopeName]
 
 - key: QG-JV-BUG-0150
   name: Path template variables should match the behaviour the code describes
@@ -7138,7 +7494,7 @@
   effort: 15min
   tags: [bug, generated]
   generated: true
-  status: planned
+
   message: This code does not behave the way it reads.
   summary: The code does not do what its shape suggests, or fails on ordinary input.
   why: |
@@ -7147,6 +7503,9 @@
   fix: |
     Make the intended behaviour explicit — fix the condition, the operator or the order of operations —
     and cover the case that used to fail with a test.
+  detect:
+    - invocation: [BindParam, DeleteMapping, GetMapping, ModelAttribute, PatchMapping, PathVariable, PostMapping, PutMapping]
+      receiver: [annotation, lang, lombok]
 
 - key: QG-JV-BUG-0151
   name: SpEL expression should match the behaviour the code describes
@@ -7156,7 +7515,7 @@
   effort: 15min
   tags: [bug, generated]
   generated: true
-  status: planned
+
   message: This code does not behave the way it reads.
   summary: The code does not do what its shape suggests, or fails on ordinary input.
   why: |
@@ -7165,6 +7524,8 @@
   fix: |
     Make the intended behaviour explicit — fix the condition, the operator or the order of operations —
     and cover the case that used to fail with a test.
+  detect:
+    - invocation: [property, springframework]
 
 - key: QG-JV-BUG-0152
   name: Beans in @Configuration class should match the behaviour the code describes
@@ -7192,7 +7553,7 @@
   effort: 15min
   tags: [bug, generated]
   generated: true
-  status: planned
+
   message: This code does not behave the way it reads.
   summary: The code does not do what its shape suggests, or fails on ordinary input.
   why: |
@@ -7201,6 +7562,9 @@
   fix: |
     Make the intended behaviour explicit — fix the condition, the operator or the order of operations —
     and cover the case that used to fail with a test.
+  detect:
+    - invocation: [HttpStatus, ResponseEntity, accepted, badRequest, created, noContent, notFound, status]
+      receiver: [http]
 
 - key: QG-JV-SML-0370
   name: Reverse iteration should be simplified
@@ -7228,7 +7592,7 @@
   effort: 15min
   tags: [prefer_api, generated]
   generated: true
-  status: planned
+
   message: The platform offers a clearer or safer construct for this.
   summary: A construct is used where the platform offers one that is clearer or safer.
   why: |
@@ -7238,6 +7602,9 @@
   fix: |
     Switch to the recommended construct; the behaviour is the same in the normal case and defined in the
     cases the old form got wrong.
+  detect:
+    - invocation: [ArrayList, AttributeList, Collection, Collections, CopyOnWriteArrayList, LinkedList, RoleList, RoleUnresolvedList]
+      receiver: [concurrent, management, relation, util]
 
 - key: QG-JV-SML-0372
   name: Outdated constructs should be replaced by the recommended alternative
@@ -7247,7 +7614,7 @@
   effort: 15min
   tags: [prefer_api, generated]
   generated: true
-  status: planned
+
   message: The platform offers a clearer or safer construct for this.
   summary: A construct is used where the platform offers one that is clearer or safer.
   why: |
@@ -7257,6 +7624,9 @@
   fix: |
     Switch to the recommended construct; the behaviour is the same in the normal case and defined in the
     cases the old form got wrong.
+  detect:
+    - invocation: [Record, equals, hashCode, toString]
+      receiver: [lang]
 
 - key: QG-JV-SML-0373
   name: Outdated constructs should be replaced by the recommended alternative
@@ -7266,7 +7636,7 @@
   effort: 15min
   tags: [prefer_api, generated]
   generated: true
-  status: planned
+
   message: The platform offers a clearer or safer construct for this.
   summary: A construct is used where the platform offers one that is clearer or safer.
   why: |
@@ -7276,6 +7646,9 @@
   fix: |
     Switch to the recommended construct; the behaviour is the same in the normal case and defined in the
     cases the old form got wrong.
+  detect:
+    - invocation: [Character, Integer, Short, short]
+      receiver: [lang]
 
 - key: QG-JV-BUG-0154
   name: Virtual threads should be replaced by the recommended alternative
@@ -7322,7 +7695,7 @@
   effort: 15min
   tags: [sml, generated]
   generated: true
-  status: planned
+
   message: This code is harder to read or change than the behaviour requires.
   summary: The code works but is harder to read or change than the behaviour requires.
   why: |
@@ -7331,6 +7704,9 @@
   fix: |
     Remove what is not used, name what is unclear, and keep one piece of behaviour in one place so the
     next change touches a single spot.
+  detect:
+    - invocation: [Camera, CameraDevice, CameraManager, LocationManager, MediaPlayer, MediaProjection, MediaRecorder, SensorManager]
+      receiver: [audiofx, camera2, display, hardware, location, media]
 
 - key: QG-JV-SML-0376
   name: Exact alarms should be simplified
@@ -7340,7 +7716,7 @@
   effort: 15min
   tags: [sml, generated]
   generated: true
-  status: planned
+
   message: This code is harder to read or change than the behaviour requires.
   summary: The code works but is harder to read or change than the behaviour requires.
   why: |
@@ -7349,6 +7725,8 @@
   fix: |
     Remove what is not used, name what is unclear, and keep one piece of behaviour in one place so the
     next change touches a single spot.
+  detect:
+    - invocation: [AlarmManager, Exact, setExact, setExactAndAllowWhileIdle, setWindow]
 
 - key: QG-JV-SML-0377
   name: High frame rates should not be used
@@ -7400,7 +7778,7 @@
   effort: 15min
   tags: [sml, generated]
   generated: true
-  status: planned
+
   message: This code is harder to read or change than the behaviour requires.
   summary: The code works but is harder to read or change than the behaviour requires.
   why: |
@@ -7409,6 +7787,9 @@
   fix: |
     Remove what is not used, name what is unclear, and keep one piece of behaviour in one place so the
     next change touches a single spot.
+  detect:
+    - invocation: [FetchType, fetch]
+      receiver: [persistence]
 
 - key: QG-JV-BUG-0156
   name: Virtual threads should be accessed in a thread-safe way
@@ -7436,7 +7817,7 @@
   effort: 15min
   tags: [sml, generated]
   generated: true
-  status: planned
+
   message: This code is harder to read or change than the behaviour requires.
   summary: The code works but is harder to read or change than the behaviour requires.
   why: |
@@ -7445,6 +7826,8 @@
   fix: |
     Remove what is not used, name what is unclear, and keep one piece of behaviour in one place so the
     next change touches a single spot.
+  detect:
+    - invocation: [PreparedStatement]
 
 - key: QG-JV-SML-0380
   name: Use batch Processing in JDBC should be simplified
@@ -7614,7 +7997,7 @@
   effort: 15min
   tags: [sml, generated]
   generated: true
-  status: planned
+
   message: This code is harder to read or change than the behaviour requires.
   summary: The code works but is harder to read or change than the behaviour requires.
   why: |
@@ -7623,6 +8006,9 @@
   fix: |
     Remove what is not used, name what is unclear, and keep one piece of behaviour in one place so the
     next change touches a single spot.
+  detect:
+    - invocation: [DirtiesContext, classMode, methodMode]
+      receiver: [annotation]
 
 - key: QG-JV-SML-0387
   name: Injecting data into static fields should be simplified
@@ -7632,7 +8018,7 @@
   effort: 15min
   tags: [sml, generated]
   generated: true
-  status: planned
+
   message: This code is harder to read or change than the behaviour requires.
   summary: The code works but is harder to read or change than the behaviour requires.
   why: |
@@ -7641,6 +8027,9 @@
   fix: |
     Remove what is not used, name what is unclear, and keep one piece of behaviour in one place so the
     next change touches a single spot.
+  detect:
+    - invocation: [Inject, springframework]
+      receiver: [inject]
 
 - key: QG-JV-SML-0388
   name: @Cacheable and @CachePut should be simplified
@@ -7650,7 +8039,7 @@
   effort: 15min
   tags: [sml, generated]
   generated: true
-  status: planned
+
   message: This code is harder to read or change than the behaviour requires.
   summary: The code works but is harder to read or change than the behaviour requires.
   why: |
@@ -7659,6 +8048,9 @@
   fix: |
     Remove what is not used, name what is unclear, and keep one piece of behaviour in one place so the
     next change touches a single spot.
+  detect:
+    - invocation: [CachePut, Cacheable, method]
+      receiver: [annotation]
 
 - key: QG-JV-SML-0389
   name: @Cache* annotations should be simplified
@@ -7668,7 +8060,7 @@
   effort: 15min
   tags: [sml, generated]
   generated: true
-  status: planned
+
   message: This code is harder to read or change than the behaviour requires.
   summary: The code works but is harder to read or change than the behaviour requires.
   why: |
@@ -7677,6 +8069,9 @@
   fix: |
     Remove what is not used, name what is unclear, and keep one piece of behaviour in one place so the
     next change touches a single spot.
+  detect:
+    - invocation: [CacheConfig, CacheEvict, CachePut, Cacheable, Caching]
+      receiver: [annotation]
 
 - key: QG-JV-BUG-0159
   name: @Scheduled annotation should match the behaviour the code describes
@@ -7686,7 +8081,7 @@
   effort: 15min
   tags: [bug, generated]
   generated: true
-  status: planned
+
   message: This code does not behave the way it reads.
   summary: The code does not do what its shape suggests, or fails on ordinary input.
   why: |
@@ -7695,6 +8090,9 @@
   fix: |
     Make the intended behaviour explicit — fix the condition, the operator or the order of operations —
     and cover the case that used to fail with a test.
+  detect:
+    - invocation: [Scheduled]
+      receiver: [annotation]
 
 - key: QG-JV-BUG-0160
   name: @EventListener methods should match the behaviour the code describes
@@ -7704,7 +8102,7 @@
   effort: 15min
   tags: [bug, generated]
   generated: true
-  status: planned
+
   message: This code does not behave the way it reads.
   summary: The code does not do what its shape suggests, or fails on ordinary input.
   why: |
@@ -7713,6 +8111,9 @@
   fix: |
     Make the intended behaviour explicit — fix the condition, the operator or the order of operations —
     and cover the case that used to fail with a test.
+  detect:
+    - invocation: [EventListener]
+      receiver: [event]
 
 - key: QG-JV-SML-0390
   name: Hard-to-read code should be simplified
@@ -7722,7 +8123,7 @@
   effort: 15min
   tags: [sml, generated]
   generated: true
-  status: planned
+
   message: This code is harder to read or change than the behaviour requires.
   summary: The code works but is harder to read or change than the behaviour requires.
   why: |
@@ -7731,6 +8132,9 @@
   fix: |
     Remove what is not used, name what is unclear, and keep one piece of behaviour in one place so the
     next change touches a single spot.
+  detect:
+    - invocation: [Pageable, Slice]
+      receiver: [domain]
 
 - key: QG-JV-SML-0391
   name: Hard-to-read code should be simplified
@@ -7740,7 +8144,7 @@
   effort: 15min
   tags: [sml, generated]
   generated: true
-  status: planned
+
   message: This code is harder to read or change than the behaviour requires.
   summary: The code works but is harder to read or change than the behaviour requires.
   why: |
@@ -7749,6 +8153,9 @@
   fix: |
     Remove what is not used, name what is unclear, and keep one piece of behaviour in one place so the
     next change touches a single spot.
+  detect:
+    - invocation: [AfterTransaction, Annotation, TestInfo]
+      receiver: [transaction]
 
 - key: QG-JV-SEC-0066
   name: Native methods should not weaken the security of the application
@@ -7951,7 +8358,7 @@
   effort: 15min
   tags: [prefer_api, generated]
   generated: true
-  status: planned
+
   message: The platform offers a clearer or safer construct for this.
   summary: A construct is used where the platform offers one that is clearer or safer.
   why: |
@@ -7961,6 +8368,9 @@
   fix: |
     Switch to the recommended construct; the behaviour is the same in the normal case and defined in the
     cases the old form got wrong.
+  detect:
+    - invocation: [BiConsumer, BinaryOperator, Gatherer, Supplier, defaultCombiner]
+      receiver: [function, stream]
 
 - key: QG-JV-SML-0401
   name: Hard-to-read code should be simplified
@@ -8006,7 +8416,7 @@
   effort: 15min
   tags: [bug, generated]
   generated: true
-  status: planned
+
   message: This code does not behave the way it reads.
   summary: The code does not do what its shape suggests, or fails on ordinary input.
   why: |
@@ -8015,6 +8425,9 @@
   fix: |
     Make the intended behaviour explicit — fix the condition, the operator or the order of operations —
     and cover the case that used to fail with a test.
+  detect:
+    - invocation: [DayOfWeek, Instant, LocalDate, LocalDateTime, LocalTime, Month, MonthDay, OffsetDateTime]
+      receiver: [temporal, time]
 
 - key: QG-JV-SML-0403
   name: Increment and decrement operators (++/--) should not be used
@@ -8024,7 +8437,7 @@
   effort: 15min
   tags: [avoid_api, generated]
   generated: true
-  status: planned
+
   message: This API should be replaced by the current alternative.
   summary: Code calls an API that is unsafe, obsolete or superseded by a better alternative.
   why: |
@@ -8034,6 +8447,8 @@
   fix: |
     Replace the call with the current API, and keep the old one only behind a compatibility layer that is
     documented and dated.
+  detect:
+    - invocation: [Decrement, Increment]
 
 - key: QG-JV-SML-0404
   name: ScopedValue.where results should be simplified
@@ -8043,7 +8458,7 @@
   effort: 15min
   tags: [sml, generated]
   generated: true
-  status: planned
+
   message: This code is harder to read or change than the behaviour requires.
   summary: The code works but is harder to read or change than the behaviour requires.
   why: |
@@ -8052,6 +8467,9 @@
   fix: |
     Remove what is not used, name what is unclear, and keep one piece of behaviour in one place so the
     next change touches a single spot.
+  detect:
+    - invocation: [ScopedValue, where]
+      receiver: [lang]
 
 - key: QG-JV-SML-0405
   name: Validation logic should be simplified
@@ -8079,7 +8497,7 @@
   effort: 15min
   tags: [sml, generated]
   generated: true
-  status: planned
+
   message: This code is harder to read or change than the behaviour requires.
   summary: The code works but is harder to read or change than the behaviour requires.
   why: |
@@ -8088,6 +8506,8 @@
   fix: |
     Remove what is not used, name what is unclear, and keep one piece of behaviour in one place so the
     next change touches a single spot.
+  detect:
+    - invocation: [statementsThreshold]
 
 - key: QG-JV-SML-0407
   name: Module imports should be simplified
@@ -8115,7 +8535,7 @@
   effort: 15min
   tags: [declaration, generated]
   generated: true
-  status: planned
+
   message: This declaration exposes more than it should.
   summary: A declaration uses modifiers, order or visibility that do not match its purpose.
   why: |
@@ -8125,6 +8545,8 @@
   fix: |
     Declare the narrowest visibility that works, in the conventional modifier order, and mark as final or
     read-only whatever is not meant to change.
+  detect:
+    - invocation: [unknown]
 
 - key: QG-JV-BUG-0162
   name: Subclass fields should match the behaviour the code describes
@@ -8152,7 +8574,7 @@
   effort: 15min
   tags: [sml, generated]
   generated: true
-  status: planned
+
   message: This code is harder to read or change than the behaviour requires.
   summary: The code works but is harder to read or change than the behaviour requires.
   why: |
@@ -8161,6 +8583,9 @@
   fix: |
     Remove what is not used, name what is unclear, and keep one piece of behaviour in one place so the
     next change touches a single spot.
+  detect:
+    - invocation: [BufferedReader, InputStream, InputStreamReader, Reader, System]
+      receiver: [lang]
 
 - key: QG-JV-BUG-0163
   name: ScopedValue instances should match the behaviour the code describes
@@ -8224,7 +8649,7 @@
   effort: 15min
   tags: [concurrency, generated]
   generated: true
-  status: planned
+
   message: Shared state is accessed without correct coordination.
   summary: Shared state is accessed with locking that is missing, too wide, or on the wrong object.
   why: |
@@ -8233,6 +8658,9 @@
   fix: |
     Lock a private object dedicated to the state it protects, keep the critical section short, and prefer
     the concurrent collections and higher-level primitives the platform provides.
+  detect:
+    - invocation: [LocalDate, LocalDateTime, LocalTime, MonthDay, OffsetDateTime, OffsetTime, YearMonth, ZonedDateTime]
+      receiver: [time]
 
 - key: QG-JV-SML-0414
   name: System clock should not be used
@@ -8395,7 +8823,7 @@
   effort: 15min
   tags: [sml, generated]
   generated: true
-  status: planned
+
   message: This code is harder to read or change than the behaviour requires.
   summary: The code works but is harder to read or change than the behaviour requires.
   why: |
@@ -8404,6 +8832,9 @@
   fix: |
     Remove what is not used, name what is unclear, and keep one piece of behaviour in one place so the
     next change touches a single spot.
+  detect:
+    - invocation: [CacheResult]
+      receiver: [cache]
 
 - key: QG-JV-BUG-0167
   name: CacheKeyGenerator implementations should match the behaviour the code describes
@@ -8413,7 +8844,7 @@
   effort: 15min
   tags: [bug, generated]
   generated: true
-  status: planned
+
   message: This code does not behave the way it reads.
   summary: The code does not do what its shape suggests, or fails on ordinary input.
   why: |
@@ -8422,6 +8853,9 @@
   fix: |
     Make the intended behaviour explicit — fix the condition, the operator or the order of operations —
     and cover the case that used to fail with a test.
+  detect:
+    - invocation: [ApplicationScoped, CacheKeyGenerator, ConversationScoped, Dependent, RequestScoped, SessionScoped]
+      receiver: [cache, context]
 
 - key: QG-JV-SML-0422
   name: Interfaces annotated with @Mapper should be simplified
@@ -8431,7 +8865,7 @@
   effort: 15min
   tags: [sml, generated]
   generated: true
-  status: planned
+
   message: This code is harder to read or change than the behaviour requires.
   summary: The code works but is harder to read or change than the behaviour requires.
   why: |
@@ -8440,6 +8874,9 @@
   fix: |
     Remove what is not used, name what is unclear, and keep one piece of behaviour in one place so the
     next change touches a single spot.
+  detect:
+    - invocation: [DaoFactory, Mapper]
+      receiver: [mapper]
 
 - key: QG-JV-BUG-0168
   name: Methods annotated with @Startup should match the behaviour the code describes
@@ -8449,7 +8886,7 @@
   effort: 15min
   tags: [bug, generated]
   generated: true
-  status: planned
+
   message: This code does not behave the way it reads.
   summary: The code does not do what its shape suggests, or fails on ordinary input.
   why: |
@@ -8458,6 +8895,9 @@
   fix: |
     Make the intended behaviour explicit — fix the condition, the operator or the order of operations —
     and cover the case that used to fail with a test.
+  detect:
+    - invocation: [Produces, Startup]
+      receiver: [inject, runtime]
 
 - key: QG-JV-BUG-0169
   name: Custom CredentialsProvider implementations should match the behaviour the code describes
@@ -8467,7 +8907,7 @@
   effort: 15min
   tags: [bug, generated]
   generated: true
-  status: planned
+
   message: This code does not behave the way it reads.
   summary: The code does not do what its shape suggests, or fails on ordinary input.
   why: |
@@ -8476,6 +8916,9 @@
   fix: |
     Make the intended behaviour explicit — fix the condition, the operator or the order of operations —
     and cover the case that used to fail with a test.
+  detect:
+    - invocation: [ApplicationScoped, CredentialsProvider, Dependent, RequestScoped, SessionScoped, Singleton, Unremovable]
+      receiver: [context, credentials, inject]
 
 - key: QG-JV-SML-0423
   name: REST Data with Panache resource interfaces should be simplified
@@ -8503,7 +8946,7 @@
   effort: 15min
   tags: [bug, generated]
   generated: true
-  status: planned
+
   message: This code does not behave the way it reads.
   summary: The code does not do what its shape suggests, or fails on ordinary input.
   why: |
@@ -8512,6 +8955,9 @@
   fix: |
     Make the intended behaviour explicit — fix the condition, the operator or the order of operations —
     and cover the case that used to fail with a test.
+  detect:
+    - invocation: [Entity, MappedSuperclass]
+      receiver: [persistence]
 
 - key: QG-JV-SML-0425
   name: @OneToMany relationships should be simplified
@@ -8521,7 +8967,7 @@
   effort: 15min
   tags: [sml, generated]
   generated: true
-  status: planned
+
   message: This code is harder to read or change than the behaviour requires.
   summary: The code works but is harder to read or change than the behaviour requires.
   why: |
@@ -8530,6 +8976,9 @@
   fix: |
     Remove what is not used, name what is unclear, and keep one piece of behaviour in one place so the
     next change touches a single spot.
+  detect:
+    - invocation: [JoinColumn, JoinTable, OneToMany, mappedBy]
+      receiver: [persistence]
 
 - key: QG-JV-BUG-0171
   name: Bean Validation constraints should match the behaviour the code describes
@@ -8539,7 +8988,7 @@
   effort: 15min
   tags: [bug, generated]
   generated: true
-  status: planned
+
   message: This code does not behave the way it reads.
   summary: The code does not do what its shape suggests, or fails on ordinary input.
   why: |
@@ -8548,6 +8997,9 @@
   fix: |
     Make the intended behaviour explicit — fix the condition, the operator or the order of operations —
     and cover the case that used to fail with a test.
+  detect:
+    - invocation: [Constraint]
+      receiver: [validation]
 
 - key: QG-JV-BUG-0172
   name: Return value of EntityManager.merge() should be replaced by the recommended alternative
@@ -8580,7 +9032,7 @@
   effort: 15min
   tags: [bug, generated]
   generated: true
-  status: planned
+
   message: This code does not behave the way it reads.
   summary: The code does not do what its shape suggests, or fails on ordinary input.
   why: |
@@ -8589,6 +9041,9 @@
   fix: |
     Make the intended behaviour explicit — fix the condition, the operator or the order of operations —
     and cover the case that used to fail with a test.
+  detect:
+    - invocation: [Inject, PersistenceContext, PersistenceUnit, Resource, Stateless, WebServiceRef]
+      receiver: [annotation, inject, persistence]
 
 - key: QG-JV-SML-0426
   name: Methods with @Transactional should make failure handling explicit
@@ -8598,7 +9053,7 @@
   effort: 15min
   tags: [exception, generated]
   generated: true
-  status: planned
+
   message: This handling hides the failure instead of dealing with it.
   summary: An exception is thrown, caught or propagated in a way that hides the failure.
   why: |
@@ -8608,6 +9063,9 @@
   fix: |
     Catch the specific failures this code can recover from, keep the original exception as the cause when
     wrapping, and let everything else reach the boundary handler.
+  detect:
+    - invocation: [Error, Exception, RuntimeException, noRollbackFor, noRollbackForClassName, rollbackFor, rollbackForClassName]
+      receiver: [lang]
 
 - key: QG-JV-BUG-0174
   name: Return values should match the behaviour the code describes
@@ -8617,7 +9075,7 @@
   effort: 15min
   tags: [bug, generated]
   generated: true
-  status: planned
+
   message: This code does not behave the way it reads.
   summary: The code does not do what its shape suggests, or fails on ordinary input.
   why: |
@@ -8626,6 +9084,9 @@
   fix: |
     Make the intended behaviour explicit — fix the condition, the operator or the order of operations —
     and cover the case that used to fail with a test.
+  detect:
+    - invocation: [BlockingQueue, Condition, CountDownLatch, Enumeration, Iterator, Semaphore, TimeUnit, await]
+      receiver: [concurrent, locks, util]
 
 - key: QG-JV-SML-0427
   name: Mock fields should be simplified
@@ -8689,7 +9150,7 @@
   effort: 15min
   tags: [bug, generated]
   generated: true
-  status: planned
+
   message: This code does not behave the way it reads.
   summary: The code does not do what its shape suggests, or fails on ordinary input.
   why: |
@@ -8698,6 +9159,8 @@
   fix: |
     Make the intended behaviour explicit — fix the condition, the operator or the order of operations —
     and cover the case that used to fail with a test.
+  detect:
+    - invocation: [proxyBeanMethods]
 
 - key: QG-JV-SML-0429
   name: @InjectMocks should be replaced by the recommended alternative
@@ -8726,7 +9189,7 @@
   effort: 15min
   tags: [prefer_api, generated]
   generated: true
-  status: planned
+
   message: The platform offers a clearer or safer construct for this.
   summary: A construct is used where the platform offers one that is clearer or safer.
   why: |
@@ -8736,6 +9199,9 @@
   fix: |
     Switch to the recommended construct; the behaviour is the same in the normal case and defined in the
     cases the old form got wrong.
+  detect:
+    - invocation: [Singleton, singleton]
+      receiver: [inject]
 
 - key: QG-JV-SML-0431
   name: ScheduledThreadPoolExecutor.setMaximumPoolSize should not be used

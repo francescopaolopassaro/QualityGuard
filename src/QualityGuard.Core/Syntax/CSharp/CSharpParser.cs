@@ -370,7 +370,10 @@ public sealed class CSharpParser
     private List<SyntaxNode> ParseAttributes()
     {
         var attributes = new List<SyntaxNode>();
-        while ((IsJava || IsKotlin) && Is("@") && Peek() is { Kind: TokenKind.Identifier })
+        // TypeScript and JavaScript spell a decorator the same way Java spells an annotation, and
+        // reading '@Field(type => Int)' as a declaration made every repeated decorator in a file
+        // look like a member declared twice — reported as a defect, at critical severity.
+        while ((IsJava || IsKotlin || IsJs) && Is("@") && Peek() is { Kind: TokenKind.Identifier })
         {
             var annotationStart = Mark();
             _index++;

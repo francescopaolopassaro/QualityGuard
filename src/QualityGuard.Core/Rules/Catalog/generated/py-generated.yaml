@@ -9,7 +9,7 @@
   effort: 15min
   tags: [avoid_api, generated]
   generated: true
-  status: planned
+
   message: This API should be replaced by the current alternative.
   summary: Code calls an API that is unsafe, obsolete or superseded by a better alternative.
   why: |
@@ -19,6 +19,8 @@
   fix: |
     Replace the call with the current API, and keep the old one only behind a compatibility layer that is
     documented and dated.
+  detect:
+    - invocation: [BackticksUsage]
 
 - key: QG-PY-SML-0023
   name: Regular expressions should be safe and correct
@@ -28,7 +30,7 @@
   effort: 15min
   tags: [regex, generated]
   generated: true
-  status: planned
+
   message: This pattern is unsafe or incorrect as written.
   summary: A regular expression is malformed, ambiguous, or able to backtrack catastrophically.
   why: |
@@ -38,6 +40,8 @@
   fix: |
     Simplify the pattern so no quantifier can match the same text in several ways, add a matching timeout
     for input that comes from outside, and cover the pattern with a test.
+  detect:
+    - invocation: [CommentRegularExpression, regularExpression]
 
 - key: QG-PY-SML-0024
   name: Exec statement should not be used
@@ -68,7 +72,7 @@
   effort: 15min
   tags: [avoid_api, generated]
   generated: true
-  status: planned
+
   message: This API should be replaced by the current alternative.
   summary: Code calls an API that is unsafe, obsolete or superseded by a better alternative.
   why: |
@@ -78,6 +82,8 @@
   fix: |
     Replace the call with the current API, and keep the old one only behind a compatibility layer that is
     documented and dated.
+  detect:
+    - invocation: [InequalityUsage]
 
 - key: QG-PY-SML-0026
   name: Long suffix L should be simplified
@@ -123,7 +129,7 @@
   effort: 15min
   tags: [sml, generated]
   generated: true
-  status: planned
+
   message: This code is harder to read or change than the behaviour requires.
   summary: The code works but is harder to read or change than the behaviour requires.
   why: |
@@ -132,6 +138,8 @@
   fix: |
     Remove what is not used, name what is unclear, and keep one piece of behaviour in one place so the
     next change touches a single spot.
+  detect:
+    - invocation: [ParsingError]
 
 - key: QG-PY-BUG-0023
   name: Increment and decrement operators should not be used
@@ -312,7 +320,7 @@
   effort: 15min
   tags: [marker, generated]
   generated: true
-  status: planned
+
   message: This marker records work that was left open.
   summary: A marker in the source records work or a decision that was left open.
   why: |
@@ -321,6 +329,8 @@
   fix: |
     Do the work, or move it to the issue tracker and reference the ticket in the marker so the deadline
     lives somewhere that gets reviewed.
+  detect:
+    - invocation: [legalTrailingCommentPattern]
 
 - key: QG-PY-SML-0040
   name: Copyright and license headers should be resolved rather than left in the code
@@ -330,7 +340,7 @@
   effort: 15min
   tags: [marker, generated]
   generated: true
-  status: planned
+
   message: This marker records work that was left open.
   summary: A marker in the source records work or a decision that was left open.
   why: |
@@ -339,6 +349,8 @@
   fix: |
     Do the work, or move it to the issue tracker and reference the ticket in the marker so the deadline
     lives somewhere that gets reviewed.
+  detect:
+    - invocation: [headerFormat, isRegularExpression]
 
 - key: QG-PY-SML-0041
   name: Functions and lambdas should be simplified
@@ -402,7 +414,7 @@
   effort: 15min
   tags: [marker, generated]
   generated: true
-  status: planned
+
   message: This marker records work that was left open.
   summary: A marker in the source records work or a decision that was left open.
   why: |
@@ -411,6 +423,8 @@
   fix: |
     Do the work, or move it to the issue tracker and reference the ticket in the marker so the deadline
     lives somewhere that gets reviewed.
+  detect:
+    - invocation: [pattern]
 
 - key: QG-PY-BUG-0028
   name: \ should match the behaviour the code describes
@@ -438,7 +452,7 @@
   effort: 15min
   tags: [declaration, generated]
   generated: true
-  status: planned
+
   message: This declaration exposes more than it should.
   summary: A declaration uses modifiers, order or visibility that do not match its purpose.
   why: |
@@ -448,6 +462,8 @@
   fix: |
     Declare the narrowest visibility that works, in the conventional modifier order, and mark as final or
     read-only whatever is not meant to change.
+  detect:
+    - invocation: [function, method, module]
 
 - key: QG-PY-SML-0047
   name: New-style classes should be replaced by the recommended alternative
@@ -472,11 +488,12 @@
   name: Methods and field names should be simplified
   languages: [py]
   category: SML
+  status: planned
   severity: minor
   effort: 15min
   tags: [sml, generated]
   generated: true
-  status: planned
+
   message: This code is harder to read or change than the behaviour requires.
   summary: The code works but is harder to read or change than the behaviour requires.
   why: |
@@ -485,7 +502,6 @@
   fix: |
     Remove what is not used, name what is unclear, and keep one piece of behaviour in one place so the
     next change touches a single spot.
-
 - key: QG-PY-SML-0050
   name: Boolean checks should be simplified
   languages: [py]
@@ -552,7 +568,7 @@
   effort: 15min
   tags: [bug, generated]
   generated: true
-  status: planned
+
   message: This code does not behave the way it reads.
   summary: The code does not do what its shape suggests, or fails on ordinary input.
   why: |
@@ -561,16 +577,19 @@
   fix: |
     Make the intended behaviour explicit — fix the condition, the operator or the order of operations —
     and cover the case that used to fail with a test.
+  detect:
+    - invocation: [__eq__, __ne__]
 
 - key: QG-PY-BUG-0031
   name: Recursion should match the behaviour the code describes
   languages: [py]
   category: BUG
+  status: planned
   severity: major
   effort: 15min
   tags: [bug, generated]
   generated: true
-  status: planned
+
   message: This code does not behave the way it reads.
   summary: The code does not do what its shape suggests, or fails on ordinary input.
   why: |
@@ -579,7 +598,6 @@
   fix: |
     Make the intended behaviour explicit — fix the condition, the operator or the order of operations —
     and cover the case that used to fail with a test.
-
 - key: QG-PY-SEC-0052
   name: Custom cryptographic algorithms should use current cryptographic parameters
   languages: [py]
@@ -679,11 +697,12 @@
   name: __iter__ should match the behaviour the code describes
   languages: [py]
   category: BUG
+  status: planned
   severity: major
   effort: 15min
   tags: [bug, generated]
   generated: true
-  status: planned
+
   message: This code does not behave the way it reads.
   summary: The code does not do what its shape suggests, or fails on ordinary input.
   why: |
@@ -692,7 +711,6 @@
   fix: |
     Make the intended behaviour explicit — fix the condition, the operator or the order of operations —
     and cover the case that used to fail with a test.
-
 - key: QG-PY-SEC-0053
   name: Cipher Block Chaining IVs should use current cryptographic parameters
   languages: [py]
@@ -755,11 +773,12 @@
   name: String formatting should be replaced by the recommended alternative
   languages: [py]
   category: SML
+  status: planned
   severity: minor
   effort: 15min
   tags: [prefer_api, generated]
   generated: true
-  status: planned
+
   message: The platform offers a clearer or safer construct for this.
   summary: A construct is used where the platform offers one that is clearer or safer.
   why: |
@@ -769,7 +788,6 @@
   fix: |
     Switch to the recommended construct; the behaviour is the same in the normal case and defined in the
     cases the old form got wrong.
-
 - key: QG-PY-SML-0062
   name: Functions returns should be simplified
   languages: [py]
@@ -796,7 +814,7 @@
   effort: 15min
   tags: [sml, generated]
   generated: true
-  status: planned
+
   message: This code is harder to read or change than the behaviour requires.
   summary: The code works but is harder to read or change than the behaviour requires.
   why: |
@@ -805,6 +823,8 @@
   fix: |
     Remove what is not used, name what is unclear, and keep one piece of behaviour in one place so the
     next change touches a single spot.
+  detect:
+    - invocation: [without]
 
 - key: QG-PY-BUG-0041
   name: Variables, classes and functions should be declared the way the language intends
@@ -829,11 +849,12 @@
   name: Suspicious code should match the behaviour the code describes
   languages: [py]
   category: BUG
+  status: planned
   severity: major
   effort: 15min
   tags: [bug, generated]
   generated: true
-  status: planned
+
   message: This code does not behave the way it reads.
   summary: The code does not do what its shape suggests, or fails on ordinary input.
   why: |
@@ -842,7 +863,6 @@
   fix: |
     Make the intended behaviour explicit — fix the condition, the operator or the order of operations —
     and cover the case that used to fail with a test.
-
 - key: QG-PY-BUG-0044
   name: Collection content should match the behaviour the code describes
   languages: [py]
@@ -865,11 +885,12 @@
   name: Functions and methods should not be duplicated
   languages: [py]
   category: SML
+  status: planned
   severity: minor
   effort: 15min
   tags: [duplication, generated]
   generated: true
-  status: planned
+
   message: This code or value is duplicated.
   summary: The same code or value appears more than once.
   why: |
@@ -878,7 +899,6 @@
   fix: |
     Keep one definition and reference it from the other places, or extract the shared part into a named
     function or constant.
-
 - key: QG-PY-SML-0068
   name: OS process signal parameters should be verified before use
   languages: [py]
@@ -985,7 +1005,7 @@
   effort: 15min
   tags: [bug, generated]
   generated: true
-  status: planned
+
   message: This code does not behave the way it reads.
   summary: The code does not do what its shape suggests, or fails on ordinary input.
   why: |
@@ -994,6 +1014,8 @@
   fix: |
     Make the intended behaviour explicit — fix the condition, the operator or the order of operations —
     and cover the case that used to fail with a test.
+  detect:
+    - invocation: [__getitem__, collections, typing]
 
 - key: QG-PY-SML-0071
   name: Arguments given to functions should be simplified
@@ -1060,7 +1082,7 @@
   effort: 15min
   tags: [exception, generated]
   generated: true
-  status: planned
+
   message: This handling hides the failure instead of dealing with it.
   summary: An exception is thrown, caught or propagated in a way that hides the failure.
   why: |
@@ -1070,6 +1092,8 @@
   fix: |
     Catch the specific failures this code can recover from, keep the original exception as the cause when
     wrapping, and let everything else reach the boundary handler.
+  detect:
+    - invocation: [BaseException, NoneType, __cause__]
 
 - key: QG-PY-SML-0076
   name: Some special methods should be replaced by the recommended alternative
@@ -1157,11 +1181,12 @@
   name: SystemExit should be simplified
   languages: [py]
   category: SML
+  status: planned
   severity: minor
   effort: 15min
   tags: [sml, generated]
   generated: true
-  status: planned
+
   message: This code is harder to read or change than the behaviour requires.
   summary: The code works but is harder to read or change than the behaviour requires.
   why: |
@@ -1170,7 +1195,6 @@
   fix: |
     Remove what is not used, name what is unclear, and keep one piece of behaviour in one place so the
     next change touches a single spot.
-
 - key: QG-PY-BUG-0053
   name: Calls should match the behaviour the code describes
   languages: [py]
@@ -1288,7 +1312,7 @@
   effort: 15min
   tags: [regex, generated]
   generated: true
-  status: planned
+
   message: This pattern is unsafe or incorrect as written.
   summary: A regular expression is malformed, ambiguous, or able to backtrack catastrophically.
   why: |
@@ -1298,6 +1322,8 @@
   fix: |
     Simplify the pattern so no quantifier can match the same text in several ways, add a matching timeout
     for input that comes from outside, and cover the pattern with a test.
+  detect:
+    - invocation: [maxComplexity]
 
 - key: QG-PY-BUG-0059
   name: Regular expressions should be safe and correct
@@ -1322,11 +1348,12 @@
   name: Names of regular expressions named groups should be replaced by the recommended alternative
   languages: [py]
   category: SML
+  status: planned
   severity: minor
   effort: 15min
   tags: [prefer_api, generated]
   generated: true
-  status: planned
+
   message: The platform offers a clearer or safer construct for this.
   summary: A construct is used where the platform offers one that is clearer or safer.
   why: |
@@ -1336,7 +1363,6 @@
   fix: |
     Switch to the recommended construct; the behaviour is the same in the normal case and defined in the
     cases the old form got wrong.
-
 - key: QG-PY-SML-0092
   name: Type checks shouldnt be confusing should be simplified
   languages: [py]
@@ -1489,11 +1515,12 @@
   name: Variables, classes and functions should match the behaviour the code describes
   languages: [py]
   category: BUG
+  status: planned
   severity: major
   effort: 15min
   tags: [bug, generated]
   generated: true
-  status: planned
+
   message: This code does not behave the way it reads.
   summary: The code does not do what its shape suggests, or fails on ordinary input.
   why: |
@@ -1502,7 +1529,6 @@
   fix: |
     Make the intended behaviour explicit — fix the condition, the operator or the order of operations —
     and cover the case that used to fail with a test.
-
 - key: QG-PY-SML-0100
   name: Tests should assert something
   languages: [py]
@@ -1640,7 +1666,7 @@
   effort: 15min
   tags: [sec, generated]
   generated: true
-  status: planned
+
   message: This construct weakens the security of the application.
   summary: A construct that attackers routinely target is used without the guard it needs.
   why: |
@@ -1650,6 +1676,8 @@
   fix: |
     Validate the incoming value against an allowed set, pass it as data rather than as code or command,
     and replace weakened mechanisms with the current recommended one.
+  detect:
+    - invocation: [versioned]
 
 - key: QG-PY-SML-0106
   name: AWS region should not be committed with the source
@@ -1906,7 +1934,7 @@
   effort: 15min
   tags: [regex, generated]
   generated: true
-  status: planned
+
   message: This pattern is unsafe or incorrect as written.
   summary: A regular expression is malformed, ambiguous, or able to backtrack catastrophically.
   why: |
@@ -1916,6 +1944,8 @@
   fix: |
     Simplify the pattern so no quantifier can match the same text in several ways, add a matching timeout
     for input that comes from outside, and cover the pattern with a test.
+  detect:
+    - invocation: [replacement]
 
 - key: QG-PY-SEC-0071
   name: Public network access to cloud resources should not grant more access than needed
@@ -2133,7 +2163,7 @@
   effort: 15min
   tags: [sml, generated]
   generated: true
-  status: planned
+
   message: This code is harder to read or change than the behaviour requires.
   summary: The code works but is harder to read or change than the behaviour requires.
   why: |
@@ -2142,6 +2172,8 @@
   fix: |
     Remove what is not used, name what is unclear, and keep one piece of behaviour in one place so the
     next change touches a single spot.
+  detect:
+    - invocation: [__new__, classmethod]
 
 - key: QG-PY-SML-0115
   name: Any should not be used
@@ -2184,11 +2216,12 @@
   name: Built-in generic types should be replaced by the recommended alternative
   languages: [py]
   category: SML
+  status: planned
   severity: minor
   effort: 15min
   tags: [prefer_api, generated]
   generated: true
-  status: planned
+
   message: The platform offers a clearer or safer construct for this.
   summary: A construct is used where the platform offers one that is clearer or safer.
   why: |
@@ -2198,7 +2231,6 @@
   fix: |
     Switch to the recommended construct; the behaviour is the same in the normal case and defined in the
     cases the old form got wrong.
-
 - key: QG-PY-SML-0118
   name: Union type expressions should be replaced by the recommended alternative
   languages: [py]
@@ -2376,7 +2408,7 @@
   effort: 15min
   tags: [prefer_api, generated]
   generated: true
-  status: planned
+
   message: The platform offers a clearer or safer construct for this.
   summary: A construct is used where the platform offers one that is clearer or safer.
   why: |
@@ -2386,6 +2418,9 @@
   fix: |
     Switch to the recommended construct; the behaviour is the same in the normal case and defined in the
     cases the old form got wrong.
+  detect:
+    - invocation: [RandomState, binomial, bytes, chisquare, choice, dirichlet, exponential, gamma]
+      receiver: [RandomState, random]
 
 - key: QG-PY-SML-0128
   name: Passing a list to np.array should be replaced by the recommended alternative
@@ -2698,11 +2733,12 @@
   name: Flask error handlers should match the behaviour the code describes
   languages: [py]
   category: BUG
+  status: planned
   severity: major
   effort: 15min
   tags: [bug, generated]
   generated: true
-  status: planned
+
   message: This code does not behave the way it reads.
   summary: The code does not do what its shape suggests, or fails on ordinary input.
   why: |
@@ -2711,16 +2747,16 @@
   fix: |
     Make the intended behaviour explicit — fix the condition, the operator or the order of operations —
     and cover the case that used to fail with a test.
-
 - key: QG-PY-SML-0139
   name: Hard-to-read code should be simplified
   languages: [py]
   category: SML
+  status: planned
   severity: minor
   effort: 15min
   tags: [sml, generated]
   generated: true
-  status: planned
+
   message: This code is harder to read or change than the behaviour requires.
   summary: The code works but is harder to read or change than the behaviour requires.
   why: |
@@ -2729,7 +2765,6 @@
   fix: |
     Remove what is not used, name what is unclear, and keep one piece of behaviour in one place so the
     next change touches a single spot.
-
 - key: QG-PY-SML-0140
   name: 12-hour format should be replaced by the recommended alternative
   languages: [py]
@@ -2753,11 +2788,12 @@
   name: Pytz.timezone should be simplified
   languages: [py]
   category: SML
+  status: planned
   severity: minor
   effort: 15min
   tags: [sml, generated]
   generated: true
-  status: planned
+
   message: This code is harder to read or change than the behaviour requires.
   summary: The code works but is harder to read or change than the behaviour requires.
   why: |
@@ -2766,7 +2802,6 @@
   fix: |
     Remove what is not used, name what is unclear, and keep one piece of behaviour in one place so the
     next change touches a single spot.
-
 - key: QG-PY-SML-0142
   name: Zoneinfo should be replaced by the recommended alternative
   languages: [py]
@@ -2860,7 +2895,7 @@
   effort: 15min
   tags: [sml, generated]
   generated: true
-  status: planned
+
   message: This code is harder to read or change than the behaviour requires.
   summary: The code works but is harder to read or change than the behaviour requires.
   why: |
@@ -2869,6 +2904,9 @@
   fix: |
     Remove what is not used, name what is unclear, and keep one piece of behaviour in one place so the
     next change touches a single spot.
+  detect:
+    - invocation: [function]
+      receiver: [tensorflow]
 
 - key: QG-PY-SML-0148
   name: Tf.Variable objects should be simplified
@@ -3045,7 +3083,7 @@
   effort: 15min
   tags: [sml, generated]
   generated: true
-  status: planned
+
   message: This code is harder to read or change than the behaviour requires.
   summary: The code works but is harder to read or change than the behaviour requires.
   why: |
@@ -3054,6 +3092,9 @@
   fix: |
     Remove what is not used, name what is unclear, and keep one piece of behaviour in one place so the
     next change touches a single spot.
+  detect:
+    - invocation: [AdaBoostClassifier, AdaBoostRegressor, Adadelta, Adagrad, AdamW, Adamax, DataLoader, DecisionTreeClassifier]
+      receiver: [_classes, _classification, _coordinate_descent, _forest, _multilayer_perceptron, _polynomial]
 
 - key: QG-PY-SML-0157
   name: Subclasses of Scikit-Learns BaseEstimator should be simplified
@@ -3184,7 +3225,7 @@
   effort: 15min
   tags: [concurrency, generated]
   generated: true
-  status: planned
+
   message: Shared state is accessed without correct coordination.
   summary: Shared state is accessed with locking that is missing, too wide, or on the wrong object.
   why: |
@@ -3193,16 +3234,19 @@
   fix: |
     Lock a private object dedicated to the state it protects, keep the critical section short, and prefer
     the concurrent collections and higher-level primitives the platform provides.
+  detect:
+    - invocation: [timeout]
 
 - key: QG-PY-SML-0161
   name: Events should be replaced by the recommended alternative
   languages: [py]
   category: SML
+  status: planned
   severity: minor
   effort: 15min
   tags: [prefer_api, generated]
   generated: true
-  status: planned
+
   message: The platform offers a clearer or safer construct for this.
   summary: A construct is used where the platform offers one that is clearer or safer.
   why: |
@@ -3212,7 +3256,6 @@
   fix: |
     Switch to the recommended construct; the behaviour is the same in the normal case and defined in the
     cases the old form got wrong.
-
 - key: QG-PY-SML-0162
   name: Long sleep durations should be replaced by the recommended alternative
   languages: [py]
@@ -3240,7 +3283,7 @@
   effort: 15min
   tags: [concurrency, generated]
   generated: true
-  status: planned
+
   message: Shared state is accessed without correct coordination.
   summary: Shared state is accessed with locking that is missing, too wide, or on the wrong object.
   why: |
@@ -3249,16 +3292,20 @@
   fix: |
     Lock a private object dedicated to the state it protects, keep the critical section short, and prefer
     the concurrent collections and higher-level primitives the platform provides.
+  detect:
+    - invocation: [Popen, check_call, check_output, getoutput, getstatusoutput, popen, spawnl, spawnle]
+      receiver: [subprocess]
 
 - key: QG-PY-BUG-0084
   name: Shared state should be accessed in a thread-safe way
   languages: [py]
   category: BUG
+  status: planned
   severity: major
   effort: 15min
   tags: [concurrency, generated]
   generated: true
-  status: planned
+
   message: Shared state is accessed without correct coordination.
   summary: Shared state is accessed with locking that is missing, too wide, or on the wrong object.
   why: |
@@ -3267,7 +3314,6 @@
   fix: |
     Lock a private object dedicated to the state it protects, keep the critical section short, and prefer
     the concurrent collections and higher-level primitives the platform provides.
-
 - key: QG-PY-BUG-0085
   name: Async functions should be accessed in a thread-safe way
   languages: [py]
@@ -3276,7 +3322,7 @@
   effort: 15min
   tags: [concurrency, generated]
   generated: true
-  status: planned
+
   message: Shared state is accessed without correct coordination.
   summary: Shared state is accessed with locking that is missing, too wide, or on the wrong object.
   why: |
@@ -3285,16 +3331,19 @@
   fix: |
     Lock a private object dedicated to the state it protects, keep the critical section short, and prefer
     the concurrent collections and higher-level primitives the platform provides.
+  detect:
+    - invocation: [anyio, waitid, waitpid]
 
 - key: QG-PY-BUG-0086
   name: Cancellation scopes should match the behaviour the code describes
   languages: [py]
   category: BUG
+  status: planned
   severity: major
   effort: 15min
   tags: [bug, generated]
   generated: true
-  status: planned
+
   message: This code does not behave the way it reads.
   summary: The code does not do what its shape suggests, or fails on ordinary input.
   why: |
@@ -3303,7 +3352,6 @@
   fix: |
     Make the intended behaviour explicit — fix the condition, the operator or the order of operations —
     and cover the case that used to fail with a test.
-
 - key: QG-PY-SML-0163
   name: Checkpoints should be replaced by the recommended alternative
   languages: [py]
@@ -3327,11 +3375,11 @@
   name: List comprehensions should not be used
   languages: [py]
   category: SML
+  status: planned
   severity: minor
   effort: 15min
   tags: [avoid_api, generated]
   generated: true
-  status: ready
   message: This API should be replaced by the current alternative.
   summary: Code calls an API that is unsafe, obsolete or superseded by a better alternative.
   why: |
@@ -3341,18 +3389,16 @@
   fix: |
     Replace the call with the current API, and keep the old one only behind a compatibility layer that is
     documented and dated.
-  detect:
-    - invocation: [all]
-
 - key: QG-PY-BUG-0087
   name: Async functions should be accessed in a thread-safe way
   languages: [py]
   category: BUG
+  status: planned
   severity: major
   effort: 15min
   tags: [concurrency, generated]
   generated: true
-  status: planned
+
   message: Shared state is accessed without correct coordination.
   summary: Shared state is accessed with locking that is missing, too wide, or on the wrong object.
   why: |
@@ -3361,7 +3407,6 @@
   fix: |
     Lock a private object dedicated to the state it protects, keep the critical section short, and prefer
     the concurrent collections and higher-level primitives the platform provides.
-
 - key: QG-PY-SML-0165
   name: Comprehensions should be replaced by the recommended alternative
   languages: [py]
@@ -3441,11 +3486,12 @@
   name: Async functions should be accessed in a thread-safe way
   languages: [py]
   category: BUG
+  status: planned
   severity: major
   effort: 15min
   tags: [concurrency, generated]
   generated: true
-  status: planned
+
   message: Shared state is accessed without correct coordination.
   summary: Shared state is accessed with locking that is missing, too wide, or on the wrong object.
   why: |
@@ -3454,7 +3500,6 @@
   fix: |
     Lock a private object dedicated to the state it protects, keep the critical section short, and prefer
     the concurrent collections and higher-level primitives the platform provides.
-
 - key: QG-PY-SML-0168
   name: Comprehensions only used to copy should be simplified
   languages: [py]
@@ -3481,7 +3526,7 @@
   effort: 15min
   tags: [bug, generated]
   generated: true
-  status: planned
+
   message: This code does not behave the way it reads.
   summary: The code does not do what its shape suggests, or fails on ordinary input.
   why: |
@@ -3490,6 +3535,8 @@
   fix: |
     Make the intended behaviour explicit — fix the condition, the operator or the order of operations —
     and cover the case that used to fail with a test.
+  detect:
+    - invocation: [anyio, asyncio, input]
 
 - key: QG-PY-BUG-0091
   name: Asyncio tasks should match the behaviour the code describes
@@ -3517,7 +3564,7 @@
   effort: 15min
   tags: [sml, generated]
   generated: true
-  status: planned
+
   message: This code is harder to read or change than the behaviour requires.
   summary: The code works but is harder to read or change than the behaviour requires.
   why: |
@@ -3526,6 +3573,8 @@
   fix: |
     Remove what is not used, name what is unclear, and keep one piece of behaviour in one place so the
     next change touches a single spot.
+  detect:
+    - invocation: [NotImplemented]
 
 - key: QG-PY-SML-0170
   name: Hard-to-read code should be simplified
@@ -3604,11 +3653,12 @@
   name: Redundant collection functions should be simplified
   languages: [py]
   category: SML
+  status: planned
   severity: minor
   effort: 15min
   tags: [sml, generated]
   generated: true
-  status: planned
+
   message: This code is harder to read or change than the behaviour requires.
   summary: The code works but is harder to read or change than the behaviour requires.
   why: |
@@ -3617,16 +3667,16 @@
   fix: |
     Remove what is not used, name what is unclear, and keep one piece of behaviour in one place so the
     next change touches a single spot.
-
 - key: QG-PY-SML-0175
   name: Sorted function call should be simplified
   languages: [py]
   category: SML
+  status: planned
   severity: minor
   effort: 15min
   tags: [sml, generated]
   generated: true
-  status: planned
+
   message: This code is harder to read or change than the behaviour requires.
   summary: The code works but is harder to read or change than the behaviour requires.
   why: |
@@ -3635,16 +3685,16 @@
   fix: |
     Remove what is not used, name what is unclear, and keep one piece of behaviour in one place so the
     next change touches a single spot.
-
 - key: QG-PY-SML-0176
   name: Hard-to-read code should be simplified
   languages: [py]
   category: SML
+  status: planned
   severity: minor
   effort: 15min
   tags: [sml, generated]
   generated: true
-  status: planned
+
   message: This code is harder to read or change than the behaviour requires.
   summary: The code works but is harder to read or change than the behaviour requires.
   why: |
@@ -3653,7 +3703,6 @@
   fix: |
     Remove what is not used, name what is unclear, and keep one piece of behaviour in one place so the
     next change touches a single spot.
-
 - key: QG-PY-SML-0177
   name: .items() to iterate over a dictionary should be simplified
   languages: [py]
@@ -3718,7 +3767,7 @@
   effort: 15min
   tags: [prefer_api, generated]
   generated: true
-  status: planned
+
   message: The platform offers a clearer or safer construct for this.
   summary: A construct is used where the platform offers one that is clearer or safer.
   why: |
@@ -3728,16 +3777,19 @@
   fix: |
     Switch to the recommended construct; the behaviour is the same in the normal case and defined in the
     cases the old form got wrong.
+  detect:
+    - invocation: [__aenter__, __aexit__]
 
 - key: QG-PY-SML-0179
   name: Sorted should be simplified
   languages: [py]
   category: SML
+  status: planned
   severity: minor
   effort: 15min
   tags: [sml, generated]
   generated: true
-  status: planned
+
   message: This code is harder to read or change than the behaviour requires.
   summary: The code works but is harder to read or change than the behaviour requires.
   why: |
@@ -3746,7 +3798,6 @@
   fix: |
     Remove what is not used, name what is unclear, and keep one piece of behaviour in one place so the
     next change touches a single spot.
-
 - key: QG-PY-SML-0180
   name: Hard-to-read code should be simplified
   languages: [py]
@@ -3824,11 +3875,12 @@
   name: AWS Lambda handlers should match the behaviour the code describes
   languages: [py]
   category: BUG
+  status: planned
   severity: major
   effort: 15min
   tags: [bug, generated]
   generated: true
-  status: planned
+
   message: This code does not behave the way it reads.
   summary: The code does not do what its shape suggests, or fails on ordinary input.
   why: |
@@ -3837,7 +3889,6 @@
   fix: |
     Make the intended behaviour explicit — fix the condition, the operator or the order of operations —
     and cover the case that used to fail with a test.
-
 - key: QG-PY-SML-0183
   name: Hard-to-read code should be simplified
   languages: [py]
@@ -3864,7 +3915,7 @@
   effort: 15min
   tags: [sml, generated]
   generated: true
-  status: planned
+
   message: This code is harder to read or change than the behaviour requires.
   summary: The code works but is harder to read or change than the behaviour requires.
   why: |
@@ -3873,6 +3924,8 @@
   fix: |
     Remove what is not used, name what is unclear, and keep one piece of behaviour in one place so the
     next change touches a single spot.
+  detect:
+    - invocation: [_Environ]
 
 - key: QG-PY-BUG-0095
   name: Suspicious code should match the behaviour the code describes
@@ -3923,7 +3976,7 @@
   effort: 15min
   tags: [prefer_api, generated]
   generated: true
-  status: planned
+
   message: The platform offers a clearer or safer construct for this.
   summary: A construct is used where the platform offers one that is clearer or safer.
   why: |
@@ -3933,6 +3986,9 @@
   fix: |
     Switch to the recommended construct; the behaviour is the same in the normal case and defined in the
     cases the old form got wrong.
+  detect:
+    - invocation: [describe_change_set, describe_cluster, describe_db_clusters, describe_db_instances, describe_db_snapshots, describe_images, describe_instance_status, describe_instances]
+      receiver: [BaseClient]
 
 - key: QG-PY-SML-0187
   name: Hard-to-read code should be simplified
@@ -4159,11 +4215,12 @@
   name: Send_file should match the behaviour the code describes
   languages: [py]
   category: BUG
+  status: planned
   severity: major
   effort: 15min
   tags: [bug, generated]
   generated: true
-  status: planned
+
   message: This code does not behave the way it reads.
   summary: The code does not do what its shape suggests, or fails on ordinary input.
   why: |
@@ -4172,7 +4229,6 @@
   fix: |
     Make the intended behaviour explicit — fix the condition, the operator or the order of operations —
     and cover the case that used to fail with a test.
-
 - key: QG-PY-SEC-0083
   name: FastAPI file upload endpoints should be replaced by the recommended alternative
   languages: [py]
@@ -4471,7 +4527,7 @@
   effort: 15min
   tags: [bug, generated]
   generated: true
-  status: planned
+
   message: This code does not behave the way it reads.
   summary: The code does not do what its shape suggests, or fails on ordinary input.
   why: |
@@ -4480,16 +4536,19 @@
   fix: |
     Make the intended behaviour explicit — fix the condition, the operator or the order of operations —
     and cover the case that used to fail with a test.
+  detect:
+    - invocation: [StopIteration]
 
 - key: QG-PY-BUG-0109
   name: Attributes should match the behaviour the code describes
   languages: [py]
   category: BUG
+  status: planned
   severity: major
   effort: 15min
   tags: [bug, generated]
   generated: true
-  status: planned
+
   message: This code does not behave the way it reads.
   summary: The code does not do what its shape suggests, or fails on ordinary input.
   why: |
@@ -4498,7 +4557,6 @@
   fix: |
     Make the intended behaviour explicit — fix the condition, the operator or the order of operations —
     and cover the case that used to fail with a test.
-
 - key: QG-PY-SML-0201
   name: Functions should be simplified
   languages: [py]
@@ -4731,11 +4789,11 @@
   name: Startswith and endswith calls should be replaced by the recommended alternative
   languages: [py]
   category: SML
+  status: planned
   severity: minor
   effort: 15min
   tags: [prefer_api, generated]
   generated: true
-  status: ready
   message: The platform offers a clearer or safer construct for this.
   summary: A construct is used where the platform offers one that is clearer or safer.
   why: |
@@ -4745,10 +4803,6 @@
   fix: |
     Switch to the recommended construct; the behaviour is the same in the normal case and defined in the
     cases the old form got wrong.
-  detect:
-    - invocation: [startswith]
-    - invocation: [endswith]
-
 - key: QG-PY-SML-0209
   name: Dataclass attributes should be simplified
   languages: [py]
@@ -4807,11 +4861,11 @@
   name: Sorted() should not be used
   languages: [py]
   category: SML
+  status: planned
   severity: minor
   effort: 15min
   tags: [avoid_api, generated]
   generated: true
-  status: ready
   message: This API should be replaced by the current alternative.
   summary: Code calls an API that is unsafe, obsolete or superseded by a better alternative.
   why: |
@@ -4821,18 +4875,15 @@
   fix: |
     Replace the call with the current API, and keep the old one only behind a compatibility layer that is
     documented and dated.
-  detect:
-    - invocation: [sorted]
-
 - key: QG-PY-SML-0211
   name: Enumerate() values should be replaced by the recommended alternative
   languages: [py]
   category: SML
+  status: planned
   severity: minor
   effort: 15min
   tags: [prefer_api, generated]
   generated: true
-  status: ready
   message: The platform offers a clearer or safer construct for this.
   summary: A construct is used where the platform offers one that is clearer or safer.
   why: |
@@ -4842,9 +4893,6 @@
   fix: |
     Switch to the recommended construct; the behaviour is the same in the normal case and defined in the
     cases the old form got wrong.
-  detect:
-    - invocation: [enumerate]
-
 - key: QG-PY-SML-0212
   name: List(...)[0] should not be used
   languages: [py]
@@ -4868,11 +4916,11 @@
   name: Sum() should not be used
   languages: [py]
   category: SML
+  status: planned
   severity: minor
   effort: 15min
   tags: [avoid_api, generated]
   generated: true
-  status: ready
   message: This API should be replaced by the current alternative.
   summary: Code calls an API that is unsafe, obsolete or superseded by a better alternative.
   why: |
@@ -4882,9 +4930,6 @@
   fix: |
     Replace the call with the current API, and keep the old one only behind a compatibility layer that is
     documented and dated.
-  detect:
-    - invocation: [sum]
-
 - key: QG-PY-SML-0214
   name: Tests should assert something
   languages: [py]
@@ -4951,11 +4996,12 @@
   name: Mutable or stateful values should not be used
   languages: [py]
   category: BUG
+  status: planned
   severity: major
   effort: 15min
   tags: [avoid_api, generated]
   generated: true
-  status: planned
+
   message: This API should be replaced by the current alternative.
   summary: Code calls an API that is unsafe, obsolete or superseded by a better alternative.
   why: |
@@ -4965,16 +5011,15 @@
   fix: |
     Replace the call with the current API, and keep the old one only behind a compatibility layer that is
     documented and dated.
-
 - key: QG-PY-SML-0217
   name: Dedicated exception assertions should be replaced by the recommended alternative
   languages: [py]
   category: SML
+  status: planned
   severity: minor
   effort: 15min
   tags: [prefer_api, generated]
   generated: true
-  status: ready
   message: The platform offers a clearer or safer construct for this.
   summary: A construct is used where the platform offers one that is clearer or safer.
   why: |
@@ -4984,9 +5029,6 @@
   fix: |
     Switch to the recommended construct; the behaviour is the same in the normal case and defined in the
     cases the old form got wrong.
-  detect:
-    - invocation: [fail]
-
 - key: QG-PY-SML-0218
   name: Deprecated code should be retired
   languages: [py]

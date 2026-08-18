@@ -21,7 +21,6 @@ public static class KotlinRuleSet
         new KotlinSensitiveLoggingRule(),
         new KotlinLocaleIndependentCaseRule(),
         new KotlinPrintlnRule(),
-        new KotlinNotNullAssertionRule(),
         new KotlinInfiniteLoopRule(),
         new KotlinEmptyCatchRule(),
         new KotlinRunBlockingRule(),

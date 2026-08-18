@@ -155,8 +155,10 @@ public abstract class CatchThatOnlyRethrowsRule : ExceptionRuleBase
             var only = body.Children[0];
             if (!IsThrow(only))
                 continue;
-            // `throw new WrappedException(e)` adds context; a bare rethrow does not
-            if (only.OfKind(NodeKind.ObjectCreation).Any())
+            // 'throw new WrappedException(e)' adds context; a bare rethrow does not. Python and
+            // Ruby build the replacement without a keyword — 'raise ConnectionError(err)' is a call
+            // — so the wrapping was invisible here and the most careful handlers were reported.
+            if (only.OfKind(NodeKind.ObjectCreation).Any() || only.OfKind(NodeKind.Invocation).Any())
                 continue;
 
             context.Report(handler, "This handler catches the exception and throws it straight back, so it "

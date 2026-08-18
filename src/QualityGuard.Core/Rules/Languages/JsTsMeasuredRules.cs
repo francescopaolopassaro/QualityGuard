@@ -1361,24 +1361,34 @@ public sealed class JsAssignmentInExpressionRule : JsTsMeasuredRuleBase
             if (assignment.Text is not ("=" or "+=" or "-=" or "*=" or "/=" or "|=" or "&=" or "??="))
                 continue;
             var parent = assignment.Parent;
-            if (parent is null)
+            // Listing the safe places was the wrong way round: a statement inside a lambda, or any
+            // shape the parser nests differently, fell through and was reported. What makes this a
+            // finding is the store sitting where a value was expected, so that is what is asked for:
+            // an operand of a larger expression, or the subject of a decision.
+            var inExpression = parent is { Kind: NodeKind.Binary or NodeKind.Unary or NodeKind.Conditional };
+            // the condition of a decision is the classic place: 'if (a = b)' reads as a comparison
+            // the extra parentheses the style guides ask for put a node between the two
+            var held = parent is { Kind: NodeKind.Parenthesized } ? parent : assignment;
+            var owner = held.Parent;
+            var isCondition = owner is { Kind: NodeKind.If or NodeKind.Loop or NodeKind.Match }
+                              && owner.Children.FirstOrDefault() == held;
+            if (!inExpression && !isCondition)
                 continue;
-            // a statement of its own, or the initialiser of a declaration, is the ordinary form
-            if (parent.Kind is NodeKind.ExpressionStatement or NodeKind.VariableDeclaration
-                or NodeKind.TopLevel or NodeKind.Block or NodeKind.ArgumentList)
-                continue;
-            // a for loop states its step and its start in the header on purpose
-            if (parent.Kind == NodeKind.Loop || Ancestor(assignment, NodeKind.Loop) is { } loop
-                && loop.Children.Contains(assignment))
-                continue;
-            // chained assignment — 'a = b = 0' — stores twice by design
-            if (parent.Kind == NodeKind.Assignment)
+            // a for loop states its start and its step in the header on purpose
+            if (Ancestor(assignment, NodeKind.Loop) is { } loop && !InBody(assignment, loop))
                 continue;
 
             context.Report(assignment, "This stores a value in the middle of a larger expression, so "
                                        + "the line both decides something and changes something. The "
                                        + "store is the half a reader skips. Do it on a line of its own.");
         }
+    }
+
+    /// <summary>Whether the node sits in what the loop runs, rather than in its header.</summary>
+    private static bool InBody(SyntaxNode node, SyntaxNode loop)
+    {
+        var body = loop.Children.LastOrDefault(c => c.Kind == NodeKind.Block);
+        return body is not null && body.DescendantsAndSelf().Contains(node);
     }
 
     private static SyntaxNode? Ancestor(SyntaxNode node, NodeKind kind)

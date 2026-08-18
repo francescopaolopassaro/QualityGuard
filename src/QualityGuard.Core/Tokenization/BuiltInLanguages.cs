@@ -123,6 +123,29 @@ public static class BuiltInLanguages
         [new("\"", "\""), new("`", "`"), new("'", "'")],
         HashComments: false, NestingBlockComments: false);
 
+    public static readonly LanguageInfo Scala = new(
+        "scala", [".scala", ".sc"],
+        ["abstract", "case", "catch", "class", "def", "do", "else", "extends", "false", "final", "finally",
+            "for", "forSome", "if", "implicit", "import", "lazy", "match", "new", "null", "object", "override",
+            "package", "private", "protected", "return", "sealed", "super", "this", "throw", "trait", "try",
+            "true", "type", "val", "var", "while", "with", "yield", "given", "using", "enum", "then"],
+        ["if", "else", "match", "case", "for", "while", "catch", "&&", "||"],
+        "//", "/*", "*/",
+        [new("\"\"\"", "\"\"\""), new("\"", "\""), new("'", "'")],
+        HashComments: false, NestingBlockComments: true);
+
+    public static readonly LanguageInfo Flex = new(
+        "flex", [".as", ".mxml"],
+        ["as", "break", "case", "catch", "class", "const", "continue", "default", "delete", "do", "dynamic",
+            "each", "else", "extends", "false", "final", "finally", "for", "function", "get", "if", "implements",
+            "import", "in", "instanceof", "interface", "internal", "is", "namespace", "native", "new", "null",
+            "override", "package", "private", "protected", "public", "return", "set", "static", "super", "switch",
+            "this", "throw", "true", "try", "typeof", "use", "var", "void", "while", "with"],
+        ["if", "else", "for", "while", "switch", "case", "catch", "&&", "||"],
+        "//", "/*", "*/",
+        [new("\"", "\""), new("'", "'")],
+        HashComments: false, NestingBlockComments: false);
+
     public static readonly LanguageInfo Ruby = new(
         "rb", [".rb", ".rake", ".gemspec", ".podspec"],
         ["__END__", "__FILE__", "__LINE__", "alias", "and", "begin", "break", "case", "class", "def", "defined?",
@@ -345,6 +368,8 @@ public static class BuiltInLanguages
         Php,
         Go,
         Ruby,
+        Scala,
+        Flex,
         Kotlin,
         Swift,
         Basic,

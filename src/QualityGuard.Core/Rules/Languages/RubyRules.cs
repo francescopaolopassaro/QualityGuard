@@ -23,8 +23,7 @@ public static class RubyRuleSet
         new RubySsrfRule(),
         new RubyPathTraversalRule(),
         new RubyErbInjectionRule(),
-        new RubyNilComparisonRule(),
-        new RubyDoubleQuoteRule()
+        new RubyNilComparisonRule()
     ];
 
     internal static readonly string[] CredentialNames =

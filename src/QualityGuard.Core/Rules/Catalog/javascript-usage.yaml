@@ -176,6 +176,7 @@
     Compute the inner text into a name first.
 
 - key: QG-JS-SML-0369
+  status: planned
   name: The any type gives up the type system
   languages: [ts]
   category: SML

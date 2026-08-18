@@ -1205,11 +1205,11 @@
   name: Expression should not be left empty
   languages: [kt]
   category: SML
+  status: planned
   severity: minor
   effort: 15min
   tags: [empty, generated]
   generated: true
-  status: ready
   message: This construct is empty, so it does nothing.
   summary: A construct is declared with no content.
   why: |
@@ -1219,11 +1219,6 @@
   fix: |
     Implement the behaviour, or remove the construct. When doing nothing is deliberate, say so in a
     comment so the next reader does not treat it as a gap.
-  detect:
-    - invocation: [isEmpty]
-    - invocation: [isNotEmpty]
-    - invocation: [isNullOrEmpty]
-
 - key: QG-KT-SML-0074
   name: Check for preconditions should be simplified
   languages: [kt]

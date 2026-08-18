@@ -20,6 +20,7 @@ var path = paths.FirstOrDefault();
 var gateFile = ExtractArg(args, "--gate", "--config");
 var sarifOut = ExtractArg(args, "--sarif", "--sarif-out");
 var sarifIn = ExtractArg(args, "--sarif-in", "--report");
+var coverageFile = ExtractArg(args, "--coverage", "--coverage-report");
 var verbose = args.Any(a => a is "--verbose" or "-v");
 var newCodeMode = args.Any(a => a is "--new-code");
 var showFixes = args.Any(a => a is "--fix-hints" or "--how-to-fix") || verbose;
@@ -78,6 +79,8 @@ try
     if (newCodeMode)
         ApplyNewCodeMetrics(metrics, analyses);
 
+    // the gate has to see the coverage, so it is read before the verdict rather than with the summary
+    var coverage = ReadCoverage(coverageFile, metrics);
     var gateResult = new QualityGateEvaluator().Evaluate(metrics, conditions);
     PrintResult(gateResult, verbose);
 
@@ -91,7 +94,7 @@ try
         }
     }
 
-    PrintQualitySummary(analyses, metrics);
+    PrintQualitySummary(analyses, metrics, coverage);
 
     if (byFolder)
         PrintFolderSummary(analyses);
@@ -201,12 +204,38 @@ static void ApplyNewCodeMetrics(Dictionary<string, double> metrics, List<FileAna
 }
 
 /// <summary>
+/// Coverage cannot be worked out by reading code — it takes running the tests — so the number comes
+/// from the report the test runner already writes. Without it the gate has no way of telling a
+/// project with a thorough suite from one with none.
+/// </summary>
+static QualityGuard.Core.Analysis.CoverageReport? ReadCoverage(string? file,
+                                                              Dictionary<string, double> metrics)
+{
+    if (string.IsNullOrEmpty(file))
+        return null;
+    var report = QualityGuard.Core.Analysis.CoverageReport.Read(file);
+    if (report is null)
+    {
+        Console.Error.WriteLine($"WARNING: {file} is not a coverage report this reads "
+                                + "(lcov, Cobertura, JaCoCo or OpenCover).");
+        return null;
+    }
+    metrics[CoreMetrics.Coverage] = report.Percentage;
+    metrics[CoreMetrics.NewCoverage] = report.Percentage;
+    return report;
+}
+
+/// <summary>
 /// The numbers of the scan: how much code was read, what was found, how it breaks down by severity,
 /// what it costs to fix and which letter each rating lands on. Printed for every run, because a
 /// verdict without the figures behind it is impossible to argue with.
 /// </summary>
-static void PrintQualitySummary(List<FileAnalysis> analyses, Dictionary<string, double> metrics)
+static void PrintQualitySummary(List<FileAnalysis> analyses, Dictionary<string, double> metrics,
+                                QualityGuard.Core.Analysis.CoverageReport? coverage = null)
 {
+    if (coverage != null)
+        Console.WriteLine($"  Coverage         {coverage.Percentage,5:0.0}%   {coverage.CoveredLines} of "
+                          + $"{coverage.CoverableLines} lines reached by tests, over {coverage.ByFile.Count} files");
     var issues = analyses.SelectMany(a => a.Issues).ToList();
     var debt = (int)metrics.GetValueOrDefault(CoreMetrics.TechnicalDebt);
 
