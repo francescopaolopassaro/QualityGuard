@@ -10,6 +10,41 @@ public class RuleRegistryTests
 {
     private static readonly IRule[] Rules = RuleRepository.GetBuiltInRules().ToArray();
 
+    /// <summary>
+    /// The number registry has to stay ahead of every identifier in use. Two batches generated in
+    /// one sitting both read the highest number from the sources and both started from it, so the
+    /// second silently reused the first one's numbers. A number is never reassigned, so the registry
+    /// is the record — and a record nobody updates is worse than none.
+    /// </summary>
+    [Fact]
+    public void The_number_registry_is_ahead_of_every_rule()
+    {
+        var registry = System.Text.Json.JsonDocument.Parse(
+            File.ReadAllText(Path.Combine(RepositoryRoot(), "rule-ids.json")));
+        var next = registry.RootElement.GetProperty("next");
+
+        var behind = new List<string>();
+        foreach (var rule in Rules)
+        {
+            var parts = rule.Key.Split('-');
+            if (parts.Length != 4 || !int.TryParse(parts[3], out var number))
+                continue;
+            var family = $"{parts[1]}-{parts[2]}";
+            if (!next.TryGetProperty(family, out var recorded) || recorded.GetInt32() <= number)
+                behind.Add($"{rule.Key}: the registry offers {(next.TryGetProperty(family, out var r) ? r.GetInt32() : 0)} next");
+        }
+        Assert.Empty(behind);
+    }
+
+    /// <summary>Walks up from the test binary to the folder that holds the registry.</summary>
+    private static string RepositoryRoot()
+    {
+        var directory = new DirectoryInfo(AppContext.BaseDirectory);
+        while (directory != null && !File.Exists(Path.Combine(directory.FullName, "rule-ids.json")))
+            directory = directory.Parent;
+        return directory?.FullName ?? AppContext.BaseDirectory;
+    }
+
     [Fact]
     public void Every_key_follows_the_proprietary_format()
     {

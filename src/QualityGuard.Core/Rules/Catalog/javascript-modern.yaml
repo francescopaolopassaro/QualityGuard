@@ -1,0 +1,138 @@
+- key: QG-JS-SML-0423
+  name: A guarded access should use optional chaining
+  languages: [js, ts]
+  category: SML
+  severity: minor
+  effort: 5min
+  tags: [clarity, ported]
+  message: The same name is written twice: once to check it is there, once to reach through it.
+  summary: A property is reached only after testing the object that holds it.
+  why: |
+    Writing the subject twice invites the two halves to drift apart: a rename that misses one of them
+    turns the guard into a test of something else, and the access it was protecting runs anyway.
+  fix: |
+    Use optional chaining, which names the subject once and stops at the first step that is absent.
+
+- key: QG-JS-SML-0424
+  name: Absence should be compared directly
+  languages: [js, ts]
+  category: SML
+  severity: minor
+  effort: 5min
+  tags: [clarity, ported]
+  message: The type of a name is asked for only to compare it with the word 'undefined'.
+  summary: A value is tested for absence through its type name.
+  why: |
+    The comparison goes the long way round, and on the way it quietly stops distinguishing two
+    different situations: a value that is absent, and a name that was never declared at all. One of
+    those is a defect and this form hides it.
+  fix: |
+    Compare the value with undefined. Where the name really might not exist, say that explicitly.
+
+- key: QG-JS-SML-0425
+  name: A membership test should say so
+  languages: [js, ts]
+  category: SML
+  severity: minor
+  effort: 5min
+  tags: [clarity, ported]
+  message: A position is looked up only to decide whether there is one.
+  summary: A search for a position is compared against minus one.
+  why: |
+    The reader has to remember which side of minus one means present, and the sense inverts depending
+    on the operator. The membership test states the question that was actually being asked.
+  fix: |
+    Use the membership test, which answers yes or no and reads as the question.
+
+- key: QG-JS-SML-0426
+  name: A prefix test should say so
+  languages: [js, ts]
+  category: SML
+  severity: minor
+  effort: 5min
+  tags: [clarity, ported]
+  message: A position is looked up only to check that it is the beginning.
+  summary: A search for a position is compared against zero.
+  why: |
+    Beyond reading indirectly, this scans the whole subject to find every occurrence and then throws
+    all but the first away. The prefix test stops at the first character that differs.
+  fix: |
+    Use the prefix or suffix test.
+
+- key: QG-JS-SML-0427
+  name: Replacing everywhere should say everywhere
+  languages: [js, ts]
+  category: SML
+  severity: minor
+  effort: 5min
+  tags: [clarity, ported]
+  message: Every match is replaced, and the only thing saying so is a flag on the pattern.
+  summary: A global replacement is expressed through a pattern flag.
+  why: |
+    The difference between replacing the first match and replacing all of them sits in a single letter
+    at the end of the pattern, far from the call. Removing it silently changes the behaviour and nothing
+    else on the line changes.
+  fix: |
+    Use the method that replaces everywhere, which says it in its name and accepts a plain string.
+
+- key: QG-JS-SML-0428
+  name: The surrounding object should not be copied into a name
+  languages: [js, ts]
+  category: SML
+  severity: minor
+  effort: 10min
+  tags: [clarity, ported]
+  message: The object this code runs on is stored under a second name.
+  summary: A variable is assigned the surrounding object so an inner function can reach it.
+  why: |
+    The copy exists because a function declared inside would otherwise bring its own subject. That is
+    no longer true of arrow functions, and while the copy lives the object has two names, which drift
+    apart as the code moves.
+  fix: |
+    Use an arrow function, which keeps the surrounding subject, and delete the copy.
+
+- key: QG-JS-SML-0429
+  name: A conditional expression should not contain another
+  languages: [js, ts]
+  category: SML
+  severity: major
+  effort: 10min
+  tags: [clarity, ported]
+  message: One conditional expression is written inside another.
+  summary: A conditional expression is nested in another conditional expression.
+  why: |
+    Each unfinished question the reader has to hold costs them the thread. Two at once, on one line,
+    with the branches interleaved, is where a wrong branch survives review.
+  fix: |
+    Lift the inner question out into a name, or use a statement where the branches are visible.
+
+- key: QG-JS-SML-0430
+  name: A platform module should be named as one
+  languages: [js, ts]
+  category: SML
+  severity: minor
+  effort: 5min
+  tags: [clarity, ported]
+  message: A module the platform provides is asked for by a bare name.
+  summary: A built-in module is imported without the prefix that identifies it.
+  why: |
+    A package installed alongside can carry the same name, and then which one arrives depends on how
+    the program was started and what is on disk. The prefix removes the question.
+  fix: |
+    Prefix the name so the platform's own module is the only thing that can answer.
+
+- key: QG-JS-SML-0431
+  name: The number functions should be reached through Number
+  languages: [js, ts]
+  category: SML
+  severity: minor
+  effort: 5min
+  tags: [clarity, ported]
+  message: A global number function is used where the one on Number was meant.
+  summary: A conversion or test is done through the global function rather than the one on Number.
+  why: |
+    The global versions convert their argument before deciding, so they answer yes about things that
+    are not numbers — an empty string, a whitespace-only string, an object with a conversion. The ones
+    on Number ask the question about the value they were handed.
+  fix: |
+    Reach the function through Number.

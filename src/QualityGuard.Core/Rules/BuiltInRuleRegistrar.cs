@@ -57,6 +57,7 @@ public static class BuiltInRuleRegistrar
         ..Languages.JsTsSemanticRuleSet.All,
         ..Languages.JsTsUsageRuleSet.All,
         ..Languages.JsTsMeasuredRuleSet.All,
+        ..Languages.JsTsModernRuleSet.All,
         ..Languages.KotlinMeasuredRuleSet.All,
         ..Languages.OrmRuleSet.All,
         ..Languages.PythonRuleSet.All,
