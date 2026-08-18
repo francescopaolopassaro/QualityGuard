@@ -84,6 +84,41 @@ public static class PythonRuleSet
     internal static bool HasSqlKeyword(string line)
         => new[] { "select", "insert", "update", "delete", "drop" }
             .Any(kw => RuleMatchers.LineContains(line, kw));
+
+    /// <summary>
+    /// Which lines sit inside a triple-quoted string. Those carry text, not code: a script that
+    /// writes another language embeds the whole of it that way, and reading it line by line found
+    /// statements, semicolons and braces belonging to the other language.
+    /// </summary>
+    internal static bool[] InsideTripleQuotes(string[] lines)
+    {
+    var inside = new bool[lines.Length];
+    var delimiter = string.Empty;
+    for (var i = 0; i < lines.Length; i++)
+    {
+    var line = lines[i];
+    if (delimiter.Length > 0)
+    {
+    inside[i] = true;
+    if (line.Contains(delimiter, StringComparison.Ordinal))
+    delimiter = string.Empty;
+    continue;
+    }
+    foreach (var mark in Marks)
+    {
+    var open = line.IndexOf(mark, StringComparison.Ordinal);
+    if (open < 0)
+    continue;
+    // a string that opens and closes on the same line carries no following lines
+    if (line.IndexOf(mark, open + mark.Length, StringComparison.Ordinal) < 0)
+    delimiter = mark;
+    break;
+    }
+    }
+    return inside;
+    }
+
+    private static readonly string[] Marks = ["\"\"\"", "'''"];
 }
 
 public sealed class PythonEvalRule : PatternRuleBase
@@ -1053,7 +1088,19 @@ public sealed class PythonUnusedImportRule : PatternRuleBase
             if (ImportedForEffect.Any(m => lines[i].Contains(m, StringComparison.Ordinal)))
                 continue;
 
-            var names = ImportedNames(lines[i]);
+            // '# noqa' is how Python says the line is deliberate: an import kept to re-export a
+            // name, or one a checker was told to leave alone. Reading past it took the marker for
+            // part of the imported name and reported the whole comment back at the reader.
+            var statement = lines[i];
+            var note = statement.IndexOf('#');
+            if (note >= 0)
+            {
+                if (statement[note..].Contains("noqa", StringComparison.OrdinalIgnoreCase))
+                    continue;
+                statement = statement[..note];
+            }
+
+            var names = ImportedNames(statement);
             foreach (var name in names)
             {
                 if (name == "*")
@@ -1294,8 +1341,12 @@ public sealed class PythonMultipleStatementsRule : PatternRuleBase
     public override void Execute(IRuleContext context)
     {
         var lines = PythonRuleSet.Lines(context);
+        var inText = PythonRuleSet.InsideTripleQuotes(lines);
         for (var i = 0; i < lines.Length; i++)
         {
+            // a triple-quoted string can hold a whole file of another language, semicolons included
+            if (inText[i])
+                continue;
             var stripped = LanguageRuleSupport.StripStrings(lines[i]);
             // what follows a '#' is a note about the statement, not another one — and stripping the
             // strings first leaves the marker in place even when the code before it held a quote

@@ -1,0 +1,699 @@
+
+- key: QG-CS-SML-0551
+  name: Collection should be simplified
+  languages: [cs]
+  category: SML
+  severity: minor
+  effort: 5min
+  tags: [sml, ported]
+  message: This code is harder to read or change than the behaviour requires.
+  summary: The code works but is harder to read or change than the behaviour requires.
+  why: |
+    The intent is buried, duplicated, or spread across places that must stay in sync, so every future
+    change costs more than it should and carries a risk that has nothing to do with the change itself.
+  fix: |
+    Remove what is not used, name what is unclear, and keep one piece of behaviour in one place so the
+    next change touches a single spot.
+  status: planned
+
+- key: QG-CS-SML-0552
+  name: Method overrides should be simplified
+  languages: [cs]
+  category: SML
+  severity: minor
+  effort: 2min
+  tags: [sml, ported]
+  message: This code is harder to read or change than the behaviour requires.
+  summary: The code works but is harder to read or change than the behaviour requires.
+  why: |
+    The intent is buried, duplicated, or spread across places that must stay in sync, so every future
+    change costs more than it should and carries a risk that has nothing to do with the change itself.
+  fix: |
+    Remove what is not used, name what is unclear, and keep one piece of behaviour in one place so the
+    next change touches a single spot.
+  status: planned
+
+- key: QG-JS-SML-0432
+  name: Test and suite titles should not be left empty
+  languages: [js, ts]
+  category: SML
+  severity: minor
+  effort: 2min
+  tags: [empty, ported]
+  message: This construct is empty, so it does nothing.
+  summary: A construct is declared with no content.
+  why: |
+    An empty body reads as if the case is handled while nothing happens, which is exactly how ignored
+    errors and unimplemented branches survive review. It is also indistinguishable from an accidental
+    deletion.
+  fix: |
+    Implement the behaviour, or remove the construct. When doing nothing is deliberate, say so in a
+    comment so the next reader does not treat it as a gap.
+  status: planned
+
+- key: QG-JS-BUG-0194
+  name: Tests should assert something
+  languages: [js, ts]
+  category: BUG
+  severity: major
+  effort: 1min
+  tags: [tests, ported]
+  message: This test cannot fail, so it verifies nothing.
+  summary: A test does not assert, is disabled, or cannot fail.
+  why: |
+    A test that cannot fail reports success forever while covering nothing, and the suite keeps its green
+    status. That is worse than having no test at all, because it removes the incentive to write one.
+  fix: |
+    Assert the behaviour the test exists for, re-enable it, and make sure it fails when the behaviour is
+    broken before trusting it again.
+  detect:
+    - invocation: [AwaitExpression, ChainExpression, ExpressionStatement, MemberExpression, debug, eslint, estree, logRoles]
+
+- key: QG-JS-SML-0433
+  name: Inline snapshots should be simplified
+  languages: [js, ts]
+  category: SML
+  severity: minor
+  effort: 5min
+  tags: [sml, ported]
+  message: This code is harder to read or change than the behaviour requires.
+  summary: The code works but is harder to read or change than the behaviour requires.
+  why: |
+    The intent is buried, duplicated, or spread across places that must stay in sync, so every future
+    change costs more than it should and carries a risk that has nothing to do with the change itself.
+  fix: |
+    Remove what is not used, name what is unclear, and keep one piece of behaviour in one place so the
+    next change touches a single spot.
+  status: planned
+
+- key: QG-JS-BUG-0195
+  name: Mocha timeouts should match the behaviour the code describes
+  languages: [js, ts]
+  category: BUG
+  severity: major
+  effort: 2min
+  tags: [bug, ported]
+  message: This code does not behave the way it reads.
+  summary: The code does not do what its shape suggests, or fails on ordinary input.
+  why: |
+    Written this way the code works by accident or breaks on values that are perfectly normal, and the
+    mistake is easy to miss in review because the intent reads correctly.
+  fix: |
+    Make the intended behaviour explicit — fix the condition, the operator or the order of operations —
+    and cover the case that used to fail with a test.
+  detect:
+    - invocation: [eslint, estree, original, timeout]
+
+- key: QG-JS-SML-0434
+  name: Tests should assert something
+  languages: [js, ts]
+  category: SML
+  severity: minor
+  effort: 10min
+  tags: [tests, ported]
+  message: This test cannot fail, so it verifies nothing.
+  summary: A test does not assert, is disabled, or cannot fail.
+  why: |
+    A test that cannot fail reports success forever while covering nothing, and the suite keeps its green
+    status. That is worse than having no test at all, because it removes the incentive to write one.
+  fix: |
+    Assert the behaviour the test exists for, re-enable it, and make sure it fails when the behaviour is
+    broken before trusting it again.
+  status: planned
+
+- key: QG-JS-SML-0435
+  name: Octal values should not be used
+  languages: [js, ts]
+  category: SML
+  severity: minor
+  effort: 5min
+  tags: [avoid_api, ported]
+  message: This API should be replaced by the current alternative.
+  summary: Code calls an API that is unsafe, obsolete or superseded by a better alternative.
+  why: |
+    The API stays available for compatibility, so nothing fails at build time, but it carries behaviour
+    the platform now considers a defect — unchecked input, a weak guarantee, or a cost the replacement
+    avoids. Its presence also spreads: new code copies what it finds nearby.
+  fix: |
+    Replace the call with the current API, and keep the old one only behind a compatibility layer that is
+    documented and dated.
+  detect:
+    - invocation: [eslint, external]
+
+- key: QG-JS-SML-0436
+  name: Vi.mock should be declared the way the language intends
+  languages: [js, ts]
+  category: SML
+  severity: minor
+  effort: 5min
+  tags: [declaration, ported]
+  message: This declaration exposes more than it should.
+  summary: A declaration uses modifiers, order or visibility that do not match its purpose.
+  why: |
+    Declarations are the contract other code relies on. A wider visibility than needed makes an internal
+    detail part of the public surface, and unusual modifier combinations hide the intent from readers and
+    tools alike.
+  fix: |
+    Declare the narrowest visibility that works, in the conventional modifier order, and mark as final or
+    read-only whatever is not meant to change.
+  detect:
+    - invocation: [ExpressionStatement, Identifier, MemberExpression, Program, eslint, estree, optional, original]
+
+- key: QG-JS-SML-0437
+  name: Tests should assert something
+  languages: [js, ts]
+  category: SML
+  severity: minor
+  effort: 5min
+  tags: [tests, ported]
+  message: This test cannot fail, so it verifies nothing.
+  summary: A test does not assert, is disabled, or cannot fail.
+  why: |
+    A test that cannot fail reports success forever while covering nothing, and the suite keeps its green
+    status. That is worse than having no test at all, because it removes the incentive to write one.
+  fix: |
+    Assert the behaviour the test exists for, re-enable it, and make sure it fails when the behaviour is
+    broken before trusting it again.
+  status: planned
+
+- key: QG-JS-BUG-0196
+  name: Tests should assert something
+  languages: [js, ts]
+  category: BUG
+  severity: major
+  effort: 1min
+  tags: [tests, ported]
+  message: This test cannot fail, so it verifies nothing.
+  summary: A test does not assert, is disabled, or cannot fail.
+  why: |
+    A test that cannot fail reports success forever while covering nothing, and the suite keeps its green
+    status. That is worse than having no test at all, because it removes the incentive to write one.
+  fix: |
+    Assert the behaviour the test exists for, re-enable it, and make sure it fails when the behaviour is
+    broken before trusting it again.
+  status: planned
+
+- key: QG-JS-SML-0438
+  name: Most specific assertion should be replaced by the recommended alternative
+  languages: [js, ts]
+  category: SML
+  severity: minor
+  effort: 1min
+  tags: [prefer_api, ported]
+  message: The platform offers a clearer or safer construct for this.
+  summary: A construct is used where the platform offers one that is clearer or safer.
+  why: |
+    The alternative exists because it removes a class of mistake — a conversion, an allocation, an edge
+    case — that the current form leaves to the caller. Using the older form means every reader has to
+    check that the edge case was handled.
+  fix: |
+    Switch to the recommended construct; the behaviour is the same in the normal case and defined in the
+    cases the old form got wrong.
+  status: planned
+
+- key: QG-JS-SML-0439
+  name: Equality operators should not be used
+  languages: [js, ts]
+  category: SML
+  severity: minor
+  effort: 2min
+  tags: [avoid_api, ported]
+  cwe: [835]
+  message: This API should be replaced by the current alternative.
+  summary: Code calls an API that is unsafe, obsolete or superseded by a better alternative.
+  why: |
+    The API stays available for compatibility, so nothing fails at build time, but it carries behaviour
+    the platform now considers a defect — unchecked input, a weak guarantee, or a cost the replacement
+    avoids. Its presence also spreads: new code copies what it finds nearby.
+  fix: |
+    Replace the call with the current API, and keep the old one only behind a compatibility layer that is
+    documented and dated.
+  detect:
+    - invocation: [AssignmentExpression, BinaryExpression, ForStatement, Identifier, Literal, SequenceExpression, UpdateExpression, VariableDeclaration]
+
+- key: QG-JS-SML-0440
+  name: Forced browser interactions should be simplified
+  languages: [js, ts]
+  category: SML
+  severity: minor
+  effort: 5min
+  tags: [sml, ported]
+  message: This code is harder to read or change than the behaviour requires.
+  summary: The code works but is harder to read or change than the behaviour requires.
+  why: |
+    The intent is buried, duplicated, or spread across places that must stay in sync, so every future
+    change costs more than it should and carries a risk that has nothing to do with the change itself.
+  fix: |
+    Remove what is not used, name what is unclear, and keep one piece of behaviour in one place so the
+    next change touches a single spot.
+  detect:
+    - invocation: [CallExpression, Literal, ObjectExpression, SpreadElement, Submit, button, checkout, clear]
+
+- key: QG-JS-BUG-0197
+  name: Tests should assert something
+  languages: [js, ts]
+  category: BUG
+  severity: major
+  effort: 5min
+  tags: [tests, ported]
+  message: This test cannot fail, so it verifies nothing.
+  summary: A test does not assert, is disabled, or cannot fail.
+  why: |
+    A test that cannot fail reports success forever while covering nothing, and the suite keeps its green
+    status. That is worse than having no test at all, because it removes the incentive to write one.
+  fix: |
+    Assert the behaviour the test exists for, re-enable it, and make sure it fails when the behaviour is
+    broken before trusting it again.
+  status: planned
+
+- key: QG-JS-SML-0441
+  name: Lifecycle hooks should assert something
+  languages: [js, ts]
+  category: SML
+  severity: minor
+  effort: 5min
+  tags: [tests, ported]
+  message: This test cannot fail, so it verifies nothing.
+  summary: A test does not assert, is disabled, or cannot fail.
+  why: |
+    A test that cannot fail reports success forever while covering nothing, and the suite keeps its green
+    status. That is worse than having no test at all, because it removes the incentive to write one.
+  fix: |
+    Assert the behaviour the test exists for, re-enable it, and make sure it fails when the behaviour is
+    broken before trusting it again.
+  status: planned
+
+- key: QG-JS-SML-0442
+  name: Tests should assert something
+  languages: [js, ts]
+  category: SML
+  severity: minor
+  effort: 5min
+  tags: [tests, ported]
+  message: This test cannot fail, so it verifies nothing.
+  summary: A test does not assert, is disabled, or cannot fail.
+  why: |
+    A test that cannot fail reports success forever while covering nothing, and the suite keeps its green
+    status. That is worse than having no test at all, because it removes the incentive to write one.
+  fix: |
+    Assert the behaviour the test exists for, re-enable it, and make sure it fails when the behaviour is
+    broken before trusting it again.
+  status: planned
+
+- key: QG-JS-SML-0443
+  name: Tests should assert something
+  languages: [js, ts]
+  category: SML
+  severity: minor
+  effort: 5min
+  tags: [tests, ported]
+  message: This test cannot fail, so it verifies nothing.
+  summary: A test does not assert, is disabled, or cannot fail.
+  why: |
+    A test that cannot fail reports success forever while covering nothing, and the suite keeps its green
+    status. That is worse than having no test at all, because it removes the incentive to write one.
+  fix: |
+    Assert the behaviour the test exists for, re-enable it, and make sure it fails when the behaviour is
+    broken before trusting it again.
+  detect:
+    - invocation: [AllBy, ArrowFunctionExpression, CallExpression, FunctionExpression, Literal, MemberExpression, SpreadElement, Super]
+
+- key: QG-PP-BUG-0091
+  name: Unsafe APIs should not be used
+  languages: [php]
+  category: BUG
+  severity: major
+  effort: 5min
+  tags: [avoid_api, ported]
+  message: This API should be replaced by the current alternative.
+  summary: Code calls an API that is unsafe, obsolete or superseded by a better alternative.
+  why: |
+    The API stays available for compatibility, so nothing fails at build time, but it carries behaviour
+    the platform now considers a defect — unchecked input, a weak guarantee, or a cost the replacement
+    avoids. Its presence also spreads: new code copies what it finds nearby.
+  fix: |
+    Replace the call with the current API, and keep the old one only behind a compatibility layer that is
+    documented and dated.
+  detect:
+    - invocation: [__halt_compiler, apd_clunk, apd_croak, apd_dump_function_table, apd_set_session, apd_set_session_trace, clearstatcache, closedir]
+
+- key: QG-PY-SML-0396
+  name: Sorted function call should be simplified
+  languages: [py]
+  category: SML
+  severity: minor
+  effort: 1min
+  tags: [sml, ported]
+  message: This code is harder to read or change than the behaviour requires.
+  summary: The code works but is harder to read or change than the behaviour requires.
+  why: |
+    The intent is buried, duplicated, or spread across places that must stay in sync, so every future
+    change costs more than it should and carries a risk that has nothing to do with the change itself.
+  fix: |
+    Remove what is not used, name what is unclear, and keep one piece of behaviour in one place so the
+    next change touches a single spot.
+  status: planned
+
+- key: QG-PY-BUG-0242
+  name: Async functions should be accessed in a thread-safe way
+  languages: [py]
+  category: BUG
+  severity: major
+  effort: 5min
+  tags: [concurrency, ported]
+  message: Shared state is accessed without correct coordination.
+  summary: Shared state is accessed with locking that is missing, too wide, or on the wrong object.
+  why: |
+    Concurrency defects depend on timing, so they pass every test and appear under load in production.
+    Locking on a shared or public object also lets unrelated code block or deadlock this one.
+  fix: |
+    Lock a private object dedicated to the state it protects, keep the critical section short, and prefer
+    the concurrent collections and higher-level primitives the platform provides.
+  detect:
+    - invocation: [PoolManager, options, patch, request]
+      receiver: [PoolManager, Session, httpx, requests, urllib3]
+
+- key: QG-PY-SML-0397
+  name: String formatting should be replaced by the recommended alternative
+  languages: [py]
+  category: SML
+  severity: minor
+  effort: 1min
+  tags: [prefer_api, ported]
+  message: The platform offers a clearer or safer construct for this.
+  summary: A construct is used where the platform offers one that is clearer or safer.
+  why: |
+    The alternative exists because it removes a class of mistake — a conversion, an allocation, an edge
+    case — that the current form leaves to the caller. Using the older form means every reader has to
+    check that the edge case was handled.
+  fix: |
+    Switch to the recommended construct; the behaviour is the same in the normal case and defined in the
+    cases the old form got wrong.
+  status: planned
+
+- key: QG-PY-SML-0401
+  name: Pytz.timezone should be simplified
+  languages: [py]
+  category: SML
+  severity: minor
+  effort: 5min
+  tags: [sml, ported]
+  message: This code is harder to read or change than the behaviour requires.
+  summary: The code works but is harder to read or change than the behaviour requires.
+  why: |
+    The intent is buried, duplicated, or spread across places that must stay in sync, so every future
+    change costs more than it should and carries a risk that has nothing to do with the change itself.
+  fix: |
+    Remove what is not used, name what is unclear, and keep one piece of behaviour in one place so the
+    next change touches a single spot.
+  detect:
+    - invocation: [datetime, timezone, tzinfo]
+      receiver: [datetime, pytz]
+
+- key: QG-PY-BUG-0243
+  name: Suspicious code should match the behaviour the code describes
+  languages: [py]
+  category: BUG
+  severity: major
+  effort: 5min
+  tags: [bug, ported]
+  message: This code does not behave the way it reads.
+  summary: The code does not do what its shape suggests, or fails on ordinary input.
+  why: |
+    Written this way the code works by accident or breaks on values that are perfectly normal, and the
+    mistake is easy to miss in review because the intent reads correctly.
+  fix: |
+    Make the intended behaviour explicit — fix the condition, the operator or the order of operations —
+    and cover the case that used to fail with a test.
+  detect:
+    - invocation: [__aiter__, __getitem__, __iter__]
+
+- key: QG-PY-SML-0402
+  name: Redundant collection functions should be simplified
+  languages: [py]
+  category: SML
+  severity: minor
+  effort: 5min
+  tags: [sml, ported]
+  message: This code is harder to read or change than the behaviour requires.
+  summary: The code works but is harder to read or change than the behaviour requires.
+  why: |
+    The intent is buried, duplicated, or spread across places that must stay in sync, so every future
+    change costs more than it should and carries a risk that has nothing to do with the change itself.
+  fix: |
+    Remove what is not used, name what is unclear, and keep one piece of behaviour in one place so the
+    next change touches a single spot.
+  status: planned
+
+- key: QG-PY-BUG-0244
+  name: Shared state should be accessed in a thread-safe way
+  languages: [py]
+  category: BUG
+  severity: major
+  effort: 5min
+  tags: [concurrency, ported]
+  message: Shared state is accessed without correct coordination.
+  summary: Shared state is accessed with locking that is missing, too wide, or on the wrong object.
+  why: |
+    Concurrency defects depend on timing, so they pass every test and appear under load in production.
+    Locking on a shared or public object also lets unrelated code block or deadlock this one.
+  fix: |
+    Lock a private object dedicated to the state it protects, keep the critical section short, and prefer
+    the concurrent collections and higher-level primitives the platform provides.
+  status: planned
+
+- key: QG-PY-BUG-0245
+  name: AWS Lambda handlers should match the behaviour the code describes
+  languages: [py]
+  category: BUG
+  severity: major
+  effort: 5min
+  tags: [bug, ported]
+  message: This code does not behave the way it reads.
+  summary: The code does not do what its shape suggests, or fails on ordinary input.
+  why: |
+    Written this way the code works by accident or breaks on values that are perfectly normal, and the
+    mistake is easy to miss in review because the intent reads correctly.
+  fix: |
+    Make the intended behaviour explicit — fix the condition, the operator or the order of operations —
+    and cover the case that used to fail with a test.
+  detect:
+    - invocation: [Decimal, Pattern, __dict__, __json__, asdict, bytearray, bytes, complex]
+      receiver: [dataclasses, date, datetime, decimal, json]
+
+- key: QG-PY-SML-0404
+  name: Sorted should be simplified
+  languages: [py]
+  category: SML
+  severity: minor
+  effort: 5min
+  tags: [sml, ported]
+  message: This code is harder to read or change than the behaviour requires.
+  summary: The code works but is harder to read or change than the behaviour requires.
+  why: |
+    The intent is buried, duplicated, or spread across places that must stay in sync, so every future
+    change costs more than it should and carries a risk that has nothing to do with the change itself.
+  fix: |
+    Remove what is not used, name what is unclear, and keep one piece of behaviour in one place so the
+    next change touches a single spot.
+  status: planned
+
+- key: QG-PY-SML-0406
+  name: Events should be replaced by the recommended alternative
+  languages: [py]
+  category: SML
+  severity: minor
+  effort: 10min
+  tags: [prefer_api, ported]
+  message: The platform offers a clearer or safer construct for this.
+  summary: A construct is used where the platform offers one that is clearer or safer.
+  why: |
+    The alternative exists because it removes a class of mistake — a conversion, an allocation, an edge
+    case — that the current form leaves to the caller. Using the older form means every reader has to
+    check that the edge case was handled.
+  fix: |
+    Switch to the recommended construct; the behaviour is the same in the normal case and defined in the
+    cases the old form got wrong.
+  status: planned
+
+- key: QG-PY-SML-0407
+  name: Hard-to-read code should be simplified
+  languages: [py]
+  category: SML
+  severity: minor
+  effort: 1min
+  tags: [sml, ported]
+  message: This code is harder to read or change than the behaviour requires.
+  summary: The code works but is harder to read or change than the behaviour requires.
+  why: |
+    The intent is buried, duplicated, or spread across places that must stay in sync, so every future
+    change costs more than it should and carries a risk that has nothing to do with the change itself.
+  fix: |
+    Remove what is not used, name what is unclear, and keep one piece of behaviour in one place so the
+    next change touches a single spot.
+  status: planned
+
+- key: QG-PY-BUG-0246
+  name: Attributes should match the behaviour the code describes
+  languages: [py]
+  category: BUG
+  severity: major
+  effort: 5 min
+  tags: [bug, ported]
+  message: This code does not behave the way it reads.
+  summary: The code does not do what its shape suggests, or fails on ordinary input.
+  why: |
+    Written this way the code works by accident or breaks on values that are perfectly normal, and the
+    mistake is easy to miss in review because the intent reads correctly.
+  fix: |
+    Make the intended behaviour explicit — fix the condition, the operator or the order of operations —
+    and cover the case that used to fail with a test.
+  status: planned
+
+- key: QG-PY-SML-0408
+  name: Enumerate() values should be replaced by the recommended alternative
+  languages: [py]
+  category: SML
+  severity: minor
+  effort: 2min
+  tags: [prefer_api, ported]
+  message: The platform offers a clearer or safer construct for this.
+  summary: A construct is used where the platform offers one that is clearer or safer.
+  why: |
+    The alternative exists because it removes a class of mistake — a conversion, an allocation, an edge
+    case — that the current form leaves to the caller. Using the older form means every reader has to
+    check that the edge case was handled.
+  fix: |
+    Switch to the recommended construct; the behaviour is the same in the normal case and defined in the
+    cases the old form got wrong.
+  status: planned
+
+- key: QG-PY-BUG-0247
+  name: Unsafe APIs should not be used
+  languages: [py]
+  category: BUG
+  severity: major
+  effort: 5min
+  tags: [avoid_api, ported]
+  message: This API should be replaced by the current alternative.
+  summary: Code calls an API that is unsafe, obsolete or superseded by a better alternative.
+  why: |
+    The API stays available for compatibility, so nothing fails at build time, but it carries behaviour
+    the platform now considers a defect — unchecked input, a weak guarantee, or a cost the replacement
+    avoids. Its presence also spreads: new code copies what it finds nearby.
+  fix: |
+    Replace the call with the current API, and keep the old one only behind a compatibility layer that is
+    documented and dated.
+  detect:
+    - invocation: [NoneType]
+
+- key: QG-PY-BUG-0248
+  name: Cancellation scopes should match the behaviour the code describes
+  languages: [py]
+  category: BUG
+  severity: major
+  effort: 5min
+  tags: [bug, ported]
+  message: This code does not behave the way it reads.
+  summary: The code does not do what its shape suggests, or fails on ordinary input.
+  why: |
+    Written this way the code works by accident or breaks on values that are perfectly normal, and the
+    mistake is easy to miss in review because the intent reads correctly.
+  fix: |
+    Make the intended behaviour explicit — fix the condition, the operator or the order of operations —
+    and cover the case that used to fail with a test.
+  status: planned
+
+- key: QG-PY-SML-0410
+  name: Hard-to-read code should be simplified
+  languages: [py]
+  category: SML
+  severity: minor
+  effort: 5min
+  tags: [sml, ported]
+  message: This code is harder to read or change than the behaviour requires.
+  summary: The code works but is harder to read or change than the behaviour requires.
+  why: |
+    The intent is buried, duplicated, or spread across places that must stay in sync, so every future
+    change costs more than it should and carries a risk that has nothing to do with the change itself.
+  fix: |
+    Remove what is not used, name what is unclear, and keep one piece of behaviour in one place so the
+    next change touches a single spot.
+  detect:
+    - invocation: [datetime, microsecond, minute, month, second]
+      receiver: [datetime]
+
+- key: QG-PY-BUG-0249
+  name: Recursion should match the behaviour the code describes
+  languages: [py]
+  category: BUG
+  severity: major
+  effort: 30min
+  tags: [bug, ported]
+  message: This code does not behave the way it reads.
+  summary: The code does not do what its shape suggests, or fails on ordinary input.
+  why: |
+    Written this way the code works by accident or breaks on values that are perfectly normal, and the
+    mistake is easy to miss in review because the intent reads correctly.
+  fix: |
+    Make the intended behaviour explicit — fix the condition, the operator or the order of operations —
+    and cover the case that used to fail with a test.
+  detect:
+    - invocation: [classmethod, method, staticmethod]
+
+- key: QG-PY-SML-0412
+  name: Sorted() should not be used
+  languages: [py]
+  category: SML
+  severity: minor
+  effort: 5 min
+  tags: [avoid_api, ported]
+  message: This API should be replaced by the current alternative.
+  summary: Code calls an API that is unsafe, obsolete or superseded by a better alternative.
+  why: |
+    The API stays available for compatibility, so nothing fails at build time, but it carries behaviour
+    the platform now considers a defect — unchecked input, a weak guarantee, or a cost the replacement
+    avoids. Its presence also spreads: new code copies what it finds nearby.
+  fix: |
+    Replace the call with the current API, and keep the old one only behind a compatibility layer that is
+    documented and dated.
+  status: planned
+
+- key: QG-PY-SML-0413
+  name: Wildcard imports should not be used
+  languages: [py]
+  category: SML
+  severity: minor
+  effort: 5min
+  tags: [avoid_api, ported]
+  message: This API should be replaced by the current alternative.
+  summary: Code calls an API that is unsafe, obsolete or superseded by a better alternative.
+  why: |
+    The API stays available for compatibility, so nothing fails at build time, but it carries behaviour
+    the platform now considers a defect — unchecked input, a weak guarantee, or a cost the replacement
+    avoids. Its presence also spreads: new code copies what it finds nearby.
+  fix: |
+    Replace the call with the current API, and keep the old one only behind a compatibility layer that is
+    documented and dated.
+  detect:
+    - invocation: [__all__]
+      receiver: [warnings]
+
+- key: QG-PY-BUG-0250
+  name: Async functions should be accessed in a thread-safe way
+  languages: [py]
+  category: BUG
+  severity: major
+  effort: 5min
+  tags: [concurrency, ported]
+  message: Shared state is accessed without correct coordination.
+  summary: Shared state is accessed with locking that is missing, too wide, or on the wrong object.
+  why: |
+    Concurrency defects depend on timing, so they pass every test and appear under load in production.
+    Locking on a shared or public object also lets unrelated code block or deadlock this one.
+  fix: |
+    Lock a private object dedicated to the state it protects, keep the critical section short, and prefer
+    the concurrent collections and higher-level primitives the platform provides.
+  detect:
+    - invocation: [NamedTemporaryFile, SpooledTemporaryFile, TemporaryFile, fdopen, popen]
+      receiver: [Path, codecs, gzip, lzma, tempfile]

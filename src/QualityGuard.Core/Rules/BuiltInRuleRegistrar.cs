@@ -55,6 +55,7 @@ public static class BuiltInRuleRegistrar
         ..Languages.KotlinMeasuredRuleSet.All,
         ..Languages.OrmRuleSet.All,
         ..Languages.PythonRuleSet.All,
+        ..Languages.PythonClassRuleSet.All,
         ..Languages.PythonAstRuleSet.All,
         ..Languages.PythonRuntimeRuleSet.All,
         ..Languages.PythonMeasuredRuleSet.All,
