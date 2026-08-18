@@ -1232,7 +1232,7 @@
   effort: 15min
   tags: [exception, generated]
   generated: true
-  status: ready
+  status: planned
   message: This handling hides the failure instead of dealing with it.
   summary: An exception is thrown, caught or propagated in a way that hides the failure.
   why: |
@@ -1242,8 +1242,6 @@
   fix: |
     Catch the specific failures this code can recover from, keep the original exception as the cause when
     wrapping, and let everything else reach the boundary handler.
-  detect:
-    - creation: [NullPointerException]
 
 - key: QG-JV-SML-0119
   name: NullPointerException should make failure handling explicit
@@ -1254,7 +1252,7 @@
   effort: 15min
   tags: [exception, generated]
   generated: true
-  status: ready
+  status: planned
   message: This handling hides the failure instead of dealing with it.
   summary: An exception is thrown, caught or propagated in a way that hides the failure.
   why: |
@@ -1264,8 +1262,6 @@
   fix: |
     Catch the specific failures this code can recover from, keep the original exception as the cause when
     wrapping, and let everything else reach the boundary handler.
-  detect:
-    - creation: [NullPointerException]
 
 - key: QG-JV-SML-0120
   name: == and != should not be used

@@ -33,7 +33,6 @@ public static class BuiltInRuleRegistrar
         new EmptyBlockRulePython(),
         new EmptyBlockRulePhp(),
         new TabCharacterRuleCs(),
-        new TabCharacterRuleJava(),
         new TabCharacterRuleKotlin(),
         new TabCharacterRuleJs(),
         new TabCharacterRulePython(),

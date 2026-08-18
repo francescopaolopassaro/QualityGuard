@@ -212,6 +212,7 @@
   name: Numbers should be named when their meaning is not obvious
   languages: [java]
   category: SML
+  status: planned
   severity: minor
   effort: 10min
   tags: [readability]
@@ -404,6 +405,7 @@
   name: One statement per line
   languages: [java]
   category: CNV
+  status: planned
   severity: minor
   effort: 5min
   tags: [convention, readability]
@@ -810,6 +812,7 @@
   name: Types should not accumulate too many members
   languages: [java]
   category: SML
+  status: planned
   severity: major
   effort: 45min
   tags: [design]
@@ -5816,6 +5819,7 @@
   name: Tabs should not be used for indentation
   languages: [java]
   category: CNV
+  status: planned
   severity: minor
   effort: 5min
   tags: [convention, readability]
@@ -6743,6 +6747,7 @@
   name: Functions should not be too long
   languages: [java]
   category: SML
+  status: planned
   severity: major
   effort: 30min
   tags: [design]
@@ -6881,6 +6886,7 @@
   name: Control structures should not be nested too deeply
   languages: [java]
   category: SML
+  status: planned
   severity: major
   effort: 20min
   tags: [design, complexity]
@@ -7664,6 +7670,7 @@
   name: Condition chains should end with a final branch
   languages: [java]
   category: SML
+  status: planned
   severity: major
   effort: 10min
   tags: [suspicious, design]
@@ -7922,6 +7929,7 @@
   name: Multi-way branches should not be nested
   languages: [java]
   category: SML
+  status: planned
   severity: major
   effort: 25min
   tags: [complexity]
@@ -8051,6 +8059,7 @@
   name: Functions should not have too many exit points
   languages: [java]
   category: SML
+  status: planned
   severity: major
   effort: 20min
   tags: [complexity]
@@ -8588,6 +8597,7 @@
   name: Catch clauses should name the failures they handle
   languages: [java]
   category: SML
+  status: planned
   severity: major
   effort: 15min
   tags: [exception]

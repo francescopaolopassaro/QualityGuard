@@ -109,3 +109,39 @@
   fix: |
     Merge the commands into one RUN joined by &&, and clean up inside the same instruction so nothing
     is captured in the layer.
+
+- key: QG-DK-SML-0003
+  name: Define a HEALTHCHECK for the container
+  status: superseded
+  superseded_by: QG-DK-SEC-0001
+  languages: [dk]
+  category: SML
+  severity: minor
+  effort: 10min
+  tags: [docker]
+  message: Define a HEALTHCHECK for the container.
+  summary: A Dockerfile declares no health check.
+  why: |
+    The advice is sound, and it belongs to a separate linter whose results the reference merely reads
+    — its own catalogue does not carry the rule. Ours fired on every image in a repository of
+    examples, where the orchestrator declares the probe instead.
+  fix: |
+    Where a team wants it enforced, the linter that owns the rule is the place to configure it.
+
+- key: QG-DK-SML-0005
+  name: Set a WORKDIR for the container
+  status: superseded
+  superseded_by: QG-DK-SEC-0001
+  languages: [dk]
+  category: SML
+  severity: minor
+  effort: 10min
+  tags: [docker]
+  message: Set a WORKDIR for the container.
+  summary: A Dockerfile sets no working directory.
+  why: |
+    The reference catalogue carries a rule about a WORKDIR given a relative path, which is a defect
+    a reader can act on. Asking for a WORKDIR to exist at all comes from an external linter, and
+    fired on every image that runs a single absolute command.
+  fix: |
+    The rule about relative paths covers the case that goes wrong.

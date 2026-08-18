@@ -17,9 +17,7 @@ public static class DockerRuleSet
         new DockerSkipCertValidationRule(),
         new DockerInstallMissingFlagsRule(),
         new DockerUnpinnedFromRule(),
-        new DockerMissingHealthcheckRule(),
         new DockerDeprecatedMaintainerRule(),
-        new DockerMissingWorkdirRule(),
         new DockerShellFormCommandRule()
     ];
 }
