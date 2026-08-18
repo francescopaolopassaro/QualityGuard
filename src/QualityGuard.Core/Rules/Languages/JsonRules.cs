@@ -41,10 +41,14 @@ public sealed class JsonDuplicateKeyRule : JsonRuleBase
 
     private static void Walk(ConfigNode node, IRuleContext context)
     {
+        // The members of an array carry no name, so two equal ones are a list with a repeat in it,
+        // not a name defined twice. Reading them as keys reported every command list in a settings
+        // file, and the reported name was the value cut at its first escaped quote.
         var seen = new Dictionary<string, int>(StringComparer.Ordinal);
+        var isList = node.Children.Count(c => c.Key.Length == 0) > node.Children.Count / 2;
         foreach (var child in node.Children)
         {
-            if (child.Key.Length > 0)
+            if (!isList && child.Key.Length > 0)
             {
                 if (seen.TryGetValue(child.Key, out var first))
                 {

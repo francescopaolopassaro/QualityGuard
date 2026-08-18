@@ -5692,7 +5692,11 @@ public abstract class TestWithoutAssertionRule : StructuralRuleBase
         // Go states a failure rather than asserting a success: 't.Error', 't.Fatal' and the helpers
         // built on them are how every test in the language says the expectation did not hold
         "t.error", "t.errorf", "t.fatal", "t.fatalf", "t.fail", "t.failnow", "b.error", "b.fatal",
-        "require", "equal", "nooerror", "noerror", "notnil", "notempty", "len"
+        "require", "equal", "nooerror", "noerror", "notnil", "notempty", "len",
+        // 'with pytest.raises(...)' and its siblings state the expectation by wrapping the code
+        // that must fail: the test has no assert of its own because the block is the assert
+        "raises", "warns", "deprecated_call", "assertraises", "assertwarns", "asserts",
+        "tobe", "toequal", "tothrow", "tohavebeencalled", "resolves", "rejects"
     ];
     public override string Name => "Tests should verify something";
     public override Severity Severity => Severity.Major;

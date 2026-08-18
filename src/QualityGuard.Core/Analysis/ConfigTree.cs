@@ -226,13 +226,22 @@ public static class ConfigTree
 
     // ------------------------------------------------------------------ helpers
 
+    /// <summary>Whether the quote at this position closes a string or was written inside one.</summary>
+    private static bool IsEscaped(string text, int index)
+    {
+        var slashes = 0;
+        for (var i = index - 1; i >= 0 && text[i] == '\\'; i--)
+            slashes++;
+        return slashes % 2 == 1;
+    }
+
     private static string StripComment(string line)
     {
         var inString = false;
         for (var i = 0; i < line.Length; i++)
         {
             var c = line[i];
-            if (c == '"')
+            if (c == '"' && !IsEscaped(line, i))
                 inString = !inString;
             else if (!inString && (c == '#' || (c == '/' && i + 1 < line.Length && line[i + 1] == '/')))
                 return line[..i];
@@ -246,7 +255,7 @@ public static class ConfigTree
         for (var i = 0; i < text.Length; i++)
         {
             var c = text[i];
-            if (c == '"')
+            if (c == '"' && !IsEscaped(text, i))
                 inString = !inString;
             else if (!inString && c == target)
                 return i;
@@ -259,14 +268,22 @@ public static class ConfigTree
         var parts = new List<string>();
         var current = new System.Text.StringBuilder();
         var inString = false;
+        var escaped = false;
         foreach (var c in text)
         {
-            if (c == '"')
+            if (inString && !escaped && c == '\\')
+            {
+                escaped = true;
+                current.Append(c);
+                continue;
+            }
+            if (c == '"' && !escaped)
             {
                 inString = !inString;
                 current.Append(c);
                 continue;
             }
+            escaped = false;
             if (!inString && char.IsWhiteSpace(c))
             {
                 if (current.Length > 0)

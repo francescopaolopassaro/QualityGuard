@@ -136,10 +136,24 @@ internal static class LanguageRuleSupport
     {
         var sb = new System.Text.StringBuilder(line.Length);
         var quote = '\0';
+        var escaped = false;
         foreach (var c in line)
         {
             if (quote != '\0')
             {
+                // A quote written inside the string does not end it. Without this, an f-string
+                // carrying a shell command closed at its first escaped quote, and everything after
+                // it was read as code — semicolons and all.
+                if (escaped)
+                {
+                    escaped = false;
+                    continue;
+                }
+                if (c == '\\')
+                {
+                    escaped = true;
+                    continue;
+                }
                 if (c == quote)
                     quote = '\0';
                 continue;

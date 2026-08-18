@@ -1297,9 +1297,16 @@ public sealed class PythonMultipleStatementsRule : PatternRuleBase
         for (var i = 0; i < lines.Length; i++)
         {
             var stripped = LanguageRuleSupport.StripStrings(lines[i]);
-            if (stripped.Trim().StartsWith("#", StringComparison.Ordinal))
+            // what follows a '#' is a note about the statement, not another one — and stripping the
+            // strings first leaves the marker in place even when the code before it held a quote
+            var comment = stripped.IndexOf('#');
+            if (comment >= 0)
+                stripped = stripped[..comment];
+            if (stripped.Trim().Length == 0)
                 continue;
-            if (stripped.Contains(';'))
+            // a trailing semicolon closes one statement; it takes a second one after it to matter
+            var separator = stripped.IndexOf(';');
+            if (separator >= 0 && stripped[(separator + 1)..].Trim().Length > 0)
                 context.Report("Avoid multiple statements on a single line.", i + 1);
         }
     }

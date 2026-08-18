@@ -426,7 +426,9 @@ public sealed class GoSsrfRule : PatternRuleBase
         var tokens = context.Tokens;
         foreach (var i in GoRuleSet.QualifiedCall(tokens, ["http", "client"], ["Get", "Post", "NewRequest"]))
         {
-            if (!RuleMatchers.NextNonParenIsString(tokens, i) || context.IsTaintedLine(tokens[i].Line))
+            // Reporting whenever the argument was not a plain literal flagged every request a test
+            // makes against its own server. What makes this a finding is the untrusted input.
+            if (context.IsTaintedLine(tokens[i].Line))
                 context.Report("Validate and allow list URLs passed to the HTTP client.", tokens[i].Line);
         }
     }
