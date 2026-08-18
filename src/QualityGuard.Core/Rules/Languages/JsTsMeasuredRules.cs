@@ -27,7 +27,14 @@ public static class JsTsMeasuredRuleSet
         new JsUncertainAssertionRule(),
         new JsReplaceAllRule(),
         new JsCodeAfterDoneRule(),
-        new JsFunctionScopedDeclarationRule()
+        new JsFunctionScopedDeclarationRule(),
+        new JsContentSecurityPolicyOffRule(),
+        new JsMimeSniffingAllowedRule(),
+        new JsReferrerPolicyOffRule(),
+        new JsStrictTransportSecurityOffRule(),
+        new JsPoweredByDisclosedRule(),
+        new JsCookieWithoutSecureRule(),
+        new JsCookieWithoutHttpOnlyRule()
     ];
 }
 
@@ -913,4 +920,198 @@ public sealed class JsFunctionScopedDeclarationRule : JsTsMeasuredRuleBase
                            + "const, or let where the value changes.", token.Line);
         }
     }
+}
+
+
+/// <summary>
+/// A response header the security middleware sets by default, switched off in its options. The
+/// middleware is configured with an object literal, so the finding is a property of that object set
+/// to false — not the mere presence of the header's name anywhere in the file.
+/// </summary>
+public abstract class JsSecurityHeaderOffRule : JsTsMeasuredRuleBase
+{
+    private static readonly string[] Middleware = ["helmet"];
+
+    public override IssueKind Kind => IssueKind.Vulnerability;
+    public override Severity Severity => Severity.Major;
+    public override string RemediationEffort => "15min";
+
+    /// <summary>The option that turns this protection off.</summary>
+    protected abstract string Option { get; }
+
+    public override void Execute(IRuleContext context)
+    {
+        if (!HasTree(context))
+            return;
+
+        foreach (var call in SyntaxQuery.Invocations(context.Root))
+        {
+            if (!Middleware.Contains(SyntaxQuery.InvokedDottedName(call), StringComparer.Ordinal))
+                continue;
+
+            foreach (var options in SyntaxQuery.Arguments(call).Where(a => a.Kind == NodeKind.ListLiteral))
+            {
+                foreach (var property in options.ChildrenOf(NodeKind.Assignment))
+                {
+                    if (property.ChildAt(0)?.Text != Option)
+                        continue;
+                    if (property.ChildAt(1) is not { Kind: NodeKind.BooleanLiteral, Text: "false" })
+                        continue;
+                    context.Report(property, Advice);
+                }
+            }
+        }
+    }
+
+    /// <summary>What the header was doing, and what switching it off exposes.</summary>
+    protected abstract string Advice { get; }
+}
+
+public sealed class JsContentSecurityPolicyOffRule : JsSecurityHeaderOffRule
+{
+    public override string Key => "QG-JS-SEC-0091";
+    public override string Name => "The content security policy should stay on";
+    public override Severity Severity => Severity.Critical;
+    protected override string Option => "contentSecurityPolicy";
+
+    protected override string Advice =>
+        "Without this header the browser will run script from anywhere the page names, so a single "
+        + "injected tag becomes running code with full access to the session. Leave the policy on "
+        + "and name the origins the page really needs.";
+}
+
+public sealed class JsMimeSniffingAllowedRule : JsSecurityHeaderOffRule
+{
+    public override string Key => "QG-JS-SEC-0092";
+    public override string Name => "The browser should be held to the declared content type";
+    protected override string Option => "noSniff";
+
+    protected override string Advice =>
+        "With this header off the browser is free to ignore the declared content type and guess from "
+        + "the bytes, so a file uploaded as an image can be decided to be script and run. Leave it on "
+        + "and send an accurate content type.";
+}
+
+public sealed class JsReferrerPolicyOffRule : JsSecurityHeaderOffRule
+{
+    public override string Key => "QG-JS-SEC-0093";
+    public override string Name => "The referrer should not be sent to other sites";
+    public override Severity Severity => Severity.Minor;
+    protected override string Option => "referrerPolicy";
+
+    protected override string Advice =>
+        "Without this header the full address of the current page — including anything carried in "
+        + "the query string, such as a reset token or an account identifier — is sent to every site "
+        + "the page links to or loads from.";
+}
+
+public sealed class JsStrictTransportSecurityOffRule : JsSecurityHeaderOffRule
+{
+    public override string Key => "QG-JS-SEC-0094";
+    public override string Name => "The browser should be told to stay on HTTPS";
+    protected override string Option => "hsts";
+
+    protected override string Advice =>
+        "Without this header the first request of every visit can be made in the clear, which is "
+        + "enough for someone on the path to keep the whole session there. Leave it on so the "
+        + "browser refuses to fall back.";
+}
+
+public sealed class JsPoweredByDisclosedRule : JsSecurityHeaderOffRule
+{
+    public override string Key => "QG-JS-SEC-0095";
+    public override string Name => "The response should not announce the framework";
+    public override Severity Severity => Severity.Minor;
+    protected override string Option => "hidePoweredBy";
+
+    protected override string Advice =>
+        "The response announces which framework answered it. That tells an attacker which published "
+        + "weaknesses to try first, and it buys nothing for the caller.";
+}
+
+
+/// <summary>
+/// A session cookie created without one of the two flags that keep it out of reach. The middleware
+/// takes its settings as an object, and express-session and csurf nest them under a 'cookie'
+/// property, so the object to read is not always the argument itself.
+/// </summary>
+public abstract class JsCookieFlagRule : JsTsMeasuredRuleBase
+{
+    private static readonly string[] Factories = ["cookieSession", "session", "csurf"];
+
+    public override IssueKind Kind => IssueKind.Vulnerability;
+    public override Severity Severity => Severity.Major;
+    public override string RemediationEffort => "10min";
+
+    /// <summary>The flag this rule insists on.</summary>
+    protected abstract string Flag { get; }
+
+    public override void Execute(IRuleContext context)
+    {
+        if (!HasTree(context) || LanguageRuleSupport.IsTestFile(context.File.Path, context.File.FileName))
+            return;
+
+        foreach (var call in SyntaxQuery.Invocations(context.Root))
+        {
+            var name = SyntaxQuery.InvokedDottedName(call);
+            var arguments = SyntaxQuery.Arguments(call);
+
+            SyntaxNode? settings = null;
+            if (Factories.Contains(SyntaxQuery.InvokedName(call), StringComparer.Ordinal))
+                settings = arguments.FirstOrDefault(a => a.Kind == NodeKind.ListLiteral);
+            else if (name.EndsWith(".set", StringComparison.Ordinal) && arguments.Count > 2)
+                // 'cookies.set(name, value, options)' keeps its settings in the third argument
+                settings = arguments[2].Kind == NodeKind.ListLiteral ? arguments[2] : null;
+            if (settings is null)
+                continue;
+
+            // express-session and csurf carry the cookie's own settings one level down. When they
+            // are not there at all the middleware's own defaults apply, and those are safe, so
+            // silence is right: reporting the absence flagged every example in a framework's repo.
+            if (SyntaxQuery.InvokedName(call) is "session" or "csurf")
+            {
+                var nested = Property(settings, "cookie");
+                if (nested is not { Kind: NodeKind.ListLiteral })
+                    continue;
+                settings = nested;
+            }
+
+            // only an explicit false is a decision; an absent flag leaves the default in place
+            if (Property(settings, Flag) is not { Text: "false" } flag)
+                continue;
+
+            context.Report(flag, Advice);
+        }
+    }
+
+    /// <summary>The value given to a named property of an object literal, if it carries one.</summary>
+    private static SyntaxNode? Property(SyntaxNode literal, string name)
+        => literal.ChildrenOf(NodeKind.Assignment)
+            .FirstOrDefault(p => p.ChildAt(0)?.Text == name)?.ChildAt(1);
+
+    protected abstract string Advice { get; }
+}
+
+public sealed class JsCookieWithoutSecureRule : JsCookieFlagRule
+{
+    public override string Key => "QG-JS-SEC-0096";
+    public override string Name => "A session cookie should not travel in the clear";
+    protected override string Flag => "secure";
+
+    protected override string Advice =>
+        "This cookie is created without the flag that keeps it off plain connections, so the browser "
+        + "will send it over HTTP as readily as HTTPS. One request on an untrusted network is enough "
+        + "for somebody to read the session and use it.";
+}
+
+public sealed class JsCookieWithoutHttpOnlyRule : JsCookieFlagRule
+{
+    public override string Key => "QG-JS-SEC-0097";
+    public override string Name => "A session cookie should be out of reach of script";
+    protected override string Flag => "httpOnly";
+
+    protected override string Advice =>
+        "This cookie is created without the flag that hides it from script, so anything running on "
+        + "the page can read it. That turns a single scripting flaw anywhere on the site into a "
+        + "stolen session.";
 }

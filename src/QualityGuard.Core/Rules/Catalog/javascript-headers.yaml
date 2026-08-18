@@ -1,0 +1,131 @@
+- key: QG-JS-SEC-0091
+  name: The content security policy should stay on
+  languages: [js, ts]
+  category: SEC
+  severity: critical
+  effort: 15min
+  cwe: [79, 1021]
+  owasp: [A5]
+  tags: [headers, sast]
+  message: The content security policy is switched off in the middleware options.
+  summary: The security middleware is configured with its content security policy disabled.
+  why: |
+    The policy is what tells the browser which origins may supply script for this page. With it off,
+    any tag the page ends up containing is allowed to run, so one injected element becomes running
+    code with the visitor's session behind it.
+  fix: |
+    Leave the policy on and name the origins the page actually needs, rather than turning the header
+    off because a resource was blocked.
+
+- key: QG-JS-SEC-0092
+  name: The browser should be held to the declared content type
+  languages: [js, ts]
+  category: SEC
+  severity: major
+  effort: 10min
+  cwe: [430, 79]
+  owasp: [A5]
+  tags: [headers, sast]
+  message: Content type sniffing is re-enabled in the middleware options.
+  summary: The security middleware is configured to let the browser guess content types.
+  why: |
+    With this header off the browser may ignore what the response declares and decide from the bytes
+    what a file is. A document accepted as an image can then be treated as script and executed on
+    the site that served it.
+  fix: |
+    Leave the header on, and make sure the application sends an accurate content type for what it
+    serves.
+
+- key: QG-JS-SEC-0093
+  name: The referrer should not be sent to other sites
+  languages: [js, ts]
+  category: SEC
+  severity: minor
+  effort: 10min
+  cwe: [200]
+  owasp: [A3]
+  tags: [headers, privacy]
+  message: The referrer policy is switched off in the middleware options.
+  summary: The security middleware is configured without a strict referrer policy.
+  why: |
+    The browser attaches the address of the current page to every request it makes to another site.
+    When that address carries a password-reset token, an invitation code or an account identifier,
+    the value is handed to every third party the page links to or loads a resource from.
+  fix: |
+    Leave the policy in place so the browser sends the origin at most, and keep secrets out of the
+    query string.
+
+- key: QG-JS-SEC-0094
+  name: The browser should be told to stay on HTTPS
+  languages: [js, ts]
+  category: SEC
+  severity: major
+  effort: 15min
+  cwe: [319]
+  owasp: [A3]
+  tags: [headers, transport]
+  message: Strict transport security is switched off in the middleware options.
+  summary: The security middleware is configured without strict transport security.
+  why: |
+    Without this header a visitor who types the address without a scheme makes the first request in
+    the clear. That single request is enough for someone on the path to answer it themselves and
+    keep the whole session on a plain connection.
+  fix: |
+    Leave the header on with a lifetime long enough to survive between visits, so the browser
+    refuses to fall back on its own.
+
+- key: QG-JS-SEC-0095
+  name: The response should not announce the framework
+  languages: [js, ts]
+  category: SEC
+  severity: minor
+  effort: 5min
+  cwe: [200]
+  owasp: [A5]
+  tags: [headers, disclosure]
+  message: The header that names the framework is re-enabled in the middleware options.
+  summary: The security middleware is configured to keep the framework header.
+  why: |
+    The response tells every caller which framework answered it. That decides where an attacker
+    starts: they look up the published weaknesses of exactly that technology instead of guessing.
+    It buys the caller nothing.
+  fix: |
+    Leave the header suppressed.
+
+- key: QG-JS-SEC-0096
+  name: A session cookie should not travel in the clear
+  languages: [js, ts]
+  category: SEC
+  severity: major
+  effort: 10min
+  cwe: [614, 311]
+  owasp: [A3]
+  tags: [cookie, sast]
+  message: This cookie is created without the flag that keeps it off plain connections.
+  summary: A cookie is configured without the secure flag.
+  why: |
+    The browser decides where to send a cookie from the flags it was given. Without this one it will
+    attach the cookie to a plain request as readily as an encrypted one, and a single request made
+    on an untrusted network hands the session to whoever is watching.
+  fix: |
+    Set the flag when the cookie is created. In development, where the connection really is plain,
+    make it conditional on the environment rather than removing it.
+
+- key: QG-JS-SEC-0097
+  name: A session cookie should be out of reach of script
+  languages: [js, ts]
+  category: SEC
+  severity: major
+  effort: 10min
+  cwe: [1004]
+  owasp: [A3]
+  tags: [cookie, sast]
+  message: This cookie is created without the flag that hides it from script.
+  summary: A cookie is configured without the httpOnly flag.
+  why: |
+    Without this flag any script running on the page can read the cookie, so one scripting flaw
+    anywhere on the site — including in a third-party script the page loads — is enough to take the
+    session away with it.
+  fix: |
+    Set the flag when the cookie is created. Code that legitimately needs the value should be given
+    it by the server in the response body, not through the cookie jar.

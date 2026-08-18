@@ -14757,3 +14757,153 @@
   fix: |
     Split along the responsibilities the type has accumulated — the fields that always travel together
     usually indicate where the seam is — and let the original delegate to the new types.
+
+- key: QG-HTML-SML-0147
+  name: Track uses of TODO and FIXME tags
+  languages: [html]
+  category: SML
+  severity: info
+  effort: 5min
+  tags: [maintainability]
+  summary: A comment marks work that was left unfinished.
+  why: |
+    A TODO records a decision that was postponed. Left in the code it becomes invisible: nobody knows
+    whether it is still relevant, who owns it, or whether the missing work is now a defect.
+  fix: |
+    Do the work, or move it to the issue tracker and reference the ticket in the comment so the deadline
+    lives somewhere that gets reviewed.
+
+- key: QG-XML-SML-0062
+  name: Track uses of TODO and FIXME tags
+  languages: [xml]
+  category: SML
+  severity: info
+  effort: 5min
+  tags: [maintainability]
+  summary: A comment marks work that was left unfinished.
+  why: |
+    A TODO records a decision that was postponed. Left in the code it becomes invisible: nobody knows
+    whether it is still relevant, who owns it, or whether the missing work is now a defect.
+  fix: |
+    Do the work, or move it to the issue tracker and reference the ticket in the comment so the deadline
+    lives somewhere that gets reviewed.
+
+- key: QG-CSS-SML-0075
+  name: Track uses of TODO and FIXME tags
+  languages: [css]
+  category: SML
+  severity: info
+  effort: 5min
+  tags: [maintainability]
+  summary: A comment marks work that was left unfinished.
+  why: |
+    A TODO records a decision that was postponed. Left in the code it becomes invisible: nobody knows
+    whether it is still relevant, who owns it, or whether the missing work is now a defect.
+  fix: |
+    Do the work, or move it to the issue tracker and reference the ticket in the comment so the deadline
+    lives somewhere that gets reviewed.
+
+- key: QG-TF-SML-0054
+  name: Track uses of TODO and FIXME tags
+  languages: [tf]
+  category: SML
+  severity: info
+  effort: 5min
+  tags: [maintainability]
+  summary: A comment marks work that was left unfinished.
+  why: |
+    A TODO records a decision that was postponed. Left in the code it becomes invisible: nobody knows
+    whether it is still relevant, who owns it, or whether the missing work is now a defect.
+  fix: |
+    Do the work, or move it to the issue tracker and reference the ticket in the comment so the deadline
+    lives somewhere that gets reviewed.
+
+- key: QG-DK-SML-0068
+  name: Track uses of TODO and FIXME tags
+  languages: [dk]
+  category: SML
+  severity: info
+  effort: 5min
+  tags: [maintainability]
+  summary: A comment marks work that was left unfinished.
+  why: |
+    A TODO records a decision that was postponed. Left in the code it becomes invisible: nobody knows
+    whether it is still relevant, who owns it, or whether the missing work is now a defect.
+  fix: |
+    Do the work, or move it to the issue tracker and reference the ticket in the comment so the deadline
+    lives somewhere that gets reviewed.
+
+- key: QG-K8-SML-0062
+  name: Track uses of TODO and FIXME tags
+  languages: [k8]
+  category: SML
+  severity: info
+  effort: 5min
+  tags: [maintainability]
+  summary: A comment marks work that was left unfinished.
+  why: |
+    A TODO records a decision that was postponed. Left in the code it becomes invisible: nobody knows
+    whether it is still relevant, who owns it, or whether the missing work is now a defect.
+  fix: |
+    Do the work, or move it to the issue tracker and reference the ticket in the comment so the deadline
+    lives somewhere that gets reviewed.
+
+- key: QG-CF-SML-0055
+  name: Track uses of TODO and FIXME tags
+  languages: [cf]
+  category: SML
+  severity: info
+  effort: 5min
+  tags: [maintainability]
+  summary: A comment marks work that was left unfinished.
+  why: |
+    A TODO records a decision that was postponed. Left in the code it becomes invisible: nobody knows
+    whether it is still relevant, who owns it, or whether the missing work is now a defect.
+  fix: |
+    Do the work, or move it to the issue tracker and reference the ticket in the comment so the deadline
+    lives somewhere that gets reviewed.
+
+- key: QG-JSON-SML-0050
+  name: Track uses of TODO and FIXME tags
+  languages: [json]
+  category: SML
+  severity: info
+  effort: 5min
+  tags: [maintainability]
+  summary: A comment marks work that was left unfinished.
+  why: |
+    A TODO records a decision that was postponed. Left in the code it becomes invisible: nobody knows
+    whether it is still relevant, who owns it, or whether the missing work is now a defect.
+  fix: |
+    Do the work, or move it to the issue tracker and reference the ticket in the comment so the deadline
+    lives somewhere that gets reviewed.
+
+- key: QG-DART-SML-0054
+  name: Track uses of TODO and FIXME tags
+  languages: [dart]
+  category: SML
+  severity: info
+  effort: 5min
+  tags: [maintainability]
+  summary: A comment marks work that was left unfinished.
+  why: |
+    A TODO records a decision that was postponed. Left in the code it becomes invisible: nobody knows
+    whether it is still relevant, who owns it, or whether the missing work is now a defect.
+  fix: |
+    Do the work, or move it to the issue tracker and reference the ticket in the comment so the deadline
+    lives somewhere that gets reviewed.
+
+- key: QG-SW-SML-0054
+  name: Track uses of TODO and FIXME tags
+  languages: [swift]
+  category: SML
+  severity: info
+  effort: 5min
+  tags: [maintainability]
+  summary: A comment marks work that was left unfinished.
+  why: |
+    A TODO records a decision that was postponed. Left in the code it becomes invisible: nobody knows
+    whether it is still relevant, who owns it, or whether the missing work is now a defect.
+  fix: |
+    Do the work, or move it to the issue tracker and reference the ticket in the comment so the deadline
+    lives somewhere that gets reviewed.

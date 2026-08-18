@@ -14,6 +14,16 @@ public static class BuiltInRuleRegistrar
         new TodosAndFixmesRulePython(),
         new TodosAndFixmesRulePhp(),
         new TodosAndFixmesRuleGo(),
+        new TodosAndFixmesRuleHtml(),
+        new TodosAndFixmesRuleXml(),
+        new TodosAndFixmesRuleCss(),
+        new TodosAndFixmesRuleTerraform(),
+        new TodosAndFixmesRuleDockerfile(),
+        new TodosAndFixmesRuleKubernetes(),
+        new TodosAndFixmesRuleCloudFormation(),
+        new TodosAndFixmesRuleJson(),
+        new TodosAndFixmesRuleDart(),
+        new TodosAndFixmesRuleSwift(),
         new TrailingCommasRuleCs(),
         new TrailingCommasRuleJava(),
         new EmptyBlockRuleCs(),
@@ -103,7 +113,9 @@ public abstract class TodosAndFixmesRule : TextualRuleBase
     public override string RemediationEffort => "5min";
     public override string[] Languages =>
     [
-        "cs", "java", "js", "ts", "py", "go", "rb", "kt", "php", "c", "cpp", "sh", "rs"
+        "cs", "java", "js", "ts", "py", "go", "rb", "kt", "php", "c", "cpp", "sh", "rs",
+        // a marker left in a template or a deployment file is the same promise to come back
+        "html", "xml", "css", "tf", "dk", "k8", "cf", "json", "dart", "swift"
     ];
 
     public override void Execute(IRuleContext context)
@@ -157,6 +169,66 @@ public sealed class TodosAndFixmesRuleGo : TodosAndFixmesRule
 {
     public override string Key => "QG-GO-SML-0038";
     public override string[] Languages => ["go"];
+}
+
+public sealed class TodosAndFixmesRuleHtml : TodosAndFixmesRule
+{
+    public override string Key => "QG-HTML-SML-0147";
+    public override string[] Languages => ["html"];
+}
+
+public sealed class TodosAndFixmesRuleXml : TodosAndFixmesRule
+{
+    public override string Key => "QG-XML-SML-0062";
+    public override string[] Languages => ["xml"];
+}
+
+public sealed class TodosAndFixmesRuleCss : TodosAndFixmesRule
+{
+    public override string Key => "QG-CSS-SML-0075";
+    public override string[] Languages => ["css"];
+}
+
+public sealed class TodosAndFixmesRuleTerraform : TodosAndFixmesRule
+{
+    public override string Key => "QG-TF-SML-0054";
+    public override string[] Languages => ["tf"];
+}
+
+public sealed class TodosAndFixmesRuleDockerfile : TodosAndFixmesRule
+{
+    public override string Key => "QG-DK-SML-0068";
+    public override string[] Languages => ["dk"];
+}
+
+public sealed class TodosAndFixmesRuleKubernetes : TodosAndFixmesRule
+{
+    public override string Key => "QG-K8-SML-0062";
+    public override string[] Languages => ["k8"];
+}
+
+public sealed class TodosAndFixmesRuleCloudFormation : TodosAndFixmesRule
+{
+    public override string Key => "QG-CF-SML-0055";
+    public override string[] Languages => ["cf"];
+}
+
+public sealed class TodosAndFixmesRuleJson : TodosAndFixmesRule
+{
+    public override string Key => "QG-JSON-SML-0050";
+    public override string[] Languages => ["json"];
+}
+
+public sealed class TodosAndFixmesRuleDart : TodosAndFixmesRule
+{
+    public override string Key => "QG-DART-SML-0054";
+    public override string[] Languages => ["dart"];
+}
+
+public sealed class TodosAndFixmesRuleSwift : TodosAndFixmesRule
+{
+    public override string Key => "QG-SW-SML-0054";
+    public override string[] Languages => ["swift"];
 }
 
 
