@@ -28,7 +28,7 @@ internal sealed class PythonExpression
         if (tokens.Count == 0)
             return null;
         var parser = new PythonExpression(tokens, language);
-        var node = parser.ParseAssignment();
+        var node = parser.ParseCommaSequence();
         while (!parser.AtEnd && node != null)
         {
             var before = parser._index;
@@ -74,6 +74,57 @@ internal sealed class PythonExpression
         for (var i = 0; i < slice.Length; i++)
             slice[i] = _tokens[start + i];
         return new SyntaxNode(kind, text, TextRange.Of(slice), slice);
+    }
+
+    /// <summary>
+    /// A comma-separated sequence, and what it means depends on what follows it.
+    ///
+    /// Python unpacks with commas — <c>first, second = pair</c> — and returns the same way. Reading
+    /// the left side one expression at a time saw the first name, then a comma it could not place,
+    /// then an assignment to the last name only: everything before the last name was never declared,
+    /// so no rule about a variable's life could see it.
+    /// </summary>
+    private SyntaxNode? ParseCommaSequence()
+    {
+        var start = _index;
+        var first = ParseConditional();
+        if (first == null)
+            return null;
+        if (!Is(","))
+            return FinishAssignment(first, start);
+
+        var items = new List<SyntaxNode> { first };
+        while (Accept(","))
+        {
+            if (AtEnd)
+                break;                       // a trailing comma still makes it a tuple
+            var before = _index;
+            var next = ParseConditional();
+            if (next == null || _index == before)
+                break;
+            items.Add(next);
+        }
+
+        var tuple = Node(NodeKind.ListLiteral, start, "tuple");
+        foreach (var item in items)
+            tuple.Add(item);
+        return FinishAssignment(tuple, start);
+    }
+
+    /// <summary>Attaches the right-hand side when the sequence turns out to be a target.</summary>
+    private SyntaxNode? FinishAssignment(SyntaxNode left, int start)
+    {
+        if (!IsAny(AssignmentOperators))
+            return left;
+        var op = Take().Text;
+        var right = ParseCommaSequence();
+        // the operator is kept: '+=' reads the value it updates, so it cannot be the point where
+        // the name comes into existence, and recording it as one made the earlier value look unread
+        var node = Node(NodeKind.Assignment, start, op == ":=" ? ":=" : op);
+        node.Add(left);
+        if (right != null)
+            node.Add(right);
+        return node;
     }
 
     private SyntaxNode? ParseAssignment()

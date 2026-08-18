@@ -1101,6 +1101,12 @@ public sealed class PythonIdentityComparisonRule : PatternRuleBase
 
     public override void Execute(IRuleContext context)
     {
+        // 'assert x is True' is how a test states that the value is that exact object, and a suite
+        // written that way produced a hundred and seventy findings on one project. In code that
+        // runs in production the comparison is still worth straightening out.
+        if (LanguageRuleSupport.IsTestFile(context.File.Path, context.File.FileName))
+            return;
+
         // Reading raw lines found the words inside docstrings — "If *auto_store* is True" is prose,
         // not a comparison. Tokens carry no comment and no string content, so only code is left.
         var tokens = context.Tokens;

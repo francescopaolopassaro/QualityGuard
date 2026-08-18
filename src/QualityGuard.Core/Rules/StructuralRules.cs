@@ -2774,6 +2774,7 @@ public abstract class DeadStoreRule : StructuralRuleBase
             var last = usages.Count > 0 ? usages[^1] : null;
             if (last is { Kind: UsageKind.Assignment }
                 && !InsideInitializer(last.Identifier) && !SetsAMember(last.Identifier)
+                && !ReadAgainNextTimeRound(last.Identifier, symbol.Name)
                 && usages.Any(u => u.Kind == UsageKind.Reference)
                 && last.Value is { } written
                 && !written.DescendantsAndSelf().Any(n => n.Kind == NodeKind.Identifier && n.Text == symbol.Name))
@@ -2830,6 +2831,38 @@ public abstract class DeadStoreRule : StructuralRuleBase
         => identifier.Parent?.Kind == NodeKind.MemberSelect;
 
     /// <summary>Whether the write sets a member of an object being constructed.</summary>
+    /// <summary>
+    /// Whether a write inside a loop is read on the following pass. The last write in program order
+    /// is not the last write in execution order: 'index += 1' at the foot of a while body, or
+    /// 'text = stripped' inside a for, is read at the top of the next iteration. Reading the usage
+    /// list in line order alone called both of those dead.
+    /// </summary>
+    private static bool ReadAgainNextTimeRound(SyntaxNode write, string name)
+    {
+        for (var node = write.Parent; node != null; node = node.Parent)
+        {
+            if (node.Kind is not (NodeKind.Loop or NodeKind.Match))
+                continue;
+            var readsInside = node.DescendantsAndSelf()
+                .Any(n => n.Kind == NodeKind.Identifier && n.Text == name
+                          && n != write && !IsWrittenAt(n));
+            if (readsInside)
+                return true;
+        }
+        return false;
+    }
+
+    /// <summary>Whether this appearance of a name is the left-hand side of an assignment.</summary>
+    private static bool IsWrittenAt(SyntaxNode identifier)
+    {
+        var parent = identifier.Parent;
+        if (parent is { Kind: NodeKind.Index or NodeKind.MemberSelect })
+            parent = parent.Parent;
+        return parent is { Kind: NodeKind.Assignment }
+               && parent.ChildAt(0) is { } left
+               && left.DescendantsAndSelf().Contains(identifier);
+    }
+
     private static bool InsideInitializer(SyntaxNode node)
     {
         for (var parent = node.Parent; parent != null; parent = parent.Parent)
@@ -5650,15 +5683,35 @@ public abstract class TestWithoutAssertionRule : StructuralRuleBase
     private static bool LooksLikeTestFile(IRuleContext context)
         => Rules.Languages.LanguageRuleSupport.IsTestFile(context.File.Path, context.File.FileName);
 
+    /// <summary>The annotations that declare a test, across the frameworks that use one.</summary>
+    private static readonly string[] Markers =
+    [
+        "Test", "TestMethod", "TestCase", "TestTemplate", "Fact", "Theory", "ParameterizedTest",
+        "RepeatedTest", "DataTestMethod", "TestFactory", "It", "Should"
+    ];
+
+    private static readonly string[] Scaffolding =
+        ["fixture", "setup", "teardown", "before", "after", "classmethod", "staticmethod", "property"];
+
     private static bool IsTestName(SyntaxNode function)
     {
+        // A fixture or a setup step runs so that the tests can, and asserting is not its job. It
+        // sits in the same file and often in the same class, so the decorator is what tells them
+        // apart — and it says so plainly even where the surrounding parse is uncertain.
+        if (function.ChildrenOf(NodeKind.Attribute)
+            .Any(a => Scaffolding.Any(s => a.Text.Contains(s, StringComparison.OrdinalIgnoreCase))))
+            return false;
+
         var name = function.Text.ToLowerInvariant();
         if (name.StartsWith("test", StringComparison.Ordinal) || name.EndsWith("test", StringComparison.Ordinal))
             return true;
+        // The annotation is the last part of the name, and only that part decides. Searching the
+        // whole text for "test" matched 'pytest.mark.parametrize' and 'pytest.fixture', because the
+        // framework has the word in its own name — so every helper in a Python suite was read as a
+        // test that verifies nothing.
         return function.ChildrenOf(NodeKind.Attribute)
-            .Any(a => a.Text.Contains("Test", StringComparison.OrdinalIgnoreCase)
-                      || a.Text.Contains("Fact", StringComparison.OrdinalIgnoreCase)
-                      || a.Text.Contains("Theory", StringComparison.OrdinalIgnoreCase));
+            .Select(a => a.Text.Split('.').Last().Split('(')[0].Trim())
+            .Any(marker => Markers.Contains(marker, StringComparer.OrdinalIgnoreCase));
     }
 }
 

@@ -192,11 +192,22 @@ public sealed class SpecRule(CatalogEntry entry) : IRule
             // care how it was typed; a rule that is about the case itself opens with '(?-i)'
             : _patterns[pattern] = new Regex(pattern, RegexOptions.IgnoreCase | RegexOptions.Compiled);
 
+        // A pattern that recognises the shape of a credential recognises the manual's example just
+        // as well, so a rule tagged as hunting for secrets gets the same filters the dedicated
+        // secret rules use.
+        var hunting = Entry.Tags.Contains("secret", StringComparer.OrdinalIgnoreCase);
+        if (hunting && SecretFilters.IsIllustrative(context.File.Path))
+            return;
+
         var lines = context.File.Content.Split('\n');
         for (var i = 0; i < lines.Length; i++)
         {
-            if (regex.IsMatch(lines[i]))
-                context.Report(spec.Message ?? Entry.Message, i + 1);
+            var found = regex.Match(lines[i]);
+            if (!found.Success)
+                continue;
+            if (hunting && SecretFilters.LooksLikeAPlaceholder(found.Value))
+                continue;
+            context.Report(spec.Message ?? Entry.Message, i + 1);
         }
     }
 

@@ -44,11 +44,7 @@ public abstract class SecretRuleBase : RuleBase
     /// </summary>
     protected void Scan(IRuleContext context, IEnumerable<SecretShape> shapes)
     {
-        var path = context.File.Path.Replace('\\', '/');
-        if (path.Contains("/test", StringComparison.OrdinalIgnoreCase)
-            || path.Contains("/fixture", StringComparison.OrdinalIgnoreCase)
-            || path.Contains("/example", StringComparison.OrdinalIgnoreCase)
-            || path.Contains("/docs/", StringComparison.OrdinalIgnoreCase))
+        if (SecretFilters.IsIllustrative(context.File.Path))
             return;
 
         var lines = context.File.Content.Split((char)10);
@@ -56,7 +52,9 @@ public abstract class SecretRuleBase : RuleBase
         {
             for (var i = 0; i < lines.Length; i++)
             {
-                if (!shape.Pattern.IsMatch(lines[i]))
+                // the shape is right and the value is still a placeholder more often than not
+                var found = shape.Pattern.Match(lines[i]);
+                if (!found.Success || SecretFilters.LooksLikeAPlaceholder(found.Value))
                     continue;
 
                 context.Report($"This looks like {shape.Name} committed with the source. Anything in the "

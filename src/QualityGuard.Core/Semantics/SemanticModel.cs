@@ -137,6 +137,27 @@ public sealed class SemanticModel
             var value = assignment?.ChildAt(1);
             if (string.IsNullOrEmpty(name))
                 name = SyntaxQuery.DottedName(assignment?.ChildAt(0));
+
+            // Python unpacks into several names at once — 'first, second = pair'. The target is a
+            // tuple rather than a single name, and reading only a name declared nothing at all, so
+            // every one of those variables was invisible to the rules that follow a value's life.
+            // an index is a ListLiteral too — 'counts[key] += 1' — and reading it as a target
+            // declared the container afresh, so the value it already held looked unread
+            if (assignment?.ChildAt(0) is { Kind: NodeKind.ListLiteral, Text: "tuple" } tuple)
+            {
+                _consumed.Add(assignment);
+                foreach (var target in tuple.ChildrenOf(NodeKind.Identifier))
+                {
+                    if (target.Text.Length == 0 || target.Text == "_")
+                        continue;
+                    var unpacked = scope.Declare(target.Text, InferType(declaration, null));
+                    unpacked.IsExplicitlyDeclared = true;
+                    target.Symbol = unpacked;
+                    unpacked.Usages.Add(new Usage(target, assignment.ChildAt(1), UsageKind.Declaration));
+                }
+                return;
+            }
+
             if (string.IsNullOrEmpty(name))
                 return;
 

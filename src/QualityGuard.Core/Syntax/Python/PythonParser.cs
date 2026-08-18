@@ -154,7 +154,15 @@ public sealed class PythonParser
     private SyntaxNode BuildSimpleStatement(IReadOnlyList<Token> tokens)
     {
         var expression = PythonExpression.Parse(tokens, _language);
-        var isAssignment = expression is { Kind: NodeKind.Assignment };
+        // Writing through a subscript or an attribute changes something that already exists:
+        // 'counts[key] += 1' does not introduce 'counts'. Treating it as a declaration shadowed the
+        // real one, and the value the original held then looked as though nobody ever read it.
+        var target = expression?.ChildAt(0);
+        var declares = (target is null
+                        || target.Kind is NodeKind.Identifier or NodeKind.ListLiteral)
+                       // a compound operator updates a value that is already there
+                       && expression?.Text is null or "=" or ":=";
+        var isAssignment = expression is { Kind: NodeKind.Assignment } && declares;
         var kind = isAssignment ? NodeKind.VariableDeclaration : NodeKind.ExpressionStatement;
         var name = isAssignment ? SyntaxQuery.DottedName(expression!.ChildAt(0)) : string.Empty;
         var node = new SyntaxNode(kind, name, TextRange.Of(tokens), tokens);
