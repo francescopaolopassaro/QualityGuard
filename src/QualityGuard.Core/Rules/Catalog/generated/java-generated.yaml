@@ -2,7 +2,7 @@
 # tools/generate_rules.py and are refined by hand as each family is reviewed.
 
 - key: QG-JV-SML-0028
-  name: NOSONAR comments should be resolved rather than left in the code
+  name: Suppression comments should be resolved rather than left in the code
   languages: [java]
   category: SML
   severity: minor
@@ -2935,7 +2935,7 @@
   effort: 15min
   tags: [concurrency, generated]
   generated: true
-  status: ready
+  status: planned
   message: Shared state is accessed without correct coordination.
   summary: Shared state is accessed with locking that is missing, too wide, or on the wrong object.
   why: |
@@ -2944,8 +2944,6 @@
   fix: |
     Lock a private object dedicated to the state it protects, keep the critical section short, and prefer
     the concurrent collections and higher-level primitives the platform provides.
-  detect:
-    - creation: [Lock]
 
 - key: QG-JV-SML-0196
   name: Lazy initialization of static fields should be accessed in a thread-safe way

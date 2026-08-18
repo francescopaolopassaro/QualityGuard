@@ -45,6 +45,24 @@ internal static class LanguageRuleSupport
     /// True when the file is a test. Kept here rather than in one rule family because several of
     /// them need it, and a second copy of this judgement would drift from the first.
     /// </summary>
+    /// <summary>
+    /// Whether a literal is an address someone will actually call, rather than a scheme being
+    /// assembled. "http://" and "http://%s" are parsing material; "http://api.example.com" is a call.
+    /// </summary>
+    internal static bool IsPlainAddress(string literal)
+    {
+        var index = literal.IndexOf("http://", StringComparison.OrdinalIgnoreCase);
+        if (index < 0)
+            return false;
+        var host = literal[(index + "http://".Length)..];
+        var end = host.IndexOfAny([' ', '"', '\'', '/', '?', ')', '\\']);
+        if (end >= 0)
+            host = host[..end];
+        // a host needs a dot or a port to be a host, and a placeholder is not one
+        return host.Length > 3 && (host.Contains('.') || host.Contains(':'))
+               && !host.Contains('%') && !host.Contains('{') && !host.Contains('$');
+    }
+
     internal static bool IsTestFile(string path, string fileName)
     {
         var normalized = path.Replace('\\', '/');

@@ -75,6 +75,7 @@
 - key: QG-PY-SEC-0040
   name: Validation should not rely on assertions
   languages: [py]
+  scope: main
   category: SEC
   severity: critical
   effort: 20min
@@ -320,3 +321,21 @@
         if name in allowed:
   detect:
     - line: "\\bin\\s*\\[[^\\]]{10,}\\]"
+
+- key: QG-PY-SML-0012
+  name: Avoid the global statement
+  status: superseded
+  superseded_by: QG-PY-SML-0020
+  languages: [py]
+  category: SML
+  severity: minor
+  effort: 10min
+  tags: [state]
+  message: Avoid using the global statement.
+  summary: A function rebinds a name that belongs to the module.
+  why: |
+    Both this rule and the one that replaces it reported the same statement, so every occurrence was
+    announced twice. The other one explains what the rebinding costs the reader, so this one stands
+    down.
+  fix: |
+    Pass the value in and return the new one, so the caller can see where it changed.

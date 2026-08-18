@@ -1,0 +1,279 @@
+
+- key: QG-CS-SEC-0095
+  name: A retired cipher protects nothing
+  languages: [cs]
+  category: SEC
+  severity: critical
+  effort: 30min
+  cwe: [327, 326]
+  owasp: [A2]
+  tags: [cryptography, sast]
+  message: This cipher is no longer considered safe and its output can be recovered.
+  summary: An encryption algorithm that is no longer considered safe is used.
+  why: |
+    DES has a key small enough to search exhaustively, and RC4 leaks the shape of the plaintext in its
+    first bytes. Data encrypted with either is readable by anyone who captures it and is willing to spend
+    a modest amount of computing time — including traffic captured today and attacked years from now.
+  fix: |
+    Use AES with a key of at least 128 bits, in an authenticated mode such as GCM so that tampering is
+    detected as well as prevented.
+  detect:
+    - creation: [DESCryptoServiceProvider, RC2CryptoServiceProvider, TripleDESCryptoServiceProvider]
+    - member: [DES.Create, RC2.Create, TripleDES.Create]
+
+- key: QG-CS-SEC-0096
+  name: A retired cipher protects nothing
+  languages: [vb]
+  category: SEC
+  severity: critical
+  effort: 30min
+  cwe: [327, 326]
+  owasp: [A2]
+  tags: [cryptography, sast]
+  message: This cipher is no longer considered safe and its output can be recovered.
+  summary: An encryption algorithm that is no longer considered safe is used.
+  why: |
+    DES has a key small enough to search exhaustively, and RC4 leaks the shape of the plaintext in its
+    first bytes. Data encrypted with either is readable by anyone who captures it and is willing to spend
+    a modest amount of computing time — including traffic captured today and attacked years from now.
+  fix: |
+    Use AES with a key of at least 128 bits, in an authenticated mode such as GCM so that tampering is
+    detected as well as prevented.
+  detect:
+    - creation: [DESCryptoServiceProvider, RC2CryptoServiceProvider, TripleDESCryptoServiceProvider]
+
+- key: QG-PY-SEC-0090
+  name: A retired cipher protects nothing
+  languages: [py]
+  category: SEC
+  severity: critical
+  effort: 30min
+  cwe: [327, 326]
+  owasp: [A2]
+  tags: [cryptography, sast]
+  message: This cipher is no longer considered safe and its output can be recovered.
+  summary: An encryption algorithm that is no longer considered safe is used.
+  why: |
+    DES has a key small enough to search exhaustively, and RC4 leaks the shape of the plaintext in its
+    first bytes. Data encrypted with either is readable by anyone who captures it and is willing to spend
+    a modest amount of computing time — including traffic captured today and attacked years from now.
+  fix: |
+    Use AES with a key of at least 128 bits, in an authenticated mode such as GCM so that tampering is
+    detected as well as prevented.
+  detect:
+    - member: [DES.new, ARC4.new, ARC2.new, Blowfish.new]
+
+- key: QG-JS-SEC-0086
+  name: A retired cipher protects nothing
+  languages: [js, ts]
+  category: SEC
+  severity: critical
+  effort: 30min
+  cwe: [327, 326]
+  owasp: [A2]
+  tags: [cryptography, sast]
+  message: This cipher is no longer considered safe and its output can be recovered.
+  summary: An encryption algorithm that is no longer considered safe is used.
+  why: |
+    DES has a key small enough to search exhaustively, and RC4 leaks the shape of the plaintext in its
+    first bytes. Data encrypted with either is readable by anyone who captures it and is willing to spend
+    a modest amount of computing time — including traffic captured today and attacked years from now.
+  fix: |
+    Use AES with a key of at least 128 bits, in an authenticated mode such as GCM so that tampering is
+    detected as well as prevented.
+  detect:
+    - invocation: [createCipheriv, createDecipheriv]
+      argLiterals: [des, des-ede3, rc4, bf]
+
+- key: QG-GO-SEC-0016
+  name: A retired cipher protects nothing
+  languages: [go]
+  category: SEC
+  severity: critical
+  effort: 30min
+  cwe: [327, 326]
+  owasp: [A2]
+  tags: [cryptography, sast]
+  message: This cipher is no longer considered safe and its output can be recovered.
+  summary: An encryption algorithm that is no longer considered safe is used.
+  why: |
+    DES has a key small enough to search exhaustively, and RC4 leaks the shape of the plaintext in its
+    first bytes. Data encrypted with either is readable by anyone who captures it and is willing to spend
+    a modest amount of computing time — including traffic captured today and attacked years from now.
+  fix: |
+    Use AES with a key of at least 128 bits, in an authenticated mode such as GCM so that tampering is
+    detected as well as prevented.
+  detect:
+    - member: [des.NewCipher, rc4.NewCipher]
+
+- key: QG-JV-SEC-0070
+  name: A predictable number is not a secret
+  languages: [java]
+  category: SEC
+  severity: major
+  effort: 15min
+  cwe: [330, 338]
+  owasp: [A2]
+  tags: [cryptography, sast]
+  message: This generator is predictable and must not produce anything that has to be unguessable.
+  summary: A general-purpose random generator produces a security-sensitive value.
+  why: |
+    These generators are built for speed and even distribution, not secrecy. Their output follows from an
+    internal state that an observer can reconstruct after seeing a handful of values — so a token, a
+    password-reset link or a session identifier built this way can be worked out rather than guessed.
+  fix: |
+    Use the generator the platform provides for cryptography, which draws from the operating system's
+    entropy pool and cannot be replayed from its output.
+  detect:
+    - member: [Math.random, ThreadLocalRandom.current]
+
+- key: QG-KT-SEC-0058
+  name: A predictable number is not a secret
+  languages: [kt]
+  category: SEC
+  severity: major
+  effort: 15min
+  cwe: [330, 338]
+  owasp: [A2]
+  tags: [cryptography, sast]
+  message: This generator is predictable and must not produce anything that has to be unguessable.
+  summary: A general-purpose random generator produces a security-sensitive value.
+  why: |
+    These generators are built for speed and even distribution, not secrecy. Their output follows from an
+    internal state that an observer can reconstruct after seeing a handful of values — so a token, a
+    password-reset link or a session identifier built this way can be worked out rather than guessed.
+  fix: |
+    Use the generator the platform provides for cryptography, which draws from the operating system's
+    entropy pool and cannot be replayed from its output.
+  detect:
+    - member: [Math.random]
+
+- key: QG-PY-SEC-0091
+  name: A predictable number is not a secret
+  languages: [py]
+  category: SEC
+  severity: major
+  effort: 15min
+  cwe: [330, 338]
+  owasp: [A2]
+  tags: [cryptography, sast]
+  message: This generator is predictable and must not produce anything that has to be unguessable.
+  summary: A general-purpose random generator produces a security-sensitive value.
+  why: |
+    These generators are built for speed and even distribution, not secrecy. Their output follows from an
+    internal state that an observer can reconstruct after seeing a handful of values — so a token, a
+    password-reset link or a session identifier built this way can be worked out rather than guessed.
+  fix: |
+    Use the generator the platform provides for cryptography, which draws from the operating system's
+    entropy pool and cannot be replayed from its output.
+  detect:
+    - member: [random.random, random.randint, random.choice, random.randrange]
+
+- key: QG-PP-SEC-0067
+  name: A predictable number is not a secret
+  languages: [php]
+  category: SEC
+  severity: major
+  effort: 15min
+  cwe: [330, 338]
+  owasp: [A2]
+  tags: [cryptography, sast]
+  message: This generator is predictable and must not produce anything that has to be unguessable.
+  summary: A general-purpose random generator produces a security-sensitive value.
+  why: |
+    These generators are built for speed and even distribution, not secrecy. Their output follows from an
+    internal state that an observer can reconstruct after seeing a handful of values — so a token, a
+    password-reset link or a session identifier built this way can be worked out rather than guessed.
+  fix: |
+    Use the generator the platform provides for cryptography, which draws from the operating system's
+    entropy pool and cannot be replayed from its output.
+  detect:
+    - invocation: [rand, mt_rand, srand, mt_srand, str_shuffle]
+
+- key: QG-CS-SEC-0097
+  name: A certificate nobody checks proves nothing
+  languages: [cs]
+  category: SEC
+  severity: blocker
+  effort: 30min
+  cwe: [295, 297]
+  owasp: [A2]
+  tags: [transport, sast]
+  message: Certificate validation is switched off, so any server can present itself as this one.
+  summary: Certificate or host name validation is disabled.
+  why: |
+    The certificate is the only thing that ties an encrypted connection to the party you meant to reach.
+    With the check removed, anyone positioned between the two ends can offer a certificate of their own,
+    terminate the connection, read everything and pass it on. The traffic is still encrypted — just to
+    the wrong party.
+  fix: |
+    Leave validation on. If the problem is a certificate the platform does not trust, add that specific
+    certificate to the trust store rather than accepting every one.
+  detect:
+    - assignTo: [ServerCertificateValidationCallback, ServerCertificateCustomValidationCallback]
+
+- key: QG-CS-SEC-0098
+  name: A certificate nobody checks proves nothing
+  languages: [vb]
+  category: SEC
+  severity: blocker
+  effort: 30min
+  cwe: [295, 297]
+  owasp: [A2]
+  tags: [transport, sast]
+  message: Certificate validation is switched off, so any server can present itself as this one.
+  summary: Certificate or host name validation is disabled.
+  why: |
+    The certificate is the only thing that ties an encrypted connection to the party you meant to reach.
+    With the check removed, anyone positioned between the two ends can offer a certificate of their own,
+    terminate the connection, read everything and pass it on. The traffic is still encrypted — just to
+    the wrong party.
+  fix: |
+    Leave validation on. If the problem is a certificate the platform does not trust, add that specific
+    certificate to the trust store rather than accepting every one.
+  detect:
+    - assignTo: [ServerCertificateValidationCallback]
+
+- key: QG-JS-SEC-0087
+  name: A certificate nobody checks proves nothing
+  languages: [js, ts]
+  category: SEC
+  severity: blocker
+  effort: 30min
+  cwe: [295, 297]
+  owasp: [A2]
+  tags: [transport, sast]
+  message: Certificate validation is switched off, so any server can present itself as this one.
+  summary: Certificate or host name validation is disabled.
+  why: |
+    The certificate is the only thing that ties an encrypted connection to the party you meant to reach.
+    With the check removed, anyone positioned between the two ends can offer a certificate of their own,
+    terminate the connection, read everything and pass it on. The traffic is still encrypted — just to
+    the wrong party.
+  fix: |
+    Leave validation on. If the problem is a certificate the platform does not trust, add that specific
+    certificate to the trust store rather than accepting every one.
+  detect:
+    - assignTo: [rejectUnauthorized]
+
+- key: QG-GO-SEC-0017
+  name: A certificate nobody checks proves nothing
+  languages: [go]
+  category: SEC
+  severity: blocker
+  effort: 30min
+  cwe: [295, 297]
+  owasp: [A2]
+  tags: [transport, sast]
+  message: Certificate validation is switched off, so any server can present itself as this one.
+  summary: Certificate or host name validation is disabled.
+  why: |
+    The certificate is the only thing that ties an encrypted connection to the party you meant to reach.
+    With the check removed, anyone positioned between the two ends can offer a certificate of their own,
+    terminate the connection, read everything and pass it on. The traffic is still encrypted — just to
+    the wrong party.
+  fix: |
+    Leave validation on. If the problem is a certificate the platform does not trust, add that specific
+    certificate to the trust store rather than accepting every one.
+  detect:
+    - assignTo: [InsecureSkipVerify]

@@ -53,7 +53,6 @@ public static class PythonRuleSet
         new PythonVagueVariableNameRule(),
         new PythonPassInExceptRule(),
         new PythonEqWithoutHashRule(),
-        new PythonGlobalStatementRule(),
         new PythonMissingDocstringRule(),
         new PythonNoneComparisonRule(),
         new PythonMultipleStatementsRule(),
@@ -1091,12 +1090,15 @@ public sealed class PythonIdentityComparisonRule : PatternRuleBase
 
     public override void Execute(IRuleContext context)
     {
-        var lines = PythonRuleSet.Lines(context);
-        for (var i = 0; i < lines.Length; i++)
+        // Reading raw lines found the words inside docstrings — "If *auto_store* is True" is prose,
+        // not a comparison. Tokens carry no comment and no string content, so only code is left.
+        var tokens = context.Tokens;
+        for (var i = 0; i < tokens.Count - 1; i++)
         {
-            if (RuleMatchers.LineContains(lines[i], "is True")
-                || RuleMatchers.LineContains(lines[i], "is False"))
-                context.Report("Compare the value directly instead of testing identity with True/False.", i + 1);
+            if (tokens[i].Text != "is" || tokens[i + 1].Text is not ("True" or "False"))
+                continue;
+            context.Report("Compare the value directly instead of testing identity with True/False.",
+                tokens[i].Line);
         }
     }
 }

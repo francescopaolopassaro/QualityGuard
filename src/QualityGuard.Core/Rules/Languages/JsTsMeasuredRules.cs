@@ -149,6 +149,14 @@ public sealed class JsIncompleteAssertionRule : JsTsMeasuredRuleBase
                 continue;
             if (SyntaxQuery.InvokedName(expression) is not ("expect" or "should"))
                 continue;
+            // '.expect(302, done)' at the end of a chain is the matcher, not a subject left bare:
+            // that is how supertest writes every assertion, and a whole test suite was reported.
+            if (SyntaxQuery.InvokedDottedName(expression).Contains('.'))
+                continue;
+            // 'expect(value)' with nothing after it is the defect; 'expect(value).toBe(1)' is not,
+            // and there the outermost call is 'toBe', so only a bare subject reaches this point.
+            if (SyntaxQuery.Arguments(expression).Count > 1)
+                continue;
 
             context.Report("The subject of the assertion is stated and nothing is asserted about it, "
                            + "so the line passes for every value. Add the matcher.",

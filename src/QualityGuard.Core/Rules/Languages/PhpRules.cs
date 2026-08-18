@@ -278,8 +278,16 @@ public sealed class PhpCleartextHttpRule : PatternRuleBase
 
     public override void Execute(IRuleContext context)
     {
+        if (LanguageRuleSupport.IsTestFile(context.File.Path, context.File.FileName))
+            return;
         foreach (var token in RuleMatchers.StringsContaining(context.Tokens, "http://"))
+        {
+            // 'http://' on its own is a scheme being parsed or built, not an address being called.
+            // An HTTP client library is full of them, and every one was reported.
+            if (!LanguageRuleSupport.IsPlainAddress(token.Text))
+                continue;
             context.Report("Use HTTPS instead of cleartext HTTP.", token.Line);
+        }
     }
 }
 

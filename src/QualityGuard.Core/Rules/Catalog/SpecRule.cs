@@ -27,6 +27,10 @@ public sealed class SpecRule(CatalogEntry entry) : IRule
 
     public void Execute(IRuleContext context)
     {
+        if (Entry.Scope == "main"
+            && Rules.Languages.LanguageRuleSupport.IsTestFile(context.File.Path, context.File.FileName))
+            return;
+
         foreach (var spec in Entry.Detect)
         {
             if (!GuardsHold(context, spec))

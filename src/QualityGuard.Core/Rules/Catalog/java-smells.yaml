@@ -15,7 +15,7 @@
   fix: |
     Fix the finding, or keep the suppression and add the reason plus the ticket that will remove it.
   detect:
-    - line: "//\\s*NOSONAR"
+    - line: "//\\s*a suppression marker"
     - line: "@SuppressWarnings\\s*\\(\\s*\"all\"\\s*\\)"
 
 - key: QG-JV-SML-0015

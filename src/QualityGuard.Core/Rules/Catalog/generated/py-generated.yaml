@@ -98,7 +98,7 @@
     next change touches a single spot.
 
 - key: QG-PY-SML-0027
-  name: NOSONAR comments should be resolved rather than left in the code
+  name: Suppression comments should be resolved rather than left in the code
   languages: [py]
   category: SML
   severity: minor
@@ -643,7 +643,7 @@
   effort: 15min
   tags: [avoid_api, generated]
   generated: true
-  status: ready
+  status: planned
   message: This API should be replaced by the current alternative.
   summary: Code calls an API that is unsafe, obsolete or superseded by a better alternative.
   why: |
@@ -653,8 +653,6 @@
   fix: |
     Replace the call with the current API, and keep the old one only behind a compatibility layer that is
     documented and dated.
-  detect:
-    - invocation: [yield]
 
 - key: QG-PY-SML-0057
   name: Pass should not be used
@@ -5303,7 +5301,7 @@
   effort: 15min
   tags: [prefer_api, generated]
   generated: true
-  status: ready
+  status: planned
   message: The platform offers a clearer or safer construct for this.
   summary: A construct is used where the platform offers one that is clearer or safer.
   why: |

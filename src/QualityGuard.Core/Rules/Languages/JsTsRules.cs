@@ -680,7 +680,9 @@ public sealed class JsSsrRule : PatternRuleBase
                 continue;
             if (i + 1 >= tokens.Count || tokens[i + 1].Text != "(")
                 continue;
-            if (RuleMatchers.NextNonParenIsString(tokens, i) && !context.IsTaintedLine(tokens[i].Line))
+            // Reporting whenever the argument was not a plain literal flagged every 'request(app)'
+            // in a test suite. The finding is the taint, so the taint is what is asked for.
+            if (!context.IsTaintedLine(tokens[i].Line))
                 continue;
             context.Report("Do not fetch a URL built from untrusted input.", tokens[i].Line);
         }
@@ -693,7 +695,7 @@ public sealed class JsSsrRule : PatternRuleBase
                 continue;
             if (i + 1 >= tokens.Count || tokens[i + 1].Text != "(")
                 continue;
-            if (RuleMatchers.NextNonParenIsString(tokens, i) && !context.IsTaintedLine(tokens[i].Line))
+            if (!context.IsTaintedLine(tokens[i].Line))
                 continue;
             context.Report("Do not build the request URL from untrusted input.", tokens[i].Line);
         }

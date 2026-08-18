@@ -96,6 +96,12 @@ public sealed class UnreachableCodeAfterJumpRule : StructuralRuleBase
     public override IssueKind Kind => IssueKind.Bug;
     public override string RemediationEffort => "5min";
 
+    // Not every keyword the parser files under Jump ends the flow. 'assert', 'del', 'pass',
+    // 'global' and 'yield' carry on to the next statement, and treating them as terminators
+    // reported the whole rest of the block as unreachable.
+    private static bool LeavesTheBlock(string keyword) =>
+        keyword is "return" or "raise" or "throw" or "break" or "continue" or "goto";
+
     public override void Execute(IRuleContext context)
     {
         foreach (var block in Blocks(context))
@@ -103,7 +109,7 @@ public sealed class UnreachableCodeAfterJumpRule : StructuralRuleBase
             var children = block.Children;
             for (var i = 0; i < children.Count - 1; i++)
             {
-                if (children[i].Kind != NodeKind.Jump)
+                if (children[i].Kind != NodeKind.Jump || !LeavesTheBlock(children[i].Text))
                     continue;
                 var next = children[i + 1];
                 if (next.Kind is NodeKind.MatchCase or NodeKind.Else or NodeKind.Catch or NodeKind.Finally)
@@ -1297,6 +1303,10 @@ public sealed class TestWithoutAssertionRule : StructuralRuleBase
                 var lowered = chain.ToLowerInvariant();
                 return AssertionNames.Any(name => lowered.Contains(name));
             });
+            // In Python and Rust the assertion is a statement, not a call: 'assert x == y' carries
+            // no invocation at all, so a whole pytest suite read as tests that verify nothing.
+            asserts = asserts || function.OfKind(NodeKind.Jump)
+                .Any(jump => jump.Text is "assert" or "raise");
             if (asserts)
                 continue;
             context.Report(function, $"'{function.Text}' runs code but asserts nothing, "

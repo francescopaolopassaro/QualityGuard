@@ -1,0 +1,44 @@
+
+- key: QG-KT-SEC-0059
+  name: A session cookie should be out of reach of script and of the network
+  languages: [kt]
+  category: SEC
+  severity: major
+  effort: 10min
+  cwe: [614, 1004, 315]
+  owasp: [A3]
+  tags: [cookie, sast]
+  message: This cookie is created without the flags that keep it off the wire in clear and away from script.
+  summary: A cookie is set without the Secure and HttpOnly flags.
+  why: |
+    Without Secure the browser will send the cookie over a plain connection, where anyone on the path can
+    read it. Without HttpOnly any script running on the page can read it — which turns a single scripting
+    flaw anywhere on the site into a stolen session.
+  fix: |
+    Set both flags when the cookie is created, and add SameSite so the cookie is not attached to requests
+    that another site started.
+  detect:
+    - creation: [Cookie]
+      withoutArgs: [setSecure, setHttpOnly]
+
+- key: QG-PP-SEC-0068
+  name: A session cookie should be out of reach of script and of the network
+  languages: [php]
+  category: SEC
+  severity: major
+  effort: 10min
+  cwe: [614, 1004, 315]
+  owasp: [A3]
+  tags: [cookie, sast]
+  message: This cookie is created without the flags that keep it off the wire in clear and away from script.
+  summary: A cookie is set without the Secure and HttpOnly flags.
+  why: |
+    Without Secure the browser will send the cookie over a plain connection, where anyone on the path can
+    read it. Without HttpOnly any script running on the page can read it — which turns a single scripting
+    flaw anywhere on the site into a stolen session.
+  fix: |
+    Set both flags when the cookie is created, and add SameSite so the cookie is not attached to requests
+    that another site started.
+  detect:
+    - invocation: [session_set_cookie_params]
+      withoutArgs: [true]

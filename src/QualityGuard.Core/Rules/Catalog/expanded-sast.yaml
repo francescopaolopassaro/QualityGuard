@@ -1,0 +1,156 @@
+
+- key: QG-JV-SEC-0071
+  name: Deserializing what a caller sent hands them the process
+  languages: [java]
+  category: SEC
+  severity: blocker
+  effort: 30min
+  cwe: [502]
+  owasp: [A8]
+  tags: [deserialization, sast]
+  message: This value comes from outside and is deserialized, which can construct objects the caller chooses.
+  summary: Data that arrived from outside is deserialized.
+  why: |
+    These deserializers rebuild whatever type the payload names, running constructors and setters as they
+    go. A caller who controls the payload therefore controls which types are built and what runs during
+    construction — enough, with a common library present, to run a command of their choosing.
+  fix: |
+    Accept a known shape instead: parse into a type you name yourself, or use a format that carries data
+    and not types. If the format must stay, restrict the types allowed to an explicit list.
+  detect:
+    - creation: [ObjectInputStream]
+    - invocation: [readObject]
+      argTainted: true
+
+- key: QG-JS-SEC-0088
+  name: Deserializing what a caller sent hands them the process
+  languages: [js, ts]
+  category: SEC
+  severity: blocker
+  effort: 30min
+  cwe: [502]
+  owasp: [A8]
+  tags: [deserialization, sast]
+  message: This value comes from outside and is deserialized, which can construct objects the caller chooses.
+  summary: Data that arrived from outside is deserialized.
+  why: |
+    These deserializers rebuild whatever type the payload names, running constructors and setters as they
+    go. A caller who controls the payload therefore controls which types are built and what runs during
+    construction — enough, with a common library present, to run a command of their choosing.
+  fix: |
+    Accept a known shape instead: parse into a type you name yourself, or use a format that carries data
+    and not types. If the format must stay, restrict the types allowed to an explicit list.
+  detect:
+    - invocation: [unserialize]
+      argTainted: true
+
+- key: QG-CS-SEC-0099
+  name: An XML parser that resolves entities will fetch what the document asks for
+  languages: [cs]
+  category: SEC
+  severity: blocker
+  effort: 30min
+  cwe: [611, 827]
+  owasp: [A4]
+  tags: [xml, sast]
+  message: This parser resolves external entities, so a document can make it read local files or call out.
+  summary: An XML parser is built without disabling external entities.
+  why: |
+    An XML document can declare an entity whose content is a file path or a URL. A parser that resolves
+    entities will read that file, or make that request, and place the result in the parsed document — so
+    a caller who supplies the XML can read files from the server or reach services that are only visible
+    from inside the network.
+  fix: |
+    Turn off document type declarations on the parser. If the format genuinely needs them, disable
+    external general and parameter entities specifically.
+  detect:
+    - assignTo: [DtdProcessing]
+      contains: [DtdProcessing.Parse]
+
+- key: QG-CS-SEC-0100
+  name: An XML parser that resolves entities will fetch what the document asks for
+  languages: [vb]
+  category: SEC
+  severity: blocker
+  effort: 30min
+  cwe: [611, 827]
+  owasp: [A4]
+  tags: [xml, sast]
+  message: This parser resolves external entities, so a document can make it read local files or call out.
+  summary: An XML parser is built without disabling external entities.
+  why: |
+    An XML document can declare an entity whose content is a file path or a URL. A parser that resolves
+    entities will read that file, or make that request, and place the result in the parsed document — so
+    a caller who supplies the XML can read files from the server or reach services that are only visible
+    from inside the network.
+  fix: |
+    Turn off document type declarations on the parser. If the format genuinely needs them, disable
+    external general and parameter entities specifically.
+  detect:
+    - assignTo: [DtdProcessing]
+      contains: [DtdProcessing.Parse]
+
+- key: QG-PY-SEC-0092
+  name: An XML parser that resolves entities will fetch what the document asks for
+  languages: [py]
+  category: SEC
+  severity: blocker
+  effort: 30min
+  cwe: [611, 827]
+  owasp: [A4]
+  tags: [xml, sast]
+  message: This parser resolves external entities, so a document can make it read local files or call out.
+  summary: An XML parser is built without disabling external entities.
+  why: |
+    An XML document can declare an entity whose content is a file path or a URL. A parser that resolves
+    entities will read that file, or make that request, and place the result in the parsed document — so
+    a caller who supplies the XML can read files from the server or reach services that are only visible
+    from inside the network.
+  fix: |
+    Turn off document type declarations on the parser. If the format genuinely needs them, disable
+    external general and parameter entities specifically.
+  detect:
+    - member: [minidom.parseString, pulldom.parseString, sax.parseString]
+
+- key: QG-JV-SEC-0072
+  name: A file everyone can write is a file anyone can replace
+  languages: [java]
+  category: SEC
+  severity: critical
+  effort: 15min
+  cwe: [732, 276]
+  owasp: [A5]
+  tags: [permissions, sast]
+  message: These permissions let every account on the machine change the file.
+  summary: A file or directory is created with permissions open to all users.
+  why: |
+    Any process on the host, whatever account it runs under, can rewrite the contents. If the file is a
+    script, a configuration or a library that this program later reads, the program will do whatever the
+    last writer decided.
+  fix: |
+    Grant the permissions the owner needs and stop there. Where a group genuinely shares the file, name
+    that group rather than opening it to everybody.
+  detect:
+    - invocation: [setWritable, setReadable, setExecutable]
+      argLiterals: [true]
+
+- key: QG-PP-SEC-0069
+  name: A file everyone can write is a file anyone can replace
+  languages: [php]
+  category: SEC
+  severity: critical
+  effort: 15min
+  cwe: [732, 276]
+  owasp: [A5]
+  tags: [permissions, sast]
+  message: These permissions let every account on the machine change the file.
+  summary: A file or directory is created with permissions open to all users.
+  why: |
+    Any process on the host, whatever account it runs under, can rewrite the contents. If the file is a
+    script, a configuration or a library that this program later reads, the program will do whatever the
+    last writer decided.
+  fix: |
+    Grant the permissions the owner needs and stop there. Where a group genuinely shares the file, name
+    that group rather than opening it to everybody.
+  detect:
+    - invocation: [chmod, umask]

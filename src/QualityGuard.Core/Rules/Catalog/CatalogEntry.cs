@@ -102,6 +102,13 @@ public sealed class CatalogEntry
     public IssueKind Kind { get; init; }
     public string Effort { get; init; } = "10min";
     public string[] Tags { get; init; } = [];
+
+    /// <summary>
+    /// Where the rule applies. "main" keeps it out of test sources: an assert that would vanish
+    /// under optimisation is a defect in production code and the whole point of a test, and reading
+    /// both the same way produced a hundred findings that told the reader nothing.
+    /// </summary>
+    public string Scope { get; init; } = "all";
     public int[] Cwe { get; init; } = [];
     public string[] Owasp { get; init; } = [];
     public string Message { get; init; } = string.Empty;
@@ -132,7 +139,12 @@ public sealed class CatalogEntry
     public bool IsSuperseded => string.Equals(Status, "superseded", StringComparison.OrdinalIgnoreCase);
 
     /// <summary>Entries without detection clauses only carry documentation for a hand-written rule.</summary>
-    public bool IsDocumentationOnly => Detect.Count == 0;
+    /// <summary>
+    /// Whether the entry only documents. An entry with no detection clause obviously does, and so
+    /// does one marked planned or superseded: those two words were being written into the catalog
+    /// and read by nobody, so a rule retired on paper went on reporting.
+    /// </summary>
+    public bool IsDocumentationOnly => Detect.Count == 0 || IsPlanned || IsSuperseded;
 
     public static CatalogEntry From(YamlMap map)
     {
@@ -153,6 +165,7 @@ public sealed class CatalogEntry
             Kind = ParseKind(map.Str("type"), category),
             Effort = map.Str("effort") ?? DefaultEffort(category),
             Tags = map.Strings("tags"),
+            Scope = map.Str("scope") ?? "all",
             Cwe = map.Integers("cwe"),
             Owasp = map.Strings("owasp"),
             Message = map.Str("message") ?? name,

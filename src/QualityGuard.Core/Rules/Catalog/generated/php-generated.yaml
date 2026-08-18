@@ -2,7 +2,7 @@
 # tools/generate_rules.py and are refined by hand as each family is reviewed.
 
 - key: QG-PP-SML-0013
-  name: NOSONAR comments should be resolved rather than left in the code
+  name: Suppression comments should be resolved rather than left in the code
   languages: [php]
   category: SML
   severity: minor

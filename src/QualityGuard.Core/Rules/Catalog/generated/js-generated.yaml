@@ -185,7 +185,7 @@
     cases the old form got wrong.
 
 - key: QG-JS-SML-0036
-  name: NOSONAR comments should be resolved rather than left in the code
+  name: Suppression comments should be resolved rather than left in the code
   languages: [js, ts]
   category: SML
   severity: minor
@@ -1804,7 +1804,7 @@
   effort: 15min
   tags: [avoid_api, generated]
   generated: true
-  status: ready
+  status: planned
   message: This API should be replaced by the current alternative.
   summary: Code calls an API that is unsafe, obsolete or superseded by a better alternative.
   why: |
@@ -1814,8 +1814,6 @@
   fix: |
     Replace the call with the current API, and keep the old one only behind a compatibility layer that is
     documented and dated.
-  detect:
-    - invocation: [await]
 
 - key: QG-JS-SML-0136
   name: Dependencies should be simplified
