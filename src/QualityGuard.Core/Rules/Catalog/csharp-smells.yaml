@@ -99,6 +99,7 @@
   name: Obsolete markers should explain the replacement
   languages: [cs, vb]
   category: SML
+  scope: main
   severity: minor
   effort: 10min
   tags: [maintainability, api]
@@ -267,6 +268,7 @@
   name: Boolean conditions should short-circuit
   languages: [cs, vb]
   category: SML
+  scope: main
   severity: major
   effort: 10min
   tags: [suspicious]
@@ -379,6 +381,7 @@
   name: Ternary operators should not be nested
   languages: [cs, vb]
   category: SML
+  scope: main
   severity: major
   effort: 15min
   tags: [readability]

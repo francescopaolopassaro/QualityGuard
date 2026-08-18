@@ -133,6 +133,7 @@
   name: Classes should stay within a size that can be reviewed
   languages: [php]
   category: SML
+  scope: main
   severity: minor
   effort: 15min
   tags: [threshold, generated]
@@ -468,6 +469,7 @@
   name: Source code should follow the naming convention of the codebase
   languages: [php]
   category: SML
+  scope: main
   severity: minor
   effort: 15min
   tags: [naming, generated]
@@ -616,6 +618,7 @@
   name: Require_once and include_once should be replaced by the recommended alternative
   languages: [php]
   category: BUG
+  scope: main
   severity: major
   effort: 15min
   tags: [prefer_api, generated]
@@ -694,6 +697,7 @@
   name: Global should not be used
   languages: [php]
   category: SML
+  scope: main
   severity: minor
   effort: 15min
   tags: [avoid_api, generated]
@@ -770,6 +774,7 @@
   name: Parentheses should not be used
   languages: [php]
   category: SML
+  scope: main
   severity: minor
   effort: 15min
   tags: [avoid_api, generated]
@@ -809,6 +814,7 @@
   name: Php_sapi_name() should not be used
   languages: [php]
   category: SML
+  scope: main
   severity: minor
   effort: 15min
   tags: [avoid_api, generated]
@@ -867,6 +873,7 @@
   name: Password hashing functions should use current cryptographic parameters
   languages: [php]
   category: SEC
+  scope: main
   severity: critical
   effort: 15min
   tags: [crypto, generated]
@@ -888,6 +895,7 @@
   name: Cookies should not weaken the security of the application
   languages: [php]
   category: SEC
+  scope: main
   severity: critical
   effort: 15min
   tags: [sec, generated]
@@ -983,6 +991,7 @@
   name: Cryptographic operations should use current cryptographic parameters
   languages: [php]
   category: SEC
+  scope: main
   severity: critical
   effort: 15min
   tags: [crypto, generated]
@@ -1060,6 +1069,7 @@
   name: Sleep should not be used
   languages: [php]
   category: SEC
+  scope: main
   severity: critical
   effort: 15min
   tags: [avoid_api, generated]
@@ -1100,6 +1110,7 @@
   name: Cookies should not weaken the security of the application
   languages: [php]
   category: SEC
+  scope: main
   severity: critical
   effort: 15min
   tags: [sec, generated]
@@ -1121,6 +1132,7 @@
   name: Session-management cookies should not weaken the security of the application
   languages: [php]
   category: SEC
+  scope: main
   severity: critical
   effort: 15min
   tags: [sec, generated]
@@ -1143,6 +1155,7 @@
   name: Open_basedir should not grant more access than needed
   languages: [php]
   category: SEC
+  scope: main
   severity: critical
   effort: 15min
   tags: [permissions, generated]
@@ -1164,6 +1177,7 @@
   name: Allow_url_fopen and allow_url_include should not weaken the security of the application
   languages: [php]
   category: SEC
+  scope: main
   severity: critical
   effort: 15min
   tags: [sec, generated]
@@ -1186,6 +1200,7 @@
   name: Cgi.force_redirect should keep the platform protection enabled
   languages: [php]
   category: SEC
+  scope: main
   severity: critical
   effort: 15min
   tags: [protection_off, generated]
@@ -1209,6 +1224,7 @@
   name: Session.use_trans_sid should not weaken the security of the application
   languages: [php]
   category: SEC
+  scope: main
   severity: critical
   effort: 15min
   tags: [sec, generated]
@@ -1232,6 +1248,7 @@
   name: Enable_dl should not weaken the security of the application
   languages: [php]
   category: SEC
+  scope: main
   severity: critical
   effort: 15min
   tags: [sec, generated]
@@ -1253,6 +1270,7 @@
   name: File_uploads should not weaken the security of the application
   languages: [php]
   category: SEC
+  scope: main
   severity: critical
   effort: 15min
   tags: [sec, generated]
@@ -1419,6 +1437,7 @@
   name: LDAP connections should be verified before use
   languages: [php]
   category: SEC
+  scope: main
   severity: critical
   effort: 15min
   tags: [verification, generated]
@@ -1440,6 +1459,7 @@
   name: CSRF protections should keep the platform protection enabled
   languages: [php]
   category: SEC
+  scope: main
   severity: critical
   effort: 15min
   tags: [protection_off, generated]
@@ -1480,6 +1500,7 @@
   name: OS process signal parameters should be verified before use
   languages: [php]
   category: SML
+  scope: main
   severity: minor
   effort: 15min
   tags: [verification, generated]
@@ -1501,6 +1522,7 @@
   name: Server certificates should be verified before use
   languages: [php]
   category: SEC
+  scope: main
   severity: critical
   effort: 15min
   tags: [verification, generated]
@@ -1522,6 +1544,7 @@
   name: Namespaces should be replaced by the recommended alternative
   languages: [php]
   category: SML
+  scope: main
   severity: minor
   effort: 15min
   tags: [prefer_api, generated]
@@ -1544,6 +1567,7 @@
   name: Expanding archive files should be simplified
   languages: [php]
   category: SML
+  scope: main
   severity: minor
   effort: 15min
   tags: [sml, generated]
@@ -1564,6 +1588,7 @@
   name: Cross-Origin Resource Sharing (CORS) policy should not weaken the security of the application
   languages: [php]
   category: SEC
+  scope: main
   severity: critical
   effort: 15min
   tags: [sec, generated]
@@ -1607,6 +1632,7 @@
   name: `str_replace` should be replaced by the recommended alternative
   languages: [php]
   category: SML
+  scope: main
   severity: minor
   effort: 15min
   tags: [prefer_api, generated]
@@ -1647,6 +1673,7 @@
   name: Encryption algorithms should use current cryptographic parameters
   languages: [php]
   category: SEC
+  scope: main
   severity: critical
   effort: 15min
   tags: [crypto, generated]
@@ -1669,6 +1696,7 @@
   name: HTTP request content length should not weaken the security of the application
   languages: [php]
   category: SEC
+  scope: main
   severity: critical
   effort: 15min
   tags: [sec, generated]
@@ -1746,6 +1774,7 @@
   name: Regular expressions should be safe and correct
   languages: [php]
   category: SML
+  scope: main
   severity: minor
   effort: 15min
   tags: [regex, generated]
@@ -1824,6 +1853,7 @@
   name: New session should not weaken the security of the application
   languages: [php]
   category: SEC
+  scope: main
   severity: critical
   effort: 15min
   tags: [sec, generated]
@@ -1957,6 +1987,7 @@
   name: Replacement strings should be safe and correct
   languages: [php]
   category: BUG
+  scope: main
   severity: major
   effort: 15min
   tags: [regex, generated]

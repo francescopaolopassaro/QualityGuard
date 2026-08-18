@@ -24,6 +24,7 @@
   name: End statements should not be used
   languages: [vb]
   category: SML
+  scope: main
   severity: minor
   effort: 15min
   tags: [avoid_api, generated]
@@ -100,6 +101,7 @@
   name: Comments should be resolved rather than left in the code
   languages: [vb]
   category: SML
+  scope: main
   severity: minor
   effort: 15min
   tags: [marker, generated]
@@ -120,6 +122,7 @@
   name: Copyright and license headers should be resolved rather than left in the code
   languages: [vb]
   category: SML
+  scope: main
   severity: minor
   effort: 15min
   tags: [marker, generated]
@@ -140,6 +143,7 @@
   name: Hard-to-read code should be simplified
   languages: [vb]
   category: SML
+  scope: main
   severity: minor
   effort: 15min
   tags: [sml, generated]
@@ -160,6 +164,7 @@
   name: & operator should be replaced by the recommended alternative
   languages: [vb]
   category: SML
+  scope: main
   severity: minor
   effort: 15min
   tags: [prefer_api, generated]
@@ -310,6 +315,7 @@
   name: NameOf should be replaced by the recommended alternative
   languages: [vb]
   category: SML
+  scope: main
   severity: minor
   effort: 15min
   tags: [prefer_api, generated]
@@ -386,6 +392,7 @@
   name: Event names should be simplified
   languages: [vb]
   category: SML
+  scope: main
   severity: minor
   effort: 15min
   tags: [sml, generated]
@@ -463,6 +470,7 @@
   name: IsNot should be replaced by the recommended alternative
   languages: [vb]
   category: SML
+  scope: main
   severity: minor
   effort: 15min
   tags: [prefer_api, generated]
@@ -522,6 +530,7 @@
   name: Private Shared ReadOnly fields should follow the naming convention of the codebase
   languages: [vb]
   category: SML
+  scope: main
   severity: minor
   effort: 15min
   tags: [naming, generated]
@@ -578,6 +587,7 @@
   name: Non-private Shared ReadOnly fields should follow the naming convention of the codebase
   languages: [vb]
   category: SML
+  scope: main
   severity: minor
   effort: 15min
   tags: [naming, generated]
@@ -598,6 +608,7 @@
   name: Signed types should be replaced by the recommended alternative
   languages: [vb]
   category: SML
+  scope: main
   severity: minor
   effort: 15min
   tags: [prefer_api, generated]
@@ -620,6 +631,7 @@
   name: With statements should be replaced by the recommended alternative
   languages: [vb]
   category: SML
+  scope: main
   severity: minor
   effort: 15min
   tags: [prefer_api, generated]
@@ -659,6 +671,7 @@
   name: Unnecessary bit operations should be simplified
   languages: [vb]
   category: SML
+  scope: main
   severity: minor
   effort: 15min
   tags: [sml, generated]
@@ -739,6 +752,7 @@
   name: Reflection should not be used
   languages: [vb]
   category: SML
+  scope: main
   severity: minor
   effort: 15min
   tags: [avoid_api, generated]
@@ -761,6 +775,7 @@
   name: StringBuilder data should be replaced by the recommended alternative
   languages: [vb]
   category: SML
+  scope: main
   severity: minor
   effort: 15min
   tags: [prefer_api, generated]
@@ -819,6 +834,7 @@
   name: Date and time should not be used
   languages: [vb]
   category: BUG
+  scope: main
   severity: major
   effort: 15min
   tags: [avoid_api, generated]
@@ -841,6 +857,7 @@
   name: Exit statements should not be used
   languages: [vb]
   category: SML
+  scope: main
   severity: minor
   effort: 15min
   tags: [avoid_api, generated]
@@ -1485,6 +1502,7 @@
   name: Property procedures should match the behaviour the code describes
   languages: [vb]
   category: BUG
+  scope: main
   severity: major
   effort: 15min
   tags: [bug, generated]
@@ -1545,6 +1563,7 @@
   name: Debugging features should not weaken the security of the application
   languages: [vb]
   category: SEC
+  scope: main
   severity: critical
   effort: 15min
   tags: [sec, generated]
@@ -1642,6 +1661,7 @@
   name: Encryption algorithms should use current cryptographic parameters
   languages: [vb]
   category: SEC
+  scope: main
   severity: critical
   effort: 15min
   tags: [crypto, generated]
@@ -1664,6 +1684,7 @@
   name: JWT should use current cryptographic parameters
   languages: [vb]
   category: SEC
+  scope: main
   severity: critical
   effort: 15min
   tags: [crypto, generated]
@@ -1686,6 +1707,7 @@
   name: HTTP request content length should not weaken the security of the application
   languages: [vb]
   category: SEC
+  scope: main
   severity: critical
   effort: 15min
   tags: [sec, generated]
@@ -1708,6 +1730,7 @@
   name: ASP.NET Request Validation should keep the platform protection enabled
   languages: [vb]
   category: SEC
+  scope: main
   severity: critical
   effort: 15min
   tags: [protection_off, generated]
@@ -1805,6 +1828,7 @@
   name: ExcludeFromCodeCoverage attributes should be simplified
   languages: [vb]
   category: SML
+  scope: main
   severity: minor
   effort: 15min
   tags: [sml, generated]
@@ -2166,6 +2190,7 @@
   name: Backslash should match the behaviour the code describes
   languages: [vb]
   category: BUG
+  scope: main
   severity: major
   effort: 15min
   tags: [bug, generated]

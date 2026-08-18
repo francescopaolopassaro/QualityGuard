@@ -3,6 +3,7 @@
   name: Suspicious code should match the behaviour the code describes
   languages: [py]
   category: BUG
+  scope: main
   severity: major
   effort: 10min
   tags: [bug, ported]
@@ -97,6 +98,7 @@
   name: S3 operations should not weaken the security of the application
   languages: [py]
   category: SEC
+  scope: main
   severity: critical
   effort: 5min
   tags: [sec, ported]
@@ -118,6 +120,7 @@
   name: AWS region should not be committed with the source
   languages: [py]
   category: SML
+  scope: main
   severity: minor
   effort: 5min
   tags: [secret, ported]
@@ -138,6 +141,7 @@
   name: Reusable resources should be simplified
   languages: [py]
   category: SML
+  scope: main
   severity: minor
   effort: 20min
   tags: [sml, ported]
@@ -157,6 +161,7 @@
   name: Lambdas should be accessed in a thread-safe way
   languages: [py]
   category: SML
+  scope: main
   severity: minor
   effort: 3h
   tags: [concurrency, ported]
@@ -362,6 +367,7 @@
   name: Method overrides should be simplified
   languages: [py]
   category: SML
+  scope: main
   severity: minor
   effort: 15min
   tags: [sml, ported]
@@ -381,6 +387,7 @@
   name: Child routers should match the behaviour the code describes
   languages: [py]
   category: BUG
+  scope: main
   severity: major
   effort: 5min
   tags: [bug, ported]
@@ -400,6 +407,7 @@
   name: Cipher Block Chaining IVs should use current cryptographic parameters
   languages: [py]
   category: SEC
+  scope: main
   severity: critical
   effort: 15min
   tags: [crypto, ported]
@@ -498,6 +506,7 @@
   name: Secure password should be replaced by the recommended alternative
   languages: [py]
   category: SEC
+  scope: main
   severity: critical
   effort: 45min
   tags: [prefer_api, ported]
@@ -654,6 +663,7 @@
   name: FastAPI dependencies should be simplified
   languages: [py]
   category: SML
+  scope: main
   severity: minor
   effort: 5min
   tags: [sml, ported]
@@ -673,6 +683,7 @@
   name: FastAPI file upload endpoints should be replaced by the recommended alternative
   languages: [py]
   category: SEC
+  scope: main
   severity: critical
   effort: 10min
   tags: [prefer_api, ported]
@@ -693,6 +704,7 @@
   name: Generic route decorators should not be used
   languages: [py]
   category: SML
+  scope: main
   severity: minor
   effort: 2min
   tags: [avoid_api, ported]
@@ -713,6 +725,7 @@
   name: HTTPException responses should make failure handling explicit
   languages: [py]
   category: SML
+  scope: main
   severity: minor
   effort: 5min
   tags: [exception, ported]
@@ -733,6 +746,7 @@
   name: FastAPI applications should be simplified
   languages: [py]
   category: SML
+  scope: main
   severity: minor
   effort: 5min
   tags: [sml, ported]
@@ -752,6 +766,7 @@
   name: FastAPI path parameters should be declared the way the language intends
   languages: [py]
   category: BUG
+  scope: main
   severity: major
   effort: 5min
   tags: [declaration, ported]
@@ -772,6 +787,7 @@
   name: FastAPI routes should be simplified
   languages: [py]
   category: SML
+  scope: main
   severity: minor
   effort: 2min
   tags: [sml, ported]
@@ -828,6 +844,7 @@
   name: HTTP headers should make failure handling explicit
   languages: [py]
   category: BUG
+  scope: main
   severity: major
   effort: 5min
   tags: [exception, ported]
@@ -868,6 +885,7 @@
   name: Flask preprocess_request() return values should match the behaviour the code describes
   languages: [py]
   category: BUG
+  scope: main
   severity: major
   effort: 5min
   tags: [bug, ported]
@@ -887,6 +905,7 @@
   name: REST API actions should be simplified
   languages: [py]
   category: SML
+  scope: main
   severity: minor
   effort: 5min
   tags: [sml, ported]
@@ -922,6 +941,7 @@
   name: Flask class-based view decorators should match the behaviour the code describes
   languages: [py]
   category: BUG
+  scope: main
   severity: major
   effort: 5min
   tags: [bug, ported]
@@ -1039,6 +1059,7 @@
   name: Endpoints returning 204 status should not be left empty
   languages: [py]
   category: BUG
+  scope: main
   severity: major
   effort: 5min
   tags: [empty, ported]
@@ -1477,6 +1498,7 @@
   name: Pydantic models should match the behaviour the code describes
   languages: [py]
   category: BUG
+  scope: main
   severity: major
   effort: 5min
   tags: [bug, ported]
@@ -1496,6 +1518,7 @@
   name: Pydantic-core serialization calls should match the behaviour the code describes
   languages: [py]
   category: BUG
+  scope: main
   severity: major
   effort: 5min
   tags: [bug, ported]
@@ -1515,6 +1538,7 @@
   name: Double leading underscores should not be used
   languages: [py]
   category: BUG
+  scope: main
   severity: major
   effort: 5min
   tags: [avoid_api, ported]
@@ -1554,6 +1578,7 @@
   name: Json_schema_input_type should not be used
   languages: [py]
   category: BUG
+  scope: main
   severity: major
   effort: 5min
   tags: [avoid_api, ported]
@@ -1574,6 +1599,7 @@
   name: Pydantic models should be simplified
   languages: [py]
   category: SML
+  scope: main
   severity: minor
   effort: 5min
   tags: [sml, ported]
@@ -1593,6 +1619,7 @@
   name: Optional Pydantic fields should be simplified
   languages: [py]
   category: SML
+  scope: main
   severity: minor
   effort: 5min
   tags: [sml, ported]
@@ -1612,6 +1639,7 @@
   name: SkipValidation should match the behaviour the code describes
   languages: [py]
   category: BUG
+  scope: main
   severity: major
   effort: 5min
   tags: [bug, ported]
@@ -1685,6 +1713,7 @@
   name: Router prefixes should be declared the way the language intends
   languages: [py]
   category: SML
+  scope: main
   severity: minor
   effort: 2min
   tags: [declaration, ported]
@@ -1705,6 +1734,7 @@
   name: Encryption algorithms should use current cryptographic parameters
   languages: [py]
   category: SEC
+  scope: main
   severity: critical
   effort: 20min
   tags: [crypto, ported]
@@ -1746,6 +1776,7 @@
   name: @singledispatch and @singledispatchmethod should match the behaviour the code describes
   languages: [py]
   category: BUG
+  scope: main
   severity: major
   effort: 5min
   tags: [bug, ported]
@@ -2219,6 +2250,7 @@
   name: Only defined names should match the behaviour the code describes
   languages: [py]
   category: BUG
+  scope: main
   severity: major
   effort: 1min
   tags: [bug, ported]
@@ -2352,6 +2384,7 @@
   name: Amazon EFS file systems should use current cryptographic parameters
   languages: [py]
   category: SEC
+  scope: main
   severity: critical
   effort: 10min
   tags: [crypto, ported]
@@ -2373,6 +2406,7 @@
   name: OpenSearch domains should use current cryptographic parameters
   languages: [py]
   category: SEC
+  scope: main
   severity: critical
   effort: 10min
   tags: [crypto, ported]
@@ -2394,6 +2428,7 @@
   name: Amazon RDS resources should use current cryptographic parameters
   languages: [py]
   category: SEC
+  scope: main
   severity: critical
   effort: 10min
   tags: [crypto, ported]
@@ -2415,6 +2450,7 @@
   name: Amazon SNS topics should use current cryptographic parameters
   languages: [py]
   category: SEC
+  scope: main
   severity: critical
   effort: 45min
   tags: [crypto, ported]
@@ -2436,6 +2472,7 @@
   name: AWS resource-based policies should not grant more access than needed
   languages: [py]
   category: SEC
+  scope: main
   severity: critical
   effort: 5min
   tags: [permissions, ported]
@@ -2476,6 +2513,7 @@
   name: AWS API Gateway should not weaken the security of the application
   languages: [py]
   category: SEC
+  scope: main
   severity: critical
   effort: 15min
   tags: [sec, ported]
@@ -2497,6 +2535,7 @@
   name: Public network access to cloud resources should not grant more access than needed
   languages: [py]
   category: SEC
+  scope: main
   severity: critical
   effort: 30min
   tags: [permissions, ported]
@@ -2518,6 +2557,7 @@
   name: Amazon S3 bucket public access should not grant more access than needed
   languages: [py]
   category: SEC
+  scope: main
   severity: critical
   effort: 30min
   tags: [permissions, ported]
@@ -2539,6 +2579,7 @@
   name: S3 buckets should not grant more access than needed
   languages: [py]
   category: SEC
+  scope: main
   severity: critical
   effort: 5min
   tags: [permissions, ported]
@@ -2560,6 +2601,7 @@
   name: S3 buckets should use current cryptographic parameters
   languages: [py]
   category: SEC
+  scope: main
   severity: critical
   effort: 10min
   tags: [crypto, ported]
@@ -2581,6 +2623,7 @@
   name: EBS volumes should use current cryptographic parameters
   languages: [py]
   category: SEC
+  scope: main
   severity: critical
   effort: 30min
   tags: [crypto, ported]
@@ -2602,6 +2645,7 @@
   name: SageMaker notebook instances should use current cryptographic parameters
   languages: [py]
   category: SEC
+  scope: main
   severity: critical
   effort: 10min
   tags: [crypto, ported]
@@ -2623,6 +2667,7 @@
   name: SQS queues should use current cryptographic parameters
   languages: [py]
   category: SEC
+  scope: main
   severity: critical
   effort: 10min
   tags: [crypto, ported]
@@ -2644,6 +2689,7 @@
   name: Security groups should not weaken the security of the application
   languages: [py]
   category: SEC
+  scope: main
   severity: critical
   effort: 60min
   tags: [sec, ported]
@@ -2745,6 +2791,7 @@
   name: Custom cryptographic algorithms should use current cryptographic parameters
   languages: [py]
   category: SEC
+  scope: main
   severity: critical
   effort: 1d
   tags: [crypto, ported]
@@ -2766,6 +2813,7 @@
   name: XML signatures should be verified before use
   languages: [py]
   category: SEC
+  scope: main
   severity: critical
   effort: 15min
   tags: [verification, ported]

@@ -4,6 +4,7 @@
   name: Servlet methods should not let exceptions escape
   languages: [java]
   category: SEC
+  scope: main
   severity: major
   effort: 20min
   cwe: [600]
@@ -93,6 +94,7 @@
   name: Endpoints should restrict the HTTP methods they accept
   languages: [java, kt]
   category: SEC
+  scope: main
   severity: major
   effort: 15min
   cwe: [352]
@@ -114,6 +116,7 @@
   name: Deserialization from directory servers should stay disabled
   languages: [java]
   category: SEC
+  scope: main
   severity: blocker
   effort: 30min
   cwe: [502]
@@ -290,6 +293,7 @@
   name: Boxed types should not be compared with the equality operator
   languages: [java]
   category: BUG
+  scope: main
   severity: critical
   effort: 10min
   tags: [suspicious, equality]

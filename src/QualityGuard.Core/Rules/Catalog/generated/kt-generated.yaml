@@ -190,6 +190,7 @@
   name: ScheduledThreadPoolExecutor should be accessed in a thread-safe way
   languages: [kt]
   category: BUG
+  scope: main
   severity: major
   effort: 15min
   tags: [concurrency, generated]
@@ -210,6 +211,7 @@
   name: RunFinalizersOnExit should not be used
   languages: [kt]
   category: BUG
+  scope: main
   severity: major
   effort: 15min
   tags: [avoid_api, generated]
@@ -570,6 +572,7 @@
   name: Outdated constructs should be replaced by the recommended alternative
   languages: [kt]
   category: SML
+  scope: main
   severity: minor
   effort: 15min
   tags: [prefer_api, generated]
@@ -1313,6 +1316,7 @@
   name: Tasks.register() should be replaced by the recommended alternative
   languages: [kt]
   category: SML
+  scope: main
   severity: minor
   effort: 15min
   tags: [prefer_api, generated]

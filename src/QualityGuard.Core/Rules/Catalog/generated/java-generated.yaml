@@ -23,6 +23,7 @@
   name: URIs should not be hardcoded in the source
   languages: [java]
   category: SML
+  scope: main
   severity: minor
   effort: 15min
   tags: [hardcoded_value, generated]
@@ -45,6 +46,7 @@
   name: Object.finalize() method should not be used
   languages: [java]
   category: BUG
+  scope: main
   severity: major
   effort: 15min
   tags: [avoid_api, generated]
@@ -68,6 +70,7 @@
   name: Super.finalize() should match the behaviour the code describes
   languages: [java]
   category: BUG
+  scope: main
   severity: major
   effort: 15min
   tags: [bug, generated]
@@ -89,6 +92,7 @@
   name: Source code should be simplified
   languages: [java]
   category: SML
+  scope: main
   severity: minor
   effort: 15min
   tags: [sml, generated]
@@ -109,6 +113,7 @@
   name: Assignments should be simplified
   languages: [java]
   category: SML
+  scope: main
   severity: minor
   effort: 15min
   tags: [sml, generated]
@@ -210,6 +215,7 @@
   name: Enumeration should be simplified
   languages: [java]
   category: SML
+  scope: main
   severity: minor
   effort: 15min
   tags: [sml, generated]
@@ -230,6 +236,7 @@
   name: Collection.isEmpty() should be replaced by the recommended alternative
   languages: [java]
   category: SML
+  scope: main
   severity: minor
   effort: 15min
   tags: [prefer_api, generated]
@@ -253,6 +260,7 @@
   name: Public methods should make failure handling explicit
   languages: [java]
   category: SML
+  scope: main
   severity: minor
   effort: 15min
   tags: [exception, generated]
@@ -297,6 +305,7 @@
   name: Checked exceptions should make failure handling explicit
   languages: [java]
   category: SML
+  scope: main
   severity: minor
   effort: 15min
   tags: [exception, generated]
@@ -319,6 +328,7 @@
   name: Exception classes should make failure handling explicit
   languages: [java]
   category: SML
+  scope: main
   severity: minor
   effort: 15min
   tags: [exception, generated]
@@ -341,6 +351,7 @@
   name: Empty arrays and collections should be replaced by the recommended alternative
   languages: [java]
   category: SML
+  scope: main
   severity: minor
   effort: 15min
   tags: [prefer_api, generated]
@@ -382,6 +393,7 @@
   name: Object.finalize() should be simplified
   languages: [java]
   category: SML
+  scope: main
   severity: minor
   effort: 15min
   tags: [sml, generated]
@@ -402,6 +414,7 @@
   name: Signature of finalize() should match the behaviour the code describes
   languages: [java]
   category: BUG
+  scope: main
   severity: major
   effort: 15min
   tags: [bug, generated]
@@ -422,6 +435,7 @@
   name: Public types, methods and fields (API) should be simplified
   languages: [java]
   category: SML
+  scope: main
   severity: minor
   effort: 15min
   tags: [sml, generated]
@@ -535,6 +549,7 @@
   name: Equals method overrides should match the behaviour the code describes
   languages: [java]
   category: BUG
+  scope: main
   severity: major
   effort: 15min
   tags: [bug, generated]
@@ -556,6 +571,7 @@
   name: Equals(Object obj) should be simplified
   languages: [java]
   category: SML
+  scope: main
   severity: minor
   effort: 15min
   tags: [sml, generated]
@@ -577,6 +593,7 @@
   name: Hard-to-read code should be simplified
   languages: [java]
   category: SML
+  scope: main
   severity: minor
   effort: 15min
   tags: [sml, generated]
@@ -670,6 +687,7 @@
   name: Regular expressions should be safe and correct
   languages: [java]
   category: SML
+  scope: main
   severity: minor
   effort: 15min
   tags: [regex, generated]
@@ -691,6 +709,7 @@
   name: Classes and enums with private members should be simplified
   languages: [java]
   category: SML
+  scope: main
   severity: minor
   effort: 15min
   tags: [sml, generated]
@@ -731,6 +750,7 @@
   name: For loop stop conditions should be simplified
   languages: [java]
   category: SML
+  scope: main
   severity: minor
   effort: 15min
   tags: [sml, generated]
@@ -769,6 +789,7 @@
   name: Switch statements should be simplified
   languages: [java]
   category: SML
+  scope: main
   severity: minor
   effort: 15min
   tags: [sml, generated]
@@ -789,6 +810,7 @@
   name: @SuppressWarnings annotations should be resolved rather than left in the code
   languages: [java]
   category: SML
+  scope: main
   severity: minor
   effort: 15min
   tags: [marker, generated]
@@ -883,6 +905,7 @@
   name: Declarations should be simplified
   languages: [java]
   category: SML
+  scope: main
   severity: minor
   effort: 15min
   tags: [sml, generated]
@@ -941,6 +964,7 @@
   name: Comments should be resolved rather than left in the code
   languages: [java]
   category: SML
+  scope: main
   severity: minor
   effort: 15min
   tags: [marker, generated]
@@ -961,6 +985,7 @@
   name: Copyright and license headers should be resolved rather than left in the code
   languages: [java]
   category: SML
+  scope: main
   severity: minor
   effort: 15min
   tags: [marker, generated]
@@ -981,6 +1006,7 @@
   name: Switch statements should stay within a size that can be reviewed
   languages: [java]
   category: SML
+  scope: main
   severity: minor
   effort: 15min
   tags: [threshold, generated]
@@ -1002,6 +1028,7 @@
   name: Collections.EMPTY_LIST, EMPTY_MAP, and EMPTY_SET should not be used
   languages: [java]
   category: SML
+  scope: main
   severity: minor
   effort: 15min
   tags: [avoid_api, generated]
@@ -1043,6 +1070,7 @@
   name: Hard-to-read code should be simplified
   languages: [java]
   category: SML
+  scope: main
   severity: minor
   effort: 15min
   tags: [sml, generated]
@@ -1177,6 +1205,7 @@
   name: Abstract class should be simplified
   languages: [java]
   category: SML
+  scope: main
   severity: minor
   effort: 15min
   tags: [sml, generated]
@@ -1198,6 +1227,7 @@
   name: NullPointerException should make failure handling explicit
   languages: [java]
   category: SML
+  scope: main
   severity: minor
   effort: 15min
   tags: [exception, generated]
@@ -1219,6 +1249,7 @@
   name: NullPointerException should make failure handling explicit
   languages: [java]
   category: SML
+  scope: main
   severity: minor
   effort: 15min
   tags: [exception, generated]
@@ -1240,6 +1271,7 @@
   name: == and != should not be used
   languages: [java]
   category: SML
+  scope: main
   severity: minor
   effort: 15min
   tags: [avoid_api, generated]
@@ -1319,6 +1351,7 @@
   name: Standard functional interfaces should be simplified
   languages: [java]
   category: SML
+  scope: main
   severity: minor
   effort: 15min
   tags: [sml, generated]
@@ -1422,6 +1455,7 @@
   name: Extensions and implementations should be simplified
   languages: [java]
   category: SML
+  scope: main
   severity: minor
   effort: 15min
   tags: [sml, generated]
@@ -1443,6 +1477,7 @@
   name: Variables should be simplified
   languages: [java]
   category: SML
+  scope: main
   severity: minor
   effort: 15min
   tags: [sml, generated]
@@ -1482,6 +1517,7 @@
   name: Fields in a Serializable class should be simplified
   languages: [java]
   category: SML
+  scope: main
   severity: minor
   effort: 15min
   tags: [sml, generated]
@@ -1539,6 +1575,7 @@
   name: Member variable visibility should be simplified
   languages: [java]
   category: SML
+  scope: main
   severity: minor
   effort: 15min
   tags: [sml, generated]
@@ -1559,6 +1596,7 @@
   name: Hard-to-read code should be simplified
   languages: [java]
   category: SML
+  scope: main
   severity: minor
   effort: 15min
   tags: [sml, generated]
@@ -1598,6 +1636,7 @@
   name: Suspicious code should match the behaviour the code describes
   languages: [java]
   category: BUG
+  scope: main
   severity: major
   effort: 15min
   tags: [bug, generated]
@@ -1619,6 +1658,7 @@
   name: Serializable classes should be simplified
   languages: [java]
   category: SML
+  scope: main
   severity: minor
   effort: 15min
   tags: [sml, generated]
@@ -1640,6 +1680,7 @@
   name: Externalizable classes should match the behaviour the code describes
   languages: [java]
   category: BUG
+  scope: main
   severity: major
   effort: 15min
   tags: [bug, generated]
@@ -1660,6 +1701,7 @@
   name: Custom serialization methods should match the behaviour the code describes
   languages: [java]
   category: BUG
+  scope: main
   severity: major
   effort: 15min
   tags: [bug, generated]
@@ -1681,6 +1723,7 @@
   name: ReadResolve methods should be simplified
   languages: [java]
   category: SML
+  scope: main
   severity: minor
   effort: 15min
   tags: [sml, generated]
@@ -1701,6 +1744,7 @@
   name: Comparators should be simplified
   languages: [java]
   category: SML
+  scope: main
   severity: minor
   effort: 15min
   tags: [sml, generated]
@@ -1722,6 +1766,7 @@
   name: Fields in non-serializable classes should be simplified
   languages: [java]
   category: SML
+  scope: main
   severity: minor
   effort: 15min
   tags: [sml, generated]
@@ -1782,6 +1827,7 @@
   name: Equals(Object obj) should assert something
   languages: [java]
   category: BUG
+  scope: main
   severity: major
   effort: 15min
   tags: [tests, generated]
@@ -1860,6 +1906,7 @@
   name: HashCode and toString should not be used
   languages: [java]
   category: BUG
+  scope: main
   severity: major
   effort: 15min
   tags: [avoid_api, generated]
@@ -1900,6 +1947,7 @@
   name: Random objects should match the behaviour the code describes
   languages: [java]
   category: BUG
+  scope: main
   severity: major
   effort: 15min
   tags: [bug, generated]
@@ -1921,6 +1969,7 @@
   name: String operations with predictable outcomes should match the behaviour the code describes
   languages: [java]
   category: BUG
+  scope: main
   severity: major
   effort: 15min
   tags: [bug, generated]
@@ -2019,6 +2068,7 @@
   name: Primitives should be simplified
   languages: [java]
   category: SML
+  scope: main
   severity: minor
   effort: 15min
   tags: [sml, generated]
@@ -2040,6 +2090,7 @@
   name: Classes extending java.lang.Thread should be accessed in a thread-safe way
   languages: [java]
   category: BUG
+  scope: main
   severity: major
   effort: 15min
   tags: [concurrency, generated]
@@ -2081,6 +2132,7 @@
   name: Unsafe APIs should not be used
   languages: [java]
   category: BUG
+  scope: main
   severity: major
   effort: 15min
   tags: [avoid_api, generated]
@@ -2167,6 +2219,7 @@
   name: Underscores should be replaced by the recommended alternative
   languages: [java]
   category: SML
+  scope: main
   severity: minor
   effort: 15min
   tags: [prefer_api, generated]
@@ -2249,6 +2302,7 @@
   name: Final classes should be simplified
   languages: [java]
   category: SML
+  scope: main
   severity: minor
   effort: 15min
   tags: [sml, generated]
@@ -2269,6 +2323,7 @@
   name: Cloneables should be simplified
   languages: [java]
   category: SML
+  scope: main
   severity: minor
   effort: 15min
   tags: [sml, generated]
@@ -2290,6 +2345,7 @@
   name: Unnecessary equality checks should match the behaviour the code describes
   languages: [java]
   category: BUG
+  scope: main
   severity: major
   effort: 15min
   tags: [bug, generated]
@@ -2329,6 +2385,7 @@
   name: Math should match the behaviour the code describes
   languages: [java]
   category: BUG
+  scope: main
   severity: major
   effort: 15min
   tags: [bug, generated]
@@ -2369,6 +2426,7 @@
   name: CompareTo should match the behaviour the code describes
   languages: [java]
   category: BUG
+  scope: main
   severity: major
   effort: 15min
   tags: [bug, generated]
@@ -2390,6 +2448,7 @@
   name: Inappropriate Collection calls should match the behaviour the code describes
   languages: [java]
   category: BUG
+  scope: main
   severity: major
   effort: 15min
   tags: [bug, generated]
@@ -2487,6 +2546,7 @@
   name: Switches should be replaced by the recommended alternative
   languages: [java]
   category: SML
+  scope: main
   severity: minor
   effort: 15min
   tags: [prefer_api, generated]
@@ -2509,6 +2569,7 @@
   name: Modulus results should be simplified
   languages: [java]
   category: SML
+  scope: main
   severity: minor
   effort: 15min
   tags: [sml, generated]
@@ -2587,6 +2648,7 @@
   name: Mix field and getter persistence annotations should be resolved rather than left in the code
   languages: [java]
   category: BUG
+  scope: main
   severity: major
   effort: 15min
   tags: [marker, generated]
@@ -2722,6 +2784,7 @@
   name: IllegalMonitorStateException should make failure handling explicit
   languages: [java]
   category: SML
+  scope: main
   severity: minor
   effort: 15min
   tags: [exception, generated]
@@ -2765,6 +2828,7 @@
   name: Collection methods with O(n) performance should be replaced by the recommended alternative
   languages: [java]
   category: SML
+  scope: main
   severity: minor
   effort: 15min
   tags: [prefer_api, generated]
@@ -2805,6 +2869,7 @@
   name: Disallowed methods should be resolved rather than left in the code
   languages: [java]
   category: SML
+  scope: main
   severity: minor
   effort: 15min
   tags: [marker, generated]
@@ -2848,6 +2913,7 @@
   name: Custom cryptographic algorithms should use current cryptographic parameters
   languages: [java]
   category: SEC
+  scope: main
   severity: critical
   effort: 15min
   tags: [crypto, generated]
@@ -2870,6 +2936,7 @@
   name: Java parser failure should be simplified
   languages: [java]
   category: SML
+  scope: main
   severity: minor
   effort: 15min
   tags: [sml, generated]
@@ -2890,6 +2957,7 @@
   name: Object.wait(), Object.notify() and Object.notifyAll() should be accessed in a thread-safe way
   languages: [java]
   category: BUG
+  scope: main
   severity: major
   effort: 15min
   tags: [concurrency, generated]
@@ -2995,6 +3063,7 @@
   name: Files should not be left empty
   languages: [java]
   category: SML
+  scope: main
   severity: minor
   effort: 15min
   tags: [empty, generated]
@@ -3070,6 +3139,7 @@
   name: Thread should not be used
   languages: [java]
   category: SML
+  scope: main
   severity: minor
   effort: 15min
   tags: [avoid_api, generated]
@@ -3148,6 +3218,7 @@
   name: NotifyAll() should be replaced by the recommended alternative
   languages: [java]
   category: BUG
+  scope: main
   severity: major
   effort: 15min
   tags: [prefer_api, generated]
@@ -3207,6 +3278,7 @@
   name: Basic authentication should not be used
   languages: [java]
   category: SEC
+  scope: main
   severity: critical
   effort: 15min
   tags: [avoid_api, generated]
@@ -3229,6 +3301,7 @@
   name: Classes should not weaken the security of the application
   languages: [java]
   category: SEC
+  scope: main
   severity: critical
   effort: 15min
   tags: [sec, generated]
@@ -3251,6 +3324,7 @@
   name: ReadObject should be accessed in a thread-safe way
   languages: [java]
   category: SML
+  scope: main
   severity: minor
   effort: 15min
   tags: [concurrency, generated]
@@ -3375,6 +3449,7 @@
   name: Null should not be used
   languages: [java]
   category: BUG
+  scope: main
   severity: major
   effort: 15min
   tags: [avoid_api, generated]
@@ -3396,6 +3471,7 @@
   name: EntrySet() should be simplified
   languages: [java]
   category: SML
+  scope: main
   severity: minor
   effort: 15min
   tags: [sml, generated]
@@ -3533,6 +3609,7 @@
   name: ThreadGroup should not be used
   languages: [java]
   category: SML
+  scope: main
   severity: minor
   effort: 15min
   tags: [avoid_api, generated]
@@ -3572,6 +3649,7 @@
   name: Arguments to append should be simplified
   languages: [java]
   category: SML
+  scope: main
   severity: minor
   effort: 15min
   tags: [sml, generated]
@@ -3632,6 +3710,7 @@
   name: Abstract methods should be simplified
   languages: [java]
   category: SML
+  scope: main
   severity: minor
   effort: 15min
   tags: [sml, generated]
@@ -3653,6 +3732,7 @@
   name: Indexes to passed to String operations should match the behaviour the code describes
   languages: [java]
   category: BUG
+  scope: main
   severity: major
   effort: 15min
   tags: [bug, generated]
@@ -3674,6 +3754,7 @@
   name: WriteObject should be accessed in a thread-safe way
   languages: [java]
   category: SML
+  scope: main
   severity: minor
   effort: 15min
   tags: [concurrency, generated]
@@ -3695,6 +3776,7 @@
   name: Wait should not be used
   languages: [java]
   category: BUG
+  scope: main
   severity: major
   effort: 15min
   tags: [avoid_api, generated]
@@ -3788,6 +3870,7 @@
   name: Enum fields should be simplified
   languages: [java]
   category: SML
+  scope: main
   severity: minor
   effort: 15min
   tags: [sml, generated]
@@ -3827,6 +3910,7 @@
   name: Non-primitive fields should match the behaviour the code describes
   languages: [java]
   category: BUG
+  scope: main
   severity: major
   effort: 15min
   tags: [bug, generated]
@@ -3848,6 +3932,7 @@
   name: Volatile variables should not be used
   languages: [java]
   category: BUG
+  scope: main
   severity: major
   effort: 15min
   tags: [avoid_api, generated]
@@ -3869,6 +3954,7 @@
   name: Static base class members should be simplified
   languages: [java]
   category: SML
+  scope: main
   severity: minor
   effort: 15min
   tags: [sml, generated]
@@ -3908,6 +3994,7 @@
   name: Factory method injection should be replaced by the recommended alternative
   languages: [java]
   category: SML
+  scope: main
   severity: minor
   effort: 15min
   tags: [prefer_api, generated]
@@ -3930,6 +4017,7 @@
   name: Constructor injection should be replaced by the recommended alternative
   languages: [java]
   category: BUG
+  scope: main
   severity: major
   effort: 15min
   tags: [prefer_api, generated]
@@ -3971,6 +4059,7 @@
   name: Cookies should not weaken the security of the application
   languages: [java]
   category: SEC
+  scope: main
   severity: critical
   effort: 15min
   tags: [sec, generated]
@@ -3992,6 +4081,7 @@
   name: Tests should assert something
   languages: [java]
   category: BUG
+  scope: main
   severity: major
   effort: 15min
   tags: [tests, generated]
@@ -4084,6 +4174,7 @@
   name: Value-based objects should be simplified
   languages: [java]
   category: SML
+  scope: main
   severity: minor
   effort: 15min
   tags: [sml, generated]
@@ -4127,6 +4218,7 @@
   name: Optional should not be used
   languages: [java]
   category: SML
+  scope: main
   severity: minor
   effort: 15min
   tags: [avoid_api, generated]
@@ -4148,6 +4240,7 @@
   name: Arrays.stream should be replaced by the recommended alternative
   languages: [java]
   category: SML
+  scope: main
   severity: minor
   effort: 15min
   tags: [prefer_api, generated]
@@ -4189,6 +4282,7 @@
   name: Disallowed classes should be resolved rather than left in the code
   languages: [java]
   category: SML
+  scope: main
   severity: minor
   effort: 15min
   tags: [marker, generated]
@@ -4229,6 +4323,7 @@
   name: Java 8s Files.exists should not be used
   languages: [java]
   category: SML
+  scope: main
   severity: minor
   effort: 15min
   tags: [avoid_api, generated]
@@ -4271,6 +4366,7 @@
   name: Members of Spring components should be simplified
   languages: [java]
   category: SML
+  scope: main
   severity: minor
   effort: 15min
   tags: [sml, generated]
@@ -4310,6 +4406,7 @@
   name: @RequestMapping methods should be simplified
   languages: [java]
   category: SML
+  scope: main
   severity: minor
   effort: 15min
   tags: [sml, generated]
@@ -4444,6 +4541,7 @@
   name: Disallowed constructors should be resolved rather than left in the code
   languages: [java]
   category: SML
+  scope: main
   severity: minor
   effort: 15min
   tags: [marker, generated]
@@ -4464,6 +4562,7 @@
   name: Collection contents should be replaced by the recommended alternative
   languages: [java]
   category: SML
+  scope: main
   severity: minor
   effort: 15min
   tags: [prefer_api, generated]
@@ -4523,6 +4622,7 @@
   name: ThreadLocal.withInitial should be replaced by the recommended alternative
   languages: [java]
   category: SML
+  scope: main
   severity: minor
   effort: 15min
   tags: [prefer_api, generated]
@@ -4619,6 +4719,7 @@
   name: Regular expressions should be safe and correct
   languages: [java]
   category: SML
+  scope: main
   severity: minor
   effort: 15min
   tags: [regex, generated]
@@ -4641,6 +4742,7 @@
   name: Stream.collect() calls should be simplified
   languages: [java]
   category: SML
+  scope: main
   severity: minor
   effort: 15min
   tags: [sml, generated]
@@ -4699,6 +4801,7 @@
   name: Functional Interfaces should be simplified
   languages: [java]
   category: SML
+  scope: main
   severity: minor
   effort: 15min
   tags: [sml, generated]
@@ -4797,6 +4900,7 @@
   name: Composed @RequestMapping variants should be replaced by the recommended alternative
   languages: [java]
   category: SML
+  scope: main
   severity: minor
   effort: 15min
   tags: [prefer_api, generated]
@@ -4856,6 +4960,7 @@
   name: Enum values should be simplified
   languages: [java]
   category: SML
+  scope: main
   severity: minor
   effort: 15min
   tags: [sml, generated]
@@ -4898,6 +5003,7 @@
   name: @SpringBootApplication and @ComponentScan should not be used
   languages: [java]
   category: BUG
+  scope: main
   severity: major
   effort: 15min
   tags: [avoid_api, generated]
@@ -4920,6 +5026,7 @@
   name: @EnableAutoConfiguration should be simplified
   languages: [java]
   category: SML
+  scope: main
   severity: minor
   effort: 15min
   tags: [sml, generated]
@@ -4941,6 +5048,7 @@
   name: Spring beans should be simplified
   languages: [java]
   category: SML
+  scope: main
   severity: minor
   effort: 15min
   tags: [sml, generated]
@@ -4962,6 +5070,7 @@
   name: String offset-based methods should be replaced by the recommended alternative
   languages: [java]
   category: SML
+  scope: main
   severity: minor
   effort: 15min
   tags: [prefer_api, generated]
@@ -4984,6 +5093,7 @@
   name: @CheckForNull or @Nullable should not be used
   languages: [java]
   category: SML
+  scope: main
   severity: minor
   effort: 15min
   tags: [avoid_api, generated]
@@ -5005,6 +5115,7 @@
   name: Database Operations should not weaken the security of the application
   languages: [java]
   category: SEC
+  scope: main
   severity: critical
   effort: 15min
   tags: [sec, generated]
@@ -5027,6 +5138,7 @@
   name: StandardCharsets constants should be replaced by the recommended alternative
   languages: [java]
   category: SML
+  scope: main
   severity: minor
   effort: 15min
   tags: [prefer_api, generated]
@@ -5048,6 +5160,7 @@
   name: Java features should be replaced by the recommended alternative
   languages: [java]
   category: SML
+  scope: main
   severity: minor
   effort: 15min
   tags: [prefer_api, generated]
@@ -5070,6 +5183,7 @@
   name: Class.forName() should be simplified
   languages: [java]
   category: SML
+  scope: main
   severity: minor
   effort: 15min
   tags: [sml, generated]
@@ -5091,6 +5205,7 @@
   name: SerialVersionUID should be simplified
   languages: [java]
   category: SML
+  scope: main
   severity: minor
   effort: 15min
   tags: [sml, generated]
@@ -5111,6 +5226,7 @@
   name: Read(byte[],int,int) should be simplified
   languages: [java]
   category: SML
+  scope: main
   severity: minor
   effort: 15min
   tags: [sml, generated]
@@ -5168,6 +5284,7 @@
   name: Bean Validation (JSR 380) should be simplified
   languages: [java]
   category: SML
+  scope: main
   severity: minor
   effort: 15min
   tags: [sml, generated]
@@ -5189,6 +5306,7 @@
   name: ThreadLocal variables should be accessed in a thread-safe way
   languages: [java]
   category: BUG
+  scope: main
   severity: major
   effort: 15min
   tags: [concurrency, generated]
@@ -5245,6 +5363,7 @@
   name: ActiveMQConnectionFactory should not weaken the security of the application
   languages: [java]
   category: SEC
+  scope: main
   severity: critical
   effort: 15min
   tags: [sec, generated]
@@ -5266,6 +5385,7 @@
   name: Intents should not grant more access than needed
   languages: [java]
   category: SEC
+  scope: main
   severity: critical
   effort: 15min
   tags: [permissions, generated]
@@ -5307,6 +5427,7 @@
   name: Collection constructors should not be used
   languages: [java]
   category: SML
+  scope: main
   severity: minor
   effort: 15min
   tags: [avoid_api, generated]
@@ -5329,6 +5450,7 @@
   name: String#replace should be replaced by the recommended alternative
   languages: [java]
   category: SML
+  scope: main
   severity: minor
   effort: 15min
   tags: [prefer_api, generated]
@@ -5369,6 +5491,7 @@
   name: List.remove() should not be used
   languages: [java]
   category: SML
+  scope: main
   severity: minor
   effort: 15min
   tags: [avoid_api, generated]
@@ -5508,6 +5631,7 @@
   name: Vararg method arguments should be simplified
   languages: [java]
   category: SML
+  scope: main
   severity: minor
   effort: 15min
   tags: [sml, generated]
@@ -5587,6 +5711,7 @@
   name: HTTP request content length should not weaken the security of the application
   languages: [java]
   category: SEC
+  scope: main
   severity: critical
   effort: 15min
   tags: [sec, generated]
@@ -5772,6 +5897,7 @@
   name: Authentication mechanisms should not weaken the security of the application
   languages: [java]
   category: SEC
+  scope: main
   severity: critical
   effort: 15min
   tags: [sec, generated]
@@ -5939,6 +6065,7 @@
   name: Regular expressions should be safe and correct
   languages: [java]
   category: SML
+  scope: main
   severity: minor
   effort: 15min
   tags: [regex, generated]
@@ -6034,6 +6161,7 @@
   name: Names of regular expressions named groups should be replaced by the recommended alternative
   languages: [java]
   category: SML
+  scope: main
   severity: minor
   effort: 15min
   tags: [prefer_api, generated]
@@ -6168,6 +6296,7 @@
   name: Assertions should not be used
   languages: [java]
   category: BUG
+  scope: main
   severity: major
   effort: 15min
   tags: [avoid_api, generated]
@@ -6373,6 +6502,7 @@
   name: Regular expressions should be safe and correct
   languages: [java]
   category: BUG
+  scope: main
   severity: major
   effort: 15min
   tags: [regex, generated]
@@ -6567,6 +6697,7 @@
   name: Text blocks should not be used
   languages: [java]
   category: SML
+  scope: main
   severity: minor
   effort: 15min
   tags: [avoid_api, generated]
@@ -6628,6 +6759,7 @@
   name: Records should be replaced by the recommended alternative
   languages: [java]
   category: SML
+  scope: main
   severity: minor
   effort: 15min
   tags: [prefer_api, generated]
@@ -6686,6 +6818,7 @@
   name: Members ignored during record serialization should not be used
   languages: [java]
   category: BUG
+  scope: main
   severity: major
   effort: 15min
   tags: [avoid_api, generated]
@@ -6803,6 +6936,7 @@
   name: Equals method should match the behaviour the code describes
   languages: [java]
   category: BUG
+  scope: main
   severity: major
   effort: 15min
   tags: [bug, generated]
@@ -6824,6 +6958,7 @@
   name: SerialVersionUID field should be simplified
   languages: [java]
   category: SML
+  scope: main
   severity: minor
   effort: 15min
   tags: [sml, generated]
@@ -7049,6 +7184,7 @@
   name: JavaScript support should not weaken the security of the application
   languages: [java]
   category: SEC
+  scope: main
   severity: critical
   effort: 15min
   tags: [sec, generated]
@@ -7109,6 +7245,7 @@
   name: Types used as keys in Maps should be simplified
   languages: [java]
   category: SML
+  scope: main
   severity: minor
   effort: 15min
   tags: [sml, generated]
@@ -7130,6 +7267,7 @@
   name: Hash-based collections with known capacity should be simplified
   languages: [java]
   category: SML
+  scope: main
   severity: minor
   effort: 15min
   tags: [sml, generated]
@@ -7151,6 +7289,7 @@
   name: Classes should be simplified
   languages: [java]
   category: SML
+  scope: main
   severity: minor
   effort: 15min
   tags: [sml, generated]
@@ -7171,6 +7310,7 @@
   name: Methods should stay within a size that can be reviewed
   languages: [java]
   category: SML
+  scope: main
   severity: minor
   effort: 15min
   tags: [threshold, generated]
@@ -7247,6 +7387,7 @@
   name: Methods with Spring proxy should not be used
   languages: [java]
   category: SML
+  scope: main
   severity: minor
   effort: 15min
   tags: [avoid_api, generated]
@@ -7269,6 +7410,7 @@
   name: Field dependency injection should be simplified
   languages: [java]
   category: SML
+  scope: main
   severity: minor
   effort: 15min
   tags: [sml, generated]
@@ -7290,6 +7432,7 @@
   name: Optional REST parameters should be simplified
   languages: [java]
   category: SML
+  scope: main
   severity: minor
   effort: 15min
   tags: [sml, generated]
@@ -7384,6 +7527,7 @@
   name: Bean names should follow the naming convention of the codebase
   languages: [java]
   category: SML
+  scope: main
   severity: minor
   effort: 15min
   tags: [naming, generated]
@@ -7405,6 +7549,7 @@
   name: @Qualifier should not be used
   languages: [java]
   category: BUG
+  scope: main
   severity: major
   effort: 15min
   tags: [avoid_api, generated]
@@ -7427,6 +7572,7 @@
   name: Non-singleton Spring beans should be simplified
   languages: [java]
   category: SML
+  scope: main
   severity: minor
   effort: 15min
   tags: [sml, generated]
@@ -7448,6 +7594,7 @@
   name: @Controller should be simplified
   languages: [java]
   category: SML
+  scope: main
   severity: minor
   effort: 15min
   tags: [sml, generated]
@@ -7469,6 +7616,7 @@
   name: @Bean methods for Singleton should not be used
   languages: [java]
   category: BUG
+  scope: main
   severity: major
   effort: 15min
   tags: [avoid_api, generated]
@@ -7490,6 +7638,7 @@
   name: Path template variables should match the behaviour the code describes
   languages: [java]
   category: BUG
+  scope: main
   severity: major
   effort: 15min
   tags: [bug, generated]
@@ -7511,6 +7660,7 @@
   name: SpEL expression should match the behaviour the code describes
   languages: [java]
   category: BUG
+  scope: main
   severity: major
   effort: 15min
   tags: [bug, generated]
@@ -7549,6 +7699,7 @@
   name: Suspicious code should match the behaviour the code describes
   languages: [java]
   category: BUG
+  scope: main
   severity: major
   effort: 15min
   tags: [bug, generated]
@@ -7588,6 +7739,7 @@
   name: Reverse view should be replaced by the recommended alternative
   languages: [java]
   category: SML
+  scope: main
   severity: minor
   effort: 15min
   tags: [prefer_api, generated]
@@ -7610,6 +7762,7 @@
   name: Outdated constructs should be replaced by the recommended alternative
   languages: [java]
   category: SML
+  scope: main
   severity: minor
   effort: 15min
   tags: [prefer_api, generated]
@@ -7632,6 +7785,7 @@
   name: Outdated constructs should be replaced by the recommended alternative
   languages: [java]
   category: SML
+  scope: main
   severity: minor
   effort: 15min
   tags: [prefer_api, generated]
@@ -7691,6 +7845,7 @@
   name: Proper Sensor Resource Management should be simplified
   languages: [java]
   category: SML
+  scope: main
   severity: minor
   effort: 15min
   tags: [sml, generated]
@@ -7712,6 +7867,7 @@
   name: Exact alarms should be simplified
   languages: [java]
   category: SML
+  scope: main
   severity: minor
   effort: 15min
   tags: [sml, generated]
@@ -7774,6 +7930,7 @@
   name: FetchType.EAGER should be simplified
   languages: [java]
   category: SML
+  scope: main
   severity: minor
   effort: 15min
   tags: [sml, generated]
@@ -7813,6 +7970,7 @@
   name: Constant parameters in a PreparedStatement should be simplified
   languages: [java]
   category: SML
+  scope: main
   severity: minor
   effort: 15min
   tags: [sml, generated]
@@ -7892,6 +8050,7 @@
   name: String.indexOf should be replaced by the recommended alternative
   languages: [java]
   category: BUG
+  scope: main
   severity: major
   effort: 15min
   tags: [prefer_api, generated]
@@ -8014,6 +8173,7 @@
   name: Injecting data into static fields should be simplified
   languages: [java]
   category: SML
+  scope: main
   severity: minor
   effort: 15min
   tags: [sml, generated]
@@ -8035,6 +8195,7 @@
   name: @Cacheable and @CachePut should be simplified
   languages: [java]
   category: SML
+  scope: main
   severity: minor
   effort: 15min
   tags: [sml, generated]
@@ -8056,6 +8217,7 @@
   name: @Cache* annotations should be simplified
   languages: [java]
   category: SML
+  scope: main
   severity: minor
   effort: 15min
   tags: [sml, generated]
@@ -8412,6 +8574,7 @@
   name: Conversions between local and timezone-aware types should match the behaviour the code describes
   languages: [java]
   category: BUG
+  scope: main
   severity: major
   effort: 15min
   tags: [bug, generated]
@@ -8645,6 +8808,7 @@
   name: Time-based .now() methods should be accessed in a thread-safe way
   languages: [java]
   category: SML
+  scope: main
   severity: minor
   effort: 15min
   tags: [concurrency, generated]
@@ -8840,6 +9004,7 @@
   name: CacheKeyGenerator implementations should match the behaviour the code describes
   languages: [java]
   category: BUG
+  scope: main
   severity: major
   effort: 15min
   tags: [bug, generated]
@@ -8882,6 +9047,7 @@
   name: Methods annotated with @Startup should match the behaviour the code describes
   languages: [java]
   category: BUG
+  scope: main
   severity: major
   effort: 15min
   tags: [bug, generated]
@@ -8942,6 +9108,7 @@
   name: JPA entity classes and methods should match the behaviour the code describes
   languages: [java]
   category: BUG
+  scope: main
   severity: major
   effort: 15min
   tags: [bug, generated]
@@ -9028,6 +9195,7 @@
   name: Stateless session beans should match the behaviour the code describes
   languages: [java]
   category: BUG
+  scope: main
   severity: major
   effort: 15min
   tags: [bug, generated]
@@ -9049,6 +9217,7 @@
   name: Methods with @Transactional should make failure handling explicit
   languages: [java]
   category: SML
+  scope: main
   severity: minor
   effort: 15min
   tags: [exception, generated]
@@ -9071,6 +9240,7 @@
   name: Return values should match the behaviour the code describes
   languages: [java]
   category: BUG
+  scope: main
   severity: major
   effort: 15min
   tags: [bug, generated]
@@ -9146,6 +9316,7 @@
   name: @Configuration classes should match the behaviour the code describes
   languages: [java]
   category: BUG
+  scope: main
   severity: major
   effort: 15min
   tags: [bug, generated]

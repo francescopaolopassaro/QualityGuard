@@ -4,6 +4,7 @@
   name: Jump statements should not leave a finally block
   languages: [js, ts]
   category: BUG
+  scope: main
   severity: blocker
   effort: 20min
   tags: [exception, suspicious]

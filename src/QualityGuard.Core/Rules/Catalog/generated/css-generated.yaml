@@ -168,6 +168,7 @@
   name: !important should not be used
   languages: [css]
   category: BUG
+  scope: main
   severity: major
   effort: 15min
   tags: [avoid_api, generated]

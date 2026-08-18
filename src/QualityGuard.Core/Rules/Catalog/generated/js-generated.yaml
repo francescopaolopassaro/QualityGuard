@@ -23,6 +23,7 @@
   name: Hard-to-read code should be simplified
   languages: [js, ts]
   category: SML
+  scope: main
   severity: minor
   effort: 15min
   tags: [sml, generated]
@@ -43,6 +44,7 @@
   name: Mouse events should match the behaviour the code describes
   languages: [js, ts]
   category: BUG
+  scope: main
   severity: major
   effort: 15min
   tags: [bug, generated]
@@ -63,6 +65,7 @@
   name: Hard-to-read code should be simplified
   languages: [js, ts]
   category: SML
+  scope: main
   severity: minor
   effort: 15min
   tags: [sml, generated]
@@ -83,6 +86,7 @@
   name: Variables should be simplified
   languages: [js, ts]
   category: SML
+  scope: main
   severity: minor
   effort: 15min
   tags: [sml, generated]
@@ -103,6 +107,7 @@
   name: Labels should not be used
   languages: [js, ts]
   category: SML
+  scope: main
   severity: minor
   effort: 15min
   tags: [avoid_api, generated]
@@ -142,6 +147,7 @@
   name: Lines should be simplified
   languages: [js, ts]
   category: SML
+  scope: main
   severity: minor
   effort: 15min
   tags: [sml, generated]
@@ -162,6 +168,7 @@
   name: Regular expressions should be safe and correct
   languages: [js, ts]
   category: SML
+  scope: main
   severity: minor
   effort: 15min
   tags: [regex, generated]
@@ -183,6 +190,7 @@
   name: While loop should be replaced by the recommended alternative
   languages: [js, ts]
   category: SML
+  scope: main
   severity: minor
   effort: 15min
   tags: [prefer_api, generated]
@@ -204,6 +212,7 @@
   name: Suppression comments should be resolved rather than left in the code
   languages: [js, ts]
   category: SML
+  scope: main
   severity: minor
   effort: 15min
   tags: [marker, generated]
@@ -224,6 +233,7 @@
   name: If statements should be replaced by the recommended alternative
   languages: [js, ts]
   category: SML
+  scope: main
   severity: minor
   effort: 15min
   tags: [prefer_api, generated]
@@ -245,6 +255,7 @@
   name: IP addresses should not be hardcoded in the source
   languages: [js, ts]
   category: SML
+  scope: main
   severity: minor
   effort: 15min
   tags: [hardcoded_value, generated]
@@ -266,6 +277,7 @@
   name: Loops should be simplified
   languages: [js, ts]
   category: SML
+  scope: main
   severity: minor
   effort: 15min
   tags: [sml, generated]
@@ -286,6 +298,7 @@
   name: Comments should be resolved rather than left in the code
   languages: [js, ts]
   category: SML
+  scope: main
   severity: minor
   effort: 15min
   tags: [marker, generated]
@@ -306,6 +319,7 @@
   name: Statements should be simplified
   languages: [js, ts]
   category: SML
+  scope: main
   severity: minor
   effort: 15min
   tags: [sml, generated]
@@ -326,6 +340,7 @@
   name: Hard-to-read code should be simplified
   languages: [js, ts]
   category: SML
+  scope: main
   severity: minor
   effort: 15min
   tags: [sml, generated]
@@ -365,6 +380,7 @@
   name: Public static fields should be simplified
   languages: [js, ts]
   category: SML
+  scope: main
   severity: minor
   effort: 15min
   tags: [sml, generated]
@@ -385,6 +401,7 @@
   name: Copyright and license headers should be resolved rather than left in the code
   languages: [js, ts]
   category: SML
+  scope: main
   severity: minor
   effort: 15min
   tags: [marker, generated]
@@ -405,6 +422,7 @@
   name: Function call arguments should be simplified
   languages: [js, ts]
   category: SML
+  scope: main
   severity: minor
   effort: 15min
   tags: [sml, generated]
@@ -425,6 +443,7 @@
   name: Switch statements should stay within a size that can be reviewed
   languages: [js, ts]
   category: SML
+  scope: main
   severity: minor
   effort: 15min
   tags: [threshold, generated]
@@ -446,6 +465,7 @@
   name: Multiline string literals should not be used
   languages: [js, ts]
   category: SML
+  scope: main
   severity: minor
   effort: 15min
   tags: [avoid_api, generated]
@@ -467,6 +487,7 @@
   name: Future reserved words should not be used
   languages: [js, ts]
   category: SML
+  scope: main
   severity: minor
   effort: 15min
   tags: [avoid_api, generated]
@@ -488,6 +509,7 @@
   name: Function declarations should be accessed in a thread-safe way
   languages: [js, ts]
   category: BUG
+  scope: main
   severity: major
   effort: 15min
   tags: [concurrency, generated]
@@ -508,6 +530,7 @@
   name: Trailing commas should not be used
   languages: [js, ts]
   category: SML
+  scope: main
   severity: minor
   effort: 15min
   tags: [avoid_api, generated]
@@ -529,6 +552,7 @@
   name: Strict mode should be replaced by the recommended alternative
   languages: [js, ts]
   category: SML
+  scope: main
   severity: minor
   effort: 15min
   tags: [prefer_api, generated]
@@ -568,6 +592,7 @@
   name: Ternary operator should not be used
   languages: [js, ts]
   category: SML
+  scope: main
   severity: minor
   effort: 15min
   tags: [avoid_api, generated]
@@ -589,6 +614,7 @@
   name: Deprecated APIs should not be used
   languages: [js, ts]
   category: SML
+  scope: main
   severity: minor
   effort: 15min
   tags: [avoid_api, generated]
@@ -610,6 +636,7 @@
   name: Boolean checks should be simplified
   languages: [js, ts]
   category: SML
+  scope: main
   severity: minor
   effort: 15min
   tags: [sml, generated]
@@ -630,6 +657,7 @@
   name: For loop increment clauses should be simplified
   languages: [js, ts]
   category: SML
+  scope: main
   severity: minor
   effort: 15min
   tags: [sml, generated]
@@ -671,6 +699,7 @@
   name: Undefined should be simplified
   languages: [js, ts]
   category: SML
+  scope: main
   severity: minor
   effort: 15min
   tags: [sml, generated]
@@ -711,6 +740,7 @@
   name: Loops should match the behaviour the code describes
   languages: [js, ts]
   category: BUG
+  scope: main
   severity: major
   effort: 15min
   tags: [bug, generated]
@@ -749,6 +779,7 @@
   name: Absent values should be handled explicitly when absent
   languages: [js, ts]
   category: BUG
+  scope: main
   severity: major
   effort: 15min
   tags: [nullability, generated]
@@ -787,6 +818,7 @@
   name: Methods should be simplified
   languages: [js, ts]
   category: SML
+  scope: main
   severity: minor
   effort: 15min
   tags: [sml, generated]
@@ -807,6 +839,7 @@
   name: Variables should be replaced by the recommended alternative
   languages: [js, ts]
   category: SML
+  scope: main
   severity: minor
   effort: 15min
   tags: [prefer_api, generated]
@@ -828,6 +861,7 @@
   name: File uploads should not weaken the security of the application
   languages: [js, ts]
   category: SEC
+  scope: main
   severity: critical
   effort: 15min
   tags: [sec, generated]
@@ -849,6 +883,7 @@
   name: Empty character classes should not be used
   languages: [js, ts]
   category: BUG
+  scope: main
   severity: major
   effort: 15min
   tags: [avoid_api, generated]
@@ -870,6 +905,7 @@
   name: Arguments.caller and arguments.callee should not be used
   languages: [js, ts]
   category: SML
+  scope: main
   severity: minor
   effort: 15min
   tags: [avoid_api, generated]
@@ -896,6 +932,7 @@
   name: NaN should not be used
   languages: [js, ts]
   category: BUG
+  scope: main
   severity: major
   effort: 15min
   tags: [avoid_api, generated]
@@ -917,6 +954,7 @@
   name: Variables should be declared the way the language intends
   languages: [js, ts]
   category: SML
+  scope: main
   severity: minor
   effort: 15min
   tags: [declaration, generated]
@@ -938,6 +976,7 @@
   name: Web SQL databases should not be used
   languages: [js, ts]
   category: SEC
+  scope: main
   severity: critical
   effort: 15min
   tags: [avoid_api, generated]
@@ -1017,6 +1056,7 @@
   name: Comparison operators should not be used
   languages: [js, ts]
   category: SML
+  scope: main
   severity: minor
   effort: 15min
   tags: [avoid_api, generated]
@@ -1038,6 +1078,7 @@
   name: Primitive types should be simplified
   languages: [js, ts]
   category: SML
+  scope: main
   severity: minor
   effort: 15min
   tags: [sml, generated]
@@ -1058,6 +1099,7 @@
   name: Default export names and file names should be simplified
   languages: [js, ts]
   category: SML
+  scope: main
   severity: minor
   effort: 15min
   tags: [sml, generated]
@@ -1099,6 +1141,7 @@
   name: Unchanged variables should be simplified
   languages: [js, ts]
   category: SML
+  scope: main
   severity: minor
   effort: 15min
   tags: [sml, generated]
@@ -1137,6 +1180,7 @@
   name: Shorthand object properties should be simplified
   languages: [js, ts]
   category: SML
+  scope: main
   severity: minor
   effort: 15min
   tags: [sml, generated]
@@ -1157,6 +1201,7 @@
   name: Const variables should match the behaviour the code describes
   languages: [js, ts]
   category: BUG
+  scope: main
   severity: major
   effort: 15min
   tags: [bug, generated]
@@ -1177,6 +1222,7 @@
   name: Destructuring syntax should be replaced by the recommended alternative
   languages: [js, ts]
   category: SML
+  scope: main
   severity: minor
   effort: 15min
   tags: [prefer_api, generated]
@@ -1198,6 +1244,7 @@
   name: Function returns should be simplified
   languages: [js, ts]
   category: SML
+  scope: main
   severity: minor
   effort: 15min
   tags: [sml, generated]
@@ -1218,6 +1265,7 @@
   name: Braces and parentheses should be replaced by the recommended alternative
   languages: [js, ts]
   category: SML
+  scope: main
   severity: minor
   effort: 15min
   tags: [prefer_api, generated]
@@ -1239,6 +1287,7 @@
   name: Class methods should be replaced by the recommended alternative
   languages: [js, ts]
   category: SML
+  scope: main
   severity: minor
   effort: 15min
   tags: [prefer_api, generated]
@@ -1279,6 +1328,7 @@
   name: Array indexes should be simplified
   languages: [js, ts]
   category: SML
+  scope: main
   severity: minor
   effort: 15min
   tags: [sml, generated]
@@ -1299,6 +1349,7 @@
   name: Comma and logical OR operators should not be used
   languages: [js, ts]
   category: BUG
+  scope: main
   severity: major
   effort: 15min
   tags: [avoid_api, generated]
@@ -1320,6 +1371,7 @@
   name: Functions should be simplified
   languages: [js, ts]
   category: SML
+  scope: main
   severity: minor
   effort: 15min
   tags: [sml, generated]
@@ -1340,6 +1392,7 @@
   name: Return value of void functions should not be used
   languages: [js, ts]
   category: BUG
+  scope: main
   severity: major
   effort: 15min
   tags: [avoid_api, generated]
@@ -1361,6 +1414,7 @@
   name: Trailing commas should be replaced by the recommended alternative
   languages: [js, ts]
   category: SML
+  scope: main
   severity: minor
   effort: 15min
   tags: [prefer_api, generated]
@@ -1382,6 +1436,7 @@
   name: Void should not be used
   languages: [js, ts]
   category: SML
+  scope: main
   severity: minor
   effort: 15min
   tags: [avoid_api, generated]
@@ -1403,6 +1458,7 @@
   name: Values not convertible to numbers should not be used
   languages: [js, ts]
   category: SML
+  scope: main
   severity: minor
   effort: 15min
   tags: [avoid_api, generated]
@@ -1460,6 +1516,7 @@
   name: In should not be used
   languages: [js, ts]
   category: BUG
+  scope: main
   severity: major
   effort: 15min
   tags: [avoid_api, generated]
@@ -1481,6 +1538,7 @@
   name: Variables and functions should be simplified
   languages: [js, ts]
   category: SML
+  scope: main
   severity: minor
   effort: 15min
   tags: [sml, generated]
@@ -1519,6 +1577,7 @@
   name: Functions should be simplified
   languages: [js, ts]
   category: SML
+  scope: main
   severity: minor
   effort: 15min
   tags: [sml, generated]
@@ -1539,6 +1598,7 @@
   name: Variables should be declared the way the language intends
   languages: [js, ts]
   category: BUG
+  scope: main
   severity: major
   effort: 15min
   tags: [declaration, generated]
@@ -1560,6 +1620,7 @@
   name: Super() should match the behaviour the code describes
   languages: [js, ts]
   category: BUG
+  scope: main
   severity: major
   effort: 15min
   tags: [bug, generated]
@@ -1580,6 +1641,7 @@
   name: Conditionals should be simplified
   languages: [js, ts]
   category: SML
+  scope: main
   severity: minor
   effort: 15min
   tags: [sml, generated]
@@ -1600,6 +1662,7 @@
   name: Conditionally executed single line should be simplified
   languages: [js, ts]
   category: SML
+  scope: main
   severity: minor
   effort: 15min
   tags: [sml, generated]
@@ -1620,6 +1683,7 @@
   name: Collection contents should be replaced by the recommended alternative
   languages: [js, ts]
   category: SML
+  scope: main
   severity: minor
   effort: 15min
   tags: [prefer_api, generated]
@@ -1641,6 +1705,7 @@
   name: Array-mutating methods should not be used
   languages: [js, ts]
   category: SML
+  scope: main
   severity: minor
   effort: 15min
   tags: [avoid_api, generated]
@@ -1662,6 +1727,7 @@
   name: Media elements should be simplified
   languages: [js, ts]
   category: SML
+  scope: main
   severity: minor
   effort: 15min
   tags: [sml, generated]
@@ -1682,6 +1748,7 @@
   name: Constructors should match the behaviour the code describes
   languages: [js, ts]
   category: BUG
+  scope: main
   severity: major
   effort: 15min
   tags: [bug, generated]
@@ -1702,6 +1769,7 @@
   name: Method overloads should be simplified
   languages: [js, ts]
   category: SML
+  scope: main
   severity: minor
   effort: 15min
   tags: [sml, generated]
@@ -1722,6 +1790,7 @@
   name: Tests should assert something
   languages: [js, ts]
   category: SML
+  scope: main
   severity: minor
   effort: 15min
   tags: [tests, generated]
@@ -1742,6 +1811,7 @@
   name: For of should be replaced by the recommended alternative
   languages: [js, ts]
   category: SML
+  scope: main
   severity: minor
   effort: 15min
   tags: [prefer_api, generated]
@@ -1763,6 +1833,7 @@
   name: Collection elements should match the behaviour the code describes
   languages: [js, ts]
   category: BUG
+  scope: main
   severity: major
   effort: 15min
   tags: [bug, generated]
@@ -1783,6 +1854,7 @@
   name: Functions should not be duplicated
   languages: [js, ts]
   category: SML
+  scope: main
   severity: minor
   effort: 15min
   tags: [duplication, generated]
@@ -1821,6 +1893,7 @@
   name: Default type parameters should be simplified
   languages: [js, ts]
   category: SML
+  scope: main
   severity: minor
   effort: 15min
   tags: [sml, generated]
@@ -1841,6 +1914,7 @@
   name: Empty collections should not be left empty
   languages: [js, ts]
   category: BUG
+  scope: main
   severity: major
   effort: 15min
   tags: [empty, generated]
@@ -1862,6 +1936,7 @@
   name: Getters and setters should match the behaviour the code describes
   languages: [js, ts]
   category: BUG
+  scope: main
   severity: major
   effort: 15min
   tags: [bug, generated]
@@ -1901,6 +1976,7 @@
   name: Type aliases should be replaced by the recommended alternative
   languages: [js, ts]
   category: SML
+  scope: main
   severity: minor
   effort: 15min
   tags: [prefer_api, generated]
@@ -1922,6 +1998,7 @@
   name: Primitive return types should be replaced by the recommended alternative
   languages: [js, ts]
   category: SML
+  scope: main
   severity: minor
   effort: 15min
   tags: [prefer_api, generated]
@@ -1943,6 +2020,7 @@
   name: Await should not be used
   languages: [js, ts]
   category: SML
+  scope: main
   severity: minor
   effort: 15min
   tags: [avoid_api, generated]
@@ -1982,6 +2060,7 @@
   name: Type intersections should match the behaviour the code describes
   languages: [js, ts]
   category: BUG
+  scope: main
   severity: major
   effort: 15min
   tags: [bug, generated]
@@ -2002,6 +2081,7 @@
   name: Cryptographic keys should use current cryptographic parameters
   languages: [js, ts]
   category: SEC
+  scope: main
   severity: critical
   effort: 15min
   tags: [crypto, generated]
@@ -2042,6 +2122,7 @@
   name: Union types should stay within a size that can be reviewed
   languages: [js, ts]
   category: SML
+  scope: main
   severity: minor
   effort: 15min
   tags: [threshold, generated]
@@ -2099,6 +2180,7 @@
   name: Optional boolean parameters should be simplified
   languages: [js, ts]
   category: SML
+  scope: main
   severity: minor
   effort: 15min
   tags: [sml, generated]
@@ -2119,6 +2201,7 @@
   name: Server certificates should be verified before use
   languages: [js, ts]
   category: SEC
+  scope: main
   severity: critical
   effort: 15min
   tags: [verification, generated]
@@ -2143,6 +2226,7 @@
   name: HTML elements should be simplified
   languages: [js, ts]
   category: SML
+  scope: main
   severity: minor
   effort: 15min
   tags: [sml, generated]
@@ -2163,6 +2247,7 @@
   name: Tables should match the behaviour the code describes
   languages: [js, ts]
   category: BUG
+  scope: main
   severity: major
   effort: 15min
   tags: [bug, generated]
@@ -2183,6 +2268,7 @@
   name: HTML <table> should not be used
   languages: [js, ts]
   category: SML
+  scope: main
   severity: minor
   effort: 15min
   tags: [avoid_api, generated]
@@ -2204,6 +2290,7 @@
   name: Table cells should match the behaviour the code describes
   languages: [js, ts]
   category: BUG
+  scope: main
   severity: major
   effort: 15min
   tags: [bug, generated]
@@ -2224,6 +2311,7 @@
   name: <object> tags should be simplified
   languages: [js, ts]
   category: SML
+  scope: main
   severity: minor
   effort: 15min
   tags: [sml, generated]
@@ -2244,6 +2332,7 @@
   name: Server hostnames should be verified before use
   languages: [js, ts]
   category: SEC
+  scope: main
   severity: critical
   effort: 15min
   tags: [verification, generated]
@@ -2265,6 +2354,7 @@
   name: Encryption algorithms should use current cryptographic parameters
   languages: [js, ts]
   category: SEC
+  scope: main
   severity: critical
   effort: 15min
   tags: [crypto, generated]
@@ -2287,6 +2377,7 @@
   name: Sensitive permissions should not grant more access than needed
   languages: [js, ts]
   category: SEC
+  scope: main
   severity: critical
   effort: 15min
   tags: [permissions, generated]
@@ -2308,6 +2399,7 @@
   name: JWT should use current cryptographic parameters
   languages: [js, ts]
   category: SEC
+  scope: main
   severity: critical
   effort: 15min
   tags: [crypto, generated]
@@ -2405,6 +2497,7 @@
   name: Content Security Policy frame-ancestors directive should keep the platform protection enabled
   languages: [js, ts]
   category: SEC
+  scope: main
   severity: critical
   effort: 15min
   tags: [protection_off, generated]
@@ -2483,6 +2576,7 @@
   name: Client IP address should not weaken the security of the application
   languages: [js, ts]
   category: SEC
+  scope: main
   severity: critical
   effort: 15min
   tags: [sec, generated]
@@ -2504,6 +2598,7 @@
   name: Repeated patterns in regular expressions should not be left empty
   languages: [js, ts]
   category: BUG
+  scope: main
   severity: major
   effort: 15min
   tags: [empty, generated]
@@ -2525,6 +2620,7 @@
   name: Regular expressions should be safe and correct
   languages: [js, ts]
   category: SML
+  scope: main
   severity: minor
   effort: 15min
   tags: [regex, generated]
@@ -2565,6 +2661,7 @@
   name: Names of regular expressions named groups should be replaced by the recommended alternative
   languages: [js, ts]
   category: SML
+  scope: main
   severity: minor
   effort: 15min
   tags: [prefer_api, generated]
@@ -2605,6 +2702,7 @@
   name: Unicode Grapheme Clusters should be safe and correct
   languages: [js, ts]
   category: BUG
+  scope: main
   severity: major
   effort: 15min
   tags: [regex, generated]
@@ -2626,6 +2724,7 @@
   name: New session should not weaken the security of the application
   languages: [js, ts]
   category: SEC
+  scope: main
   severity: critical
   effort: 15min
   tags: [sec, generated]
@@ -2780,6 +2879,7 @@
   name: S3 buckets should use current cryptographic parameters
   languages: [js, ts]
   category: SEC
+  scope: main
   severity: critical
   effort: 15min
   tags: [crypto, generated]
@@ -2801,6 +2901,7 @@
   name: Amazon S3 buckets should not weaken the security of the application
   languages: [js, ts]
   category: SEC
+  scope: main
   severity: critical
   effort: 15min
   tags: [sec, generated]
@@ -2822,6 +2923,7 @@
   name: Angular built-in sanitization should keep the platform protection enabled
   languages: [js, ts]
   category: SEC
+  scope: main
   severity: critical
   effort: 15min
   tags: [protection_off, generated]
@@ -2843,6 +2945,7 @@
   name: Amazon S3 bucket public access should not grant more access than needed
   languages: [js, ts]
   category: SEC
+  scope: main
   severity: critical
   effort: 15min
   tags: [permissions, generated]
@@ -2864,6 +2967,7 @@
   name: AWS IAM policies should not grant more access than needed
   languages: [js, ts]
   category: SEC
+  scope: main
   severity: critical
   effort: 15min
   tags: [permissions, generated]
@@ -2885,6 +2989,7 @@
   name: SageMaker notebook instances should use current cryptographic parameters
   languages: [js, ts]
   category: SEC
+  scope: main
   severity: critical
   effort: 15min
   tags: [crypto, generated]
@@ -2906,6 +3011,7 @@
   name: Regular expression literals should be replaced by the recommended alternative
   languages: [js, ts]
   category: SML
+  scope: main
   severity: minor
   effort: 15min
   tags: [prefer_api, generated]
@@ -2927,6 +3033,7 @@
   name: Replacement strings should be safe and correct
   languages: [js, ts]
   category: BUG
+  scope: main
   severity: major
   effort: 15min
   tags: [regex, generated]
@@ -2948,6 +3055,7 @@
   name: SQS queues should use current cryptographic parameters
   languages: [js, ts]
   category: SEC
+  scope: main
   severity: critical
   effort: 15min
   tags: [crypto, generated]
@@ -2969,6 +3077,7 @@
   name: Regular expressions should not be left empty
   languages: [js, ts]
   category: SML
+  scope: main
   severity: minor
   effort: 15min
   tags: [empty, generated]
@@ -2990,6 +3099,7 @@
   name: AWS API Gateway should not weaken the security of the application
   languages: [js, ts]
   category: SEC
+  scope: main
   severity: critical
   effort: 15min
   tags: [sec, generated]
@@ -3011,6 +3121,7 @@
   name: Regular expressions with the global flag should be replaced by the recommended alternative
   languages: [js, ts]
   category: BUG
+  scope: main
   severity: major
   effort: 15min
   tags: [prefer_api, generated]
@@ -3032,6 +3143,7 @@
   name: Regular expression quantifiers and character classes should be replaced by the recommended alternative
   languages: [js, ts]
   category: SML
+  scope: main
   severity: minor
   effort: 15min
   tags: [prefer_api, generated]
@@ -3071,6 +3183,7 @@
   name: React render functions should match the behaviour the code describes
   languages: [js, ts]
   category: BUG
+  scope: main
   severity: major
   effort: 15min
   tags: [bug, generated]
@@ -3109,6 +3222,7 @@
   name: React Hooks should match the behaviour the code describes
   languages: [js, ts]
   category: BUG
+  scope: main
   severity: major
   effort: 15min
   tags: [bug, generated]
@@ -3129,6 +3243,7 @@
   name: Reacts useState hook should not be used
   languages: [js, ts]
   category: BUG
+  scope: main
   severity: major
   effort: 15min
   tags: [avoid_api, generated]
@@ -3150,6 +3265,7 @@
   name: React state setter function should not be used
   languages: [js, ts]
   category: BUG
+  scope: main
   severity: major
   effort: 15min
   tags: [avoid_api, generated]
@@ -3171,6 +3287,7 @@
   name: JSX list components should be simplified
   languages: [js, ts]
   category: SML
+  scope: main
   severity: minor
   effort: 15min
   tags: [sml, generated]
@@ -3191,6 +3308,7 @@
   name: React components should not be nested inside another one
   languages: [js, ts]
   category: SML
+  scope: main
   severity: minor
   effort: 15min
   tags: [nesting, generated]
@@ -3229,6 +3347,7 @@
   name: Hard-to-read code should be simplified
   languages: [js, ts]
   category: SML
+  scope: main
   severity: minor
   effort: 15min
   tags: [sml, generated]
@@ -3249,6 +3368,7 @@
   name: React Context Provider values should be simplified
   languages: [js, ts]
   category: SML
+  scope: main
   severity: minor
   effort: 15min
   tags: [sml, generated]
@@ -3287,6 +3407,7 @@
   name: Import variables should be simplified
   languages: [js, ts]
   category: SML
+  scope: main
   severity: minor
   effort: 15min
   tags: [sml, generated]
@@ -3307,6 +3428,7 @@
   name: Optional chaining should not be used
   languages: [js, ts]
   category: BUG
+  scope: main
   severity: major
   effort: 15min
   tags: [avoid_api, generated]
@@ -3328,6 +3450,7 @@
   name: Numbers should match the behaviour the code describes
   languages: [js, ts]
   category: BUG
+  scope: main
   severity: major
   effort: 15min
   tags: [bug, generated]
@@ -3348,6 +3471,7 @@
   name: All enum members should be simplified
   languages: [js, ts]
   category: SML
+  scope: main
   severity: minor
   effort: 15min
   tags: [sml, generated]
@@ -3368,6 +3492,7 @@
   name: Hard-to-read code should be simplified
   languages: [js, ts]
   category: SML
+  scope: main
   severity: minor
   effort: 15min
   tags: [sml, generated]
@@ -3406,6 +3531,7 @@
   name: Redundant type aliases should not be used
   languages: [js, ts]
   category: SML
+  scope: main
   severity: minor
   effort: 15min
   tags: [avoid_api, generated]
@@ -3427,6 +3553,7 @@
   name: Return type this in fluent interfaces should be simplified
   languages: [js, ts]
   category: SML
+  scope: main
   severity: minor
   effort: 15min
   tags: [sml, generated]
@@ -3447,6 +3574,7 @@
   name: Type constituents of unions and intersections should be simplified
   languages: [js, ts]
   category: SML
+  scope: main
   severity: minor
   effort: 15min
   tags: [sml, generated]
@@ -3467,6 +3595,7 @@
   name: Enum member values should be simplified
   languages: [js, ts]
   category: SML
+  scope: main
   severity: minor
   effort: 15min
   tags: [sml, generated]
@@ -3487,6 +3616,7 @@
   name: Enum values should be simplified
   languages: [js, ts]
   category: SML
+  scope: main
   severity: minor
   effort: 15min
   tags: [sml, generated]
@@ -3526,6 +3656,7 @@
   name: Enum members should be simplified
   languages: [js, ts]
   category: SML
+  scope: main
   severity: minor
   effort: 15min
   tags: [sml, generated]
@@ -3546,6 +3677,7 @@
   name: As const assertions should be replaced by the recommended alternative
   languages: [js, ts]
   category: SML
+  scope: main
   severity: minor
   effort: 15min
   tags: [prefer_api, generated]
@@ -3567,6 +3699,7 @@
   name: RegExp.exec() should be replaced by the recommended alternative
   languages: [js, ts]
   category: SML
+  scope: main
   severity: minor
   effort: 15min
   tags: [prefer_api, generated]
@@ -3593,6 +3726,7 @@
   name: Function types should be replaced by the recommended alternative
   languages: [js, ts]
   category: SML
+  scope: main
   severity: minor
   effort: 15min
   tags: [prefer_api, generated]
@@ -3614,6 +3748,7 @@
   name: Nullish coalescing should be replaced by the recommended alternative
   languages: [js, ts]
   category: SML
+  scope: main
   severity: minor
   effort: 15min
   tags: [prefer_api, generated]
@@ -3635,6 +3770,7 @@
   name: Users should be simplified
   languages: [js, ts]
   category: SML
+  scope: main
   severity: minor
   effort: 15min
   tags: [sml, generated]
@@ -3655,6 +3791,7 @@
   name: Constructors should be simplified
   languages: [js, ts]
   category: SML
+  scope: main
   severity: minor
   effort: 15min
   tags: [sml, generated]
@@ -3675,6 +3812,7 @@
   name: Unnecessary calls to .bind() should not be used
   languages: [js, ts]
   category: SML
+  scope: main
   severity: minor
   effort: 15min
   tags: [avoid_api, generated]
@@ -3696,6 +3834,7 @@
   name: Binary expressions should match the behaviour the code describes
   languages: [js, ts]
   category: BUG
+  scope: main
   severity: major
   effort: 15min
   tags: [bug, generated]
@@ -3716,6 +3855,7 @@
   name: Prototypes of builtin objects should be simplified
   languages: [js, ts]
   category: SML
+  scope: main
   severity: minor
   effort: 15min
   tags: [sml, generated]
@@ -3736,6 +3876,7 @@
   name: Ternary operator should not be used
   languages: [js, ts]
   category: SML
+  scope: main
   severity: minor
   effort: 15min
   tags: [avoid_api, generated]
@@ -3757,6 +3898,7 @@
   name: Variables should be simplified
   languages: [js, ts]
   category: SML
+  scope: main
   severity: minor
   effort: 15min
   tags: [sml, generated]
@@ -3777,6 +3919,7 @@
   name: Renaming import, export, and destructuring assignments should be simplified
   languages: [js, ts]
   category: SML
+  scope: main
   severity: minor
   effort: 15min
   tags: [sml, generated]
@@ -3797,6 +3940,7 @@
   name: Outdated constructs should be replaced by the recommended alternative
   languages: [js, ts]
   category: SML
+  scope: main
   severity: minor
   effort: 15min
   tags: [prefer_api, generated]
@@ -3818,6 +3962,7 @@
   name: __proto__ property should not be used
   languages: [js, ts]
   category: SML
+  scope: main
   severity: minor
   effort: 15min
   tags: [avoid_api, generated]
@@ -3839,6 +3984,7 @@
   name: Octal escape sequences should not be used
   languages: [js, ts]
   category: SML
+  scope: main
   severity: minor
   effort: 15min
   tags: [avoid_api, generated]
@@ -3860,6 +4006,7 @@
   name: If statements should be accessed in a thread-safe way
   languages: [js, ts]
   category: SML
+  scope: main
   severity: minor
   effort: 15min
   tags: [concurrency, generated]
@@ -3880,6 +4027,7 @@
   name: Object spread syntax should be replaced by the recommended alternative
   languages: [js, ts]
   category: SML
+  scope: main
   severity: minor
   effort: 15min
   tags: [prefer_api, generated]
@@ -3939,6 +4087,7 @@
   name: Number.isNaN() should be replaced by the recommended alternative
   languages: [js, ts]
   category: SML
+  scope: main
   severity: minor
   effort: 15min
   tags: [prefer_api, generated]
@@ -3963,6 +4112,7 @@
   name: In React this.state should be simplified
   languages: [js, ts]
   category: SML
+  scope: main
   severity: minor
   effort: 15min
   tags: [sml, generated]
@@ -3983,6 +4133,7 @@
   name: JSX elements should be simplified
   languages: [js, ts]
   category: SML
+  scope: main
   severity: minor
   effort: 15min
   tags: [sml, generated]
@@ -4003,6 +4154,7 @@
   name: React children should be simplified
   languages: [js, ts]
   category: SML
+  scope: main
   severity: minor
   effort: 15min
   tags: [sml, generated]
@@ -4023,6 +4175,7 @@
   name: Return value of ReactDOM.render should not be used
   languages: [js, ts]
   category: SML
+  scope: main
   severity: minor
   effort: 15min
   tags: [avoid_api, generated]
@@ -4046,6 +4199,7 @@
   name: Return value of useState should be simplified
   languages: [js, ts]
   category: SML
+  scope: main
   severity: minor
   effort: 15min
   tags: [sml, generated]
@@ -4066,6 +4220,7 @@
   name: SetState should match the behaviour the code describes
   languages: [js, ts]
   category: BUG
+  scope: main
   severity: major
   effort: 15min
   tags: [bug, generated]
@@ -4086,6 +4241,7 @@
   name: This should not be used
   languages: [js, ts]
   category: BUG
+  scope: main
   severity: major
   effort: 15min
   tags: [avoid_api, generated]
@@ -4107,6 +4263,7 @@
   name: React props should be simplified
   languages: [js, ts]
   category: SML
+  scope: main
   severity: minor
   effort: 15min
   tags: [sml, generated]
@@ -4127,6 +4284,7 @@
   name: Children and dangerouslySetInnerHTML should not be used
   languages: [js, ts]
   category: BUG
+  scope: main
   severity: major
   effort: 15min
   tags: [avoid_api, generated]
@@ -4149,6 +4307,7 @@
   name: ShouldComponentUpdate should be simplified
   languages: [js, ts]
   category: SML
+  scope: main
   severity: minor
   effort: 15min
   tags: [sml, generated]
@@ -4169,6 +4328,7 @@
   name: JSX special characters should be simplified
   languages: [js, ts]
   category: SML
+  scope: main
   severity: minor
   effort: 15min
   tags: [sml, generated]
@@ -4189,6 +4349,7 @@
   name: User-defined JSX components should be simplified
   languages: [js, ts]
   category: SML
+  scope: main
   severity: minor
   effort: 15min
   tags: [sml, generated]
@@ -4209,6 +4370,7 @@
   name: Spacing between inline elements should be simplified
   languages: [js, ts]
   category: SML
+  scope: main
   severity: minor
   effort: 15min
   tags: [sml, generated]
@@ -4229,6 +4391,7 @@
   name: React components should be simplified
   languages: [js, ts]
   category: SML
+  scope: main
   severity: minor
   effort: 15min
   tags: [sml, generated]
@@ -4249,6 +4412,7 @@
   name: All defaultProps should be simplified
   languages: [js, ts]
   category: SML
+  scope: main
   severity: minor
   effort: 15min
   tags: [sml, generated]
@@ -4269,6 +4433,7 @@
   name: Reacts findDOMNode should not be used
   languages: [js, ts]
   category: SML
+  scope: main
   severity: minor
   effort: 15min
   tags: [avoid_api, generated]
@@ -4290,6 +4455,7 @@
   name: Reacts isMounted should not be used
   languages: [js, ts]
   category: SML
+  scope: main
   severity: minor
   effort: 15min
   tags: [avoid_api, generated]
@@ -4311,6 +4477,7 @@
   name: String references should not be used
   languages: [js, ts]
   category: SML
+  scope: main
   severity: minor
   effort: 15min
   tags: [avoid_api, generated]
@@ -4332,6 +4499,7 @@
   name: React legacy lifecycle methods should not be used
   languages: [js, ts]
   category: SML
+  scope: main
   severity: minor
   effort: 15min
   tags: [avoid_api, generated]
@@ -4353,6 +4521,7 @@
   name: ARIA properties in DOM elements should be simplified
   languages: [js, ts]
   category: SML
+  scope: main
   severity: minor
   effort: 15min
   tags: [sml, generated]
@@ -4373,6 +4542,7 @@
   name: DOM elements with ARIA roles should be simplified
   languages: [js, ts]
   category: SML
+  scope: main
   severity: minor
   effort: 15min
   tags: [sml, generated]
@@ -4393,6 +4563,7 @@
   name: DOM elements with ARIA role should be simplified
   languages: [js, ts]
   category: SML
+  scope: main
   severity: minor
   effort: 15min
   tags: [sml, generated]
@@ -4413,6 +4584,7 @@
   name: Tag over ARIA role should be simplified
   languages: [js, ts]
   category: SML
+  scope: main
   severity: minor
   effort: 15min
   tags: [sml, generated]
@@ -4433,6 +4605,7 @@
   name: DOM elements with ARIA roles should be simplified
   languages: [js, ts]
   category: SML
+  scope: main
   severity: minor
   effort: 15min
   tags: [sml, generated]
@@ -4453,6 +4626,7 @@
   name: No redundant ARIA role should be simplified
   languages: [js, ts]
   category: SML
+  scope: main
   severity: minor
   effort: 15min
   tags: [sml, generated]
@@ -4473,6 +4647,7 @@
   name: DOM elements with the `aria-activedescendant` property should be simplified
   languages: [js, ts]
   category: SML
+  scope: main
   severity: minor
   effort: 15min
   tags: [sml, generated]
@@ -4493,6 +4668,7 @@
   name: Hard-to-read code should be simplified
   languages: [js, ts]
   category: SML
+  scope: main
   severity: minor
   effort: 15min
   tags: [sml, generated]
@@ -4513,6 +4689,7 @@
   name: Focusable elements should be simplified
   languages: [js, ts]
   category: SML
+  scope: main
   severity: minor
   effort: 15min
   tags: [sml, generated]
@@ -4533,6 +4710,7 @@
   name: Anchors should be simplified
   languages: [js, ts]
   category: SML
+  scope: main
   severity: minor
   effort: 15min
   tags: [sml, generated]
@@ -4553,6 +4731,7 @@
   name: DOM elements should be simplified
   languages: [js, ts]
   category: SML
+  scope: main
   severity: minor
   effort: 15min
   tags: [sml, generated]
@@ -4573,6 +4752,7 @@
   name: TabIndex values should be simplified
   languages: [js, ts]
   category: SML
+  scope: main
   severity: minor
   effort: 15min
   tags: [sml, generated]
@@ -4611,6 +4791,7 @@
   name: Interactive DOM elements should be simplified
   languages: [js, ts]
   category: SML
+  scope: main
   severity: minor
   effort: 15min
   tags: [sml, generated]
@@ -4631,6 +4812,7 @@
   name: Anchor tags should not be used
   languages: [js, ts]
   category: SML
+  scope: main
   severity: minor
   effort: 15min
   tags: [avoid_api, generated]
@@ -4652,6 +4834,7 @@
   name: Non-interactive DOM elements should be simplified
   languages: [js, ts]
   category: SML
+  scope: main
   severity: minor
   effort: 15min
   tags: [sml, generated]
@@ -4672,6 +4855,7 @@
   name: DOM elements should be simplified
   languages: [js, ts]
   category: SML
+  scope: main
   severity: minor
   effort: 15min
   tags: [sml, generated]
@@ -4692,6 +4876,7 @@
   name: Non-interactive elements shouldnt have event handlers should be simplified
   languages: [js, ts]
   category: SML
+  scope: main
   severity: minor
   effort: 15min
   tags: [sml, generated]
@@ -4712,6 +4897,7 @@
   name: Non-interactive DOM elements should be simplified
   languages: [js, ts]
   category: SML
+  scope: main
   severity: minor
   effort: 15min
   tags: [sml, generated]
@@ -4732,6 +4918,7 @@
   name: Heading elements should be simplified
   languages: [js, ts]
   category: SML
+  scope: main
   severity: minor
   effort: 15min
   tags: [sml, generated]
@@ -4752,6 +4939,7 @@
   name: Images should be simplified
   languages: [js, ts]
   category: SML
+  scope: main
   severity: minor
   effort: 15min
   tags: [sml, generated]
@@ -4772,6 +4960,7 @@
   name: Elements with an interactive role should be simplified
   languages: [js, ts]
   category: SML
+  scope: main
   severity: minor
   effort: 15min
   tags: [sml, generated]
@@ -4810,6 +4999,7 @@
   name: Imports should be simplified
   languages: [js, ts]
   category: SML
+  scope: main
   severity: minor
   effort: 15min
   tags: [sml, generated]
@@ -4830,6 +5020,7 @@
   name: Mutable variables should be simplified
   languages: [js, ts]
   category: SML
+  scope: main
   severity: minor
   effort: 15min
   tags: [sml, generated]
@@ -4850,6 +5041,7 @@
   name: Deprecated React APIs should not be used
   languages: [js, ts]
   category: SML
+  scope: main
   severity: minor
   effort: 15min
   tags: [avoid_api, generated]
@@ -4871,6 +5063,7 @@
   name: Literals should not be used
   languages: [js, ts]
   category: BUG
+  scope: main
   severity: major
   effort: 15min
   tags: [avoid_api, generated]
@@ -4928,6 +5121,7 @@
   name: Module should be simplified
   languages: [js, ts]
   category: SML
+  scope: main
   severity: minor
   effort: 15min
   tags: [sml, generated]
@@ -4948,6 +5142,7 @@
   name: Wallet phrases should not be committed with the source
   languages: [js, ts]
   category: SEC
+  scope: main
   severity: critical
   effort: 15min
   tags: [secret, generated]
@@ -4969,6 +5164,7 @@
   name: Angular lifecycle methods should be replaced by the recommended alternative
   languages: [js, ts]
   category: SML
+  scope: main
   severity: minor
   effort: 15min
   tags: [prefer_api, generated]
@@ -4990,6 +5186,7 @@
   name: Components, Directives, and Pipes should be simplified
   languages: [js, ts]
   category: SML
+  scope: main
   severity: minor
   effort: 15min
   tags: [sml, generated]
@@ -5010,6 +5207,7 @@
   name: Input bindings should be simplified
   languages: [js, ts]
   category: SML
+  scope: main
   severity: minor
   effort: 15min
   tags: [sml, generated]
@@ -5030,6 +5228,7 @@
   name: Components and directives should be simplified
   languages: [js, ts]
   category: SML
+  scope: main
   severity: minor
   effort: 15min
   tags: [sml, generated]
@@ -5050,6 +5249,7 @@
   name: Output bindings should be simplified
   languages: [js, ts]
   category: SML
+  scope: main
   severity: minor
   effort: 15min
   tags: [sml, generated]
@@ -5070,6 +5270,7 @@
   name: Output bindings should be simplified
   languages: [js, ts]
   category: SML
+  scope: main
   severity: minor
   effort: 15min
   tags: [sml, generated]
@@ -5090,6 +5291,7 @@
   name: Output bindings should be simplified
   languages: [js, ts]
   category: SML
+  scope: main
   severity: minor
   effort: 15min
   tags: [sml, generated]
@@ -5110,6 +5312,7 @@
   name: Outputs metadata property should not be used
   languages: [js, ts]
   category: SML
+  scope: main
   severity: minor
   effort: 15min
   tags: [avoid_api, generated]
@@ -5131,6 +5334,7 @@
   name: Angular classes should be simplified
   languages: [js, ts]
   category: SML
+  scope: main
   severity: minor
   effort: 15min
   tags: [sml, generated]
@@ -5151,6 +5355,7 @@
   name: Angular Pipes should be simplified
   languages: [js, ts]
   category: SML
+  scope: main
   severity: minor
   effort: 15min
   tags: [sml, generated]
@@ -5171,6 +5376,7 @@
   name: Error parameters in catch clauses should follow the naming convention of the codebase
   languages: [js, ts]
   category: SML
+  scope: main
   severity: minor
   effort: 15min
   tags: [naming, generated]
@@ -5191,6 +5397,7 @@
   name: Date objects should be simplified
   languages: [js, ts]
   category: SML
+  scope: main
   severity: minor
   effort: 15min
   tags: [sml, generated]
@@ -5211,6 +5418,7 @@
   name: Ternary expressions in array spreads should be simplified
   languages: [js, ts]
   category: SML
+  scope: main
   severity: minor
   effort: 15min
   tags: [sml, generated]
@@ -5231,6 +5439,7 @@
   name: Functions should be simplified
   languages: [js, ts]
   category: SML
+  scope: main
   severity: minor
   effort: 15min
   tags: [sml, generated]
@@ -5251,6 +5460,7 @@
   name: Built-in error objects should be simplified
   languages: [js, ts]
   category: SML
+  scope: main
   severity: minor
   effort: 15min
   tags: [sml, generated]
@@ -5289,6 +5499,7 @@
   name: ESLint disable comments should be resolved rather than left in the code
   languages: [js, ts]
   category: SML
+  scope: main
   severity: minor
   effort: 15min
   tags: [marker, generated]
@@ -5309,6 +5520,7 @@
   name: Getters and setters should match the behaviour the code describes
   languages: [js, ts]
   category: BUG
+  scope: main
   severity: major
   effort: 15min
   tags: [bug, generated]
@@ -5329,6 +5541,7 @@
   name: Default exports should follow the naming convention of the codebase
   languages: [js, ts]
   category: SML
+  scope: main
   severity: minor
   effort: 15min
   tags: [naming, generated]
@@ -5349,6 +5562,7 @@
   name: Function references should match the behaviour the code describes
   languages: [js, ts]
   category: BUG
+  scope: main
   severity: major
   effort: 15min
   tags: [bug, generated]
@@ -5388,6 +5602,7 @@
   name: Array method callbacks should be simplified
   languages: [js, ts]
   category: SML
+  scope: main
   severity: minor
   effort: 15min
   tags: [sml, generated]
@@ -5408,6 +5623,7 @@
   name: Member access from await expressions should be simplified
   languages: [js, ts]
   category: SML
+  scope: main
   severity: minor
   effort: 15min
   tags: [sml, generated]
@@ -5428,6 +5644,7 @@
   name: Traditional for loops should be simplified
   languages: [js, ts]
   category: SML
+  scope: main
   severity: minor
   effort: 15min
   tags: [sml, generated]
@@ -5448,6 +5665,7 @@
   name: Instanceof should not be used
   languages: [js, ts]
   category: SML
+  scope: main
   severity: minor
   effort: 15min
   tags: [avoid_api, generated]
@@ -5469,6 +5687,7 @@
   name: HTTP GET and HEAD requests should match the behaviour the code describes
   languages: [js, ts]
   category: BUG
+  scope: main
   severity: major
   effort: 15min
   tags: [bug, generated]
@@ -5489,6 +5708,7 @@
   name: Default imports and exports should be simplified
   languages: [js, ts]
   category: SML
+  scope: main
   severity: minor
   effort: 15min
   tags: [sml, generated]
@@ -5509,6 +5729,7 @@
   name: Negated conditions should be simplified
   languages: [js, ts]
   category: SML
+  scope: main
   severity: minor
   effort: 15min
   tags: [sml, generated]
@@ -5529,6 +5750,7 @@
   name: Negated expressions should not be used
   languages: [js, ts]
   category: BUG
+  scope: main
   severity: major
   effort: 15min
   tags: [avoid_api, generated]
@@ -5550,6 +5772,7 @@
   name: Objects should not be used
   languages: [js, ts]
   category: SML
+  scope: main
   severity: minor
   effort: 15min
   tags: [avoid_api, generated]
@@ -5571,6 +5794,7 @@
   name: Objects should match the behaviour the code describes
   languages: [js, ts]
   category: BUG
+  scope: main
   severity: major
   effort: 15min
   tags: [bug, generated]
@@ -5630,6 +5854,7 @@
   name: Polyfills should not be used
   languages: [js, ts]
   category: SML
+  scope: main
   severity: minor
   effort: 15min
   tags: [avoid_api, generated]
@@ -5651,6 +5876,7 @@
   name: Hard-to-read code should be simplified
   languages: [js, ts]
   category: SML
+  scope: main
   severity: minor
   effort: 15min
   tags: [sml, generated]
@@ -5671,6 +5897,7 @@
   name: Unnecessary fallback objects should not be used
   languages: [js, ts]
   category: SML
+  scope: main
   severity: minor
   effort: 15min
   tags: [avoid_api, generated]
@@ -5692,6 +5919,7 @@
   name: Array length checks should not be used
   languages: [js, ts]
   category: SML
+  scope: main
   severity: minor
   effort: 15min
   tags: [avoid_api, generated]
@@ -5713,6 +5941,7 @@
   name: Spread syntax should not be used
   languages: [js, ts]
   category: SML
+  scope: main
   severity: minor
   effort: 15min
   tags: [avoid_api, generated]
@@ -5734,6 +5963,7 @@
   name: Number literals should be simplified
   languages: [js, ts]
   category: SML
+  scope: main
   severity: minor
   effort: 15min
   tags: [sml, generated]
@@ -5754,6 +5984,7 @@
   name: Numeric literals should be simplified
   languages: [js, ts]
   category: SML
+  scope: main
   severity: minor
   effort: 15min
   tags: [sml, generated]
@@ -5774,6 +6005,7 @@
   name: Array flattening should be simplified
   languages: [js, ts]
   category: SML
+  scope: main
   severity: minor
   effort: 15min
   tags: [sml, generated]
@@ -5794,6 +6026,7 @@
   name: Array methods .map().flat() should be simplified
   languages: [js, ts]
   category: SML
+  scope: main
   severity: minor
   effort: 15min
   tags: [sml, generated]
@@ -5832,6 +6065,7 @@
   name: Outdated constructs should be replaced by the recommended alternative
   languages: [js, ts]
   category: SML
+  scope: main
   severity: minor
   effort: 15min
   tags: [prefer_api, generated]
@@ -5871,6 +6105,7 @@
   name: Modern Blob methods should be replaced by the recommended alternative
   languages: [js, ts]
   category: SML
+  scope: main
   severity: minor
   effort: 15min
   tags: [prefer_api, generated]
@@ -5892,6 +6127,7 @@
   name: Class properties should be declared the way the language intends
   languages: [js, ts]
   category: SML
+  scope: main
   severity: minor
   effort: 15min
   tags: [declaration, generated]
@@ -5913,6 +6149,7 @@
   name: Unicode-aware string methods should be replaced by the recommended alternative
   languages: [js, ts]
   category: SML
+  scope: main
   severity: minor
   effort: 15min
   tags: [prefer_api, generated]
@@ -5934,6 +6171,7 @@
   name: Outdated constructs should be replaced by the recommended alternative
   languages: [js, ts]
   category: SML
+  scope: main
   severity: minor
   effort: 15min
   tags: [prefer_api, generated]
@@ -5957,6 +6195,7 @@
   name: Default parameters should be replaced by the recommended alternative
   languages: [js, ts]
   category: SML
+  scope: main
   severity: minor
   effort: 15min
   tags: [prefer_api, generated]
@@ -5978,6 +6217,7 @@
   name: Data attributes should be simplified
   languages: [js, ts]
   category: SML
+  scope: main
   severity: minor
   effort: 15min
   tags: [sml, generated]
@@ -6016,6 +6256,7 @@
   name: Re-exports should be simplified
   languages: [js, ts]
   category: SML
+  scope: main
   severity: minor
   effort: 15min
   tags: [sml, generated]
@@ -6074,6 +6315,7 @@
   name: Ternary expressions should be simplified
   languages: [js, ts]
   category: SML
+  scope: main
   severity: minor
   effort: 15min
   tags: [sml, generated]
@@ -6094,6 +6336,7 @@
   name: Bitwise operators should not be used
   languages: [js, ts]
   category: SML
+  scope: main
   severity: minor
   effort: 15min
   tags: [avoid_api, generated]
@@ -6115,6 +6358,7 @@
   name: Modern DOM manipulation methods should be replaced by the recommended alternative
   languages: [js, ts]
   category: SML
+  scope: main
   severity: minor
   effort: 15min
   tags: [prefer_api, generated]
@@ -6136,6 +6380,7 @@
   name: Modern Math APIs should be replaced by the recommended alternative
   languages: [js, ts]
   category: SML
+  scope: main
   severity: minor
   effort: 15min
   tags: [prefer_api, generated]
@@ -6157,6 +6402,7 @@
   name: Hard-to-read code should be simplified
   languages: [js, ts]
   category: SML
+  scope: main
   severity: minor
   effort: 15min
   tags: [sml, generated]
@@ -6177,6 +6423,7 @@
   name: Negative indices should be replaced by the recommended alternative
   languages: [js, ts]
   category: SML
+  scope: main
   severity: minor
   effort: 15min
   tags: [prefer_api, generated]
@@ -6235,6 +6482,7 @@
   name: Methods should be simplified
   languages: [js, ts]
   category: SML
+  scope: main
   severity: minor
   effort: 15min
   tags: [sml, generated]
@@ -6255,6 +6503,7 @@
   name: Outdated constructs should be replaced by the recommended alternative
   languages: [js, ts]
   category: SML
+  scope: main
   severity: minor
   effort: 15min
   tags: [prefer_api, generated]
@@ -6284,6 +6533,7 @@
   name: Arrays used only for existence checks should be simplified
   languages: [js, ts]
   category: SML
+  scope: main
   severity: minor
   effort: 15min
   tags: [sml, generated]
@@ -6304,6 +6554,7 @@
   name: Set size should be replaced by the recommended alternative
   languages: [js, ts]
   category: SML
+  scope: main
   severity: minor
   effort: 15min
   tags: [prefer_api, generated]
@@ -6325,6 +6576,7 @@
   name: Hard-to-read code should be simplified
   languages: [js, ts]
   category: SML
+  scope: main
   severity: minor
   effort: 15min
   tags: [sml, generated]
@@ -6363,6 +6615,7 @@
   name: TrimLeft() and trimRight() should be simplified
   languages: [js, ts]
   category: SML
+  scope: main
   severity: minor
   effort: 15min
   tags: [sml, generated]
@@ -6383,6 +6636,7 @@
   name: StructuredClone() should be replaced by the recommended alternative
   languages: [js, ts]
   category: SML
+  scope: main
   severity: minor
   effort: 15min
   tags: [prefer_api, generated]
@@ -6404,6 +6658,7 @@
   name: Generic Error should make failure handling explicit
   languages: [js, ts]
   category: SML
+  scope: main
   severity: minor
   effort: 15min
   tags: [exception, generated]
@@ -6425,6 +6680,7 @@
   name: Import and export statements should not be left empty
   languages: [js, ts]
   category: SML
+  scope: main
   severity: minor
   effort: 15min
   tags: [empty, generated]
@@ -6446,6 +6702,7 @@
   name: Templates should not weaken the security of the application
   languages: [js, ts]
   category: SEC
+  scope: main
   severity: critical
   effort: 15min
   tags: [sec, generated]
@@ -6467,6 +6724,7 @@
   name: DOMPurify configuration should not weaken the security of the application
   languages: [js, ts]
   category: SEC
+  scope: main
   severity: critical
   effort: 15min
   tags: [sec, generated]
@@ -6508,6 +6766,7 @@
   name: Comma operator should not be used
   languages: [js, ts]
   category: SML
+  scope: main
   severity: minor
   effort: 15min
   tags: [avoid_api, generated]
@@ -6642,6 +6901,7 @@
   name: Native APIs should be replaced by the recommended alternative
   languages: [js, ts]
   category: SML
+  scope: main
   severity: minor
   effort: 15min
   tags: [prefer_api, generated]
@@ -6663,6 +6923,7 @@
   name: Default imports from modular utility libraries should not be used
   languages: [js, ts]
   category: SML
+  scope: main
   severity: minor
   effort: 15min
   tags: [avoid_api, generated]
@@ -6684,6 +6945,7 @@
   name: Vue props with a default value should be simplified
   languages: [js, ts]
   category: SML
+  scope: main
   severity: minor
   effort: 15min
   tags: [sml, generated]
@@ -6704,6 +6966,7 @@
   name: Vue component props should be simplified
   languages: [js, ts]
   category: SML
+  scope: main
   severity: minor
   effort: 15min
   tags: [sml, generated]
@@ -6724,6 +6987,7 @@
   name: Vue component props should be simplified
   languages: [js, ts]
   category: SML
+  scope: main
   severity: minor
   effort: 15min
   tags: [sml, generated]
@@ -6780,6 +7044,7 @@
   name: Vue component events should be simplified
   languages: [js, ts]
   category: SML
+  scope: main
   severity: minor
   effort: 15min
   tags: [sml, generated]
@@ -6800,6 +7065,7 @@
   name: Vue ref and shallowRef calls should be simplified
   languages: [js, ts]
   category: SML
+  scope: main
   severity: minor
   effort: 15min
   tags: [sml, generated]
@@ -6899,6 +7165,7 @@
   name: HTML elements with v-for should match the behaviour the code describes
   languages: [js, ts]
   category: BUG
+  scope: main
   severity: major
   effort: 15min
   tags: [bug, generated]
@@ -6919,6 +7186,7 @@
   name: Vue v-for directives should match the behaviour the code describes
   languages: [js, ts]
   category: BUG
+  scope: main
   severity: major
   effort: 15min
   tags: [bug, generated]
@@ -6959,6 +7227,7 @@
   name: V-if and v-for should not be used
   languages: [js, ts]
   category: SML
+  scope: main
   severity: minor
   effort: 15min
   tags: [avoid_api, generated]
@@ -6980,6 +7249,7 @@
   name: Side effects should match the behaviour the code describes
   languages: [js, ts]
   category: BUG
+  scope: main
   severity: major
   effort: 15min
   tags: [bug, generated]
@@ -7059,6 +7329,7 @@
   name: Vue refs should not be used
   languages: [js, ts]
   category: BUG
+  scope: main
   severity: major
   effort: 15min
   tags: [avoid_api, generated]
@@ -7100,6 +7371,7 @@
   name: Asynchronous actions should not be used
   languages: [js, ts]
   category: BUG
+  scope: main
   severity: major
   effort: 15min
   tags: [avoid_api, generated]
@@ -7179,6 +7451,7 @@
   name: Continue should not be used
   languages: [js, ts]
   category: SML
+  scope: main
   severity: minor
   effort: 15min
   tags: [avoid_api, generated]
@@ -7218,6 +7491,7 @@
   name: Suspicious code should match the behaviour the code describes
   languages: [js, ts]
   category: BUG
+  scope: main
   severity: major
   effort: 15min
   tags: [bug, generated]
@@ -7238,6 +7512,7 @@
   name: Vue component field names should not be duplicated
   languages: [js, ts]
   category: BUG
+  scope: main
   severity: major
   effort: 15min
   tags: [duplication, generated]
@@ -7258,6 +7533,7 @@
   name: Hard-to-read code should be simplified
   languages: [js, ts]
   category: SML
+  scope: main
   severity: minor
   effort: 15min
   tags: [sml, generated]
@@ -7278,6 +7554,7 @@
   name: Native APIs should be replaced by the recommended alternative
   languages: [js, ts]
   category: SML
+  scope: main
   severity: minor
   effort: 15min
   tags: [prefer_api, generated]
@@ -7318,6 +7595,7 @@
   name: Vue components should be simplified
   languages: [js, ts]
   category: SML
+  scope: main
   severity: minor
   effort: 15min
   tags: [sml, generated]
@@ -7358,6 +7636,7 @@
   name: Reactive state should match the behaviour the code describes
   languages: [js, ts]
   category: BUG
+  scope: main
   severity: major
   effort: 15min
   tags: [bug, generated]
@@ -7397,6 +7676,7 @@
   name: Function calls should match the behaviour the code describes
   languages: [js, ts]
   category: BUG
+  scope: main
   severity: major
   effort: 15min
   tags: [bug, generated]

@@ -33,6 +33,7 @@
   name: Trust managers should verify the certificate chain
   languages: [java, kt]
   category: SEC
+  scope: main
   severity: blocker
   effort: 30min
   cwe: [295]
@@ -79,6 +80,7 @@
   name: Cross-origin annotations should name the allowed origins
   languages: [java, kt]
   category: SEC
+  scope: main
   severity: major
   effort: 15min
   cwe: [942]
@@ -104,6 +106,7 @@
   name: Reflection should not be used to bypass access control
   languages: [java, kt]
   category: SEC
+  scope: main
   severity: major
   effort: 20min
   cwe: [470]
@@ -327,6 +330,7 @@
   name: Debug mode should not be enabled in application code
   languages: [py]
   category: SEC
+  scope: main
   severity: critical
   effort: 10min
   cwe: [489]
@@ -349,6 +353,7 @@
   name: Temporary files should be created atomically
   languages: [py]
   category: SEC
+  scope: main
   severity: major
   effort: 15min
   cwe: [377]
@@ -509,6 +514,7 @@
   name: Integer parsing should specify the radix
   languages: [js]
   category: BUG
+  scope: main
   severity: major
   effort: 5min
   tags: [suspicious]

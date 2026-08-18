@@ -4,6 +4,7 @@
   name: Equals and GetHashCode should be overridden together
   languages: [cs, vb]
   category: BUG
+  scope: main
   severity: critical
   effort: 15min
   tags: [suspicious, equality]
@@ -44,6 +45,7 @@
   name: Exceptions should not be created without being thrown
   languages: [cs, vb]
   category: BUG
+  scope: main
   severity: major
   effort: 10min
   tags: [exception, suspicious]
@@ -86,6 +88,7 @@
   name: A stream read result should be checked
   languages: [cs, vb]
   category: BUG
+  scope: main
   severity: critical
   effort: 15min
   tags: [io]
@@ -149,6 +152,7 @@
   name: Integer division should not be assigned to a floating point variable
   languages: [cs, vb]
   category: BUG
+  scope: main
   severity: major
   effort: 10min
   tags: [arithmetic, suspicious]
@@ -172,6 +176,7 @@
   name: ToString should never return null
   languages: [cs, vb]
   category: BUG
+  scope: main
   severity: critical
   effort: 10min
   tags: [suspicious]
@@ -249,6 +254,7 @@
   name: Non-existent operators should not be written accidentally
   languages: [cs, vb]
   category: BUG
+  scope: main
   severity: critical
   effort: 5min
   tags: [suspicious]

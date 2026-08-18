@@ -3,6 +3,7 @@
   name: Math.abs and negation should not be used
   languages: [java]
   category: BUG
+  scope: main
   severity: major
   effort: 5min
   tags: [avoid_api, ported]
@@ -40,6 +41,7 @@
   name: High frame rates should not be used
   languages: [java]
   category: SML
+  scope: main
   severity: minor
   effort: 5min
   tags: [avoid_api, ported]
@@ -60,6 +62,7 @@
   name: Use batch Processing in JDBC should be simplified
   languages: [java]
   category: SML
+  scope: main
   severity: minor
   effort: 5min
   tags: [sml, ported]
@@ -79,6 +82,7 @@
   name: Virtual threads should be replaced by the recommended alternative
   languages: [java]
   category: BUG
+  scope: main
   severity: major
   effort: 5min
   tags: [prefer_api, ported]
@@ -99,6 +103,7 @@
   name: Bluetooth should be simplified
   languages: [java]
   category: SML
+  scope: main
   severity: minor
   effort: 5min
   tags: [sml, ported]
@@ -118,6 +123,7 @@
   name: Hard-to-read code should be simplified
   languages: [java]
   category: SML
+  scope: main
   severity: minor
   effort: 5min
   tags: [sml, ported]
@@ -137,6 +143,7 @@
   name: DeleteOnExit should not be used
   languages: [java]
   category: SML
+  scope: main
   severity: minor
   effort: 30min
   tags: [avoid_api, ported]
@@ -196,6 +203,7 @@
   name: Collect should be replaced by the recommended alternative
   languages: [java]
   category: SML
+  scope: main
   severity: minor
   effort: 15min
   tags: [prefer_api, ported]
@@ -233,6 +241,7 @@
   name: CompareTo results should match the behaviour the code describes
   languages: [java]
   category: BUG
+  scope: main
   severity: major
   effort: 5min
   tags: [bug, ported]
@@ -268,6 +277,7 @@
   name: Java.time classes should be replaced by the recommended alternative
   languages: [java]
   category: SML
+  scope: main
   severity: minor
   effort: 15min
   tags: [prefer_api, ported]
@@ -328,6 +338,7 @@
   name: DateTimeFormatters should match the behaviour the code describes
   languages: [java]
   category: BUG
+  scope: main
   severity: major
   effort: 10min
   tags: [bug, ported]
@@ -347,6 +358,7 @@
   name: DateUtils.truncate from Apache Commons Lang library should not be used
   languages: [java]
   category: SML
+  scope: main
   severity: minor
   effort: 10min
   tags: [avoid_api, ported]
@@ -402,6 +414,7 @@
   name: Return value of EntityManager.merge() should be replaced by the recommended alternative
   languages: [java]
   category: BUG
+  scope: main
   severity: major
   effort: 5min
   tags: [prefer_api, ported]
@@ -422,6 +435,7 @@
   name: Hard-to-read code should be simplified
   languages: [java]
   category: SML
+  scope: main
   severity: minor
   effort: 5min
   tags: [sml, ported]
@@ -441,6 +455,7 @@
   name: .equals() should not be used
   languages: [java]
   category: BUG
+  scope: main
   severity: major
   effort: 5min
   tags: [avoid_api, ported]
@@ -519,6 +534,7 @@
   name: Execution of the Garbage Collector should be simplified
   languages: [java]
   category: SML
+  scope: main
   severity: minor
   effort: 30min
   tags: [sml, ported]
@@ -538,6 +554,7 @@
   name: JEE applications should match the behaviour the code describes
   languages: [java]
   category: BUG
+  scope: main
   severity: major
   effort: 5min
   tags: [bug, ported]
@@ -557,6 +574,7 @@
   name: HttpServletRequest.getRequestedSessionId() should not be used
   languages: [java]
   category: SEC
+  scope: main
   severity: critical
   effort: 10min
   tags: [avoid_api, ported]
@@ -595,6 +613,7 @@
   name: Inappropriate regular expressions should not be used
   languages: [java]
   category: BUG
+  scope: main
   severity: major
   effort: 15min
   tags: [avoid_api, ported]
@@ -615,6 +634,7 @@
   name: InputSteam.read() implementation should match the behaviour the code describes
   languages: [java]
   category: BUG
+  scope: main
   severity: major
   effort: 10min
   tags: [bug, ported]
@@ -634,6 +654,7 @@
   name: InterruptedException and ThreadDeath should make failure handling explicit
   languages: [java]
   category: BUG
+  scope: main
   severity: major
   effort: 15min
   tags: [exception, ported]
@@ -655,6 +676,7 @@
   name: Operator instanceof should be replaced by the recommended alternative
   languages: [java]
   category: SML
+  scope: main
   severity: minor
   effort: 5min
   tags: [prefer_api, ported]
@@ -707,6 +729,7 @@
   name: Loggers should follow the naming convention of the codebase
   languages: [java]
   category: SML
+  scope: main
   severity: minor
   effort: 5min
   tags: [naming, ported]
@@ -726,6 +749,7 @@
   name: Double.longBitsToDouble should match the behaviour the code describes
   languages: [java]
   category: BUG
+  scope: main
   severity: major
   effort: 15min
   tags: [bug, ported]
@@ -745,6 +769,7 @@
   name: Math.clamp should be replaced by the recommended alternative
   languages: [java]
   category: BUG
+  scope: main
   severity: major
   effort: 5min
   tags: [prefer_api, ported]
@@ -765,6 +790,7 @@
   name: Private mutable members should be simplified
   languages: [java]
   category: SML
+  scope: main
   severity: minor
   effort: 5min
   tags: [sml, ported]
@@ -785,6 +811,7 @@
   name: Map computeIfAbsent() and computeIfPresent() should not be used
   languages: [java]
   category: BUG
+  scope: main
   severity: major
   effort: 10min
   tags: [avoid_api, ported]
@@ -805,6 +832,7 @@
   name: Stream call chains should be simplified
   languages: [java]
   category: SML
+  scope: main
   severity: minor
   effort: 2min
   tags: [sml, ported]
@@ -863,6 +891,7 @@
   name: Close() calls should be simplified
   languages: [java]
   category: SML
+  scope: main
   severity: minor
   effort: 2min
   tags: [sml, ported]
@@ -882,6 +911,7 @@
   name: Reflection should not be used
   languages: [java]
   category: BUG
+  scope: main
   severity: major
   effort: 15min
   tags: [avoid_api, ported]
@@ -902,6 +932,7 @@
   name: ResultSet.isLast() should not be used
   languages: [java]
   category: SML
+  scope: main
   severity: minor
   effort: 10min
   tags: [avoid_api, ported]
@@ -922,6 +953,7 @@
   name: Reverse iteration should be simplified
   languages: [java]
   category: SML
+  scope: main
   severity: minor
   effort: 5min
   tags: [sml, ported]
@@ -958,6 +990,7 @@
   name: RunFinalizersOnExit should not be used
   languages: [java]
   category: BUG
+  scope: main
   severity: major
   effort: 20min
   tags: [avoid_api, ported]
@@ -998,6 +1031,7 @@
   name: ScheduledThreadPoolExecutor should be accessed in a thread-safe way
   languages: [java]
   category: BUG
+  scope: main
   severity: major
   effort: 20min
   tags: [concurrency, ported]
@@ -1036,6 +1070,7 @@
   name: Servlets should match the behaviour the code describes
   languages: [java]
   category: BUG
+  scope: main
   severity: major
   effort: 30min
   tags: [bug, ported]
@@ -1074,6 +1109,7 @@
   name: Lazy initialization of static fields should be accessed in a thread-safe way
   languages: [java]
   category: SML
+  scope: main
   severity: minor
   effort: 30min
   tags: [concurrency, ported]
@@ -1113,6 +1149,7 @@
   name: Stream.peek should be replaced by the recommended alternative
   languages: [java]
   category: SML
+  scope: main
   severity: minor
   effort: 5min
   tags: [prefer_api, ported]
@@ -1166,6 +1203,7 @@
   name: Wait(...) should be replaced by the recommended alternative
   languages: [java]
   category: BUG
+  scope: main
   severity: major
   effort: 5min
   tags: [prefer_api, ported]
@@ -1186,6 +1224,7 @@
   name: Methods wait(...), notify() and notifyAll() should not be used
   languages: [java]
   category: BUG
+  scope: main
   severity: major
   effort: 30min
   tags: [avoid_api, ported]
@@ -1206,6 +1245,7 @@
   name: Collection.toArray() should match the behaviour the code describes
   languages: [java]
   category: BUG
+  scope: main
   severity: major
   effort: 5min
   tags: [bug, ported]
@@ -1245,6 +1285,7 @@
   name: Motion Sensor should be simplified
   languages: [java]
   category: SML
+  scope: main
   severity: minor
   effort: 5min
   tags: [sml, ported]
@@ -1303,6 +1344,7 @@
   name: Virtual threads should be accessed in a thread-safe way
   languages: [java]
   category: BUG
+  scope: main
   severity: major
   effort: 5min
   tags: [concurrency, ported]
@@ -1322,6 +1364,7 @@
   name: SetDaemon, setPriority and getThreadGroup should not be used
   languages: [java]
   category: BUG
+  scope: main
   severity: major
   effort: 5min
   tags: [avoid_api, ported]
@@ -1342,6 +1385,7 @@
   name: Object.wait should not be used
   languages: [java]
   category: SML
+  scope: main
   severity: minor
   effort: 20min
   tags: [avoid_api, ported]
@@ -1362,6 +1406,7 @@
   name: Regular expressions should be safe and correct
   languages: [java]
   category: SML
+  scope: main
   severity: minor
   effort: 3min
   tags: [regex, ported]
@@ -1382,6 +1427,7 @@
   name: Empty lines should not be left empty
   languages: [java]
   category: SML
+  scope: main
   severity: minor
   effort: 15min
   tags: [empty, ported]
@@ -1402,6 +1448,7 @@
   name: Biometric authentication should use current cryptographic parameters
   languages: [java]
   category: SEC
+  scope: main
   severity: critical
   effort: 5min
   tags: [crypto, ported]
@@ -1423,6 +1470,7 @@
   name: Mobile database encryption keys should not be committed with the source
   languages: [java]
   category: SEC
+  scope: main
   severity: critical
   effort: 10min
   tags: [secret, ported]
@@ -1465,6 +1513,7 @@
   name: Authorizations should not weaken the security of the application
   languages: [java]
   category: SEC
+  scope: main
   severity: critical
   effort: 30min
   tags: [sec, ported]
@@ -1486,6 +1535,7 @@
   name: Cipher Block Chaining IVs should use current cryptographic parameters
   languages: [java]
   category: SEC
+  scope: main
   severity: critical
   effort: 15min
   tags: [crypto, ported]
@@ -1507,6 +1557,7 @@
   name: Debugging features should not weaken the security of the application
   languages: [java]
   category: SEC
+  scope: main
   severity: critical
   effort: 1min
   tags: [sec, ported]
@@ -1528,6 +1579,7 @@
   name: Web application technologies should not weaken the security of the application
   languages: [java]
   category: SEC
+  scope: main
   severity: critical
   effort: 5min
   tags: [sec, ported]
@@ -1549,6 +1601,7 @@
   name: Secure password should be replaced by the recommended alternative
   languages: [java]
   category: SEC
+  scope: main
   severity: critical
   effort: 45min
   tags: [prefer_api, ported]
@@ -1570,6 +1623,7 @@
   name: Encryption algorithms should use current cryptographic parameters
   languages: [java]
   category: SEC
+  scope: main
   severity: critical
   effort: 20min
   tags: [crypto, ported]
@@ -1591,6 +1645,7 @@
   name: Integer.toHexString should not be used
   languages: [java]
   category: SML
+  scope: main
   severity: minor
   effort: 2min
   tags: [avoid_api, ported]
@@ -1612,6 +1667,7 @@
   name: JWT should use current cryptographic parameters
   languages: [java]
   category: SEC
+  scope: main
   severity: critical
   effort: 30min
   tags: [crypto, ported]
@@ -1633,6 +1689,7 @@
   name: OpenSAML2 should not weaken the security of the application
   languages: [java]
   category: SEC
+  scope: main
   severity: critical
   effort: 10min
   tags: [sec, ported]
@@ -1654,6 +1711,7 @@
   name: Android broadcast receivers should not grant more access than needed
   languages: [java]
   category: SEC
+  scope: main
   severity: critical
   effort: 15min
   tags: [permissions, ported]
@@ -1675,6 +1733,7 @@
   name: Cookies should not weaken the security of the application
   languages: [java]
   category: SEC
+  scope: main
   severity: critical
   effort: 5min
   tags: [sec, ported]
@@ -1696,6 +1755,7 @@
   name: Password hashing functions should use current cryptographic parameters
   languages: [java]
   category: SEC
+  scope: main
   severity: critical
   effort: 30min
   tags: [crypto, ported]
@@ -1738,6 +1798,7 @@
   name: WebViews should not grant more access than needed
   languages: [java]
   category: SEC
+  scope: main
   severity: critical
   effort: 5min
   tags: [permissions, ported]
@@ -1780,6 +1841,7 @@
   name: Suspicious code should match the behaviour the code describes
   languages: [java]
   category: BUG
+  scope: main
   severity: major
   effort: 15min
   tags: [bug, ported]
@@ -1799,6 +1861,7 @@
   name: Non-serializable objects should match the behaviour the code describes
   languages: [java]
   category: BUG
+  scope: main
   severity: major
   effort: 20min
   tags: [bug, ported]
@@ -1819,6 +1882,7 @@
   name: Suspicious code should match the behaviour the code describes
   languages: [java]
   category: BUG
+  scope: main
   severity: major
   effort: 15min
   tags: [bug, ported]
@@ -1838,6 +1902,7 @@
   name: Model attributes should follow the naming convention of the codebase
   languages: [java]
   category: BUG
+  scope: main
   severity: major
   effort: 5min
   tags: [naming, ported]
@@ -1857,6 +1922,7 @@
   name: HttpSecurity URL patterns should not weaken the security of the application
   languages: [java]
   category: SEC
+  scope: main
   severity: critical
   effort: 10min
   tags: [sec, ported]
@@ -1878,6 +1944,7 @@
   name: Hard-to-read code should be simplified
   languages: [java]
   category: SML
+  scope: main
   severity: minor
   effort: 15min
   tags: [sml, ported]
@@ -2204,6 +2271,7 @@
   name: Read and readLine return values should be replaced by the recommended alternative
   languages: [java]
   category: BUG
+  scope: main
   severity: major
   effort: 5min
   tags: [prefer_api, ported]

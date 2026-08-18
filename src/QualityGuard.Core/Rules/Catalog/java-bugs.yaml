@@ -282,6 +282,7 @@
   name: Serializable classes should be able to serialize their state
   languages: [java]
   category: BUG
+  scope: main
   severity: major
   effort: 25min
   tags: [serialization]

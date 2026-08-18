@@ -183,6 +183,7 @@
   name: All except blocks should make failure handling explicit
   languages: [py]
   category: BUG
+  scope: main
   severity: major
   effort: 15min
   tags: [exception, generated]
@@ -204,6 +205,7 @@
   name: Exception and BaseException should make failure handling explicit
   languages: [py]
   category: SML
+  scope: main
   severity: minor
   effort: 15min
   tags: [exception, generated]
@@ -316,6 +318,7 @@
   name: Comments should be resolved rather than left in the code
   languages: [py]
   category: SML
+  scope: main
   severity: minor
   effort: 15min
   tags: [marker, generated]
@@ -336,6 +339,7 @@
   name: Copyright and license headers should be resolved rather than left in the code
   languages: [py]
   category: SML
+  scope: main
   severity: minor
   effort: 15min
   tags: [marker, generated]
@@ -410,6 +414,7 @@
   name: Markers left in the code should be resolved rather than left in the code
   languages: [py]
   category: SML
+  scope: main
   severity: minor
   effort: 15min
   tags: [marker, generated]
@@ -448,6 +453,7 @@
   name: Docstrings should be declared the way the language intends
   languages: [py]
   category: SML
+  scope: main
   severity: minor
   effort: 15min
   tags: [declaration, generated]
@@ -564,6 +570,7 @@
   name: Unnecessary equality checks should match the behaviour the code describes
   languages: [py]
   category: BUG
+  scope: main
   severity: major
   effort: 15min
   tags: [bug, generated]
@@ -676,6 +683,7 @@
   name: Pass should not be used
   languages: [py]
   category: SML
+  scope: main
   severity: minor
   effort: 15min
   tags: [avoid_api, generated]
@@ -810,6 +818,7 @@
   name: Functions should be simplified
   languages: [py]
   category: SML
+  scope: main
   severity: minor
   effort: 15min
   tags: [sml, generated]
@@ -1308,6 +1317,7 @@
   name: Regular expressions should be safe and correct
   languages: [py]
   category: SML
+  scope: main
   severity: minor
   effort: 15min
   tags: [regex, generated]
@@ -1662,6 +1672,7 @@
   name: Amazon S3 buckets should not weaken the security of the application
   languages: [py]
   category: SEC
+  scope: main
   severity: critical
   effort: 15min
   tags: [sec, generated]
@@ -1930,6 +1941,7 @@
   name: Replacement strings should be safe and correct
   languages: [py]
   category: BUG
+  scope: main
   severity: major
   effort: 15min
   tags: [regex, generated]
@@ -3972,6 +3984,7 @@
   name: AWS waiters should be replaced by the recommended alternative
   languages: [py]
   category: SML
+  scope: main
   severity: minor
   effort: 15min
   tags: [prefer_api, generated]
@@ -4523,6 +4536,7 @@
   name: StopIteration should match the behaviour the code describes
   languages: [py]
   category: BUG
+  scope: main
   severity: major
   effort: 15min
   tags: [bug, generated]
@@ -4970,6 +4984,7 @@
   name: Logging.exception() should be replaced by the recommended alternative
   languages: [py]
   category: SML
+  scope: main
   severity: minor
   effort: 15min
   tags: [prefer_api, generated]

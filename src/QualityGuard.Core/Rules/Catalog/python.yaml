@@ -32,6 +32,7 @@
   name: Template engines should keep auto-escaping on
   languages: [py]
   category: SEC
+  scope: main
   severity: critical
   effort: 20min
   cwe: [79]
@@ -127,6 +128,7 @@
   name: Cross-origin policies should name their origins
   languages: [py]
   category: SEC
+  scope: main
   severity: major
   effort: 15min
   cwe: [942]

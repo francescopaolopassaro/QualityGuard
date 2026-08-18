@@ -172,6 +172,7 @@
   name: Types should be declared on parameters and return values
   languages: [php]
   category: SML
+  scope: main
   severity: minor
   effort: 15min
   tags: [types]

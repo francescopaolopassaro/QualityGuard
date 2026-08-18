@@ -4,6 +4,7 @@
   name: Windows opened by the page should not keep a handle on it
   languages: [js, ts]
   category: SEC
+  scope: main
   severity: major
   effort: 10min
   cwe: [1022]
@@ -81,6 +82,7 @@
   name: Security headers should not be disabled
   languages: [js, ts]
   category: SEC
+  scope: main
   severity: major
   effort: 20min
   cwe: [693]
@@ -164,6 +166,7 @@
   name: Confidential values should not be logged
   languages: [js, ts]
   category: SEC
+  scope: main
   severity: major
   effort: 15min
   cwe: [532]
@@ -185,6 +188,7 @@
   name: Session cookies should not be attached to static responses
   languages: [js, ts]
   category: SEC
+  scope: main
   severity: major
   effort: 20min
   cwe: [524]
@@ -243,6 +247,7 @@
   name: Array callbacks should return a value
   languages: [js, ts]
   category: BUG
+  scope: main
   severity: major
   effort: 10min
   tags: [suspicious]
@@ -261,6 +266,7 @@
   name: Equality with NaN never holds
   languages: [js, ts]
   category: SML
+  scope: main
   severity: major
   effort: 5min
   tags: [suspicious]
@@ -296,6 +302,7 @@
   name: Delete should not be used on variables
   languages: [js]
   category: SML
+  scope: main
   severity: major
   effort: 10min
   tags: [suspicious]
@@ -315,6 +322,7 @@
   name: Non-null assertions should not hide missing checks
   languages: [ts]
   category: SML
+  scope: main
   severity: major
   effort: 15min
   tags: [types, null-safety]

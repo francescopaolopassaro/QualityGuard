@@ -171,6 +171,7 @@
   name: Cookies should not weaken the security of the application
   languages: [xml]
   category: SEC
+  scope: main
   severity: critical
   effort: 15min
   tags: [sec, generated]
@@ -510,6 +511,7 @@
   name: Custom permissions should not grant more access than needed
   languages: [xml]
   category: SEC
+  scope: main
   severity: critical
   effort: 15min
   tags: [permissions, generated]

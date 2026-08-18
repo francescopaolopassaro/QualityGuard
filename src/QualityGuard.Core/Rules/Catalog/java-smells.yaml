@@ -22,6 +22,7 @@
   name: Utility classes should not be instantiable
   languages: [java]
   category: SML
+  scope: main
   severity: major
   effort: 10min
   tags: [design]
@@ -60,6 +61,7 @@
   name: Legacy synchronized collections should not be used
   languages: [java]
   category: SML
+  scope: main
   severity: major
   effort: 15min
   tags: [collections, concurrency]
@@ -79,6 +81,7 @@
   name: String comparisons should not be wrapped in a conditional
   languages: [java, cs, js, ts, kt]
   category: SML
+  scope: main
   severity: minor
   effort: 5min
   tags: [readability]
@@ -96,6 +99,7 @@
   name: Nested try blocks should be flattened
   languages: [java, cs, py, js, ts]
   category: SML
+  scope: main
   severity: major
   effort: 20min
   tags: [exception, readability]
@@ -113,6 +117,7 @@
   name: Local variables should not shadow fields
   languages: [java, cs, kt]
   category: SML
+  scope: main
   severity: major
   effort: 10min
   tags: [readability, suspicious]
@@ -130,6 +135,7 @@
   name: Labels should not be used
   languages: [java]
   category: SML
+  scope: main
   severity: major
   effort: 20min
   tags: [readability]
@@ -220,6 +226,7 @@
   name: Inheritance should not be too deep
   languages: [java, cs, kt]
   category: SML
+  scope: main
   severity: major
   effort: 30min
   tags: [design]
@@ -238,6 +245,7 @@
   name: Strings should be compared with the constant on the left
   languages: [java]
   category: PRF
+  scope: main
   severity: minor
   effort: 5min
   tags: [null-safety]

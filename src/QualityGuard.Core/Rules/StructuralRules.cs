@@ -3923,6 +3923,35 @@ public abstract class UnusedParameterRule : StructuralRuleBase
             // an empty body is the same idea written as a default hook.
             if (owner != null && SyntaxQuery.Body(owner) is not { Children.Count: > 0 })
                 continue;
+            // A decorated or annotated function is called by something else, with a signature that
+            // something else decides: a route handler, an event hook, a fixture. The parameter is
+            // there because the caller passes it, and removing it breaks the call.
+            if (owner != null && owner.ChildrenOf(NodeKind.Attribute).Any())
+                continue;
+            // The name of a test's fixture is its request for that fixture, whether or not the body
+            // reads it, and a test file is where most of these live.
+            if (Rules.Languages.LanguageRuleSupport.IsTestFile(context.File.Path, context.File.FileName))
+                continue;
+            // A special method implements a protocol the language calls: the signature is fixed.
+            if (owner != null && owner.Text.StartsWith("__", StringComparison.Ordinal)
+                && owner.Text.EndsWith("__", StringComparison.Ordinal))
+                continue;
+            // Names the platform imposes: the entry point of a serverless function receives both
+            // whether or not it reads them.
+            if (symbol.Name is "self" or "cls" or "event" or "context" or "args" or "kwargs")
+                continue;
+            // A body that only declares itself unfinished has nothing to use the parameter in.
+            if (owner != null && SyntaxQuery.Body(owner) is { } shell
+                && shell.OfKind(NodeKind.Jump).Any(j => j.Text is "raise" or "throw")
+                && shell.Children.Count == 1)
+                continue;
+            // The name may be read from a docstring or a comment — an annotation written as a
+            // string, an example in the documentation — and that is a use the tree cannot show.
+            if (context.Tokens.Any(t => t.Kind is Tokenization.TokenKind.String
+                                            or Tokenization.TokenKind.Comment
+                                        && t.Text.Contains(symbol.Name, StringComparison.Ordinal)))
+                continue;
+
             context.Report(declaration.Identifier, $"'{symbol.Name}' is never used in the body; "
                                                    + "remove it or use the value the caller passes.");
         }

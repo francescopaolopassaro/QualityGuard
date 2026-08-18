@@ -186,6 +186,7 @@
   name: Developer diagnostics should not be enabled unconditionally
   languages: [cs]
   category: SEC
+  scope: main
   severity: critical
   effort: 15min
   cwe: [489]
@@ -366,6 +367,7 @@
   name: Passwords should not be stored with a fast hash
   languages: [cs, vb]
   category: SEC
+  scope: main
   severity: blocker
   effort: 30min
   cwe: [916]

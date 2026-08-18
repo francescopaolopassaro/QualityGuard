@@ -62,6 +62,7 @@
   name: Context managers should accept the three exit arguments
   languages: [py]
   category: BUG
+  scope: main
   severity: critical
   effort: 10min
   tags: [protocol]
@@ -187,6 +188,7 @@
   name: Key generation should use strong parameters
   languages: [py]
   category: SEC
+  scope: main
   severity: critical
   effort: 20min
   cwe: [326]
@@ -209,6 +211,7 @@
   name: Certificate verification should stay on
   languages: [py]
   category: SEC
+  scope: main
   severity: blocker
   effort: 15min
   cwe: [295]
@@ -232,6 +235,7 @@
   name: Cross-site request forgery protection should stay enabled
   languages: [py]
   category: SEC
+  scope: main
   severity: critical
   effort: 20min
   cwe: [352]

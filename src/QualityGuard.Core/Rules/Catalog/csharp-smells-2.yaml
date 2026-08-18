@@ -202,6 +202,7 @@
   name: Default clauses should be first or last
   languages: [cs]
   category: SML
+  scope: main
   severity: minor
   effort: 5min
   tags: [readability]
@@ -362,6 +363,7 @@
   name: Logger fields should follow one naming convention
   languages: [cs]
   category: SML
+  scope: main
   severity: minor
   effort: 5min
   tags: [logging, naming]
@@ -477,6 +479,7 @@
   name: Numeric literal suffixes should be upper case
   languages: [cs]
   category: CNV
+  scope: main
   severity: minor
   effort: 2min
   tags: [readability]

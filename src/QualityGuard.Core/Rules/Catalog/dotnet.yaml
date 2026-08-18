@@ -5,6 +5,7 @@
   name: Antiforgery validation should not be switched off
   languages: [cs]
   category: SEC
+  scope: main
   severity: critical
   effort: 15min
   cwe: [352]
@@ -301,6 +302,7 @@
   name: Secrets should not be written to logs
   languages: [cs]
   category: SEC
+  scope: main
   severity: major
   effort: 15min
   cwe: [532]
@@ -323,6 +325,7 @@
   name: Regular expressions on user input should have a timeout
   languages: [cs]
   category: SEC
+  scope: main
   severity: major
   effort: 15min
   cwe: [1333]
