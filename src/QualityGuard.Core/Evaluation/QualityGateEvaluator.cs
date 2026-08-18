@@ -68,14 +68,21 @@ public sealed class QualityGateEvaluator
 
     private static string Format(string metricKey, double value)
     {
-        var isPercent = metricKey is CoreMetrics.NewCoverage or CoreMetrics.NewDuplicatedLinesDensity
-            or CoreMetrics.NewSecurityHotspotsReviewed;
+        var isPercent = metricKey is CoreMetrics.NewCoverage or CoreMetrics.Coverage
+            or CoreMetrics.LineCoverage or CoreMetrics.BranchCoverage
+            or CoreMetrics.NewLineCoverage or CoreMetrics.NewBranchCoverage
+            or CoreMetrics.NewDuplicatedLinesDensity or CoreMetrics.NewSecurityHotspotsReviewed;
         return value.ToString("0.0", System.Globalization.CultureInfo.InvariantCulture) + (isPercent ? "%" : "");
     }
 
     private static string MetricName(string key) => key switch
     {
+        CoreMetrics.Coverage => "Coverage",
         CoreMetrics.NewCoverage => "Coverage on New Code",
+        CoreMetrics.LineCoverage => "Line Coverage",
+        CoreMetrics.BranchCoverage => "Branch Coverage",
+        CoreMetrics.NewLineCoverage => "Line Coverage on New Code",
+        CoreMetrics.NewBranchCoverage => "Branch Coverage on New Code",
         CoreMetrics.NewDuplicatedLinesDensity => "Duplicated Lines on New Code",
         CoreMetrics.NewSecurityRating => "Security Rating on New Code",
         CoreMetrics.NewReliabilityRating => "Reliability Rating on New Code",

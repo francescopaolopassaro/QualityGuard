@@ -3206,8 +3206,12 @@ public sealed class CSharpParser
                 continue;
             }
 
-            // PHP reaches a static member with ::, which is the same access for a rule
-            if (Is(".") || Is("?.") || (Is("->") && !IsKotlin) || (IsPhp && Is("::")))
+            // PHP reaches a static member with ::, which is the same access for a rule, and joins
+            // the parts of a qualified name with a backslash: one name, several separators. Leaving
+            // those in the stream ended the expression at each of them, so a single statement was
+            // counted as four and reported as a line holding several.
+            if (Is(".") || Is("?.") || (Is("->") && !IsKotlin)
+                || (IsPhp && (Is("::") || (Is("\\") && Peek() is { Kind: TokenKind.Identifier }))))
             {
                 // the operator itself is kept in the node's tokens: without it a null-conditional
                 // access reads exactly like a plain one, and a rule about null cannot tell them apart

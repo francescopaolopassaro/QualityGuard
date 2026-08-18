@@ -15,7 +15,6 @@ public static class ShellRuleSet
         new ShSourceVariableRule(),
         new ShPathRelativeRule(),
         new ShRmRecursiveRule(),
-        new ShMissingSetERule(),
         new ShUselessCatRule(),
         new ShDeprecatedGrepRule(),
         new ShMktempRule(),

@@ -20,7 +20,8 @@ var path = paths.FirstOrDefault();
 var gateFile = ExtractArg(args, "--gate", "--config");
 var sarifOut = ExtractArg(args, "--sarif", "--sarif-out");
 var sarifIn = ExtractArg(args, "--sarif-in", "--report");
-var coverageFile = ExtractArg(args, "--coverage", "--coverage-report");
+var coverageFiles = ExtractAll(args, "--coverage", "--coverage-report");
+var newCodeBase = ExtractArg(args, "--base", "--diff-base", "--new-code-base");
 var verbose = args.Any(a => a is "--verbose" or "-v");
 var newCodeMode = args.Any(a => a is "--new-code");
 var showFixes = args.Any(a => a is "--fix-hints" or "--how-to-fix") || verbose;
@@ -80,7 +81,14 @@ try
         ApplyNewCodeMetrics(metrics, analyses);
 
     // the gate has to see the coverage, so it is read before the verdict rather than with the summary
-    var coverage = ReadCoverage(coverageFile, metrics);
+    var coverage = ReadCoverage(coverageFiles);
+    if (coverage is not null)
+    {
+        ApplyCoverageMetrics(metrics, coverage);
+        if (newCodeBase is not null)
+            ApplyNewCodeCoverage(metrics, coverage, newCodeBase, analyses);
+    }
+
     var gateResult = new QualityGateEvaluator().Evaluate(metrics, conditions);
     PrintResult(gateResult, verbose);
 
@@ -94,7 +102,7 @@ try
         }
     }
 
-    PrintQualitySummary(analyses, metrics, coverage);
+    PrintQualitySummary(analyses, metrics, coverage, newCodeBase);
 
     if (byFolder)
         PrintFolderSummary(analyses);
@@ -205,24 +213,101 @@ static void ApplyNewCodeMetrics(Dictionary<string, double> metrics, List<FileAna
 
 /// <summary>
 /// Coverage cannot be worked out by reading code — it takes running the tests — so the number comes
-/// from the report the test runner already writes. Without it the gate has no way of telling a
-/// project with a thorough suite from one with none.
+/// from the report the test runner already writes. Several reports for the same suite (one per shard
+/// or per test project) are merged into one, and the tests' own files are left out so that the
+/// percentage describes production code. Without it the gate has no way of telling a project with a
+/// thorough suite from one with none.
 /// </summary>
-static QualityGuard.Core.Analysis.CoverageReport? ReadCoverage(string? file,
-                                                              Dictionary<string, double> metrics)
+static QualityGuard.Core.Analysis.CoverageReport? ReadCoverage(List<string> files)
 {
-    if (string.IsNullOrEmpty(file))
-        return null;
-    var report = QualityGuard.Core.Analysis.CoverageReport.Read(file);
-    if (report is null)
+    var reports = new List<QualityGuard.Core.Analysis.CoverageReport>();
+    foreach (var file in files)
     {
-        Console.Error.WriteLine($"WARNING: {file} is not a coverage report this reads "
-                                + "(lcov, Cobertura, JaCoCo or OpenCover).");
-        return null;
+        var report = QualityGuard.Core.Analysis.CoverageReport.Read(file);
+        if (report is null)
+        {
+            Console.Error.WriteLine($"WARNING: {file} is not a recognized coverage report "
+                                    + "(LCOV, Cobertura or JaCoCo).");
+            continue;
+        }
+        reports.Add(report);
     }
-    metrics[CoreMetrics.Coverage] = report.Percentage;
-    metrics[CoreMetrics.NewCoverage] = report.Percentage;
-    return report;
+    if (reports.Count == 0)
+        return null;
+    var merged = reports.Count == 1 ? reports[0] : QualityGuard.Core.Analysis.CoverageReport.Merge(reports);
+    return merged.ExcludingTests();
+}
+
+/// <summary>
+/// The overall coverage numbers into the metric map, computed the way the reference engine defines
+/// them: line coverage over lines, branch coverage over conditions, overall coverage over both.
+/// </summary>
+static void ApplyCoverageMetrics(Dictionary<string, double> metrics,
+                                 QualityGuard.Core.Analysis.CoverageReport coverage)
+{
+    metrics[CoreMetrics.LinesToCover] = coverage.LinesToCover;
+    metrics[CoreMetrics.UncoveredLines] = coverage.UncoveredLines;
+    metrics[CoreMetrics.ConditionsToCover] = coverage.ConditionsToCover;
+    metrics[CoreMetrics.UncoveredConditions] = coverage.UncoveredConditions;
+    metrics[CoreMetrics.Coverage] = coverage.Coverage;
+    metrics[CoreMetrics.LineCoverage] = coverage.LineCoverage;
+    metrics[CoreMetrics.BranchCoverage] = coverage.BranchCoverage;
+}
+
+/// <summary>
+/// New code means the lines the current branch added or rewrote against the base: git is asked which
+/// lines those are, the coverage report is restricted to them, and the same percentages are then
+/// computed over that smaller set. A gate that asks about <c>new_coverage</c> is then judging the
+/// change itself rather than the whole file. Without a base there is no new code to measure, so the
+/// <c>new_*</c> metrics are left unset — which is how a gate treats a metric it was not given.
+/// </summary>
+static bool ApplyNewCodeCoverage(Dictionary<string, double> metrics,
+                                 QualityGuard.Core.Analysis.CoverageReport coverage,
+                                 string baseRef, List<FileAnalysis> analyses)
+{
+    var git = GitChangedLines.Read(baseRef);
+    if (git.Count == 0)
+    {
+        Console.Error.WriteLine($"WARNING: could not read the lines changed since {baseRef} from git; "
+                                + "new code coverage is not measured.");
+        return false;
+    }
+
+    // git reports absolute paths and the scan may have recorded relative ones, so every scanned file
+    // is made absolute (against the working directory) before the two sides are compared
+    var resolver = new CoveragePathResolver(analyses.Select(a => System.IO.Path.GetFullPath(a.File.Path)));
+    var newLinesByFile = new Dictionary<string, IReadOnlySet<int>>(StringComparer.OrdinalIgnoreCase);
+    foreach (var file in coverage.Files)
+    {
+        if (resolver.Resolve(file.Path) is not { } scanned)
+            continue;
+        if (git.TryGetValue(scanned, out var lines))
+            newLinesByFile[file.Path] = lines;
+    }
+    if (newLinesByFile.Count == 0)
+    {
+        Console.Error.WriteLine($"WARNING: no covered file matched the lines changed since {baseRef}; "
+                                + "new code coverage is not measured.");
+        return false;
+    }
+
+    var newCode = coverage.NewCode(newLinesByFile);
+    if (!newCode.HasData)
+    {
+        Console.Error.WriteLine($"WARNING: no new code with coverage data since {baseRef}; "
+                                + "new code coverage is not measured.");
+        return false;
+    }
+    metrics[CoreMetrics.NewLinesToCover] = newCode.LinesToCover;
+    metrics[CoreMetrics.NewUncoveredLines] = newCode.UncoveredLines;
+    metrics[CoreMetrics.NewConditionsToCover] = newCode.ConditionsToCover;
+    metrics[CoreMetrics.NewUncoveredConditions] = newCode.UncoveredConditions;
+    metrics[CoreMetrics.NewCoverage] = newCode.Coverage;
+    metrics[CoreMetrics.NewLineCoverage] = newCode.LineCoverage;
+    metrics[CoreMetrics.NewBranchCoverage] = newCode.BranchCoverage;
+    // the fudge factor that skips coverage below 20 new lines reads this: it is the real new-code size
+    metrics[CoreMetrics.NewLines] = newCode.LinesToCover;
+    return true;
 }
 
 /// <summary>
@@ -231,11 +316,27 @@ static QualityGuard.Core.Analysis.CoverageReport? ReadCoverage(string? file,
 /// verdict without the figures behind it is impossible to argue with.
 /// </summary>
 static void PrintQualitySummary(List<FileAnalysis> analyses, Dictionary<string, double> metrics,
-                                QualityGuard.Core.Analysis.CoverageReport? coverage = null)
+                                QualityGuard.Core.Analysis.CoverageReport? coverage = null,
+                                string? newCodeBase = null)
 {
     if (coverage != null)
-        Console.WriteLine($"  Coverage         {coverage.Percentage,5:0.0}%   {coverage.CoveredLines} of "
-                          + $"{coverage.CoverableLines} lines reached by tests, over {coverage.ByFile.Count} files");
+    {
+        Console.WriteLine($"  Coverage         {coverage.Coverage,5:0.0}%   {coverage.CoveredLines} of "
+                          + $"{coverage.LinesToCover} lines and {coverage.CoveredConditions} of "
+                          + $"{coverage.ConditionsToCover} conditions "
+                          + $"(line {coverage.LineCoverage:0.0}%, branch {coverage.BranchCoverage:0.0}%) "
+                          + $"over {coverage.Files.Count} files");
+    }
+    if (metrics.ContainsKey(CoreMetrics.NewCoverage) && newCodeBase is not null)
+    {
+        var newLines = metrics.GetValueOrDefault(CoreMetrics.NewLinesToCover);
+        var newCovered = newLines - metrics.GetValueOrDefault(CoreMetrics.NewUncoveredLines);
+        var newConditions = metrics.GetValueOrDefault(CoreMetrics.NewConditionsToCover);
+        var newCoveredConditions = newConditions - metrics.GetValueOrDefault(CoreMetrics.NewUncoveredConditions);
+        Console.WriteLine($"  New code         {metrics[CoreMetrics.NewCoverage],5:0.0}%   {newCovered:0} of {newLines:0}"
+                          + $" new lines and {newCoveredConditions:0} of {newConditions:0} new conditions "
+                          + $"since {newCodeBase}");
+    }
     var issues = analyses.SelectMany(a => a.Issues).ToList();
     var debt = (int)metrics.GetValueOrDefault(CoreMetrics.TechnicalDebt);
 
@@ -463,6 +564,11 @@ static void PrintUsage()
           --max-file-kb skip files larger than this (default 2048).
           --all-files   keep the build, dependency and generated files that are skipped by default
                         (bin, obj, node_modules, vendor, dist, *.min.js, *.designer.cs, …).
+          --coverage    coverage report from the test runner (LCOV, Cobertura or JaCoCo). Repeatable:
+                        reports from every test shard are merged. Test files are excluded by default.
+          --base        base branch/commit/tag that new code is measured against. When given with
+                        --coverage, the new_* coverage metrics are computed from git on the lines the
+                        current branch actually changed, instead of being left empty.
 
         Output
           --by-folder   summary table of files, ncloc and issues per directory.

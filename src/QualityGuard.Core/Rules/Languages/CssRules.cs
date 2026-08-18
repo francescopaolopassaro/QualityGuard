@@ -48,11 +48,26 @@ public sealed class CssImportRule : PatternRuleBase
 
     public override void Execute(IRuleContext context)
     {
+        // In Sass and Less '@import' is resolved when the stylesheet is built and leaves nothing
+        // behind: the browser never sees it, so there is no request to serialise. This rule is about
+        // the CSS at-rule the browser fetches, and in a preprocessed file it means the opposite.
+        if (StyleSheetKind.IsBuilt(context.File.FileName))
+            return;
+
         var lines = context.File.Content.Split('\n');
         for (var i = 0; i < lines.Length; i++)
             if (lines[i].TrimStart().StartsWith("@import", StringComparison.Ordinal))
                 context.Report("Avoid @import; it blocks parallel loading.", i + 1);
     }
+}
+
+/// <summary>Whether the stylesheet is built before a browser ever sees it.</summary>
+internal static class StyleSheetKind
+{
+    private static readonly string[] Preprocessed = [".scss", ".sass", ".less", ".styl"];
+
+    public static bool IsBuilt(string fileName)
+        => Preprocessed.Any(e => fileName.EndsWith(e, StringComparison.OrdinalIgnoreCase));
 }
 
 public sealed class CssUniversalSelectorRule : PatternRuleBase

@@ -10,7 +10,6 @@ public static class CSharpRuleSet
     [
         new CsUploadedFileNameRule(),
         new CsMutableCollectionPropertyRule(),
-        new CsAsyncSuffixRule(),
         new CsProcessExecutionRule(),
         new CsSqlInjectionRule(),
         new CsWeakCryptoRule(),

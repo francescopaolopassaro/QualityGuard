@@ -802,3 +802,21 @@
     them off the tree and can tell a library from an entry point. The more careful one is kept.
   fix: |
     Send the message through the logger, or remove it.
+
+- key: QG-SH-SML-0001
+  name: Script without set -euo pipefail
+  status: superseded
+  superseded_by: QG-SH-SEC-0006
+  languages: [sh]
+  category: SML
+  severity: minor
+  effort: 5min
+  tags: [shell]
+  message: Add 'set -euo pipefail' to exit early on errors.
+  summary: A shell script does not set the strict options.
+  why: |
+    The options are worth setting, and they are also a house choice: a script meant to survive a
+    failing command sets them deliberately the other way. No reference catalogue carries the rule —
+    there is no shell analyser to carry it — and ours fired on the shebang of every script it found.
+  fix: |
+    Where a team wants the options enforced, a lint step configured by that team is the place for it.

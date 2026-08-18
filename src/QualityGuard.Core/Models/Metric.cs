@@ -20,6 +20,18 @@ public static class CoreMetrics
 {
     public const string Coverage = "coverage";
     public const string NewCoverage = "new_coverage";
+    public const string LineCoverage = "line_coverage";
+    public const string BranchCoverage = "branch_coverage";
+    public const string NewLineCoverage = "new_line_coverage";
+    public const string NewBranchCoverage = "new_branch_coverage";
+    public const string LinesToCover = "lines_to_cover";
+    public const string UncoveredLines = "uncovered_lines";
+    public const string ConditionsToCover = "conditions_to_cover";
+    public const string UncoveredConditions = "uncovered_conditions";
+    public const string NewLinesToCover = "new_lines_to_cover";
+    public const string NewUncoveredLines = "new_uncovered_lines";
+    public const string NewConditionsToCover = "new_conditions_to_cover";
+    public const string NewUncoveredConditions = "new_uncovered_conditions";
     public const string NewDuplicatedLinesDensity = "new_duplicated_lines_density";
     public const string NewSecurityRating = "new_security_rating";
     public const string NewReliabilityRating = "new_reliability_rating";
@@ -52,8 +64,20 @@ public static class CoreMetrics
 
     public static readonly IReadOnlyList<Metric> All =
     [
-        new Metric(Coverage, "Coverage", "Share of lines the tests reach, read from the runner's report"),
+        new Metric(Coverage, "Coverage", "Share of lines and conditions the tests reach"),
         new Metric(NewCoverage, "Coverage on New Code", "Coverage of new/changed code"),
+        new Metric(LineCoverage, "Line Coverage", "Share of executable lines the tests reach"),
+        new Metric(BranchCoverage, "Branch Coverage", "Share of conditions the tests reach"),
+        new Metric(NewLineCoverage, "Line Coverage on New Code", "Line coverage of new code"),
+        new Metric(NewBranchCoverage, "Branch Coverage on New Code", "Branch coverage of new code"),
+        new Metric(LinesToCover, "Lines to Cover", "Executable lines the tests should reach"),
+        new Metric(UncoveredLines, "Uncovered Lines", "Executable lines the tests never reach"),
+        new Metric(ConditionsToCover, "Conditions to Cover", "Conditions the tests should reach"),
+        new Metric(UncoveredConditions, "Uncovered Conditions", "Conditions the tests never reach"),
+        new Metric(NewLinesToCover, "Lines to Cover on New Code", "Executable lines of new code"),
+        new Metric(NewUncoveredLines, "Uncovered Lines on New Code", "Uncovered lines on new code"),
+        new Metric(NewConditionsToCover, "Conditions to Cover on New Code", "Conditions of new code"),
+        new Metric(NewUncoveredConditions, "Uncovered Conditions on New Code", "Uncovered conditions on new code"),
         new Metric(NewDuplicatedLinesDensity, "Duplicated Lines on New Code", "Duplicated lines on new code"),
         new Metric(NewSecurityRating, "Security Rating on New Code", "Security rating of new code"),
         new Metric(NewReliabilityRating, "Reliability Rating on New Code", "Reliability rating of new code"),
