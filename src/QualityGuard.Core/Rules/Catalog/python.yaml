@@ -433,3 +433,76 @@
     that really do hide defects.
   fix: |
     The rule about catching everything covers the case that matters, and names what to change.
+
+# Cloud rules implemented in Rules/Languages/PythonCloudRules.cs. A permission statement is read
+# both as the construct of the deployment library and as the plain dictionary that ends up in the
+# template, because the second is what gets pasted in from a console and never reviewed.
+
+- key: QG-PY-SEC-0063
+  name: A permission statement should not allow every action
+  languages: [py]
+  category: SEC
+  severity: critical
+  effort: 15min
+  cwe: [284]
+  tags: [cloud, permissions]
+  summary: A policy statement grants every action on the resources it names.
+  why: |
+    Whoever holds it can read, change and delete anything those resources contain, and can grant the
+    same to somebody else. A wildcard of this kind is written to get a deployment working and then
+    stays, because nothing ever fails to remind anyone of it.
+  fix: |
+    List the actions the workload actually calls. Start from what it does today and add to the list
+    when something legitimately fails.
+
+- key: QG-PY-SEC-0067
+  name: A permission statement should not allow escalation over every resource
+  languages: [py]
+  category: SEC
+  severity: critical
+  effort: 30min
+  cwe: [284]
+  tags: [cloud, permissions]
+  summary: A policy grants an identity-changing action over every resource in the account.
+  why: |
+    Creating a credential for another identity, attaching a policy, passing a role to something that
+    then runs with it: each of these turns limited access into unlimited access. Scoped to one
+    resource they are ordinary; scoped to all of them, the policy is worth as much as the most
+    privileged role it can reach.
+  fix: |
+    Name the resources the statement applies to, and keep the actions that delegate identity out of
+    the policies that applications use.
+
+- key: QG-PY-SEC-0069
+  name: Remote administration should not be open to every address
+  languages: [py]
+  category: SEC
+  severity: critical
+  effort: 15min
+  cwe: [284]
+  tags: [cloud, network]
+  summary: A security group rule opens a remote shell or desktop port to the whole internet.
+  why: |
+    Whatever authentication sits behind the port becomes the only thing between the machine and the
+    scanners that find it within minutes of the rule being applied. The rule itself is usually
+    temporary in intent and permanent in practice.
+  fix: |
+    Restrict the address range to the networks that administer the system, or reach the machine
+    through the provider's own session service, which authenticates and records the connection.
+
+- key: QG-PY-SEC-0084
+  name: A server should not listen on every network interface
+  languages: [py]
+  category: SEC
+  severity: major
+  effort: 10min
+  cwe: [668]
+  tags: [network]
+  summary: A web server is started bound to every interface of the machine.
+  why: |
+    It is then reachable from every network the machine is attached to, including the ones nobody
+    meant to expose it on and the public one when the machine has a routable address. On a developer
+    machine it also publishes the application to the local network.
+  fix: |
+    Bind to the address the server is meant to serve — the loopback one during development — and let
+    a proxy publish it where it has to be public.

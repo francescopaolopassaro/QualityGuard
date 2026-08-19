@@ -3,7 +3,7 @@
 # detection is written by hand, against the shape the defect actually has, and measured before
 # the entry stops being planned.
 
-- key: QG-K8-SEC-0026
+- key: QG-K8-SEC-0036
   name: Secrets should not be hard-coded
   languages: [k8]
   category: SEC
@@ -19,7 +19,7 @@
   fix: |
     Read the value from configuration the deployment supplies, and rotate the one already committed.
 
-- key: QG-K8-SEC-0027
+- key: QG-K8-SEC-0037
   name: Administration services should not run in containers
   languages: [k8]
   category: SEC
@@ -35,7 +35,7 @@
   fix: |
     Make the intended behaviour explicit, and cover the case that used to fail with a test.
 
-- key: QG-K8-SEC-0028
+- key: QG-K8-SEC-0038
   name: Clear-text protocols should not be used
   languages: [k8]
   category: SEC
@@ -51,7 +51,7 @@
   fix: |
     Make the intended behaviour explicit, and cover the case that used to fail with a test.
 
-- key: QG-K8-SEC-0029
+- key: QG-K8-SEC-0039
   name: Excessive Linux capabilities should not be granted
   languages: [k8]
   category: SEC
@@ -67,7 +67,7 @@
   fix: |
     Make the intended behaviour explicit, and cover the case that used to fail with a test.
 
-- key: QG-K8-SEC-0030
+- key: QG-K8-SEC-0040
   name: Containers should not share the host operating system namespaces
   languages: [k8]
   category: SEC
@@ -83,7 +83,7 @@
   fix: |
     Rename it to match the convention used around it.
 
-- key: QG-K8-SEC-0031
+- key: QG-K8-SEC-0041
   name: Service account permissions should be restricted
   languages: [k8]
   category: SEC
@@ -99,7 +99,7 @@
   fix: |
     Grant the access to the identities that need it and to nothing else.
 
-- key: QG-K8-SEC-0032
+- key: QG-K8-SEC-0042
   name: Kubernetes roles should not allow command execution in pods
   languages: [k8]
   category: SEC
@@ -115,7 +115,7 @@
   fix: |
     Keep the instruction fixed and pass the values separately, so no input can change its shape.
 
-- key: QG-K8-SEC-0033
+- key: QG-K8-SEC-0043
   name: Storage limits should be enforced
   languages: [k8]
   category: SEC
@@ -131,7 +131,7 @@
   fix: |
     Make the intended behaviour explicit, and cover the case that used to fail with a test.
 
-- key: QG-K8-SEC-0034
+- key: QG-K8-SEC-0044
   name: Sensitive file system paths should not be mounted in containers
   languages: [k8]
   category: SEC
@@ -147,7 +147,7 @@
   fix: |
     Make the intended behaviour explicit, and cover the case that used to fail with a test.
 
-- key: QG-K8-SEC-0035
+- key: QG-K8-SEC-0045
   name: CPU limits should be enforced
   languages: [k8]
   category: SEC
@@ -163,7 +163,7 @@
   fix: |
     Make the intended behaviour explicit, and cover the case that used to fail with a test.
 
-- key: QG-K8-SML-0067
+- key: QG-K8-SML-0071
   name: Specific version tag for image should be used
   languages: [k8]
   category: SML
@@ -179,7 +179,7 @@
   fix: |
     Use the current API, and keep the old one only behind a documented compatibility layer.
 
-- key: QG-K8-SML-0068
+- key: QG-K8-SML-0072
   name: Ensure whitespace in-between braces in template directives
   languages: [k8]
   category: SML
@@ -195,7 +195,7 @@
   fix: |
     Guard the shared state, or give each caller its own copy.
 
-- key: QG-K8-SML-0069
+- key: QG-K8-SML-0073
   name: Deprecated code should not be used
   languages: [k8]
   category: SML
@@ -211,7 +211,7 @@
   fix: |
     Use the current API, and keep the old one only behind a documented compatibility layer.
 
-- key: QG-K8-SML-0070
+- key: QG-K8-SML-0074
   name: Kubernetes parsing failure
   languages: [k8]
   category: SML

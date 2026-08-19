@@ -827,3 +827,173 @@
     there is no shell analyser to carry it — and ours fired on the shebang of every script it found.
   fix: |
     Where a team wants the options enforced, a lint step configured by that team is the place for it.
+
+# Platform descriptor rules implemented in Rules/Languages/XmlPlatformRules.cs. Each one is bound to
+# the file that gives its elements meaning — a mobile manifest, a web descriptor, a site
+# configuration — because the same element name means something else everywhere else.
+
+- key: QG-XML-SEC-0005
+  name: A default interceptor should be declared where it applies
+  languages: [xml]
+  category: SEC
+  severity: major
+  effort: 15min
+  cwe: [693]
+  tags: [descriptor, java]
+  summary: An interceptor bound to every component is declared outside the standard descriptor.
+  why: |
+    A default interceptor is only applied when it is declared in the deployment descriptor the
+    container reads for it. Declared anywhere else it is parsed, accepted and never invoked, so
+    whatever it does for every call — an audit entry, an authorisation check — silently does not
+    happen.
+  fix: |
+    Move the binding to ejb-jar.xml, where the container looks for it.
+
+- key: QG-XML-SEC-0007
+  name: A declared filter should have a mapping
+  languages: [xml]
+  category: SEC
+  severity: critical
+  effort: 15min
+  cwe: [693]
+  tags: [descriptor, java]
+  summary: A filter is declared in the web descriptor and mapped to no path.
+  why: |
+    The filter is instantiated and then runs on no request at all. When it is the one that
+    authenticates, escapes output or validates a token, the protection somebody wrote is simply
+    absent — and because the declaration is there, a reader is convinced it is in place.
+  fix: |
+    Add a filter-mapping for it, or remove the declaration so nobody is misled by it.
+
+- key: QG-XML-SEC-0008
+  name: Two validation forms should not share a name
+  languages: [xml]
+  category: SEC
+  severity: critical
+  effort: 10min
+  tags: [descriptor, java]
+  summary: One form set declares two forms with the same name.
+  why: |
+    Only one of the two is used and the other is discarded without a message, so the validation
+    somebody wrote may never run on the input it was written for. Which one survives is a detail of
+    the parser, not a decision anybody made.
+  fix: |
+    Rename one of the forms, or merge the two declarations into the one that is actually used.
+
+- key: QG-XML-SEC-0009
+  name: A shipped application should not enable its debugging features
+  languages: [xml]
+  category: SEC
+  severity: critical
+  effort: 10min
+  cwe: [489]
+  tags: [android, aspnet, configuration]
+  summary: A mobile manifest marks the package debuggable, or a site turns custom errors off.
+  why: |
+    A debuggable package lets anyone holding the device attach to the process, read its memory and
+    step through it. A site without custom errors answers a failed request with the stack trace, the
+    failing statement and the physical path — a map of the application, handed to whoever was probing
+    it.
+  fix: |
+    Remove the debuggable attribute; the build tools set it for you in a debug build. Set custom
+    errors to RemoteOnly or On.
+
+- key: QG-XML-SEC-0010
+  name: A broadcast receiver should require a permission
+  languages: [xml]
+  category: SEC
+  severity: critical
+  effort: 10min
+  cwe: [925]
+  tags: [android, permissions]
+  summary: A manifest declares a reachable receiver without a permission.
+  why: |
+    Any application on the device can then send it the broadcast it listens for, with whatever data
+    it likes and whenever it likes. The code that handles the intent treats input from an unknown
+    source as its own, and can be triggered at will.
+  fix: |
+    Require a permission on the receiver, or mark it as not exported when it is only for internal
+    use.
+
+- key: QG-XML-SEC-0011
+  name: An application should not allow traffic in clear text
+  languages: [xml]
+  category: SEC
+  severity: critical
+  effort: 15min
+  cwe: [319]
+  tags: [android, network, encryption]
+  summary: A manifest opts back in to unencrypted HTTP.
+  why: |
+    Anyone on the same network as the device — a shared access point, a mobile operator, a captive
+    portal — reads and rewrites what the application exchanges. The application keeps working
+    perfectly, which is why the setting survives for years after the one endpoint that needed it is
+    gone.
+  fix: |
+    Remove the attribute and declare the few hosts that still need clear text in the network security
+    configuration.
+
+- key: QG-XML-SEC-0014
+  name: A site should tell browsers not to guess content types
+  languages: [xml]
+  category: SEC
+  severity: minor
+  effort: 10min
+  cwe: [430]
+  tags: [aspnet, headers]
+  summary: A site configures response headers but not the one that disables content sniffing.
+  why: |
+    Without it a browser may decide for itself what a file is, whatever the response says. A document
+    a user uploaded can then be interpreted as script and run in the site's own origin, with the
+    session of whoever opened it.
+  fix: |
+    Add X-Content-Type-Options with the value nosniff to the response headers.
+
+- key: QG-XML-SEC-0015
+  name: Application backup should be disabled or restricted
+  languages: [xml]
+  category: SEC
+  severity: major
+  effort: 15min
+  cwe: [312]
+  tags: [android, data]
+  summary: A manifest leaves the platform backup on with nothing to limit what it takes.
+  why: |
+    Everything the application stores is copied off the device, including the files it keeps private:
+    tokens, cached personal data, a local database. The copy then lives wherever the backup goes, and
+    is restored onto whichever device claims the account.
+  fix: |
+    Disable the backup, declare a backup agent, or list which files it may take.
+
+- key: QG-XML-SEC-0017
+  name: A content provider should separate its read and write permissions
+  languages: [xml]
+  category: SEC
+  severity: major
+  effort: 10min
+  cwe: [732]
+  tags: [android, permissions]
+  summary: A provider guards reading and writing with the same permission.
+  why: |
+    Every application granted the right to read the data is then also granted the right to change it.
+    The two are almost never wanted together: one is sharing, the other is trust, and the manifest
+    gives no hint that the second was granted by accident.
+  fix: |
+    Declare readPermission and writePermission separately, and give each the level it needs.
+
+- key: QG-XML-SEC-0018
+  name: A component with an intent filter should say whether it is exported
+  languages: [xml]
+  category: SEC
+  severity: major
+  effort: 10min
+  cwe: [926]
+  tags: [android, permissions]
+  summary: A manifest component declares an intent filter without stating whether it is exported.
+  why: |
+    The default depends on the platform version the package is installed on: on older ones a
+    component with an intent filter becomes reachable from every other application on the device.
+    Whether this component is part of the application's public surface is then decided by the phone,
+    not by the author.
+  fix: |
+    State the exported attribute explicitly, either way.

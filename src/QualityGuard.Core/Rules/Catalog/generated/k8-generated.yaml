@@ -57,25 +57,6 @@
     Replace the call with the current API, and keep the old one only behind a compatibility layer that is
     documented and dated.
 
-- key: QG-K8-SEC-0011
-  name: Excessive Linux capabilities should not weaken the security of the application
-  languages: [k8]
-  category: SEC
-  severity: critical
-  effort: 15min
-  tags: [sec, generated]
-  generated: true
-  status: planned
-  message: This construct weakens the security of the application.
-  summary: A construct that attackers routinely target is used without the guard it needs.
-  why: |
-    The pattern either trusts data the program does not control, or relies on a mechanism that no longer
-    offers the protection it appears to offer. Both keep working normally, which is why they survive
-    until someone looks for them.
-  fix: |
-    Validate the incoming value against an allowed set, pass it as data rather than as code or command,
-    and replace weakened mechanisms with the current recommended one.
-
 - key: QG-K8-SEC-0012
   name: Secrets should not be committed with the source
   languages: [k8]
@@ -97,44 +78,6 @@
 
 - key: QG-K8-SEC-0014
   name: Docker sockets should not weaken the security of the application
-  languages: [k8]
-  category: SEC
-  severity: critical
-  effort: 15min
-  tags: [sec, generated]
-  generated: true
-  status: planned
-  message: This construct weakens the security of the application.
-  summary: A construct that attackers routinely target is used without the guard it needs.
-  why: |
-    The pattern either trusts data the program does not control, or relies on a mechanism that no longer
-    offers the protection it appears to offer. Both keep working normally, which is why they survive
-    until someone looks for them.
-  fix: |
-    Validate the incoming value against an allowed set, pass it as data rather than as code or command,
-    and replace weakened mechanisms with the current recommended one.
-
-- key: QG-K8-SEC-0015
-  name: Containers should not weaken the security of the application
-  languages: [k8]
-  category: SEC
-  severity: critical
-  effort: 15min
-  tags: [sec, generated]
-  generated: true
-  status: planned
-  message: This construct weakens the security of the application.
-  summary: A construct that attackers routinely target is used without the guard it needs.
-  why: |
-    The pattern either trusts data the program does not control, or relies on a mechanism that no longer
-    offers the protection it appears to offer. Both keep working normally, which is why they survive
-    until someone looks for them.
-  fix: |
-    Validate the incoming value against an allowed set, pass it as data rather than as code or command,
-    and replace weakened mechanisms with the current recommended one.
-
-- key: QG-K8-SEC-0016
-  name: Administration services should not weaken the security of the application
   languages: [k8]
   category: SEC
   severity: critical
@@ -208,25 +151,6 @@
   fix: |
     Grant the narrowest right that works, to the specific identity that needs it, and rely on inherited
     permissions from a properly secured parent instead of widening the resource itself.
-
-- key: QG-K8-SEC-0020
-  name: Kubernetes roles should not weaken the security of the application
-  languages: [k8]
-  category: SEC
-  severity: critical
-  effort: 15min
-  tags: [sec, generated]
-  generated: true
-  status: planned
-  message: This construct weakens the security of the application.
-  summary: A construct that attackers routinely target is used without the guard it needs.
-  why: |
-    The pattern either trusts data the program does not control, or relies on a mechanism that no longer
-    offers the protection it appears to offer. Both keep working normally, which is why they survive
-    until someone looks for them.
-  fix: |
-    Validate the incoming value against an allowed set, pass it as data rather than as code or command,
-    and replace weakened mechanisms with the current recommended one.
 
 - key: QG-K8-SEC-0021
   name: CPU limits should not weaken the security of the application

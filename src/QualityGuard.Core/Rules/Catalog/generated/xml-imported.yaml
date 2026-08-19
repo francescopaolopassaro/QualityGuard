@@ -3,7 +3,7 @@
 # detection is written by hand, against the shape the defect actually has, and measured before
 # the entry stops being planned.
 
-- key: QG-XML-SEC-0019
+- key: QG-XML-SEC-0032
   name: Default EJB interceptors should be declared in "ejb-jar.xml"
   languages: [xml]
   category: SEC
@@ -19,7 +19,7 @@
   fix: |
     Make the intended behaviour explicit, and cover the case that used to fail with a test.
 
-- key: QG-XML-SEC-0020
+- key: QG-XML-SEC-0033
   name: Struts filters should not miss their corresponding filter-map
   languages: [xml]
   category: SEC
@@ -35,7 +35,7 @@
   fix: |
     Make the intended behaviour explicit, and cover the case that used to fail with a test.
 
-- key: QG-XML-SEC-0021
+- key: QG-XML-SEC-0034
   name: Struts validation forms should have unique names
   languages: [xml]
   category: SEC
@@ -51,7 +51,7 @@
   fix: |
     Rename it to match the convention used around it.
 
-- key: QG-XML-SEC-0022
+- key: QG-XML-SEC-0035
   name: Android broadcast receivers should not be registered without a permission
   languages: [xml]
   category: SEC
@@ -67,7 +67,7 @@
   fix: |
     Grant the access to the identities that need it and to nothing else.
 
-- key: QG-XML-SEC-0023
+- key: QG-XML-SEC-0036
   name: Debugging features should not be enabled in production
   languages: [xml]
   category: SEC
@@ -83,7 +83,7 @@
   fix: |
     Make the intended behaviour explicit, and cover the case that used to fail with a test.
 
-- key: QG-XML-SEC-0024
+- key: QG-XML-SEC-0037
   name: Clear-text protocols should not be used
   languages: [xml]
   category: SEC
@@ -99,7 +99,7 @@
   fix: |
     Make the intended behaviour explicit, and cover the case that used to fail with a test.
 
-- key: QG-XML-SEC-0025
+- key: QG-XML-SEC-0038
   name: Browsers should not be allowed to perform MIME type sniffing
   languages: [xml]
   category: SEC
@@ -115,7 +115,7 @@
   fix: |
     Make the intended behaviour explicit, and cover the case that used to fail with a test.
 
-- key: QG-XML-SEC-0026
+- key: QG-XML-SEC-0039
   name: Android application backup should be disabled or restricted
   languages: [xml]
   category: SEC
@@ -131,7 +131,7 @@
   fix: |
     Make the intended behaviour explicit, and cover the case that used to fail with a test.
 
-- key: QG-XML-SEC-0027
+- key: QG-XML-SEC-0040
   name: Content providers should use separate read and write permissions
   languages: [xml]
   category: SEC
@@ -147,7 +147,7 @@
   fix: |
     Grant the access to the identities that need it and to nothing else.
 
-- key: QG-XML-SEC-0028
+- key: QG-XML-SEC-0041
   name: Components should be explicitly exported
   languages: [xml]
   category: SEC
@@ -163,7 +163,7 @@
   fix: |
     Make the intended behaviour explicit, and cover the case that used to fail with a test.
 
-- key: QG-XML-SEC-0029
+- key: QG-XML-SEC-0042
   name: Basic authentication should not be used
   languages: [xml]
   category: SEC
@@ -179,7 +179,7 @@
   fix: |
     Grant the access to the identities that need it and to nothing else.
 
-- key: QG-XML-SEC-0030
+- key: QG-XML-SEC-0043
   name: Exported component access should be restricted with appropriate permissions
   languages: [xml]
   category: SEC
@@ -195,7 +195,7 @@
   fix: |
     Grant the access to the identities that need it and to nothing else.
 
-- key: QG-XML-SEC-0031
+- key: QG-XML-SEC-0044
   name: Sensitive permissions should not be requested unnecessarily
   languages: [xml]
   category: SEC
@@ -211,7 +211,7 @@
   fix: |
     Grant the access to the identities that need it and to nothing else.
 
-- key: QG-XML-BUG-0047
+- key: QG-XML-BUG-0052
   name: XML files containing a prolog header should start with "<?xml" characters
   languages: [xml]
   category: BUG
@@ -227,7 +227,7 @@
   fix: |
     Make the intended behaviour explicit, and cover the case that used to fail with a test.
 
-- key: QG-XML-BUG-0048
+- key: QG-XML-BUG-0053
   name: Dependencies should not have "system" scope
   languages: [xml]
   category: BUG
@@ -243,7 +243,7 @@
   fix: |
     Guard the shared state, or give each caller its own copy.
 
-- key: QG-XML-BUG-0049
+- key: QG-XML-BUG-0054
   name: Hibernate should not update database schemas
   languages: [xml]
   category: BUG
@@ -259,7 +259,7 @@
   fix: |
     Keep the instruction fixed and pass the values separately, so no input can change its shape.
 
-- key: QG-XML-BUG-0050
+- key: QG-XML-BUG-0055
   name: "SingleConnectionFactory" instances should be set to "reconnectOnException"
   languages: [xml]
   category: BUG
@@ -275,7 +275,7 @@
   fix: |
     Release it on every path, including the exceptional one.
 
-- key: QG-XML-BUG-0051
+- key: QG-XML-BUG-0056
   name: "DefaultMessageListenerContainer" instances should not drop messages during restarts
   languages: [xml]
   category: BUG
@@ -291,7 +291,7 @@
   fix: |
     Make the intended behaviour explicit, and cover the case that used to fail with a test.
 
-- key: QG-XML-SML-0063
+- key: QG-XML-SML-0074
   name: Deprecated "${pom}" properties should not be used
   languages: [xml]
   category: SML
@@ -307,7 +307,7 @@
   fix: |
     Use the current API, and keep the old one only behind a documented compatibility layer.
 
-- key: QG-XML-SML-0064
+- key: QG-XML-SML-0075
   name: EJB interceptor exclusions should be declared as annotations
   languages: [xml]
   category: SML
@@ -323,7 +323,7 @@
   fix: |
     Make the intended behaviour explicit, and cover the case that used to fail with a test.
 
-- key: QG-XML-SML-0065
+- key: QG-XML-SML-0076
   name: Source code should be indented consistently
   languages: [xml]
   category: SML
@@ -339,7 +339,7 @@
   fix: |
     Rename it to match the convention used around it.
 
-- key: QG-XML-SML-0066
+- key: QG-XML-SML-0077
   name: Newlines should follow each element
   languages: [xml]
   category: SML
@@ -355,7 +355,7 @@
   fix: |
     Split it along the responsibilities it has accumulated.
 
-- key: QG-XML-SML-0067
+- key: QG-XML-SML-0078
   name: "action" mappings should not have too many "forward" entries
   languages: [xml]
   category: SML
@@ -371,7 +371,7 @@
   fix: |
     Split it along the responsibilities it has accumulated.
 
-- key: QG-XML-SML-0068
+- key: QG-XML-SML-0079
   name: Track uses of disallowed dependencies
   languages: [xml]
   category: SML
@@ -387,7 +387,7 @@
   fix: |
     Make the intended behaviour explicit, and cover the case that used to fail with a test.
 
-- key: QG-XML-SML-0069
+- key: QG-XML-SML-0080
   name: Lines should not be too long
   languages: [xml]
   category: SML
@@ -403,7 +403,7 @@
   fix: |
     Rename it to match the convention used around it.
 
-- key: QG-XML-SML-0070
+- key: QG-XML-SML-0081
   name: Tabulation characters should not be used
   languages: [xml]
   category: SML
@@ -419,7 +419,7 @@
   fix: |
     Rename it to match the convention used around it.
 
-- key: QG-XML-SML-0071
+- key: QG-XML-SML-0082
   name: Track breaches of an XPath rule
   languages: [xml]
   category: SML
@@ -435,7 +435,7 @@
   fix: |
     Keep the instruction fixed and pass the values separately, so no input can change its shape.
 
-- key: QG-XML-SML-0072
+- key: QG-XML-SML-0083
   name: XML parser failure
   languages: [xml]
   category: SML
@@ -451,7 +451,7 @@
   fix: |
     Make the intended behaviour explicit, and cover the case that used to fail with a test.
 
-- key: QG-XML-SML-0073
+- key: QG-XML-SML-0084
   name: pom elements should be in the recommended order
   languages: [xml]
   category: SML

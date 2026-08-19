@@ -114,25 +114,6 @@
     Grant the narrowest right that works, to the specific identity that needs it, and rely on inherited
     permissions from a properly secured parent instead of widening the resource itself.
 
-- key: QG-CF-SEC-0019
-  name: Amazon S3 bucket public access should not grant more access than needed
-  languages: [cf]
-  category: SEC
-  severity: critical
-  effort: 15min
-  tags: [permissions, generated]
-  generated: true
-  status: planned
-  message: This grants wider access than the operation needs.
-  summary: A resource is created or shared with permissions wider than the task requires.
-  why: |
-    Every account that can reach the resource can also change it, so a single compromised process is
-    enough to alter data or code the application later trusts. Wide permissions are also invisible at the
-    call site: nothing in the reading code says who else can write.
-  fix: |
-    Grant the narrowest right that works, to the specific identity that needs it, and rely on inherited
-    permissions from a properly secured parent instead of widening the resource itself.
-
 - key: QG-CF-SML-0003
   name: Log Groups should be declared the way the language intends
   languages: [cf]
@@ -169,44 +150,6 @@
   fix: |
     Remove what is not used, name what is unclear, and keep one piece of behaviour in one place so the
     next change touches a single spot.
-
-- key: QG-CF-SEC-0031
-  name: AWS API Gateway should not weaken the security of the application
-  languages: [cf]
-  category: SEC
-  severity: critical
-  effort: 15min
-  tags: [sec, generated]
-  generated: true
-  status: planned
-  message: This construct weakens the security of the application.
-  summary: A construct that attackers routinely target is used without the guard it needs.
-  why: |
-    The pattern either trusts data the program does not control, or relies on a mechanism that no longer
-    offers the protection it appears to offer. Both keep working normally, which is why they survive
-    until someone looks for them.
-  fix: |
-    Validate the incoming value against an allowed set, pass it as data rather than as code or command,
-    and replace weakened mechanisms with the current recommended one.
-
-- key: QG-CF-SEC-0032
-  name: Backup retention period should not weaken the security of the application
-  languages: [cf]
-  category: SEC
-  severity: critical
-  effort: 15min
-  tags: [sec, generated]
-  generated: true
-  status: planned
-  message: This construct weakens the security of the application.
-  summary: A construct that attackers routinely target is used without the guard it needs.
-  why: |
-    The pattern either trusts data the program does not control, or relies on a mechanism that no longer
-    offers the protection it appears to offer. Both keep working normally, which is why they survive
-    until someone looks for them.
-  fix: |
-    Validate the incoming value against an allowed set, pass it as data rather than as code or command,
-    and replace weakened mechanisms with the current recommended one.
 
 - key: QG-CF-SML-0005
   name: AWS resource tags should be simplified

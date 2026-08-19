@@ -3,7 +3,7 @@
 # detection is written by hand, against the shape the defect actually has, and measured before
 # the entry stops being planned.
 
-- key: QG-PP-SEC-0070
+- key: QG-PP-SEC-0087
   name: Authorizations should be based on strong decisions
   languages: [php]
   category: SEC
@@ -19,7 +19,7 @@
   fix: |
     Grant the access to the identities that need it and to nothing else.
 
-- key: QG-PP-SEC-0071
+- key: QG-PP-SEC-0088
   name: Disable direct file editing in WordPress admin interface
   languages: [php]
   category: SEC
@@ -35,7 +35,7 @@
   fix: |
     Make the intended behaviour explicit, and cover the case that used to fail with a test.
 
-- key: QG-PP-SEC-0072
+- key: QG-PP-SEC-0089
   name: Automatic updates should not be disabled
   languages: [php]
   category: SEC
@@ -51,7 +51,7 @@
   fix: |
     Make the intended behaviour explicit, and cover the case that used to fail with a test.
 
-- key: QG-PP-SEC-0073
+- key: QG-PP-SEC-0090
   name: External requests should be restricted in WordPress to prevent data leaks and SSRF
   languages: [php]
   category: SEC
@@ -67,7 +67,7 @@
   fix: |
     Release it on every path, including the exceptional one.
 
-- key: QG-PP-SEC-0074
+- key: QG-PP-SEC-0091
   name: Prevent unauthenticated WordPress database repair for enhanced security
   languages: [php]
   category: SEC
@@ -83,7 +83,7 @@
   fix: |
     Grant the access to the identities that need it and to nothing else.
 
-- key: QG-PP-SEC-0075
+- key: QG-PP-SEC-0092
   name: Prevent unfiltered HTML exposure in WordPress for enhanced security
   languages: [php]
   category: SEC
@@ -99,7 +99,7 @@
   fix: |
     Make the intended behaviour explicit, and cover the case that used to fail with a test.
 
-- key: QG-PP-SEC-0076
+- key: QG-PP-SEC-0093
   name: Cryptographic RSA algorithms should always incorporate OAEP (Optimal Asymmetric Encryption Padding)
   languages: [php]
   category: SEC
@@ -115,7 +115,7 @@
   fix: |
     Use the current recommended algorithm and parameters, and let the platform choose what it can.
 
-- key: QG-PP-SEC-0077
+- key: QG-PP-SEC-0094
   name: Neither DES (Data Encryption Standard) nor DESede (3DES) should be used
   languages: [php]
   category: SEC
@@ -131,7 +131,7 @@
   fix: |
     Use the current recommended algorithm and parameters, and let the platform choose what it can.
 
-- key: QG-PP-SEC-0078
+- key: QG-PP-SEC-0095
   name: "open_basedir" should limit file access
   languages: [php]
   category: SEC
@@ -147,7 +147,7 @@
   fix: |
     Grant the access to the identities that need it and to nothing else.
 
-- key: QG-PP-SEC-0079
+- key: QG-PP-SEC-0096
   name: "allow_url_fopen" and "allow_url_include" should be disabled
   languages: [php]
   category: SEC
@@ -163,7 +163,7 @@
   fix: |
     Make the intended behaviour explicit, and cover the case that used to fail with a test.
 
-- key: QG-PP-SEC-0080
+- key: QG-PP-SEC-0097
   name: "session.use_trans_sid" should not be enabled
   languages: [php]
   category: SEC
@@ -179,7 +179,7 @@
   fix: |
     Make the intended behaviour explicit, and cover the case that used to fail with a test.
 
-- key: QG-PP-SEC-0081
+- key: QG-PP-SEC-0098
   name: "enable_dl" should be disabled
   languages: [php]
   category: SEC
@@ -195,7 +195,7 @@
   fix: |
     Make the intended behaviour explicit, and cover the case that used to fail with a test.
 
-- key: QG-PP-SEC-0082
+- key: QG-PP-SEC-0099
   name: "file_uploads" should be disabled
   languages: [php]
   category: SEC
@@ -211,7 +211,7 @@
   fix: |
     Make the intended behaviour explicit, and cover the case that used to fail with a test.
 
-- key: QG-PP-SEC-0083
+- key: QG-PP-SEC-0100
   name: "cgi.force_redirect" should be enabled
   languages: [php]
   category: SEC
@@ -227,7 +227,7 @@
   fix: |
     Make the intended behaviour explicit, and cover the case that used to fail with a test.
 
-- key: QG-PP-SEC-0084
+- key: QG-PP-SEC-0101
   name: Secret keys and salt values should be robust
   languages: [php]
   category: SEC
@@ -243,7 +243,7 @@
   fix: |
     Read the value from configuration the deployment supplies, and rotate the one already committed.
 
-- key: QG-PP-SEC-0085
+- key: QG-PP-SEC-0102
   name: "sleep" should not be called
   languages: [php]
   category: SEC
@@ -259,7 +259,7 @@
   fix: |
     Make the intended behaviour explicit, and cover the case that used to fail with a test.
 
-- key: QG-PP-SEC-0086
+- key: QG-PP-SEC-0103
   name: Session-management cookies should not be persistent
   languages: [php]
   category: SEC
@@ -275,7 +275,7 @@
   fix: |
     Make the intended behaviour explicit, and cover the case that used to fail with a test.
 
-- key: QG-PP-SML-0167
+- key: QG-PP-SML-0229
   name: References should not be passed to function calls
   languages: [php]
   category: SML
@@ -291,7 +291,7 @@
   fix: |
     Use the current API, and keep the old one only behind a documented compatibility layer.
 
-- key: QG-PP-SML-0168
+- key: QG-PP-SML-0230
   name: Test class names should end with "Test"
   languages: [php]
   category: SML
@@ -307,7 +307,7 @@
   fix: |
     Rename it to match the convention used around it.
 
-- key: QG-PP-SML-0169
+- key: QG-PP-SML-0231
   name: Generic exceptions ErrorException, RuntimeException and Exception should not be thrown
   languages: [php]
   category: SML
@@ -323,7 +323,7 @@
   fix: |
     Make the intended behaviour explicit, and cover the case that used to fail with a test.
 
-- key: QG-PP-SML-0170
+- key: QG-PP-SML-0232
   name: Modifiers should be declared in the correct order
   languages: [php]
   category: SML
@@ -339,7 +339,7 @@
   fix: |
     Rename it to match the convention used around it.
 
-- key: QG-PP-SML-0171
+- key: QG-PP-SML-0233
   name: "empty()" should be used to test for emptiness
   languages: [php]
   category: SML
@@ -355,7 +355,7 @@
   fix: |
     Remove it: the history keeps it if it is ever needed again.
 
-- key: QG-PP-SML-0172
+- key: QG-PP-SML-0234
   name: "for" loop stop conditions should be invariant
   languages: [php]
   category: SML
@@ -371,7 +371,7 @@
   fix: |
     Make the flow say what it does, and remove what cannot happen.
 
-- key: QG-PP-SML-0173
+- key: QG-PP-SML-0235
   name: "switch" statements should have at least 3 "case" clauses
   languages: [php]
   category: SML
@@ -387,7 +387,7 @@
   fix: |
     Make the flow say what it does, and remove what cannot happen.
 
-- key: QG-PP-SML-0174
+- key: QG-PP-SML-0236
   name: "__construct" functions should not make PHP 4-style calls to parent constructors
   languages: [php]
   category: SML
@@ -403,7 +403,7 @@
   fix: |
     Rename it to match the convention used around it.
 
-- key: QG-PP-SML-0175
+- key: QG-PP-SML-0237
   name: A reason should be provided when skipping a test
   languages: [php]
   category: SML
@@ -419,7 +419,7 @@
   fix: |
     Make the intended behaviour explicit, and cover the case that used to fail with a test.
 
-- key: QG-PP-SML-0176
+- key: QG-PP-SML-0238
   name: "<?php" and "<?=" tags should be used
   languages: [php]
   category: SML
@@ -435,7 +435,7 @@
   fix: |
     Rename it to match the convention used around it.
 
-- key: QG-PP-SML-0177
+- key: QG-PP-SML-0239
   name: PHP keywords and constants "true", "false", "null" should be lower case
   languages: [php]
   category: SML
@@ -451,7 +451,7 @@
   fix: |
     Handle the absent case where it arises, or make the type say the value is always there.
 
-- key: QG-PP-SML-0178
+- key: QG-PP-SML-0240
   name: "elseif" keyword should be used in place of "else if" keywords
   languages: [php]
   category: SML
@@ -467,7 +467,7 @@
   fix: |
     Rename it to match the convention used around it.
 
-- key: QG-PP-SML-0179
+- key: QG-PP-SML-0241
   name: "&&" and "||" should be used
   languages: [php]
   category: SML
@@ -483,7 +483,7 @@
   fix: |
     Use the current API, and keep the old one only behind a documented compatibility layer.
 
-- key: QG-PP-SML-0180
+- key: QG-PP-SML-0242
   name: Functions should use "return" consistently
   languages: [php]
   category: SML
@@ -499,7 +499,7 @@
   fix: |
     Make the intended behaviour explicit, and cover the case that used to fail with a test.
 
-- key: QG-PP-SML-0181
+- key: QG-PP-SML-0243
   name: Regular expressions should not contain empty groups
   languages: [php]
   category: SML
@@ -515,7 +515,7 @@
   fix: |
     Remove it: the history keeps it if it is ever needed again.
 
-- key: QG-PP-SML-0182
+- key: QG-PP-SML-0244
   name: Non-capturing groups without quantifier should not be used
   languages: [php]
   category: SML
@@ -531,7 +531,7 @@
   fix: |
     Make the intended behaviour explicit, and cover the case that used to fail with a test.
 
-- key: QG-PP-SML-0183
+- key: QG-PP-SML-0245
   name: Conditionals should start on new lines
   languages: [php]
   category: SML
@@ -547,7 +547,7 @@
   fix: |
     Make the flow say what it does, and remove what cannot happen.
 
-- key: QG-PP-SML-0184
+- key: QG-PP-SML-0246
   name: A conditionally executed single line should be denoted by indentation
   languages: [php]
   category: SML
@@ -563,7 +563,7 @@
   fix: |
     Make the flow say what it does, and remove what cannot happen.
 
-- key: QG-PP-SML-0185
+- key: QG-PP-SML-0247
   name: "if ... else if" constructs should end with "else" clauses
   languages: [php]
   category: SML
@@ -579,7 +579,7 @@
   fix: |
     Make the intended behaviour explicit, and cover the case that used to fail with a test.
 
-- key: QG-PP-SML-0186
+- key: QG-PP-SML-0248
   name: Octal values should not be used
   languages: [php]
   category: SML
@@ -595,7 +595,7 @@
   fix: |
     Make the intended behaviour explicit, and cover the case that used to fail with a test.
 
-- key: QG-PP-SML-0187
+- key: QG-PP-SML-0249
   name: "switch" statements should not be nested
   languages: [php]
   category: SML
@@ -611,7 +611,7 @@
   fix: |
     Make the flow say what it does, and remove what cannot happen.
 
-- key: QG-PP-SML-0188
+- key: QG-PP-SML-0250
   name: Functions and variables should not be defined outside of classes
   languages: [php]
   category: SML
@@ -627,7 +627,7 @@
   fix: |
     Make the intended behaviour explicit, and cover the case that used to fail with a test.
 
-- key: QG-PP-SML-0189
+- key: QG-PP-SML-0251
   name: "global" should not be used
   languages: [php]
   category: SML
@@ -643,7 +643,7 @@
   fix: |
     Rename it to match the convention used around it.
 
-- key: QG-PP-SML-0190
+- key: QG-PP-SML-0252
   name: Parentheses should not be used for calls to "echo"
   languages: [php]
   category: SML
@@ -659,7 +659,7 @@
   fix: |
     Make the intended behaviour explicit, and cover the case that used to fail with a test.
 
-- key: QG-PP-SML-0191
+- key: QG-PP-SML-0253
   name: OS process signal parameters should be validated
   languages: [php]
   category: SML
@@ -675,7 +675,7 @@
   fix: |
     Split it along the responsibilities it has accumulated.
 
-- key: QG-PP-SML-0192
+- key: QG-PP-SML-0254
   name: URIs should not be hardcoded
   languages: [php]
   category: SML
@@ -691,7 +691,7 @@
   fix: |
     Make the intended behaviour explicit, and cover the case that used to fail with a test.
 
-- key: QG-PP-SML-0193
+- key: QG-PP-SML-0255
   name: Files should end with a newline
   languages: [php]
   category: SML
@@ -707,7 +707,7 @@
   fix: |
     Rename it to match the convention used around it.
 
-- key: QG-PP-SML-0194
+- key: QG-PP-SML-0256
   name: Lines should not end with trailing whitespaces
   languages: [php]
   category: SML
@@ -723,7 +723,7 @@
   fix: |
     Rename it to match the convention used around it.
 
-- key: QG-PP-SML-0195
+- key: QG-PP-SML-0257
   name: Closing tag "?>" should be omitted on files containing only PHP
   languages: [php]
   category: SML
@@ -739,7 +739,7 @@
   fix: |
     Make the intended behaviour explicit, and cover the case that used to fail with a test.
 
-- key: QG-PP-SML-0196
+- key: QG-PP-SML-0258
   name: Reflection should not be used to increase accessibility of classes, methods, or fields
   languages: [php]
   category: SML
@@ -755,7 +755,7 @@
   fix: |
     Grant the access to the identities that need it and to nothing else.
 
-- key: QG-PP-SML-0197
+- key: QG-PP-SML-0259
   name: Regular expression quantifiers and character classes should be used concisely
   languages: [php]
   category: SML
@@ -771,7 +771,7 @@
   fix: |
     Use the current API, and keep the old one only behind a documented compatibility layer.
 
-- key: QG-PP-SML-0198
+- key: QG-PP-SML-0260
   name: Assignments should not be made from within sub-expressions
   languages: [php]
   category: SML
@@ -787,7 +787,7 @@
   fix: |
     Make the intended behaviour explicit, and cover the case that used to fail with a test.
 
-- key: QG-PP-SML-0199
+- key: QG-PP-SML-0261
   name: "switch case" clauses should not have too many lines of code
   languages: [php]
   category: SML
@@ -803,7 +803,7 @@
   fix: |
     Make the flow say what it does, and remove what cannot happen.
 
-- key: QG-PP-SML-0200
+- key: QG-PP-SML-0262
   name: Comments should not be located at the end of lines of code
   languages: [php]
   category: SML
@@ -819,7 +819,7 @@
   fix: |
     Rename it to match the convention used around it.
 
-- key: QG-PP-SML-0201
+- key: QG-PP-SML-0263
   name: Source code should comply with formatting standards
   languages: [php]
   category: SML
@@ -835,7 +835,7 @@
   fix: |
     Rename it to match the convention used around it.
 
-- key: QG-PP-SML-0202
+- key: QG-PP-SML-0264
   name: "final" should not be used redundantly
   languages: [php]
   category: SML
@@ -851,7 +851,7 @@
   fix: |
     Rename it to match the convention used around it.
 
-- key: QG-PP-SML-0203
+- key: QG-PP-SML-0265
   name: String literals should not be concatenated
   languages: [php]
   category: SML
@@ -867,7 +867,7 @@
   fix: |
     Make the intended behaviour explicit, and cover the case that used to fail with a test.
 
-- key: QG-PP-SML-0204
+- key: QG-PP-SML-0266
   name: Colors should be defined in upper case
   languages: [php]
   category: SML
@@ -883,7 +883,7 @@
   fix: |
     Make the flow say what it does, and remove what cannot happen.
 
-- key: QG-PP-SML-0205
+- key: QG-PP-SML-0267
   name: Superglobals should not be accessed directly
   languages: [php]
   category: SML
@@ -899,7 +899,7 @@
   fix: |
     Grant the access to the identities that need it and to nothing else.
 
-- key: QG-PP-SML-0206
+- key: QG-PP-SML-0268
   name: "php_sapi_name()" should not be used
   languages: [php]
   category: SML
@@ -915,7 +915,7 @@
   fix: |
     Rename it to match the convention used around it.
 
-- key: QG-PP-SML-0207
+- key: QG-PP-SML-0269
   name: Perl-style comments should not be used
   languages: [php]
   category: SML
@@ -931,7 +931,7 @@
   fix: |
     Rename it to match the convention used around it.
 
-- key: QG-PP-SML-0208
+- key: QG-PP-SML-0270
   name: The names of methods with boolean return values should start with "is" or "has"
   languages: [php]
   category: SML
@@ -947,7 +947,7 @@
   fix: |
     Rename it to match the convention used around it.
 
-- key: QG-PP-SML-0209
+- key: QG-PP-SML-0271
   name: Alias functions should not be used
   languages: [php]
   category: SML
@@ -963,7 +963,7 @@
   fix: |
     Use the current API, and keep the old one only behind a documented compatibility layer.
 
-- key: QG-PP-SML-0210
+- key: QG-PP-SML-0272
   name: Class constructors should not create other objects
   languages: [php]
   category: SML
@@ -979,7 +979,7 @@
   fix: |
     Make the intended behaviour explicit, and cover the case that used to fail with a test.
 
-- key: QG-PP-SML-0211
+- key: QG-PP-SML-0273
   name: Duplicate values should not be passed as arguments
   languages: [php]
   category: SML
@@ -995,7 +995,7 @@
   fix: |
     Make the intended behaviour explicit, and cover the case that used to fail with a test.
 
-- key: QG-PP-SML-0212
+- key: QG-PP-SML-0274
   name: Expanding archive files should not be done without controlling resource consumption
   languages: [php]
   category: SML
@@ -1011,7 +1011,7 @@
   fix: |
     Release it on every path, including the exceptional one.
 
-- key: QG-PP-SML-0213
+- key: QG-PP-SML-0275
   name: Unicode-aware versions of character classes should be preferred
   languages: [php]
   category: SML
@@ -1027,7 +1027,7 @@
   fix: |
     Use the current API, and keep the old one only behind a documented compatibility layer.
 
-- key: QG-PP-SML-0214
+- key: QG-PP-SML-0276
   name: Test methods should be discoverable
   languages: [php]
   category: SML
@@ -1043,7 +1043,7 @@
   fix: |
     Remove it: the history keeps it if it is ever needed again.
 
-- key: QG-PP-SML-0215
+- key: QG-PP-SML-0277
   name: Framework-provided functions should be used to test exceptions
   languages: [php]
   category: SML
@@ -1059,7 +1059,7 @@
   fix: |
     Use the current API, and keep the old one only behind a documented compatibility layer.
 
-- key: QG-PP-SML-0216
+- key: QG-PP-SML-0278
   name: Increment (++) and decrement (--) operators should not be used in a method call or mixed with other operators in an expression
   languages: [php]
   category: SML
@@ -1075,7 +1075,7 @@
   fix: |
     Make the intended behaviour explicit, and cover the case that used to fail with a test.
 
-- key: QG-PP-SML-0217
+- key: QG-PP-SML-0279
   name: Track lack of copyright and license headers
   languages: [php]
   category: SML
@@ -1091,7 +1091,7 @@
   fix: |
     Rename it to match the convention used around it.
 
-- key: QG-PP-SML-0218
+- key: QG-PP-SML-0280
   name: Classes should not be coupled to too many other classes
   languages: [php]
   category: SML
@@ -1107,7 +1107,7 @@
   fix: |
     Split it along the responsibilities it has accumulated.
 
-- key: QG-PP-SML-0219
+- key: QG-PP-SML-0281
   name: Files should not contain inline HTML
   languages: [php]
   category: SML
@@ -1123,7 +1123,7 @@
   fix: |
     Rename it to match the convention used around it.
 
-- key: QG-PP-SML-0220
+- key: QG-PP-SML-0282
   name: Configuration should not be changed dynamically
   languages: [php]
   category: SML
@@ -1139,7 +1139,7 @@
   fix: |
     Make the intended behaviour explicit, and cover the case that used to fail with a test.
 
-- key: QG-PP-SML-0221
+- key: QG-PP-SML-0283
   name: Lines should not be too long
   languages: [php]
   category: SML
@@ -1155,7 +1155,7 @@
   fix: |
     Rename it to match the convention used around it.
 
-- key: QG-PP-SML-0222
+- key: QG-PP-SML-0284
   name: Files should not have too many lines of code
   languages: [php]
   category: SML
@@ -1171,7 +1171,7 @@
   fix: |
     Split it along the responsibilities it has accumulated.
 
-- key: QG-PP-SML-0223
+- key: QG-PP-SML-0285
   name: Statements should be on separate lines
   languages: [php]
   category: SML
@@ -1187,7 +1187,7 @@
   fix: |
     Rename it to match the convention used around it.
 
-- key: QG-PP-SML-0224
+- key: QG-PP-SML-0286
   name: Only LF character (Unix-like) should be used to end lines
   languages: [php]
   category: SML
@@ -1203,7 +1203,7 @@
   fix: |
     Rename it to match the convention used around it.
 
-- key: QG-PP-SML-0225
+- key: QG-PP-SML-0287
   name: Files should contain only one top-level class or interface each
   languages: [php]
   category: SML
@@ -1219,7 +1219,7 @@
   fix: |
     Make the intended behaviour explicit, and cover the case that used to fail with a test.
 
-- key: QG-PP-SML-0226
+- key: QG-PP-SML-0288
   name: Deprecated features should not be used
   languages: [php]
   category: SML
@@ -1235,7 +1235,7 @@
   fix: |
     Use the current API, and keep the old one only behind a documented compatibility layer.
 
-- key: QG-PP-SML-0227
+- key: QG-PP-SML-0289
   name: Classes should not have too many lines of code
   languages: [php]
   category: SML
@@ -1251,7 +1251,7 @@
   fix: |
     Split it along the responsibilities it has accumulated.
 
-- key: QG-PP-SML-0228
+- key: QG-PP-SML-0290
   name: PHP parser failure
   languages: [php]
   category: SML
@@ -1267,7 +1267,7 @@
   fix: |
     Make the intended behaviour explicit, and cover the case that used to fail with a test.
 
-- key: QG-PP-BUG-0092
+- key: QG-PP-BUG-0109
   name: Class of caught exception should be defined
   languages: [php]
   category: BUG
@@ -1283,7 +1283,7 @@
   fix: |
     Make the intended behaviour explicit, and cover the case that used to fail with a test.
 
-- key: QG-PP-BUG-0093
+- key: QG-PP-BUG-0110
   name: Regex patterns following a possessive quantifier should not always fail
   languages: [php]
   category: BUG
@@ -1299,7 +1299,7 @@
   fix: |
     Make the flow say what it does, and remove what cannot happen.
 
-- key: QG-PP-BUG-0094
+- key: QG-PP-BUG-0111
   name: Regex lookahead assertions should not be contradictory
   languages: [php]
   category: BUG
@@ -1315,7 +1315,7 @@
   fix: |
     Make the intended behaviour explicit, and cover the case that used to fail with a test.
 
-- key: QG-PP-BUG-0095
+- key: QG-PP-BUG-0112
   name: All "catch" blocks should be able to catch exceptions
   languages: [php]
   category: BUG
@@ -1331,7 +1331,7 @@
   fix: |
     Guard the shared state, or give each caller its own copy.
 
-- key: QG-PP-BUG-0096
+- key: QG-PP-BUG-0113
   name: Repeated patterns in regular expressions should not match the empty string
   languages: [php]
   category: BUG
@@ -1347,7 +1347,7 @@
   fix: |
     Remove it: the history keeps it if it is ever needed again.
 
-- key: QG-PP-BUG-0097
+- key: QG-PP-BUG-0114
   name: Alternatives in regular expressions should be grouped when used with anchors
   languages: [php]
   category: BUG
@@ -1363,7 +1363,7 @@
   fix: |
     Make the intended behaviour explicit, and cover the case that used to fail with a test.
 
-- key: QG-PP-BUG-0098
+- key: QG-PP-BUG-0115
   name: Unicode Grapheme Clusters should be avoided inside regex character classes
   languages: [php]
   category: BUG
@@ -1379,7 +1379,7 @@
   fix: |
     Make the intended behaviour explicit, and cover the case that used to fail with a test.
 
-- key: QG-PP-BUG-0099
+- key: QG-PP-BUG-0116
   name: Variables should be initialized before use
   languages: [php]
   category: BUG
@@ -1395,7 +1395,7 @@
   fix: |
     Make the intended behaviour explicit, and cover the case that used to fail with a test.
 
-- key: QG-PP-BUG-0100
+- key: QG-PP-BUG-0117
   name: "exit(...)" and "die(...)" statements should not be used
   languages: [php]
   category: BUG
@@ -1411,7 +1411,7 @@
   fix: |
     Make the intended behaviour explicit, and cover the case that used to fail with a test.
 
-- key: QG-PP-BUG-0101
+- key: QG-PP-BUG-0118
   name: Only one method invocation is expected when testing exceptions
   languages: [php]
   category: BUG
@@ -1427,7 +1427,7 @@
   fix: |
     Make the intended behaviour explicit, and cover the case that used to fail with a test.
 
-- key: QG-PP-BUG-0102
+- key: QG-PP-BUG-0119
   name: Assertions should not be made at the end of blocks expecting an exception
   languages: [php]
   category: BUG
@@ -1443,7 +1443,7 @@
   fix: |
     Guard the shared state, or give each caller its own copy.
 
-- key: QG-PP-BUG-0103
+- key: QG-PP-BUG-0120
   name: Unary prefix operators should not be repeated
   languages: [php]
   category: BUG
@@ -1459,7 +1459,7 @@
   fix: |
     Make the intended behaviour explicit, and cover the case that used to fail with a test.
 
-- key: QG-PP-BUG-0104
+- key: QG-PP-BUG-0121
   name: Array or Countable object count comparisons should make sense
   languages: [php]
   category: BUG
@@ -1475,7 +1475,7 @@
   fix: |
     Make the intended behaviour explicit, and cover the case that used to fail with a test.
 
-- key: QG-PP-BUG-0105
+- key: QG-PP-BUG-0122
   name: Files should not contain characters before "<?php"
   languages: [php]
   category: BUG
@@ -1491,7 +1491,7 @@
   fix: |
     Make the intended behaviour explicit, and cover the case that used to fail with a test.
 
-- key: QG-PP-BUG-0106
+- key: QG-PP-BUG-0123
   name: Errors should not be silenced
   languages: [php]
   category: BUG
@@ -1507,7 +1507,7 @@
   fix: |
     Make the intended behaviour explicit, and cover the case that used to fail with a test.
 
-- key: QG-PP-BUG-0107
+- key: QG-PP-BUG-0124
   name: Files that define symbols should not cause side-effects
   languages: [php]
   category: BUG
@@ -1523,7 +1523,7 @@
   fix: |
     Make the intended behaviour explicit, and cover the case that used to fail with a test.
 
-- key: QG-PP-BUG-0108
+- key: QG-PP-BUG-0125
   name: Static members should be referenced with "static::"
   languages: [php]
   category: BUG

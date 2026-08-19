@@ -3,7 +3,7 @@
 # detection is written by hand, against the shape the defect actually has, and measured before
 # the entry stops being planned.
 
-- key: QG-SC-SML-0001
+- key: QG-SC-SML-0024
   name: Methods should not be empty
   languages: [scala]
   category: SML
@@ -19,7 +19,7 @@
   fix: |
     Remove it: the history keeps it if it is ever needed again.
 
-- key: QG-SC-SML-0002
+- key: QG-SC-SML-0025
   name: Mergeable "if" statements should be combined
   languages: [scala]
   category: SML
@@ -35,7 +35,7 @@
   fix: |
     Make the intended behaviour explicit, and cover the case that used to fail with a test.
 
-- key: QG-SC-SML-0003
+- key: QG-SC-SML-0026
   name: Boolean literals should not be redundant
   languages: [scala]
   category: SML
@@ -51,7 +51,7 @@
   fix: |
     Remove it: the history keeps it if it is ever needed again.
 
-- key: QG-SC-SML-0004
+- key: QG-SC-SML-0027
   name: Unused "private" methods should be removed
   languages: [scala]
   category: SML
@@ -67,7 +67,7 @@
   fix: |
     Remove it: the history keeps it if it is ever needed again.
 
-- key: QG-SC-SML-0005
+- key: QG-SC-SML-0028
   name: IP addresses should not be hardcoded
   languages: [scala]
   category: SML
@@ -83,7 +83,7 @@
   fix: |
     Make the intended behaviour explicit, and cover the case that used to fail with a test.
 
-- key: QG-SC-SML-0006
+- key: QG-SC-SML-0029
   name: Unused local variables should be removed
   languages: [scala]
   category: SML
@@ -99,7 +99,7 @@
   fix: |
     Remove it: the history keeps it if it is ever needed again.
 
-- key: QG-SC-SML-0007
+- key: QG-SC-SML-0030
   name: Boolean checks should not be inverted
   languages: [scala]
   category: SML
@@ -115,7 +115,7 @@
   fix: |
     Make the intended behaviour explicit, and cover the case that used to fail with a test.
 
-- key: QG-SC-SML-0008
+- key: QG-SC-SML-0031
   name: Cognitive Complexity of functions should not be too high
   languages: [scala]
   category: SML
@@ -131,7 +131,7 @@
   fix: |
     Split it along the responsibilities it has accumulated.
 
-- key: QG-SC-SML-0009
+- key: QG-SC-SML-0032
   name: Expressions should not be too complex
   languages: [scala]
   category: SML
@@ -147,7 +147,7 @@
   fix: |
     Split it along the responsibilities it has accumulated.
 
-- key: QG-SC-SML-0010
+- key: QG-SC-SML-0033
   name: "if ... else if" constructs should end with "else" clauses
   languages: [scala]
   category: SML
@@ -163,7 +163,7 @@
   fix: |
     Make the intended behaviour explicit, and cover the case that used to fail with a test.
 
-- key: QG-SC-SML-0011
+- key: QG-SC-SML-0034
   name: "match" statements should not be nested
   languages: [scala]
   category: SML
@@ -179,7 +179,7 @@
   fix: |
     Split it along the responsibilities it has accumulated.
 
-- key: QG-SC-SML-0012
+- key: QG-SC-SML-0035
   name: Unused function parameters should be removed
   languages: [scala]
   category: SML
@@ -195,7 +195,7 @@
   fix: |
     Remove it: the history keeps it if it is ever needed again.
 
-- key: QG-SC-SML-0013
+- key: QG-SC-SML-0036
   name: Two branches in a conditional structure should not have exactly the same implementation
   languages: [scala]
   category: SML
@@ -211,7 +211,7 @@
   fix: |
     Make the flow say what it does, and remove what cannot happen.
 
-- key: QG-SC-SML-0014
+- key: QG-SC-SML-0037
   name: Methods should not have identical implementations
   languages: [scala]
   category: SML
@@ -227,7 +227,7 @@
   fix: |
     Make the intended behaviour explicit, and cover the case that used to fail with a test.
 
-- key: QG-SC-SML-0015
+- key: QG-SC-SML-0038
   name: Multi-line comments should not be empty
   languages: [scala]
   category: SML
@@ -243,7 +243,7 @@
   fix: |
     Remove it: the history keeps it if it is ever needed again.
 
-- key: QG-SC-SML-0016
+- key: QG-SC-SML-0039
   name: "match case" clauses should not have too many lines of code
   languages: [scala]
   category: SML
@@ -259,7 +259,7 @@
   fix: |
     Make the flow say what it does, and remove what cannot happen.
 
-- key: QG-SC-SML-0017
+- key: QG-SC-SML-0040
   name: Track lack of copyright and license headers
   languages: [scala]
   category: SML
@@ -275,7 +275,7 @@
   fix: |
     Rename it to match the convention used around it.
 
-- key: QG-SC-SML-0018
+- key: QG-SC-SML-0041
   name: Control flow statements "if", "for", "while", "match" and "try" should not be nested too deeply
   languages: [scala]
   category: SML
@@ -291,7 +291,7 @@
   fix: |
     Split it along the responsibilities it has accumulated.
 
-- key: QG-SC-SML-0019
+- key: QG-SC-SML-0042
   name: Lines should not be too long
   languages: [scala]
   category: SML
@@ -307,7 +307,7 @@
   fix: |
     Rename it to match the convention used around it.
 
-- key: QG-SC-SML-0020
+- key: QG-SC-SML-0043
   name: Files should not have too many lines of code
   languages: [scala]
   category: SML
@@ -323,7 +323,7 @@
   fix: |
     Split it along the responsibilities it has accumulated.
 
-- key: QG-SC-SML-0021
+- key: QG-SC-SML-0044
   name: Tabulation characters should not be used
   languages: [scala]
   category: SML
@@ -339,7 +339,7 @@
   fix: |
     Rename it to match the convention used around it.
 
-- key: QG-SC-SML-0022
+- key: QG-SC-SML-0045
   name: Statements should be on separate lines
   languages: [scala]
   category: SML
@@ -355,7 +355,7 @@
   fix: |
     Rename it to match the convention used around it.
 
-- key: QG-SC-SML-0023
+- key: QG-SC-SML-0046
   name: Methods should not have too many lines of code
   languages: [scala]
   category: SML
@@ -371,7 +371,7 @@
   fix: |
     Split it along the responsibilities it has accumulated.
 
-- key: QG-SC-BUG-0001
+- key: QG-SC-BUG-0006
   name: Useless "if(true) {...}" and "if(false){...}" blocks should be removed
   languages: [scala]
   category: BUG
@@ -387,7 +387,7 @@
   fix: |
     Guard the shared state, or give each caller its own copy.
 
-- key: QG-SC-BUG-0002
+- key: QG-SC-BUG-0007
   name: Variables should not be self-assigned
   languages: [scala]
   category: BUG
@@ -403,7 +403,7 @@
   fix: |
     Make the intended behaviour explicit, and cover the case that used to fail with a test.
 
-- key: QG-SC-BUG-0003
+- key: QG-SC-BUG-0008
   name: All code should be reachable
   languages: [scala]
   category: BUG
@@ -419,7 +419,7 @@
   fix: |
     Remove it: the history keeps it if it is ever needed again.
 
-- key: QG-SC-BUG-0004
+- key: QG-SC-BUG-0009
   name: Related "if"/"else if" statements and "case" in a "match" should not have the same condition
   languages: [scala]
   category: BUG
@@ -435,7 +435,7 @@
   fix: |
     Make the flow say what it does, and remove what cannot happen.
 
-- key: QG-SC-BUG-0005
+- key: QG-SC-BUG-0010
   name: All branches in a conditional structure should not have exactly the same implementation
   languages: [scala]
   category: BUG

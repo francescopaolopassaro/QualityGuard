@@ -3,7 +3,7 @@
 # detection is written by hand, against the shape the defect actually has, and measured before
 # the entry stops being planned.
 
-- key: QG-CS-SEC-0106
+- key: QG-CS-SEC-0115
   name: Password hashing functions should use an unpredictable salt
   languages: [vbnet]
   category: SEC
@@ -19,7 +19,7 @@
   fix: |
     Read the value from configuration the deployment supplies, and rotate the one already committed.
 
-- key: QG-CS-SEC-0107
+- key: QG-CS-SEC-0116
   name: Custom cryptographic algorithms should not be used
   languages: [vbnet]
   category: SEC
@@ -35,7 +35,7 @@
   fix: |
     Use the current recommended algorithm and parameters, and let the platform choose what it can.
 
-- key: QG-CS-SEC-0108
+- key: QG-CS-SEC-0117
   name: Cipher Block Chaining IVs should be unpredictable
   languages: [vbnet]
   category: SEC
@@ -51,7 +51,7 @@
   fix: |
     Use the current recommended algorithm and parameters, and let the platform choose what it can.
 
-- key: QG-CS-SEC-0109
+- key: QG-CS-SEC-0118
   name: Server certificates should be verified during SSL/TLS connections
   languages: [vbnet]
   category: SEC
@@ -67,7 +67,7 @@
   fix: |
     Use the current recommended algorithm and parameters, and let the platform choose what it can.
 
-- key: QG-CS-SEC-0110
+- key: QG-CS-SEC-0119
   name: "CoSetProxyBlanket" and "CoInitializeSecurity" should not be used
   languages: [vbnet]
   category: SEC
@@ -83,7 +83,7 @@
   fix: |
     Make the intended behaviour explicit, and cover the case that used to fail with a test.
 
-- key: QG-CS-SML-0744
+- key: QG-CS-SML-1006
   name: Flags enumerations zero-value members should be named "None"
   languages: [vbnet]
   category: SML
@@ -99,7 +99,7 @@
   fix: |
     Handle the absent case where it arises, or make the type say the value is always there.
 
-- key: QG-CS-SML-0745
+- key: QG-CS-SML-1007
   name: Properties should not make collection or array copies
   languages: [vbnet]
   category: SML
@@ -115,7 +115,7 @@
   fix: |
     Make the intended behaviour explicit, and cover the case that used to fail with a test.
 
-- key: QG-CS-SML-0746
+- key: QG-CS-SML-1008
   name: Exception types should be "Public"
   languages: [vbnet]
   category: SML
@@ -131,7 +131,7 @@
   fix: |
     Grant the access to the identities that need it and to nothing else.
 
-- key: QG-CS-SML-0747
+- key: QG-CS-SML-1009
   name: Assemblies should have version information
   languages: [vbnet]
   category: SML
@@ -147,7 +147,7 @@
   fix: |
     Make the intended behaviour explicit, and cover the case that used to fail with a test.
 
-- key: QG-CS-SML-0748
+- key: QG-CS-SML-1010
   name: Threads should not lock on objects with weak identity
   languages: [vbnet]
   category: SML
@@ -163,7 +163,7 @@
   fix: |
     Guard the shared state, or give each caller its own copy.
 
-- key: QG-CS-SML-0749
+- key: QG-CS-SML-1011
   name: "Option Explicit" should be enabled
   languages: [vbnet]
   category: SML
@@ -179,7 +179,7 @@
   fix: |
     Make the intended behaviour explicit, and cover the case that used to fail with a test.
 
-- key: QG-CS-SML-0750
+- key: QG-CS-SML-1012
   name: General or reserved exceptions should never be thrown
   languages: [vbnet]
   category: SML
@@ -195,7 +195,7 @@
   fix: |
     Make the intended behaviour explicit, and cover the case that used to fail with a test.
 
-- key: QG-CS-SML-0751
+- key: QG-CS-SML-1013
   name: IP addresses should not be hardcoded
   languages: [vbnet]
   category: SML
@@ -211,7 +211,7 @@
   fix: |
     Make the intended behaviour explicit, and cover the case that used to fail with a test.
 
-- key: QG-CS-SML-0752
+- key: QG-CS-SML-1014
   name: Invalid casts should be avoided
   languages: [vbnet]
   category: SML
@@ -227,7 +227,7 @@
   fix: |
     Make the intended behaviour explicit, and cover the case that used to fail with a test.
 
-- key: QG-CS-SML-0753
+- key: QG-CS-SML-1015
   name: Indexed properties with more than one parameter should not be used
   languages: [vbnet]
   category: SML
@@ -243,7 +243,7 @@
   fix: |
     Make the intended behaviour explicit, and cover the case that used to fail with a test.
 
-- key: QG-CS-SML-0754
+- key: QG-CS-SML-1016
   name: Array literals should be used instead of array creation expressions
   languages: [vbnet]
   category: SML
@@ -259,7 +259,7 @@
   fix: |
     Use the current API, and keep the old one only behind a documented compatibility layer.
 
-- key: QG-CS-SML-0755
+- key: QG-CS-SML-1017
   name: "On Error" statements should not be used
   languages: [vbnet]
   category: SML
@@ -275,7 +275,7 @@
   fix: |
     Make the intended behaviour explicit, and cover the case that used to fail with a test.
 
-- key: QG-CS-SML-0756
+- key: QG-CS-SML-1018
   name: "Exit Select" statements should not be used redundantly
   languages: [vbnet]
   category: SML
@@ -291,7 +291,7 @@
   fix: |
     Remove it: the history keeps it if it is ever needed again.
 
-- key: QG-CS-SML-0757
+- key: QG-CS-SML-1019
   name: "[ExpectedException]" should not be used
   languages: [vbnet]
   category: SML
@@ -307,7 +307,7 @@
   fix: |
     Make the intended behaviour explicit, and cover the case that used to fail with a test.
 
-- key: QG-CS-SML-0758
+- key: QG-CS-SML-1020
   name: Arrays should not be created for ParamArray parameters
   languages: [vbnet]
   category: SML
@@ -323,7 +323,7 @@
   fix: |
     Split it along the responsibilities it has accumulated.
 
-- key: QG-CS-SML-0759
+- key: QG-CS-SML-1021
   name: Objects should not be disposed more than once
   languages: [vbnet]
   category: SML
@@ -339,7 +339,7 @@
   fix: |
     Release it on every path, including the exceptional one.
 
-- key: QG-CS-SML-0760
+- key: QG-CS-SML-1022
   name: Method overloads should be grouped together
   languages: [vbnet]
   category: SML
@@ -355,7 +355,7 @@
   fix: |
     Rename it to match the convention used around it.
 
-- key: QG-CS-SML-0761
+- key: QG-CS-SML-1023
   name: "DebuggerDisplayAttribute" strings should reference existing members
   languages: [vbnet]
   category: SML
@@ -371,7 +371,7 @@
   fix: |
     Make the intended behaviour explicit, and cover the case that used to fail with a test.
 
-- key: QG-CS-SML-0762
+- key: QG-CS-SML-1024
   name: "Return" statements should be used instead of assigning values to function names
   languages: [vbnet]
   category: SML
@@ -387,7 +387,7 @@
   fix: |
     Rename it to match the convention used around it.
 
-- key: QG-CS-SML-0763
+- key: QG-CS-SML-1025
   name: "Option Strict" should be enabled
   languages: [vbnet]
   category: SML
@@ -403,7 +403,7 @@
   fix: |
     Make the intended behaviour explicit, and cover the case that used to fail with a test.
 
-- key: QG-CS-SML-0764
+- key: QG-CS-SML-1026
   name: Always set the "DateTimeKind" when creating new "DateTime" instances
   languages: [vbnet]
   category: SML
@@ -419,7 +419,7 @@
   fix: |
     Make the flow say what it does, and remove what cannot happen.
 
-- key: QG-CS-SML-0765
+- key: QG-CS-SML-1027
   name: ASP.NET controller actions should not have a route template starting with "/"
   languages: [vbnet]
   category: SML
@@ -435,7 +435,7 @@
   fix: |
     Make the intended behaviour explicit, and cover the case that used to fail with a test.
 
-- key: QG-CS-SML-0766
+- key: QG-CS-SML-1028
   name: First/Single should be used instead of FirstOrDefault/SingleOrDefault on collections that are known to be non-empty
   languages: [vbnet]
   category: SML
@@ -451,7 +451,7 @@
   fix: |
     Remove it: the history keeps it if it is ever needed again.
 
-- key: QG-CS-SML-0767
+- key: QG-CS-SML-1029
   name: Public methods should not have multidimensional array parameters
   languages: [vbnet]
   category: SML
@@ -467,7 +467,7 @@
   fix: |
     Grant the access to the identities that need it and to nothing else.
 
-- key: QG-CS-SML-0768
+- key: QG-CS-SML-1030
   name: Parameter names should match base declaration
   languages: [vbnet]
   category: SML
@@ -483,7 +483,7 @@
   fix: |
     Rename it to match the convention used around it.
 
-- key: QG-CS-SML-0769
+- key: QG-CS-SML-1031
   name: "If ... ElseIf" constructs should end with "Else" clauses
   languages: [vbnet]
   category: SML
@@ -499,7 +499,7 @@
   fix: |
     Make the intended behaviour explicit, and cover the case that used to fail with a test.
 
-- key: QG-CS-SML-0770
+- key: QG-CS-SML-1032
   name: "Select" statements should end with a "Case Else" clause
   languages: [vbnet]
   category: SML
@@ -515,7 +515,7 @@
   fix: |
     Make the flow say what it does, and remove what cannot happen.
 
-- key: QG-CS-SML-0771
+- key: QG-CS-SML-1033
   name: "Select Case" statements should not be nested
   languages: [vbnet]
   category: SML
@@ -531,7 +531,7 @@
   fix: |
     Make the flow say what it does, and remove what cannot happen.
 
-- key: QG-CS-SML-0772
+- key: QG-CS-SML-1034
   name: "NameOf" should be used
   languages: [vbnet]
   category: SML
@@ -547,7 +547,7 @@
   fix: |
     Rename it to match the convention used around it.
 
-- key: QG-CS-SML-0773
+- key: QG-CS-SML-1035
   name: Public constant members should not be used
   languages: [vbnet]
   category: SML
@@ -563,7 +563,7 @@
   fix: |
     Grant the access to the identities that need it and to nothing else.
 
-- key: QG-CS-SML-0774
+- key: QG-CS-SML-1036
   name: Optional parameters should not be used
   languages: [vbnet]
   category: SML
@@ -579,7 +579,7 @@
   fix: |
     Handle the absent case where it arises, or make the type say the value is always there.
 
-- key: QG-CS-SML-0775
+- key: QG-CS-SML-1037
   name: Signed types should be preferred to unsigned ones
   languages: [vbnet]
   category: SML
@@ -595,7 +595,7 @@
   fix: |
     Use the current API, and keep the old one only behind a documented compatibility layer.
 
-- key: QG-CS-SML-0776
+- key: QG-CS-SML-1038
   name: "IIf" should not be used
   languages: [vbnet]
   category: SML
@@ -611,7 +611,7 @@
   fix: |
     Make the intended behaviour explicit, and cover the case that used to fail with a test.
 
-- key: QG-CS-SML-0777
+- key: QG-CS-SML-1039
   name: Child class fields should not differ from parent class fields only by capitalization
   languages: [vbnet]
   category: SML
@@ -627,7 +627,7 @@
   fix: |
     Make the intended behaviour explicit, and cover the case that used to fail with a test.
 
-- key: QG-CS-SML-0778
+- key: QG-CS-SML-1040
   name: URIs should not be hardcoded
   languages: [vbnet]
   category: SML
@@ -643,7 +643,7 @@
   fix: |
     Make the intended behaviour explicit, and cover the case that used to fail with a test.
 
-- key: QG-CS-SML-0779
+- key: QG-CS-SML-1041
   name: Arguments should be passed in the same order as the procedure parameters
   languages: [vbnet]
   category: SML
@@ -659,7 +659,7 @@
   fix: |
     Split it along the responsibilities it has accumulated.
 
-- key: QG-CS-SML-0780
+- key: QG-CS-SML-1042
   name: If operators should not be nested
   languages: [vbnet]
   category: SML
@@ -675,7 +675,7 @@
   fix: |
     Split it along the responsibilities it has accumulated.
 
-- key: QG-CS-SML-0781
+- key: QG-CS-SML-1043
   name: Methods should not have identical implementations
   languages: [vbnet]
   category: SML
@@ -691,7 +691,7 @@
   fix: |
     Make the intended behaviour explicit, and cover the case that used to fail with a test.
 
-- key: QG-CS-SML-0782
+- key: QG-CS-SML-1044
   name: "End" statements should not be used
   languages: [vbnet]
   category: SML
@@ -707,7 +707,7 @@
   fix: |
     Make the intended behaviour explicit, and cover the case that used to fail with a test.
 
-- key: QG-CS-SML-0783
+- key: QG-CS-SML-1045
   name: Control flow statements "If", "For", "For Each", "Do", "While", "Select" and "Try" should not be nested too deeply
   languages: [vbnet]
   category: SML
@@ -723,7 +723,7 @@
   fix: |
     Split it along the responsibilities it has accumulated.
 
-- key: QG-CS-SML-0784
+- key: QG-CS-SML-1046
   name: "Select...Case" clauses should not have too many lines of code
   languages: [vbnet]
   category: SML
@@ -739,7 +739,7 @@
   fix: |
     Make the flow say what it does, and remove what cannot happen.
 
-- key: QG-CS-SML-0785
+- key: QG-CS-SML-1047
   name: Array designators "()" should be on the type, not the variable
   languages: [vbnet]
   category: SML
@@ -755,7 +755,7 @@
   fix: |
     Rename it to match the convention used around it.
 
-- key: QG-CS-SML-0786
+- key: QG-CS-SML-1048
   name: "Select" statements should have at least 3 "Case" clauses
   languages: [vbnet]
   category: SML
@@ -771,7 +771,7 @@
   fix: |
     Make the flow say what it does, and remove what cannot happen.
 
-- key: QG-CS-SML-0787
+- key: QG-CS-SML-1049
   name: Comments should not be located at the end of lines of code
   languages: [vbnet]
   category: SML
@@ -787,7 +787,7 @@
   fix: |
     Rename it to match the convention used around it.
 
-- key: QG-CS-SML-0788
+- key: QG-CS-SML-1050
   name: Multiple variables should not be declared on the same line
   languages: [vbnet]
   category: SML
@@ -803,7 +803,7 @@
   fix: |
     Rename it to match the convention used around it.
 
-- key: QG-CS-SML-0789
+- key: QG-CS-SML-1051
   name: Line continuations should not be used
   languages: [vbnet]
   category: SML
@@ -819,7 +819,7 @@
   fix: |
     Rename it to match the convention used around it.
 
-- key: QG-CS-SML-0790
+- key: QG-CS-SML-1052
   name: Fields should be private
   languages: [vbnet]
   category: SML
@@ -835,7 +835,7 @@
   fix: |
     Make the intended behaviour explicit, and cover the case that used to fail with a test.
 
-- key: QG-CS-SML-0791
+- key: QG-CS-SML-1053
   name: Private constants should comply with a naming convention
   languages: [vbnet]
   category: SML
@@ -851,7 +851,7 @@
   fix: |
     Rename it to match the convention used around it.
 
-- key: QG-CS-SML-0792
+- key: QG-CS-SML-1054
   name: "Private Shared ReadOnly" fields should comply with a naming convention
   languages: [vbnet]
   category: SML
@@ -867,7 +867,7 @@
   fix: |
     Rename it to match the convention used around it.
 
-- key: QG-CS-SML-0793
+- key: QG-CS-SML-1055
   name: "Private" fields should comply with a naming convention
   languages: [vbnet]
   category: SML
@@ -883,7 +883,7 @@
   fix: |
     Rename it to match the convention used around it.
 
-- key: QG-CS-SML-0794
+- key: QG-CS-SML-1056
   name: Non-private constants should comply with a naming convention
   languages: [vbnet]
   category: SML
@@ -899,7 +899,7 @@
   fix: |
     Rename it to match the convention used around it.
 
-- key: QG-CS-SML-0795
+- key: QG-CS-SML-1057
   name: Non-private fields should comply with a naming convention
   languages: [vbnet]
   category: SML
@@ -915,7 +915,7 @@
   fix: |
     Rename it to match the convention used around it.
 
-- key: QG-CS-SML-0796
+- key: QG-CS-SML-1058
   name: Non-private "Shared ReadOnly" fields should comply with a naming convention
   languages: [vbnet]
   category: SML
@@ -931,7 +931,7 @@
   fix: |
     Rename it to match the convention used around it.
 
-- key: QG-CS-SML-0797
+- key: QG-CS-SML-1059
   name: Arrays should be initialized using the "... = {}" syntax
   languages: [vbnet]
   category: SML
@@ -947,7 +947,7 @@
   fix: |
     Make the intended behaviour explicit, and cover the case that used to fail with a test.
 
-- key: QG-CS-SML-0798
+- key: QG-CS-SML-1060
   name: "ByVal" should not be used
   languages: [vbnet]
   category: SML
@@ -963,7 +963,7 @@
   fix: |
     Make the intended behaviour explicit, and cover the case that used to fail with a test.
 
-- key: QG-CS-SML-0799
+- key: QG-CS-SML-1061
   name: Value types should implement "IEquatable<T>"
   languages: [vbnet]
   category: SML
@@ -979,7 +979,7 @@
   fix: |
     Make the intended behaviour explicit, and cover the case that used to fail with a test.
 
-- key: QG-CS-SML-0800
+- key: QG-CS-SML-1062
   name: Arguments of public methods should be validated against Nothing
   languages: [vbnet]
   category: SML
@@ -995,7 +995,7 @@
   fix: |
     Grant the access to the identities that need it and to nothing else.
 
-- key: QG-CS-SML-0801
+- key: QG-CS-SML-1063
   name: Assemblies should explicitly specify COM visibility
   languages: [vbnet]
   category: SML
@@ -1011,7 +1011,7 @@
   fix: |
     Make the intended behaviour explicit, and cover the case that used to fail with a test.
 
-- key: QG-CS-SML-0802
+- key: QG-CS-SML-1064
   name: Non-abstract attributes should be sealed
   languages: [vbnet]
   category: SML
@@ -1027,7 +1027,7 @@
   fix: |
     Make the intended behaviour explicit, and cover the case that used to fail with a test.
 
-- key: QG-CS-SML-0803
+- key: QG-CS-SML-1065
   name: Expanding archive files should not be done without controlling resource consumption
   languages: [vbnet]
   category: SML
@@ -1043,7 +1043,7 @@
   fix: |
     Release it on every path, including the exceptional one.
 
-- key: QG-CS-SML-0804
+- key: QG-CS-SML-1066
   name: Use a testable date/time provider
   languages: [vbnet]
   category: SML
@@ -1059,7 +1059,7 @@
   fix: |
     Make the intended behaviour explicit, and cover the case that used to fail with a test.
 
-- key: QG-CS-SML-0805
+- key: QG-CS-SML-1067
   name: "ExcludeFromCodeCoverage" attributes should include a justification
   languages: [vbnet]
   category: SML
@@ -1075,7 +1075,7 @@
   fix: |
     Make the intended behaviour explicit, and cover the case that used to fail with a test.
 
-- key: QG-CS-SML-0806
+- key: QG-CS-SML-1068
   name: Use "DateTimeOffset" instead of "DateTime"
   languages: [vbnet]
   category: SML
@@ -1091,7 +1091,7 @@
   fix: |
     Use the current API, and keep the old one only behind a documented compatibility layer.
 
-- key: QG-CS-SML-0807
+- key: QG-CS-SML-1069
   name: Don't hardcode the format when turning dates and times to strings
   languages: [vbnet]
   category: SML
@@ -1107,7 +1107,7 @@
   fix: |
     Make the intended behaviour explicit, and cover the case that used to fail with a test.
 
-- key: QG-CS-SML-0808
+- key: QG-CS-SML-1070
   name: "Find" method should be used instead of the "FirstOrDefault" extension
   languages: [vbnet]
   category: SML
@@ -1123,7 +1123,7 @@
   fix: |
     Use the current API, and keep the old one only behind a documented compatibility layer.
 
-- key: QG-CS-SML-0809
+- key: QG-CS-SML-1071
   name: The collection-specific "TrueForAll" method should be used instead of the "All" extension
   languages: [vbnet]
   category: SML
@@ -1139,7 +1139,7 @@
   fix: |
     Use the current API, and keep the old one only behind a documented compatibility layer.
 
-- key: QG-CS-SML-0810
+- key: QG-CS-SML-1072
   name: Collection-specific "Exists" method should be used instead of the "Any" extension
   languages: [vbnet]
   category: SML
@@ -1155,7 +1155,7 @@
   fix: |
     Use the current API, and keep the old one only behind a documented compatibility layer.
 
-- key: QG-CS-SML-0811
+- key: QG-CS-SML-1073
   name: Track lack of copyright and license headers
   languages: [vbnet]
   category: SML
@@ -1171,7 +1171,7 @@
   fix: |
     Rename it to match the convention used around it.
 
-- key: QG-CS-SML-0812
+- key: QG-CS-SML-1074
   name: Extension methods should not extend "Object"
   languages: [vbnet]
   category: SML
@@ -1187,7 +1187,7 @@
   fix: |
     Make the intended behaviour explicit, and cover the case that used to fail with a test.
 
-- key: QG-CS-SML-0813
+- key: QG-CS-SML-1075
   name: Assemblies should be marked as CLS compliant
   languages: [vbnet]
   category: SML
@@ -1203,7 +1203,7 @@
   fix: |
     Make the intended behaviour explicit, and cover the case that used to fail with a test.
 
-- key: QG-CS-SML-0814
+- key: QG-CS-SML-1076
   name: Lines should not be too long
   languages: [vbnet]
   category: SML
@@ -1219,7 +1219,7 @@
   fix: |
     Rename it to match the convention used around it.
 
-- key: QG-CS-SML-0815
+- key: QG-CS-SML-1077
   name: Files should not have too many lines of code
   languages: [vbnet]
   category: SML
@@ -1235,7 +1235,7 @@
   fix: |
     Split it along the responsibilities it has accumulated.
 
-- key: QG-CS-SML-0816
+- key: QG-CS-SML-1078
   name: Tabulation characters should not be used
   languages: [vbnet]
   category: SML
@@ -1251,7 +1251,7 @@
   fix: |
     Rename it to match the convention used around it.
 
-- key: QG-CS-SML-0817
+- key: QG-CS-SML-1079
   name: Statements should be on separate lines
   languages: [vbnet]
   category: SML
@@ -1267,7 +1267,7 @@
   fix: |
     Rename it to match the convention used around it.
 
-- key: QG-CS-SML-0818
+- key: QG-CS-SML-1080
   name: Procedures should not have too many lines of code
   languages: [vbnet]
   category: SML
@@ -1283,7 +1283,7 @@
   fix: |
     Split it along the responsibilities it has accumulated.
 
-- key: QG-CS-BUG-0229
+- key: QG-CS-BUG-0277
   name: "Shared" parts should not be created with "new"
   languages: [vbnet]
   category: BUG
@@ -1299,7 +1299,7 @@
   fix: |
     Make the intended behaviour explicit, and cover the case that used to fail with a test.
 
-- key: QG-CS-BUG-0230
+- key: QG-CS-BUG-0278
   name: Non-async "Task/Task<T>" methods should not return null
   languages: [vbnet]
   category: BUG
@@ -1315,7 +1315,7 @@
   fix: |
     Handle the absent case where it arises, or make the type say the value is always there.
 
-- key: QG-CS-BUG-0231
+- key: QG-CS-BUG-0279
   name: A write lock should not be released when a read lock has been acquired and vice versa
   languages: [vbnet]
   category: BUG
@@ -1331,7 +1331,7 @@
   fix: |
     Release it on every path, including the exceptional one.
 
-- key: QG-CS-BUG-0232
+- key: QG-CS-BUG-0280
   name: Null pointers should not be dereferenced
   languages: [vbnet]
   category: BUG
@@ -1347,7 +1347,7 @@
   fix: |
     Handle the absent case where it arises, or make the type say the value is always there.
 
-- key: QG-CS-BUG-0233
+- key: QG-CS-BUG-0281
   name: Flags enumerations should explicitly initialize all their members
   languages: [vbnet]
   category: BUG
@@ -1363,7 +1363,7 @@
   fix: |
     Make the intended behaviour explicit, and cover the case that used to fail with a test.
 
-- key: QG-CS-BUG-0234
+- key: QG-CS-BUG-0282
   name: Classes should not have only "private" constructors
   languages: [vbnet]
   category: BUG
@@ -1379,7 +1379,7 @@
   fix: |
     Make the intended behaviour explicit, and cover the case that used to fail with a test.
 
-- key: QG-CS-BUG-0235
+- key: QG-CS-BUG-0283
   name: Optional parameters should be passed to "base" calls
   languages: [vbnet]
   category: BUG
@@ -1395,7 +1395,7 @@
   fix: |
     Handle the absent case where it arises, or make the type say the value is always there.
 
-- key: QG-CS-BUG-0236
+- key: QG-CS-BUG-0284
   name: Methods with "Pure" attribute should return a value
   languages: [vbnet]
   category: BUG
@@ -1411,7 +1411,7 @@
   fix: |
     Make the intended behaviour explicit, and cover the case that used to fail with a test.
 
-- key: QG-CS-BUG-0237
+- key: QG-CS-BUG-0285
   name: Empty nullable value should not be accessed
   languages: [vbnet]
   category: BUG
@@ -1427,7 +1427,7 @@
   fix: |
     Grant the access to the identities that need it and to nothing else.
 
-- key: QG-CS-BUG-0238
+- key: QG-CS-BUG-0286
   name: Serialization event handlers should be implemented correctly
   languages: [vbnet]
   category: BUG
@@ -1443,7 +1443,7 @@
   fix: |
     Make the intended behaviour explicit, and cover the case that used to fail with a test.
 
-- key: QG-CS-BUG-0239
+- key: QG-CS-BUG-0287
   name: Calculations should not overflow
   languages: [vbnet]
   category: BUG
@@ -1459,7 +1459,7 @@
   fix: |
     Make the intended behaviour explicit, and cover the case that used to fail with a test.
 
-- key: QG-CS-BUG-0240
+- key: QG-CS-BUG-0288
   name: Empty collections should not be accessed or iterated
   languages: [vbnet]
   category: BUG
@@ -1475,7 +1475,7 @@
   fix: |
     Grant the access to the identities that need it and to nothing else.
 
-- key: QG-CS-BUG-0241
+- key: QG-CS-BUG-0289
   name: "ConstructorArgument" parameters should exist in constructors
   languages: [vbnet]
   category: BUG
@@ -1491,7 +1491,7 @@
   fix: |
     Split it along the responsibilities it has accumulated.
 
-- key: QG-CS-BUG-0242
+- key: QG-CS-BUG-0290
   name: Right operands of shift operators should be integers
   languages: [vbnet]
   category: BUG
@@ -1507,7 +1507,7 @@
   fix: |
     Make the intended behaviour explicit, and cover the case that used to fail with a test.
 
-- key: QG-CS-BUG-0243
+- key: QG-CS-BUG-0291
   name: Type inheritance should not be recursive
   languages: [vbnet]
   category: BUG
@@ -1523,7 +1523,7 @@
   fix: |
     Make the intended behaviour explicit, and cover the case that used to fail with a test.
 
-- key: QG-CS-BUG-0244
+- key: QG-CS-BUG-0292
   name: "ToString()" method should not return Nothing
   languages: [vbnet]
   category: BUG
@@ -1539,7 +1539,7 @@
   fix: |
     Make the intended behaviour explicit, and cover the case that used to fail with a test.
 
-- key: QG-CS-BUG-0245
+- key: QG-CS-BUG-0293
   name: 'Not' boolean operator should not be repeated
   languages: [vbnet]
   category: BUG
@@ -1555,7 +1555,7 @@
   fix: |
     Make the intended behaviour explicit, and cover the case that used to fail with a test.
 
-- key: QG-CS-BUG-0246
+- key: QG-CS-BUG-0294
   name: Map values should not be replaced unconditionally
   languages: [vbnet]
   category: BUG

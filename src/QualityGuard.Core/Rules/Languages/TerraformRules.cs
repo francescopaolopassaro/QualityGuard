@@ -10,7 +10,6 @@ public static class TerraformRuleSet
         new TerraformWideOpenIngressRule(),
         new TerraformPublicDatabaseRule(),
         new TerraformPublicS3AclRule(),
-        new TerraformS3WithoutVersioningRule(),
         new TerraformOpenManagementPortRule(),
         new TerraformUnencryptedDatabaseRule(),
         new TerraformUnencryptedS3Rule(),

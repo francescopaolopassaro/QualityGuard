@@ -3,7 +3,7 @@
 # detection is written by hand, against the shape the defect actually has, and measured before
 # the entry stops being planned.
 
-- key: QG-CF-SEC-0033
+- key: QG-CF-SEC-0041
   name: S3 buckets should not grant access to all users or authenticated users
   languages: [cf]
   category: SEC
@@ -19,7 +19,7 @@
   fix: |
     Grant the access to the identities that need it and to nothing else.
 
-- key: QG-CF-SEC-0034
+- key: QG-CF-SEC-0042
   name: Amazon S3 bucket public access should be fully blocked
   languages: [cf]
   category: SEC
@@ -35,7 +35,7 @@
   fix: |
     Grant the access to the identities that need it and to nothing else.
 
-- key: QG-CF-SEC-0035
+- key: QG-CF-SEC-0043
   name: AWS API Gateway should require authentication
   languages: [cf]
   category: SEC
@@ -51,7 +51,7 @@
   fix: |
     Grant the access to the identities that need it and to nothing else.
 
-- key: QG-CF-SEC-0036
+- key: QG-CF-SEC-0044
   name: Clear-text protocols should not be used
   languages: [cf]
   category: SEC
@@ -67,7 +67,7 @@
   fix: |
     Make the intended behaviour explicit, and cover the case that used to fail with a test.
 
-- key: QG-CF-SEC-0037
+- key: QG-CF-SEC-0045
   name: S3 buckets should enforce HTTPS-only access
   languages: [cf]
   category: SEC
@@ -83,7 +83,7 @@
   fix: |
     Grant the access to the identities that need it and to nothing else.
 
-- key: QG-CF-SEC-0038
+- key: QG-CF-SEC-0046
   name: Amazon S3 buckets should have versioning enabled
   languages: [cf]
   category: SEC
@@ -99,7 +99,7 @@
   fix: |
     Make the intended behaviour explicit, and cover the case that used to fail with a test.
 
-- key: QG-CF-SEC-0039
+- key: QG-CF-SEC-0047
   name: Cloud resources logging should not be disabled
   languages: [cf]
   category: SEC
@@ -115,7 +115,7 @@
   fix: |
     Release it on every path, including the exceptional one.
 
-- key: QG-CF-SEC-0040
+- key: QG-CF-SEC-0048
   name: Backup retention period should be sufficient
   languages: [cf]
   category: SEC
@@ -131,7 +131,7 @@
   fix: |
     Make the intended behaviour explicit, and cover the case that used to fail with a test.
 
-- key: QG-CF-SML-0056
+- key: QG-CF-SML-0060
   name: "Log Groups" should be configured with a retention policy
   languages: [cf]
   category: SML
@@ -147,7 +147,7 @@
   fix: |
     Rename it to match the convention used around it.
 
-- key: QG-CF-SML-0057
+- key: QG-CF-SML-0061
   name: "Log Groups" should be declared explicitly
   languages: [cf]
   category: SML
@@ -163,7 +163,7 @@
   fix: |
     Rename it to match the convention used around it.
 
-- key: QG-CF-SML-0058
+- key: QG-CF-SML-0062
   name: AWS resource tags should have valid format
   languages: [cf]
   category: SML
@@ -179,7 +179,7 @@
   fix: |
     Release it on every path, including the exceptional one.
 
-- key: QG-CF-SML-0059
+- key: QG-CF-SML-0063
   name: CloudFormation parsing failure
   languages: [cf]
   category: SML

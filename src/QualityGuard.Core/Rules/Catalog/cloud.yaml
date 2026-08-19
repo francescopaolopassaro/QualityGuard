@@ -105,3 +105,289 @@
   fix: |
     Scope the assignment to the resource group the identity works in, and add a second assignment
     where another group is genuinely needed.
+
+# Access, identity and retention rules implemented in Rules/Languages/CloudSecurityRules.cs. They
+# read the resource block that owns the setting, so a permission is judged against the type it is
+# attached to rather than against the words on the line.
+
+- key: QG-TF-SEC-0038
+  name: A service should authenticate with a platform-managed identity
+  languages: [tf]
+  category: SEC
+  severity: major
+  effort: 30min
+  cwe: [522]
+  tags: [infrastructure, authentication, secrets]
+  summary: A service that calls other services is declared without an identity the platform manages.
+  why: |
+    Without one, the call has to carry a secret that somebody created by hand and stored somewhere —
+    an application setting, a variable in the pipeline, a file in the repository. Nothing rotates it,
+    everybody who can read that store holds it, and it usually outlives the person who created it.
+  fix: |
+    Declare an identity block on the resource and grant that identity the access it needs. The
+    platform then issues and rotates the credential, and there is nothing left to store.
+
+- key: QG-TF-SEC-0039
+  name: A resource should not enable its own administrative account
+  languages: [tf]
+  category: SEC
+  severity: critical
+  effort: 15min
+  cwe: [284]
+  tags: [infrastructure, permissions]
+  summary: A built-in administrator account or an elevated start task is switched on.
+  why: |
+    An account like this belongs to no person: it is one shared password with full control, and every
+    action taken with it is recorded against the resource instead of against whoever used it. Once it
+    is handed out it cannot be traced, and it is never withdrawn.
+  fix: |
+    Disable the built-in account and assign the roles to the individual identities that need them.
+    Where a task needs to run at start-up, run it as an ordinary user.
+
+- key: QG-TF-SEC-0041
+  name: An assignment should not hand out a full-control built-in role
+  languages: [tf]
+  category: SEC
+  severity: critical
+  effort: 15min
+  cwe: [284]
+  tags: [infrastructure, permissions]
+  summary: A role assignment grants owner, contributor or user access administrator.
+  why: |
+    These roles cover every resource in the scope they are given, and two of them can also grant that
+    same access to somebody else. The assignment is written once, for a reason that is real that
+    week, and stays in place long after it.
+  fix: |
+    Assign the built-in role that matches the task, scoped to the single resource or resource group
+    it applies to.
+
+- key: QG-TF-SEC-0043
+  name: Role-based access control should not be switched off
+  languages: [tf]
+  category: SEC
+  severity: critical
+  effort: 15min
+  cwe: [284]
+  tags: [infrastructure, permissions]
+  summary: A cluster or a key vault turns role-based access control off.
+  why: |
+    Access then comes from a policy list kept on the resource itself, which no report about role
+    assignments can see. An entry left in that list is invisible to every review, and the person it
+    belongs to may have left years ago.
+  fix: |
+    Enable role-based access control and express who may do what as role assignments, so the answer
+    lives in one place and can be read.
+
+- key: QG-TF-SEC-0044
+  name: A custom role should not amount to ownership of the subscription
+  languages: [tf]
+  category: SEC
+  severity: critical
+  effort: 30min
+  cwe: [284]
+  tags: [infrastructure, permissions]
+  summary: A custom role allows every action and is assignable over a whole subscription.
+  why: |
+    The two together reproduce the built-in owner role while looking like a narrow, purpose-made one.
+    Whoever holds it can do anything in the subscription, including granting the same role to
+    somebody else, and the name of the role suggests none of that.
+  fix: |
+    Narrow the actions to the ones the role exists for, or narrow the assignable scope to the
+    resource group it applies to. A wildcard is defensible only inside a small scope.
+
+- key: QG-TF-SEC-0047
+  name: An identity should not be granted a full-access role
+  languages: [tf]
+  category: SEC
+  severity: critical
+  effort: 15min
+  cwe: [284]
+  tags: [infrastructure, permissions]
+  summary: A binding grants an administrator, owner or manager role over a resource.
+  why: |
+    A role of this kind carries every operation the service offers, including the ones that change
+    who else has access. One compromised credential is then enough to take the resource over and to
+    remove the record of having done so.
+  fix: |
+    Grant the narrowest predefined role that covers the task — in most cases a read-only one — and
+    split day-to-day work away from the role that can administer.
+
+- key: QG-TF-SEC-0051
+  name: A resource should not be granted to every user of the internet
+  languages: [tf]
+  category: SEC
+  severity: blocker
+  effort: 15min
+  cwe: [732]
+  tags: [infrastructure, permissions]
+  summary: An access grant names all users or all authenticated users.
+  why: |
+    Neither is a group inside the organisation: they mean everyone who can reach the provider,
+    including an account created a minute ago. Nothing downstream asks who the caller is, and the
+    access log has nobody to attribute a request to.
+  fix: |
+    Name the accounts, the group or the service identity that needs the resource, and keep public
+    exposure to the resources that are meant to be published.
+
+- key: QG-TF-SEC-0053
+  name: A custom role should not accumulate write permissions
+  languages: [tf]
+  category: SEC
+  severity: major
+  effort: 30min
+  cwe: [284]
+  tags: [infrastructure, permissions]
+  summary: A custom role gathers more than five permissions that create, change or delete something.
+  why: |
+    A role built that wide is granted once and then reused for tasks that need a fraction of it. When
+    one of the accounts holding it is compromised, the attacker can deploy, delete and remove the
+    evidence with the credential they already have.
+  fix: |
+    Split it into roles that each cover one task, and use the read-only form of a permission wherever
+    reading is enough.
+
+- key: QG-TF-SEC-0054
+  name: An application handler should require an encrypted connection
+  languages: [tf]
+  category: SEC
+  severity: critical
+  effort: 30min
+  cwe: [319]
+  tags: [infrastructure, encryption, network]
+  summary: A handler accepts plain HTTP, either explicitly or by saying nothing.
+  why: |
+    When the client decides whether the connection is encrypted, a client that asks for plain HTTP is
+    served — and everything it sends, session cookie included, crosses the network readable by
+    anyone on the path.
+  fix: |
+    Require the encrypted transport on every handler, so the redirect happens before any content is
+    exchanged.
+
+- key: QG-TF-SEC-0055
+  name: A custom role should not grant a permission that escalates privileges
+  languages: [tf]
+  category: SEC
+  severity: critical
+  effort: 30min
+  cwe: [284]
+  tags: [infrastructure, permissions]
+  summary: A custom role includes a permission that lets its holder act as another identity.
+  why: |
+    Impersonating a service account, minting a key for one, or starting a workload that runs as one
+    all raise the ceiling of the role: what it can do is not what it lists, but whatever the most
+    privileged account it can reach is allowed to do.
+  fix: |
+    Remove the permission and give the workload its own identity with the rights it actually needs.
+
+- key: QG-TF-SEC-0056
+  name: A cluster should not enable legacy attribute-based access control
+  languages: [tf]
+  category: SEC
+  severity: critical
+  effort: 1h
+  cwe: [668]
+  tags: [infrastructure, permissions]
+  summary: A managed cluster switches on the superseded attribute-based access control.
+  why: |
+    The cluster then also grants access from a policy file that sits outside the role definitions
+    everything else is reviewed against. A permission that looks revoked stays in force, and nothing
+    in the role assignments shows it.
+  fix: |
+    Leave it off and express the access as roles and bindings, which is what the tooling reads.
+
+- key: QG-TF-SEC-0057
+  name: A load balancer should not accept obsolete cipher suites
+  languages: [tf]
+  category: SEC
+  severity: critical
+  effort: 15min
+  cwe: [327]
+  tags: [infrastructure, crypto, network]
+  summary: A TLS policy keeps a profile that still offers broken algorithms, or names no profile.
+  why: |
+    The weakest client decides which suite is used, and somebody sitting on the connection can steer
+    the handshake towards the weakest one on offer. The connection still succeeds and still shows as
+    encrypted while the protection is already gone.
+  fix: |
+    Set the restricted profile, then fix the clients that fail to connect — the failure is what
+    names them.
+
+- key: QG-TF-SEC-0058
+  name: An object store should keep previous versions of its objects
+  languages: [tf]
+  category: SEC
+  severity: major
+  effort: 15min
+  cwe: [693]
+  tags: [infrastructure, availability]
+  summary: A bucket is created without versioning and without a retention policy.
+  why: |
+    The last write to an object is then the only copy there is. A faulty deployment, or anyone who
+    obtains a write credential, can overwrite or delete it and leave nothing to restore from — and
+    deletion is the usual last step of an intrusion.
+  fix: |
+    Enable versioning, or set a retention policy that prevents an object from being replaced or
+    removed before its time.
+
+- key: QG-TF-SEC-0059
+  name: Logs should be kept long enough to investigate an incident
+  languages: [tf]
+  category: SEC
+  severity: major
+  effort: 20min
+  cwe: [778]
+  tags: [infrastructure, logging]
+  summary: A log bucket keeps its records for fewer than two weeks.
+  why: |
+    Intrusions are noticed weeks after they happen. By the time anyone looks, the records that would
+    say what was reached and by whom have already been discarded, and the investigation has nothing
+    to work from.
+  fix: |
+    Keep at least two weeks, and longer where the data or the regulation asks for it.
+
+- key: QG-TF-SEC-0060
+  name: Audit logging should not exempt individual members
+  languages: [tf]
+  category: SEC
+  severity: critical
+  effort: 15min
+  cwe: [778]
+  tags: [infrastructure, logging]
+  summary: An audit configuration lists members whose activity is not recorded.
+  why: |
+    The log stops answering the question it exists for: who did this. An account that is exempt is
+    also the most attractive one to take over, because acting through it leaves no trace at all.
+  fix: |
+    Audit every member and filter the noise when reading the logs, rather than at the point where
+    they are written.
+
+- key: QG-TF-SEC-0061
+  name: A key vault should be protected against permanent deletion
+  languages: [tf]
+  category: SEC
+  severity: major
+  effort: 15min
+  cwe: [693]
+  tags: [infrastructure, availability, crypto]
+  summary: A key vault leaves purge protection off, explicitly or by omission.
+  why: |
+    A deleted key can then be purged before its retention window ends, and everything encrypted with
+    it becomes unreadable for good. It takes one wrong pipeline run, or one account that was meant to
+    have only delete rights.
+  fix: |
+    Enable purge protection, so a deletion can still be undone during the retention period.
+
+- key: QG-TF-SEC-0062
+  name: An object store should enforce a single access model
+  languages: [tf]
+  category: SEC
+  severity: major
+  effort: 15min
+  cwe: [732]
+  tags: [infrastructure, permissions]
+  summary: A bucket lets per-object access lists work alongside the project's own permissions.
+  why: |
+    An object can then be readable to somebody the bucket policy denies, and nothing in that policy
+    shows it. The permissions that were reviewed are not the permissions that apply.
+  fix: |
+    Enforce uniform access at bucket level and express who may read what once, in the policy.

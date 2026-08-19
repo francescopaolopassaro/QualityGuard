@@ -158,7 +158,7 @@ public class InfrastructureRulesTests
                 - name: app
                   image: app:1.0
             """;
-        Assert.NotEmpty(Lines("pod.yaml", manifest, "QG-K8-SEC-0006"));
+        Assert.NotEmpty(Lines("pod.yaml", manifest, "QG-K8-SEC-0015"));
     }
 
     [Fact]
@@ -327,7 +327,7 @@ public class InfrastructureRulesTests
                       add:
                         - NET_ADMIN
             """;
-        Assert.Equal(2, Lines("pod.yaml", manifest, "QG-K8-SEC-0007").Count);
+        Assert.Equal(2, Lines("pod.yaml", manifest, "QG-K8-SEC-0011").Count);
     }
 
     [Fact]
@@ -347,7 +347,7 @@ public class InfrastructureRulesTests
                   - SYS_ADMIN
                   - NET_ADMIN
             """;
-        Assert.Empty(Lines("policy.yaml", manifest, "QG-K8-SEC-0007"));
+        Assert.Empty(Lines("policy.yaml", manifest, "QG-K8-SEC-0011"));
     }
 
     [Fact]
@@ -365,7 +365,7 @@ public class InfrastructureRulesTests
                       drop: ["ALL"]
                       add: ["NET_BIND_SERVICE"]
             """;
-        Assert.Empty(Lines("pod.yaml", manifest, "QG-K8-SEC-0007"));
+        Assert.Empty(Lines("pod.yaml", manifest, "QG-K8-SEC-0011"));
     }
     [Fact]
     public void A_bucket_permission_that_grants_everyone_is_reported()

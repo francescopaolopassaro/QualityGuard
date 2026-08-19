@@ -3,7 +3,7 @@
 # detection is written by hand, against the shape the defect actually has, and measured before
 # the entry stops being planned.
 
-- key: QG-CS-SEC-0102
+- key: QG-CS-SEC-0111
   name: Custom cryptographic algorithms should not be used
   languages: [cs]
   category: SEC
@@ -19,7 +19,7 @@
   fix: |
     Use the current recommended algorithm and parameters, and let the platform choose what it can.
 
-- key: QG-CS-SEC-0103
+- key: QG-CS-SEC-0112
   name: Members should not have conflicting transparency annotations
   languages: [cs]
   category: SEC
@@ -35,7 +35,7 @@
   fix: |
     Make the intended behaviour explicit, and cover the case that used to fail with a test.
 
-- key: QG-CS-SEC-0104
+- key: QG-CS-SEC-0113
   name: "CoSetProxyBlanket" and "CoInitializeSecurity" should not be used
   languages: [cs]
   category: SEC
@@ -51,7 +51,7 @@
   fix: |
     Make the intended behaviour explicit, and cover the case that used to fail with a test.
 
-- key: QG-CS-SEC-0105
+- key: QG-CS-SEC-0114
   name: Serialization constructors should be secured
   languages: [cs]
   category: SEC
@@ -67,7 +67,7 @@
   fix: |
     Make the intended behaviour explicit, and cover the case that used to fail with a test.
 
-- key: QG-CS-SML-0557
+- key: QG-CS-SML-0819
   name: Method overrides should not change parameter defaults
   languages: [cs]
   category: SML
@@ -83,7 +83,7 @@
   fix: |
     Make the intended behaviour explicit, and cover the case that used to fail with a test.
 
-- key: QG-CS-SML-0558
+- key: QG-CS-SML-0820
   name: Invalid casts should be avoided
   languages: [cs]
   category: SML
@@ -99,7 +99,7 @@
   fix: |
     Make the intended behaviour explicit, and cover the case that used to fail with a test.
 
-- key: QG-CS-SML-0559
+- key: QG-CS-SML-0821
   name: Field-like events should not be virtual
   languages: [cs]
   category: SML
@@ -115,7 +115,7 @@
   fix: |
     Make the intended behaviour explicit, and cover the case that used to fail with a test.
 
-- key: QG-CS-SML-0560
+- key: QG-CS-SML-0822
   name: Flags enumerations zero-value members should be named "None"
   languages: [cs]
   category: SML
@@ -131,7 +131,7 @@
   fix: |
     Handle the absent case where it arises, or make the type say the value is always there.
 
-- key: QG-CS-SML-0561
+- key: QG-CS-SML-0823
   name: Properties should not make collection or array copies
   languages: [cs]
   category: SML
@@ -147,7 +147,7 @@
   fix: |
     Make the intended behaviour explicit, and cover the case that used to fail with a test.
 
-- key: QG-CS-SML-0562
+- key: QG-CS-SML-0824
   name: Whitespace and control characters in string literals should be explicit
   languages: [cs]
   category: SML
@@ -163,7 +163,7 @@
   fix: |
     Make the intended behaviour explicit, and cover the case that used to fail with a test.
 
-- key: QG-CS-SML-0563
+- key: QG-CS-SML-0825
   name: Instance members should not write to "static" fields
   languages: [cs]
   category: SML
@@ -179,7 +179,7 @@
   fix: |
     Guard the shared state, or give each caller its own copy.
 
-- key: QG-CS-SML-0564
+- key: QG-CS-SML-0826
   name: "is" should not be used with "this"
   languages: [cs]
   category: SML
@@ -195,7 +195,7 @@
   fix: |
     Make the intended behaviour explicit, and cover the case that used to fail with a test.
 
-- key: QG-CS-SML-0565
+- key: QG-CS-SML-0827
   name: "value" contextual keyword should be used
   languages: [cs]
   category: SML
@@ -211,7 +211,7 @@
   fix: |
     Use the current API, and keep the old one only behind a documented compatibility layer.
 
-- key: QG-CS-SML-0566
+- key: QG-CS-SML-0828
   name: Method overloads with default parameter values should not overlap
   languages: [cs]
   category: SML
@@ -227,7 +227,7 @@
   fix: |
     Remove it: the history keeps it if it is ever needed again.
 
-- key: QG-CS-SML-0567
+- key: QG-CS-SML-0829
   name: Type should not be examined on "System.Type" instances
   languages: [cs]
   category: SML
@@ -243,7 +243,7 @@
   fix: |
     Make the intended behaviour explicit, and cover the case that used to fail with a test.
 
-- key: QG-CS-SML-0568
+- key: QG-CS-SML-0830
   name: "[Optional]" should not be used on "ref" or "out" parameters
   languages: [cs]
   category: SML
@@ -259,7 +259,7 @@
   fix: |
     Handle the absent case where it arises, or make the type say the value is always there.
 
-- key: QG-CS-SML-0569
+- key: QG-CS-SML-0831
   name: "params" should not be introduced on overrides
   languages: [cs]
   category: SML
@@ -275,7 +275,7 @@
   fix: |
     Make the intended behaviour explicit, and cover the case that used to fail with a test.
 
-- key: QG-CS-SML-0570
+- key: QG-CS-SML-0832
   name: Exception types should be "public"
   languages: [cs]
   category: SML
@@ -291,7 +291,7 @@
   fix: |
     Grant the access to the identities that need it and to nothing else.
 
-- key: QG-CS-SML-0571
+- key: QG-CS-SML-0833
   name: Assemblies should have version information
   languages: [cs]
   category: SML
@@ -307,7 +307,7 @@
   fix: |
     Make the intended behaviour explicit, and cover the case that used to fail with a test.
 
-- key: QG-CS-SML-0572
+- key: QG-CS-SML-0834
   name: Threads should not lock on objects with weak identity
   languages: [cs]
   category: SML
@@ -323,7 +323,7 @@
   fix: |
     Guard the shared state, or give each caller its own copy.
 
-- key: QG-CS-SML-0573
+- key: QG-CS-SML-0835
   name: Identifiers should not conflict with the C# 14 "field" contextual keyword
   languages: [cs]
   category: SML
@@ -339,7 +339,7 @@
   fix: |
     Rename it to match the convention used around it.
 
-- key: QG-CS-SML-0574
+- key: QG-CS-SML-0836
   name: Unnecessary mathematical comparisons should not be made
   languages: [cs]
   category: SML
@@ -355,7 +355,7 @@
   fix: |
     Make the intended behaviour explicit, and cover the case that used to fail with a test.
 
-- key: QG-CS-SML-0575
+- key: QG-CS-SML-0837
   name: URIs should not be hardcoded
   languages: [cs]
   category: SML
@@ -371,7 +371,7 @@
   fix: |
     Make the intended behaviour explicit, and cover the case that used to fail with a test.
 
-- key: QG-CS-SML-0576
+- key: QG-CS-SML-0838
   name: General or reserved exceptions should never be thrown
   languages: [cs]
   category: SML
@@ -387,7 +387,7 @@
   fix: |
     Make the intended behaviour explicit, and cover the case that used to fail with a test.
 
-- key: QG-CS-SML-0577
+- key: QG-CS-SML-0839
   name: "Equals" and the comparison operators should be overridden when implementing "IComparable"
   languages: [cs]
   category: SML
@@ -403,7 +403,7 @@
   fix: |
     Make the intended behaviour explicit, and cover the case that used to fail with a test.
 
-- key: QG-CS-SML-0578
+- key: QG-CS-SML-0840
   name: "for" loop stop conditions should be invariant
   languages: [cs]
   category: SML
@@ -419,7 +419,7 @@
   fix: |
     Make the flow say what it does, and remove what cannot happen.
 
-- key: QG-CS-SML-0579
+- key: QG-CS-SML-0841
   name: An abstract class should have both abstract and concrete methods
   languages: [cs]
   category: SML
@@ -435,7 +435,7 @@
   fix: |
     Rename it to match the convention used around it.
 
-- key: QG-CS-SML-0580
+- key: QG-CS-SML-0842
   name: Runtime type checking should be simplified
   languages: [cs]
   category: SML
@@ -451,7 +451,7 @@
   fix: |
     Make the intended behaviour explicit, and cover the case that used to fail with a test.
 
-- key: QG-CS-SML-0581
+- key: QG-CS-SML-0843
   name: "StringBuilder" data should be used
   languages: [cs]
   category: SML
@@ -467,7 +467,7 @@
   fix: |
     Use the current API, and keep the old one only behind a documented compatibility layer.
 
-- key: QG-CS-SML-0582
+- key: QG-CS-SML-0844
   name: Duplicate casts should not be made
   languages: [cs]
   category: SML
@@ -483,7 +483,7 @@
   fix: |
     Make the intended behaviour explicit, and cover the case that used to fail with a test.
 
-- key: QG-CS-SML-0583
+- key: QG-CS-SML-0845
   name: Implementations should be provided for "partial" methods
   languages: [cs]
   category: SML
@@ -499,7 +499,7 @@
   fix: |
     Make the intended behaviour explicit, and cover the case that used to fail with a test.
 
-- key: QG-CS-SML-0584
+- key: QG-CS-SML-0846
   name: "params" should be used on overrides
   languages: [cs]
   category: SML
@@ -515,7 +515,7 @@
   fix: |
     Use the current API, and keep the old one only behind a documented compatibility layer.
 
-- key: QG-CS-SML-0585
+- key: QG-CS-SML-0847
   name: "private" methods called only by inner classes should be moved to those classes
   languages: [cs]
   category: SML
@@ -531,7 +531,7 @@
   fix: |
     Make the intended behaviour explicit, and cover the case that used to fail with a test.
 
-- key: QG-CS-SML-0586
+- key: QG-CS-SML-0848
   name: "[ExpectedException]" should not be used
   languages: [cs]
   category: SML
@@ -547,7 +547,7 @@
   fix: |
     Make the intended behaviour explicit, and cover the case that used to fail with a test.
 
-- key: QG-CS-SML-0587
+- key: QG-CS-SML-0849
   name: Variables should not be checked against the values they're about to be assigned
   languages: [cs]
   category: SML
@@ -563,7 +563,7 @@
   fix: |
     Make the intended behaviour explicit, and cover the case that used to fail with a test.
 
-- key: QG-CS-SML-0588
+- key: QG-CS-SML-0850
   name: Interfaces should not simply inherit from base interfaces with colliding members
   languages: [cs]
   category: SML
@@ -579,7 +579,7 @@
   fix: |
     Make the intended behaviour explicit, and cover the case that used to fail with a test.
 
-- key: QG-CS-SML-0589
+- key: QG-CS-SML-0851
   name: Parameters with "[DefaultParameterValue]" attributes should also be marked "[Optional]"
   languages: [cs]
   category: SML
@@ -595,7 +595,7 @@
   fix: |
     Handle the absent case where it arises, or make the type say the value is always there.
 
-- key: QG-CS-SML-0590
+- key: QG-CS-SML-0852
   name: Composite format strings should be used correctly
   languages: [cs]
   category: SML
@@ -611,7 +611,7 @@
   fix: |
     Use the current API, and keep the old one only behind a documented compatibility layer.
 
-- key: QG-CS-SML-0591
+- key: QG-CS-SML-0853
   name: Empty "case" clauses that fall through to the "default" should be omitted
   languages: [cs]
   category: SML
@@ -627,7 +627,7 @@
   fix: |
     Make the flow say what it does, and remove what cannot happen.
 
-- key: QG-CS-SML-0592
+- key: QG-CS-SML-0854
   name: Member initializer values should not be redundant
   languages: [cs]
   category: SML
@@ -643,7 +643,7 @@
   fix: |
     Remove it: the history keeps it if it is ever needed again.
 
-- key: QG-CS-SML-0593
+- key: QG-CS-SML-0855
   name: Arrays should not be created for params parameters
   languages: [cs]
   category: SML
@@ -659,7 +659,7 @@
   fix: |
     Split it along the responsibilities it has accumulated.
 
-- key: QG-CS-SML-0594
+- key: QG-CS-SML-0856
   name: Classes that provide "Equals(<T>)" should implement "IEquatable<T>"
   languages: [cs]
   category: SML
@@ -675,7 +675,7 @@
   fix: |
     Make the intended behaviour explicit, and cover the case that used to fail with a test.
 
-- key: QG-CS-SML-0595
+- key: QG-CS-SML-0857
   name: "ISerializable" should be implemented correctly
   languages: [cs]
   category: SML
@@ -691,7 +691,7 @@
   fix: |
     Make the intended behaviour explicit, and cover the case that used to fail with a test.
 
-- key: QG-CS-SML-0596
+- key: QG-CS-SML-0858
   name: "static" fields should be initialized inline
   languages: [cs]
   category: SML
@@ -707,7 +707,7 @@
   fix: |
     Make the intended behaviour explicit, and cover the case that used to fail with a test.
 
-- key: QG-CS-SML-0597
+- key: QG-CS-SML-0859
   name: Objects should not be disposed more than once
   languages: [cs]
   category: SML
@@ -723,7 +723,7 @@
   fix: |
     Release it on every path, including the exceptional one.
 
-- key: QG-CS-SML-0598
+- key: QG-CS-SML-0860
   name: Custom attributes should be marked with "System.AttributeUsageAttribute"
   languages: [cs]
   category: SML
@@ -739,7 +739,7 @@
   fix: |
     Make the intended behaviour explicit, and cover the case that used to fail with a test.
 
-- key: QG-CS-SML-0599
+- key: QG-CS-SML-0861
   name: Classes implementing "IEquatable<T>" should be sealed
   languages: [cs]
   category: SML
@@ -755,7 +755,7 @@
   fix: |
     Make the intended behaviour explicit, and cover the case that used to fail with a test.
 
-- key: QG-CS-SML-0600
+- key: QG-CS-SML-0862
   name: Types should not extend outdated base types
   languages: [cs]
   category: SML
@@ -771,7 +771,7 @@
   fix: |
     Make the intended behaviour explicit, and cover the case that used to fail with a test.
 
-- key: QG-CS-SML-0601
+- key: QG-CS-SML-0863
   name: Non-flags enums should not be marked with "FlagsAttribute"
   languages: [cs]
   category: SML
@@ -787,7 +787,7 @@
   fix: |
     Make the intended behaviour explicit, and cover the case that used to fail with a test.
 
-- key: QG-CS-SML-0602
+- key: QG-CS-SML-0864
   name: Method overloads should be grouped together
   languages: [cs]
   category: SML
@@ -803,7 +803,7 @@
   fix: |
     Rename it to match the convention used around it.
 
-- key: QG-CS-SML-0603
+- key: QG-CS-SML-0865
   name: Native methods should be wrapped
   languages: [cs]
   category: SML
@@ -819,7 +819,7 @@
   fix: |
     Make the intended behaviour explicit, and cover the case that used to fail with a test.
 
-- key: QG-CS-SML-0604
+- key: QG-CS-SML-0866
   name: Events should have proper arguments
   languages: [cs]
   category: SML
@@ -835,7 +835,7 @@
   fix: |
     Make the intended behaviour explicit, and cover the case that used to fail with a test.
 
-- key: QG-CS-SML-0605
+- key: QG-CS-SML-0867
   name: Parameter validation in yielding methods should be wrapped
   languages: [cs]
   category: SML
@@ -851,7 +851,7 @@
   fix: |
     Make the intended behaviour explicit, and cover the case that used to fail with a test.
 
-- key: QG-CS-SML-0606
+- key: QG-CS-SML-0868
   name: "DebuggerDisplayAttribute" strings should reference existing members
   languages: [cs]
   category: SML
@@ -867,7 +867,7 @@
   fix: |
     Make the intended behaviour explicit, and cover the case that used to fail with a test.
 
-- key: QG-CS-SML-0607
+- key: QG-CS-SML-0869
   name: Azure Functions should be stateless
   languages: [cs]
   category: SML
@@ -883,7 +883,7 @@
   fix: |
     Make the intended behaviour explicit, and cover the case that used to fail with a test.
 
-- key: QG-CS-SML-0608
+- key: QG-CS-SML-0870
   name: Client instances should not be recreated on each Azure Function invocation
   languages: [cs]
   category: SML
@@ -899,7 +899,7 @@
   fix: |
     Make the intended behaviour explicit, and cover the case that used to fail with a test.
 
-- key: QG-CS-SML-0609
+- key: QG-CS-SML-0871
   name: Always set the "DateTimeKind" when creating new "DateTime" instances
   languages: [cs]
   category: SML
@@ -915,7 +915,7 @@
   fix: |
     Make the flow say what it does, and remove what cannot happen.
 
-- key: QG-CS-SML-0610
+- key: QG-CS-SML-0872
   name: The collection should be filtered before sorting by using "Where" before "OrderBy"
   languages: [cs]
   category: SML
@@ -931,7 +931,7 @@
   fix: |
     Make the intended behaviour explicit, and cover the case that used to fail with a test.
 
-- key: QG-CS-SML-0611
+- key: QG-CS-SML-0873
   name: Generic logger injection should match enclosing type
   languages: [cs]
   category: SML
@@ -947,7 +947,7 @@
   fix: |
     Keep the instruction fixed and pass the values separately, so no input can change its shape.
 
-- key: QG-CS-SML-0612
+- key: QG-CS-SML-0874
   name: Use PascalCase for named placeholders
   languages: [cs]
   category: SML
@@ -963,7 +963,7 @@
   fix: |
     Make the flow say what it does, and remove what cannot happen.
 
-- key: QG-CS-SML-0613
+- key: QG-CS-SML-0875
   name: First/Single should be used instead of FirstOrDefault/SingleOrDefault on collections that are known to be non-empty
   languages: [cs]
   category: SML
@@ -979,7 +979,7 @@
   fix: |
     Remove it: the history keeps it if it is ever needed again.
 
-- key: QG-CS-SML-0614
+- key: QG-CS-SML-0876
   name: Null-forgiving operators should not be redundant
   languages: [cs]
   category: SML
@@ -995,7 +995,7 @@
   fix: |
     Handle the absent case where it arises, or make the type say the value is always there.
 
-- key: QG-CS-SML-0615
+- key: QG-CS-SML-0877
   name: Null-forgiving operators should not be used when nullable warnings are disabled
   languages: [cs]
   category: SML
@@ -1011,7 +1011,7 @@
   fix: |
     Handle the absent case where it arises, or make the type say the value is always there.
 
-- key: QG-CS-SML-0616
+- key: QG-CS-SML-0878
   name: Method calls should not resolve ambiguously to overloads with "params"
   languages: [cs]
   category: SML
@@ -1027,7 +1027,7 @@
   fix: |
     Make the intended behaviour explicit, and cover the case that used to fail with a test.
 
-- key: QG-CS-SML-0617
+- key: QG-CS-SML-0879
   name: Methods should not return values that are never used
   languages: [cs]
   category: SML
@@ -1043,7 +1043,7 @@
   fix: |
     Remove it: the history keeps it if it is ever needed again.
 
-- key: QG-CS-SML-0618
+- key: QG-CS-SML-0880
   name: Namespaces should not be empty
   languages: [cs]
   category: SML
@@ -1059,7 +1059,7 @@
   fix: |
     Rename it to match the convention used around it.
 
-- key: QG-CS-SML-0619
+- key: QG-CS-SML-0881
   name: "async" and "await" should not be used as identifiers
   languages: [cs]
   category: SML
@@ -1075,7 +1075,7 @@
   fix: |
     Rename it to match the convention used around it.
 
-- key: QG-CS-SML-0620
+- key: QG-CS-SML-0882
   name: Public methods should not have multidimensional array parameters
   languages: [cs]
   category: SML
@@ -1091,7 +1091,7 @@
   fix: |
     Grant the access to the identities that need it and to nothing else.
 
-- key: QG-CS-SML-0621
+- key: QG-CS-SML-0883
   name: "Explicit" conversions of "foreach" loops should not be used
   languages: [cs]
   category: SML
@@ -1107,7 +1107,7 @@
   fix: |
     Make the flow say what it does, and remove what cannot happen.
 
-- key: QG-CS-SML-0622
+- key: QG-CS-SML-0884
   name: Non-flags enums should not be used in bitwise operations
   languages: [cs]
   category: SML
@@ -1123,7 +1123,7 @@
   fix: |
     Rename it to match the convention used around it.
 
-- key: QG-CS-SML-0623
+- key: QG-CS-SML-0885
   name: Test method signatures should be correct
   languages: [cs]
   category: SML
@@ -1139,7 +1139,7 @@
   fix: |
     Make the intended behaviour explicit, and cover the case that used to fail with a test.
 
-- key: QG-CS-SML-0624
+- key: QG-CS-SML-0886
   name: "[DefaultValue]" should not be used when "[DefaultParameterValue]" is meant
   languages: [cs]
   category: SML
@@ -1155,7 +1155,7 @@
   fix: |
     Make the intended behaviour explicit, and cover the case that used to fail with a test.
 
-- key: QG-CS-SML-0625
+- key: QG-CS-SML-0887
   name: "operator==" should not be overloaded on reference types
   languages: [cs]
   category: SML
@@ -1171,7 +1171,7 @@
   fix: |
     Make the intended behaviour explicit, and cover the case that used to fail with a test.
 
-- key: QG-CS-SML-0626
+- key: QG-CS-SML-0888
   name: Conditionals should start on new lines
   languages: [cs]
   category: SML
@@ -1187,7 +1187,7 @@
   fix: |
     Make the flow say what it does, and remove what cannot happen.
 
-- key: QG-CS-SML-0627
+- key: QG-CS-SML-0889
   name: A conditionally executed single line should be denoted by indentation
   languages: [cs]
   category: SML
@@ -1203,7 +1203,7 @@
   fix: |
     Make the flow say what it does, and remove what cannot happen.
 
-- key: QG-CS-SML-0628
+- key: QG-CS-SML-0890
   name: Inherited member visibility should not be decreased
   languages: [cs]
   category: SML
@@ -1219,7 +1219,7 @@
   fix: |
     Make the intended behaviour explicit, and cover the case that used to fail with a test.
 
-- key: QG-CS-SML-0629
+- key: QG-CS-SML-0891
   name: Calls to "async" methods should not be blocking in Azure Functions
   languages: [cs]
   category: SML
@@ -1235,7 +1235,7 @@
   fix: |
     Guard the shared state, or give each caller its own copy.
 
-- key: QG-CS-SML-0630
+- key: QG-CS-SML-0892
   name: Parameter names should match base declaration and other partial definitions
   languages: [cs]
   category: SML
@@ -1251,7 +1251,7 @@
   fix: |
     Rename it to match the convention used around it.
 
-- key: QG-CS-SML-0631
+- key: QG-CS-SML-0893
   name: "if ... else if" constructs should end with "else" clauses
   languages: [cs]
   category: SML
@@ -1267,7 +1267,7 @@
   fix: |
     Make the intended behaviour explicit, and cover the case that used to fail with a test.
 
-- key: QG-CS-SML-0632
+- key: QG-CS-SML-0894
   name: "switch/Select" statements should contain a "default/Case Else" clauses
   languages: [cs]
   category: SML
@@ -1283,7 +1283,7 @@
   fix: |
     Make the flow say what it does, and remove what cannot happen.
 
-- key: QG-CS-SML-0633
+- key: QG-CS-SML-0895
   name: Control flow statements "if", "switch", "for", "foreach", "while", "do"  and "try" should not be nested too deeply
   languages: [cs]
   category: SML
@@ -1299,7 +1299,7 @@
   fix: |
     Make the flow say what it does, and remove what cannot happen.
 
-- key: QG-CS-SML-0634
+- key: QG-CS-SML-0896
   name: Modulus results should not be checked for direct equality
   languages: [cs]
   category: SML
@@ -1315,7 +1315,7 @@
   fix: |
     Make the intended behaviour explicit, and cover the case that used to fail with a test.
 
-- key: QG-CS-SML-0635
+- key: QG-CS-SML-0897
   name: "nameof" should be used
   languages: [cs]
   category: SML
@@ -1331,7 +1331,7 @@
   fix: |
     Rename it to match the convention used around it.
 
-- key: QG-CS-SML-0636
+- key: QG-CS-SML-0898
   name: Array covariance should not be used
   languages: [cs]
   category: SML
@@ -1347,7 +1347,7 @@
   fix: |
     Make the intended behaviour explicit, and cover the case that used to fail with a test.
 
-- key: QG-CS-SML-0637
+- key: QG-CS-SML-0899
   name: Public constant members should not be used
   languages: [cs]
   category: SML
@@ -1363,7 +1363,7 @@
   fix: |
     Grant the access to the identities that need it and to nothing else.
 
-- key: QG-CS-SML-0638
+- key: QG-CS-SML-0900
   name: Optional parameters should not be used
   languages: [cs]
   category: SML
@@ -1379,7 +1379,7 @@
   fix: |
     Handle the absent case where it arises, or make the type say the value is always there.
 
-- key: QG-CS-SML-0639
+- key: QG-CS-SML-0901
   name: "ConfigureAwait(false)" should be used
   languages: [cs]
   category: SML
@@ -1395,7 +1395,7 @@
   fix: |
     Guard the shared state, or give each caller its own copy.
 
-- key: QG-CS-SML-0640
+- key: QG-CS-SML-0902
   name: Unchanged variables should be marked as "const"
   languages: [cs]
   category: SML
@@ -1411,7 +1411,7 @@
   fix: |
     Make the intended behaviour explicit, and cover the case that used to fail with a test.
 
-- key: QG-CS-SML-0641
+- key: QG-CS-SML-0903
   name: "out" and "ref" parameters should not be used
   languages: [cs]
   category: SML
@@ -1427,7 +1427,7 @@
   fix: |
     Split it along the responsibilities it has accumulated.
 
-- key: QG-CS-SML-0642
+- key: QG-CS-SML-0904
   name: Number patterns should be regular
   languages: [cs]
   category: SML
@@ -1443,7 +1443,7 @@
   fix: |
     Make the intended behaviour explicit, and cover the case that used to fail with a test.
 
-- key: QG-CS-SML-0643
+- key: QG-CS-SML-0905
   name: Pointers to unmanaged memory should not be visible
   languages: [cs]
   category: SML
@@ -1459,7 +1459,7 @@
   fix: |
     Make the intended behaviour explicit, and cover the case that used to fail with a test.
 
-- key: QG-CS-SML-0644
+- key: QG-CS-SML-0906
   name: Child class fields should not differ from parent class fields only by capitalization
   languages: [cs]
   category: SML
@@ -1475,7 +1475,7 @@
   fix: |
     Make the intended behaviour explicit, and cover the case that used to fail with a test.
 
-- key: QG-CS-SML-0645
+- key: QG-CS-SML-0907
   name: Interface methods should be callable by derived types
   languages: [cs]
   category: SML
@@ -1491,7 +1491,7 @@
   fix: |
     Make the intended behaviour explicit, and cover the case that used to fail with a test.
 
-- key: QG-CS-SML-0646
+- key: QG-CS-SML-0908
   name: Calls to "async" methods should not be blocking
   languages: [cs]
   category: SML
@@ -1507,7 +1507,7 @@
   fix: |
     Guard the shared state, or give each caller its own copy.
 
-- key: QG-CS-SML-0647
+- key: QG-CS-SML-0909
   name: Types should be named in PascalCase
   languages: [cs]
   category: SML
@@ -1523,7 +1523,7 @@
   fix: |
     Make the flow say what it does, and remove what cannot happen.
 
-- key: QG-CS-SML-0648
+- key: QG-CS-SML-0910
   name: "GC.SuppressFinalize" should not be called
   languages: [cs]
   category: SML
@@ -1539,7 +1539,7 @@
   fix: |
     Make the intended behaviour explicit, and cover the case that used to fail with a test.
 
-- key: QG-CS-SML-0649
+- key: QG-CS-SML-0911
   name: Exit methods should not be called
   languages: [cs]
   category: SML
@@ -1555,7 +1555,7 @@
   fix: |
     Make the intended behaviour explicit, and cover the case that used to fail with a test.
 
-- key: QG-CS-SML-0650
+- key: QG-CS-SML-0912
   name: "interface" instances should not be cast to concrete types
   languages: [cs]
   category: SML
@@ -1571,7 +1571,7 @@
   fix: |
     Make the intended behaviour explicit, and cover the case that used to fail with a test.
 
-- key: QG-CS-SML-0651
+- key: QG-CS-SML-0913
   name: Magic numbers should not be used
   languages: [cs]
   category: SML
@@ -1587,7 +1587,7 @@
   fix: |
     Make the intended behaviour explicit, and cover the case that used to fail with a test.
 
-- key: QG-CS-SML-0652
+- key: QG-CS-SML-0914
   name: Unnecessary "using" should be removed
   languages: [cs]
   category: SML
@@ -1603,7 +1603,7 @@
   fix: |
     Remove it: the history keeps it if it is ever needed again.
 
-- key: QG-CS-SML-0653
+- key: QG-CS-SML-0915
   name: "switch case" clauses should not have too many lines of code
   languages: [cs]
   category: SML
@@ -1619,7 +1619,7 @@
   fix: |
     Make the flow say what it does, and remove what cannot happen.
 
-- key: QG-CS-SML-0654
+- key: QG-CS-SML-0916
   name: break statements should not be used except for switch cases
   languages: [cs]
   category: SML
@@ -1635,7 +1635,7 @@
   fix: |
     Make the flow say what it does, and remove what cannot happen.
 
-- key: QG-CS-SML-0655
+- key: QG-CS-SML-0917
   name: "switch" statements should have at least 3 "case" clauses
   languages: [cs]
   category: SML
@@ -1651,7 +1651,7 @@
   fix: |
     Make the flow say what it does, and remove what cannot happen.
 
-- key: QG-CS-SML-0656
+- key: QG-CS-SML-0918
   name: Logger fields should be "private static readonly"
   languages: [cs]
   category: SML
@@ -1667,7 +1667,7 @@
   fix: |
     Rename it to match the convention used around it.
 
-- key: QG-CS-SML-0657
+- key: QG-CS-SML-0919
   name: Culture should be specified for "string" operations
   languages: [cs]
   category: SML
@@ -1683,7 +1683,7 @@
   fix: |
     Make the intended behaviour explicit, and cover the case that used to fail with a test.
 
-- key: QG-CS-SML-0658
+- key: QG-CS-SML-0920
   name: Multiple variables should not be declared on the same line
   languages: [cs]
   category: SML
@@ -1699,7 +1699,7 @@
   fix: |
     Rename it to match the convention used around it.
 
-- key: QG-CS-SML-0659
+- key: QG-CS-SML-0921
   name: "==" should not be used when "Equals" is overridden
   languages: [cs]
   category: SML
@@ -1715,7 +1715,7 @@
   fix: |
     Make the intended behaviour explicit, and cover the case that used to fail with a test.
 
-- key: QG-CS-SML-0660
+- key: QG-CS-SML-0922
   name: Underscores should be used to make large numbers readable
   languages: [cs]
   category: SML
@@ -1731,7 +1731,7 @@
   fix: |
     Rename it to match the convention used around it.
 
-- key: QG-CS-SML-0661
+- key: QG-CS-SML-0923
   name: "sealed" classes should not have "protected" members
   languages: [cs]
   category: SML
@@ -1747,7 +1747,7 @@
   fix: |
     Make the intended behaviour explicit, and cover the case that used to fail with a test.
 
-- key: QG-CS-SML-0662
+- key: QG-CS-SML-0924
   name: "Exception" should not be caught
   languages: [cs]
   category: SML
@@ -1763,7 +1763,7 @@
   fix: |
     Make the intended behaviour explicit, and cover the case that used to fail with a test.
 
-- key: QG-CS-SML-0663
+- key: QG-CS-SML-0925
   name: Redundant modifiers should not be used
   languages: [cs]
   category: SML
@@ -1779,7 +1779,7 @@
   fix: |
     Remove it: the history keeps it if it is ever needed again.
 
-- key: QG-CS-SML-0664
+- key: QG-CS-SML-0926
   name: Fields should be private
   languages: [cs]
   category: SML
@@ -1795,7 +1795,7 @@
   fix: |
     Make the intended behaviour explicit, and cover the case that used to fail with a test.
 
-- key: QG-CS-SML-0665
+- key: QG-CS-SML-0927
   name: Members should not be initialized to default values
   languages: [cs]
   category: SML
@@ -1811,7 +1811,7 @@
   fix: |
     Rename it to match the convention used around it.
 
-- key: QG-CS-SML-0666
+- key: QG-CS-SML-0928
   name: Types should not have members with visibility set higher than the type's visibility
   languages: [cs]
   category: SML
@@ -1827,7 +1827,7 @@
   fix: |
     Make the intended behaviour explicit, and cover the case that used to fail with a test.
 
-- key: QG-CS-SML-0667
+- key: QG-CS-SML-0929
   name: "GC.SuppressFinalize" should not be invoked for types without destructors
   languages: [cs]
   category: SML
@@ -1843,7 +1843,7 @@
   fix: |
     Remove it: the history keeps it if it is ever needed again.
 
-- key: QG-CS-SML-0668
+- key: QG-CS-SML-0930
   name: Redundant parentheses should not be used
   languages: [cs]
   category: SML
@@ -1859,7 +1859,7 @@
   fix: |
     Remove it: the history keeps it if it is ever needed again.
 
-- key: QG-CS-SML-0669
+- key: QG-CS-SML-0931
   name: The simplest possible condition syntax should be used
   languages: [cs]
   category: SML
@@ -1875,7 +1875,7 @@
   fix: |
     Make the flow say what it does, and remove what cannot happen.
 
-- key: QG-CS-SML-0670
+- key: QG-CS-SML-0932
   name: Method parameters should be declared with base types
   languages: [cs]
   category: SML
@@ -1891,7 +1891,7 @@
   fix: |
     Split it along the responsibilities it has accumulated.
 
-- key: QG-CS-SML-0671
+- key: QG-CS-SML-0933
   name: Constructor and destructor declarations should not be redundant
   languages: [cs]
   category: SML
@@ -1907,7 +1907,7 @@
   fix: |
     Remove it: the history keeps it if it is ever needed again.
 
-- key: QG-CS-SML-0672
+- key: QG-CS-SML-0934
   name: Default parameter values should not be passed as arguments
   languages: [cs]
   category: SML
@@ -1923,7 +1923,7 @@
   fix: |
     Make the intended behaviour explicit, and cover the case that used to fail with a test.
 
-- key: QG-CS-SML-0673
+- key: QG-CS-SML-0935
   name: "string.IsNullOrEmpty" should be used
   languages: [cs]
   category: SML
@@ -1939,7 +1939,7 @@
   fix: |
     Handle the absent case where it arises, or make the type say the value is always there.
 
-- key: QG-CS-SML-0674
+- key: QG-CS-SML-0936
   name: Declarations and initializations should be as concise as possible
   languages: [cs]
   category: SML
@@ -1955,7 +1955,7 @@
   fix: |
     Make the intended behaviour explicit, and cover the case that used to fail with a test.
 
-- key: QG-CS-SML-0675
+- key: QG-CS-SML-0937
   name: Redundant property names should be omitted in anonymous classes
   languages: [cs]
   category: SML
@@ -1971,7 +1971,7 @@
   fix: |
     Rename it to match the convention used around it.
 
-- key: QG-CS-SML-0676
+- key: QG-CS-SML-0938
   name: Empty "default" clauses should be removed
   languages: [cs]
   category: SML
@@ -1987,7 +1987,7 @@
   fix: |
     Remove it: the history keeps it if it is ever needed again.
 
-- key: QG-CS-SML-0677
+- key: QG-CS-SML-0939
   name: Parameter names should not duplicate the names of their methods
   languages: [cs]
   category: SML
@@ -2003,7 +2003,7 @@
   fix: |
     Rename it to match the convention used around it.
 
-- key: QG-CS-SML-0678
+- key: QG-CS-SML-0940
   name: Value types should implement "IEquatable<T>"
   languages: [cs]
   category: SML
@@ -2019,7 +2019,7 @@
   fix: |
     Make the intended behaviour explicit, and cover the case that used to fail with a test.
 
-- key: QG-CS-SML-0679
+- key: QG-CS-SML-0941
   name: Arguments of public methods should be validated against null
   languages: [cs]
   category: SML
@@ -2035,7 +2035,7 @@
   fix: |
     Grant the access to the identities that need it and to nothing else.
 
-- key: QG-CS-SML-0680
+- key: QG-CS-SML-0942
   name: "Assembly.GetExecutingAssembly" should not be called
   languages: [cs]
   category: SML
@@ -2051,7 +2051,7 @@
   fix: |
     Make the intended behaviour explicit, and cover the case that used to fail with a test.
 
-- key: QG-CS-SML-0681
+- key: QG-CS-SML-0943
   name: Event Handlers should have the correct signature
   languages: [cs]
   category: SML
@@ -2067,7 +2067,7 @@
   fix: |
     Rename it to match the convention used around it.
 
-- key: QG-CS-SML-0682
+- key: QG-CS-SML-0944
   name: Generic event handlers should be used
   languages: [cs]
   category: SML
@@ -2083,7 +2083,7 @@
   fix: |
     Use the current API, and keep the old one only behind a documented compatibility layer.
 
-- key: QG-CS-SML-0683
+- key: QG-CS-SML-0945
   name: Collections should implement the generic interface
   languages: [cs]
   category: SML
@@ -2099,7 +2099,7 @@
   fix: |
     Make the intended behaviour explicit, and cover the case that used to fail with a test.
 
-- key: QG-CS-SML-0684
+- key: QG-CS-SML-0946
   name: "Generic.List" instances should not be part of public APIs
   languages: [cs]
   category: SML
@@ -2115,7 +2115,7 @@
   fix: |
     Grant the access to the identities that need it and to nothing else.
 
-- key: QG-CS-SML-0685
+- key: QG-CS-SML-0947
   name: "static readonly" constants should be "const" instead
   languages: [cs]
   category: SML
@@ -2131,7 +2131,7 @@
   fix: |
     Make the intended behaviour explicit, and cover the case that used to fail with a test.
 
-- key: QG-CS-SML-0686
+- key: QG-CS-SML-0948
   name: Multidimensional arrays should not be used
   languages: [cs]
   category: SML
@@ -2147,7 +2147,7 @@
   fix: |
     Make the intended behaviour explicit, and cover the case that used to fail with a test.
 
-- key: QG-CS-SML-0687
+- key: QG-CS-SML-0949
   name: Assemblies should explicitly specify COM visibility
   languages: [cs]
   category: SML
@@ -2163,7 +2163,7 @@
   fix: |
     Make the intended behaviour explicit, and cover the case that used to fail with a test.
 
-- key: QG-CS-SML-0688
+- key: QG-CS-SML-0950
   name: URI Parameters should not be strings
   languages: [cs]
   category: SML
@@ -2179,7 +2179,7 @@
   fix: |
     Split it along the responsibilities it has accumulated.
 
-- key: QG-CS-SML-0689
+- key: QG-CS-SML-0951
   name: URI return values should not be strings
   languages: [cs]
   category: SML
@@ -2195,7 +2195,7 @@
   fix: |
     Make the intended behaviour explicit, and cover the case that used to fail with a test.
 
-- key: QG-CS-SML-0690
+- key: QG-CS-SML-0952
   name: URI properties should not be strings
   languages: [cs]
   category: SML
@@ -2211,7 +2211,7 @@
   fix: |
     Make the intended behaviour explicit, and cover the case that used to fail with a test.
 
-- key: QG-CS-SML-0691
+- key: QG-CS-SML-0953
   name: String URI overloads should call "System.Uri" overloads
   languages: [cs]
   category: SML
@@ -2227,7 +2227,7 @@
   fix: |
     Make the intended behaviour explicit, and cover the case that used to fail with a test.
 
-- key: QG-CS-SML-0692
+- key: QG-CS-SML-0954
   name: "System.Uri" arguments should be used instead of strings
   languages: [cs]
   category: SML
@@ -2243,7 +2243,7 @@
   fix: |
     Use the current API, and keep the old one only behind a documented compatibility layer.
 
-- key: QG-CS-SML-0693
+- key: QG-CS-SML-0955
   name: All type parameters should be used in the parameter list to enable type inference
   languages: [cs]
   category: SML
@@ -2259,7 +2259,7 @@
   fix: |
     Use the current API, and keep the old one only behind a documented compatibility layer.
 
-- key: QG-CS-SML-0694
+- key: QG-CS-SML-0956
   name: Enumerations should have "Int32" storage
   languages: [cs]
   category: SML
@@ -2275,7 +2275,7 @@
   fix: |
     Make the intended behaviour explicit, and cover the case that used to fail with a test.
 
-- key: QG-CS-SML-0695
+- key: QG-CS-SML-0957
   name: Assemblies should be marked with "NeutralResourcesLanguageAttribute"
   languages: [cs]
   category: SML
@@ -2291,7 +2291,7 @@
   fix: |
     Release it on every path, including the exceptional one.
 
-- key: QG-CS-SML-0696
+- key: QG-CS-SML-0958
   name: Exceptions should provide standard constructors
   languages: [cs]
   category: SML
@@ -2307,7 +2307,7 @@
   fix: |
     Rename it to match the convention used around it.
 
-- key: QG-CS-SML-0697
+- key: QG-CS-SML-0959
   name: Strings should be normalized to uppercase
   languages: [cs]
   category: SML
@@ -2323,7 +2323,7 @@
   fix: |
     Make the flow say what it does, and remove what cannot happen.
 
-- key: QG-CS-SML-0698
+- key: QG-CS-SML-0960
   name: Generics should be used when appropriate
   languages: [cs]
   category: SML
@@ -2339,7 +2339,7 @@
   fix: |
     Use the current API, and keep the old one only behind a documented compatibility layer.
 
-- key: QG-CS-SML-0699
+- key: QG-CS-SML-0961
   name: Properties should be preferred
   languages: [cs]
   category: SML
@@ -2355,7 +2355,7 @@
   fix: |
     Rename it to match the convention used around it.
 
-- key: QG-CS-SML-0700
+- key: QG-CS-SML-0962
   name: Literals should not be passed as localized parameters
   languages: [cs]
   category: SML
@@ -2371,7 +2371,7 @@
   fix: |
     Split it along the responsibilities it has accumulated.
 
-- key: QG-CS-SML-0701
+- key: QG-CS-SML-0963
   name: Overloads with a "CultureInfo" or an "IFormatProvider" parameter should be used
   languages: [cs]
   category: SML
@@ -2387,7 +2387,7 @@
   fix: |
     Use the current API, and keep the old one only behind a documented compatibility layer.
 
-- key: QG-CS-SML-0702
+- key: QG-CS-SML-0964
   name: Locales should be set for data types
   languages: [cs]
   category: SML
@@ -2403,7 +2403,7 @@
   fix: |
     Make the intended behaviour explicit, and cover the case that used to fail with a test.
 
-- key: QG-CS-SML-0703
+- key: QG-CS-SML-0965
   name: Overloads with a "StringComparison" parameter should be used
   languages: [cs]
   category: SML
@@ -2419,7 +2419,7 @@
   fix: |
     Use the current API, and keep the old one only behind a documented compatibility layer.
 
-- key: QG-CS-SML-0704
+- key: QG-CS-SML-0966
   name: Property names should not match get methods
   languages: [cs]
   category: SML
@@ -2435,7 +2435,7 @@
   fix: |
     Rename it to match the convention used around it.
 
-- key: QG-CS-SML-0705
+- key: QG-CS-SML-0967
   name: Non-abstract attributes should be sealed
   languages: [cs]
   category: SML
@@ -2451,7 +2451,7 @@
   fix: |
     Make the intended behaviour explicit, and cover the case that used to fail with a test.
 
-- key: QG-CS-SML-0706
+- key: QG-CS-SML-0968
   name: "P/Invoke" methods should not be visible
   languages: [cs]
   category: SML
@@ -2467,7 +2467,7 @@
   fix: |
     Make the intended behaviour explicit, and cover the case that used to fail with a test.
 
-- key: QG-CS-SML-0707
+- key: QG-CS-SML-0969
   name: Extensions should be in separate namespaces
   languages: [cs]
   category: SML
@@ -2483,7 +2483,7 @@
   fix: |
     Rename it to match the convention used around it.
 
-- key: QG-CS-SML-0708
+- key: QG-CS-SML-0970
   name: Methods should be named according to their synchronicities
   languages: [cs]
   category: SML
@@ -2499,7 +2499,7 @@
   fix: |
     Guard the shared state, or give each caller its own copy.
 
-- key: QG-CS-SML-0709
+- key: QG-CS-SML-0971
   name: Parameter validation in "async"/"await" methods should be wrapped
   languages: [cs]
   category: SML
@@ -2515,7 +2515,7 @@
   fix: |
     Make the intended behaviour explicit, and cover the case that used to fail with a test.
 
-- key: QG-CS-SML-0710
+- key: QG-CS-SML-0972
   name: Expanding archive files should not be done without controlling resource consumption
   languages: [cs]
   category: SML
@@ -2531,7 +2531,7 @@
   fix: |
     Release it on every path, including the exceptional one.
 
-- key: QG-CS-SML-0711
+- key: QG-CS-SML-0973
   name: Use a testable date/time provider
   languages: [cs]
   category: SML
@@ -2547,7 +2547,7 @@
   fix: |
     Make the intended behaviour explicit, and cover the case that used to fail with a test.
 
-- key: QG-CS-SML-0712
+- key: QG-CS-SML-0974
   name: Azure Functions should use Structured Error Handling
   languages: [cs]
   category: SML
@@ -2563,7 +2563,7 @@
   fix: |
     Make the intended behaviour explicit, and cover the case that used to fail with a test.
 
-- key: QG-CS-SML-0713
+- key: QG-CS-SML-0975
   name: Azure Functions should log all failures
   languages: [cs]
   category: SML
@@ -2579,7 +2579,7 @@
   fix: |
     Make the intended behaviour explicit, and cover the case that used to fail with a test.
 
-- key: QG-CS-SML-0714
+- key: QG-CS-SML-0976
   name: "ExcludeFromCodeCoverage" attributes should include a justification
   languages: [cs]
   category: SML
@@ -2595,7 +2595,7 @@
   fix: |
     Make the intended behaviour explicit, and cover the case that used to fail with a test.
 
-- key: QG-CS-SML-0715
+- key: QG-CS-SML-0977
   name: Use "DateTimeOffset" instead of "DateTime"
   languages: [cs]
   category: SML
@@ -2611,7 +2611,7 @@
   fix: |
     Use the current API, and keep the old one only behind a documented compatibility layer.
 
-- key: QG-CS-SML-0716
+- key: QG-CS-SML-0978
   name: Don't hardcode the format when turning dates and times to strings
   languages: [cs]
   category: SML
@@ -2627,7 +2627,7 @@
   fix: |
     Make the intended behaviour explicit, and cover the case that used to fail with a test.
 
-- key: QG-CS-SML-0717
+- key: QG-CS-SML-0979
   name: "Find" method should be used instead of the "FirstOrDefault" extension
   languages: [cs]
   category: SML
@@ -2643,7 +2643,7 @@
   fix: |
     Use the current API, and keep the old one only behind a documented compatibility layer.
 
-- key: QG-CS-SML-0718
+- key: QG-CS-SML-0980
   name: The collection-specific "TrueForAll" method should be used instead of the "All" extension
   languages: [cs]
   category: SML
@@ -2659,7 +2659,7 @@
   fix: |
     Use the current API, and keep the old one only behind a documented compatibility layer.
 
-- key: QG-CS-SML-0719
+- key: QG-CS-SML-0981
   name: Collection-specific "Exists" method should be used instead of the "Any" extension
   languages: [cs]
   category: SML
@@ -2675,7 +2675,7 @@
   fix: |
     Use the current API, and keep the old one only behind a documented compatibility layer.
 
-- key: QG-CS-SML-0720
+- key: QG-CS-SML-0982
   name: Using lambda expressions in loops should be avoided in Blazor markup section
   languages: [cs]
   category: SML
@@ -2691,7 +2691,7 @@
   fix: |
     Make the flow say what it does, and remove what cannot happen.
 
-- key: QG-CS-SML-0721
+- key: QG-CS-SML-0983
   name: Parameters with SupplyParameterFromQuery attribute should be used only in routable components
   languages: [cs]
   category: SML
@@ -2707,7 +2707,7 @@
   fix: |
     Use the current API, and keep the old one only behind a documented compatibility layer.
 
-- key: QG-CS-SML-0722
+- key: QG-CS-SML-0984
   name: Increment (++) and decrement (--) operators should not be used in a method call or mixed with other operators in an expression
   languages: [cs]
   category: SML
@@ -2723,7 +2723,7 @@
   fix: |
     Make the intended behaviour explicit, and cover the case that used to fail with a test.
 
-- key: QG-CS-SML-0723
+- key: QG-CS-SML-0985
   name: Track lack of copyright and license headers
   languages: [cs]
   category: SML
@@ -2739,7 +2739,7 @@
   fix: |
     Rename it to match the convention used around it.
 
-- key: QG-CS-SML-0724
+- key: QG-CS-SML-0986
   name: Classes should not be coupled to too many other classes
   languages: [cs]
   category: SML
@@ -2755,7 +2755,7 @@
   fix: |
     Split it along the responsibilities it has accumulated.
 
-- key: QG-CS-SML-0725
+- key: QG-CS-SML-0987
   name: Track uses of in-source issue suppressions
   languages: [cs]
   category: SML
@@ -2771,7 +2771,7 @@
   fix: |
     Make the intended behaviour explicit, and cover the case that used to fail with a test.
 
-- key: QG-CS-SML-0726
+- key: QG-CS-SML-0988
   name: "this" should not be exposed from constructors
   languages: [cs]
   category: SML
@@ -2787,7 +2787,7 @@
   fix: |
     Guard the shared state, or give each caller its own copy.
 
-- key: QG-CS-SML-0727
+- key: QG-CS-SML-0989
   name: Track use of "NotImplementedException"
   languages: [cs]
   category: SML
@@ -2803,7 +2803,7 @@
   fix: |
     Make the intended behaviour explicit, and cover the case that used to fail with a test.
 
-- key: QG-CS-SML-0728
+- key: QG-CS-SML-0990
   name: Strings or integral types should be used for indexers
   languages: [cs]
   category: SML
@@ -2819,7 +2819,7 @@
   fix: |
     Use the current API, and keep the old one only behind a documented compatibility layer.
 
-- key: QG-CS-SML-0729
+- key: QG-CS-SML-0991
   name: Finalizers should not be empty
   languages: [cs]
   category: SML
@@ -2835,7 +2835,7 @@
   fix: |
     Remove it: the history keeps it if it is ever needed again.
 
-- key: QG-CS-SML-0730
+- key: QG-CS-SML-0992
   name: Enumeration members should not be named "Reserved"
   languages: [cs]
   category: SML
@@ -2851,7 +2851,7 @@
   fix: |
     Rename it to match the convention used around it.
 
-- key: QG-CS-SML-0731
+- key: QG-CS-SML-0993
   name: Method signatures should not contain nested generic types
   languages: [cs]
   category: SML
@@ -2867,7 +2867,7 @@
   fix: |
     Split it along the responsibilities it has accumulated.
 
-- key: QG-CS-SML-0732
+- key: QG-CS-SML-0994
   name: Extension methods should not extend "object"
   languages: [cs]
   category: SML
@@ -2883,7 +2883,7 @@
   fix: |
     Make the intended behaviour explicit, and cover the case that used to fail with a test.
 
-- key: QG-CS-SML-0733
+- key: QG-CS-SML-0995
   name: "switch" statements should not be nested
   languages: [cs]
   category: SML
@@ -2899,7 +2899,7 @@
   fix: |
     Make the flow say what it does, and remove what cannot happen.
 
-- key: QG-CS-SML-0734
+- key: QG-CS-SML-0996
   name: Assemblies should be marked as CLS compliant
   languages: [cs]
   category: SML
@@ -2915,7 +2915,7 @@
   fix: |
     Make the intended behaviour explicit, and cover the case that used to fail with a test.
 
-- key: QG-CS-SML-0735
+- key: QG-CS-SML-0997
   name: Methods and properties should be named in PascalCase
   languages: [cs]
   category: SML
@@ -2931,7 +2931,7 @@
   fix: |
     Make the flow say what it does, and remove what cannot happen.
 
-- key: QG-CS-SML-0736
+- key: QG-CS-SML-0998
   name: Lines should not be too long
   languages: [cs]
   category: SML
@@ -2947,7 +2947,7 @@
   fix: |
     Rename it to match the convention used around it.
 
-- key: QG-CS-SML-0737
+- key: QG-CS-SML-0999
   name: Files should not have too many lines of code
   languages: [cs]
   category: SML
@@ -2963,7 +2963,7 @@
   fix: |
     Split it along the responsibilities it has accumulated.
 
-- key: QG-CS-SML-0738
+- key: QG-CS-SML-1000
   name: Tabulation characters should not be used
   languages: [cs]
   category: SML
@@ -2979,7 +2979,7 @@
   fix: |
     Rename it to match the convention used around it.
 
-- key: QG-CS-SML-0739
+- key: QG-CS-SML-1001
   name: Standard outputs should not be used directly to log anything
   languages: [cs]
   category: SML
@@ -2995,7 +2995,7 @@
   fix: |
     Make the intended behaviour explicit, and cover the case that used to fail with a test.
 
-- key: QG-CS-SML-0740
+- key: QG-CS-SML-1002
   name: Files should end with a newline
   languages: [cs]
   category: SML
@@ -3011,7 +3011,7 @@
   fix: |
     Rename it to match the convention used around it.
 
-- key: QG-CS-SML-0741
+- key: QG-CS-SML-1003
   name: Statements should be on separate lines
   languages: [cs]
   category: SML
@@ -3027,7 +3027,7 @@
   fix: |
     Rename it to match the convention used around it.
 
-- key: QG-CS-SML-0742
+- key: QG-CS-SML-1004
   name: Loggers should be named for their enclosing types
   languages: [cs]
   category: SML
@@ -3043,7 +3043,7 @@
   fix: |
     Rename it to match the convention used around it.
 
-- key: QG-CS-SML-0743
+- key: QG-CS-SML-1005
   name: Operator overloads should have named alternatives
   languages: [cs]
   category: SML
@@ -3059,7 +3059,7 @@
   fix: |
     Rename it to match the convention used around it.
 
-- key: QG-CS-BUG-0199
+- key: QG-CS-BUG-0247
   name: Composite format strings should not lead to unexpected behavior at runtime
   languages: [cs]
   category: BUG
@@ -3075,7 +3075,7 @@
   fix: |
     Make the intended behaviour explicit, and cover the case that used to fail with a test.
 
-- key: QG-CS-BUG-0200
+- key: QG-CS-BUG-0248
   name: "Shared" parts should not be created with "new"
   languages: [cs]
   category: BUG
@@ -3091,7 +3091,7 @@
   fix: |
     Make the intended behaviour explicit, and cover the case that used to fail with a test.
 
-- key: QG-CS-BUG-0201
+- key: QG-CS-BUG-0249
   name: Non-async "Task/Task<T>" methods should not return null
   languages: [cs]
   category: BUG
@@ -3107,7 +3107,7 @@
   fix: |
     Handle the absent case where it arises, or make the type say the value is always there.
 
-- key: QG-CS-BUG-0202
+- key: QG-CS-BUG-0250
   name: A write lock should not be released when a read lock has been acquired and vice versa
   languages: [cs]
   category: BUG
@@ -3123,7 +3123,7 @@
   fix: |
     Release it on every path, including the exceptional one.
 
-- key: QG-CS-BUG-0203
+- key: QG-CS-BUG-0251
   name: Multiple "[Key]" attributes should not be used to define a composite key
   languages: [cs]
   category: BUG
@@ -3139,7 +3139,7 @@
   fix: |
     Make the intended behaviour explicit, and cover the case that used to fail with a test.
 
-- key: QG-CS-BUG-0204
+- key: QG-CS-BUG-0252
   name: Client-evaluated default values should use database functions
   languages: [cs]
   category: BUG
@@ -3155,7 +3155,7 @@
   fix: |
     Make the intended behaviour explicit, and cover the case that used to fail with a test.
 
-- key: QG-CS-BUG-0205
+- key: QG-CS-BUG-0253
   name: Null pointers should not be dereferenced
   languages: [cs]
   category: BUG
@@ -3171,7 +3171,7 @@
   fix: |
     Handle the absent case where it arises, or make the type say the value is always there.
 
-- key: QG-CS-BUG-0206
+- key: QG-CS-BUG-0254
   name: Flags enumerations should explicitly initialize all their members
   languages: [cs]
   category: BUG
@@ -3187,7 +3187,7 @@
   fix: |
     Make the intended behaviour explicit, and cover the case that used to fail with a test.
 
-- key: QG-CS-BUG-0207
+- key: QG-CS-BUG-0255
   name: Property assignments should not be made for "readonly" fields not constrained to reference types
   languages: [cs]
   category: BUG
@@ -3203,7 +3203,7 @@
   fix: |
     Make the intended behaviour explicit, and cover the case that used to fail with a test.
 
-- key: QG-CS-BUG-0208
+- key: QG-CS-BUG-0256
   name: Delegates should not be subtracted
   languages: [cs]
   category: BUG
@@ -3219,7 +3219,7 @@
   fix: |
     Make the intended behaviour explicit, and cover the case that used to fail with a test.
 
-- key: QG-CS-BUG-0209
+- key: QG-CS-BUG-0257
   name: Anonymous delegates should not be used to unsubscribe from Events
   languages: [cs]
   category: BUG
@@ -3235,7 +3235,7 @@
   fix: |
     Make the intended behaviour explicit, and cover the case that used to fail with a test.
 
-- key: QG-CS-BUG-0210
+- key: QG-CS-BUG-0258
   name: Static fields should appear in the order they must be initialized
   languages: [cs]
   category: BUG
@@ -3251,7 +3251,7 @@
   fix: |
     Make the intended behaviour explicit, and cover the case that used to fail with a test.
 
-- key: QG-CS-BUG-0211
+- key: QG-CS-BUG-0259
   name: Caller information parameters should come at the end of the parameter list
   languages: [cs]
   category: BUG
@@ -3267,7 +3267,7 @@
   fix: |
     Split it along the responsibilities it has accumulated.
 
-- key: QG-CS-BUG-0212
+- key: QG-CS-BUG-0260
   name: Classes should not have only "private" constructors
   languages: [cs]
   category: BUG
@@ -3283,7 +3283,7 @@
   fix: |
     Make the intended behaviour explicit, and cover the case that used to fail with a test.
 
-- key: QG-CS-BUG-0213
+- key: QG-CS-BUG-0261
   name: Optional parameters should be passed to "base" calls
   languages: [cs]
   category: BUG
@@ -3299,7 +3299,7 @@
   fix: |
     Handle the absent case where it arises, or make the type say the value is always there.
 
-- key: QG-CS-BUG-0214
+- key: QG-CS-BUG-0262
   name: Methods with "Pure" attribute should return a value
   languages: [cs]
   category: BUG
@@ -3315,7 +3315,7 @@
   fix: |
     Make the intended behaviour explicit, and cover the case that used to fail with a test.
 
-- key: QG-CS-BUG-0215
+- key: QG-CS-BUG-0263
   name: Nullable type comparison should not be redundant
   languages: [cs]
   category: BUG
@@ -3331,7 +3331,7 @@
   fix: |
     Handle the absent case where it arises, or make the type say the value is always there.
 
-- key: QG-CS-BUG-0216
+- key: QG-CS-BUG-0264
   name: Empty nullable value should not be accessed
   languages: [cs]
   category: BUG
@@ -3347,7 +3347,7 @@
   fix: |
     Grant the access to the identities that need it and to nothing else.
 
-- key: QG-CS-BUG-0217
+- key: QG-CS-BUG-0265
   name: Serialization event handlers should be implemented correctly
   languages: [cs]
   category: BUG
@@ -3363,7 +3363,7 @@
   fix: |
     Make the intended behaviour explicit, and cover the case that used to fail with a test.
 
-- key: QG-CS-BUG-0218
+- key: QG-CS-BUG-0266
   name: Calculations should not overflow
   languages: [cs]
   category: BUG
@@ -3379,7 +3379,7 @@
   fix: |
     Make the intended behaviour explicit, and cover the case that used to fail with a test.
 
-- key: QG-CS-BUG-0219
+- key: QG-CS-BUG-0267
   name: Empty collections should not be accessed or iterated
   languages: [cs]
   category: BUG
@@ -3395,7 +3395,7 @@
   fix: |
     Grant the access to the identities that need it and to nothing else.
 
-- key: QG-CS-BUG-0220
+- key: QG-CS-BUG-0268
   name: "ConstructorArgument" parameters should exist in constructors
   languages: [cs]
   category: BUG
@@ -3411,7 +3411,7 @@
   fix: |
     Split it along the responsibilities it has accumulated.
 
-- key: QG-CS-BUG-0221
+- key: QG-CS-BUG-0269
   name: Message template placeholders should be unique
   languages: [cs]
   category: BUG
@@ -3427,7 +3427,7 @@
   fix: |
     Make the intended behaviour explicit, and cover the case that used to fail with a test.
 
-- key: QG-CS-BUG-0222
+- key: QG-CS-BUG-0270
   name: Potential Cartesian Explosion
   languages: [cs]
   category: BUG
@@ -3443,7 +3443,7 @@
   fix: |
     Make the intended behaviour explicit, and cover the case that used to fail with a test.
 
-- key: QG-CS-BUG-0223
+- key: QG-CS-BUG-0271
   name: Migrations should not narrow column types without converting existing data
   languages: [cs]
   category: BUG
@@ -3459,7 +3459,7 @@
   fix: |
     Make the intended behaviour explicit, and cover the case that used to fail with a test.
 
-- key: QG-CS-BUG-0224
+- key: QG-CS-BUG-0272
   name: Default values should be compatible with their entity property type
   languages: [cs]
   category: BUG
@@ -3475,7 +3475,7 @@
   fix: |
     Make the intended behaviour explicit, and cover the case that used to fail with a test.
 
-- key: QG-CS-BUG-0225
+- key: QG-CS-BUG-0273
   name: SQL keywords should be delimited by whitespace
   languages: [cs]
   category: BUG
@@ -3491,7 +3491,7 @@
   fix: |
     Keep the instruction fixed and pass the values separately, so no input can change its shape.
 
-- key: QG-CS-BUG-0226
+- key: QG-CS-BUG-0274
   name: Right operands of shift operators should be integers
   languages: [cs]
   category: BUG
@@ -3507,7 +3507,7 @@
   fix: |
     Make the intended behaviour explicit, and cover the case that used to fail with a test.
 
-- key: QG-CS-BUG-0227
+- key: QG-CS-BUG-0275
   name: Type inheritance should not be recursive
   languages: [cs]
   category: BUG
@@ -3523,7 +3523,7 @@
   fix: |
     Make the intended behaviour explicit, and cover the case that used to fail with a test.
 
-- key: QG-CS-BUG-0228
+- key: QG-CS-BUG-0276
   name: Classes should "Dispose" of members from the classes' own "Dispose" methods
   languages: [cs]
   category: BUG

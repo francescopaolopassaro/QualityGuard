@@ -3,7 +3,7 @@
 # detection is written by hand, against the shape the defect actually has, and measured before
 # the entry stops being planned.
 
-- key: QG-DK-SEC-0020
+- key: QG-DK-SEC-0025
   name: Permissions of sensitive mount points should be restrictive
   languages: [docker]
   category: SEC
@@ -19,7 +19,7 @@
   fix: |
     Grant the access to the identities that need it and to nothing else.
 
-- key: QG-DK-SEC-0021
+- key: QG-DK-SEC-0026
   name: Builder sandboxes should not be disabled
   languages: [docker]
   category: SEC
@@ -35,7 +35,7 @@
   fix: |
     Make the intended behaviour explicit, and cover the case that used to fail with a test.
 
-- key: QG-DK-SEC-0022
+- key: QG-DK-SEC-0027
   name: Debugging features should not be enabled in production
   languages: [docker]
   category: SEC
@@ -51,7 +51,7 @@
   fix: |
     Make the intended behaviour explicit, and cover the case that used to fail with a test.
 
-- key: QG-DK-SEC-0023
+- key: QG-DK-SEC-0028
   name: Containers should not share the host operating system namespaces
   languages: [docker]
   category: SEC
@@ -67,7 +67,7 @@
   fix: |
     Rename it to match the convention used around it.
 
-- key: QG-DK-SEC-0024
+- key: QG-DK-SEC-0029
   name: Sensitive resources copied to Docker images should not be owned or writable by non-root users
   languages: [docker]
   category: SEC
@@ -83,7 +83,7 @@
   fix: |
     Release it on every path, including the exceptional one.
 
-- key: QG-DK-BUG-0049
+- key: QG-DK-BUG-0051
   name: Malformed JSON in Exec form leads to unexpected behavior
   languages: [docker]
   category: BUG
@@ -99,7 +99,7 @@
   fix: |
     Make the intended behaviour explicit, and cover the case that used to fail with a test.
 
-- key: QG-DK-BUG-0050
+- key: QG-DK-BUG-0052
   name: Access variable which is not available in the current scope
   languages: [docker]
   category: BUG
@@ -115,7 +115,7 @@
   fix: |
     Grant the access to the identities that need it and to nothing else.
 
-- key: QG-DK-SML-0069
+- key: QG-DK-SML-0072
   name: Too long RUN instruction should be split into multiple lines
   languages: [docker]
   category: SML
@@ -131,7 +131,7 @@
   fix: |
     Split it along the responsibilities it has accumulated.
 
-- key: QG-DK-SML-0070
+- key: QG-DK-SML-0073
   name: Descriptive labels are mandatory
   languages: [docker]
   category: SML
@@ -147,7 +147,7 @@
   fix: |
     Make the intended behaviour explicit, and cover the case that used to fail with a test.
 
-- key: QG-DK-SML-0071
+- key: QG-DK-SML-0074
   name: Dockerfile parsing failure
   languages: [docker]
   category: SML

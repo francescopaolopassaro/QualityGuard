@@ -8,7 +8,6 @@ public static class KubernetesRuleSet
 {
     public static IReadOnlyList<IRule> All { get; } =
     [
-        new KubernetesAddCapabilitiesRule(),
         new KubernetesSecretsInEnvRule(),
         new KubernetesAutomountTokenRule()
     ];

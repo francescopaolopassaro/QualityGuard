@@ -72,6 +72,7 @@ public sealed class LanguageRecognizer
 {
     private readonly Dictionary<string, LanguageInfo> _byExtension;
     private readonly LanguageInfo? _docker;
+    private readonly LanguageInfo? _cloudFormation;
 
     public LanguageRecognizer(IEnumerable<LanguageInfo> languages)
     {
@@ -82,6 +83,8 @@ public sealed class LanguageRecognizer
                 _byExtension[ext] = lang;
             if (lang.LanguageKey == LanguageKeys.Docker)
                 _docker = lang;
+            if (lang.LanguageKey == LanguageKeys.CloudFormation)
+                _cloudFormation = lang;
         }
     }
 
@@ -100,4 +103,25 @@ public sealed class LanguageRecognizer
 
         return null;
     }
+
+    /// <summary>
+    /// The language of a file whose content has already been read. A cluster manifest and a cloud
+    /// template share the extension .yaml and are read by different rules, so the extension alone
+    /// sends every template to the wrong set of rules — and templates are almost never named
+    /// anything else.
+    /// </summary>
+    public LanguageInfo? Recognize(string path, string content)
+    {
+        var language = Recognize(path);
+        if (language?.LanguageKey == LanguageKeys.Kubernetes && _cloudFormation != null
+            && DeclaresCloudTemplate(content))
+            return _cloudFormation;
+        return language;
+    }
+
+    private static bool DeclaresCloudTemplate(string content)
+        => content.Contains("AWSTemplateFormatVersion", StringComparison.Ordinal)
+           || content.Contains("Type: AWS::", StringComparison.Ordinal)
+           || content.Contains("Type: \"AWS::", StringComparison.Ordinal)
+           || content.Contains("Type: 'AWS::", StringComparison.Ordinal);
 }

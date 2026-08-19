@@ -187,3 +187,91 @@
     rejected rather than guessed.
   detect:
     - line: "function\\s+\\w+\\s*\\(\\s*\\$\\w+(\\s*,\\s*\\$\\w+)*\\s*\\)\\s*\\{"
+
+# Platform configuration rules implemented in Rules/Languages/PhpPlatformRules.cs. They read the
+# constants of the platform's own configuration file and only that file: the same names appear in
+# tests and deployment scripts where they mean nothing, and a rule about a missing constant would
+# otherwise fire on every PHP file there is.
+
+- key: QG-PP-SEC-0061
+  name: Editing code from the administration interface should be disabled
+  languages: [php]
+  category: SEC
+  severity: critical
+  effort: 10min
+  cwe: [94]
+  tags: [platform, permissions]
+  summary: The built-in file editor is left enabled in the platform configuration.
+  why: |
+    The editor writes to the site's own PHP files, which turns a content permission into running code
+    on the server: one administrator account, or one stolen session belonging to one, is enough. The
+    change also leaves no trace in the deployment history, because it never went through it.
+  fix: |
+    Set DISALLOW_FILE_EDIT to true — or DISALLOW_FILE_MODS, which covers every kind of change — and
+    deploy code the way the rest of it is deployed.
+
+- key: QG-PP-SEC-0062
+  name: Automatic updates should not be switched off
+  languages: [php]
+  category: SEC
+  severity: major
+  effort: 10min
+  cwe: [1104]
+  tags: [platform, maintenance]
+  summary: The platform configuration disables the updates it installs on its own.
+  why: |
+    Security fixes for a platform this widely deployed are published together with a description of
+    what they fix. An installation that does not take them is attackable from that day by anyone who
+    reads the release notes, and nothing about the site shows that it is behind.
+  fix: |
+    Leave the automatic updates on, or commit to a process that applies them by hand within days —
+    and check that the process actually runs.
+
+- key: QG-PP-SEC-0063
+  name: Outgoing requests should be restricted to the hosts that are needed
+  languages: [php]
+  category: SEC
+  severity: minor
+  effort: 15min
+  cwe: [918]
+  tags: [platform, network]
+  summary: The platform is left free to call any address on the internet.
+  why: |
+    Every installed plugin inherits that freedom. One that is compromised, or simply careless, sends
+    the site's data out with nothing to notice it, and can be used to reach hosts only this server
+    can see — an internal service, a metadata endpoint.
+  fix: |
+    Set WP_HTTP_BLOCK_EXTERNAL to true and list the hosts that are genuinely needed in
+    WP_ACCESSIBLE_HOSTS.
+
+- key: QG-PP-SEC-0064
+  name: Database repair should not be reachable without logging in
+  languages: [php]
+  category: SEC
+  severity: critical
+  effort: 10min
+  cwe: [284]
+  tags: [platform, permissions]
+  summary: The unauthenticated database repair page is switched on.
+  why: |
+    The page repairs and optimises the database for anyone who knows its address — it asks for no
+    login by design, because it is meant to work when the site cannot log anybody in. It is meant to
+    be on for the minutes a repair takes, and it is almost always left on.
+  fix: |
+    Remove the constant once the repair is finished.
+
+- key: QG-PP-SEC-0065
+  name: Unfiltered HTML in content should be disallowed
+  languages: [php]
+  category: SEC
+  severity: major
+  effort: 10min
+  cwe: [79]
+  tags: [platform, xss]
+  summary: Users who can publish content are allowed to publish unfiltered HTML.
+  why: |
+    Unfiltered HTML includes script tags, so a single editor account — or a stolen session belonging
+    to one — runs code in the browser of every visitor and of every administrator who opens the page,
+    with their session.
+  fix: |
+    Set DISALLOW_UNFILTERED_HTML to true and let the platform sanitise what is posted.

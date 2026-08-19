@@ -3,7 +3,7 @@
 # detection is written by hand, against the shape the defect actually has, and measured before
 # the entry stops being planned.
 
-- key: QG-GO-SML-0081
+- key: QG-GO-SML-0091
   name: "if ... else if" constructs should end with "else" clauses
   languages: [go]
   category: SML
@@ -19,7 +19,7 @@
   fix: |
     Make the intended behaviour explicit, and cover the case that used to fail with a test.
 
-- key: QG-GO-SML-0082
+- key: QG-GO-SML-0092
   name: Octal values should not be used
   languages: [go]
   category: SML
@@ -35,7 +35,7 @@
   fix: |
     Make the intended behaviour explicit, and cover the case that used to fail with a test.
 
-- key: QG-GO-SML-0083
+- key: QG-GO-SML-0093
   name: Control flow statements "if", "for" and "switch" should not be nested too deeply
   languages: [go]
   category: SML
@@ -51,7 +51,7 @@
   fix: |
     Make the flow say what it does, and remove what cannot happen.
 
-- key: QG-GO-SML-0084
+- key: QG-GO-SML-0094
   name: "switch" statements should not be nested
   languages: [go]
   category: SML
@@ -67,7 +67,7 @@
   fix: |
     Make the flow say what it does, and remove what cannot happen.
 
-- key: QG-GO-SML-0085
+- key: QG-GO-SML-0095
   name: "switch case" clauses should not have too many lines
   languages: [go]
   category: SML
@@ -83,7 +83,7 @@
   fix: |
     Make the flow say what it does, and remove what cannot happen.
 
-- key: QG-GO-SML-0086
+- key: QG-GO-SML-0096
   name: Track lack of copyright and license headers
   languages: [go]
   category: SML
@@ -99,7 +99,7 @@
   fix: |
     Rename it to match the convention used around it.
 
-- key: QG-GO-SML-0087
+- key: QG-GO-SML-0097
   name: Lines should not be too long
   languages: [go]
   category: SML
@@ -115,7 +115,7 @@
   fix: |
     Rename it to match the convention used around it.
 
-- key: QG-GO-SML-0088
+- key: QG-GO-SML-0098
   name: Files should not have too many lines of code
   languages: [go]
   category: SML
@@ -131,7 +131,7 @@
   fix: |
     Split it along the responsibilities it has accumulated.
 
-- key: QG-GO-SML-0089
+- key: QG-GO-SML-0099
   name: Statements should be on separate lines
   languages: [go]
   category: SML
@@ -147,7 +147,7 @@
   fix: |
     Rename it to match the convention used around it.
 
-- key: QG-GO-SML-0090
+- key: QG-GO-SML-0100
   name: Go parser failure
   languages: [go]
   category: SML
@@ -163,7 +163,7 @@
   fix: |
     Make the intended behaviour explicit, and cover the case that used to fail with a test.
 
-- key: QG-GO-BUG-0047
+- key: QG-GO-BUG-0048
   name: Useless "if(true) {...}" and "if(false){...}" blocks should be removed
   languages: [go]
   category: BUG

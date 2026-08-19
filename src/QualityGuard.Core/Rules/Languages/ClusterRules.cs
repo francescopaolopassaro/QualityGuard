@@ -41,6 +41,11 @@ public abstract class ClusterRequestRule : ClusterRuleBase
         {
             if (container.Child("image") == null)
                 continue;
+            // a container that declares nothing at all is one decision, not four: QG-K8-SML-0004
+            // names it once, and this rule speaks only where the block exists and this entry is
+            // the one missing from it
+            if (container.Child("resources") == null)
+                continue;
             var requests = container.At("resources", "requests");
             if (requests?.Child(Resource) != null)
                 continue;

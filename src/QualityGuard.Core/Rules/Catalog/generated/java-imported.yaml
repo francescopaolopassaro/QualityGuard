@@ -1,0 +1,2916 @@
+# Catalogue entries written in one pass, one per defect this language still lacks a check for.
+# Every entry is documentation and carries no detection, so none of them reports anything: a
+# detection is written by hand, against the shape the defect actually has, and measured before
+# the entry stops being planned.
+
+- key: QG-JV-SEC-0092
+  name: JavaBean properties should not be populated from untrusted input
+  languages: [java]
+  category: SEC
+  severity: critical
+  effort: 15min
+  status: planned
+  generated: true
+  tags: [cwe, cert, former-hotspot]
+  summary: The code does not behave the way it reads.
+  why: |
+    Written this way it works by accident or fails on ordinary input, and the mistake survives
+    review because the intent reads correctly.
+  fix: |
+    Make the intended behaviour explicit, and cover the case that used to fail with a test.
+
+- key: QG-JV-SEC-0093
+  name: A new session should be created during user authentication
+  languages: [java]
+  category: SEC
+  severity: critical
+  effort: 5min
+  status: planned
+  generated: true
+  tags: [cwe, spring]
+  summary: Something is reachable by callers who should not reach it.
+  why: |
+    Access granted this broadly is never noticed afterwards: nothing fails, and the surface stays
+    open for as long as the resource exists.
+  fix: |
+    Grant the access to the identities that need it and to nothing else.
+
+- key: QG-JV-SEC-0094
+  name: Android KeyStore keys should require user authentication
+  languages: [java]
+  category: SEC
+  severity: major
+  effort: 5min
+  status: planned
+  generated: true
+  tags: [cwe, android, former-hotspot]
+  summary: Something is reachable by callers who should not reach it.
+  why: |
+    Access granted this broadly is never noticed afterwards: nothing fails, and the surface stays
+    open for as long as the resource exists.
+  fix: |
+    Grant the access to the identities that need it and to nothing else.
+
+- key: QG-JV-SML-0575
+  name: Future keywords should not be used as names
+  languages: [java]
+  category: SML
+  severity: blocker
+  effort: 5min
+  status: planned
+  generated: true
+  tags: [obsolete, pitfall]
+  summary: A name does not follow the convention the rest of the code uses.
+  why: |
+    Conventions let a reader infer what something is from its shape alone. A deviation costs a
+    lookup every time, and makes searches and automated refactoring less reliable.
+  fix: |
+    Rename it to match the convention used around it.
+
+- key: QG-JV-SML-0576
+  name: "if ... else if" constructs should end with "else" clauses
+  languages: [java]
+  category: SML
+  severity: critical
+  effort: 5min
+  status: planned
+  generated: true
+  tags: [cert]
+  summary: The code does not behave the way it reads.
+  why: |
+    Written this way it works by accident or fails on ordinary input, and the mistake survives
+    review because the intent reads correctly.
+  fix: |
+    Make the intended behaviour explicit, and cover the case that used to fail with a test.
+
+- key: QG-JV-SML-0577
+  name: Octal values should not be used
+  languages: [java]
+  category: SML
+  severity: blocker
+  effort: 5min
+  status: planned
+  generated: true
+  tags: [cert, pitfall]
+  summary: The code does not behave the way it reads.
+  why: |
+    Written this way it works by accident or fails on ordinary input, and the mistake survives
+    review because the intent reads correctly.
+  fix: |
+    Make the intended behaviour explicit, and cover the case that used to fail with a test.
+
+- key: QG-JV-SML-0578
+  name: Control flow statements "if", "for", "while", "switch" and "try" should not be nested too deeply
+  languages: [java]
+  category: SML
+  severity: critical
+  effort: 10min
+  status: planned
+  generated: true
+  tags: [brain-overload]
+  summary: The control flow does not do what it reads as doing.
+  why: |
+    A branch that cannot be taken, a loop that cannot end, a condition that is always the same: the
+    code states an intent the machine does not carry out, and review reads the intent.
+  fix: |
+    Make the flow say what it does, and remove what cannot happen.
+
+- key: QG-JV-SML-0579
+  name: Package declaration should match source file directory
+  languages: [java]
+  category: SML
+  severity: critical
+  effort: 5min
+  status: planned
+  generated: true
+  tags: [pitfall]
+  summary: The code does not behave the way it reads.
+  why: |
+    Written this way it works by accident or fails on ordinary input, and the mistake survives
+    review because the intent reads correctly.
+  fix: |
+    Make the intended behaviour explicit, and cover the case that used to fail with a test.
+
+- key: QG-JV-SML-0580
+  name: "switch" statements and expressions should not be nested
+  languages: [java]
+  category: SML
+  severity: critical
+  effort: 10min
+  status: planned
+  generated: true
+  tags: [pitfall]
+  summary: The control flow does not do what it reads as doing.
+  why: |
+    A branch that cannot be taken, a loop that cannot end, a condition that is always the same: the
+    code states an intent the machine does not carry out, and review reads the intent.
+  fix: |
+    Make the flow say what it does, and remove what cannot happen.
+
+- key: QG-JV-SML-0581
+  name: Methods and field names should not be the same or differ only by capitalization
+  languages: [java]
+  category: SML
+  severity: blocker
+  effort: 10min
+  status: planned
+  generated: true
+  tags: [confusing]
+  summary: A name does not follow the convention the rest of the code uses.
+  why: |
+    Conventions let a reader infer what something is from its shape alone. A deviation costs a
+    lookup every time, and makes searches and automated refactoring less reliable.
+  fix: |
+    Rename it to match the convention used around it.
+
+- key: QG-JV-SML-0582
+  name: JUnit assertions should not be used in "run" methods
+  languages: [java]
+  category: SML
+  severity: critical
+  effort: 30min
+  status: planned
+  generated: true
+  tags: [junit, tests]
+  summary: The code does not behave the way it reads.
+  why: |
+    Written this way it works by accident or fails on ordinary input, and the mistake survives
+    review because the intent reads correctly.
+  fix: |
+    Make the intended behaviour explicit, and cover the case that used to fail with a test.
+
+- key: QG-JV-SML-0583
+  name: JUnit test cases should call super methods
+  languages: [java]
+  category: SML
+  severity: blocker
+  effort: 5min
+  status: planned
+  generated: true
+  tags: [junit, tests]
+  summary: The control flow does not do what it reads as doing.
+  why: |
+    A branch that cannot be taken, a loop that cannot end, a condition that is always the same: the
+    code states an intent the machine does not carry out, and review reads the intent.
+  fix: |
+    Make the flow say what it does, and remove what cannot happen.
+
+- key: QG-JV-SML-0584
+  name: Wildcard imports should not be used
+  languages: [java]
+  category: SML
+  severity: critical
+  effort: 5min
+  status: planned
+  generated: true
+  tags: [pitfall]
+  summary: The code does not behave the way it reads.
+  why: |
+    Written this way it works by accident or fails on ordinary input, and the mistake survives
+    review because the intent reads correctly.
+  fix: |
+    Make the intended behaviour explicit, and cover the case that used to fail with a test.
+
+- key: QG-JV-SML-0585
+  name: Method overrides should not change contracts
+  languages: [java]
+  category: SML
+  severity: critical
+  effort: 15min
+  status: planned
+  generated: true
+  tags: [suspicious]
+  summary: The code does not behave the way it reads.
+  why: |
+    Written this way it works by accident or fails on ordinary input, and the mistake survives
+    review because the intent reads correctly.
+  fix: |
+    Make the intended behaviour explicit, and cover the case that used to fail with a test.
+
+- key: QG-JV-SML-0586
+  name: Number patterns should be regular
+  languages: [java]
+  category: SML
+  severity: critical
+  effort: 10min
+  status: planned
+  generated: true
+  tags: [suspicious]
+  summary: The code does not behave the way it reads.
+  why: |
+    Written this way it works by accident or fails on ordinary input, and the mistake survives
+    review because the intent reads correctly.
+  fix: |
+    Make the intended behaviour explicit, and cover the case that used to fail with a test.
+
+- key: QG-JV-SML-0587
+  name: "equals" method parameters should not be marked "@Nonnull"
+  languages: [java]
+  category: SML
+  severity: critical
+  effort: 3min
+  status: planned
+  generated: true
+  tags: []
+  summary: A value that can be absent is used as though it always exists.
+  why: |
+    The path that produces the absence is usually the rare one, so this survives testing and arrives
+    in production as a failure with no obvious cause.
+  fix: |
+    Handle the absent case where it arises, or make the type say the value is always there.
+
+- key: QG-JV-SML-0588
+  name: Derived exceptions should not hide their parents' catch blocks
+  languages: [java]
+  category: SML
+  severity: critical
+  effort: 5min
+  status: planned
+  generated: true
+  tags: []
+  summary: Shared state is reached without the coordination that makes it safe.
+  why: |
+    It works every time it is tested and fails under load, on a machine with more cores, once. That
+    is the hardest kind of defect to reproduce and the easiest to write.
+  fix: |
+    Guard the shared state, or give each caller its own copy.
+
+- key: QG-JV-SML-0589
+  name: Class members annotated with "@VisibleForTesting" should not be accessed from production code
+  languages: [java]
+  category: SML
+  severity: critical
+  effort: 10min
+  status: planned
+  generated: true
+  tags: [pitfall]
+  summary: Something is reachable by callers who should not reach it.
+  why: |
+    Access granted this broadly is never noticed afterwards: nothing fails, and the surface stays
+    open for as long as the resource exists.
+  fix: |
+    Grant the access to the identities that need it and to nothing else.
+
+- key: QG-JV-SML-0590
+  name: Methods setUp() and tearDown() should be correctly annotated starting with JUnit4
+  languages: [java]
+  category: SML
+  severity: critical
+  effort: 2min
+  status: planned
+  generated: true
+  tags: [junit, tests]
+  summary: The code does not behave the way it reads.
+  why: |
+    Written this way it works by accident or fails on ordinary input, and the mistake survives
+    review because the intent reads correctly.
+  fix: |
+    Make the intended behaviour explicit, and cover the case that used to fail with a test.
+
+- key: QG-JV-SML-0591
+  name: Mocking all non-private methods of a class should be avoided
+  languages: [java]
+  category: SML
+  severity: critical
+  effort: 10min
+  status: planned
+  generated: true
+  tags: [tests, mockito]
+  summary: The code does not behave the way it reads.
+  why: |
+    Written this way it works by accident or fails on ordinary input, and the mistake survives
+    review because the intent reads correctly.
+  fix: |
+    Make the intended behaviour explicit, and cover the case that used to fail with a test.
+
+- key: QG-JV-SML-0592
+  name: Equality operators should not be used in "for" loop termination conditions
+  languages: [java]
+  category: SML
+  severity: critical
+  effort: 2min
+  status: planned
+  generated: true
+  tags: [cwe, cert, suspicious]
+  summary: The control flow does not do what it reads as doing.
+  why: |
+    A branch that cannot be taken, a loop that cannot end, a condition that is always the same: the
+    code states an intent the machine does not carry out, and review reads the intent.
+  fix: |
+    Make the flow say what it does, and remove what cannot happen.
+
+- key: QG-JV-SML-0593
+  name: Exit methods should not be called
+  languages: [java]
+  category: SML
+  severity: blocker
+  effort: 30min
+  status: planned
+  generated: true
+  tags: [cwe, cert, suspicious]
+  summary: The code does not behave the way it reads.
+  why: |
+    Written this way it works by accident or fails on ordinary input, and the mistake survives
+    review because the intent reads correctly.
+  fix: |
+    Make the intended behaviour explicit, and cover the case that used to fail with a test.
+
+- key: QG-JV-SML-0594
+  name: Magic numbers should not be used
+  languages: [java]
+  category: SML
+  severity: major
+  effort: 5min
+  status: planned
+  generated: true
+  tags: [brain-overload]
+  summary: The code does not behave the way it reads.
+  why: |
+    Written this way it works by accident or fails on ordinary input, and the mistake survives
+    review because the intent reads correctly.
+  fix: |
+    Make the intended behaviour explicit, and cover the case that used to fail with a test.
+
+- key: QG-JV-SML-0595
+  name: Class variable fields should not have public accessibility
+  languages: [java]
+  category: SML
+  severity: minor
+  effort: 10min
+  status: planned
+  generated: true
+  tags: [cwe]
+  summary: Something is reachable by callers who should not reach it.
+  why: |
+    Access granted this broadly is never noticed afterwards: nothing fails, and the surface stays
+    open for as long as the resource exists.
+  fix: |
+    Grant the access to the identities that need it and to nothing else.
+
+- key: QG-JV-SML-0596
+  name: Generic exceptions should never be thrown
+  languages: [java]
+  category: SML
+  severity: major
+  effort: 20min
+  status: planned
+  generated: true
+  tags: [cwe, error-handling, cert]
+  summary: The code does not behave the way it reads.
+  why: |
+    Written this way it works by accident or fails on ordinary input, and the mistake survives
+    review because the intent reads correctly.
+  fix: |
+    Make the intended behaviour explicit, and cover the case that used to fail with a test.
+
+- key: QG-JV-SML-0597
+  name: Synchronized classes "Vector", "Hashtable", "Stack" and "StringBuffer" should not be used
+  languages: [java]
+  category: SML
+  severity: major
+  effort: 20min
+  status: planned
+  generated: true
+  tags: [performance]
+  summary: Cryptography is used in a way that does not give the protection it appears to.
+  why: |
+    The code still runs and the data still looks protected, which is what makes this expensive to
+    find: nothing fails until somebody who should not be able to read the data reads it.
+  fix: |
+    Use the current recommended algorithm and parameters, and let the platform choose what it can.
+
+- key: QG-JV-SML-0598
+  name: "switch case" clauses should not have too many lines of code
+  languages: [java]
+  category: SML
+  severity: major
+  effort: 5min
+  status: planned
+  generated: true
+  tags: [brain-overload]
+  summary: The control flow does not do what it reads as doing.
+  why: |
+    A branch that cannot be taken, a loop that cannot end, a condition that is always the same: the
+    code states an intent the machine does not carry out, and review reads the intent.
+  fix: |
+    Make the flow say what it does, and remove what cannot happen.
+
+- key: QG-JV-SML-0599
+  name: Only static class initializers should be used
+  languages: [java]
+  category: SML
+  severity: major
+  effort: 30min
+  status: planned
+  generated: true
+  tags: [pitfall]
+  summary: An API is used where a better one exists.
+  why: |
+    The older form usually costs something the newer one does not, and it is on its way out: a
+    conversion, an allocation, a case it handles wrongly.
+  fix: |
+    Use the current API, and keep the old one only behind a documented compatibility layer.
+
+- key: QG-JV-SML-0600
+  name: Classes that override "clone" should be "Cloneable" and call "super.clone()"
+  languages: [java]
+  category: SML
+  severity: minor
+  effort: 20min
+  status: planned
+  generated: true
+  tags: [convention, cwe, cert]
+  summary: A name does not follow the convention the rest of the code uses.
+  why: |
+    Conventions let a reader infer what something is from its shape alone. A deviation costs a
+    lookup every time, and makes searches and automated refactoring less reliable.
+  fix: |
+    Rename it to match the convention used around it.
+
+- key: QG-JV-SML-0601
+  name: Array designators "[]" should be located after the type in method signatures
+  languages: [java]
+  category: SML
+  severity: minor
+  effort: 5min
+  status: planned
+  generated: true
+  tags: [convention]
+  summary: A name does not follow the convention the rest of the code uses.
+  why: |
+    Conventions let a reader infer what something is from its shape alone. A deviation costs a
+    lookup every time, and makes searches and automated refactoring less reliable.
+  fix: |
+    Rename it to match the convention used around it.
+
+- key: QG-JV-SML-0602
+  name: Array designators "[]" should be on the type, not the variable
+  languages: [java]
+  category: SML
+  severity: minor
+  effort: 5min
+  status: planned
+  generated: true
+  tags: [convention]
+  summary: A name does not follow the convention the rest of the code uses.
+  why: |
+    Conventions let a reader infer what something is from its shape alone. A deviation costs a
+    lookup every time, and makes searches and automated refactoring less reliable.
+  fix: |
+    Rename it to match the convention used around it.
+
+- key: QG-JV-SML-0603
+  name: The default unnamed package should not be used
+  languages: [java]
+  category: SML
+  severity: minor
+  effort: 10min
+  status: planned
+  generated: true
+  tags: [convention]
+  summary: A name does not follow the convention the rest of the code uses.
+  why: |
+    Conventions let a reader infer what something is from its shape alone. A deviation costs a
+    lookup every time, and makes searches and automated refactoring less reliable.
+  fix: |
+    Rename it to match the convention used around it.
+
+- key: QG-JV-SML-0604
+  name: Loggers should be "private static final" and should share a naming convention
+  languages: [java]
+  category: SML
+  severity: minor
+  effort: 5min
+  status: planned
+  generated: true
+  tags: [convention, logging]
+  summary: A name does not follow the convention the rest of the code uses.
+  why: |
+    Conventions let a reader infer what something is from its shape alone. A deviation costs a
+    lookup every time, and makes searches and automated refactoring less reliable.
+  fix: |
+    Rename it to match the convention used around it.
+
+- key: QG-JV-SML-0605
+  name: Loops should not contain more than a single "break" or "continue" statement
+  languages: [java]
+  category: SML
+  severity: minor
+  effort: 15min
+  status: planned
+  generated: true
+  tags: [brain-overload]
+  summary: The control flow does not do what it reads as doing.
+  why: |
+    A branch that cannot be taken, a loop that cannot end, a condition that is always the same: the
+    code states an intent the machine does not carry out, and review reads the intent.
+  fix: |
+    Make the flow say what it does, and remove what cannot happen.
+
+- key: QG-JV-SML-0606
+  name: "public static" fields should be constant
+  languages: [java]
+  category: SML
+  severity: minor
+  effort: 20min
+  status: planned
+  generated: true
+  tags: [cwe, cert]
+  summary: Something is reachable by callers who should not reach it.
+  why: |
+    Access granted this broadly is never noticed afterwards: nothing fails, and the surface stays
+    open for as long as the resource exists.
+  fix: |
+    Grant the access to the identities that need it and to nothing else.
+
+- key: QG-JV-SML-0607
+  name: JUnit4 @Ignored and JUnit5 @Disabled annotations should be used to disable tests and should provide a rationale
+  languages: [java]
+  category: SML
+  severity: major
+  effort: 10min
+  status: planned
+  generated: true
+  tags: [junit, tests, bad-practice, confusing]
+  summary: An API is used where a better one exists.
+  why: |
+    The older form usually costs something the newer one does not, and it is on its way out: a
+    conversion, an allocation, a case it handles wrongly.
+  fix: |
+    Use the current API, and keep the old one only behind a documented compatibility layer.
+
+- key: QG-JV-SML-0608
+  name: Abstract classes without fields should be converted to interfaces
+  languages: [java]
+  category: SML
+  severity: minor
+  effort: 10min
+  status: planned
+  generated: true
+  tags: []
+  summary: The code does not behave the way it reads.
+  why: |
+    Written this way it works by accident or fails on ordinary input, and the mistake survives
+    review because the intent reads correctly.
+  fix: |
+    Make the intended behaviour explicit, and cover the case that used to fail with a test.
+
+- key: QG-JV-SML-0609
+  name: Parentheses should be removed from a single lambda parameter when its type is inferred
+  languages: [java]
+  category: SML
+  severity: minor
+  effort: 2min
+  status: planned
+  generated: true
+  tags: [java8]
+  summary: Code that no longer takes part in anything is still here.
+  why: |
+    It has to be read, understood and kept compiling by everyone who passes through, and it gives
+    nothing back. Worse, it suggests a purpose that no longer exists.
+  fix: |
+    Remove it: the history keeps it if it is ever needed again.
+
+- key: QG-JV-SML-0610
+  name: Lambdas should be replaced with method references
+  languages: [java]
+  category: SML
+  severity: minor
+  effort: 2min
+  status: planned
+  generated: true
+  tags: [java8]
+  summary: An API is used where a better one exists.
+  why: |
+    The older form usually costs something the newer one does not, and it is on its way out: a
+    conversion, an allocation, a case it handles wrongly.
+  fix: |
+    Use the current API, and keep the old one only behind a documented compatibility layer.
+
+- key: QG-JV-SML-0611
+  name: Multiple variables should not be declared on the same line
+  languages: [java]
+  category: SML
+  severity: minor
+  effort: 2min
+  status: planned
+  generated: true
+  tags: [convention, cert]
+  summary: A name does not follow the convention the rest of the code uses.
+  why: |
+    Conventions let a reader infer what something is from its shape alone. A deviation costs a
+    lookup every time, and makes searches and automated refactoring less reliable.
+  fix: |
+    Rename it to match the convention used around it.
+
+- key: QG-JV-SML-0612
+  name: "NullPointerException" should not be explicitly thrown
+  languages: [java]
+  category: SML
+  severity: major
+  effort: 10min
+  status: planned
+  generated: true
+  tags: [error-handling, pitfall]
+  summary: A value that can be absent is used as though it always exists.
+  why: |
+    The path that produces the absence is usually the rare one, so this survives testing and arrives
+    in production as a failure with no obvious cause.
+  fix: |
+    Handle the absent case where it arises, or make the type say the value is always there.
+
+- key: QG-JV-SML-0613
+  name: "NullPointerException" should not be caught
+  languages: [java]
+  category: SML
+  severity: major
+  effort: 5min
+  status: planned
+  generated: true
+  tags: [cwe, error-handling, cert]
+  summary: A value that can be absent is used as though it always exists.
+  why: |
+    The path that produces the absence is usually the rare one, so this survives testing and arrives
+    in production as a failure with no obvious cause.
+  fix: |
+    Handle the absent case where it arises, or make the type say the value is always there.
+
+- key: QG-JV-SML-0614
+  name: The ternary operator should not be used
+  languages: [java]
+  category: SML
+  severity: major
+  effort: 5min
+  status: planned
+  generated: true
+  tags: [brain-overload]
+  summary: The code does not behave the way it reads.
+  why: |
+    Written this way it works by accident or fails on ordinary input, and the mistake survives
+    review because the intent reads correctly.
+  fix: |
+    Make the intended behaviour explicit, and cover the case that used to fail with a test.
+
+- key: QG-JV-SML-0615
+  name: Redundant casts should not be used
+  languages: [java]
+  category: SML
+  severity: minor
+  effort: 5min
+  status: planned
+  generated: true
+  tags: [redundant, clumsy]
+  summary: Code that no longer takes part in anything is still here.
+  why: |
+    It has to be read, understood and kept compiling by everyone who passes through, and it gives
+    nothing back. Worse, it suggests a purpose that no longer exists.
+  fix: |
+    Remove it: the history keeps it if it is ever needed again.
+
+- key: QG-JV-SML-0616
+  name: Simple class names should be used
+  languages: [java]
+  category: SML
+  severity: minor
+  effort: 2min
+  status: planned
+  generated: true
+  tags: [confusing, redundant]
+  summary: A name does not follow the convention the rest of the code uses.
+  why: |
+    Conventions let a reader infer what something is from its shape alone. A deviation costs a
+    lookup every time, and makes searches and automated refactoring less reliable.
+  fix: |
+    Rename it to match the convention used around it.
+
+- key: QG-JV-SML-0617
+  name: Constructors should not be used to instantiate "String", "BigInteger", "BigDecimal" and primitive-wrapper classes
+  languages: [java]
+  category: SML
+  severity: major
+  effort: 5min
+  status: planned
+  generated: true
+  tags: [performance]
+  summary: The code does not behave the way it reads.
+  why: |
+    Written this way it works by accident or fails on ordinary input, and the mistake survives
+    review because the intent reads correctly.
+  fix: |
+    Make the intended behaviour explicit, and cover the case that used to fail with a test.
+
+- key: QG-JV-SML-0618
+  name: Catches should be combined
+  languages: [java]
+  category: SML
+  severity: minor
+  effort: 5min
+  status: planned
+  generated: true
+  tags: [clumsy]
+  summary: The code does not behave the way it reads.
+  why: |
+    Written this way it works by accident or fails on ordinary input, and the mistake survives
+    review because the intent reads correctly.
+  fix: |
+    Make the intended behaviour explicit, and cover the case that used to fail with a test.
+
+- key: QG-JV-SML-0619
+  name: "finalize" should not set fields to "null"
+  languages: [java]
+  category: SML
+  severity: minor
+  effort: 5min
+  status: planned
+  generated: true
+  tags: []
+  summary: A value that can be absent is used as though it always exists.
+  why: |
+    The path that produces the absence is usually the rare one, so this survives testing and arrives
+    in production as a failure with no obvious cause.
+  fix: |
+    Handle the absent case where it arises, or make the type say the value is always there.
+
+- key: QG-JV-SML-0620
+  name: "static" members should be accessed statically
+  languages: [java]
+  category: SML
+  severity: major
+  effort: 5min
+  status: planned
+  generated: true
+  tags: [pitfall]
+  summary: Something is reachable by callers who should not reach it.
+  why: |
+    Access granted this broadly is never noticed afterwards: nothing fails, and the surface stays
+    open for as long as the resource exists.
+  fix: |
+    Grant the access to the identities that need it and to nothing else.
+
+- key: QG-JV-SML-0621
+  name: Types should be used in lambdas
+  languages: [java]
+  category: SML
+  severity: major
+  effort: 5min
+  status: planned
+  generated: true
+  tags: [convention, java8]
+  summary: A name does not follow the convention the rest of the code uses.
+  why: |
+    Conventions let a reader infer what something is from its shape alone. A deviation costs a
+    lookup every time, and makes searches and automated refactoring less reliable.
+  fix: |
+    Rename it to match the convention used around it.
+
+- key: QG-JV-SML-0622
+  name: "Exception" should not be caught when not required by called methods
+  languages: [java]
+  category: SML
+  severity: minor
+  effort: 15min
+  status: planned
+  generated: true
+  tags: [cwe, error-handling]
+  summary: The code does not behave the way it reads.
+  why: |
+    Written this way it works by accident or fails on ordinary input, and the mistake survives
+    review because the intent reads correctly.
+  fix: |
+    Make the intended behaviour explicit, and cover the case that used to fail with a test.
+
+- key: QG-JV-SML-0623
+  name: The diamond operator ("<>") should be used
+  languages: [java]
+  category: SML
+  severity: minor
+  effort: 1min
+  status: planned
+  generated: true
+  tags: [clumsy]
+  summary: An API is used where a better one exists.
+  why: |
+    The older form usually costs something the newer one does not, and it is on its way out: a
+    conversion, an allocation, a case it handles wrongly.
+  fix: |
+    Use the current API, and keep the old one only behind a documented compatibility layer.
+
+- key: QG-JV-SML-0624
+  name: Public methods should not contain selector arguments
+  languages: [java]
+  category: SML
+  severity: major
+  effort: 15min
+  status: planned
+  generated: true
+  tags: [design]
+  summary: Something is reachable by callers who should not reach it.
+  why: |
+    Access granted this broadly is never noticed afterwards: nothing fails, and the surface stays
+    open for as long as the resource exists.
+  fix: |
+    Grant the access to the identities that need it and to nothing else.
+
+- key: QG-JV-SML-0625
+  name: Inner class calls to super class methods should be unambiguous
+  languages: [java]
+  category: SML
+  severity: major
+  effort: 5min
+  status: planned
+  generated: true
+  tags: [pitfall]
+  summary: The code does not behave the way it reads.
+  why: |
+    Written this way it works by accident or fails on ordinary input, and the mistake survives
+    review because the intent reads correctly.
+  fix: |
+    Make the intended behaviour explicit, and cover the case that used to fail with a test.
+
+- key: QG-JV-SML-0626
+  name: Synchronizing on a "Lock" object should be avoided
+  languages: [java]
+  category: SML
+  severity: major
+  effort: 15min
+  status: planned
+  generated: true
+  tags: [multi-threading, cert, clumsy]
+  summary: Shared state is reached without the coordination that makes it safe.
+  why: |
+    It works every time it is tested and fails under load, on a machine with more cores, once. That
+    is the hardest kind of defect to reproduce and the easiest to write.
+  fix: |
+    Guard the shared state, or give each caller its own copy.
+
+- key: QG-JV-SML-0627
+  name: Inner classes which do not reference their owning classes should be "static"
+  languages: [java]
+  category: SML
+  severity: major
+  effort: 15min
+  status: planned
+  generated: true
+  tags: [performance]
+  summary: The code does not behave the way it reads.
+  why: |
+    Written this way it works by accident or fails on ordinary input, and the mistake survives
+    review because the intent reads correctly.
+  fix: |
+    Make the intended behaviour explicit, and cover the case that used to fail with a test.
+
+- key: QG-JV-SML-0628
+  name: JUnit rules should be used
+  languages: [java]
+  category: SML
+  severity: minor
+  effort: 5min
+  status: planned
+  generated: true
+  tags: [junit, tests, unused]
+  summary: Code that no longer takes part in anything is still here.
+  why: |
+    It has to be read, understood and kept compiling by everyone who passes through, and it gives
+    nothing back. Worse, it suggests a purpose that no longer exists.
+  fix: |
+    Remove it: the history keeps it if it is ever needed again.
+
+- key: QG-JV-SML-0629
+  name: Escaped Unicode characters should not be used
+  languages: [java]
+  category: SML
+  severity: major
+  effort: 5min
+  status: planned
+  generated: true
+  tags: [confusing]
+  summary: The code does not behave the way it reads.
+  why: |
+    Written this way it works by accident or fails on ordinary input, and the mistake survives
+    review because the intent reads correctly.
+  fix: |
+    Make the intended behaviour explicit, and cover the case that used to fail with a test.
+
+- key: QG-JV-SML-0630
+  name: Classes without "public" constructors should be "final"
+  languages: [java]
+  category: SML
+  severity: minor
+  effort: 5min
+  status: planned
+  generated: true
+  tags: [design]
+  summary: Something is reachable by callers who should not reach it.
+  why: |
+    Access granted this broadly is never noticed afterwards: nothing fails, and the surface stays
+    open for as long as the resource exists.
+  fix: |
+    Grant the access to the identities that need it and to nothing else.
+
+- key: QG-JV-SML-0631
+  name: Multiple loops over the same set should be combined
+  languages: [java]
+  category: SML
+  severity: minor
+  effort: 20min
+  status: planned
+  generated: true
+  tags: [performance]
+  summary: The control flow does not do what it reads as doing.
+  why: |
+    A branch that cannot be taken, a loop that cannot end, a condition that is always the same: the
+    code states an intent the machine does not carry out, and review reads the intent.
+  fix: |
+    Make the flow say what it does, and remove what cannot happen.
+
+- key: QG-JV-SML-0632
+  name: "main" should have the right signature
+  languages: [java]
+  category: SML
+  severity: minor
+  effort: 15min
+  status: planned
+  generated: true
+  tags: [convention, confusing]
+  summary: A name does not follow the convention the rest of the code uses.
+  why: |
+    Conventions let a reader infer what something is from its shape alone. A deviation costs a
+    lookup every time, and makes searches and automated refactoring less reliable.
+  fix: |
+    Rename it to match the convention used around it.
+
+- key: QG-JV-SML-0633
+  name: "StringBuilder" data should be used
+  languages: [java]
+  category: SML
+  severity: major
+  effort: 5min
+  status: planned
+  generated: true
+  tags: [performance]
+  summary: An API is used where a better one exists.
+  why: |
+    The older form usually costs something the newer one does not, and it is on its way out: a
+    conversion, an allocation, a case it handles wrongly.
+  fix: |
+    Use the current API, and keep the old one only behind a documented compatibility layer.
+
+- key: QG-JV-SML-0634
+  name: Method parameters should be declared with base types
+  languages: [java]
+  category: SML
+  severity: minor
+  effort: 5min
+  status: planned
+  generated: true
+  tags: [api-design]
+  summary: A piece of code has grown past what can be held in mind at once.
+  why: |
+    The size is the defect: every change to it costs more than it should and carries a risk that has
+    nothing to do with the change itself.
+  fix: |
+    Split it along the responsibilities it has accumulated.
+
+- key: QG-JV-SML-0635
+  name: Default annotation parameter values should not be passed as arguments
+  languages: [java]
+  category: SML
+  severity: minor
+  effort: 2min
+  status: planned
+  generated: true
+  tags: [finding, clumsy]
+  summary: The code does not behave the way it reads.
+  why: |
+    Written this way it works by accident or fails on ordinary input, and the mistake survives
+    review because the intent reads correctly.
+  fix: |
+    Make the intended behaviour explicit, and cover the case that used to fail with a test.
+
+- key: QG-JV-SML-0636
+  name: "private" methods called only by inner classes should be moved to those classes
+  languages: [java]
+  category: SML
+  severity: minor
+  effort: 5min
+  status: planned
+  generated: true
+  tags: [confusing]
+  summary: The code does not behave the way it reads.
+  why: |
+    Written this way it works by accident or fails on ordinary input, and the mistake survives
+    review because the intent reads correctly.
+  fix: |
+    Make the intended behaviour explicit, and cover the case that used to fail with a test.
+
+- key: QG-JV-SML-0637
+  name: Unit tests should throw exceptions
+  languages: [java]
+  category: SML
+  severity: minor
+  effort: 2min
+  status: planned
+  generated: true
+  tags: [error-handling, junit, tests, clumsy]
+  summary: The code does not behave the way it reads.
+  why: |
+    Written this way it works by accident or fails on ordinary input, and the mistake survives
+    review because the intent reads correctly.
+  fix: |
+    Make the intended behaviour explicit, and cover the case that used to fail with a test.
+
+- key: QG-JV-SML-0638
+  name: Raw types should not be used
+  languages: [java]
+  category: SML
+  severity: major
+  effort: 5min
+  status: planned
+  generated: true
+  tags: [pitfall]
+  summary: The code does not behave the way it reads.
+  why: |
+    Written this way it works by accident or fails on ordinary input, and the mistake survives
+    review because the intent reads correctly.
+  fix: |
+    Make the intended behaviour explicit, and cover the case that used to fail with a test.
+
+- key: QG-JV-SML-0639
+  name: Arrays should not be created for varargs parameters
+  languages: [java]
+  category: SML
+  severity: minor
+  effort: 2min
+  status: planned
+  generated: true
+  tags: [clumsy]
+  summary: A piece of code has grown past what can be held in mind at once.
+  why: |
+    The size is the defect: every change to it costs more than it should and carries a risk that has
+    nothing to do with the change itself.
+  fix: |
+    Split it along the responsibilities it has accumulated.
+
+- key: QG-JV-SML-0640
+  name: "java.nio.Files#delete" should be preferred
+  languages: [java]
+  category: SML
+  severity: major
+  effort: 10min
+  status: planned
+  generated: true
+  tags: [error-handling, api-design]
+  summary: An API is used where a better one exists.
+  why: |
+    The older form usually costs something the newer one does not, and it is on its way out: a
+    conversion, an allocation, a case it handles wrongly.
+  fix: |
+    Use the current API, and keep the old one only behind a documented compatibility layer.
+
+- key: QG-JV-SML-0641
+  name: Null checks should not be used with "instanceof"
+  languages: [java]
+  category: SML
+  severity: minor
+  effort: 5min
+  status: planned
+  generated: true
+  tags: [redundant]
+  summary: A value that can be absent is used as though it always exists.
+  why: |
+    The path that produces the absence is usually the rare one, so this survives testing and arrives
+    in production as a failure with no obvious cause.
+  fix: |
+    Handle the absent case where it arises, or make the type say the value is always there.
+
+- key: QG-JV-SML-0642
+  name: Asserts should not be used to check the parameters of a public method
+  languages: [java]
+  category: SML
+  severity: major
+  effort: 5min
+  status: planned
+  generated: true
+  tags: [pitfall]
+  summary: Something is reachable by callers who should not reach it.
+  why: |
+    Access granted this broadly is never noticed afterwards: nothing fails, and the surface stays
+    open for as long as the resource exists.
+  fix: |
+    Grant the access to the identities that need it and to nothing else.
+
+- key: QG-JV-SML-0643
+  name: Spring components should use constructor injection
+  languages: [java]
+  category: SML
+  severity: major
+  effort: 15min
+  status: planned
+  generated: true
+  tags: [spring, design]
+  summary: Input decides part of something the program then executes.
+  why: |
+    Whatever the caller sends becomes part of the instruction rather than part of the data. The code
+    reads naturally, because the value sits exactly where it belongs in the sentence.
+  fix: |
+    Keep the instruction fixed and pass the values separately, so no input can change its shape.
+
+- key: QG-JV-SML-0644
+  name: "write(byte[],int,int)" should be overridden
+  languages: [java]
+  category: SML
+  severity: minor
+  effort: 30min
+  status: planned
+  generated: true
+  tags: [performance]
+  summary: The code does not behave the way it reads.
+  why: |
+    Written this way it works by accident or fails on ordinary input, and the mistake survives
+    review because the intent reads correctly.
+  fix: |
+    Make the intended behaviour explicit, and cover the case that used to fail with a test.
+
+- key: QG-JV-SML-0645
+  name: The upper bound of type variables and wildcards should not be "final"
+  languages: [java]
+  category: SML
+  severity: minor
+  effort: 5min
+  status: planned
+  generated: true
+  tags: []
+  summary: The code does not behave the way it reads.
+  why: |
+    Written this way it works by accident or fails on ordinary input, and the mistake survives
+    review because the intent reads correctly.
+  fix: |
+    Make the intended behaviour explicit, and cover the case that used to fail with a test.
+
+- key: QG-JV-SML-0646
+  name: Use Java 14 "switch" expression
+  languages: [java]
+  category: SML
+  severity: minor
+  effort: 5min
+  status: planned
+  generated: true
+  tags: [java14]
+  summary: The control flow does not do what it reads as doing.
+  why: |
+    A branch that cannot be taken, a loop that cannot end, a condition that is always the same: the
+    code states an intent the machine does not carry out, and review reads the intent.
+  fix: |
+    Make the flow say what it does, and remove what cannot happen.
+
+- key: QG-JV-SML-0647
+  name: "else" statements should be clearly matched with an "if"
+  languages: [java]
+  category: SML
+  severity: major
+  effort: 1min
+  status: planned
+  generated: true
+  tags: [confusing]
+  summary: The code does not behave the way it reads.
+  why: |
+    Written this way it works by accident or fails on ordinary input, and the mistake survives
+    review because the intent reads correctly.
+  fix: |
+    Make the intended behaviour explicit, and cover the case that used to fail with a test.
+
+- key: QG-JV-SML-0648
+  name: Simple string literal should be used for single line strings
+  languages: [java]
+  category: SML
+  severity: minor
+  effort: 5min
+  status: planned
+  generated: true
+  tags: [java14]
+  summary: An API is used where a better one exists.
+  why: |
+    The older form usually costs something the newer one does not, and it is on its way out: a
+    conversion, an allocation, a case it handles wrongly.
+  fix: |
+    Use the current API, and keep the old one only behind a documented compatibility layer.
+
+- key: QG-JV-SML-0649
+  name: Whitespace for text block indent should be consistent
+  languages: [java]
+  category: SML
+  severity: major
+  effort: 5min
+  status: planned
+  generated: true
+  tags: [java14]
+  summary: Shared state is reached without the coordination that makes it safe.
+  why: |
+    It works every time it is tested and fails under load, on a machine with more cores, once. That
+    is the hardest kind of defect to reproduce and the easiest to write.
+  fix: |
+    Guard the shared state, or give each caller its own copy.
+
+- key: QG-JV-SML-0650
+  name: Escape sequences should not be used in text blocks
+  languages: [java]
+  category: SML
+  severity: minor
+  effort: 5min
+  status: planned
+  generated: true
+  tags: [java14]
+  summary: Shared state is reached without the coordination that makes it safe.
+  why: |
+    It works every time it is tested and fails under load, on a machine with more cores, once. That
+    is the hardest kind of defect to reproduce and the easiest to write.
+  fix: |
+    Guard the shared state, or give each caller its own copy.
+
+- key: QG-JV-SML-0651
+  name: Exception testing via JUnit @Test annotation should be avoided
+  languages: [java]
+  category: SML
+  severity: minor
+  effort: 5min
+  status: planned
+  generated: true
+  tags: [junit, tests]
+  summary: The code does not behave the way it reads.
+  why: |
+    Written this way it works by accident or fails on ordinary input, and the mistake survives
+    review because the intent reads correctly.
+  fix: |
+    Make the intended behaviour explicit, and cover the case that used to fail with a test.
+
+- key: QG-JV-SML-0652
+  name: Only one method invocation is expected when testing runtime exceptions
+  languages: [java]
+  category: SML
+  severity: major
+  effort: 5min
+  status: planned
+  generated: true
+  tags: [junit, tests]
+  summary: The code does not behave the way it reads.
+  why: |
+    Written this way it works by accident or fails on ordinary input, and the mistake survives
+    review because the intent reads correctly.
+  fix: |
+    Make the intended behaviour explicit, and cover the case that used to fail with a test.
+
+- key: QG-JV-SML-0653
+  name: JUnit5 test classes and methods should have default package visibility
+  languages: [java]
+  category: SML
+  severity: info
+  effort: 2min
+  status: planned
+  generated: true
+  tags: [junit, tests]
+  summary: The code does not behave the way it reads.
+  why: |
+    Written this way it works by accident or fails on ordinary input, and the mistake survives
+    review because the intent reads correctly.
+  fix: |
+    Make the intended behaviour explicit, and cover the case that used to fail with a test.
+
+- key: QG-JV-SML-0654
+  name: Migrate your tests from JUnit4 to the new JUnit5 annotations
+  languages: [java]
+  category: SML
+  severity: info
+  effort: 5min
+  status: planned
+  generated: true
+  tags: [junit, tests]
+  summary: The code does not behave the way it reads.
+  why: |
+    Written this way it works by accident or fails on ordinary input, and the mistake survives
+    review because the intent reads correctly.
+  fix: |
+    Make the intended behaviour explicit, and cover the case that used to fail with a test.
+
+- key: QG-JV-SML-0655
+  name: Unicode-aware versions of character classes should be preferred
+  languages: [java]
+  category: SML
+  severity: minor
+  effort: 5min
+  status: planned
+  generated: true
+  tags: [regex]
+  summary: An API is used where a better one exists.
+  why: |
+    The older form usually costs something the newer one does not, and it is on its way out: a
+    conversion, an allocation, a case it handles wrongly.
+  fix: |
+    Use the current API, and keep the old one only behind a documented compatibility layer.
+
+- key: QG-JV-SML-0656
+  name: Test methods should not contain too many assertions
+  languages: [java]
+  category: SML
+  severity: major
+  effort: 20min
+  status: planned
+  generated: true
+  tags: [tests]
+  summary: A piece of code has grown past what can be held in mind at once.
+  why: |
+    The size is the defect: every change to it costs more than it should and carries a risk that has
+    nothing to do with the change itself.
+  fix: |
+    Split it along the responsibilities it has accumulated.
+
+- key: QG-JV-SML-0657
+  name: Similar tests should be grouped in a single Parameterized test
+  languages: [java]
+  category: SML
+  severity: major
+  effort: 10min
+  status: planned
+  generated: true
+  tags: [tests, bad-practice, clumsy]
+  summary: The code does not behave the way it reads.
+  why: |
+    Written this way it works by accident or fails on ordinary input, and the mistake survives
+    review because the intent reads correctly.
+  fix: |
+    Make the intended behaviour explicit, and cover the case that used to fail with a test.
+
+- key: QG-JV-SML-0658
+  name: Constructors of an "abstract" class should not be declared "public"
+  languages: [java]
+  category: SML
+  severity: major
+  effort: 2min
+  status: planned
+  generated: true
+  tags: [design]
+  summary: Something is reachable by callers who should not reach it.
+  why: |
+    Access granted this broadly is never noticed afterwards: nothing fails, and the surface stays
+    open for as long as the resource exists.
+  fix: |
+    Grant the access to the identities that need it and to nothing else.
+
+- key: QG-JV-SML-0659
+  name: Call to Mockito method "verify", "when" or "given" should be simplified
+  languages: [java]
+  category: SML
+  severity: minor
+  effort: 2min
+  status: planned
+  generated: true
+  tags: [tests, mockito, clumsy]
+  summary: The code does not behave the way it reads.
+  why: |
+    Written this way it works by accident or fails on ordinary input, and the mistake survives
+    review because the intent reads correctly.
+  fix: |
+    Make the intended behaviour explicit, and cover the case that used to fail with a test.
+
+- key: QG-JV-SML-0660
+  name: String multiline concatenation should be replaced with Text Blocks
+  languages: [java]
+  category: SML
+  severity: major
+  effort: 2min
+  status: planned
+  generated: true
+  tags: [java15]
+  summary: Shared state is reached without the coordination that makes it safe.
+  why: |
+    It works every time it is tested and fails under load, on a machine with more cores, once. That
+    is the hardest kind of defect to reproduce and the easiest to write.
+  fix: |
+    Guard the shared state, or give each caller its own copy.
+
+- key: QG-JV-SML-0661
+  name: Pattern Matching for "instanceof" operator should be used instead of simple "instanceof" + cast
+  languages: [java]
+  category: SML
+  severity: minor
+  effort: 5min
+  status: planned
+  generated: true
+  tags: [java16]
+  summary: An API is used where a better one exists.
+  why: |
+    The older form usually costs something the newer one does not, and it is on its way out: a
+    conversion, an allocation, a case it handles wrongly.
+  fix: |
+    Use the current API, and keep the old one only behind a documented compatibility layer.
+
+- key: QG-JV-SML-0662
+  name: Switch arrow labels should not use redundant keywords
+  languages: [java]
+  category: SML
+  severity: minor
+  effort: 5min
+  status: planned
+  generated: true
+  tags: [java14]
+  summary: The control flow does not do what it reads as doing.
+  why: |
+    A branch that cannot be taken, a loop that cannot end, a condition that is always the same: the
+    code states an intent the machine does not carry out, and review reads the intent.
+  fix: |
+    Make the flow say what it does, and remove what cannot happen.
+
+- key: QG-JV-SML-0663
+  name: Redundant constructors/methods should be avoided in records
+  languages: [java]
+  category: SML
+  severity: major
+  effort: 5min
+  status: planned
+  generated: true
+  tags: [java16]
+  summary: Code that no longer takes part in anything is still here.
+  why: |
+    It has to be read, understood and kept compiling by everyone who passes through, and it gives
+    nothing back. Worse, it suggests a purpose that no longer exists.
+  fix: |
+    Remove it: the history keeps it if it is ever needed again.
+
+- key: QG-JV-SML-0664
+  name: Comma-separated labels should be used in Switch with colon case
+  languages: [java]
+  category: SML
+  severity: info
+  effort: 5min
+  status: planned
+  generated: true
+  tags: [java14]
+  summary: The control flow does not do what it reads as doing.
+  why: |
+    A branch that cannot be taken, a loop that cannot end, a condition that is always the same: the
+    code states an intent the machine does not carry out, and review reads the intent.
+  fix: |
+    Make the flow say what it does, and remove what cannot happen.
+
+- key: QG-JV-SML-0665
+  name: Custom getter method should not be used to override record's getter behavior
+  languages: [java]
+  category: SML
+  severity: major
+  effort: 5min
+  status: planned
+  generated: true
+  tags: [java16]
+  summary: The code does not behave the way it reads.
+  why: |
+    Written this way it works by accident or fails on ordinary input, and the mistake survives
+    review because the intent reads correctly.
+  fix: |
+    Make the intended behaviour explicit, and cover the case that used to fail with a test.
+
+- key: QG-JV-SML-0666
+  name: Local-Variable Type Inference should be used
+  languages: [java]
+  category: SML
+  severity: info
+  effort: 0min
+  status: planned
+  generated: true
+  tags: [java10]
+  summary: An API is used where a better one exists.
+  why: |
+    The older form usually costs something the newer one does not, and it is on its way out: a
+    conversion, an allocation, a case it handles wrongly.
+  fix: |
+    Use the current API, and keep the old one only behind a documented compatibility layer.
+
+- key: QG-JV-SML-0667
+  name: Permitted types of a sealed class should be omitted if they are declared in the same file
+  languages: [java]
+  category: SML
+  severity: minor
+  effort: 5min
+  status: planned
+  generated: true
+  tags: [java17]
+  summary: The code does not behave the way it reads.
+  why: |
+    Written this way it works by accident or fails on ordinary input, and the mistake survives
+    review because the intent reads correctly.
+  fix: |
+    Make the intended behaviour explicit, and cover the case that used to fail with a test.
+
+- key: QG-JV-SML-0668
+  name: Region should be set explicitly when creating a new "AwsClient"
+  languages: [java]
+  category: SML
+  severity: major
+  effort: 20min
+  status: planned
+  generated: true
+  tags: [startup-time, aws]
+  summary: The code does not behave the way it reads.
+  why: |
+    Written this way it works by accident or fails on ordinary input, and the mistake survives
+    review because the intent reads correctly.
+  fix: |
+    Make the intended behaviour explicit, and cover the case that used to fail with a test.
+
+- key: QG-JV-SML-0669
+  name: Credentials Provider should be set explicitly when creating a new "AwsClient"
+  languages: [java]
+  category: SML
+  severity: major
+  effort: 20min
+  status: planned
+  generated: true
+  tags: [startup-time, aws]
+  summary: A value that has to stay private is written where the code is kept.
+  why: |
+    Anyone with a copy of the repository has the value, and that includes every clone, every fork
+    and every build artefact. Changing it means shipping, so in practice it is never changed.
+  fix: |
+    Read the value from configuration the deployment supplies, and rotate the one already committed.
+
+- key: QG-JV-SML-0670
+  name: Reusable resources should be initialized at construction time of Lambda functions
+  languages: [java]
+  category: SML
+  severity: major
+  effort: 20min
+  status: planned
+  generated: true
+  tags: [aws]
+  summary: Something the runtime cannot reclaim on its own is not released.
+  why: |
+    Handles, sockets and connections are finite. The failure appears far from here, under load, as
+    an exhaustion nobody can attribute to a single line.
+  fix: |
+    Release it on every path, including the exceptional one.
+
+- key: QG-JV-SML-0671
+  name: Consumer Builders should be used
+  languages: [java]
+  category: SML
+  severity: minor
+  effort: 5min
+  status: planned
+  generated: true
+  tags: [aws]
+  summary: An API is used where a better one exists.
+  why: |
+    The older form usually costs something the newer one does not, and it is on its way out: a
+    conversion, an allocation, a case it handles wrongly.
+  fix: |
+    Use the current API, and keep the old one only behind a documented compatibility layer.
+
+- key: QG-JV-SML-0672
+  name: AWS region should not be set with a hardcoded String
+  languages: [java]
+  category: SML
+  severity: minor
+  effort: 5min
+  status: planned
+  generated: true
+  tags: [aws]
+  summary: The code does not behave the way it reads.
+  why: |
+    Written this way it works by accident or fails on ordinary input, and the mistake survives
+    review because the intent reads correctly.
+  fix: |
+    Make the intended behaviour explicit, and cover the case that used to fail with a test.
+
+- key: QG-JV-SML-0673
+  name: Regular expressions should not contain empty groups
+  languages: [java]
+  category: SML
+  severity: major
+  effort: 5min
+  status: planned
+  generated: true
+  tags: [regex]
+  summary: Code that no longer takes part in anything is still here.
+  why: |
+    It has to be read, understood and kept compiling by everyone who passes through, and it gives
+    nothing back. Worse, it suggests a purpose that no longer exists.
+  fix: |
+    Remove it: the history keeps it if it is ever needed again.
+
+- key: QG-JV-SML-0674
+  name: Non-capturing groups without quantifier should not be used
+  languages: [java]
+  category: SML
+  severity: major
+  effort: 5min
+  status: planned
+  generated: true
+  tags: [regex]
+  summary: The code does not behave the way it reads.
+  why: |
+    Written this way it works by accident or fails on ordinary input, and the mistake survives
+    review because the intent reads correctly.
+  fix: |
+    Make the intended behaviour explicit, and cover the case that used to fail with a test.
+
+- key: QG-JV-SML-0675
+  name: "@Value" annotation should inject property or SpEL expression
+  languages: [java]
+  category: SML
+  severity: major
+  effort: 5min
+  status: planned
+  generated: true
+  tags: [spring]
+  summary: The code does not behave the way it reads.
+  why: |
+    Written this way it works by accident or fails on ordinary input, and the mistake survives
+    review because the intent reads correctly.
+  fix: |
+    Make the intended behaviour explicit, and cover the case that used to fail with a test.
+
+- key: QG-JV-SML-0676
+  name: "@Autowired" should be used when multiple constructors are provided
+  languages: [java]
+  category: SML
+  severity: major
+  effort: 5min
+  status: planned
+  generated: true
+  tags: [spring]
+  summary: An API is used where a better one exists.
+  why: |
+    The older form usually costs something the newer one does not, and it is on its way out: a
+    conversion, an allocation, a case it handles wrongly.
+  fix: |
+    Use the current API, and keep the old one only behind a documented compatibility layer.
+
+- key: QG-JV-SML-0677
+  name: Use built-in "Math.clamp" methods
+  languages: [java]
+  category: SML
+  severity: major
+  effort: 5min
+  status: planned
+  generated: true
+  tags: [java21]
+  summary: The code does not behave the way it reads.
+  why: |
+    Written this way it works by accident or fails on ordinary input, and the mistake survives
+    review because the intent reads correctly.
+  fix: |
+    Make the intended behaviour explicit, and cover the case that used to fail with a test.
+
+- key: QG-JV-SML-0678
+  name: Use when instead of a single if inside a pattern match body
+  languages: [java]
+  category: SML
+  severity: major
+  effort: 5min
+  status: planned
+  generated: true
+  tags: [java21]
+  summary: An API is used where a better one exists.
+  why: |
+    The older form usually costs something the newer one does not, and it is on its way out: a
+    conversion, an allocation, a case it handles wrongly.
+  fix: |
+    Use the current API, and keep the old one only behind a documented compatibility layer.
+
+- key: QG-JV-SML-0679
+  name: Unnamed variable declarations should use the "var" identifier
+  languages: [java]
+  category: SML
+  severity: minor
+  effort: 2min
+  status: planned
+  generated: true
+  tags: [java22]
+  summary: A name does not follow the convention the rest of the code uses.
+  why: |
+    Conventions let a reader infer what something is from its shape alone. A deviation costs a
+    lookup every time, and makes searches and automated refactoring less reliable.
+  fix: |
+    Rename it to match the convention used around it.
+
+- key: QG-JV-SML-0680
+  name: Unused exception parameter should use the unnamed variable pattern
+  languages: [java]
+  category: SML
+  severity: minor
+  effort: 2min
+  status: planned
+  generated: true
+  tags: [java22]
+  summary: A name does not follow the convention the rest of the code uses.
+  why: |
+    Conventions let a reader infer what something is from its shape alone. A deviation costs a
+    lookup every time, and makes searches and automated refactoring less reliable.
+  fix: |
+    Rename it to match the convention used around it.
+
+- key: QG-JV-SML-0681
+  name: Markdown, HTML and Javadoc tags should be consistent
+  languages: [java]
+  category: SML
+  severity: minor
+  effort: 5min
+  status: planned
+  generated: true
+  tags: [java23, javadoc]
+  summary: The code does not behave the way it reads.
+  why: |
+    Written this way it works by accident or fails on ordinary input, and the mistake survives
+    review because the intent reads correctly.
+  fix: |
+    Make the intended behaviour explicit, and cover the case that used to fail with a test.
+
+- key: QG-JV-SML-0682
+  name: Types of unused record components should be removed from pattern matching
+  languages: [java]
+  category: SML
+  severity: info
+  effort: 5min
+  status: planned
+  generated: true
+  tags: [java22, unused]
+  summary: Code that no longer takes part in anything is still here.
+  why: |
+    It has to be read, understood and kept compiling by everyone who passes through, and it gives
+    nothing back. Worse, it suggests a purpose that no longer exists.
+  fix: |
+    Remove it: the history keeps it if it is ever needed again.
+
+- key: QG-JV-SML-0683
+  name: Comments should start with the appropriate number of slashes
+  languages: [java]
+  category: SML
+  severity: minor
+  effort: 5min
+  status: planned
+  generated: true
+  tags: [java23, javadoc]
+  summary: The code does not behave the way it reads.
+  why: |
+    Written this way it works by accident or fails on ordinary input, and the mistake survives
+    review because the intent reads correctly.
+  fix: |
+    Make the intended behaviour explicit, and cover the case that used to fail with a test.
+
+- key: QG-JV-SML-0684
+  name: Module imports should come first and imports should be grouped by kind
+  languages: [java]
+  category: SML
+  severity: minor
+  effort: 2min
+  status: planned
+  generated: true
+  tags: [convention, java25]
+  summary: A name does not follow the convention the rest of the code uses.
+  why: |
+    Conventions let a reader infer what something is from its shape alone. A deviation costs a
+    lookup every time, and makes searches and automated refactoring less reliable.
+  fix: |
+    Rename it to match the convention used around it.
+
+- key: QG-JV-SML-0685
+  name: Limited dependence should be placed on operator precedence
+  languages: [java]
+  category: SML
+  severity: major
+  effort: 2min
+  status: planned
+  generated: true
+  tags: [cwe, cert]
+  summary: The code does not behave the way it reads.
+  why: |
+    Written this way it works by accident or fails on ordinary input, and the mistake survives
+    review because the intent reads correctly.
+  fix: |
+    Make the intended behaviour explicit, and cover the case that used to fail with a test.
+
+- key: QG-JV-SML-0686
+  name: JUnit Jupiter tests should not use JUnit 4 assertions
+  languages: [java]
+  category: SML
+  severity: minor
+  effort: 5min
+  status: planned
+  generated: true
+  tags: [junit, tests]
+  summary: The code does not behave the way it reads.
+  why: |
+    Written this way it works by accident or fails on ordinary input, and the mistake survives
+    review because the intent reads correctly.
+  fix: |
+    Make the intended behaviour explicit, and cover the case that used to fail with a test.
+
+- key: QG-JV-SML-0687
+  name: Increment (++) and decrement (--) operators should not be used in a method call or mixed with other operators in an expression
+  languages: [java]
+  category: SML
+  severity: major
+  effort: 5min
+  status: planned
+  generated: true
+  tags: [cert]
+  summary: The code does not behave the way it reads.
+  why: |
+    Written this way it works by accident or fails on ordinary input, and the mistake survives
+    review because the intent reads correctly.
+  fix: |
+    Make the intended behaviour explicit, and cover the case that used to fail with a test.
+
+- key: QG-JV-SML-0688
+  name: REST Data with Panache resource interfaces should not have implementation classes
+  languages: [java]
+  category: SML
+  severity: major
+  effort: 10min
+  status: planned
+  generated: true
+  tags: [quarkus, rest, confusing]
+  summary: Something the runtime cannot reclaim on its own is not released.
+  why: |
+    Handles, sockets and connections are finite. The failure appears far from here, under load, as
+    an exhaustion nobody can attribute to a single line.
+  fix: |
+    Release it on every path, including the exceptional one.
+
+- key: QG-JV-SML-0689
+  name: Predefined mathematical constants should be used instead of hard-coded approximations
+  languages: [java]
+  category: SML
+  severity: major
+  effort: 5 min
+  status: planned
+  generated: true
+  tags: [cwe, readability, pitfall]
+  summary: An API is used where a better one exists.
+  why: |
+    The older form usually costs something the newer one does not, and it is on its way out: a
+    conversion, an allocation, a case it handles wrongly.
+  fix: |
+    Use the current API, and keep the old one only behind a documented compatibility layer.
+
+- key: QG-JV-SML-0690
+  name: Static methods should not hide methods from superclasses
+  languages: [java]
+  category: SML
+  severity: major
+  effort: 15min
+  status: planned
+  generated: true
+  tags: [pitfall, confusing, inheritance]
+  summary: The code does not behave the way it reads.
+  why: |
+    Written this way it works by accident or fails on ordinary input, and the mistake survives
+    review because the intent reads correctly.
+  fix: |
+    Make the intended behaviour explicit, and cover the case that used to fail with a test.
+
+- key: QG-JV-SML-0691
+  name: Methods should not have too many return statements
+  languages: [java]
+  category: SML
+  severity: major
+  effort: 20min
+  status: planned
+  generated: true
+  tags: [brain-overload]
+  summary: A piece of code has grown past what can be held in mind at once.
+  why: |
+    The size is the defect: every change to it costs more than it should and carries a risk that has
+    nothing to do with the change itself.
+  fix: |
+    Split it along the responsibilities it has accumulated.
+
+- key: QG-JV-SML-0692
+  name: Classes should not be coupled to too many other classes
+  languages: [java]
+  category: SML
+  severity: major
+  effort: 2h
+  status: planned
+  generated: true
+  tags: [brain-overload]
+  summary: A piece of code has grown past what can be held in mind at once.
+  why: |
+    The size is the defect: every change to it costs more than it should and carries a risk that has
+    nothing to do with the change itself.
+  fix: |
+    Split it along the responsibilities it has accumulated.
+
+- key: QG-JV-SML-0693
+  name: Track uses of "NOPMD" suppression comments
+  languages: [java]
+  category: SML
+  severity: minor
+  effort: 10min
+  status: planned
+  generated: true
+  tags: [bad-practice]
+  summary: The code does not behave the way it reads.
+  why: |
+    Written this way it works by accident or fails on ordinary input, and the mistake survives
+    review because the intent reads correctly.
+  fix: |
+    Make the intended behaviour explicit, and cover the case that used to fail with a test.
+
+- key: QG-JV-SML-0694
+  name: Track uses of "CHECKSTYLE:OFF" suppression comments
+  languages: [java]
+  category: SML
+  severity: minor
+  effort: 5min
+  status: planned
+  generated: true
+  tags: [bad-practice]
+  summary: The code does not behave the way it reads.
+  why: |
+    Written this way it works by accident or fails on ordinary input, and the mistake survives
+    review because the intent reads correctly.
+  fix: |
+    Make the intended behaviour explicit, and cover the case that used to fail with a test.
+
+- key: QG-JV-SML-0695
+  name: Classes should not have too many "static" imports
+  languages: [java]
+  category: SML
+  severity: major
+  effort: 30min
+  status: planned
+  generated: true
+  tags: [brain-overload]
+  summary: A piece of code has grown past what can be held in mind at once.
+  why: |
+    The size is the defect: every change to it costs more than it should and carries a risk that has
+    nothing to do with the change itself.
+  fix: |
+    Split it along the responsibilities it has accumulated.
+
+- key: QG-JV-SML-0696
+  name: "this" should not be exposed from constructors
+  languages: [java]
+  category: SML
+  severity: major
+  effort: 30min
+  status: planned
+  generated: true
+  tags: [multi-threading, cert, suspicious]
+  summary: Shared state is reached without the coordination that makes it safe.
+  why: |
+    It works every time it is tested and fails under load, on a machine with more cores, once. That
+    is the hardest kind of defect to reproduce and the easiest to write.
+  fix: |
+    Guard the shared state, or give each caller its own copy.
+
+- key: QG-JV-SML-0697
+  name: Tests should be stable
+  languages: [java]
+  category: SML
+  severity: major
+  effort: 20min
+  status: planned
+  generated: true
+  tags: [tests, design, unpredictable]
+  summary: The code does not behave the way it reads.
+  why: |
+    Written this way it works by accident or fails on ordinary input, and the mistake survives
+    review because the intent reads correctly.
+  fix: |
+    Make the intended behaviour explicit, and cover the case that used to fail with a test.
+
+- key: QG-JV-SML-0698
+  name: Lambdas should not invoke other lambdas synchronously
+  languages: [java]
+  category: SML
+  severity: minor
+  effort: 3h
+  status: planned
+  generated: true
+  tags: [aws]
+  summary: Shared state is reached without the coordination that makes it safe.
+  why: |
+    It works every time it is tested and fails under load, on a machine with more cores, once. That
+    is the hardest kind of defect to reproduce and the easiest to write.
+  fix: |
+    Guard the shared state, or give each caller its own copy.
+
+- key: QG-JV-SML-0699
+  name: Functions should not be defined with a variable number of arguments
+  languages: [java]
+  category: SML
+  severity: info
+  effort: 1min
+  status: planned
+  generated: true
+  tags: [cert, pitfall]
+  summary: The code does not behave the way it reads.
+  why: |
+    Written this way it works by accident or fails on ordinary input, and the mistake survives
+    review because the intent reads correctly.
+  fix: |
+    Make the intended behaviour explicit, and cover the case that used to fail with a test.
+
+- key: QG-JV-SML-0700
+  name: Interfaces should not solely consist of constants
+  languages: [java]
+  category: SML
+  severity: critical
+  effort: 10min
+  status: planned
+  generated: true
+  tags: [bad-practice]
+  summary: The code does not behave the way it reads.
+  why: |
+    Written this way it works by accident or fails on ordinary input, and the mistake survives
+    review because the intent reads correctly.
+  fix: |
+    Make the intended behaviour explicit, and cover the case that used to fail with a test.
+
+- key: QG-JV-SML-0701
+  name: Generic wildcard types should not be used in return types
+  languages: [java]
+  category: SML
+  severity: critical
+  effort: 20min
+  status: planned
+  generated: true
+  tags: [pitfall]
+  summary: The code does not behave the way it reads.
+  why: |
+    Written this way it works by accident or fails on ordinary input, and the mistake survives
+    review because the intent reads correctly.
+  fix: |
+    Make the intended behaviour explicit, and cover the case that used to fail with a test.
+
+- key: QG-JV-SML-0702
+  name: Conditionals should start on new lines
+  languages: [java]
+  category: SML
+  severity: critical
+  effort: 10min
+  status: planned
+  generated: true
+  tags: [suspicious]
+  summary: The control flow does not do what it reads as doing.
+  why: |
+    A branch that cannot be taken, a loop that cannot end, a condition that is always the same: the
+    code states an intent the machine does not carry out, and review reads the intent.
+  fix: |
+    Make the flow say what it does, and remove what cannot happen.
+
+- key: QG-JV-SML-0703
+  name: A conditionally executed single line should be denoted by indentation
+  languages: [java]
+  category: SML
+  severity: critical
+  effort: 10min
+  status: planned
+  generated: true
+  tags: [confusing, suspicious]
+  summary: The control flow does not do what it reads as doing.
+  why: |
+    A branch that cannot be taken, a loop that cannot end, a condition that is always the same: the
+    code states an intent the machine does not carry out, and review reads the intent.
+  fix: |
+    Make the flow say what it does, and remove what cannot happen.
+
+- key: QG-JV-SML-0704
+  name: Packages should have a javadoc file 'package-info.java'
+  languages: [java]
+  category: SML
+  severity: minor
+  effort: 20min
+  status: planned
+  generated: true
+  tags: [convention]
+  summary: A name does not follow the convention the rest of the code uses.
+  why: |
+    Conventions let a reader infer what something is from its shape alone. A deviation costs a
+    lookup every time, and makes searches and automated refactoring less reliable.
+  fix: |
+    Rename it to match the convention used around it.
+
+- key: QG-JV-SML-0705
+  name: Files should not have too many lines of code
+  languages: [java]
+  category: SML
+  severity: major
+  effort: 1h
+  status: planned
+  generated: true
+  tags: [brain-overload]
+  summary: A piece of code has grown past what can be held in mind at once.
+  why: |
+    The size is the defect: every change to it costs more than it should and carries a risk that has
+    nothing to do with the change itself.
+  fix: |
+    Split it along the responsibilities it has accumulated.
+
+- key: QG-JV-SML-0706
+  name: Tabulation characters should not be used
+  languages: [java]
+  category: SML
+  severity: minor
+  effort: 2min
+  status: planned
+  generated: true
+  tags: [convention]
+  summary: A name does not follow the convention the rest of the code uses.
+  why: |
+    Conventions let a reader infer what something is from its shape alone. A deviation costs a
+    lookup every time, and makes searches and automated refactoring less reliable.
+  fix: |
+    Rename it to match the convention used around it.
+
+- key: QG-JV-SML-0707
+  name: Files should end with a newline
+  languages: [java]
+  category: SML
+  severity: minor
+  effort: 1min
+  status: planned
+  generated: true
+  tags: [convention]
+  summary: A name does not follow the convention the rest of the code uses.
+  why: |
+    Conventions let a reader infer what something is from its shape alone. A deviation costs a
+    lookup every time, and makes searches and automated refactoring less reliable.
+  fix: |
+    Rename it to match the convention used around it.
+
+- key: QG-JV-SML-0708
+  name: Anonymous classes should not have too many lines
+  languages: [java]
+  category: SML
+  severity: major
+  effort: 20min
+  status: planned
+  generated: true
+  tags: []
+  summary: A piece of code has grown past what can be held in mind at once.
+  why: |
+    The size is the defect: every change to it costs more than it should and carries a risk that has
+    nothing to do with the change itself.
+  fix: |
+    Split it along the responsibilities it has accumulated.
+
+- key: QG-JV-SML-0709
+  name: Statements should be on separate lines
+  languages: [java]
+  category: SML
+  severity: major
+  effort: 1min
+  status: planned
+  generated: true
+  tags: [convention]
+  summary: A name does not follow the convention the rest of the code uses.
+  why: |
+    Conventions let a reader infer what something is from its shape alone. A deviation costs a
+    lookup every time, and makes searches and automated refactoring less reliable.
+  fix: |
+    Rename it to match the convention used around it.
+
+- key: QG-JV-SML-0710
+  name: Methods should not have too many lines
+  languages: [java]
+  category: SML
+  severity: major
+  effort: 20min
+  status: planned
+  generated: true
+  tags: [brain-overload]
+  summary: A piece of code has grown past what can be held in mind at once.
+  why: |
+    The size is the defect: every change to it costs more than it should and carries a risk that has
+    nothing to do with the change itself.
+  fix: |
+    Split it along the responsibilities it has accumulated.
+
+- key: QG-JV-SML-0711
+  name: Classes should not have too many methods
+  languages: [java]
+  category: SML
+  severity: major
+  effort: 1h
+  status: planned
+  generated: true
+  tags: [brain-overload]
+  summary: A piece of code has grown past what can be held in mind at once.
+  why: |
+    The size is the defect: every change to it costs more than it should and carries a risk that has
+    nothing to do with the change itself.
+  fix: |
+    Split it along the responsibilities it has accumulated.
+
+- key: QG-JV-SML-0712
+  name: Classes should not have too many fields
+  languages: [java]
+  category: SML
+  severity: major
+  effort: 1h
+  status: planned
+  generated: true
+  tags: [brain-overload]
+  summary: A piece of code has grown past what can be held in mind at once.
+  why: |
+    The size is the defect: every change to it costs more than it should and carries a risk that has
+    nothing to do with the change itself.
+  fix: |
+    Split it along the responsibilities it has accumulated.
+
+- key: QG-JV-SML-0713
+  name: Files should contain only one top-level class or interface each
+  languages: [java]
+  category: SML
+  severity: major
+  effort: 15min
+  status: planned
+  generated: true
+  tags: [brain-overload]
+  summary: The code does not behave the way it reads.
+  why: |
+    Written this way it works by accident or fails on ordinary input, and the mistake survives
+    review because the intent reads correctly.
+  fix: |
+    Make the intended behaviour explicit, and cover the case that used to fail with a test.
+
+- key: QG-JV-SML-0714
+  name: Inner classes should not have too many lines of code
+  languages: [java]
+  category: SML
+  severity: major
+  effort: 20min
+  status: planned
+  generated: true
+  tags: [brain-overload]
+  summary: A piece of code has grown past what can be held in mind at once.
+  why: |
+    The size is the defect: every change to it costs more than it should and carries a risk that has
+    nothing to do with the change itself.
+  fix: |
+    Split it along the responsibilities it has accumulated.
+
+- key: QG-JV-SML-0715
+  name: Reflection should not be used to increase accessibility of classes, methods, or fields
+  languages: [java]
+  category: SML
+  severity: major
+  effort: 30min
+  status: planned
+  generated: true
+  tags: [cert]
+  summary: Something is reachable by callers who should not reach it.
+  why: |
+    Access granted this broadly is never noticed afterwards: nothing fails, and the surface stays
+    open for as long as the resource exists.
+  fix: |
+    Grant the access to the identities that need it and to nothing else.
+
+- key: QG-JV-SML-0716
+  name: Tests should be kept in a dedicated source directory
+  languages: [java]
+  category: SML
+  severity: major
+  effort: 5min
+  status: planned
+  generated: true
+  tags: [tests, suspicious]
+  summary: The code does not behave the way it reads.
+  why: |
+    Written this way it works by accident or fails on ordinary input, and the mistake survives
+    review because the intent reads correctly.
+  fix: |
+    Make the intended behaviour explicit, and cover the case that used to fail with a test.
+
+- key: QG-JV-SML-0717
+  name: Lambdas should not have too many lines
+  languages: [java]
+  category: SML
+  severity: major
+  effort: 20min
+  status: planned
+  generated: true
+  tags: []
+  summary: A piece of code has grown past what can be held in mind at once.
+  why: |
+    The size is the defect: every change to it costs more than it should and carries a risk that has
+    nothing to do with the change itself.
+  fix: |
+    Split it along the responsibilities it has accumulated.
+
+- key: QG-JV-SML-0718
+  name: Regular expression quantifiers and character classes should be used concisely
+  languages: [java]
+  category: SML
+  severity: minor
+  effort: 5min
+  status: planned
+  generated: true
+  tags: [regex]
+  summary: An API is used where a better one exists.
+  why: |
+    The older form usually costs something the newer one does not, and it is on its way out: a
+    conversion, an allocation, a case it handles wrongly.
+  fix: |
+    Use the current API, and keep the old one only behind a documented compatibility layer.
+
+- key: QG-JV-SML-0719
+  name: The Singleton design pattern should be used with care
+  languages: [java]
+  category: SML
+  severity: info
+  effort: 0min
+  status: planned
+  generated: true
+  tags: [design]
+  summary: An API is used where a better one exists.
+  why: |
+    The older form usually costs something the newer one does not, and it is on its way out: a
+    conversion, an allocation, a case it handles wrongly.
+  fix: |
+    Use the current API, and keep the old one only behind a documented compatibility layer.
+
+- key: QG-JV-BUG-0280
+  name: Getters and setters should access the expected fields
+  languages: [java]
+  category: BUG
+  severity: critical
+  effort: 5min
+  status: planned
+  generated: true
+  tags: [pitfall]
+  summary: Something is reachable by callers who should not reach it.
+  why: |
+    Access granted this broadly is never noticed afterwards: nothing fails, and the surface stays
+    open for as long as the resource exists.
+  fix: |
+    Grant the access to the identities that need it and to nothing else.
+
+- key: QG-JV-BUG-0281
+  name: Assertion methods should not be used within the try block of a try-catch catching an Error
+  languages: [java]
+  category: BUG
+  severity: critical
+  effort: 5min
+  status: planned
+  generated: true
+  tags: [junit, tests]
+  summary: Shared state is reached without the coordination that makes it safe.
+  why: |
+    It works every time it is tested and fails under load, on a machine with more cores, once. That
+    is the hardest kind of defect to reproduce and the easiest to write.
+  fix: |
+    Guard the shared state, or give each caller its own copy.
+
+- key: QG-JV-BUG-0282
+  name: Only one method invocation is expected when testing checked exceptions
+  languages: [java]
+  category: BUG
+  severity: critical
+  effort: 5min
+  status: planned
+  generated: true
+  tags: [junit, tests]
+  summary: The code does not behave the way it reads.
+  why: |
+    Written this way it works by accident or fails on ordinary input, and the mistake survives
+    review because the intent reads correctly.
+  fix: |
+    Make the intended behaviour explicit, and cover the case that used to fail with a test.
+
+- key: QG-JV-BUG-0283
+  name: JUnit5 inner test classes should be annotated with @Nested
+  languages: [java]
+  category: BUG
+  severity: critical
+  effort: 2min
+  status: planned
+  generated: true
+  tags: [junit, tests]
+  summary: A piece of code has grown past what can be held in mind at once.
+  why: |
+    The size is the defect: every change to it costs more than it should and carries a risk that has
+    nothing to do with the change itself.
+  fix: |
+    Split it along the responsibilities it has accumulated.
+
+- key: QG-JV-BUG-0284
+  name: Regex patterns following a possessive quantifier should not always fail
+  languages: [java]
+  category: BUG
+  severity: critical
+  effort: 15min
+  status: planned
+  generated: true
+  tags: [regex]
+  summary: The control flow does not do what it reads as doing.
+  why: |
+    A branch that cannot be taken, a loop that cannot end, a condition that is always the same: the
+    code states an intent the machine does not carry out, and review reads the intent.
+  fix: |
+    Make the flow say what it does, and remove what cannot happen.
+
+- key: QG-JV-BUG-0285
+  name: Regex lookahead assertions should not be contradictory
+  languages: [java]
+  category: BUG
+  severity: critical
+  effort: 20min
+  status: planned
+  generated: true
+  tags: [regex]
+  summary: The code does not behave the way it reads.
+  why: |
+    Written this way it works by accident or fails on ordinary input, and the mistake survives
+    review because the intent reads correctly.
+  fix: |
+    Make the intended behaviour explicit, and cover the case that used to fail with a test.
+
+- key: QG-JV-BUG-0286
+  name: Nullable injected fields and parameters should provide a default value
+  languages: [java]
+  category: BUG
+  severity: critical
+  effort: 5min
+  status: planned
+  generated: true
+  tags: [spring]
+  summary: A value that can be absent is used as though it always exists.
+  why: |
+    The path that produces the absence is usually the rare one, so this survives testing and arrives
+    in production as a failure with no obvious cause.
+  fix: |
+    Handle the absent case where it arises, or make the type say the value is always there.
+
+- key: QG-JV-BUG-0287
+  name: Use of the "@Async" annotation on methods declared within a "@Configuration" class in Spring Boot
+  languages: [java]
+  category: BUG
+  severity: critical
+  effort: 5min
+  status: planned
+  generated: true
+  tags: [spring]
+  summary: The code does not behave the way it reads.
+  why: |
+    Written this way it works by accident or fails on ordinary input, and the mistake survives
+    review because the intent reads correctly.
+  fix: |
+    Make the intended behaviour explicit, and cover the case that used to fail with a test.
+
+- key: QG-JV-BUG-0288
+  name: "@Autowired" should only be used on a single constructor
+  languages: [java]
+  category: BUG
+  severity: critical
+  effort: 5min
+  status: planned
+  generated: true
+  tags: [spring]
+  summary: The code does not behave the way it reads.
+  why: |
+    Written this way it works by accident or fails on ordinary input, and the mistake survives
+    review because the intent reads correctly.
+  fix: |
+    Make the intended behaviour explicit, and cover the case that used to fail with a test.
+
+- key: QG-JV-BUG-0289
+  name: Subclass fields should be initialized before calls to "super()" or "this()"
+  languages: [java]
+  category: BUG
+  severity: critical
+  effort: 5min
+  status: planned
+  generated: true
+  tags: [java25]
+  summary: The code does not behave the way it reads.
+  why: |
+    Written this way it works by accident or fails on ordinary input, and the mistake survives
+    review because the intent reads correctly.
+  fix: |
+    Make the intended behaviour explicit, and cover the case that used to fail with a test.
+
+- key: QG-JV-BUG-0290
+  name: Classes should not access their own subclasses during class initialization
+  languages: [java]
+  category: BUG
+  severity: critical
+  effort: 20min
+  status: planned
+  generated: true
+  tags: [cert]
+  summary: Something is reachable by callers who should not reach it.
+  why: |
+    Access granted this broadly is never noticed afterwards: nothing fails, and the surface stays
+    open for as long as the resource exists.
+  fix: |
+    Grant the access to the identities that need it and to nothing else.
+
+- key: QG-JV-BUG-0291
+  name: Dissimilar primitive wrappers should not be used with the ternary operator without explicit casting
+  languages: [java]
+  category: BUG
+  severity: major
+  effort: 5min
+  status: planned
+  generated: true
+  tags: []
+  summary: The code does not behave the way it reads.
+  why: |
+    Written this way it works by accident or fails on ordinary input, and the mistake survives
+    review because the intent reads correctly.
+  fix: |
+    Make the intended behaviour explicit, and cover the case that used to fail with a test.
+
+- key: QG-JV-BUG-0292
+  name: "equals" methods should be symmetric and work for subclasses
+  languages: [java]
+  category: BUG
+  severity: minor
+  effort: 5min
+  status: planned
+  generated: true
+  tags: [cert]
+  summary: The code does not behave the way it reads.
+  why: |
+    Written this way it works by accident or fails on ordinary input, and the mistake survives
+    review because the intent reads correctly.
+  fix: |
+    Make the intended behaviour explicit, and cover the case that used to fail with a test.
+
+- key: QG-JV-BUG-0293
+  name: Child class methods named for parent class methods should be overrides
+  languages: [java]
+  category: BUG
+  severity: major
+  effort: 30min
+  status: planned
+  generated: true
+  tags: [pitfall]
+  summary: A name does not follow the convention the rest of the code uses.
+  why: |
+    Conventions let a reader infer what something is from its shape alone. A deviation costs a
+    lookup every time, and makes searches and automated refactoring less reliable.
+  fix: |
+    Rename it to match the convention used around it.
+
+- key: QG-JV-BUG-0294
+  name: Methods with Spring proxying annotations should be public
+  languages: [java]
+  category: BUG
+  severity: major
+  effort: 5min
+  status: planned
+  generated: true
+  tags: [spring]
+  summary: Something is reachable by callers who should not reach it.
+  why: |
+    Access granted this broadly is never noticed afterwards: nothing fails, and the surface stays
+    open for as long as the resource exists.
+  fix: |
+    Grant the access to the identities that need it and to nothing else.
+
+- key: QG-JV-BUG-0295
+  name: Getters and setters should be synchronized in pairs
+  languages: [java]
+  category: BUG
+  severity: major
+  effort: 5min
+  status: planned
+  generated: true
+  tags: [multi-threading, cert]
+  summary: Shared state is reached without the coordination that makes it safe.
+  why: |
+    It works every time it is tested and fails under load, on a machine with more cores, once. That
+    is the hardest kind of defect to reproduce and the easiest to write.
+  fix: |
+    Guard the shared state, or give each caller its own copy.
+
+- key: QG-JV-BUG-0296
+  name: Raw byte values should not be used in bitwise operations in combination with shifts
+  languages: [java]
+  category: BUG
+  severity: major
+  effort: 5min
+  status: planned
+  generated: true
+  tags: [cert]
+  summary: The code does not behave the way it reads.
+  why: |
+    Written this way it works by accident or fails on ordinary input, and the mistake survives
+    review because the intent reads correctly.
+  fix: |
+    Make the intended behaviour explicit, and cover the case that used to fail with a test.
+
+- key: QG-JV-BUG-0297
+  name: Assignment of lazy-initialized members should be the last step with double-checked locking
+  languages: [java]
+  category: BUG
+  severity: major
+  effort: 5min
+  status: planned
+  generated: true
+  tags: [multi-threading, cert]
+  summary: Shared state is reached without the coordination that makes it safe.
+  why: |
+    It works every time it is tested and fails under load, on a machine with more cores, once. That
+    is the hardest kind of defect to reproduce and the easiest to write.
+  fix: |
+    Guard the shared state, or give each caller its own copy.
+
+- key: QG-JV-BUG-0298
+  name: "getClass" should not be used for synchronization
+  languages: [java]
+  category: BUG
+  severity: major
+  effort: 5min
+  status: planned
+  generated: true
+  tags: [multi-threading, cert]
+  summary: Shared state is reached without the coordination that makes it safe.
+  why: |
+    It works every time it is tested and fails under load, on a machine with more cores, once. That
+    is the hardest kind of defect to reproduce and the easiest to write.
+  fix: |
+    Guard the shared state, or give each caller its own copy.
+
+- key: QG-JV-BUG-0299
+  name: Spring "@Controller" classes should not use "@Scope"
+  languages: [java]
+  category: BUG
+  severity: major
+  effort: 2min
+  status: planned
+  generated: true
+  tags: [spring]
+  summary: The code does not behave the way it reads.
+  why: |
+    Written this way it works by accident or fails on ordinary input, and the mistake survives
+    review because the intent reads correctly.
+  fix: |
+    Make the intended behaviour explicit, and cover the case that used to fail with a test.
+
+- key: QG-JV-BUG-0300
+  name: JUnit5 test classes and methods should not be silently ignored
+  languages: [java]
+  category: BUG
+  severity: major
+  effort: 2min
+  status: planned
+  generated: true
+  tags: [junit, tests]
+  summary: The code does not behave the way it reads.
+  why: |
+    Written this way it works by accident or fails on ordinary input, and the mistake survives
+    review because the intent reads correctly.
+  fix: |
+    Make the intended behaviour explicit, and cover the case that used to fail with a test.
+
+- key: QG-JV-BUG-0301
+  name: AssertJ configuration should be applied
+  languages: [java]
+  category: BUG
+  severity: major
+  effort: 5min
+  status: planned
+  generated: true
+  tags: [tests, assertj]
+  summary: The code does not behave the way it reads.
+  why: |
+    Written this way it works by accident or fails on ordinary input, and the mistake survives
+    review because the intent reads correctly.
+  fix: |
+    Make the intended behaviour explicit, and cover the case that used to fail with a test.
+
+- key: QG-JV-BUG-0302
+  name: AssertJ methods setting the assertion context should come before an assertion
+  languages: [java]
+  category: BUG
+  severity: major
+  effort: 5min
+  status: planned
+  generated: true
+  tags: [tests, assertj]
+  summary: The code does not behave the way it reads.
+  why: |
+    Written this way it works by accident or fails on ordinary input, and the mistake survives
+    review because the intent reads correctly.
+  fix: |
+    Make the intended behaviour explicit, and cover the case that used to fail with a test.
+
+- key: QG-JV-BUG-0303
+  name: Repeated patterns in regular expressions should not match the empty string
+  languages: [java]
+  category: BUG
+  severity: minor
+  effort: 5min
+  status: planned
+  generated: true
+  tags: [regex]
+  summary: Code that no longer takes part in anything is still here.
+  why: |
+    It has to be read, understood and kept compiling by everyone who passes through, and it gives
+    nothing back. Worse, it suggests a purpose that no longer exists.
+  fix: |
+    Remove it: the history keeps it if it is ever needed again.
+
+- key: QG-JV-BUG-0304
+  name: Alternatives in regular expressions should be grouped when used with anchors
+  languages: [java]
+  category: BUG
+  severity: major
+  effort: 10min
+  status: planned
+  generated: true
+  tags: [regex]
+  summary: The code does not behave the way it reads.
+  why: |
+    Written this way it works by accident or fails on ordinary input, and the mistake survives
+    review because the intent reads correctly.
+  fix: |
+    Make the intended behaviour explicit, and cover the case that used to fail with a test.
+
+- key: QG-JV-BUG-0305
+  name: Case insensitive Unicode regular expressions should enable the "UNICODE_CASE" flag
+  languages: [java]
+  category: BUG
+  severity: major
+  effort: 3min
+  status: planned
+  generated: true
+  tags: [regex]
+  summary: The control flow does not do what it reads as doing.
+  why: |
+    A branch that cannot be taken, a loop that cannot end, a condition that is always the same: the
+    code states an intent the machine does not carry out, and review reads the intent.
+  fix: |
+    Make the flow say what it does, and remove what cannot happen.
+
+- key: QG-JV-BUG-0306
+  name: Unicode Grapheme Clusters should be avoided inside regex character classes
+  languages: [java]
+  category: BUG
+  severity: major
+  effort: 5min
+  status: planned
+  generated: true
+  tags: [regex]
+  summary: The code does not behave the way it reads.
+  why: |
+    Written this way it works by accident or fails on ordinary input, and the mistake survives
+    review because the intent reads correctly.
+  fix: |
+    Make the intended behaviour explicit, and cover the case that used to fail with a test.
+
+- key: QG-JV-BUG-0307
+  name: Tests method should not be annotated with competing annotations
+  languages: [java]
+  category: BUG
+  severity: major
+  effort: 2min
+  status: planned
+  generated: true
+  tags: [tests]
+  summary: The code does not behave the way it reads.
+  why: |
+    Written this way it works by accident or fails on ordinary input, and the mistake survives
+    review because the intent reads correctly.
+  fix: |
+    Make the intended behaviour explicit, and cover the case that used to fail with a test.
+
+- key: QG-JV-BUG-0308
+  name: The regex escape sequence \cX should only be used with characters in the @-_ range
+  languages: [java]
+  category: BUG
+  severity: major
+  effort: 5min
+  status: planned
+  generated: true
+  tags: [regex]
+  summary: The code does not behave the way it reads.
+  why: |
+    Written this way it works by accident or fails on ordinary input, and the mistake survives
+    review because the intent reads correctly.
+  fix: |
+    Make the intended behaviour explicit, and cover the case that used to fail with a test.
+
+- key: QG-JV-BUG-0309
+  name: Mockito argument matchers should be used on all parameters
+  languages: [java]
+  category: BUG
+  severity: major
+  effort: 5min
+  status: planned
+  generated: true
+  tags: [tests, mockito]
+  summary: An API is used where a better one exists.
+  why: |
+    The older form usually costs something the newer one does not, and it is on its way out: a
+    conversion, an allocation, a case it handles wrongly.
+  fix: |
+    Use the current API, and keep the old one only behind a documented compatibility layer.
+
+- key: QG-JV-BUG-0310
+  name: Beans in "@Configuration" class should have different names
+  languages: [java]
+  category: BUG
+  severity: major
+  effort: 5min
+  status: planned
+  generated: true
+  tags: [spring]
+  summary: A name does not follow the convention the rest of the code uses.
+  why: |
+    Conventions let a reader infer what something is from its shape alone. A deviation costs a
+    lookup every time, and makes searches and automated refactoring less reliable.
+  fix: |
+    Rename it to match the convention used around it.
+
+- key: QG-JV-BUG-0311
+  name: Test classes should not contain multiple lifecycle methods of the same type
+  languages: [java]
+  category: BUG
+  severity: major
+  effort: 15min
+  status: planned
+  generated: true
+  tags: [junit, tests]
+  summary: The code does not behave the way it reads.
+  why: |
+    Written this way it works by accident or fails on ordinary input, and the mistake survives
+    review because the intent reads correctly.
+  fix: |
+    Make the intended behaviour explicit, and cover the case that used to fail with a test.
+
+- key: QG-JV-BUG-0312
+  name: Reflection should not be used to increase accessibility of records' fields
+  languages: [java]
+  category: BUG
+  severity: major
+  effort: 30min
+  status: planned
+  generated: true
+  tags: [java16]
+  summary: Something is reachable by callers who should not reach it.
+  why: |
+    Access granted this broadly is never noticed afterwards: nothing fails, and the surface stays
+    open for as long as the resource exists.
+  fix: |
+    Grant the access to the identities that need it and to nothing else.
+
+- key: QG-JV-BUG-0313
+  name: Loop conditions should be true at least once
+  languages: [java]
+  category: BUG
+  severity: major
+  effort: 10min
+  status: planned
+  generated: true
+  tags: []
+  summary: The control flow does not do what it reads as doing.
+  why: |
+    A branch that cannot be taken, a loop that cannot end, a condition that is always the same: the
+    code states an intent the machine does not carry out, and review reads the intent.
+  fix: |
+    Make the flow say what it does, and remove what cannot happen.

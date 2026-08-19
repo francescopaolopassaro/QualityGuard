@@ -38,7 +38,6 @@ public static class KotlinRuleSet
         new KotlinTrustAllCertificatesRule(),
         new KotlinReflectionInjectionRule(),
         new KotlinUnsafeWebViewRule(),
-        new KotlinWebViewFileAccessRule(),
         new KotlinWorldReadableFileRule(),
         new KotlinZipSlipRule(),
         new KotlinReDosRule(),
@@ -884,11 +883,11 @@ public sealed class KotlinReflectionInjectionRule : PatternRuleBase
 public sealed class KotlinUnsafeWebViewRule : PatternRuleBase
 {
     public override string Key => "QG-KT-SEC-0021";
-    public override string Name => "WebView JavaScript bridges should not expose native objects";
+    public override string Name => "WebView JavaScript should be enabled only for trusted content";
     public override Severity Severity => Severity.Critical;
     public override IssueKind Kind => IssueKind.Vulnerability;
     public override string RemediationEffort => "30min";
-    public override string FixAdvice => "Remove addJavascriptInterface or restrict JavaScript to trusted content only.";
+    public override string FixAdvice => "Enable JavaScript only where the loaded content is under your control.";
     public override string[] Languages => ["kt"];
 
     public override void Execute(IRuleContext context)
@@ -896,11 +895,8 @@ public sealed class KotlinUnsafeWebViewRule : PatternRuleBase
         var tokens = context.Tokens;
         for (var i = 0; i < tokens.Count; i++)
         {
-            if (RuleMatchers.IsName(tokens[i], "addJavascriptInterface"))
-            {
-                context.Report("Exposing native objects to WebView JavaScript can lead to remote code execution.", tokens[i].Line);
-                continue;
-            }
+            // the bridge itself is QG-KT-SEC-0052, which reads the call on the tree; reporting it
+            // here as well put two identifiers on one line
             if (!RuleMatchers.IsName(tokens[i], "javaScriptEnabled"))
                 continue;
             var limit = Math.Min(i + 4, tokens.Count);

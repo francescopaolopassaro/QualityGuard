@@ -2042,82 +2042,6 @@
     Validate the incoming value against an allowed set, pass it as data rather than as code or command,
     and replace weakened mechanisms with the current recommended one.
 
-- key: QG-PP-SEC-0061
-  name: Security-sensitive code should not weaken the security of the application
-  languages: [php]
-  category: SEC
-  severity: critical
-  effort: 15min
-  tags: [sec, generated]
-  generated: true
-  status: planned
-  message: This construct weakens the security of the application.
-  summary: A construct that attackers routinely target is used without the guard it needs.
-  why: |
-    The pattern either trusts data the program does not control, or relies on a mechanism that no longer
-    offers the protection it appears to offer. Both keep working normally, which is why they survive
-    until someone looks for them.
-  fix: |
-    Validate the incoming value against an allowed set, pass it as data rather than as code or command,
-    and replace weakened mechanisms with the current recommended one.
-
-- key: QG-PP-SEC-0062
-  name: Automatic updates should keep the platform protection enabled
-  languages: [php]
-  category: SEC
-  severity: critical
-  effort: 15min
-  tags: [protection_off, generated]
-  generated: true
-  status: planned
-  message: A protection provided by the platform is switched off here.
-  summary: A safety mechanism the platform provides is switched off.
-  why: |
-    The setting exists because the default behaviour blocks a known class of attack. Turning it off is
-    usually done to make one case work and then applies everywhere, so the whole application loses the
-    protection while nothing in the code says so.
-  fix: |
-    Restore the default and solve the original problem in a narrower way — scope the exception to the
-    single endpoint or value that needs it, and document why it is safe there.
-
-- key: QG-PP-SEC-0063
-  name: External requests should not weaken the security of the application
-  languages: [php]
-  category: SEC
-  severity: critical
-  effort: 15min
-  tags: [sec, generated]
-  generated: true
-  status: planned
-  message: This construct weakens the security of the application.
-  summary: A construct that attackers routinely target is used without the guard it needs.
-  why: |
-    The pattern either trusts data the program does not control, or relies on a mechanism that no longer
-    offers the protection it appears to offer. Both keep working normally, which is why they survive
-    until someone looks for them.
-  fix: |
-    Validate the incoming value against an allowed set, pass it as data rather than as code or command,
-    and replace weakened mechanisms with the current recommended one.
-
-- key: QG-PP-SEC-0064
-  name: Security-sensitive code should not weaken the security of the application
-  languages: [php]
-  category: SEC
-  severity: critical
-  effort: 15min
-  tags: [sec, generated]
-  generated: true
-  status: planned
-  message: This construct weakens the security of the application.
-  summary: A construct that attackers routinely target is used without the guard it needs.
-  why: |
-    The pattern either trusts data the program does not control, or relies on a mechanism that no longer
-    offers the protection it appears to offer. Both keep working normally, which is why they survive
-    until someone looks for them.
-  fix: |
-    Validate the incoming value against an allowed set, pass it as data rather than as code or command,
-    and replace weakened mechanisms with the current recommended one.
-
 - key: QG-PP-SML-0103
   name: WordPress options should be simplified
   languages: [php]
@@ -2137,25 +2061,6 @@
     next change touches a single spot.
   detect:
     - invocation: [require_once]
-
-- key: QG-PP-SEC-0065
-  name: Security-sensitive code should not weaken the security of the application
-  languages: [php]
-  category: SEC
-  severity: critical
-  effort: 15min
-  tags: [sec, generated]
-  generated: true
-  status: planned
-  message: This construct weakens the security of the application.
-  summary: A construct that attackers routinely target is used without the guard it needs.
-  why: |
-    The pattern either trusts data the program does not control, or relies on a mechanism that no longer
-    offers the protection it appears to offer. Both keep working normally, which is why they survive
-    until someone looks for them.
-  fix: |
-    Validate the incoming value against an allowed set, pass it as data rather than as code or command,
-    and replace weakened mechanisms with the current recommended one.
 
 - key: QG-PP-SML-0104
   name: WordPress option names should be simplified

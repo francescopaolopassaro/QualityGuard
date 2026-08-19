@@ -3,7 +3,7 @@
 # detection is written by hand, against the shape the defect actually has, and measured before
 # the entry stops being planned.
 
-- key: QG-JS-SEC-0100
+- key: QG-JS-SEC-0109
   name: Remote artifacts should not be used without integrity checks
   languages: [js]
   category: SEC
@@ -19,7 +19,7 @@
   fix: |
     Make the intended behaviour explicit, and cover the case that used to fail with a test.
 
-- key: QG-JS-SEC-0101
+- key: QG-JS-SEC-0110
   name: Web SQL databases should not be used
   languages: [js]
   category: SEC
@@ -35,7 +35,7 @@
   fix: |
     Keep the instruction fixed and pass the values separately, so no input can change its shape.
 
-- key: QG-JS-SEC-0102
+- key: QG-JS-SEC-0111
   name: "alert(...)" should not be used
   languages: [js]
   category: SEC
@@ -51,7 +51,7 @@
   fix: |
     Make the intended behaviour explicit, and cover the case that used to fail with a test.
 
-- key: QG-JS-SEC-0103
+- key: QG-JS-SEC-0112
   name: Debugger statements should not be used
   languages: [js]
   category: SEC
@@ -67,7 +67,7 @@
   fix: |
     Make the intended behaviour explicit, and cover the case that used to fail with a test.
 
-- key: QG-JS-SEC-0104
+- key: QG-JS-SEC-0113
   name: Sensitive permissions should not be requested unnecessarily
   languages: [js]
   category: SEC
@@ -83,7 +83,7 @@
   fix: |
     Grant the access to the identities that need it and to nothing else.
 
-- key: QG-JS-SEC-0105
+- key: QG-JS-SEC-0114
   name: Hidden files should not be served statically
   languages: [js]
   category: SEC
@@ -99,7 +99,7 @@
   fix: |
     Make the intended behaviour explicit, and cover the case that used to fail with a test.
 
-- key: QG-JS-SEC-0106
+- key: QG-JS-SEC-0115
   name: Content Security Policy frame-ancestors directive should not be disabled
   languages: [js]
   category: SEC
@@ -115,7 +115,7 @@
   fix: |
     Make the intended behaviour explicit, and cover the case that used to fail with a test.
 
-- key: QG-JS-SEC-0107
+- key: QG-JS-SEC-0116
   name: Confidential information should not be logged
   languages: [js]
   category: SEC
@@ -131,7 +131,7 @@
   fix: |
     Make the intended behaviour explicit, and cover the case that used to fail with a test.
 
-- key: QG-JS-SEC-0108
+- key: QG-JS-SEC-0117
   name: Client IP address should not be forwarded to proxies
   languages: [js]
   category: SEC
@@ -147,7 +147,7 @@
   fix: |
     Make the intended behaviour explicit, and cover the case that used to fail with a test.
 
-- key: QG-JS-SML-0444
+- key: QG-JS-SML-0541
   name: Constructors should not contain asynchronous operations
   languages: [js]
   category: SML
@@ -163,7 +163,7 @@
   fix: |
     Guard the shared state, or give each caller its own copy.
 
-- key: QG-JS-SML-0445
+- key: QG-JS-SML-0542
   name: Arguments to built-in functions should match documented types
   languages: [js]
   category: SML
@@ -179,7 +179,7 @@
   fix: |
     Make the intended behaviour explicit, and cover the case that used to fail with a test.
 
-- key: QG-JS-SML-0446
+- key: QG-JS-SML-0543
   name: Type predicates should be used
   languages: [js]
   category: SML
@@ -195,7 +195,7 @@
   fix: |
     Use the current API, and keep the old one only behind a documented compatibility layer.
 
-- key: QG-JS-SML-0447
+- key: QG-JS-SML-0544
   name: "undefined" should not be passed as the value of optional parameters
   languages: [js]
   category: SML
@@ -211,7 +211,7 @@
   fix: |
     Handle the absent case where it arises, or make the type say the value is always there.
 
-- key: QG-JS-SML-0448
+- key: QG-JS-SML-0545
   name: Optional property declarations should not use both '?' and 'undefined' syntax
   languages: [js]
   category: SML
@@ -227,7 +227,7 @@
   fix: |
     Handle the absent case where it arises, or make the type say the value is always there.
 
-- key: QG-JS-SML-0449
+- key: QG-JS-SML-0546
   name: The most specific assertion should be used
   languages: [js]
   category: SML
@@ -243,7 +243,7 @@
   fix: |
     Use the current API, and keep the old one only behind a documented compatibility layer.
 
-- key: QG-JS-SML-0450
+- key: QG-JS-SML-0547
   name: Tests should check which exception is thrown
   languages: [js]
   category: SML
@@ -259,7 +259,7 @@
   fix: |
     Make the intended behaviour explicit, and cover the case that used to fail with a test.
 
-- key: QG-JS-SML-0451
+- key: QG-JS-SML-0548
   name: JSX list components keys should match up between renders
   languages: [js]
   category: SML
@@ -275,7 +275,7 @@
   fix: |
     Make the intended behaviour explicit, and cover the case that used to fail with a test.
 
-- key: QG-JS-SML-0452
+- key: QG-JS-SML-0549
   name: Calls to ".call()" and ".apply()" methods should not be redundant
   languages: [js]
   category: SML
@@ -291,7 +291,7 @@
   fix: |
     Remove it: the history keeps it if it is ever needed again.
 
-- key: QG-JS-SML-0453
+- key: QG-JS-SML-0550
   name: Non-interactive DOM elements should not have interactive ARIA roles
   languages: [js]
   category: SML
@@ -307,7 +307,7 @@
   fix: |
     Grant the access to the identities that need it and to nothing else.
 
-- key: QG-JS-SML-0454
+- key: QG-JS-SML-0551
   name: Label elements should have a text label and an associated control
   languages: [js]
   category: SML
@@ -323,7 +323,7 @@
   fix: |
     Grant the access to the identities that need it and to nothing else.
 
-- key: QG-JS-SML-0455
+- key: QG-JS-SML-0552
   name: Built-in constructors should be called consistently with or without "new"
   languages: [js]
   category: SML
@@ -339,7 +339,7 @@
   fix: |
     Rename it to match the convention used around it.
 
-- key: QG-JS-SML-0456
+- key: QG-JS-SML-0553
   name: "indexOf()" and "lastIndexOf()" should be used instead of "findIndex()" and "findLastIndex()" for simple equality searches
   languages: [js]
   category: SML
@@ -355,7 +355,7 @@
   fix: |
     Use the current API, and keep the old one only behind a documented compatibility layer.
 
-- key: QG-JS-SML-0457
+- key: QG-JS-SML-0554
   name: Complex index access patterns should be replaced with ".at()" method
   languages: [js]
   category: SML
@@ -371,7 +371,7 @@
   fix: |
     Grant the access to the identities that need it and to nothing else.
 
-- key: QG-JS-SML-0458
+- key: QG-JS-SML-0555
   name: Use "Date.now()" instead of creating Date objects to get current timestamp
   languages: [js]
   category: SML
@@ -387,7 +387,7 @@
   fix: |
     Use the current API, and keep the old one only behind a documented compatibility layer.
 
-- key: QG-JS-SML-0459
+- key: QG-JS-SML-0556
   name: DOM nodes should be removed using "remove()" instead of "removeChild()"
   languages: [js]
   category: SML
@@ -403,7 +403,7 @@
   fix: |
     Remove it: the history keeps it if it is ever needed again.
 
-- key: QG-JS-SML-0460
+- key: QG-JS-SML-0557
   name: Test and suite titles should not be empty or whitespace-only
   languages: [js]
   category: SML
@@ -419,7 +419,7 @@
   fix: |
     Remove it: the history keeps it if it is ever needed again.
 
-- key: QG-JS-SML-0461
+- key: QG-JS-SML-0558
   name: Lifecycle hooks should not be interleaved with test cases or nested suites
   languages: [js]
   category: SML
@@ -435,7 +435,7 @@
   fix: |
     Make the flow say what it does, and remove what cannot happen.
 
-- key: QG-JS-SML-0462
+- key: QG-JS-SML-0559
   name: Assertions should be placed inside test cases or hooks
   languages: [js]
   category: SML
@@ -451,7 +451,7 @@
   fix: |
     Make the flow say what it does, and remove what cannot happen.
 
-- key: QG-JS-SML-0463
+- key: QG-JS-SML-0560
   name: Inline snapshots should not contain interpolations
   languages: [js]
   category: SML
@@ -467,7 +467,7 @@
   fix: |
     Make the intended behaviour explicit, and cover the case that used to fail with a test.
 
-- key: QG-JS-SML-0464
+- key: QG-JS-SML-0561
   name: "<button>" elements should have an explicit "type" attribute
   languages: [js]
   category: SML
@@ -483,7 +483,7 @@
   fix: |
     Make the intended behaviour explicit, and cover the case that used to fail with a test.
 
-- key: QG-JS-SML-0465
+- key: QG-JS-SML-0562
   name: Vue components should not use the deprecated "vue-class-component" or "vue-property-decorator" libraries
   languages: [js]
   category: SML
@@ -499,7 +499,7 @@
   fix: |
     Use the current API, and keep the old one only behind a documented compatibility layer.
 
-- key: QG-JS-SML-0466
+- key: QG-JS-SML-0563
   name: "if ... else if" constructs should end with "else" clauses
   languages: [js]
   category: SML
@@ -515,7 +515,7 @@
   fix: |
     Make the intended behaviour explicit, and cover the case that used to fail with a test.
 
-- key: QG-JS-SML-0467
+- key: QG-JS-SML-0564
   name: Track lack of copyright and license headers
   languages: [js]
   category: SML
@@ -531,7 +531,7 @@
   fix: |
     Rename it to match the convention used around it.
 
-- key: QG-JS-SML-0468
+- key: QG-JS-SML-0565
   name: "strict" mode should be used with caution
   languages: [js]
   category: SML
@@ -547,7 +547,7 @@
   fix: |
     Use the current API, and keep the old one only behind a documented compatibility layer.
 
-- key: QG-JS-SML-0469
+- key: QG-JS-SML-0566
   name: "switch" statements should not be nested
   languages: [js]
   category: SML
@@ -563,7 +563,7 @@
   fix: |
     Make the flow say what it does, and remove what cannot happen.
 
-- key: QG-JS-SML-0470
+- key: QG-JS-SML-0567
   name: Wildcard imports should not be used
   languages: [js]
   category: SML
@@ -579,7 +579,7 @@
   fix: |
     Make the intended behaviour explicit, and cover the case that used to fail with a test.
 
-- key: QG-JS-SML-0471
+- key: QG-JS-SML-0568
   name: Unchanged variables should be marked as "const"
   languages: [js]
   category: SML
@@ -595,7 +595,7 @@
   fix: |
     Make the intended behaviour explicit, and cover the case that used to fail with a test.
 
-- key: QG-JS-SML-0472
+- key: QG-JS-SML-0569
   name: Class methods should be used instead of "prototype" assignments
   languages: [js]
   category: SML
@@ -611,7 +611,7 @@
   fix: |
     Use the current API, and keep the old one only behind a documented compatibility layer.
 
-- key: QG-JS-SML-0473
+- key: QG-JS-SML-0570
   name: A conditionally executed single line should be denoted by indentation
   languages: [js]
   category: SML
@@ -627,7 +627,7 @@
   fix: |
     Make the flow say what it does, and remove what cannot happen.
 
-- key: QG-JS-SML-0474
+- key: QG-JS-SML-0571
   name: Components, Directives, and Pipes should use standalone architecture
   languages: [js]
   category: SML
@@ -643,7 +643,7 @@
   fix: |
     Make the intended behaviour explicit, and cover the case that used to fail with a test.
 
-- key: QG-JS-SML-0475
+- key: QG-JS-SML-0572
   name: Lines should not be too long
   languages: [js]
   category: SML
@@ -659,7 +659,7 @@
   fix: |
     Split it along the responsibilities it has accumulated.
 
-- key: QG-JS-SML-0476
+- key: QG-JS-SML-0573
   name: Files should not have too many lines of code
   languages: [js]
   category: SML
@@ -675,7 +675,7 @@
   fix: |
     Split it along the responsibilities it has accumulated.
 
-- key: QG-JS-SML-0477
+- key: QG-JS-SML-0574
   name: Tabulation characters should not be used
   languages: [js]
   category: SML
@@ -691,7 +691,7 @@
   fix: |
     Make the intended behaviour explicit, and cover the case that used to fail with a test.
 
-- key: QG-JS-SML-0478
+- key: QG-JS-SML-0575
   name: Standard outputs should not be used directly to log anything
   languages: [js]
   category: SML
@@ -707,7 +707,7 @@
   fix: |
     Make the intended behaviour explicit, and cover the case that used to fail with a test.
 
-- key: QG-JS-SML-0479
+- key: QG-JS-SML-0576
   name: Mergeable "if" statements should be combined
   languages: [js]
   category: SML
@@ -723,7 +723,7 @@
   fix: |
     Make the intended behaviour explicit, and cover the case that used to fail with a test.
 
-- key: QG-JS-SML-0480
+- key: QG-JS-SML-0577
   name: Magic numbers should not be used
   languages: [js]
   category: SML
@@ -739,7 +739,7 @@
   fix: |
     Make the intended behaviour explicit, and cover the case that used to fail with a test.
 
-- key: QG-JS-SML-0481
+- key: QG-JS-SML-0578
   name: Variables should not be shadowed
   languages: [js]
   category: SML
@@ -755,7 +755,7 @@
   fix: |
     Make the intended behaviour explicit, and cover the case that used to fail with a test.
 
-- key: QG-JS-SML-0482
+- key: QG-JS-SML-0579
   name: Files should end with a newline
   languages: [js]
   category: SML
@@ -771,7 +771,7 @@
   fix: |
     Make the intended behaviour explicit, and cover the case that used to fail with a test.
 
-- key: QG-JS-SML-0483
+- key: QG-JS-SML-0580
   name: Lines should not end with trailing whitespaces
   languages: [js]
   category: SML
@@ -787,7 +787,7 @@
   fix: |
     Split it along the responsibilities it has accumulated.
 
-- key: QG-JS-SML-0484
+- key: QG-JS-SML-0581
   name: Statements should be on separate lines
   languages: [js]
   category: SML
@@ -803,7 +803,7 @@
   fix: |
     Split it along the responsibilities it has accumulated.
 
-- key: QG-JS-SML-0485
+- key: QG-JS-SML-0582
   name: Track comments matching a regular expression
   languages: [js]
   category: SML
@@ -819,7 +819,7 @@
   fix: |
     Make the intended behaviour explicit, and cover the case that used to fail with a test.
 
-- key: QG-JS-SML-0486
+- key: QG-JS-SML-0583
   name: Sections of code should not be commented out
   languages: [js]
   category: SML
@@ -835,7 +835,7 @@
   fix: |
     Remove it: the history keeps it if it is ever needed again.
 
-- key: QG-JS-SML-0487
+- key: QG-JS-SML-0584
   name: Track uses of "NOSONAR" comments
   languages: [js]
   category: SML
@@ -851,7 +851,7 @@
   fix: |
     Make the intended behaviour explicit, and cover the case that used to fail with a test.
 
-- key: QG-JS-SML-0488
+- key: QG-JS-SML-0585
   name: Loops should not contain more than a single "break" or "continue" statement
   languages: [js]
   category: SML
@@ -867,7 +867,7 @@
   fix: |
     Make the flow say what it does, and remove what cannot happen.
 
-- key: QG-JS-SML-0489
+- key: QG-JS-SML-0586
   name: Comments should not be located at the end of lines of code
   languages: [js]
   category: SML
@@ -883,7 +883,7 @@
   fix: |
     Split it along the responsibilities it has accumulated.
 
-- key: QG-JS-SML-0490
+- key: QG-JS-SML-0587
   name: Statements should end with semicolons
   languages: [js]
   category: SML
@@ -899,7 +899,7 @@
   fix: |
     Make the intended behaviour explicit, and cover the case that used to fail with a test.
 
-- key: QG-JS-SML-0491
+- key: QG-JS-SML-0588
   name: Quotes for string literals should be used consistently
   languages: [js]
   category: SML
@@ -915,7 +915,7 @@
   fix: |
     Use the current API, and keep the old one only behind a documented compatibility layer.
 
-- key: QG-JS-SML-0492
+- key: QG-JS-SML-0589
   name: Local variables should not be declared and then immediately returned or thrown
   languages: [js]
   category: SML
@@ -931,7 +931,7 @@
   fix: |
     Make the intended behaviour explicit, and cover the case that used to fail with a test.
 
-- key: QG-JS-SML-0493
+- key: QG-JS-SML-0590
   name: Array constructors should not be used
   languages: [js]
   category: SML
@@ -947,7 +947,7 @@
   fix: |
     Make the intended behaviour explicit, and cover the case that used to fail with a test.
 
-- key: QG-JS-SML-0494
+- key: QG-JS-SML-0591
   name: Trailing commas should not be used
   languages: [js]
   category: SML
@@ -963,7 +963,7 @@
   fix: |
     Make the intended behaviour explicit, and cover the case that used to fail with a test.
 
-- key: QG-JS-SML-0495
+- key: QG-JS-SML-0592
   name: The ternary operator should not be used
   languages: [js]
   category: SML
@@ -979,7 +979,7 @@
   fix: |
     Make the intended behaviour explicit, and cover the case that used to fail with a test.
 
-- key: QG-JS-SML-0496
+- key: QG-JS-SML-0593
   name: "undefined" should not be assigned
   languages: [js]
   category: SML
@@ -995,7 +995,7 @@
   fix: |
     Handle the absent case where it arises, or make the type say the value is always there.
 
-- key: QG-JS-SML-0497
+- key: QG-JS-SML-0594
   name: JavaScript parser failure
   languages: [js]
   category: SML
@@ -1011,7 +1011,7 @@
   fix: |
     Make the intended behaviour explicit, and cover the case that used to fail with a test.
 
-- key: QG-JS-SML-0498
+- key: QG-JS-SML-0595
   name: Property getters and setters should come in pairs
   languages: [js]
   category: SML
@@ -1027,7 +1027,7 @@
   fix: |
     Make the intended behaviour explicit, and cover the case that used to fail with a test.
 
-- key: QG-JS-SML-0499
+- key: QG-JS-SML-0596
   name: Object literal syntax should be used
   languages: [js]
   category: SML
@@ -1043,7 +1043,7 @@
   fix: |
     Use the current API, and keep the old one only behind a documented compatibility layer.
 
-- key: QG-JS-SML-0500
+- key: QG-JS-SML-0597
   name: Comparison operators should not be used with strings
   languages: [js]
   category: SML
@@ -1059,7 +1059,7 @@
   fix: |
     Make the intended behaviour explicit, and cover the case that used to fail with a test.
 
-- key: QG-JS-SML-0501
+- key: QG-JS-SML-0598
   name: Primitive types should be omitted from initialized or defaulted declarations
   languages: [js]
   category: SML
@@ -1075,7 +1075,7 @@
   fix: |
     Make the intended behaviour explicit, and cover the case that used to fail with a test.
 
-- key: QG-JS-SML-0502
+- key: QG-JS-SML-0599
   name: Default export names and file names should match
   languages: [js]
   category: SML
@@ -1091,7 +1091,7 @@
   fix: |
     Rename it to match the convention used around it.
 
-- key: QG-JS-SML-0503
+- key: QG-JS-SML-0600
   name: Strings and non-strings should not be added
   languages: [js]
   category: SML
@@ -1107,7 +1107,7 @@
   fix: |
     Make the intended behaviour explicit, and cover the case that used to fail with a test.
 
-- key: QG-JS-SML-0504
+- key: QG-JS-SML-0601
   name: Object literal shorthand syntax should be used
   languages: [js]
   category: SML
@@ -1123,7 +1123,7 @@
   fix: |
     Rename it to match the convention used around it.
 
-- key: QG-JS-SML-0505
+- key: QG-JS-SML-0602
   name: Shorthand object properties should be grouped at the beginning or end of an object declaration
   languages: [js]
   category: SML
@@ -1139,7 +1139,7 @@
   fix: |
     Rename it to match the convention used around it.
 
-- key: QG-JS-SML-0506
+- key: QG-JS-SML-0603
   name: Template strings should be used instead of concatenation
   languages: [js]
   category: SML
@@ -1155,7 +1155,7 @@
   fix: |
     Use the current API, and keep the old one only behind a documented compatibility layer.
 
-- key: QG-JS-SML-0507
+- key: QG-JS-SML-0604
   name: "arguments" should not be accessed directly
   languages: [js]
   category: SML
@@ -1171,7 +1171,7 @@
   fix: |
     Grant the access to the identities that need it and to nothing else.
 
-- key: QG-JS-SML-0508
+- key: QG-JS-SML-0605
   name: Destructuring syntax should be used for assignments
   languages: [js]
   category: SML
@@ -1187,7 +1187,7 @@
   fix: |
     Use the current API, and keep the old one only behind a documented compatibility layer.
 
-- key: QG-JS-SML-0509
+- key: QG-JS-SML-0606
   name: Function constructors should not be used
   languages: [js]
   category: SML
@@ -1203,7 +1203,7 @@
   fix: |
     Make the intended behaviour explicit, and cover the case that used to fail with a test.
 
-- key: QG-JS-SML-0510
+- key: QG-JS-SML-0607
   name: Braces and parentheses should be used consistently with arrow functions
   languages: [js]
   category: SML
@@ -1219,7 +1219,7 @@
   fix: |
     Guard the shared state, or give each caller its own copy.
 
-- key: QG-JS-SML-0511
+- key: QG-JS-SML-0608
   name: "import" should be used to include external code
   languages: [js]
   category: SML
@@ -1235,7 +1235,7 @@
   fix: |
     Rename it to match the convention used around it.
 
-- key: QG-JS-SML-0512
+- key: QG-JS-SML-0609
   name: Trailing commas should be used
   languages: [js]
   category: SML
@@ -1251,7 +1251,7 @@
   fix: |
     Use the current API, and keep the old one only behind a documented compatibility layer.
 
-- key: QG-JS-SML-0513
+- key: QG-JS-SML-0610
   name: Arithmetic operations should not result in "NaN"
   languages: [js]
   category: SML
@@ -1267,7 +1267,7 @@
   fix: |
     Make the intended behaviour explicit, and cover the case that used to fail with a test.
 
-- key: QG-JS-SML-0514
+- key: QG-JS-SML-0611
   name: Values not convertible to numbers should not be used in numeric comparisons
   languages: [js]
   category: SML
@@ -1283,7 +1283,7 @@
   fix: |
     Make the intended behaviour explicit, and cover the case that used to fail with a test.
 
-- key: QG-JS-SML-0515
+- key: QG-JS-SML-0612
   name: Arithmetic operators should only have numbers as operands
   languages: [js]
   category: SML
@@ -1299,7 +1299,7 @@
   fix: |
     Make the intended behaviour explicit, and cover the case that used to fail with a test.
 
-- key: QG-JS-SML-0516
+- key: QG-JS-SML-0613
   name: Variables and functions should not be declared in the global scope
   languages: [js]
   category: SML
@@ -1315,7 +1315,7 @@
   fix: |
     Make the intended behaviour explicit, and cover the case that used to fail with a test.
 
-- key: QG-JS-SML-0517
+- key: QG-JS-SML-0614
   name: Functions should use "return" consistently
   languages: [js]
   category: SML
@@ -1331,7 +1331,7 @@
   fix: |
     Make the intended behaviour explicit, and cover the case that used to fail with a test.
 
-- key: QG-JS-SML-0518
+- key: QG-JS-SML-0615
   name: Method overloads should be grouped together
   languages: [js]
   category: SML
@@ -1347,7 +1347,7 @@
   fix: |
     Rename it to match the convention used around it.
 
-- key: QG-JS-SML-0519
+- key: QG-JS-SML-0616
   name: Type assertions should use "as"
   languages: [js]
   category: SML
@@ -1363,7 +1363,7 @@
   fix: |
     Make the intended behaviour explicit, and cover the case that used to fail with a test.
 
-- key: QG-JS-SML-0520
+- key: QG-JS-SML-0617
   name: Default type parameters should be omitted
   languages: [js]
   category: SML
@@ -1379,7 +1379,7 @@
   fix: |
     Split it along the responsibilities it has accumulated.
 
-- key: QG-JS-SML-0521
+- key: QG-JS-SML-0618
   name: The "any" type should not be used
   languages: [js]
   category: SML
@@ -1395,7 +1395,7 @@
   fix: |
     Make the intended behaviour explicit, and cover the case that used to fail with a test.
 
-- key: QG-JS-SML-0522
+- key: QG-JS-SML-0619
   name: Primitive return types should be used
   languages: [js]
   category: SML
@@ -1411,7 +1411,7 @@
   fix: |
     Use the current API, and keep the old one only behind a documented compatibility layer.
 
-- key: QG-JS-SML-0523
+- key: QG-JS-SML-0620
   name: "await" should not be used redundantly
   languages: [js]
   category: SML
@@ -1427,7 +1427,7 @@
   fix: |
     Remove it: the history keeps it if it is ever needed again.
 
-- key: QG-JS-SML-0524
+- key: QG-JS-SML-0621
   name: "this" should not be assigned to variables
   languages: [js]
   category: SML
@@ -1443,7 +1443,7 @@
   fix: |
     Make the intended behaviour explicit, and cover the case that used to fail with a test.
 
-- key: QG-JS-SML-0525
+- key: QG-JS-SML-0622
   name: Dependencies should be explicit
   languages: [js]
   category: SML
@@ -1459,7 +1459,7 @@
   fix: |
     Make the intended behaviour explicit, and cover the case that used to fail with a test.
 
-- key: QG-JS-SML-0526
+- key: QG-JS-SML-0623
   name: Union types should not have too many elements
   languages: [js]
   category: SML
@@ -1475,7 +1475,7 @@
   fix: |
     Split it along the responsibilities it has accumulated.
 
-- key: QG-JS-SML-0527
+- key: QG-JS-SML-0624
   name: Optional boolean parameters should have default value
   languages: [js]
   category: SML
@@ -1491,7 +1491,7 @@
   fix: |
     Handle the absent case where it arises, or make the type say the value is always there.
 
-- key: QG-JS-SML-0528
+- key: QG-JS-SML-0625
   name: Expanding archive files should not be done without controlling resource consumption
   languages: [js]
   category: SML
@@ -1507,7 +1507,7 @@
   fix: |
     Release it on every path, including the exceptional one.
 
-- key: QG-JS-SML-0529
+- key: QG-JS-SML-0626
   name: Disallow `.bind()` and arrow functions in JSX props
   languages: [js]
   category: SML
@@ -1523,7 +1523,7 @@
   fix: |
     Make the intended behaviour explicit, and cover the case that used to fail with a test.
 
-- key: QG-JS-SML-0530
+- key: QG-JS-SML-0627
   name: JSX special characters should be escaped
   languages: [js]
   category: SML
@@ -1539,7 +1539,7 @@
   fix: |
     Make the intended behaviour explicit, and cover the case that used to fail with a test.
 
-- key: QG-JS-SML-0531
+- key: QG-JS-SML-0628
   name: React components should validate prop types
   languages: [js]
   category: SML
@@ -1555,7 +1555,7 @@
   fix: |
     Make the intended behaviour explicit, and cover the case that used to fail with a test.
 
-- key: QG-JS-SML-0532
+- key: QG-JS-SML-0629
   name: Use "for...of" loops instead of "forEach" method calls
   languages: [js]
   category: SML
@@ -1571,7 +1571,7 @@
   fix: |
     Make the flow say what it does, and remove what cannot happen.
 
-- key: QG-JS-SML-0533
+- key: QG-JS-SML-0630
   name: Member access from await expressions should use destructuring or intermediate variables
   languages: [js]
   category: SML
@@ -1587,7 +1587,7 @@
   fix: |
     Grant the access to the identities that need it and to nothing else.
 
-- key: QG-JS-SML-0534
+- key: QG-JS-SML-0631
   name: Traditional for loops should be replaced with for-of loops
   languages: [js]
   category: SML
@@ -1603,7 +1603,7 @@
   fix: |
     Make the flow say what it does, and remove what cannot happen.
 
-- key: QG-JS-SML-0535
+- key: QG-JS-SML-0632
   name: Negated conditions should be avoided when an else clause is present
   languages: [js]
   category: SML
@@ -1619,7 +1619,7 @@
   fix: |
     Make the flow say what it does, and remove what cannot happen.
 
-- key: QG-JS-SML-0536
+- key: QG-JS-SML-0633
   name: Number literals should not have unnecessary decimal points or trailing zeros
   languages: [js]
   category: SML
@@ -1635,7 +1635,7 @@
   fix: |
     Make the intended behaviour explicit, and cover the case that used to fail with a test.
 
-- key: QG-JS-SML-0537
+- key: QG-JS-SML-0634
   name: Use "globalThis" instead of "window", "self", or "global"
   languages: [js]
   category: SML
@@ -1651,7 +1651,7 @@
   fix: |
     Use the current API, and keep the old one only behind a documented compatibility layer.
 
-- key: QG-JS-SML-0538
+- key: QG-JS-SML-0635
   name: Use "RegExp.test()" instead of "String.match()" or "RegExp.exec()" when only checking for pattern existence
   languages: [js]
   category: SML
@@ -1667,7 +1667,7 @@
   fix: |
     Use the current API, and keep the old one only behind a documented compatibility layer.
 
-- key: QG-JS-SML-0539
+- key: QG-JS-SML-0636
   name: Increment (++) and decrement (--) operators should not be used in a method call or mixed with other operators in an expression
   languages: [js]
   category: SML
@@ -1683,7 +1683,7 @@
   fix: |
     Make the intended behaviour explicit, and cover the case that used to fail with a test.
 
-- key: QG-JS-SML-0540
+- key: QG-JS-SML-0637
   name: "continue" should not be used
   languages: [js]
   category: SML
@@ -1699,7 +1699,7 @@
   fix: |
     Make the intended behaviour explicit, and cover the case that used to fail with a test.
 
-- key: QG-JS-BUG-0198
+- key: QG-JS-BUG-0212
   name: "new" should only be used with functions and classes
   languages: [js]
   category: BUG
@@ -1715,7 +1715,7 @@
   fix: |
     Make the intended behaviour explicit, and cover the case that used to fail with a test.
 
-- key: QG-JS-BUG-0199
+- key: QG-JS-BUG-0213
   name: React components should not render non-boolean condition values
   languages: [js]
   category: BUG
@@ -1731,7 +1731,7 @@
   fix: |
     Make the flow say what it does, and remove what cannot happen.
 
-- key: QG-JS-BUG-0200
+- key: QG-JS-BUG-0214
   name: "Array.reduce()" calls should include an initial value
   languages: [js]
   category: BUG
@@ -1747,7 +1747,7 @@
   fix: |
     Make the intended behaviour explicit, and cover the case that used to fail with a test.
 
-- key: QG-JS-BUG-0201
+- key: QG-JS-BUG-0215
   name: Test and hook callbacks should use a single completion style
   languages: [js]
   category: BUG
@@ -1763,7 +1763,7 @@
   fix: |
     Make the intended behaviour explicit, and cover the case that used to fail with a test.
 
-- key: QG-JS-BUG-0202
+- key: QG-JS-BUG-0216
   name: Vue component prop types should be constructors
   languages: [js]
   category: BUG
@@ -1779,7 +1779,7 @@
   fix: |
     Make the intended behaviour explicit, and cover the case that used to fail with a test.
 
-- key: QG-JS-BUG-0203
+- key: QG-JS-BUG-0217
   name: Variables should be defined before being used
   languages: [js]
   category: BUG
@@ -1795,7 +1795,7 @@
   fix: |
     Make the intended behaviour explicit, and cover the case that used to fail with a test.
 
-- key: QG-JS-BUG-0204
+- key: QG-JS-BUG-0218
   name: Results of operations on strings should not be ignored
   languages: [js]
   category: BUG
@@ -1811,7 +1811,7 @@
   fix: |
     Make the intended behaviour explicit, and cover the case that used to fail with a test.
 
-- key: QG-JS-BUG-0205
+- key: QG-JS-BUG-0219
   name: Function declarations should not be made within blocks
   languages: [js]
   category: BUG
@@ -1827,7 +1827,7 @@
   fix: |
     Guard the shared state, or give each caller its own copy.
 
-- key: QG-JS-BUG-0206
+- key: QG-JS-BUG-0220
   name: "for...in" loops should filter properties before acting on them
   languages: [js]
   category: BUG
@@ -1843,7 +1843,7 @@
   fix: |
     Make the flow say what it does, and remove what cannot happen.
 
-- key: QG-JS-BUG-0207
+- key: QG-JS-BUG-0221
   name: Built-in objects should not be overridden
   languages: [js]
   category: BUG
@@ -1859,7 +1859,7 @@
   fix: |
     Make the intended behaviour explicit, and cover the case that used to fail with a test.
 
-- key: QG-JS-BUG-0208
+- key: QG-JS-BUG-0222
   name: The base should be provided to "parseInt"
   languages: [js]
   category: BUG
@@ -1875,7 +1875,7 @@
   fix: |
     Make the intended behaviour explicit, and cover the case that used to fail with a test.
 
-- key: QG-JS-BUG-0209
+- key: QG-JS-BUG-0223
   name: Template literal placeholder syntax should not be used in regular strings
   languages: [js]
   category: BUG
@@ -1891,7 +1891,7 @@
   fix: |
     Make the intended behaviour explicit, and cover the case that used to fail with a test.
 
-- key: QG-JS-BUG-0210
+- key: QG-JS-BUG-0224
   name: Regular expressions using Unicode character classes or property escapes should enable the unicode flag
   languages: [js]
   category: BUG
@@ -1907,7 +1907,7 @@
   fix: |
     Make the intended behaviour explicit, and cover the case that used to fail with a test.
 
-- key: QG-JS-BUG-0211
+- key: QG-JS-BUG-0225
   name: React Hooks should be properly called
   languages: [js]
   category: BUG

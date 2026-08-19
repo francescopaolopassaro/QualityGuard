@@ -3,7 +3,7 @@
 # detection is written by hand, against the shape the defect actually has, and measured before
 # the entry stops being planned.
 
-- key: QG-RB-SML-0070
+- key: QG-RB-SML-0080
   name: "if ... else if" constructs should end with "else" clauses
   languages: [rb]
   category: SML
@@ -19,7 +19,7 @@
   fix: |
     Make the intended behaviour explicit, and cover the case that used to fail with a test.
 
-- key: QG-RB-SML-0071
+- key: QG-RB-SML-0081
   name: Octal values should not be used
   languages: [rb]
   category: SML
@@ -35,7 +35,7 @@
   fix: |
     Make the intended behaviour explicit, and cover the case that used to fail with a test.
 
-- key: QG-RB-SML-0072
+- key: QG-RB-SML-0082
   name: "case" statements should not be nested
   languages: [rb]
   category: SML
@@ -51,7 +51,7 @@
   fix: |
     Make the flow say what it does, and remove what cannot happen.
 
-- key: QG-RB-SML-0073
+- key: QG-RB-SML-0083
   name: "case when" clauses should not have too many lines of code
   languages: [rb]
   category: SML
@@ -67,7 +67,7 @@
   fix: |
     Make the flow say what it does, and remove what cannot happen.
 
-- key: QG-RB-SML-0074
+- key: QG-RB-SML-0084
   name: Track lack of copyright and license headers
   languages: [rb]
   category: SML
@@ -83,7 +83,7 @@
   fix: |
     Rename it to match the convention used around it.
 
-- key: QG-RB-SML-0075
+- key: QG-RB-SML-0085
   name: Control flow statements "if", "for", "while", "until", "case" and "begin...rescue" should not be nested too deeply
   languages: [rb]
   category: SML
@@ -99,7 +99,7 @@
   fix: |
     Make the flow say what it does, and remove what cannot happen.
 
-- key: QG-RB-SML-0076
+- key: QG-RB-SML-0086
   name: Lines should not be too long
   languages: [rb]
   category: SML
@@ -115,7 +115,7 @@
   fix: |
     Rename it to match the convention used around it.
 
-- key: QG-RB-SML-0077
+- key: QG-RB-SML-0087
   name: Files should not have too many lines of code
   languages: [rb]
   category: SML
@@ -131,7 +131,7 @@
   fix: |
     Split it along the responsibilities it has accumulated.
 
-- key: QG-RB-SML-0078
+- key: QG-RB-SML-0088
   name: Tabulation characters should not be used
   languages: [rb]
   category: SML
@@ -147,7 +147,7 @@
   fix: |
     Rename it to match the convention used around it.
 
-- key: QG-RB-SML-0079
+- key: QG-RB-SML-0089
   name: Statements should be on separate lines
   languages: [rb]
   category: SML

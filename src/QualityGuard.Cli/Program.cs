@@ -164,11 +164,13 @@ static List<FileAnalysis> AnalyzeAndScan(ScanOptions options, bool verbose, bool
     var files = new List<SourceFile>();
     foreach (var filePath in scan.Files)
     {
-        if (BuiltInLanguages.Recognizer.Recognize(filePath) is not { } lang)
-            continue;
         try
         {
-            files.Add(new SourceFile(filePath, File.ReadAllText(filePath), lang));
+            // the content decides for the formats that share an extension, so it is read before the
+            // language is settled rather than after
+            var content = File.ReadAllText(filePath);
+            if (BuiltInLanguages.Recognizer.Recognize(filePath, content) is { } lang)
+                files.Add(new SourceFile(filePath, content, lang));
         }
         catch (Exception ex)
         {

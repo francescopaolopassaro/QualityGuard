@@ -233,3 +233,208 @@
     project, most of them in tests where the value is known to be there because the test put it there.
   fix: |
     Where the check matters, a linter configured by the team is the right place for it.
+
+# Mobile platform rules implemented in Rules/Languages/KotlinAndroidRules.cs. They read the call on
+# the tree: the argument that is missing, the one that is null, the builder step that was never
+# added. The two about the release build read the Gradle script, and only where the module declares
+# an application identifier — a library has no release package to harden.
+
+- key: QG-KT-SEC-0041
+  name: A broadcast should name the permission its receivers need
+  languages: [kt]
+  category: SEC
+  severity: critical
+  effort: 15min
+  cwe: [927]
+  tags: [android, permissions]
+  summary: An intent is broadcast without naming a permission, or is sent as a sticky broadcast.
+  why: |
+    Every application on the device receives it and reads what the intent carries. A sticky broadcast
+    is worse: the system keeps it and hands it to whoever asks afterwards, and no permission can be
+    attached to it at all.
+  fix: |
+    Pass the permission a receiver must hold, or address the intent to a specific component — and
+    replace sticky broadcasts, which the platform itself has retired.
+
+- key: QG-KT-SEC-0042
+  name: A registered receiver should require a permission
+  languages: [kt]
+  category: SEC
+  severity: critical
+  effort: 15min
+  cwe: [925]
+  tags: [android, permissions]
+  summary: A receiver is registered at run time without the permission a sender must hold.
+  why: |
+    Any application on the device can then trigger it, with data of its choosing. The handler treats
+    that input as its own, and the action it performs — refreshing a token, writing a file, starting
+    work — happens whenever somebody else decides.
+  fix: |
+    Register the receiver with the permission senders must hold.
+
+- key: QG-KT-SEC-0044
+  name: A stored key should require the user to authenticate
+  languages: [kt]
+  category: SEC
+  severity: critical
+  effort: 20min
+  cwe: [522]
+  tags: [android, crypto]
+  summary: A key is generated in the hardware store without requiring user authentication.
+  why: |
+    The key material is protected, but the operation it performs is not: anything running on the
+    device can use the key, including while the screen is locked. The protection people believe they
+    have from the secure hardware is only about theft of the key, not about its use.
+  fix: |
+    Require user authentication on the key when it protects something personal, and choose a validity
+    window that matches the operation.
+
+- key: QG-KT-SEC-0045
+  name: Biometric authentication should be bound to a key operation
+  languages: [kt]
+  category: SEC
+  severity: critical
+  effort: 30min
+  cwe: [287]
+  tags: [android, authentication]
+  summary: A biometric prompt is shown without a cryptographic object.
+  why: |
+    The result is then a boolean the application decides to trust. Nothing the user's fingerprint
+    unlocks is actually needed afterwards, so somebody who can change what runs on the device only
+    has to make that boolean true — and the fingerprint check becomes decoration.
+  fix: |
+    Pass the crypto object whose key the authentication unlocks, and use that key for the operation
+    the prompt was protecting.
+
+- key: QG-KT-SEC-0046
+  name: A database encryption key should not be written in the source
+  languages: [kt]
+  category: SEC
+  severity: critical
+  effort: 15min
+  cwe: [798]
+  tags: [android, secrets, crypto]
+  summary: The key that encrypts a local database is a literal in the code.
+  why: |
+    It ships inside the package, so anyone who takes the application apart — a short job with public
+    tools — reads it, and then reads every copy of that database on every device. The encryption
+    still passes review because the database is, technically, encrypted.
+  fix: |
+    Derive the key from something the user supplies, or keep it in the platform's key store and fetch
+    it at run time.
+
+- key: QG-KT-SEC-0048
+  name: A web view should not be allowed to reach local files
+  languages: [kt]
+  category: SEC
+  severity: critical
+  effort: 15min
+  cwe: [200]
+  tags: [android, webview]
+  summary: A web view is configured to allow file, content or universal access.
+  why: |
+    A page loaded into it — including one reached through a redirect nobody planned — can then read
+    the application's own private storage and send it out. The setting is usually added to make one
+    local page work and never taken back out.
+  fix: |
+    Leave file access off and serve what the page needs from the application itself.
+
+- key: QG-KT-SEC-0049
+  name: An authenticated cipher should not reuse its initialisation vector
+  languages: [kt]
+  category: SEC
+  severity: critical
+  effort: 20min
+  cwe: [323]
+  tags: [crypto]
+  summary: A message is encrypted in an authenticated mode with a vector written in the source.
+  why: |
+    Every message then uses the same vector. In this mode that is not a weakness of degree: two
+    messages under one key and one vector let anyone who sees both recover the plaintext and forge
+    new messages that verify correctly.
+  fix: |
+    Generate a random vector for every message and transmit it alongside the ciphertext — it is not
+    secret, it only has to be unique.
+
+- key: QG-KT-SEC-0050
+  name: Dependency verification should not be switched off
+  languages: [kt]
+  category: SEC
+  severity: major
+  effort: 15min
+  cwe: [494]
+  tags: [build, supply-chain]
+  summary: The build disables the check that dependencies match what the project recorded.
+  why: |
+    Without it a compromised mirror, or a package republished under the same version, is compiled
+    into the artefact and nothing anywhere notices. The build succeeds, the tests pass, and the
+    change arrives in production signed by your own pipeline.
+  fix: |
+    Keep verification on and update the recorded metadata when a dependency legitimately changes.
+
+- key: QG-KT-SEC-0051
+  name: A release build should be obfuscated
+  languages: [kt]
+  category: SEC
+  severity: major
+  effort: 30min
+  cwe: [656]
+  tags: [android, build]
+  summary: The release build of an application does not enable minification.
+  why: |
+    The shipped package then keeps every class, method and field name as written, together with the
+    code that is never called. Working out how the application authenticates, or where it keeps its
+    keys, becomes a matter of reading it.
+  fix: |
+    Enable minification on the release build type and keep what must survive in the rules file.
+
+- key: QG-KT-SEC-0052
+  name: Application code should not be exposed to a web view's page
+  languages: [kt]
+  category: SEC
+  severity: critical
+  effort: 30min
+  cwe: [749]
+  tags: [android, webview]
+  summary: An object of the application is registered as a bridge for the loaded page.
+  why: |
+    The page decides when to call it. One redirect, or one injected script in a page you do not
+    control, and code inside the application runs on request — with the application's own
+    permissions.
+  fix: |
+    Expose nothing, or expose a single narrow method and check the page's origin before answering.
+
+- key: QG-KT-SEC-0054
+  name: A release build should not be debuggable
+  languages: [kt]
+  category: SEC
+  severity: critical
+  effort: 15min
+  cwe: [489]
+  tags: [android, build]
+  summary: The release build type is marked debuggable.
+  why: |
+    Anyone holding the device can attach to the running process, read its memory and step through it.
+    The platform also drops obfuscation for such a build, so everything the code was hiding is
+    readable at the same time.
+  fix: |
+    Remove the setting from the release build type; the debug type already has it.
+
+- key: QG-KT-SEC-0022
+  name: WebView file access should be disabled
+  status: superseded
+  superseded_by: QG-KT-SEC-0048
+  languages: [kt]
+  category: SEC
+  severity: major
+  effort: 20min
+  tags: [android, webview]
+  message: Keep file access off unless the web view genuinely needs it.
+  summary: A web view is configured to allow file access.
+  why: |
+    It read the file as a stream of tokens and reported anything called allowFileAccess with the word
+    true within four tokens of it, which reports the check that turns the setting off as readily as
+    the assignment that turns it on.
+  fix: |
+    QG-KT-SEC-0048 reads the call and the assignment on the tree, and covers the content and
+    universal access settings as well.

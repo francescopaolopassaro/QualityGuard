@@ -145,3 +145,91 @@
     fired on every image that runs a single absolute command.
   fix: |
     The rule about relative paths covers the case that goes wrong.
+
+# Image security rules implemented in Rules/Languages/DockerSecurityRules.cs. The ones about what
+# ships read only the last stage of the file: everything a builder stage does is discarded when the
+# build ends, so judging it would report settings that never reach anything that runs.
+
+- key: QG-DK-SEC-0009
+  name: A shipped image should not switch on debugging features
+  languages: [dk]
+  category: SEC
+  severity: critical
+  effort: 10min
+  cwe: [489]
+  tags: [container, configuration]
+  summary: The final image sets a variable that puts the application in development or debug mode.
+  why: |
+    What that mode turns on is usually a page that prints the stack trace, the configuration and the
+    failing query — to whoever caused the error. It also relaxes checks the framework performs in
+    production, and none of it fails, so the image runs for months looking healthy.
+  fix: |
+    Set the variable in the local environment or in the development compose file, and leave the image
+    with the production defaults.
+
+- key: QG-DK-SEC-0011
+  name: A build step should not run in the network of its host
+  languages: [dk]
+  category: SEC
+  severity: major
+  effort: 10min
+  cwe: [653]
+  tags: [container, network]
+  summary: A build instruction asks for the network namespace of the build machine.
+  why: |
+    Whatever the step downloads and executes can then reach services that are only meant to be
+    reachable from inside that machine — a metadata endpoint, an internal registry, an agent that
+    trusts anything on localhost.
+  fix: |
+    Let the step use the default isolated network, and pass in what it needs as a build argument or a
+    mounted secret.
+
+- key: QG-DK-SEC-0012
+  name: A mounted secret should not be readable by every user
+  languages: [dk]
+  category: SEC
+  severity: critical
+  effort: 10min
+  cwe: [732]
+  tags: [container, secrets]
+  summary: A secret or agent socket is mounted with permissions that grant access to everyone.
+  why: |
+    Every account inside the build step can then read it, including anything a dependency runs during
+    installation. A secret mounted this way is exposed to code the author of the Dockerfile never
+    reviewed.
+  fix: |
+    Give the mount a mode that grants nothing to others, so only the account the step runs as can
+    read it.
+
+- key: QG-DK-SEC-0017
+  name: A build step should not disable the builder sandbox
+  languages: [dk]
+  category: SEC
+  severity: critical
+  effort: 15min
+  cwe: [250]
+  tags: [container, permissions]
+  summary: A build instruction is run with the sandbox switched off.
+  why: |
+    The command then holds the privileges of the machine that builds the image rather than those of a
+    container, and every dependency it fetches inherits them. A build agent usually holds credentials
+    for far more than the image being built.
+  fix: |
+    Remove the flag. Where a step genuinely needs one extra privilege, grant that privilege
+    specifically instead of removing the sandbox.
+
+- key: QG-DK-SEC-0018
+  name: An executable copied into an image should stay owned by root
+  languages: [dk]
+  category: SEC
+  severity: critical
+  effort: 10min
+  cwe: [732]
+  tags: [container, permissions]
+  summary: A program or a file in a system directory is copied under a non-root owner.
+  why: |
+    Anything running as that account can rewrite the file, so a process compromised once keeps its
+    foothold across every restart — the image looks unchanged and the replacement code runs with
+    whatever the container is allowed to do.
+  fix: |
+    Copy it as root and give the runtime user read and execute access only.

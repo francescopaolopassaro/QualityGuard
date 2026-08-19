@@ -3,7 +3,7 @@
 # detection is written by hand, against the shape the defect actually has, and measured before
 # the entry stops being planned.
 
-- key: QG-RS-SML-0011
+- key: QG-RS-SML-0030
   name: Wildcard imports should not be used
   languages: [rust]
   category: SML
@@ -19,7 +19,7 @@
   fix: |
     Make the intended behaviour explicit, and cover the case that used to fail with a test.
 
-- key: QG-RS-SML-0012
+- key: QG-RS-SML-0031
   name: Unnecessary mathematical comparisons should not be made
   languages: [rust]
   category: SML
@@ -35,7 +35,7 @@
   fix: |
     Make the intended behaviour explicit, and cover the case that used to fail with a test.
 
-- key: QG-RS-SML-0013
+- key: QG-RS-SML-0032
   name: Erasing mathematical operations should not be performed
   languages: [rust]
   category: SML
@@ -51,7 +51,7 @@
   fix: |
     Make the intended behaviour explicit, and cover the case that used to fail with a test.
 
-- key: QG-RS-SML-0014
+- key: QG-RS-SML-0033
   name: Boolean expressions should not be gratuitous
   languages: [rust]
   category: SML
@@ -67,7 +67,7 @@
   fix: |
     Remove it: the history keeps it if it is ever needed again.
 
-- key: QG-RS-SML-0015
+- key: QG-RS-SML-0034
   name: Array elements should be separated by commas
   languages: [rust]
   category: SML
@@ -83,7 +83,7 @@
   fix: |
     Make the intended behaviour explicit, and cover the case that used to fail with a test.
 
-- key: QG-RS-SML-0016
+- key: QG-RS-SML-0035
   name: Mathematical constants should not be hardcoded
   languages: [rust]
   category: SML
@@ -99,7 +99,7 @@
   fix: |
     Make the intended behaviour explicit, and cover the case that used to fail with a test.
 
-- key: QG-RS-SML-0017
+- key: QG-RS-SML-0036
   name: Inline vector literals should be preferred to chains of insertions
   languages: [rust]
   category: SML
@@ -115,7 +115,7 @@
   fix: |
     Use the current API, and keep the old one only behind a documented compatibility layer.
 
-- key: QG-RS-SML-0018
+- key: QG-RS-SML-0037
   name: Pointer arithmetic should not be performed on zero-sized types
   languages: [rust]
   category: SML
@@ -131,7 +131,7 @@
   fix: |
     Make the intended behaviour explicit, and cover the case that used to fail with a test.
 
-- key: QG-RS-SML-0019
+- key: QG-RS-SML-0038
   name: Invisible Unicode characters should not be used
   languages: [rust]
   category: SML
@@ -147,7 +147,7 @@
   fix: |
     Make the intended behaviour explicit, and cover the case that used to fail with a test.
 
-- key: QG-RS-SML-0020
+- key: QG-RS-SML-0039
   name: Cognitive Complexity of functions should not be too high
   languages: [rust]
   category: SML
@@ -163,7 +163,7 @@
   fix: |
     Split it along the responsibilities it has accumulated.
 
-- key: QG-RS-SML-0021
+- key: QG-RS-SML-0040
   name: "if ... else if" constructs should end with "else" clauses
   languages: [rust]
   category: SML
@@ -179,7 +179,7 @@
   fix: |
     Make the intended behaviour explicit, and cover the case that used to fail with a test.
 
-- key: QG-RS-SML-0022
+- key: QG-RS-SML-0041
   name: Field init shorthand should be used
   languages: [rust]
   category: SML
@@ -195,7 +195,7 @@
   fix: |
     Use the current API, and keep the old one only behind a documented compatibility layer.
 
-- key: QG-RS-SML-0023
+- key: QG-RS-SML-0042
   name: Redundant casts should be avoided
   languages: [rust]
   category: SML
@@ -211,7 +211,7 @@
   fix: |
     Remove it: the history keeps it if it is ever needed again.
 
-- key: QG-RS-SML-0024
+- key: QG-RS-SML-0043
   name: Standard outputs should not be used directly to log anything
   languages: [rust]
   category: SML
@@ -227,7 +227,7 @@
   fix: |
     Make the intended behaviour explicit, and cover the case that used to fail with a test.
 
-- key: QG-RS-SML-0025
+- key: QG-RS-SML-0044
   name: Closures should be replaced with function pointers
   languages: [rust]
   category: SML
@@ -243,7 +243,7 @@
   fix: |
     Use the current API, and keep the old one only behind a documented compatibility layer.
 
-- key: QG-RS-SML-0026
+- key: QG-RS-SML-0045
   name: Underscores should be used to make large numbers readable
   languages: [rust]
   category: SML
@@ -259,7 +259,7 @@
   fix: |
     Rename it to match the convention used around it.
 
-- key: QG-RS-SML-0027
+- key: QG-RS-SML-0046
   name: Shared code in all branches should be extracted
   languages: [rust]
   category: SML
@@ -275,7 +275,7 @@
   fix: |
     Make the flow say what it does, and remove what cannot happen.
 
-- key: QG-RS-SML-0028
+- key: QG-RS-SML-0047
   name: Match expression conditions should not have boolean type
   languages: [rust]
   category: SML
@@ -291,7 +291,7 @@
   fix: |
     Make the flow say what it does, and remove what cannot happen.
 
-- key: QG-RS-SML-0029
+- key: QG-RS-SML-0048
   name: Rust source files should not have syntax errors
   languages: [rust]
   category: SML
@@ -307,7 +307,7 @@
   fix: |
     Make the intended behaviour explicit, and cover the case that used to fail with a test.
 
-- key: QG-RS-BUG-0008
+- key: QG-RS-BUG-0064
   name: Null pointers should not be passed to functions expecting non-null arguments
   languages: [rust]
   category: BUG
@@ -323,7 +323,7 @@
   fix: |
     Handle the absent case where it arises, or make the type say the value is always there.
 
-- key: QG-RS-BUG-0009
+- key: QG-RS-BUG-0065
   name: Getters should access the expected fields
   languages: [rust]
   category: BUG
@@ -339,7 +339,7 @@
   fix: |
     Grant the access to the identities that need it and to nothing else.
 
-- key: QG-RS-BUG-0010
+- key: QG-RS-BUG-0066
   name: Accessing an array element should not trigger a panic
   languages: [rust]
   category: BUG
@@ -355,7 +355,7 @@
   fix: |
     Grant the access to the identities that need it and to nothing else.
 
-- key: QG-RS-BUG-0011
+- key: QG-RS-BUG-0067
   name: Await should be used for awaitable returns in async blocks and functions
   languages: [rust]
   category: BUG
@@ -371,7 +371,7 @@
   fix: |
     Guard the shared state, or give each caller its own copy.
 
-- key: QG-RS-BUG-0012
+- key: QG-RS-BUG-0068
   name: Manual PartialOrd implementation should be avoided when Ord is derived
   languages: [rust]
   category: BUG
@@ -387,7 +387,7 @@
   fix: |
     Make the intended behaviour explicit, and cover the case that used to fail with a test.
 
-- key: QG-RS-BUG-0013
+- key: QG-RS-BUG-0069
   name: Avoid manual PartialEq implementation with a derived Hash
   languages: [rust]
   category: BUG
@@ -403,7 +403,7 @@
   fix: |
     Use the current recommended algorithm and parameters, and let the platform choose what it can.
 
-- key: QG-RS-BUG-0014
+- key: QG-RS-BUG-0070
   name: C-like enums should not have unportable variants
   languages: [rust]
   category: BUG
@@ -419,7 +419,7 @@
   fix: |
     Make the intended behaviour explicit, and cover the case that used to fail with a test.
 
-- key: QG-RS-BUG-0015
+- key: QG-RS-BUG-0071
   name: Case mismatches in pattern arms of match expressions should be avoided
   languages: [rust]
   category: BUG
@@ -435,7 +435,7 @@
   fix: |
     Make the flow say what it does, and remove what cannot happen.
 
-- key: QG-RS-BUG-0016
+- key: QG-RS-BUG-0072
   name: Raw pointers should not be casted to slices with differently sized elements
   languages: [rust]
   category: BUG
@@ -451,7 +451,7 @@
   fix: |
     Make the intended behaviour explicit, and cover the case that used to fail with a test.
 
-- key: QG-RS-BUG-0017
+- key: QG-RS-BUG-0073
   name: Variables should be swapped using `std::mem::swap`
   languages: [rust]
   category: BUG
@@ -467,7 +467,7 @@
   fix: |
     Make the intended behaviour explicit, and cover the case that used to fail with a test.
 
-- key: QG-RS-BUG-0018
+- key: QG-RS-BUG-0074
   name: Incompatible bit masks should not be used in comparisons
   languages: [rust]
   category: BUG
@@ -483,7 +483,7 @@
   fix: |
     Make the intended behaviour explicit, and cover the case that used to fail with a test.
 
-- key: QG-RS-BUG-0019
+- key: QG-RS-BUG-0075
   name: Calls to `std::mem::transmute` should not be evaluated eagerly
   languages: [rust]
   category: BUG
@@ -499,7 +499,7 @@
   fix: |
     Make the intended behaviour explicit, and cover the case that used to fail with a test.
 
-- key: QG-RS-BUG-0020
+- key: QG-RS-BUG-0076
   name: The `#[inline]` attribute should not be used on trait methods without implementation
   languages: [rust]
   category: BUG
@@ -515,7 +515,7 @@
   fix: |
     Make the intended behaviour explicit, and cover the case that used to fail with a test.
 
-- key: QG-RS-BUG-0021
+- key: QG-RS-BUG-0077
   name: Calls to `step_by` that always panic should not be made
   languages: [rust]
   category: BUG
@@ -531,7 +531,7 @@
   fix: |
     Make the flow say what it does, and remove what cannot happen.
 
-- key: QG-RS-BUG-0022
+- key: QG-RS-BUG-0078
   name: Comparisons with overlapping ranges that are always false should not be made
   languages: [rust]
   category: BUG
@@ -547,7 +547,7 @@
   fix: |
     Make the flow say what it does, and remove what cannot happen.
 
-- key: QG-RS-BUG-0023
+- key: QG-RS-BUG-0079
   name: Conflicting `Borrow` and `Hash` implementations should be avoided
   languages: [rust]
   category: BUG
@@ -563,7 +563,7 @@
   fix: |
     Use the current recommended algorithm and parameters, and let the platform choose what it can.
 
-- key: QG-RS-BUG-0024
+- key: QG-RS-BUG-0080
   name: Variables should not be self-assigned
   languages: [rust]
   category: BUG
@@ -579,7 +579,7 @@
   fix: |
     Make the intended behaviour explicit, and cover the case that used to fail with a test.
 
-- key: QG-RS-BUG-0025
+- key: QG-RS-BUG-0081
   name: Loops with at most one iteration should be refactored
   languages: [rust]
   category: BUG
@@ -595,7 +595,7 @@
   fix: |
     Make the flow say what it does, and remove what cannot happen.
 
-- key: QG-RS-BUG-0026
+- key: QG-RS-BUG-0082
   name: Related "if/else if" statements should not have the same condition
   languages: [rust]
   category: BUG
@@ -611,7 +611,7 @@
   fix: |
     Make the flow say what it does, and remove what cannot happen.
 
-- key: QG-RS-BUG-0027
+- key: QG-RS-BUG-0083
   name: "while" loop counters should not have floating type
   languages: [rust]
   category: BUG
@@ -627,7 +627,7 @@
   fix: |
     Make the flow say what it does, and remove what cannot happen.
 
-- key: QG-RS-BUG-0028
+- key: QG-RS-BUG-0084
   name: Clamping values with `cmp::min` and `cmp::max` should use correct ranges
   languages: [rust]
   category: BUG
@@ -643,7 +643,7 @@
   fix: |
     Make the intended behaviour explicit, and cover the case that used to fail with a test.
 
-- key: QG-RS-BUG-0029
+- key: QG-RS-BUG-0085
   name: Avoid resizing a vector to zero using `vec.resize(0, value)`
   languages: [rust]
   category: BUG
@@ -659,7 +659,7 @@
   fix: |
     Make the intended behaviour explicit, and cover the case that used to fail with a test.
 
-- key: QG-RS-BUG-0030
+- key: QG-RS-BUG-0086
   name: Avoid transmutes that can never be correct
   languages: [rust]
   category: BUG
@@ -675,7 +675,7 @@
   fix: |
     Make the intended behaviour explicit, and cover the case that used to fail with a test.
 
-- key: QG-RS-BUG-0031
+- key: QG-RS-BUG-0087
   name: Immutable variables should not be used in while loop conditions
   languages: [rust]
   category: BUG
@@ -691,7 +691,7 @@
   fix: |
     Make the flow say what it does, and remove what cannot happen.
 
-- key: QG-RS-BUG-0032
+- key: QG-RS-BUG-0088
   name: Lint attributes should not be used on crate imports
   languages: [rust]
   category: BUG
@@ -707,7 +707,7 @@
   fix: |
     Make the intended behaviour explicit, and cover the case that used to fail with a test.
 
-- key: QG-RS-BUG-0033
+- key: QG-RS-BUG-0089
   name: I/O buffers should be processed entirely
   languages: [rust]
   category: BUG
@@ -723,7 +723,7 @@
   fix: |
     Make the intended behaviour explicit, and cover the case that used to fail with a test.
 
-- key: QG-RS-BUG-0034
+- key: QG-RS-BUG-0090
   name: Collections should not be transmuted to different types
   languages: [rust]
   category: BUG
@@ -739,7 +739,7 @@
   fix: |
     Make the intended behaviour explicit, and cover the case that used to fail with a test.
 
-- key: QG-RS-BUG-0035
+- key: QG-RS-BUG-0091
   name: Unit values should not be hashed
   languages: [rust]
   category: BUG
@@ -755,7 +755,7 @@
   fix: |
     Use the current recommended algorithm and parameters, and let the platform choose what it can.
 
-- key: QG-RS-BUG-0036
+- key: QG-RS-BUG-0092
   name: Unit values should not be compared
   languages: [rust]
   category: BUG
@@ -771,7 +771,7 @@
   fix: |
     Make the intended behaviour explicit, and cover the case that used to fail with a test.
 
-- key: QG-RS-BUG-0037
+- key: QG-RS-BUG-0093
   name: `MaybeUninit::uninit().assume_init()` should not be used
   languages: [rust]
   category: BUG
@@ -787,7 +787,7 @@
   fix: |
     Make the intended behaviour explicit, and cover the case that used to fail with a test.
 
-- key: QG-RS-BUG-0038
+- key: QG-RS-BUG-0094
   name: Null pointers should not be transmuted
   languages: [rust]
   category: BUG
@@ -803,7 +803,7 @@
   fix: |
     Handle the absent case where it arises, or make the type say the value is always there.
 
-- key: QG-RS-BUG-0039
+- key: QG-RS-BUG-0095
   name: Null function pointers should not be created through `transmute`
   languages: [rust]
   category: BUG
@@ -819,7 +819,7 @@
   fix: |
     Handle the absent case where it arises, or make the type say the value is always there.
 
-- key: QG-RS-BUG-0040
+- key: QG-RS-BUG-0096
   name: `splitn` should not be used with a limit of 0 or 1
   languages: [rust]
   category: BUG
@@ -835,7 +835,7 @@
   fix: |
     Make the intended behaviour explicit, and cover the case that used to fail with a test.
 
-- key: QG-RS-BUG-0041
+- key: QG-RS-BUG-0097
   name: `size_of::<T>` should not be used to count elements of type `T`
   languages: [rust]
   category: BUG
@@ -851,7 +851,7 @@
   fix: |
     Make the intended behaviour explicit, and cover the case that used to fail with a test.
 
-- key: QG-RS-BUG-0042
+- key: QG-RS-BUG-0098
   name: Reversed ranges and slices should not be empty
   languages: [rust]
   category: BUG
@@ -867,7 +867,7 @@
   fix: |
     Remove it: the history keeps it if it is ever needed again.
 
-- key: QG-RS-BUG-0043
+- key: QG-RS-BUG-0099
   name: Redundant comparisons should be removed
   languages: [rust]
   category: BUG
@@ -883,7 +883,7 @@
   fix: |
     Remove it: the history keeps it if it is ever needed again.
 
-- key: QG-RS-BUG-0044
+- key: QG-RS-BUG-0100
   name: Formatting trait implementations should not be recursive
   languages: [rust]
   category: BUG
@@ -899,7 +899,7 @@
   fix: |
     Make the intended behaviour explicit, and cover the case that used to fail with a test.
 
-- key: QG-RS-BUG-0045
+- key: QG-RS-BUG-0101
   name: Lines read from the standard input should be trimmed
   languages: [rust]
   category: BUG
@@ -915,7 +915,7 @@
   fix: |
     Split it along the responsibilities it has accumulated.
 
-- key: QG-RS-BUG-0046
+- key: QG-RS-BUG-0102
   name: `unwrap()` should only be used when there is a value to unwrap
   languages: [rust]
   category: BUG
@@ -931,7 +931,7 @@
   fix: |
     Make the intended behaviour explicit, and cover the case that used to fail with a test.
 
-- key: QG-RS-BUG-0047
+- key: QG-RS-BUG-0103
   name: `checked_add` and `overflowing_add` should be used to prevent overflows
   languages: [rust]
   category: BUG
@@ -947,7 +947,7 @@
   fix: |
     Use the current API, and keep the old one only behind a documented compatibility layer.
 
-- key: QG-RS-BUG-0048
+- key: QG-RS-BUG-0104
   name: `env!` should be preferred over `option_env!`
   languages: [rust]
   category: BUG
@@ -963,7 +963,7 @@
   fix: |
     Use the current API, and keep the old one only behind a documented compatibility layer.
 
-- key: QG-RS-BUG-0049
+- key: QG-RS-BUG-0105
   name: Functions expecting raw pointer arguments should be marked as unsafe
   languages: [rust]
   category: BUG
@@ -979,7 +979,7 @@
   fix: |
     Make the intended behaviour explicit, and cover the case that used to fail with a test.
 
-- key: QG-RS-BUG-0050
+- key: QG-RS-BUG-0106
   name: File open options should be consistent
   languages: [rust]
   category: BUG
@@ -995,7 +995,7 @@
   fix: |
     Make the intended behaviour explicit, and cover the case that used to fail with a test.
 
-- key: QG-RS-BUG-0051
+- key: QG-RS-BUG-0107
   name: Unix file permissions should be set with octal values
   languages: [rust]
   category: BUG
@@ -1011,7 +1011,7 @@
   fix: |
     Grant the access to the identities that need it and to nothing else.
 
-- key: QG-RS-BUG-0052
+- key: QG-RS-BUG-0108
   name: Synchronization locks should not be dropped immediately after acquisition
   languages: [rust]
   category: BUG
@@ -1027,7 +1027,7 @@
   fix: |
     Guard the shared state, or give each caller its own copy.
 
-- key: QG-RS-BUG-0053
+- key: QG-RS-BUG-0109
   name: Remainder operations with `1` or `-1` should be avoided
   languages: [rust]
   category: BUG
@@ -1043,7 +1043,7 @@
   fix: |
     Make the intended behaviour explicit, and cover the case that used to fail with a test.
 
-- key: QG-RS-BUG-0054
+- key: QG-RS-BUG-0110
   name: Functions should not return mutable references from immutable parameters
   languages: [rust]
   category: BUG
@@ -1059,7 +1059,7 @@
   fix: |
     Split it along the responsibilities it has accumulated.
 
-- key: QG-RS-BUG-0055
+- key: QG-RS-BUG-0111
   name: The return value of `next` should not be looped over
   languages: [rust]
   category: BUG
@@ -1075,7 +1075,7 @@
   fix: |
     Make the flow say what it does, and remove what cannot happen.
 
-- key: QG-RS-BUG-0056
+- key: QG-RS-BUG-0112
   name: `skip(0)` should not be used on iterators
   languages: [rust]
   category: BUG
@@ -1091,7 +1091,7 @@
   fix: |
     Make the intended behaviour explicit, and cover the case that used to fail with a test.
 
-- key: QG-RS-BUG-0057
+- key: QG-RS-BUG-0113
   name: Inherent shadowing definitions of to_string should be avoided
   languages: [rust]
   category: BUG
@@ -1107,7 +1107,7 @@
   fix: |
     Make the intended behaviour explicit, and cover the case that used to fail with a test.
 
-- key: QG-RS-BUG-0058
+- key: QG-RS-BUG-0114
   name: `set_len` should not be called on uninitialized vectors
   languages: [rust]
   category: BUG
@@ -1123,7 +1123,7 @@
   fix: |
     Make the intended behaviour explicit, and cover the case that used to fail with a test.
 
-- key: QG-RS-BUG-0059
+- key: QG-RS-BUG-0115
   name: Serde `visit_str` method should be implemented when `visit_string` is implemented
   languages: [rust]
   category: BUG
@@ -1139,7 +1139,7 @@
   fix: |
     Make the intended behaviour explicit, and cover the case that used to fail with a test.
 
-- key: QG-RS-BUG-0060
+- key: QG-RS-BUG-0116
   name: `mem::uninitialized` and `mem::zeroed()` should not be used to replace values
   languages: [rust]
   category: BUG
@@ -1155,7 +1155,7 @@
   fix: |
     Use the current API, and keep the old one only behind a documented compatibility layer.
 
-- key: QG-RS-BUG-0061
+- key: QG-RS-BUG-0117
   name: `saturating_sub` should be used to avoid subtraction underflow
   languages: [rust]
   category: BUG
@@ -1171,7 +1171,7 @@
   fix: |
     Use the current API, and keep the old one only behind a documented compatibility layer.
 
-- key: QG-RS-BUG-0062
+- key: QG-RS-BUG-0118
   name: Infinite iterators should be finished off with a terminating operation
   languages: [rust]
   category: BUG
@@ -1187,7 +1187,7 @@
   fix: |
     Make the intended behaviour explicit, and cover the case that used to fail with a test.
 
-- key: QG-RS-BUG-0063
+- key: QG-RS-BUG-0119
   name: Non-empty statements should change control flow or have at least one side-effect
   languages: [rust]
   category: BUG

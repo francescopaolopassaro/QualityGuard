@@ -3,7 +3,7 @@
 # detection is written by hand, against the shape the defect actually has, and measured before
 # the entry stops being planned.
 
-- key: QG-KT-SEC-0072
+- key: QG-KT-SEC-0084
   name: Android broadcast receivers should not be registered without a permission
   languages: [kt]
   category: SEC
@@ -19,7 +19,7 @@
   fix: |
     Grant the access to the identities that need it and to nothing else.
 
-- key: QG-KT-SEC-0073
+- key: QG-KT-SEC-0085
   name: Counter Mode initialization vectors should not be reused
   languages: [kt]
   category: SEC
@@ -35,7 +35,7 @@
   fix: |
     Make the intended behaviour explicit, and cover the case that used to fail with a test.
 
-- key: QG-KT-SEC-0074
+- key: QG-KT-SEC-0086
   name: Intents should not be broadcast without receiver permissions
   languages: [kt]
   category: SEC
@@ -51,7 +51,7 @@
   fix: |
     Grant the access to the identities that need it and to nothing else.
 
-- key: QG-KT-SEC-0075
+- key: QG-KT-SEC-0087
   name: Android KeyStore keys should require user authentication
   languages: [kt]
   category: SEC
@@ -67,7 +67,7 @@
   fix: |
     Grant the access to the identities that need it and to nothing else.
 
-- key: QG-KT-SEC-0076
+- key: QG-KT-SEC-0088
   name: Biometric authentication should be cryptographically bound
   languages: [kt]
   category: SEC
@@ -83,7 +83,7 @@
   fix: |
     Use the current recommended algorithm and parameters, and let the platform choose what it can.
 
-- key: QG-KT-SEC-0077
+- key: QG-KT-SEC-0089
   name: Mobile database encryption keys should not be disclosed
   languages: [kt]
   category: SEC
@@ -99,7 +99,7 @@
   fix: |
     Use the current recommended algorithm and parameters, and let the platform choose what it can.
 
-- key: QG-KT-SEC-0078
+- key: QG-KT-SEC-0090
   name: WebViews should not allow unrestricted file access
   languages: [kt]
   category: SEC
@@ -115,7 +115,7 @@
   fix: |
     Grant the access to the identities that need it and to nothing else.
 
-- key: QG-KT-SEC-0079
+- key: QG-KT-SEC-0091
   name: Remote artifacts should be verified for authenticity and integrity
   languages: [kt]
   category: SEC
@@ -131,7 +131,7 @@
   fix: |
     Grant the access to the identities that need it and to nothing else.
 
-- key: QG-KT-SEC-0080
+- key: QG-KT-SEC-0092
   name: Obfuscation should be enabled for release builds
   languages: [kt]
   category: SEC
@@ -147,7 +147,7 @@
   fix: |
     Release it on every path, including the exceptional one.
 
-- key: QG-KT-SEC-0081
+- key: QG-KT-SEC-0093
   name: Native methods should not be exposed to untrusted WebView content
   languages: [kt]
   category: SEC
@@ -163,7 +163,7 @@
   fix: |
     Make the intended behaviour explicit, and cover the case that used to fail with a test.
 
-- key: QG-KT-SEC-0082
+- key: QG-KT-SEC-0094
   name: Android production release targets should not be debuggable
   languages: [kt]
   category: SEC
@@ -179,7 +179,7 @@
   fix: |
     Release it on every path, including the exceptional one.
 
-- key: QG-KT-SEC-0083
+- key: QG-KT-SEC-0095
   name: JavaScript support should not be enabled in WebViews unless strictly necessary
   languages: [kt]
   category: SEC
@@ -195,7 +195,7 @@
   fix: |
     Make the intended behaviour explicit, and cover the case that used to fail with a test.
 
-- key: QG-KT-BUG-0082
+- key: QG-KT-BUG-0092
   name: "PreparedStatement" and "ResultSet" methods should be called with valid indices
   languages: [kt]
   category: BUG
@@ -211,7 +211,7 @@
   fix: |
     Keep the instruction fixed and pass the values separately, so no input can change its shape.
 
-- key: QG-KT-BUG-0083
+- key: QG-KT-BUG-0093
   name: Inappropriate collection calls should not be made
   languages: [kt]
   category: BUG
@@ -227,7 +227,7 @@
   fix: |
     Make the intended behaviour explicit, and cover the case that used to fail with a test.
 
-- key: QG-KT-BUG-0084
+- key: QG-KT-BUG-0094
   name: Intermediate Sequence and Stream functions should not be left unused
   languages: [kt]
   category: BUG
@@ -243,7 +243,7 @@
   fix: |
     Release it on every path, including the exceptional one.
 
-- key: QG-KT-BUG-0085
+- key: QG-KT-BUG-0095
   name: Repeated patterns in regular expressions should not match the empty string
   languages: [kt]
   category: BUG
@@ -259,7 +259,7 @@
   fix: |
     Remove it: the history keeps it if it is ever needed again.
 
-- key: QG-KT-BUG-0086
+- key: QG-KT-BUG-0096
   name: Alternatives in regular expressions should be grouped when used with anchors
   languages: [kt]
   category: BUG
@@ -275,7 +275,7 @@
   fix: |
     Make the intended behaviour explicit, and cover the case that used to fail with a test.
 
-- key: QG-KT-BUG-0087
+- key: QG-KT-BUG-0097
   name: Unicode Grapheme Clusters should be avoided inside regex character classes
   languages: [kt]
   category: BUG
@@ -291,7 +291,7 @@
   fix: |
     Make the intended behaviour explicit, and cover the case that used to fail with a test.
 
-- key: QG-KT-BUG-0088
+- key: QG-KT-BUG-0098
   name: Equals method should be overridden in data classes containing array fields
   languages: [kt]
   category: BUG
@@ -307,7 +307,7 @@
   fix: |
     Make the intended behaviour explicit, and cover the case that used to fail with a test.
 
-- key: QG-KT-BUG-0089
+- key: QG-KT-BUG-0099
   name: Flow intermediate operation results should not be left unused
   languages: [kt]
   category: BUG
@@ -323,7 +323,7 @@
   fix: |
     Remove it: the history keeps it if it is ever needed again.
 
-- key: QG-KT-BUG-0090
+- key: QG-KT-BUG-0100
   name: "Map" values should be accessed safely
   languages: [kt]
   category: BUG
@@ -339,7 +339,7 @@
   fix: |
     Grant the access to the identities that need it and to nothing else.
 
-- key: QG-KT-BUG-0091
+- key: QG-KT-BUG-0101
   name: Return values should not be ignored when they contain the operation status code
   languages: [kt]
   category: BUG
@@ -355,7 +355,7 @@
   fix: |
     Make the intended behaviour explicit, and cover the case that used to fail with a test.
 
-- key: QG-KT-SML-0184
+- key: QG-KT-SML-0231
   name: Empty lines should not be tested with regex MULTILINE flag
   languages: [kt]
   category: SML
@@ -371,7 +371,7 @@
   fix: |
     Remove it: the history keeps it if it is ever needed again.
 
-- key: QG-KT-SML-0185
+- key: QG-KT-SML-0232
   name: Regular expressions should not be too complicated
   languages: [kt]
   category: SML
@@ -387,7 +387,7 @@
   fix: |
     Make the intended behaviour explicit, and cover the case that used to fail with a test.
 
-- key: QG-KT-SML-0186
+- key: QG-KT-SML-0233
   name: Redundant methods should be avoided in data classes
   languages: [kt]
   category: SML
@@ -403,7 +403,7 @@
   fix: |
     Remove it: the history keeps it if it is ever needed again.
 
-- key: QG-KT-SML-0187
+- key: QG-KT-SML-0234
   name: "MutableStateFlow" and "MutableSharedFlow" should not be exposed
   languages: [kt]
   category: SML
@@ -419,7 +419,7 @@
   fix: |
     Make the intended behaviour explicit, and cover the case that used to fail with a test.
 
-- key: QG-KT-SML-0188
+- key: QG-KT-SML-0235
   name: Suspending functions should be main-safe
   languages: [kt]
   category: SML
@@ -435,7 +435,7 @@
   fix: |
     Make the intended behaviour explicit, and cover the case that used to fail with a test.
 
-- key: QG-KT-SML-0189
+- key: QG-KT-SML-0236
   name: Functions returning Flow/Channel should not be suspending
   languages: [kt]
   category: SML
@@ -451,7 +451,7 @@
   fix: |
     Make the intended behaviour explicit, and cover the case that used to fail with a test.
 
-- key: QG-KT-SML-0190
+- key: QG-KT-SML-0237
   name: Dispatchers should be injectable
   languages: [kt]
   category: SML
@@ -467,7 +467,7 @@
   fix: |
     Make the intended behaviour explicit, and cover the case that used to fail with a test.
 
-- key: QG-KT-SML-0191
+- key: QG-KT-SML-0238
   name: Suspending functions should not be called on a different dispatcher
   languages: [kt]
   category: SML
@@ -483,7 +483,7 @@
   fix: |
     Make the intended behaviour explicit, and cover the case that used to fail with a test.
 
-- key: QG-KT-SML-0192
+- key: QG-KT-SML-0239
   name: Extension functions on CoroutineScopes should not be declared as "suspend"
   languages: [kt]
   category: SML
@@ -499,7 +499,7 @@
   fix: |
     Make the intended behaviour explicit, and cover the case that used to fail with a test.
 
-- key: QG-KT-SML-0193
+- key: QG-KT-SML-0240
   name: ViewModel classes should create coroutines
   languages: [kt]
   category: SML
@@ -515,7 +515,7 @@
   fix: |
     Make the intended behaviour explicit, and cover the case that used to fail with a test.
 
-- key: QG-KT-SML-0194
+- key: QG-KT-SML-0241
   name: Kotlin coroutines API for timeouts should be used
   languages: [kt]
   category: SML
@@ -531,7 +531,7 @@
   fix: |
     Use the current API, and keep the old one only behind a documented compatibility layer.
 
-- key: QG-KT-SML-0195
+- key: QG-KT-SML-0242
   name: "return" statements should be lifted before "if" or "when" statement
   languages: [kt]
   category: SML
@@ -547,7 +547,7 @@
   fix: |
     Make the intended behaviour explicit, and cover the case that used to fail with a test.
 
-- key: QG-KT-SML-0196
+- key: QG-KT-SML-0243
   name: "when" statements should be used instead of chained "if" statements
   languages: [kt]
   category: SML
@@ -563,7 +563,7 @@
   fix: |
     Use the current API, and keep the old one only behind a documented compatibility layer.
 
-- key: QG-KT-SML-0197
+- key: QG-KT-SML-0244
   name: Getter and setter pattern should use property getters and setters
   languages: [kt]
   category: SML
@@ -579,7 +579,7 @@
   fix: |
     Make the intended behaviour explicit, and cover the case that used to fail with a test.
 
-- key: QG-KT-SML-0198
+- key: QG-KT-SML-0245
   name: Delegator pattern should use "by" clause
   languages: [kt]
   category: SML
@@ -595,7 +595,7 @@
   fix: |
     Make the intended behaviour explicit, and cover the case that used to fail with a test.
 
-- key: QG-KT-SML-0199
+- key: QG-KT-SML-0246
   name: Singleton pattern should use object declarations or expressions
   languages: [kt]
   category: SML
@@ -611,7 +611,7 @@
   fix: |
     Make the intended behaviour explicit, and cover the case that used to fail with a test.
 
-- key: QG-KT-SML-0200
+- key: QG-KT-SML-0247
   name: Functional interface implementations should use lambda expressions
   languages: [kt]
   category: SML
@@ -627,7 +627,7 @@
   fix: |
     Make the intended behaviour explicit, and cover the case that used to fail with a test.
 
-- key: QG-KT-SML-0201
+- key: QG-KT-SML-0248
   name: Single function interfaces should be functional interfaces
   languages: [kt]
   category: SML
@@ -643,7 +643,7 @@
   fix: |
     Make the intended behaviour explicit, and cover the case that used to fail with a test.
 
-- key: QG-KT-SML-0202
+- key: QG-KT-SML-0249
   name: Structural equality tests should use "==" or "!="
   languages: [kt]
   category: SML
@@ -659,7 +659,7 @@
   fix: |
     Make the intended behaviour explicit, and cover the case that used to fail with a test.
 
-- key: QG-KT-SML-0203
+- key: QG-KT-SML-0250
   name: Collection should be immutable if contents is not changed
   languages: [kt]
   category: SML
@@ -675,7 +675,7 @@
   fix: |
     Make the intended behaviour explicit, and cover the case that used to fail with a test.
 
-- key: QG-KT-SML-0204
+- key: QG-KT-SML-0251
   name: Abstract class should be interface
   languages: [kt]
   category: SML
@@ -691,7 +691,7 @@
   fix: |
     Make the intended behaviour explicit, and cover the case that used to fail with a test.
 
-- key: QG-KT-SML-0205
+- key: QG-KT-SML-0252
   name: Function chain using "filter" should be simplified
   languages: [kt]
   category: SML
@@ -707,7 +707,7 @@
   fix: |
     Make the intended behaviour explicit, and cover the case that used to fail with a test.
 
-- key: QG-KT-SML-0206
+- key: QG-KT-SML-0253
   name: "find" should be replaced with "any", "none" or "contains"
   languages: [kt]
   category: SML
@@ -723,7 +723,7 @@
   fix: |
     Handle the absent case where it arises, or make the type say the value is always there.
 
-- key: QG-KT-SML-0207
+- key: QG-KT-SML-0254
   name: Expression should be simplified with "isEmpty", "isNotEmpty" or "isNullOrEmpty"
   languages: [kt]
   category: SML
@@ -739,7 +739,7 @@
   fix: |
     Handle the absent case where it arises, or make the type say the value is always there.
 
-- key: QG-KT-SML-0208
+- key: QG-KT-SML-0255
   name: Check for preconditions should be simplified
   languages: [kt]
   category: SML
@@ -755,7 +755,7 @@
   fix: |
     Make the flow say what it does, and remove what cannot happen.
 
-- key: QG-KT-SML-0209
+- key: QG-KT-SML-0256
   name: "It" shouldn't be used as a lambda parameter name
   languages: [kt]
   category: SML
@@ -771,7 +771,7 @@
   fix: |
     Rename it to match the convention used around it.
 
-- key: QG-KT-SML-0210
+- key: QG-KT-SML-0257
   name: Variables assigned values should be read
   languages: [kt]
   category: SML
@@ -787,7 +787,7 @@
   fix: |
     Make the intended behaviour explicit, and cover the case that used to fail with a test.
 
-- key: QG-KT-SML-0211
+- key: QG-KT-SML-0258
   name: Null checks should be useful
   languages: [kt]
   category: SML
@@ -803,7 +803,7 @@
   fix: |
     Handle the absent case where it arises, or make the type say the value is always there.
 
-- key: QG-KT-SML-0212
+- key: QG-KT-SML-0259
   name: Dependency versions shouldn't be hard-coded
   languages: [kt]
   category: SML
@@ -819,7 +819,7 @@
   fix: |
     Make the intended behaviour explicit, and cover the case that used to fail with a test.
 
-- key: QG-KT-SML-0213
+- key: QG-KT-SML-0260
   name: "rootProject.name" should always be present in Gradle settings
   languages: [kt]
   category: SML
@@ -835,7 +835,7 @@
   fix: |
     Make the flow say what it does, and remove what cannot happen.
 
-- key: QG-KT-SML-0214
+- key: QG-KT-SML-0261
   name: Tasks should define "description" and "group"
   languages: [kt]
   category: SML
@@ -851,7 +851,7 @@
   fix: |
     Make the intended behaviour explicit, and cover the case that used to fail with a test.
 
-- key: QG-KT-SML-0215
+- key: QG-KT-SML-0262
   name: Dependencies should be grouped by destination
   languages: [kt]
   category: SML
@@ -867,7 +867,7 @@
   fix: |
     Make the intended behaviour explicit, and cover the case that used to fail with a test.
 
-- key: QG-KT-SML-0216
+- key: QG-KT-SML-0263
   name: Core plugins IDs should be replaced by their shortcuts
   languages: [kt]
   category: SML
@@ -883,7 +883,7 @@
   fix: |
     Use the current API, and keep the old one only behind a documented compatibility layer.
 
-- key: QG-KT-SML-0217
+- key: QG-KT-SML-0264
   name: "if ... else if" constructs should end with "else" clauses
   languages: [kt]
   category: SML
@@ -899,7 +899,7 @@
   fix: |
     Make the intended behaviour explicit, and cover the case that used to fail with a test.
 
-- key: QG-KT-SML-0218
+- key: QG-KT-SML-0265
   name: "when" statements should not be nested
   languages: [kt]
   category: SML
@@ -915,7 +915,7 @@
   fix: |
     Split it along the responsibilities it has accumulated.
 
-- key: QG-KT-SML-0219
+- key: QG-KT-SML-0266
   name: Code annotated as deprecated should not be used
   languages: [kt]
   category: SML
@@ -931,7 +931,7 @@
   fix: |
     Use the current API, and keep the old one only behind a documented compatibility layer.
 
-- key: QG-KT-SML-0220
+- key: QG-KT-SML-0267
   name: Native features should be preferred to Guava
   languages: [kt]
   category: SML
@@ -947,7 +947,7 @@
   fix: |
     Use the current API, and keep the old one only behind a documented compatibility layer.
 
-- key: QG-KT-SML-0221
+- key: QG-KT-SML-0268
   name: Gradle settings file should always be present
   languages: [kt]
   category: SML
@@ -963,7 +963,7 @@
   fix: |
     Make the flow say what it does, and remove what cannot happen.
 
-- key: QG-KT-SML-0222
+- key: QG-KT-SML-0269
   name: "when" clauses should not have too many lines of code
   languages: [kt]
   category: SML
@@ -979,7 +979,7 @@
   fix: |
     Split it along the responsibilities it has accumulated.
 
-- key: QG-KT-SML-0223
+- key: QG-KT-SML-0270
   name: Unicode-aware versions of character classes should be preferred
   languages: [kt]
   category: SML
@@ -995,7 +995,7 @@
   fix: |
     Use the current API, and keep the old one only behind a documented compatibility layer.
 
-- key: QG-KT-SML-0224
+- key: QG-KT-SML-0271
   name: Track lack of copyright and license headers
   languages: [kt]
   category: SML
@@ -1011,7 +1011,7 @@
   fix: |
     Rename it to match the convention used around it.
 
-- key: QG-KT-SML-0225
+- key: QG-KT-SML-0272
   name: Control flow statements "if", "for", "while", "when" and "try" should not be nested too deeply
   languages: [kt]
   category: SML
@@ -1027,7 +1027,7 @@
   fix: |
     Split it along the responsibilities it has accumulated.
 
-- key: QG-KT-SML-0226
+- key: QG-KT-SML-0273
   name: Lines should not be too long
   languages: [kt]
   category: SML
@@ -1043,7 +1043,7 @@
   fix: |
     Rename it to match the convention used around it.
 
-- key: QG-KT-SML-0227
+- key: QG-KT-SML-0274
   name: Files should not have too many lines of code
   languages: [kt]
   category: SML
@@ -1059,7 +1059,7 @@
   fix: |
     Split it along the responsibilities it has accumulated.
 
-- key: QG-KT-SML-0228
+- key: QG-KT-SML-0275
   name: Tabulation characters should not be used
   languages: [kt]
   category: SML
@@ -1075,7 +1075,7 @@
   fix: |
     Rename it to match the convention used around it.
 
-- key: QG-KT-SML-0229
+- key: QG-KT-SML-0276
   name: Statements should be on separate lines
   languages: [kt]
   category: SML
@@ -1091,7 +1091,7 @@
   fix: |
     Rename it to match the convention used around it.
 
-- key: QG-KT-SML-0230
+- key: QG-KT-SML-0277
   name: Lambdas should not have too many lines
   languages: [kt]
   category: SML

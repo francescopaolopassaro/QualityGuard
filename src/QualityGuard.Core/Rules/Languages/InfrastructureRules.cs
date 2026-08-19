@@ -23,7 +23,6 @@ public static class InfrastructureRuleSet
         new TerraformOverPermissivePolicyRule(),
         new KubernetesPrivilegedContainerRule(),
         new KubernetesPrivilegeEscalationRule(),
-        new KubernetesHostNamespaceRule(),
         new KubernetesRunAsRootRule(),
         new KubernetesMissingResourceLimitsRule(),
         new KubernetesWritableRootFilesystemRule(),
@@ -64,6 +63,44 @@ public abstract class ConfigRuleBase : RuleBase
 
     protected static bool IsKubernetes(IRuleContext context)
         => context.Config.Descendants().Any(n => n.Key is "apiVersion" or "kind");
+
+    /// <summary>
+    /// The values of a list attribute. A list is written on one line, or one item per line, and the
+    /// two shapes reach the tree differently — so a rule that reads only one of them is silently
+    /// blind on half the files it is given.
+    /// </summary>
+    protected static IEnumerable<(string Text, int Line)> Items(ConfigNode? list)
+    {
+        if (list == null)
+            yield break;
+
+        var inline = list.Value.Trim();
+        if (inline.StartsWith('['))
+        {
+            foreach (var part in inline.Trim('[', ']').Split(','))
+            {
+                var text = Clean(part);
+                if (text.Length > 0)
+                    yield return (text, list.Line);
+            }
+            yield break;
+        }
+
+        foreach (var child in list.Children)
+        {
+            // an indented list gives each item a node of its own and hangs the value under it; a
+            // brace list writes the value on the item's own line
+            var carrier = child.IsListItem && child.Key.Length == 0 && child.Value.Length == 0
+                          && child.Children is [{ Value.Length: 0, Children.Count: 0 }]
+                ? child.Children[0]
+                : child;
+            var text = Clean(carrier.Value.Length > 0 ? carrier.Value : carrier.Key);
+            if (text.Length > 0)
+                yield return (text, carrier.Line);
+        }
+    }
+
+    private static string Clean(string text) => text.Trim().Trim(',').Trim('"').Trim();
 }
 
 // --------------------------------------------------------------------------- Terraform
@@ -377,9 +414,15 @@ public sealed class KubernetesMissingResourceLimitsRule : ConfigRuleBase
             if (limits != null && limits.Children.Count > 0)
                 continue;
 
-            context.Report("This container has no memory or cpu limit, so one runaway process takes the "
-                           + "whole node down with it and the scheduler cannot place the pod sensibly. "
-                           + "Declare resources.limits, even generously.", container.Line);
+            var nothingDeclared = container.Child("resources") == null;
+            context.Report(nothingDeclared
+                    ? "This container declares no resources at all, so the scheduler places it as if "
+                      + "it needed none and the runtime lets it take whatever it asks for: one "
+                      + "runaway process takes the node down with every pod on it. Declare "
+                      + "resources.requests and resources.limits, even generously."
+                    : "This container has no memory or cpu limit, so one runaway process takes the "
+                      + "whole node down with it and the scheduler cannot place the pod sensibly. "
+                      + "Declare resources.limits, even generously.", container.Line);
         }
     }
 }

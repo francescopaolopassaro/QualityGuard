@@ -80,3 +80,76 @@
   fix: |
     Use the API the cluster offers for the task instead. Where a build genuinely needs a runtime, give
     it one inside the pod rather than the node's.
+
+# Cluster security rules implemented in Rules/Languages/ClusterSecurityRules.cs. They read the pod
+# specification and the role definitions as a tree, so a setting is judged inside the object that
+# owns it and a manifest of another kind stays silent.
+
+- key: QG-K8-SEC-0011
+  name: A container should not be granted extra kernel capabilities
+  languages: [k8]
+  category: SEC
+  severity: critical
+  effort: 15min
+  cwe: [250]
+  tags: [container, permissions]
+  summary: A container adds Linux capabilities to the set the runtime gives it.
+  why: |
+    Each capability lifts one of the restrictions that separate a container from the node it runs on:
+    binding low ports, changing ownership, loading modules, reading another process. Whatever the
+    container is later made to execute inherits them, and nothing at runtime asks whether it needed
+    them.
+  fix: |
+    Drop the capability and give the workload the narrower mechanism that solves the actual problem —
+    a port above the reserved range, a volume with the right ownership, a sidecar with its own rights.
+
+- key: QG-K8-SEC-0015
+  name: A container should not share the namespaces of its host
+  languages: [k8]
+  category: SEC
+  severity: critical
+  effort: 15min
+  cwe: [653]
+  tags: [container, isolation]
+  summary: A pod is placed in the process, network or inter-process namespace of its node.
+  why: |
+    The pod then sees and can reach what every other workload on that node is doing — their
+    processes, their local sockets, their shared memory. The isolation the whole cluster is built on
+    stops at this one line, and it stops for every container in the pod.
+  fix: |
+    Remove the setting and expose what the pod actually needs: a service for the network, a volume
+    for the data, a dedicated agent for what has to run on the node.
+
+- key: QG-K8-SEC-0016
+  name: A workload should not expose a remote administration port
+  languages: [k8]
+  category: SEC
+  severity: major
+  effort: 15min
+  cwe: [284]
+  tags: [container, network]
+  summary: A container or a service publishes a port used for remote shell or desktop access.
+  why: |
+    Reaching a container that way skips everything the application in front of it verifies, and the
+    credentials such a service accepts are usually the ones baked into the image — shared, unrotated
+    and identical in every replica.
+  fix: |
+    Remove the port and use the cluster's own mechanism to run a command inside a pod, which is
+    authenticated and recorded.
+
+- key: QG-K8-SEC-0020
+  name: A role should not allow running commands inside pods
+  languages: [k8]
+  category: SEC
+  severity: critical
+  effort: 30min
+  cwe: [284]
+  tags: [container, permissions]
+  summary: A role grants the permission to create an exec session on a pod.
+  why: |
+    That permission is a shell inside a running container. The holder reads the files, the mounted
+    secrets and the service account token of a workload it does not own, and acts with that
+    workload's identity — so the audit trail names the wrong party.
+  fix: |
+    Take the permission out of the roles that applications and pipelines use, and grant it separately,
+    to the people who need to debug, in the namespaces where they do it.

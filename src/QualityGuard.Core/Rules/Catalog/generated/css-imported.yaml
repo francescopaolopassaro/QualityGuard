@@ -3,7 +3,7 @@
 # detection is written by hand, against the shape the defect actually has, and measured before
 # the entry stops being planned.
 
-- key: QG-CSS-BUG-0072
+- key: QG-CSS-BUG-0095
   name: Color definitions should be valid
   languages: [css]
   category: BUG
@@ -19,23 +19,7 @@
   fix: |
     Make the intended behaviour explicit, and cover the case that used to fail with a test.
 
-- key: QG-CSS-BUG-0073
-  name: "calc" operands should be correctly spaced
-  languages: [css]
-  category: BUG
-  severity: blocker
-  effort: 1min
-  status: planned
-  generated: true
-  tags: []
-  summary: The code does not behave the way it reads.
-  why: |
-    Written this way it works by accident or fails on ordinary input, and the mistake survives
-    review because the intent reads correctly.
-  fix: |
-    Make the intended behaviour explicit, and cover the case that used to fail with a test.
-
-- key: QG-CSS-BUG-0074
+- key: QG-CSS-BUG-0096
   name: "linear-gradient" directions should be valid
   languages: [css]
   category: BUG
@@ -51,7 +35,7 @@
   fix: |
     Make the intended behaviour explicit, and cover the case that used to fail with a test.
 
-- key: QG-CSS-BUG-0075
+- key: QG-CSS-BUG-0097
   name: Units should be valid
   languages: [css]
   category: BUG
@@ -67,7 +51,7 @@
   fix: |
     Make the intended behaviour explicit, and cover the case that used to fail with a test.
 
-- key: QG-CSS-BUG-0076
+- key: QG-CSS-BUG-0098
   name: CSS properties should be valid
   languages: [css]
   category: BUG
@@ -83,7 +67,7 @@
   fix: |
     Make the intended behaviour explicit, and cover the case that used to fail with a test.
 
-- key: QG-CSS-BUG-0077
+- key: QG-CSS-BUG-0099
   name: Single line comment syntax should not be used
   languages: [css]
   category: BUG
@@ -99,7 +83,7 @@
   fix: |
     Make the intended behaviour explicit, and cover the case that used to fail with a test.
 
-- key: QG-CSS-BUG-0078
+- key: QG-CSS-BUG-0100
   name: Selectors should be known
   languages: [css]
   category: BUG
@@ -115,247 +99,7 @@
   fix: |
     Make the intended behaviour explicit, and cover the case that used to fail with a test.
 
-- key: QG-CSS-BUG-0079
-  name: Custom properties should be wrapped in "var()" when used as values
-  languages: [css]
-  category: BUG
-  severity: blocker
-  effort: 1min
-  status: planned
-  generated: true
-  tags: []
-  summary: The code does not behave the way it reads.
-  why: |
-    Written this way it works by accident or fails on ordinary input, and the mistake survives
-    review because the intent reads correctly.
-  fix: |
-    Make the intended behaviour explicit, and cover the case that used to fail with a test.
-
-- key: QG-CSS-BUG-0080
-  name: An+B selectors should be matchable
-  languages: [css]
-  category: BUG
-  severity: critical
-  effort: 5min
-  status: planned
-  generated: true
-  tags: []
-  summary: The code does not behave the way it reads.
-  why: |
-    Written this way it works by accident or fails on ordinary input, and the mistake survives
-    review because the intent reads correctly.
-  fix: |
-    Make the intended behaviour explicit, and cover the case that used to fail with a test.
-
-- key: QG-CSS-BUG-0081
-  name: At-rule descriptor values should be valid
-  languages: [css]
-  category: BUG
-  severity: blocker
-  effort: 5min
-  status: planned
-  generated: true
-  tags: []
-  summary: The code does not behave the way it reads.
-  why: |
-    Written this way it works by accident or fails on ordinary input, and the mistake survives
-    review because the intent reads correctly.
-  fix: |
-    Make the intended behaviour explicit, and cover the case that used to fail with a test.
-
-- key: QG-CSS-BUG-0082
-  name: Font declarations should contain at least one generic font family
-  languages: [css]
-  category: BUG
-  severity: major
-  effort: 1min
-  status: planned
-  generated: true
-  tags: []
-  summary: The code does not behave the way it reads.
-  why: |
-    Written this way it works by accident or fails on ordinary input, and the mistake survives
-    review because the intent reads correctly.
-  fix: |
-    Make the intended behaviour explicit, and cover the case that used to fail with a test.
-
-- key: QG-CSS-BUG-0083
-  name: Properties should not be duplicated
-  languages: [css]
-  category: BUG
-  severity: major
-  effort: 1min
-  status: planned
-  generated: true
-  tags: []
-  summary: The code does not behave the way it reads.
-  why: |
-    Written this way it works by accident or fails on ordinary input, and the mistake survives
-    review because the intent reads correctly.
-  fix: |
-    Make the intended behaviour explicit, and cover the case that used to fail with a test.
-
-- key: QG-CSS-BUG-0084
-  name: Pseudo-class selectors should be valid
-  languages: [css]
-  category: BUG
-  severity: major
-  effort: 1min
-  status: planned
-  generated: true
-  tags: []
-  summary: The code does not behave the way it reads.
-  why: |
-    Written this way it works by accident or fails on ordinary input, and the mistake survives
-    review because the intent reads correctly.
-  fix: |
-    Make the intended behaviour explicit, and cover the case that used to fail with a test.
-
-- key: QG-CSS-BUG-0085
-  name: Pseudo-element selectors should be valid
-  languages: [css]
-  category: BUG
-  severity: major
-  effort: 1min
-  status: planned
-  generated: true
-  tags: []
-  summary: The code does not behave the way it reads.
-  why: |
-    Written this way it works by accident or fails on ordinary input, and the mistake survives
-    review because the intent reads correctly.
-  fix: |
-    Make the intended behaviour explicit, and cover the case that used to fail with a test.
-
-- key: QG-CSS-BUG-0086
-  name: Media features should be valid
-  languages: [css]
-  category: BUG
-  severity: major
-  effort: 1min
-  status: planned
-  generated: true
-  tags: []
-  summary: The code does not behave the way it reads.
-  why: |
-    Written this way it works by accident or fails on ordinary input, and the mistake survives
-    review because the intent reads correctly.
-  fix: |
-    Make the intended behaviour explicit, and cover the case that used to fail with a test.
-
-- key: QG-CSS-BUG-0087
-  name: "at-rules" should be valid
-  languages: [css]
-  category: BUG
-  severity: major
-  effort: 1min
-  status: planned
-  generated: true
-  tags: []
-  summary: The code does not behave the way it reads.
-  why: |
-    Written this way it works by accident or fails on ordinary input, and the mistake survives
-    review because the intent reads correctly.
-  fix: |
-    Make the intended behaviour explicit, and cover the case that used to fail with a test.
-
-- key: QG-CSS-BUG-0088
-  name: CSS annotations should be known
-  languages: [css]
-  category: BUG
-  severity: major
-  effort: 5min
-  status: planned
-  generated: true
-  tags: []
-  summary: The code does not behave the way it reads.
-  why: |
-    Written this way it works by accident or fails on ordinary input, and the mistake survives
-    review because the intent reads correctly.
-  fix: |
-    Make the intended behaviour explicit, and cover the case that used to fail with a test.
-
-- key: QG-CSS-BUG-0089
-  name: CSS declarations should be placed in valid positions
-  languages: [css]
-  category: BUG
-  severity: major
-  effort: 1min
-  status: planned
-  generated: true
-  tags: []
-  summary: The code does not behave the way it reads.
-  why: |
-    Written this way it works by accident or fails on ordinary input, and the mistake survives
-    review because the intent reads correctly.
-  fix: |
-    Make the intended behaviour explicit, and cover the case that used to fail with a test.
-
-- key: QG-CSS-BUG-0090
-  name: Descriptors within "at-rules" should be valid
-  languages: [css]
-  category: BUG
-  severity: major
-  effort: 1min
-  status: planned
-  generated: true
-  tags: []
-  summary: The code does not behave the way it reads.
-  why: |
-    Written this way it works by accident or fails on ordinary input, and the mistake survives
-    review because the intent reads correctly.
-  fix: |
-    Make the intended behaviour explicit, and cover the case that used to fail with a test.
-
-- key: QG-CSS-BUG-0091
-  name: Keyframe selectors should not be duplicated
-  languages: [css]
-  category: BUG
-  severity: major
-  effort: 1min
-  status: planned
-  generated: true
-  tags: []
-  summary: The code does not behave the way it reads.
-  why: |
-    Written this way it works by accident or fails on ordinary input, and the mistake survives
-    review because the intent reads correctly.
-  fix: |
-    Make the intended behaviour explicit, and cover the case that used to fail with a test.
-
-- key: QG-CSS-BUG-0092
-  name: "at-rule" preludes should be valid
-  languages: [css]
-  category: BUG
-  severity: major
-  effort: 1min
-  status: planned
-  generated: true
-  tags: []
-  summary: The code does not behave the way it reads.
-  why: |
-    Written this way it works by accident or fails on ordinary input, and the mistake survives
-    review because the intent reads correctly.
-  fix: |
-    Make the intended behaviour explicit, and cover the case that used to fail with a test.
-
-- key: QG-CSS-BUG-0093
-  name: "@import" rules should precede all other statements
-  languages: [css]
-  category: BUG
-  severity: major
-  effort: 1min
-  status: planned
-  generated: true
-  tags: []
-  summary: The code does not behave the way it reads.
-  why: |
-    Written this way it works by accident or fails on ordinary input, and the mistake survives
-    review because the intent reads correctly.
-  fix: |
-    Make the intended behaviour explicit, and cover the case that used to fail with a test.
-
-- key: QG-CSS-BUG-0094
+- key: QG-CSS-BUG-0101
   name: Expressions within "calc" should be valid
   languages: [css]
   category: BUG
@@ -371,23 +115,119 @@
   fix: |
     Make the intended behaviour explicit, and cover the case that used to fail with a test.
 
-- key: QG-CSS-SML-0076
-  name: Deprecated CSS features should not be used
+- key: QG-CSS-BUG-0102
+  name: Font declarations should contain at least one generic font family
   languages: [css]
-  category: SML
-  severity: minor
-  effort: 15min
+  category: BUG
+  severity: major
+  effort: 1min
   status: planned
   generated: true
-  tags: [cwe, obsolete]
-  summary: An API is used where a better one exists.
+  tags: []
+  summary: The code does not behave the way it reads.
   why: |
-    The older form usually costs something the newer one does not, and it is on its way out: a
-    conversion, an allocation, a case it handles wrongly.
+    Written this way it works by accident or fails on ordinary input, and the mistake survives
+    review because the intent reads correctly.
   fix: |
-    Use the current API, and keep the old one only behind a documented compatibility layer.
+    Make the intended behaviour explicit, and cover the case that used to fail with a test.
 
-- key: QG-CSS-SML-0077
+- key: QG-CSS-BUG-0103
+  name: Properties should not be duplicated
+  languages: [css]
+  category: BUG
+  severity: major
+  effort: 1min
+  status: planned
+  generated: true
+  tags: []
+  summary: The code does not behave the way it reads.
+  why: |
+    Written this way it works by accident or fails on ordinary input, and the mistake survives
+    review because the intent reads correctly.
+  fix: |
+    Make the intended behaviour explicit, and cover the case that used to fail with a test.
+
+- key: QG-CSS-BUG-0104
+  name: Pseudo-class selectors should be valid
+  languages: [css]
+  category: BUG
+  severity: major
+  effort: 1min
+  status: planned
+  generated: true
+  tags: []
+  summary: The code does not behave the way it reads.
+  why: |
+    Written this way it works by accident or fails on ordinary input, and the mistake survives
+    review because the intent reads correctly.
+  fix: |
+    Make the intended behaviour explicit, and cover the case that used to fail with a test.
+
+- key: QG-CSS-BUG-0105
+  name: Pseudo-element selectors should be valid
+  languages: [css]
+  category: BUG
+  severity: major
+  effort: 1min
+  status: planned
+  generated: true
+  tags: []
+  summary: The code does not behave the way it reads.
+  why: |
+    Written this way it works by accident or fails on ordinary input, and the mistake survives
+    review because the intent reads correctly.
+  fix: |
+    Make the intended behaviour explicit, and cover the case that used to fail with a test.
+
+- key: QG-CSS-BUG-0106
+  name: Media features should be valid
+  languages: [css]
+  category: BUG
+  severity: major
+  effort: 1min
+  status: planned
+  generated: true
+  tags: []
+  summary: The code does not behave the way it reads.
+  why: |
+    Written this way it works by accident or fails on ordinary input, and the mistake survives
+    review because the intent reads correctly.
+  fix: |
+    Make the intended behaviour explicit, and cover the case that used to fail with a test.
+
+- key: QG-CSS-BUG-0107
+  name: "at-rules" should be valid
+  languages: [css]
+  category: BUG
+  severity: major
+  effort: 1min
+  status: planned
+  generated: true
+  tags: []
+  summary: The code does not behave the way it reads.
+  why: |
+    Written this way it works by accident or fails on ordinary input, and the mistake survives
+    review because the intent reads correctly.
+  fix: |
+    Make the intended behaviour explicit, and cover the case that used to fail with a test.
+
+- key: QG-CSS-BUG-0108
+  name: "calc" operands should be correctly spaced
+  languages: [css]
+  category: BUG
+  severity: blocker
+  effort: 1min
+  status: planned
+  generated: true
+  tags: []
+  summary: The code does not behave the way it reads.
+  why: |
+    Written this way it works by accident or fails on ordinary input, and the mistake survives
+    review because the intent reads correctly.
+  fix: |
+    Make the intended behaviour explicit, and cover the case that used to fail with a test.
+
+- key: QG-CSS-SML-0086
   name: Strings should not contain new lines
   languages: [css]
   category: SML
@@ -403,7 +243,7 @@
   fix: |
     Split it along the responsibilities it has accumulated.
 
-- key: QG-CSS-SML-0078
+- key: QG-CSS-SML-0087
   name: Selectors should not be duplicated
   languages: [css]
   category: SML
@@ -419,87 +259,7 @@
   fix: |
     Make the intended behaviour explicit, and cover the case that used to fail with a test.
 
-- key: QG-CSS-SML-0079
-  name: CSS files should not be empty
-  languages: [css]
-  category: SML
-  severity: major
-  effort: 1min
-  status: planned
-  generated: true
-  tags: []
-  summary: Code that no longer takes part in anything is still here.
-  why: |
-    It has to be read, understood and kept compiling by everyone who passes through, and it gives
-    nothing back. Worse, it suggests a purpose that no longer exists.
-  fix: |
-    Remove it: the history keeps it if it is ever needed again.
-
-- key: QG-CSS-SML-0080
-  name: CSS should not restrict page orientation using transform properties
-  languages: [css]
-  category: SML
-  severity: minor
-  effort: 30 min
-  status: planned
-  generated: true
-  tags: [accessibility, wcag, css, responsive-design]
-  summary: Something is reachable by callers who should not reach it.
-  why: |
-    Access granted this broadly is never noticed afterwards: nothing fails, and the surface stays
-    open for as long as the resource exists.
-  fix: |
-    Grant the access to the identities that need it and to nothing else.
-
-- key: QG-CSS-SML-0081
-  name: Text and background colors should have sufficient contrast
-  languages: [css]
-  category: SML
-  severity: major
-  effort: 5 min
-  status: planned
-  generated: true
-  tags: [accessibility, wcag, css, contrast]
-  summary: Something is reachable by callers who should not reach it.
-  why: |
-    Access granted this broadly is never noticed afterwards: nothing fails, and the surface stays
-    open for as long as the resource exists.
-  fix: |
-    Grant the access to the identities that need it and to nothing else.
-
-- key: QG-CSS-SML-0082
-  name: Text spacing properties should not use "!important" in style attributes
-  languages: [css]
-  category: SML
-  severity: minor
-  effort: 5 min
-  status: planned
-  generated: true
-  tags: [accessibility, wcag, css]
-  summary: Something is reachable by callers who should not reach it.
-  why: |
-    Access granted this broadly is never noticed afterwards: nothing fails, and the surface stays
-    open for as long as the resource exists.
-  fix: |
-    Grant the access to the identities that need it and to nothing else.
-
-- key: QG-CSS-SML-0083
-  name: "at-rules" should not be vendor-prefixed
-  languages: [css]
-  category: SML
-  severity: major
-  effort: 1min
-  status: planned
-  generated: true
-  tags: []
-  summary: The code does not behave the way it reads.
-  why: |
-    Written this way it works by accident or fails on ordinary input, and the mistake survives
-    review because the intent reads correctly.
-  fix: |
-    Make the intended behaviour explicit, and cover the case that used to fail with a test.
-
-- key: QG-CSS-SML-0084
+- key: QG-CSS-SML-0088
   name: Selectors of lower specificity should come before overriding selectors of higher specificity
   languages: [css]
   category: SML
@@ -515,18 +275,18 @@
   fix: |
     Make the intended behaviour explicit, and cover the case that used to fail with a test.
 
-- key: QG-CSS-SML-0085
-  name: CSS parser failure
+- key: QG-CSS-SML-0089
+  name: CSS files should not be empty
   languages: [css]
   category: SML
   severity: major
-  effort: 30min
+  effort: 1min
   status: planned
   generated: true
-  tags: [suspicious]
-  summary: The code does not behave the way it reads.
+  tags: []
+  summary: Code that no longer takes part in anything is still here.
   why: |
-    Written this way it works by accident or fails on ordinary input, and the mistake survives
-    review because the intent reads correctly.
+    It has to be read, understood and kept compiling by everyone who passes through, and it gives
+    nothing back. Worse, it suggests a purpose that no longer exists.
   fix: |
-    Make the intended behaviour explicit, and cover the case that used to fail with a test.
+    Remove it: the history keeps it if it is ever needed again.

@@ -8,8 +8,12 @@ a configurable Quality Gate and exits with `PASSED` or `FAILED` — no server, n
 dotnet run --project src/QualityGuard.Cli -- --path ./src --by-folder
 ```
 
-**3668 rules across 26 languages**, on a real syntax tree with a semantic model, a project index and
-interprocedural taint analysis. Rules ship in a **default profile** — the conventions and stylistic
+**3723 rules across 26 languages**, of which **618 are security rules**, on a real syntax tree with a
+semantic model, a project index and interprocedural taint analysis. The coverage goes past the
+languages themselves: AWS, Azure and Google Cloud infrastructure (Terraform, CloudFormation),
+Kubernetes manifests, Dockerfiles, Android manifests and Gradle build scripts, Java EE and ASP.NET
+descriptors, WordPress configuration, and the .NET application frameworks — Entity Framework, Dapper,
+ASP.NET Core, Blazor, MAUI, WPF, WinUI and Avalonia. Rules ship in a **default profile** — the conventions and stylistic
 checks stay off until `--all-rules` asks for them — because a report where every preference is an
 issue buries the defects that matter.
 
@@ -146,7 +150,7 @@ Severity and issue kind follow the category: `SEC` → vulnerability (major or a
 
 ## 5. Rules
 
-**3668 rules are loaded**, backed by **5690 catalog entries** (an entry either carries its own
+**3723 rules are loaded**, backed by **5861 catalog entries** (an entry either carries its own
 detection or documents a rule implemented in code). Every rule ships an English name, message,
 summary, *why is this an issue* and *how to fix*.
 
@@ -159,32 +163,33 @@ read as a tree of keys and blocks.
 
 | Language | Code | Rules | Tree |
 | --- | --- | --- | --- |
-| Java | `JV` | 551 | dedicated parser |
-| JavaScript | `JS` | 461 | dedicated parser |
-| Python | `PY` | 420 | dedicated parser |
-| C# / VB.NET | `CS` | 396 | dedicated parser |
-| Kotlin | `KT` | 172 | dedicated parser (C-family dialect) |
-| PHP | `PP` | 164 | dedicated parser |
+| Java | `JV` | 560 | dedicated parser |
+| JavaScript | `JS` | 470 | dedicated parser |
+| Python | `PY` | 433 | dedicated parser |
+| C# / VB.NET | `CS` | 408 | dedicated parser |
+| Kotlin | `KT` | 194 | dedicated parser (C-family dialect) |
+| PHP | `PP` | 183 | dedicated parser |
+| Terraform | `TF` | 142 | configuration tree |
 | HTML | `HTML` | 132 | markup reader |
-| Terraform | `TF` | 120 | configuration tree |
-| Go | `GO` | 117 | dedicated parser |
-| Ruby | `RB` | 113 | structural parser |
-| Dockerfile | `DK` | 112 | configuration tree |
-| CSS / SCSS / Sass / Less | `CSS` | 110 | stylesheet reader |
-| Kubernetes | `K8` | 109 | configuration tree |
+| Go | `GO` | 120 | dedicated parser |
+| Dockerfile | `DK` | 117 | instruction list |
+| Ruby | `RB` | 117 | structural parser |
+| Kubernetes | `K8` | 111 | configuration tree |
+| CSS / SCSS / Sass / Less | `CSS` | 109 | stylesheet reader |
+| XML and descriptors | `XML` | 109 | markup reader |
 | Swift | `SW` | 107 | structural parser |
 | Dart / Flutter | `DART` | 100 | dedicated parser (C-family dialect) |
-| XML | `XML` | 99 | markup reader |
+| CloudFormation | `CF` | 96 | configuration tree |
 | JSON | `JSON` | 96 | configuration tree |
-| CloudFormation | `CF` | 93 | configuration tree |
 | Rust | `RS` | 35 | structural parser |
 | Secrets (any language) | `SEC` | 24 | token scan over every file |
 | C / C++ | `CC` | 16 | structural parser |
 | Shell | `SH` | 12 | structural parser |
 | SQL | `SQL` | 9 | structural parser |
 | TypeScript-specific | `TS` | 9 | dedicated parser |
-| Razor / Blazor | `RAZ` | 8 | C# parser over the `@code` block, markup reader over the rest |
 | XAML / WPF / WinUI / Avalonia | `XAML` | 8 | markup reader, joined to the class behind it |
+| Razor / Blazor | `RAZ` | 4 | C# parser over the `@code` block, markup reader over the rest |
+| Multi-language | `ALL` | 2 | whichever tree the file has |
 | Scala | — | — | catalogue mapped, rules not written yet |
 
 TypeScript, Sass, SCSS, Less, JSX/TSX and VB.NET are analysed by the rules of the language they
@@ -326,6 +331,10 @@ the one before it — a constant defined twice, an error hidden by the `@` opera
 declaration habits (`var`, several properties per statement, a method with no visibility, a default
 argument that can never be used, `exit` inside a function, an alias such as `sizeof`).
 
+PHP also carries a WordPress set, described under *Descriptors and platform configuration*: five
+rules that read the platform's own configuration file and nothing else, because three of them are
+about a constant that is *missing* and would otherwise fire on every PHP file in existence.
+
 ### C# and JavaScript on the tree
 
 * **C#** — the shape of a type and the contract it offers: a public field, a class of static members
@@ -393,17 +402,31 @@ the keychain, a query built by interpolation, plain HTTP, a broken hash. There i
 catalog behind these — they are written from the language — and no Swift corpus on the build machine,
 so each one is pinned by a test that also states the shape it must stay silent on.
 
-### Mobile: Kotlin
+### Mobile: Kotlin and Android
 
-Kotlin is read with the structural parser and carries 83 rules — coroutines and dispatchers, Android
-intents and broadcast receivers, WebView settings, the not-null assertion operator, `SharedPreferences`
-holding a secret. The work that mattered here was precision rather than count: an extension function,
-a `@Composable`, a trailing lambda and the word "token" in a parser were all being reported, and
-Jetpack Compose alone accounted for hundreds of findings. See [§8](#precision-on-kotlin).
+Kotlin has a dedicated parser — a dialect of the C-family one, on the TypeScript branch rather than
+the Java one, because `fun f(a: Int): String` puts the type after the name — and carries **194
+rules**: coroutines and dispatchers, the not-null assertion operator, `SharedPreferences` holding a
+secret, and a full Android security set read on the tree.
 
-A Kotlin dialect for the C-family parser is the next step: it would unlock the ~90 shared structural
-rules that stay silent today because the tree is not exact enough. It belongs on the TypeScript
-branch, not the Java one — `fun f(a: Int): String` puts the type after the name, as TypeScript does.
+* **Intents and receivers** — a broadcast sent without naming the permission its receivers must hold,
+  a sticky broadcast (which the platform cannot protect at all), a receiver registered at run time
+  that any application on the device can trigger.
+* **Web views** — file, content and universal access enabled, JavaScript enabled for content that is
+  not yours, and an application object handed to the loaded page as a bridge.
+* **Keys and authentication** — a key generated in the hardware store without requiring the user to
+  authenticate, a biometric prompt shown without a cryptographic object (so the result is a boolean
+  somebody decides to trust), a local database encrypted with a key written in the source, an
+  authenticated cipher reusing an initialisation vector taken from a literal.
+* **Release builds** — the Gradle script itself is read: a release type that is debuggable, one that
+  does not enable minification, and a build that switches dependency verification off. These only
+  run where the module declares an application identifier, because a library has no release package
+  to harden.
+
+The manifest is read too, as XML — see *Descriptors and platform configuration*. The work that
+mattered on Kotlin was precision rather than count: an extension function, a `@Composable`, a
+trailing lambda and the word "token" in a parser were all being reported, and Jetpack Compose alone
+accounted for hundreds of findings. See [§8](#precision-on-kotlin).
 
 ### Secrets, in every language
 
@@ -420,21 +443,90 @@ container's security context, a setting missing from the resource that needs it.
 covered by one reader — braces with labels (Terraform, JSON) and indentation with list items
 (Kubernetes, CloudFormation) — and Dockerfiles are read as their instruction list.
 
-* **Terraform** — storage without encryption at rest, resources reachable from the whole internet,
-  outdated TLS versions, logging switched off, policies granting every action to everyone.
-* **Kubernetes** — privileged containers, privilege escalation, host namespaces, running as root,
-  missing resource limits, writable root filesystem, unpinned images, wildcard RBAC.
-* **Dockerfile** — lower-case instructions, relative WORKDIR, duplicated CMD/ENTRYPOINT, ADD for
-  local files, the whole build context copied into the image, spaces around `=` in ENV/ARG, runs of
-  consecutive RUN instructions, unpinned base images, secrets in ENV.
+**Terraform — 142 rules, across the three major providers.**
+
+* **Shared** — storage without encryption at rest, resources reachable from the whole internet,
+  outdated TLS versions, logging switched off, policies granting every action to everyone, keys that
+  are never rotated, short log and backup retention.
+* **AWS** — buckets that do not enforce HTTPS-only access, public access blocks left open,
+  unversioned buckets, security groups opening administration ports to `0.0.0.0/0`, databases
+  reachable from the internet or unencrypted.
+* **Azure** — full-control built-in roles handed out (`Owner`, `Contributor`, `User Access
+  Administrator`), custom roles that allow every action over a whole subscription, resource-level
+  administrator accounts, role-based access control switched off on clusters and key vaults, key
+  vaults without purge protection, and services that run code without a platform-managed identity —
+  which is what forces somebody to store a secret instead.
+* **Google Cloud** — bindings that grant an administrator or owner role, `allUsers` and
+  `allAuthenticatedUsers` on IAM bindings, object ACLs and BigQuery datasets, custom roles that
+  accumulate write permissions or include the ones that let their holder impersonate another
+  identity, App Engine handlers that accept plain HTTP, load balancer policies still offering broken
+  cipher suites, buckets without versioning or uniform access, log buckets with a retention shorter
+  than two weeks, audit configurations that exempt individual members, and legacy attribute-based
+  access control on clusters.
+
+**CloudFormation — 96 rules.** Templates are recognised by their content, not their extension, so a
+`.yaml` template is read as a template and not as a Kubernetes manifest. Public access blocks with a
+guard missing or switched off, API Gateway methods that change data and accept unauthenticated calls
+(with sign-in, health and token endpoints deliberately left alone), backup retention shorter than a
+week — read per resource type, so a read replica and an engine with continuous backup are not
+reported.
+
+**Kubernetes — 111 rules.** Privileged containers, privilege escalation, host namespaces, running as
+root, missing resource requests and limits, writable root filesystem, unpinned images, wildcard RBAC,
+added kernel capabilities, remote administration ports published by a container or a service, and
+roles that allow creating an exec session inside somebody else's pod.
+
+**Dockerfile — 117 rules.** Lower-case instructions, relative WORKDIR, duplicated CMD/ENTRYPOINT, ADD
+for local files, the whole build context copied into the image, spaces around `=` in ENV/ARG, runs of
+consecutive RUN instructions, unpinned base images, secrets in ENV — plus the security set: a debug
+variable left on in the image that ships (read on the final stage only, because a builder stage is
+discarded), a step running in the host's network namespace, a mounted secret readable by every
+account in the build, a step with the builder sandbox disabled, and an executable copied in under a
+non-root owner.
+
+### Descriptors and platform configuration
+
+A large part of what an application exposes is decided before any of its code runs, in files nobody
+executes and everybody copies from the last project. These are read as element trees, and each rule
+is bound to the file that gives its elements meaning.
+
+* **Android manifest** — a package marked debuggable, clear-text traffic allowed, the platform backup
+  left free to copy everything the application stores, a broadcast receiver reachable without a
+  permission, a content provider guarding reading and writing with the same permission, a component
+  with an intent filter that does not say whether it is exported.
+* **Java EE descriptors** — a filter declared and mapped to no path, which is how an authentication
+  or escaping filter ends up running on nothing at all; a default interceptor declared outside the
+  descriptor the container reads it from; two validation forms sharing a name, where one silently
+  wins.
+* **ASP.NET `web.config`** — custom errors turned off, which answers a failed request with the stack
+  trace and the physical path; response headers configured without the one that stops browsers
+  guessing content types.
+* **WordPress `wp-config.php`** — the built-in file editor left enabled, which turns an administrator
+  account into code execution on the server; automatic updates switched off, on a platform whose
+  fixes are published together with what they fix; unauthenticated database repair left on; outgoing
+  requests unrestricted, so every installed plugin can call anywhere; unfiltered HTML allowed for
+  anyone who can publish. These run on the configuration file itself and nowhere else.
+
+### Python for the cloud
+
+Infrastructure written from application code is analysed on the tree, in both shapes it is written
+in: the construct of the deployment library, and the plain dictionary pasted in from a console.
+Permission statements that allow every action, statements that grant an identity-delegating action
+over every resource in the account, security group rules that open a remote administration port to
+the whole internet, and a server bound to every network interface of its machine.
 
 ### Security coverage
 
-Command injection, SQL injection, path traversal, open redirect, server-side request forgery, unsafe
-deserialization, XML external entities, dynamic code execution, weak cryptography (broken hashes,
-obsolete ciphers, ECB, predictable randomness, weak key sizes), disabled certificate validation,
-cleartext transport, hardcoded credentials, permissive CORS, insecure cookies, and infrastructure as
-code (open CIDR blocks, unencrypted storage, wildcard IAM policies, privileged containers).
+**618 security rules.** Command injection, SQL injection, path traversal, open redirect, server-side
+request forgery, unsafe deserialization, XML external entities, dynamic code execution, weak
+cryptography (broken hashes, obsolete ciphers, ECB, reused initialisation vectors, predictable
+randomness, weak key sizes), disabled certificate validation, cleartext transport, hardcoded
+credentials and keys, permissive CORS, insecure cookies, missing security headers, privilege
+escalation through IAM and custom roles, unauthenticated endpoints, mobile platform exposure
+(receivers, providers, web view bridges, biometric prompts without a bound key), supply chain
+(dependency verification disabled, remote artefacts without integrity checks) and infrastructure as
+code (open CIDR blocks, unencrypted storage, wildcard policies, privileged containers, host
+namespaces, disabled logging, short retention).
 
 ---
 
@@ -643,7 +735,12 @@ because they are real legacy rather than a curated library.
 
 | Project | Language | ncloc | Findings | Per 1k lines |
 | --- | --- | ---: | ---: | ---: |
+| a library of AWS CloudFormation templates | CloudFormation | 26 214 | 10 | **0.4** |
+| a Google Cloud Terraform module library | Terraform | 50 085 | 90 | **1.8** |
+| an AWS Terraform module library | Terraform | 5 475 | 22 | **4.0** |
 | two public Terraform module libraries | Terraform | 55 560 | 112 | **2.0** |
+| an Azure Terraform example library | Terraform | 22 146 | 193 | **8.7** |
+| the public Kubernetes example manifests | Kubernetes | 5 743 | 113 | **19.7** |
 | express | JavaScript | 14 730 | 52 | **3.5** |
 | rails | Ruby | 281 755 | 1 339 | **4.8** |
 | guzzle | PHP | 48 147 | 380 | **7.9** |
@@ -657,6 +754,12 @@ because they are real legacy rather than a curated library.
 | axios, nest | TypeScript | 36 073 | 644 | **17.9** |
 | requests, flask, a private application | Python | 42 955 | 868 | **20.2** |
 | a WebForms application from 2010 | C# | 214 434 | 9 808 | **45.7** |
+
+**A repository of examples is not a repository.** The two highest infrastructure rows above are
+collections of small samples: every example declares one virtual machine, one pod, one bucket, so
+anything a rule asks of a resource is asked once per file. The same rules on a real deployment
+repository land an order of magnitude lower, because most of the file is the part that was already
+configured properly.
 
 **Scan the whole project, not one extension.** Narrowing a scan to `**/*.cs` leaves the templates out,
 and a field a component only touches from its markup then reads as unused — on the Blazor application
@@ -994,7 +1097,7 @@ file end a run: a source it cannot read is recorded with its reason and the scan
 a quality gate that stops at the first surprise is worse than one that reports what it managed to
 read. The corpus that produced nothing now produces 33,273 findings, 65.8% of the expected lines.
 
-### One defect, one finding### One defect, one finding
+### One defect, one finding
 
 A reader who is told the same thing three times stops reading. A dedicated pass runs the
 engine over a corpus and reports the rule pairs whose findings land on the same line:
@@ -1006,7 +1109,14 @@ catalogue rather than hidden: the entry keeps its documentation and takes `statu
 `superseded_by`, so the identifier keeps its meaning and is never handed to a different check. The
 validator enforces that pairing.
 
-Fifteen rules have been retired this way so far. Three of them said the same thing about
+Nineteen rules have been retired this way so far. The four most recent came out of the
+infrastructure work: two Kubernetes rules whose replacements read the same pod specification — one
+about host namespaces, one about added capabilities — one Terraform rule about bucket versioning that
+read the file as
+lines — any occurrence of the word `versioning` anywhere silenced it for every bucket in the file —
+and one Kotlin rule that reported anything named `allowFileAccess` with the word `true` within four
+tokens, which flags the check that turns the setting *off* as readily as the assignment that turns it
+on. Three more said the same thing about
 `System.out`, three about a thrown `Exception`, two about an empty method body. One was a security
 rule that matched any call named `forName`, so `Charset.forName("UTF-8")` was reported as a
 vulnerability; another was about the case of a numeric suffix and ran with case ignored, so it

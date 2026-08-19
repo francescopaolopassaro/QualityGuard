@@ -159,3 +159,112 @@
   fix: |
     The specific rules on privilege, on the root filesystem and on token mounting cover this ground
     and say what to change.
+
+# Template security rules implemented in Rules/Languages/CloudFormationSecurityRules.cs. They read
+# the template as a tree of declared resources, so a property is judged under the resource type that
+# gives it meaning rather than wherever the word appears.
+
+- key: QG-CF-SEC-0019
+  name: An object store should block public access on every path
+  languages: [cf]
+  category: SEC
+  severity: blocker
+  effort: 15min
+  cwe: [732]
+  tags: [infrastructure, permissions]
+  summary: A bucket declares its public access block but leaves one of the four guards off or absent.
+  why: |
+    Each guard closes a different way of making the bucket public — an access list on the bucket, one
+    on an object, a policy attached later. A guard that is missing defaults to permissive, so the
+    template reads as though access were settled here when it is not.
+  fix: |
+    Declare all four settings and set them to true, so nothing added afterwards can open the bucket.
+
+- key: QG-CF-SEC-0031
+  name: An endpoint that changes data should require authentication
+  languages: [cf]
+  category: SEC
+  severity: critical
+  effort: 30min
+  cwe: [284]
+  tags: [infrastructure, authentication]
+  summary: An API method that writes, or that carries an administrative name, accepts unauthenticated calls.
+  why: |
+    Whoever finds the address can invoke it as often as they like, and the access log has nobody to
+    attribute the call to. Endpoints meant to be public — sign-in, health, token exchange — are a
+    deliberate exception; a method that changes state is not.
+  fix: |
+    Attach an authorizer, or require the platform's own request signature, and keep the open
+    endpoints to the ones that have to be reachable before anyone is authenticated.
+
+- key: QG-CF-SEC-0032
+  name: A database should keep backups long enough to recover from
+  languages: [cf]
+  category: SEC
+  severity: major
+  effort: 10min
+  cwe: [693]
+  tags: [infrastructure, availability]
+  summary: A managed database keeps fewer than seven days of backups, or does not say and keeps one.
+  why: |
+    Data loss is usually discovered well after it happens — a bad migration, a deletion nobody
+    questioned, a job that ran twice. A window this short means the last good copy is already gone by
+    the time anybody asks for it.
+  fix: |
+    Set a retention period of at least a week, and longer where the data would be expensive to
+    reconstruct.
+
+- key: QG-K8-SEC-0006
+  name: A pod should not share a namespace with the host
+  status: superseded
+  superseded_by: QG-K8-SEC-0015
+  languages: [k8]
+  category: SEC
+  severity: critical
+  effort: 15min
+  tags: [kubernetes, isolation]
+  message: Remove the host namespace setting from this pod.
+  summary: A pod is placed in the process, network or inter-process namespace of its node.
+  why: |
+    The check was written twice: this one and QG-K8-SEC-0015 read the same three fields of the same
+    pod specification and reported the same line under two identifiers, which makes a report look
+    twice as long as the problem is.
+  fix: |
+    QG-K8-SEC-0015 covers this ground and names which of the three namespaces is shared.
+
+- key: QG-K8-SEC-0007
+  name: Container is granted powerful capabilities
+  status: superseded
+  superseded_by: QG-K8-SEC-0011
+  languages: [k8]
+  category: SEC
+  severity: major
+  effort: 20min
+  tags: [kubernetes, permissions]
+  message: Drop all capabilities and add back only the ones the process calls.
+  summary: A container adds Linux capabilities that let it act on the node.
+  why: |
+    It reported the same line as QG-K8-SEC-0011 and judged only a fixed list of the most dangerous
+    capabilities, so a container adding several of them was reported once per capability while a
+    container adding an unusual one was not reported at all.
+  fix: |
+    QG-K8-SEC-0011 reports the whole added set once, whichever capabilities it contains.
+
+- key: QG-TF-SEC-0004
+  name: Storage bucket has versioning disabled
+  status: superseded
+  superseded_by: QG-TF-SEC-0058
+  languages: [tf]
+  category: SEC
+  severity: major
+  effort: 20min
+  tags: [infrastructure, availability]
+  message: Enable versioning on the storage bucket.
+  summary: A bucket is declared without versioning.
+  why: |
+    It read the file as lines rather than as blocks: any versioning keyword anywhere in the file
+    silenced it for every bucket, and a file with several buckets was reported once, at whichever
+    bucket happened to be last. It also ignored a retention policy, which solves the same problem.
+  fix: |
+    QG-TF-SEC-0058 judges each bucket inside its own block and stays silent where a retention policy
+    already prevents an object from being replaced.

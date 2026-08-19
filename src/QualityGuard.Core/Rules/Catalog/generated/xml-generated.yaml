@@ -129,25 +129,6 @@
     Replace the call with the current API, and keep the old one only behind a compatibility layer that is
     documented and dated.
 
-- key: QG-XML-SEC-0005
-  name: Default EJB interceptors should be declared the way the language intends
-  languages: [xml]
-  category: SEC
-  severity: critical
-  effort: 15min
-  tags: [declaration, generated]
-  generated: true
-  status: planned
-  message: This declaration exposes more than it should.
-  summary: A declaration uses modifiers, order or visibility that do not match its purpose.
-  why: |
-    Declarations are the contract other code relies on. A wider visibility than needed makes an internal
-    detail part of the public surface, and unusual modifier combinations hide the intent from readers and
-    tools alike.
-  fix: |
-    Declare the narrowest visibility that works, in the conventional modifier order, and mark as final or
-    read-only whatever is not meant to change.
-
 - key: QG-XML-SML-0007
   name: EJB interceptor exclusions should be declared the way the language intends
   languages: [xml]
@@ -189,25 +170,6 @@
   detect:
     - creation: [HttpOnly]
 
-- key: QG-XML-SEC-0007
-  name: Struts filters should not weaken the security of the application
-  languages: [xml]
-  category: SEC
-  severity: critical
-  effort: 15min
-  tags: [sec, generated]
-  generated: true
-  status: planned
-  message: This construct weakens the security of the application.
-  summary: A construct that attackers routinely target is used without the guard it needs.
-  why: |
-    The pattern either trusts data the program does not control, or relies on a mechanism that no longer
-    offers the protection it appears to offer. Both keep working normally, which is why they survive
-    until someone looks for them.
-  fix: |
-    Validate the incoming value against an allowed set, pass it as data rather than as code or command,
-    and replace weakened mechanisms with the current recommended one.
-
 - key: QG-XML-SML-0008
   name: Action mappings should stay within a size that can be reviewed
   languages: [xml]
@@ -226,25 +188,6 @@
   fix: |
     Split along the responsibilities the code has accumulated: extract the sections that already have a
     name, and keep the original as the sequence of those steps.
-
-- key: QG-XML-SEC-0008
-  name: Struts validation forms should not weaken the security of the application
-  languages: [xml]
-  category: SEC
-  severity: critical
-  effort: 15min
-  tags: [sec, generated]
-  generated: true
-  status: planned
-  message: This construct weakens the security of the application.
-  summary: A construct that attackers routinely target is used without the guard it needs.
-  why: |
-    The pattern either trusts data the program does not control, or relies on a mechanism that no longer
-    offers the protection it appears to offer. Both keep working normally, which is why they survive
-    until someone looks for them.
-  fix: |
-    Validate the incoming value against an allowed set, pass it as data rather than as code or command,
-    and replace weakened mechanisms with the current recommended one.
 
 - key: QG-XML-SML-0009
   name: Disallowed dependencies should be resolved rather than left in the code
@@ -374,63 +317,6 @@
     Make the intended behaviour explicit — fix the condition, the operator or the order of operations —
     and cover the case that used to fail with a test.
 
-- key: QG-XML-SEC-0009
-  name: Debugging features should not weaken the security of the application
-  languages: [xml]
-  category: SEC
-  severity: critical
-  effort: 15min
-  tags: [sec, generated]
-  generated: true
-  status: planned
-  message: This construct weakens the security of the application.
-  summary: A construct that attackers routinely target is used without the guard it needs.
-  why: |
-    The pattern either trusts data the program does not control, or relies on a mechanism that no longer
-    offers the protection it appears to offer. Both keep working normally, which is why they survive
-    until someone looks for them.
-  fix: |
-    Validate the incoming value against an allowed set, pass it as data rather than as code or command,
-    and replace weakened mechanisms with the current recommended one.
-
-- key: QG-XML-SEC-0010
-  name: Android broadcast receivers should not grant more access than needed
-  languages: [xml]
-  category: SEC
-  severity: critical
-  effort: 15min
-  tags: [permissions, generated]
-  generated: true
-  status: planned
-  message: This grants wider access than the operation needs.
-  summary: A resource is created or shared with permissions wider than the task requires.
-  why: |
-    Every account that can reach the resource can also change it, so a single compromised process is
-    enough to alter data or code the application later trusts. Wide permissions are also invisible at the
-    call site: nothing in the reading code says who else can write.
-  fix: |
-    Grant the narrowest right that works, to the specific identity that needs it, and rely on inherited
-    permissions from a properly secured parent instead of widening the resource itself.
-
-- key: QG-XML-SEC-0011
-  name: Clear-text protocols should not be used
-  languages: [xml]
-  category: SEC
-  severity: critical
-  effort: 15min
-  tags: [avoid_api, generated]
-  generated: true
-  status: planned
-  message: This API should be replaced by the current alternative.
-  summary: Code calls an API that is unsafe, obsolete or superseded by a better alternative.
-  why: |
-    The API stays available for compatibility, so nothing fails at build time, but it carries behaviour
-    the platform now considers a defect — unchecked input, a weak guarantee, or a cost the replacement
-    avoids. Its presence also spreads: new code copies what it finds nearby.
-  fix: |
-    Replace the call with the current API, and keep the old one only behind a compatibility layer that is
-    documented and dated.
-
 - key: QG-XML-SEC-0012
   name: Exported component access should not grant more access than needed
   languages: [xml]
@@ -469,44 +355,6 @@
     Grant the narrowest right that works, to the specific identity that needs it, and rely on inherited
     permissions from a properly secured parent instead of widening the resource itself.
 
-- key: QG-XML-SEC-0014
-  name: Browsers should not weaken the security of the application
-  languages: [xml]
-  category: SEC
-  severity: critical
-  effort: 15min
-  tags: [sec, generated]
-  generated: true
-  status: planned
-  message: This construct weakens the security of the application.
-  summary: A construct that attackers routinely target is used without the guard it needs.
-  why: |
-    The pattern either trusts data the program does not control, or relies on a mechanism that no longer
-    offers the protection it appears to offer. Both keep working normally, which is why they survive
-    until someone looks for them.
-  fix: |
-    Validate the incoming value against an allowed set, pass it as data rather than as code or command,
-    and replace weakened mechanisms with the current recommended one.
-
-- key: QG-XML-SEC-0015
-  name: Android application backup should not weaken the security of the application
-  languages: [xml]
-  category: SEC
-  severity: critical
-  effort: 15min
-  tags: [sec, generated]
-  generated: true
-  status: planned
-  message: This construct weakens the security of the application.
-  summary: A construct that attackers routinely target is used without the guard it needs.
-  why: |
-    The pattern either trusts data the program does not control, or relies on a mechanism that no longer
-    offers the protection it appears to offer. Both keep working normally, which is why they survive
-    until someone looks for them.
-  fix: |
-    Validate the incoming value against an allowed set, pass it as data rather than as code or command,
-    and replace weakened mechanisms with the current recommended one.
-
 - key: QG-XML-SEC-0016
   name: Custom permissions should not grant more access than needed
   languages: [xml]
@@ -530,44 +378,6 @@
     - member: [android.permission]
     - invocation: [permission]
       receiver: [android]
-
-- key: QG-XML-SEC-0017
-  name: Content providers should not grant more access than needed
-  languages: [xml]
-  category: SEC
-  severity: critical
-  effort: 15min
-  tags: [permissions, generated]
-  generated: true
-  status: planned
-  message: This grants wider access than the operation needs.
-  summary: A resource is created or shared with permissions wider than the task requires.
-  why: |
-    Every account that can reach the resource can also change it, so a single compromised process is
-    enough to alter data or code the application later trusts. Wide permissions are also invisible at the
-    call site: nothing in the reading code says who else can write.
-  fix: |
-    Grant the narrowest right that works, to the specific identity that needs it, and rely on inherited
-    permissions from a properly secured parent instead of widening the resource itself.
-
-- key: QG-XML-SEC-0018
-  name: Components should not weaken the security of the application
-  languages: [xml]
-  category: SEC
-  severity: critical
-  effort: 15min
-  tags: [sec, generated]
-  generated: true
-  status: planned
-  message: This construct weakens the security of the application.
-  summary: A construct that attackers routinely target is used without the guard it needs.
-  why: |
-    The pattern either trusts data the program does not control, or relies on a mechanism that no longer
-    offers the protection it appears to offer. Both keep working normally, which is why they survive
-    until someone looks for them.
-  fix: |
-    Validate the incoming value against an allowed set, pass it as data rather than as code or command,
-    and replace weakened mechanisms with the current recommended one.
 
 - key: QG-XML-SML-0012
   name: Breaches of an XPath rule should be resolved rather than left in the code
