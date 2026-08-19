@@ -231,6 +231,14 @@ public sealed class CSharpTrivialPropertyRule : CSharpApiRuleBase
             }
             if (!trivial || backing == null)
                 continue;
+            // The accessors have to reach a field of this type. 'get { return other.Value; }' with a
+            // matching setter is a property that forwards to another object — there is no backing
+            // field to remove, and on a real code base that was almost every report this rule made.
+            var owner = property.Ancestor(NodeKind.ClassDeclaration);
+            var declared = owner?.OfKind(NodeKind.FieldDeclaration)
+                .Any(f => string.Equals(f.Text, backing, StringComparison.Ordinal)) ?? false;
+            if (!declared)
+                continue;
 
             context.Report($"Both accessors do nothing but reach '{backing}'. An auto-implemented "
                            + "property says the same thing in one line and removes the field that only "
@@ -247,7 +255,7 @@ public sealed class CSharpTrivialPropertyRule : CSharpApiRuleBase
         var statement = body.Children[0];
 
         if (accessor.Text is "get" && statement is { Kind: NodeKind.Jump, Text: "return" })
-            return SyntaxQuery.SimpleName(statement.ChildAt(0)) is { Length: > 0 } name ? name : null;
+            return PlainField(statement.ChildAt(0));
 
         if (accessor.Text is not "set")
             return null;
@@ -256,7 +264,23 @@ public sealed class CSharpTrivialPropertyRule : CSharpApiRuleBase
             return null;
         if (SyntaxQuery.SimpleName(assignment.ChildAt(1)) != "value")
             return null;
-        return SyntaxQuery.SimpleName(assignment.ChildAt(0)) is { Length: > 0 } target ? target : null;
+        return PlainField(assignment.ChildAt(0));
+    }
+
+    /// <summary>
+    /// The name when it is a field of this object — 'value' or 'this.value' — and nothing when it
+    /// reaches through something else, because then the accessor is forwarding rather than wrapping.
+    /// </summary>
+    private static string? PlainField(SyntaxNode? node)
+    {
+        if (node == null)
+            return null;
+        if (node.Kind == NodeKind.Identifier)
+            return node.Text.Length > 0 ? node.Text : null;
+        if (node.Kind != NodeKind.MemberSelect
+            || node.ChildAt(0) is not { Kind: NodeKind.Identifier, Text: "this" })
+            return null;
+        return SyntaxQuery.SimpleName(node) is { Length: > 0 } name ? name : null;
     }
 }
 

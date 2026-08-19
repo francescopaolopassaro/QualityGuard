@@ -211,6 +211,12 @@ public sealed class SwiftBooleanLiteralComparisonRule : SwiftRuleBase
             var literal = comparison.Children.FirstOrDefault(c => c.Kind == NodeKind.BooleanLiteral);
             if (literal == null)
                 continue;
+            // An optional Bool cannot be tested on its own: 'value?.isEmpty == true' is the way the
+            // language asks "true, and present". Removing the comparison would change the meaning,
+            // and on a real library this was every report the rule made.
+            var other = comparison.Children.FirstOrDefault(c => c != literal);
+            if (other != null && other.Tokens.Any(t => t.Text is "?" or "??"))
+                continue;
 
             var suggestion = (comparison.Text == "==") == (literal.Text == "true")
                 ? "the expression itself"

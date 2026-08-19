@@ -22,12 +22,10 @@ public static class RustRuleSet
         new RustWeakUuidRule(),
         new RustSensitiveLoggingRule(),
         new RustWorldWritablePermissionsRule(),
-        new RustUnwrapExpectRule(),
         new RustDebugPrintRule(),
         new RustUndocumentedUnsafeRule(),
         new RustPanicMacroRule(),
         new RustLongFunctionRule(),
-        new RustVariableShadowingRule(),
         new RustDuplicatedLiteralsRule(),
         new RustBooleanLiteralComparisonRule(),
         new RustInfiniteLoopRule(),
@@ -654,9 +652,15 @@ public sealed class RustDuplicatedLiteralsRule : PatternRuleBase
 
     public override void Execute(IRuleContext context)
     {
-        var groups = context.Tokens.Where(t => RuleMatchers.IsString(t) && t.Text.Length >= 6)
-            .GroupBy(t => t.Text)
-            .Where(g => g.Count() > 1);
+        // A literal is worth a name when it is written a third time, and only when it is long enough
+        // to mean something: two occurrences of a line break are not a constant waiting to be
+        // declared. Tests repeat their fixtures on purpose, so they are left alone.
+        if (LanguageRuleSupport.IsTestFile(context.File.Path, context.File.FileName))
+            return;
+
+        var groups = context.Tokens.Where(t => RuleMatchers.IsString(t) && t.Text.Trim().Length >= 5)
+            .GroupBy(t => t.Text, StringComparer.Ordinal)
+            .Where(g => g.Count() >= 3);
         foreach (var group in groups)
         {
             var first = group.OrderBy(t => t.Line).First();

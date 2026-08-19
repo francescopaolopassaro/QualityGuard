@@ -35,6 +35,10 @@ var scanOptions = new ScanOptions
     MaxFileKilobytes = int.TryParse(ExtractArg(args, "--max-file-kb"), out var kb) ? kb : 2048
 };
 
+// The default profile mirrors what the reference engines enable out of the box; '--all-rules' turns
+// the conventions and the stylistic checks back on for a full sweep.
+var everyRule = args.Any(a => a is "--all-rules" or "--every-rule");
+
 if (args.Any(a => a is "--rules"))
 {
     PrintRuleCatalog();
@@ -74,7 +78,7 @@ try
         return 2;
     }
 
-    var analyses = AnalyzeAndScan(scanOptions, verbose);
+    var analyses = AnalyzeAndScan(scanOptions, verbose, everyRule);
     var metrics = AggregateMetrics(analyses);
 
     // new_lines is a real count whenever a base is given: git is asked which lines the branch added
@@ -131,7 +135,7 @@ catch (Exception ex)
     return 2;
 }
 
-static List<FileAnalysis> AnalyzeAndScan(ScanOptions options, bool verbose)
+static List<FileAnalysis> AnalyzeAndScan(ScanOptions options, bool verbose, bool everyRule)
 {
     var scan = SourceScanner.Scan(options);
     foreach (var missing in scan.MissingPaths)
@@ -168,7 +172,7 @@ static List<FileAnalysis> AnalyzeAndScan(ScanOptions options, bool verbose)
     foreach (var (path, reason) in engine.Unreadable)
         Console.WriteLine($"  SKIPPED {path}: {reason}");
 
-    var rules = RuleRepository.GetBuiltInRules();
+    var rules = RuleRepository.GetBuiltInRules(everyRule);
     foreach (var analysis in all)
         RuleEngine.Run(analysis, rules);
 

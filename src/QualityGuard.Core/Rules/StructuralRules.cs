@@ -1008,12 +1008,20 @@ public abstract class UnreachableCodeAfterJumpRule : StructuralRuleBase
                 // not finished yet, and what follows it is its own value, not code left behind
                 if (ExpressionStillOpen(context, children[i]))
                     continue;
+                // 'return@withLock' leaves the lambda it names, not the function that contains it,
+                // so the statements after it in the enclosing block still run
+                if (LeavesOnlyItsLabel(context, children[i]))
+                    continue;
                 context.Report(next, $"This code is unreachable: '{children[i].Text}' on line "
                                      + $"{children[i].Line} always leaves the block first.");
                 break;
             }
         }
     }
+
+    /// <summary>Whether the jump names a label, as Kotlin writes 'return@run' and 'break@loop'.</summary>
+    private static bool LeavesOnlyItsLabel(IRuleContext context, SyntaxNode jump)
+        => context.Tokens.Any(t => t.Text == "@" && t.Line == jump.Range.StartLine);
 
     /// <summary>
     /// Whether the jump leaves a bracket open on its last line. A parenthesised expression written
@@ -1489,7 +1497,11 @@ public abstract class SelfAssignmentRule : StructuralRuleBase
 
             var left = PlainName(assignment.ChildAt(0));
             var right = PlainName(assignment.ChildAt(1));
-            if (left.Length > 0 && left == right)
+            // 'x = x or (x ushr 1)' names x on the right and does arithmetic with it. Where an infix
+            // function reaches the tree as a loose chain, the name alone is not the whole right side:
+            // it is one only when no other token belongs to it.
+            var rightIsBare = assignment.ChildAt(1) is { } value && value.Tokens.Count <= 1;
+            if (left.Length > 0 && left == right && rightIsBare)
                 context.Report(assignment, $"Assigning '{left}' to itself has no effect; "
                                            + "the intended target or source is probably a different name.");
         }
@@ -2455,10 +2467,31 @@ public abstract class MatchWithoutDefaultRule : StructuralRuleBase
                 continue;
             var hasDefault = body.DescendantsAndSelf()
                 .Any(n => n.Tokens.Count > 0 && n.Tokens[0].Text is "default" or "else" or "_");
+            // A Kotlin 'when' whose value is used has to cover every case or the code does not
+            // compile, and one that branches on an enum or a sealed hierarchy already does. Asking
+            // for an 'else' there asks for a branch the compiler would call unreachable.
+            if (!hasDefault && context.Language.LanguageKey == "kt" && IsAlreadyExhaustive(match, body))
+                continue;
             if (!hasDefault)
                 context.Report(match, "No branch handles the values that are not listed; add a default case "
                                       + "so an unexpected value is not silently ignored.");
         }
+    }
+
+    /// <summary>
+    /// Whether the branches already cover everything: the value of the 'when' is used somewhere, or
+    /// every branch names a member of one type — the shapes Kotlin checks for the author.
+    /// </summary>
+    private static bool IsAlreadyExhaustive(SyntaxNode match, SyntaxNode body)
+    {
+        if (match.Parent is { Kind: NodeKind.Assignment or NodeKind.Jump or NodeKind.VariableDeclaration })
+            return true;
+        var branches = body.ChildrenOf(NodeKind.SwitchSection).ToList();
+        if (branches.Count == 0)
+            return false;
+        return branches.All(branch => branch.Tokens.Count > 1
+                                      && (branch.Tokens[0].Text == "is"
+                                          || branch.Tokens.Take(3).Any(t => t.Text == ".")));
     }
 }
 
@@ -2817,7 +2850,7 @@ public abstract class DeadStoreRule : StructuralRuleBase
             // and that is the commoner shape: the assignment is left over from a change
             var last = usages.Count > 0 ? usages[^1] : null;
             if (last is { Kind: UsageKind.Assignment }
-                && !IsCompound(last.Identifier)
+                && !IsCompound(last.Identifier) && !WritesThroughTheName(last.Identifier)
                 && !InsideInitializer(last.Identifier) && !SetsAMember(last.Identifier)
                 && !ReadAgainNextTimeRound(last.Identifier, symbol.Name)
                 && usages.Any(u => u.Kind == UsageKind.Reference)
@@ -2846,6 +2879,9 @@ public abstract class DeadStoreRule : StructuralRuleBase
                     continue;
                 // a declaration with no value written is not a store
                 if (write.Kind == UsageKind.Declaration && write.Value == null)
+                    continue;
+                // 'command += "zip"' adds to what is there: the first write is what it adds to
+                if (IsCompound(next.Identifier) || WritesThroughTheName(next.Identifier))
                     continue;
                 // 'new Thing { Name = "a" }' assigns a member of the object being built, not a
                 // variable: two initialisers naming the same member are two different objects
@@ -2931,6 +2967,17 @@ public abstract class DeadStoreRule : StructuralRuleBase
     }
 
     /// <summary>
+    /// Whether the assignment goes through the name rather than replacing it: 'result[0] = x' and
+    /// 'buffer.pos = 0' read the variable to reach what they write, so the value it holds is used.
+    /// </summary>
+    private static bool WritesThroughTheName(SyntaxNode identifier)
+    {
+        var assignment = identifier.Ancestor(NodeKind.Assignment);
+        var target = assignment?.ChildAt(0);
+        return target != null && target.Kind is NodeKind.Index or NodeKind.MemberSelect;
+    }
+
+    /// <summary>
     /// Whether the write also reads: '+=' and its relatives take the value that is there, so the
     /// last one in a loop is what the next round starts from and is never a store nobody reads.
     /// </summary>
@@ -2965,10 +3012,13 @@ public abstract class DeadStoreRule : StructuralRuleBase
         var secondBlock = second.Ancestor(NodeKind.Block);
         if (firstBlock == null || firstBlock != secondBlock)
             return false;
+        // Two cases of one switch share the block that holds them and the switch above it, so the
+        // clause itself has to be compared: 'case "done": x = A; break; case "cancel": x = B;' writes
+        // the name twice and only one of the two ever runs.
         return first.Ancestor(NodeKind.If, NodeKind.Else, NodeKind.Loop, NodeKind.Match,
-                   NodeKind.Try, NodeKind.Catch, NodeKind.Lambda)
+                   NodeKind.Try, NodeKind.Catch, NodeKind.Lambda, NodeKind.SwitchSection)
                == second.Ancestor(NodeKind.If, NodeKind.Else, NodeKind.Loop, NodeKind.Match,
-                   NodeKind.Try, NodeKind.Catch, NodeKind.Lambda);
+                   NodeKind.Try, NodeKind.Catch, NodeKind.Lambda, NodeKind.SwitchSection);
     }
 }
 
@@ -3103,6 +3153,16 @@ public abstract class UnusedLocalVariableRule : StructuralRuleBase
             var declaration = symbol.Usages.FirstOrDefault(u => u.Kind == UsageKind.Declaration);
             if (declaration == null || symbol.Name.StartsWith('_'))
                 continue;
+            // A name declared outside any function is a member of the type, not a local: it is read
+            // by the other members and by whoever holds the object. The body of a Kotlin object or
+            // class reaches the binder as a block, so without this every property of a multiplatform
+            // declaration was reported as a value nobody reads.
+            if (SyntaxQuery.EnclosingFunction(declaration.Identifier) == null)
+                continue;
+            // The name in a catch clause says which failure is being handled. Handling it without
+            // mentioning it again is the ordinary shape, in every language that names the exception.
+            if (declaration.Identifier.Ancestor(NodeKind.Catch) != null)
+                continue;
             // Go says what leaves the package with a capital letter. A constant declared at the top
             // of a library and named that way is read by whoever imports it, and this scan cannot
             // see them — every exported MIME type in a web framework was reported as unread.
@@ -3236,6 +3296,11 @@ public abstract class EmptyFunctionRule : StructuralRuleBase
         {
             if (function.Kind == NodeKind.ConstructorDeclaration)
                 continue; // an empty constructor is how a class says it takes no setup
+            // Swift writes the constructor as 'init', and 'public init() {}' exists precisely to
+            // give the type a public one — the empty body is the declaration. A member the parser
+            // could not name is not something to report either.
+            if (function.Text.Length == 0 || function.Text is "init" or "deinit" or "constructor")
+                continue;
             // A signature declared for the type checker alone carries no body by design: that is
             // what '@overload' and '@abstractmethod' mean, and asking them to be implemented asks
             // for the opposite of what they say.
@@ -3986,6 +4051,12 @@ public abstract class UnusedParameterRule : StructuralRuleBase
             // there because the caller passes it, and removing it breaks the call.
             if (owner != null && owner.ChildrenOf(NodeKind.Attribute).Any())
                 continue;
+            // A signature somebody else can call is not a decision this file gets to revisit: an
+            // override, an implementation, a public entry point all receive what the caller sends.
+            // Only what the file itself can change — a private member, a function declared at the top
+            // level of its own file, a lambda — is worth reporting.
+            if (owner != null && !CanChangeTheSignature(context, owner))
+                continue;
             // An event handler is bound to a delegate, so its two parameters are the shape the
             // framework calls it with — not a choice. This was the single loudest rule on a real
             // web application, where every button and page hook has this signature.
@@ -4018,6 +4089,27 @@ public abstract class UnusedParameterRule : StructuralRuleBase
             context.Report(declaration.Identifier, $"'{symbol.Name}' is never used in the body; "
                                                    + "remove it or use the value the caller passes.");
         }
+    }
+
+    /// <summary>
+    /// Whether the file alone decides this signature.
+    ///
+    /// Kotlin binds a member of a class to whatever declares it — an interface, an expect/actual
+    /// pair, an open base — so only a private member, a function at the top level of its file and a
+    /// lambda are the author's to change. Everything else receives what the caller sends, and asking
+    /// for the parameter to go was most of what this rule said on a multiplatform library.
+    /// </summary>
+    private static bool CanChangeTheSignature(IRuleContext context, SyntaxNode owner)
+    {
+        if (context.Language.LanguageKey != "kt")
+            return true;
+        var modifiers = owner.ChildrenOf(NodeKind.Modifier).Select(m => m.Text).ToArray();
+        if (modifiers.Contains("private"))
+            return true;
+        if (modifiers.Any(m => m is "public" or "protected" or "internal" or "open" or "abstract"
+                or "override" or "external" or "expect" or "actual"))
+            return false;
+        return owner.Ancestor(NodeKind.ClassDeclaration) == null;
     }
 
     /// <summary>
@@ -5382,6 +5474,24 @@ public abstract class MagicNumberRule : StructuralRuleBase
             // a literal that initialises a constant is already named
             if (number.Ancestor(NodeKind.FieldDeclaration, NodeKind.EnumMember) != null)
                 continue;
+            // so is one that initialises a name that cannot change afterwards: 'val size = 1080'
+            // gives the number exactly what the rule asks for
+            if (number.Ancestor(NodeKind.VariableDeclaration) is { } declared
+                && (declared.ChildrenOf(NodeKind.Modifier).Select(m => m.Text)
+                        .Any(m => m is "val" or "const" or "readonly" or "final" or "static")
+                    // Kotlin writes 'val' as the keyword that opens the declaration rather than as a
+                    // modifier, so the tree carries it only in the tokens
+                    || declared.Tokens.Count > 0
+                    && declared.Tokens[0].Text is "val" or "const" or "final" or "readonly"))
+                continue;
+            // an annotation is metadata: its arguments are the values the framework expects, and a
+            // name for them would have to live outside the declaration they describe
+            if (number.Ancestor(NodeKind.Attribute, NodeKind.Annotation) != null)
+                continue;
+            // the primes in a hash are the algorithm, and naming them explains nothing
+            if (SyntaxQuery.EnclosingFunction(number) is { } owner
+                && owner.Text.Equals("hashCode", StringComparison.OrdinalIgnoreCase))
+                continue;
             if (number.Ancestor(NodeKind.Invocation, NodeKind.If, NodeKind.Loop, NodeKind.Binary) == null)
                 continue;
             context.Report(number, $"The meaning of {number.Text} is not visible here; "
@@ -5785,6 +5895,10 @@ public abstract class TestWithoutAssertionRule : StructuralRuleBase
         "raises", "warns", "deprecated_call", "assertraises", "assertwarns", "asserts",
         "tobe", "toequal", "tothrow", "tohavebeencalled", "resolves", "rejects"
     ];
+    /// <summary>How a framework spells the beginning of an assertion, whatever follows it.</summary>
+    private static readonly string[] AssertionPrefixes =
+        ["assert", "verify", "fail", "should", "check", "expect", "validate", "approve", "require"];
+
     public override string Name => "Tests should verify something";
     public override Severity Severity => Severity.Major;
     public override IssueKind Kind => IssueKind.Bug;
@@ -5817,6 +5931,13 @@ public abstract class TestWithoutAssertionRule : StructuralRuleBase
             // no invocation at all, so a whole pytest suite read as tests that verify nothing.
             asserts = asserts || function.OfKind(NodeKind.Jump)
                 .Any(jump => jump.Text is "assert" or "raise");
+            // Last resort, on the words themselves: 'assertFailsWith<EOFException> { }' reaches the
+            // tree as a comparison because of the type argument, so no invocation carries the name.
+            // A word that opens with one of these is an assertion in every framework there is.
+            asserts = asserts || context.Tokens.Any(t =>
+                t.Kind == Tokenization.TokenKind.Identifier
+                && t.Line >= function.Range.StartLine && t.Line <= function.Range.EndLine
+                && AssertionPrefixes.Any(prefix => t.Text.StartsWith(prefix, StringComparison.OrdinalIgnoreCase)));
             if (asserts)
                 continue;
             context.Report(function, $"'{function.Text}' runs code but asserts nothing, "
@@ -7407,7 +7528,9 @@ public sealed class DeepInheritanceRuleJson : DeepInheritanceRule
 
 public abstract class HiddenBaseMemberRule : StructuralRuleBase
 {
-    private static readonly string[] IntentionalMarkers = ["override", "new", "virtual", "abstract", "partial"];
+    // 'expect'/'actual' are two halves of one declaration, not a member hiding another
+    private static readonly string[] IntentionalMarkers =
+        ["override", "new", "virtual", "abstract", "partial", "expect", "actual"];
     public override string Name => "Members should not hide a base member by accident";
     public override Severity Severity => Severity.Major;
     public override IssueKind Kind => IssueKind.Bug;
@@ -8789,10 +8912,15 @@ public sealed class MutableStaticStateRuleJson : MutableStaticStateRule
 
 public abstract class UnreleasedResourceRule : StructuralRuleBase
 {
+    /// <summary>
+    /// Types that hold something the runtime cannot take back on its own: a handle, a socket, a
+    /// connection. MemoryStream is deliberately absent — it lives in managed memory and its Dispose
+    /// does nothing, so asking for it produced a hundred findings on one library and fixed nothing.
+    /// </summary>
     private static readonly string[] ResourceTypes =
     [
         "FileStream", "StreamReader", "StreamWriter", "SqlConnection", "SqlCommand", "HttpClient",
-        "MemoryStream", "Socket", "TcpClient", "NpgsqlConnection", "MySqlConnection", "FileInputStream",
+        "Socket", "TcpClient", "NpgsqlConnection", "MySqlConnection", "FileInputStream",
         "FileOutputStream", "FileReader", "FileWriter", "BufferedReader", "ServerSocket", "Scanner"
     ];
 

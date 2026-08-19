@@ -483,6 +483,22 @@ public sealed class CSharpParser
         if (Is("<"))
             SkipGenericParameters();
         SyntaxNode? primaryConstructor = null;
+        // Kotlin may spell the primary constructor out — 'class E actual constructor(...)',
+        // 'class S private constructor(...)', '@Inject constructor(...)'. Stopping at the keyword
+        // left the parameter list outside the type, so the class looked empty and everything written
+        // after it looked like top-level code.
+        if (IsKotlin)
+        {
+            var probe = _index;
+            while (probe < _tokens.Count
+                   && (ModifierWords.Contains(_tokens[probe].Text) || _tokens[probe].Text == "@"
+                       || (probe > _index && _tokens[probe - 1].Text == "@")))
+                probe++;
+            if (probe < _tokens.Count && _tokens[probe].Text == "constructor")
+            {
+                _index = probe + 1;
+            }
+        }
         if (Is("("))
         {
             // the primary constructor of a Kotlin class declares the properties of the type, so it is

@@ -406,47 +406,37 @@ public sealed class KotlinNotNullAssertionRule : PatternRuleBase
     }
 }
 
-public sealed class KotlinInfiniteLoopRule : PatternRuleBase
+public sealed class KotlinInfiniteLoopRule : RuleBase
 {
     public override string Key => "QG-KT-SML-0003";
-    public override string Name => "while(true) loops should provide a break condition";
+    public override string Name => "A loop should be able to end";
     public override Severity Severity => Severity.Minor;
     public override IssueKind Kind => IssueKind.CodeSmell;
     public override string RemediationEffort => "10min";
-    public override string FixAdvice => "Use a boolean or counter condition that terminates the loop.";
+    public override string FixAdvice => "Give the loop a way out: a condition that becomes false, or a break on the case that ends it.";
     public override string[] Languages => ["kt"];
 
     public override void Execute(IRuleContext context)
     {
-        var tokens = context.Tokens;
-        for (var i = 0; i < tokens.Count; i++)
+        if (!context.Tree.HasDedicatedParser)
+            return;
+
+        foreach (var loop in context.Root.OfKind(Syntax.NodeKind.Loop))
         {
-            if (tokens[i].Text != "while")
+            if (loop.Text != "while")
                 continue;
-            var close = -1;
-            for (var j = i + 1; j < tokens.Count && j < i + 20; j++)
-            {
-                if (tokens[j].Text == ")")
-                {
-                    close = j;
-                    break;
-                }
-                if (tokens[j].Text == "{")
-                    break;
-            }
-            if (close < 0)
+            var condition = loop.Children.FirstOrDefault(c => c.Kind != Syntax.NodeKind.Block);
+            if (condition is not { Kind: Syntax.NodeKind.BooleanLiteral } || condition.Text != "true")
                 continue;
-            var hasTrue = false;
-            for (var j = i + 1; j < close; j++)
-            {
-                if (tokens[j].Text == "true")
-                {
-                    hasTrue = true;
-                    break;
-                }
-            }
-            if (hasTrue)
-                context.Report("Replace this while(true) loop with a clear break condition.", tokens[i].Line);
+            // 'while (true)' with a way out is the ordinary way to write a loop whose end is decided
+            // inside it — a reader, a parser, a queue. Only a body that can never leave is a defect.
+            var body = loop.FirstChild(Syntax.NodeKind.Block);
+            if (body != null && body.OfKind(Syntax.NodeKind.Jump)
+                    .Any(j => j.Text is "break" or "return" or "throw"))
+                continue;
+
+            context.Report("This loop has no way out: the condition is always true and nothing in the "
+                           + "body leaves it, so whatever runs after it never runs.", loop.Line);
         }
     }
 }
@@ -1812,6 +1802,10 @@ public sealed class KotlinFunctionNameConventionRule : PatternRuleBase
             // a name in backticks is a sentence, which is how Kotlin tests are named
             if (value.Contains(' ') || IsComposable(tokens, i))
                 continue;
+            // An external function is the name the other side exports — a C entry point, a WASI
+            // import — and renaming it breaks the link. The declaration says so with 'external'.
+            if (IsExternal(tokens, i))
+                continue;
 
             context.Report("Rename this function to follow the lowerCamelCase convention.", tokens[name].Line);
         }
@@ -1822,6 +1816,19 @@ public sealed class KotlinFunctionNameConventionRule : PatternRuleBase
     /// case by the framework's own convention — it is a component, not a procedure — so reporting
     /// one is reporting the Android standard.
     /// </summary>
+    /// <summary>Whether the declaration binds to a symbol outside the program, whose name is fixed.</summary>
+    private static bool IsExternal(IReadOnlyList<Tokenization.Token> tokens, int keyword)
+    {
+        for (var back = keyword - 1; back >= 0 && back >= keyword - 6; back--)
+        {
+            if (tokens[back].Text == "external")
+                return true;
+            if (tokens[back].Text is "}" or "{" or ";")
+                break;
+        }
+        return false;
+    }
+
     private static bool IsComposable(IReadOnlyList<Token> tokens, int functionKeyword)
     {
         for (var i = functionKeyword - 1; i >= 0 && functionKeyword - i < 24; i--)

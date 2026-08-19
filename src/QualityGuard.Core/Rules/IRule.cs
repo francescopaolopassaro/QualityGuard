@@ -160,7 +160,16 @@ public static class RuleRepository
             target.Add(rule);
     }
 
-    public static ISet<IRule> GetBuiltInRules() => new HashSet<IRule>(BuiltInRuleRegistrar.All);
+    /// <summary>
+    /// The rules a scan runs. A catalogue is not a profile: the reference engines ship around half
+    /// of their checks disabled — conventions, metric thresholds, stylistic preferences — because a
+    /// report where every one of them is an issue buries the defects that matter. The same split is
+    /// kept here, and <paramref name="everyRule"/> asks for the whole catalogue instead.
+    /// </summary>
+    public static ISet<IRule> GetBuiltInRules(bool everyRule = false)
+        => new HashSet<IRule>(everyRule
+            ? BuiltInRuleRegistrar.All
+            : BuiltInRuleRegistrar.All.Where(r => DefaultProfile.IsOn(r.Key)));
 
     public static IRule? Find(string key)
         => BuiltInRuleRegistrar.All.FirstOrDefault(r => r.Key == key);
@@ -206,6 +215,13 @@ public static class RuleScope
 {
     private static readonly HashSet<string> MainOnly = new(StringComparer.Ordinal)
     {
+        "QG-CS-SML-0469",
+        "QG-KT-SML-0113",
+        "QG-JV-SML-0455",
+        "QG-PY-SML-0281",
+        "QG-JS-SML-0404",
+        "QG-KT-SML-0110",
+        "QG-CS-SML-0527",
         "QG-KT-SML-0099",
         "QG-PY-SML-0272",
         "QG-PP-SML-0137",

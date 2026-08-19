@@ -83,9 +83,14 @@ internal static class LanguageRuleSupport
         // production code made every deliberate empty catch in them a finding.
         foreach (var segment in normalized.Split('/'))
         {
-            if (segment.Length > 4 && !segment.Contains('.')
+            // A source set named after what it tests — commonTest, jvmTest — and the .NET convention
+            // of a whole project called 'Something.Tests'. Requiring the segment to be a single word
+            // left every file of a .NET test project reading as production code.
+            if (segment.Length > 4
                 && (segment.EndsWith("Test", StringComparison.Ordinal)
-                    || segment.EndsWith("Tests", StringComparison.Ordinal)))
+                    || segment.EndsWith("Tests", StringComparison.Ordinal)
+                    || segment.EndsWith(".Test", StringComparison.OrdinalIgnoreCase)
+                    || segment.EndsWith(".Tests", StringComparison.OrdinalIgnoreCase)))
                 return true;
         }
 

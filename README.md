@@ -8,10 +8,15 @@ a configurable Quality Gate and exits with `PASSED` or `FAILED` — no server, n
 dotnet run --project src/QualityGuard.Cli -- --path ./src --by-folder
 ```
 
-**3206 rules** across 26 languages, on a real syntax tree with a semantic model, a project index and
-interprocedural taint analysis. The bar the engine is held to is precision: every rule is measured on
-a production codebase in its own language before it is kept, and a rule that produces noise is
-rewritten or removed — see [§8](#8-quality-bar).
+**3570 rules across 26 languages**, on a real syntax tree with a semantic model, a project index and
+interprocedural taint analysis. Rules ship in a **default profile** — the conventions and stylistic
+checks stay off until `--all-rules` asks for them — because a report where every preference is an
+issue buries the defects that matter.
+
+The bar the engine is held to is precision: every rule is measured on somebody else's production
+code in its own language before it is kept, a rule that produces noise is rewritten on the tree or
+removed, and every false positive that was fixed is pinned by a regression test — see
+[§8](#8-quality-bar).
 
 ---
 
@@ -39,9 +44,9 @@ Then across the whole scan:
 project index → type resolution → interprocedural taint → rules → quality gate
 ```
 
-* **Syntax tree** — recursive-descent parsers for C#, Java, Go, JavaScript, TypeScript, PHP and Dart
-  (one C-family parser with a dialect each) and an indentation-driven parser for Python. Everything
-  else — Kotlin, Swift, Ruby, Rust, C/C++, VB.NET, shell, SQL — falls back to a generic structural
+* **Syntax tree** — recursive-descent parsers for C#, VB.NET, Java, Go, JavaScript, TypeScript, PHP,
+  Kotlin and Dart (one C-family parser with a dialect each) and an indentation-driven parser for
+  Python. Everything else — Swift, Ruby, Rust, C/C++, shell, SQL — falls back to a generic structural
   parser that still recognises declarations, blocks and control flow;
   `SyntaxTree.HasDedicatedParser` tells a rule whether the tree is exact enough to reason about
   statements, and a rule that needs more stays silent rather than guessing.
@@ -141,51 +146,61 @@ Severity and issue kind follow the category: `SEC` → vulnerability (major or a
 
 ## 5. Rules
 
-**3206 rules are loaded and executable**, backed by **4574 catalog entries** (a catalog entry either
-carries its own detection or documents a rule implemented in code).
+**3570 rules are loaded**, backed by **4665 catalog entries** (an entry either carries its own
+detection or documents a rule implemented in code). Every rule ships an English name, message,
+summary, *why is this an issue* and *how to fix*.
 
-Coverage is tracked honestly in `rules-tracker.tsv`: **3256 catalogued rules are mapped, 1477 of them
-executable**. The rest are documented and deliberately silent — a rule counts as implemented only
-when it detects something and has been measured on real code.
+### Languages
 
-Measured against the published rule inventories of the reference catalogues — 3358 rules across 21
-languages, read from their own metadata rather than from a summary of it — **92% are mapped**, and
-**1449 are executable today**, 271 of them security rules. Python (89% of its security rules), Java
-(85%), Ruby (83%), Go (78%) and CloudFormation (64%) are the furthest along.
+Every language below is recognised by extension, tokenized, parsed and analysed. "Tree" says how much
+structure the rules can rely on: a dedicated parser gives exact statement boundaries, the generic
+structural parser recognises declarations, blocks and control flow, and configuration formats are
+read as a tree of keys and blocks.
 
-Two numbers are worth separating. A rule counts as executable when it has a detection; whether that
-detection is right is a different question, answered by the comparison below. Of the rules added by
-reading the reference implementations in bulk, thirteen have so far been seen to fire on the projects
-measured here — the rest are present and quiet, some because they cover an API those projects never
-touch, some because a detection table without the logic around it recognises where to look and not
-what to look for.
+| Language | Code | Rules | Tree |
+| --- | --- | --- | --- |
+| Java | `JV` | 551 | dedicated parser |
+| JavaScript | `JS` | 461 | dedicated parser |
+| Python | `PY` | 420 | dedicated parser |
+| C# / VB.NET | `CS` | 382 | dedicated parser |
+| Kotlin | `KT` | 172 | dedicated parser (C-family dialect) |
+| PHP | `PP` | 164 | dedicated parser |
+| HTML | `HTML` | 132 | markup reader |
+| Terraform | `TF` | 120 | configuration tree |
+| Go | `GO` | 117 | dedicated parser |
+| Ruby | `RB` | 113 | structural parser |
+| Dockerfile | `DK` | 112 | configuration tree |
+| CSS / SCSS / Sass / Less | `CSS` | 110 | stylesheet reader |
+| Kubernetes | `K8` | 109 | configuration tree |
+| Swift | `SW` | 107 | structural parser |
+| Dart / Flutter | `DART` | 100 | dedicated parser (C-family dialect) |
+| XML | `XML` | 99 | markup reader |
+| JSON | `JSON` | 96 | configuration tree |
+| CloudFormation | `CF` | 93 | configuration tree |
+| Rust | `RS` | 35 | structural parser |
+| Secrets (any language) | `SEC` | 24 | token scan over every file |
+| C / C++ | `CC` | 16 | structural parser |
+| Shell | `SH` | 12 | structural parser |
+| SQL | `SQL` | 9 | structural parser |
+| TypeScript-specific | `TS` | 9 | dedicated parser |
+| Razor / XAML | `RAZ`, `XAML` | 7 | markup reader |
+| Scala | — | — | catalogue mapped, rules not written yet |
 
-| Area | Code | Rules |
-| --- | --- | --- |
-| C# / VB.NET | `CS` | 253 |
-| Java | `JV` | 198 |
-| Python | `PY` | 173 |
-| JavaScript | `JS` | 140 |
-| Kotlin | `KT` | 83 |
-| Swift | `SW` | 14 |
-| Multi-language | `ALL` | 94 |
-| Dockerfile | `DK` | 21 |
-| CSS / SCSS / Sass / Less | `CSS` | 19 |
-| HTML | `HTML` | 41 |
-| Dart / Flutter | `DART` | 7 |
-| Secrets (every language) | `SEC` | 5 |
-| JSON | `JSON` | 3 |
-| PHP | `PP` | 76 |
-| Rust | `RS` | 37 |
-| Go | `GO` | 28 |
-| Ruby | `RB` | 26 |
-| C / C++ | `CC` | 16 |
-| Terraform | `TF` | 21 |
-| Kubernetes | `K8` | 14 |
-| Shell | `SH` | 13 |
-| TypeScript-specific | `TS` | 10 |
-| SQL | `SQL` | 9 |
-| Razor / XAML / XML | `RAZ`, `XAML`, `XML` | 11 |
+TypeScript, Sass, SCSS, Less, JSX/TSX and VB.NET are analysed by the rules of the language they
+extend, so their own row only counts what is specific to them.
+
+### The default profile
+
+A catalogue is not a profile. The reference engines ship around half of their checks disabled out of
+the box — method naming, magic numbers, metric thresholds, stylistic preferences — and QualityGuard
+follows the same split: `tools/import_profile.py` reads their default profiles, maps them onto our
+identifiers through the coverage tracker and writes `Rules/DefaultProfile.cs`. Rules outside every
+default profile stay loaded and documented, and run only with `--all-rules`.
+
+```bash
+python tools/import_profile.py --reference <analyzers>   # rebuild the profile
+dotnet run --project src/QualityGuard.Cli -- --path ./src --all-rules
+```
 
 Every rule ships an English **summary**, a **why is this an issue** explanation and a **how to fix**
 section; the CLI prints the fix guidance with `--fix-hints`, and SARIF carries it in the rule
@@ -515,33 +530,76 @@ rule that produces noise is rewritten on the syntax tree or removed, and every f
 was fixed is pinned by a regression test — written next to the shape the rule must still report — so
 the precision cannot be lost again silently.
 
-**514 tests** cover the parsers, the semantic model, taint, the scanner and rule precision.
+**575 tests** cover the parsers, the semantic model, taint, the scanner and rule precision. Every
+false positive that was ever fixed has one of them, written next to the shape the rule must still
+report, so precision cannot be lost again in silence.
 
 ### Noise, measured per language
 
-Precision is not an opinion, so it is kept as a number per language on projects nobody here wrote.
-`tools/noise_audit.py` runs the engine over each of them, ranks the rules most likely to be noise —
-by density, by how far one file dominates their findings, by how often they land on a line another
-rule already took — and compares against a stored baseline, so a change to a shared part of the
-engine cannot quietly wreck a language nobody was looking at. That guard has already caught one: a
-rule about indentation reached Go, where tabs are the convention, and produced fifteen thousand
-findings in a single run.
+Precision is not an opinion, so it is a number, measured on projects nobody here wrote: one or two
+public repositories per language, plus two real applications the author owns — the harshest test,
+because they are real legacy rather than a curated library.
 
-| project | language | findings per 1k lines |
-| --- | --- | --- |
-| a production C# application | C# | 29.5 |
-| guzzle | PHP | 36.8 |
-| gson | Java | 40.9 |
-| express | JavaScript | 42.7 |
-| gin | Go | 46.0 |
-| flask | Python | 63.7 |
-| requests | Python | 67.1 |
+| Project | Language | ncloc | Findings | Per 1k lines |
+| --- | --- | ---: | ---: | ---: |
+| terraform-google-kubernetes-engine, terraform-aws-rds | Terraform | 55 560 | 112 | **2.0** |
+| express | JavaScript | 14 730 | 52 | **3.5** |
+| rails | Ruby | 281 755 | 1 339 | **4.8** |
+| guzzle | PHP | 48 147 | 437 | **9.1** |
+| ripgrep | Rust | 42 211 | 573 | **13.6** |
+| okio | Kotlin | 44 514 | 617 | **13.9** |
+| Alamofire | Swift | 26 592 | 372 | **14.0** |
+| gson | Java | 47 559 | 686 | **14.4** |
+| cobra, gin | Go | 30 723 | 527 | **17.2** |
+| axios, nest | TypeScript | 36 073 | 644 | **17.9** |
+| Newtonsoft.Json | C# | 126 652 | 2 423 | **19.1** |
+| requests, flask, a private application | Python | 42 955 | 921 | **21.4** |
+| a WebForms application from 2010 | C# | 152 731 | 8 481 | **55.5** |
 
-One measure that moved all of them at once: a cap on how many times a single rule may speak about one
-file. A generated documentation page produced four hundred and seventy-five findings from one rule
-about a retired markup tag — every one of them true, and past the first few, useless. The twentieth
-finding now carries the total and the rest are left out, which took a fifth off the noise of some
-projects without hiding anything.
+The last row is the point of the table rather than an embarrassment: **density measures the code, not
+the engine**. That application really does carry a thousand trivial properties wrapping a field, eight
+hundred blocks of commented-out code and hundreds of dead stores — a sample read by hand puts the
+false positives there at roughly one in ten. What the engine is judged on is that ratio, not the size
+of the number.
+
+### How the false-positive rate is measured
+
+Density and precision are different questions. Precision is answered by reading a sample:
+
+```bash
+python tools/sample_findings.py --path <repo> --include "**/*.kt" --size 26 --out review.tsv
+# judge each row ok / fp, then
+python tools/sample_findings.py --score review.tsv
+```
+
+`tools/noise_audit.py` ranks the rules most likely to be noise — by density, by how far one file
+dominates their findings, by how often they land on a line another rule already took — and prints
+every finding of one rule with `--rule`, which is how a family is picked to work on:
+
+```bash
+python tools/noise_audit.py --path <repo> --arg="--include" --arg="**/*.cs"
+python tools/noise_audit.py --path <repo> --rule QG-CS-SML-0497 --show 20
+```
+
+Two measures moved every language at once. The first is a cap on how many times a single rule may
+speak about one file: the twentieth finding carries the total and the rest are left out. The second
+is the default profile — the conventions the reference engines ship disabled are disabled here too,
+which is why the naming and magic-number rules no longer dominate a report.
+
+### What reading their implementation gives that guessing does not
+
+Every entry below is a condition the reference engines have and this one did not, found by reading
+their check after a sample had shown the false positive:
+
+* **an unused parameter** is reported only on a private, top-level or anonymous function — a
+  signature somebody else can call is not a decision that file gets to revisit;
+* **a duplicated literal** needs three occurrences and five characters, and never counts in tests;
+* **a magic number** excludes −1, 0, 1, anything inside an annotation, `hashCode`, and above all a
+  literal that already initialises a named constant;
+* **a `when` over a sealed hierarchy** is already exhaustive, so asking it for an `else` asks for a
+  branch the compiler calls unreachable;
+* **an infinite loop** is only the one no `break`, `return` or `throw` ever leaves;
+* **an empty catch** in `try { x; fail() } catch {}` is how a test states its expectation.
 
 ```bash
 dotnet build QualityGuard.sln
