@@ -1,0 +1,48 @@
+- key: QG-PY-BUG-0251
+  name: A class should not list the same base twice
+  languages: [py]
+  category: BUG
+  severity: major
+  effort: 5min
+  tags: [suspicious]
+  message: This base class is named twice in the same declaration.
+  summary: A class declaration repeats one of its base classes.
+  why: |
+    The language resolves the order once and keeps the first appearance, so the second changes
+    nothing. It is there because a name was edited and the old one left behind, or because the base
+    that was meant to be second is now missing — and the class inherits less than it appears to.
+  fix: |
+    Delete the repeat, or replace it with the base that was meant to be there.
+
+- key: QG-PY-BUG-0252
+  name: A class should not define the same field twice
+  languages: [py]
+  category: BUG
+  severity: major
+  effort: 5min
+  tags: [suspicious]
+  message: This field is given a value twice in the same class body.
+  summary: A class body assigns the same field name more than once.
+  why: |
+    The class keeps the last value, so the first assignment is dead code that reads as though it took
+    effect. Where the two were meant to be different fields, one of them no longer exists and every
+    read of it silently gets the other.
+  fix: |
+    Remove the assignment that does nothing, or give the second field the name it was meant to have.
+
+- key: QG-PY-SML-0414
+  name: A dictionary comprehension should vary its key
+  languages: [py]
+  category: SML
+  severity: major
+  effort: 10min
+  tags: [suspicious]
+  message: The key of this comprehension never changes, so the result holds one entry.
+  summary: A dictionary comprehension uses a constant key.
+  why: |
+    Every turn of the loop writes over the entry the last one made, so a comprehension that looks
+    like it builds a table leaves a dictionary with a single item in it. The reader sees a loop and
+    expects many.
+  fix: |
+    Derive the key from what is being iterated, or build a list if one entry per key was not the
+    intention.

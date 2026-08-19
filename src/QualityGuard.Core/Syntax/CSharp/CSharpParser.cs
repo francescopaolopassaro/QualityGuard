@@ -133,6 +133,10 @@ public sealed class CSharpParser
 
     private bool IsKotlin => _dialect == CFamilyDialect.Kotlin;
 
+    /// <summary>Dialects where a newline ends a statement, so a jump takes nothing from the next line.</summary>
+    private bool HasOptionalSemicolons => _dialect is CFamilyDialect.Kotlin or CFamilyDialect.Go
+        or CFamilyDialect.JavaScript or CFamilyDialect.TypeScript;
+
     private string[] ModifierWords => _dialect switch
     {
         CFamilyDialect.Java => JavaModifiers,
@@ -458,6 +462,11 @@ public sealed class CSharpParser
         {
             // 'ref' is a modifier only in front of a type or another modifier
             if (!IsJava && Is("ref") && PeekText() is "(" or ";")
+                break;
+            // 'fun' is a modifier only in 'fun interface'. Taken as one everywhere else it swallowed
+            // the keyword that opens the declaration, so 'internal fun Pointer.read()' was read as a
+            // call and the whole file below it became one expression.
+            if (IsKotlin && Is("fun") && PeekText() != "interface")
                 break;
             modifiers.Add(Take().Text);
         }
@@ -2622,14 +2631,38 @@ public sealed class CSharpParser
             if (Is("("))
             {
                 Accept("(");
-                var type = ParseType();
-                catchNode.Add(type);
-                if (IsIdentifier)
+                // Kotlin writes the name first and the type after a colon — 'catch (e: IOException)'
+                // and 'catch (_: IOException)'. Read as 'Type name' the parser stopped at the colon
+                // and left the rest of the clause loose in the enclosing block, where every rule read
+                // it as code that runs after the try.
+                if (IsKotlin)
                 {
-                    var name = Take().Text;
-                    var variable = new SyntaxNode(NodeKind.VariableDeclaration, name, type.Range, type.Tokens);
-                    variable.Add(type);
-                    catchNode.Add(variable);
+                    var name = IsIdentifier || Is("_") ? Take().Text : string.Empty;
+                    SyntaxNode? type = null;
+                    if (Accept(":"))
+                        type = ParseType();
+                    if (type != null)
+                    {
+                        catchNode.Add(type);
+                        if (name.Length > 0 && name != "_")
+                        {
+                            var declared = new SyntaxNode(NodeKind.VariableDeclaration, name, type.Range, type.Tokens);
+                            declared.Add(type);
+                            catchNode.Add(declared);
+                        }
+                    }
+                }
+                else
+                {
+                    var type = ParseType();
+                    catchNode.Add(type);
+                    if (IsIdentifier)
+                    {
+                        var name = Take().Text;
+                        var variable = new SyntaxNode(NodeKind.VariableDeclaration, name, type.Range, type.Tokens);
+                        variable.Add(type);
+                        catchNode.Add(variable);
+                    }
                 }
                 Accept(")");
             }
@@ -2707,7 +2740,24 @@ public sealed class CSharpParser
         if (keyword == "yield" && (Is("return") || Is("break")))
             keyword += " " + Take().Text;
         var node = Node(NodeKind.Jump, start, keyword);
-        if (!Is(";") && !AtEnd)
+        var keywordLine = _tokens[start].Line;
+        // 'break' and 'continue' carry a label at most, and in a language without semicolons the
+        // statement ends with the line. Reading an expression after them swallowed the brace that
+        // closed the block, so everything written after the branch moved inside it — and every rule
+        // that reasons about what follows a jump answered on the wrong shape.
+        var carriesNothing = keyword is "break" or "continue"
+                             || (!Is(";") && !AtEnd && Current!.Line > keywordLine && HasOptionalSemicolons);
+        if (carriesNothing)
+        {
+            if (keyword is "break" or "continue" && !AtEnd && Current!.Line == keywordLine
+                && (Is("@") || IsIdentifier))
+            {
+                Accept("@");
+                if (IsIdentifier)
+                    Take();
+            }
+        }
+        else if (!Is(";") && !AtEnd)
         {
             if (ParseExpression() is { } value)
                 node.Add(value);

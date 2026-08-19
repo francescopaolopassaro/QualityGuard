@@ -75,7 +75,7 @@ public sealed class TerraformUnencryptedStorageRule : ConfigRuleBase
     /// the provider split the setting into its own resource, a bucket without an encryption block is
     /// the normal shape, and reporting it would flag every bucket in every project.
     /// </summary>
-    private static readonly string[] StorageTypes =
+    internal static readonly string[] StorageTypes =
     [
         "_ebs_volume", "_efs_file_system", "_rds_cluster", "_db_instance", "_dynamodb_table",
         "_elasticsearch_domain", "_opensearch_domain", "_sagemaker_notebook_instance",

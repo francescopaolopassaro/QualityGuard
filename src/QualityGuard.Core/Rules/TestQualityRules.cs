@@ -136,6 +136,30 @@ public abstract class TestRuleBase : RuleBase
     protected static bool IsTestCode(IRuleContext context)
         => Rules.Languages.LanguageRuleSupport.IsTestFile(context.File.Path, context.File.FileName);
 
+    /// <summary>
+    /// The same question when the tree cannot answer it: '@Test fun x()' written on one line does not
+    /// reach the tree as an annotation, so the marker is looked for in the tokens of the line the
+    /// function opens on and the line above it. Without this every Kotlin test class read as empty.
+    /// </summary>
+    protected static bool IsTestFunction(IRuleContext context, SyntaxNode function)
+    {
+        if (IsTestFunction(function))
+            return true;
+        foreach (var token in context.Tokens)
+        {
+            if (token.Line < function.Line - 1 || token.Line > function.Line)
+                continue;
+            if (token.Text.Length > 1 && token.Text[0] == '@'
+                && TestAnnotations.Any(t => token.Text.Contains(t, StringComparison.OrdinalIgnoreCase)))
+                return true;
+            if (token.Text == "@")
+                continue;
+            if (TestAnnotations.Any(t => string.Equals(token.Text, t, StringComparison.OrdinalIgnoreCase)))
+                return true;
+        }
+        return false;
+    }
+
     protected static bool IsTestFunction(SyntaxNode function)
         => function.ChildrenOf(NodeKind.Attribute).Any(a => TestAnnotations.Any(
                t => a.Text.Contains(t, StringComparison.OrdinalIgnoreCase)))
@@ -724,7 +748,7 @@ public abstract class TestClassWithoutTestsRule : TestRuleBase
             var functions = type.OfKind(NodeKind.FunctionDeclaration)
                 .Where(f => f.Ancestor(NodeKind.ClassDeclaration) == type)
                 .ToList();
-            if (functions.Count == 0 || functions.Any(IsTestFunction))
+            if (functions.Count == 0 || functions.Any(f => IsTestFunction(context, f)))
                 continue;
 
             context.Report(type, $"'{type.Text}' is named as a test class but holds no test: the suite runs "

@@ -213,10 +213,6 @@
     another case. Reordering the cases later can also change which clause the eye associates with it.
   fix: |
     Move the default clause to the end of the switch, or to the top when it acts as a guard.
-  detect:
-    - line: "^\\s*default\\s*:"
-      requires: [switch]
-      absent: [switch expression]
 
 - key: QG-CS-SML-0064
   name: Empty clauses should be removed
@@ -234,8 +230,6 @@
   fix: |
     Delete the clause, or add the handling it needs. If the case is deliberately ignored, keep it with a
     comment stating why.
-  detect:
-    - line: "^\\s*default\\s*:\\s*(break\\s*;)?\\s*$"
 
 - key: QG-CS-SML-0066
   name: Controller actions should declare their HTTP verb
@@ -434,8 +428,6 @@
     used to be — so a reader assumes something was meant to be there.
   fix: |
     Remove the marker, or write the explanation the code needs.
-  detect:
-    - line: "^\\s*(//+|'+)\\s*$"
 
 - key: QG-CS-SML-0076
   name: Archive extraction should be bounded

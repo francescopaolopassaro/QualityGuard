@@ -58,7 +58,8 @@ public sealed record LanguageInfo(
     StringDelimiter[] StringDelimiters,
     bool HashComments,
     bool NestingBlockComments,
-    bool CaseInsensitiveKeywords = false)
+    bool CaseInsensitiveKeywords = false,
+    bool LineDirectives = false)
 {
     public bool MatchesExtension(string path)
     {

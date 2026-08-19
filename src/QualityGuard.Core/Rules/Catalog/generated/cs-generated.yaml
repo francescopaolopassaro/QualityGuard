@@ -50,6 +50,7 @@
   effort: 15min
   tags: [naming, generated]
   generated: true
+  status: planned
 
   message: This identifier does not follow the naming convention of the codebase.
   summary: An identifier does not follow the convention used by the rest of the code.
@@ -59,8 +60,6 @@
   fix: |
     Rename the identifier to match the convention, and let the editor propagate the change so callers
     stay in sync.
-  detect:
-    - invocation: [format]
 
 - key: QG-CS-SML-0081
   name: URIs should not be hardcoded in the source
@@ -340,6 +339,7 @@
   effort: 15min
   tags: [sml, generated]
   generated: true
+  status: planned
 
   message: This code is harder to read or change than the behaviour requires.
   summary: The code works but is harder to read or change than the behaviour requires.
@@ -349,9 +349,6 @@
   fix: |
     Remove what is not used, name what is unclear, and keep one piece of behaviour in one place so the
     next change touches a single spot.
-  detect:
-    - invocation: [Compare, CompareTo, IndexOf, LastIndexOf, ToLower, ToString, ToUpper]
-      receiver: [CompareOptions, CultureInfo, DateTime, NonIntegralNumbers, String, StringComparison]
 
 - key: QG-CS-SML-0108
   name: Copyright and license headers should be resolved rather than left in the code
@@ -640,6 +637,7 @@
   effort: 15min
   tags: [sml, generated]
   generated: true
+  status: planned
 
   message: This code is harder to read or change than the behaviour requires.
   summary: The code works but is harder to read or change than the behaviour requires.
@@ -649,9 +647,6 @@
   fix: |
     Remove what is not used, name what is unclear, and keep one piece of behaviour in one place so the
     next change touches a single spot.
-  detect:
-    - invocation: [GetType, IsAssignableFrom, IsInstanceOfType, ShouldRemoveGetType, UseIsOperator]
-      receiver: [Object, Type]
 
 - key: QG-CS-SML-0133
   name: Arguments should be simplified
@@ -717,6 +712,7 @@
   effort: 15min
   tags: [bug, generated]
   generated: true
+  status: planned
 
   message: This code does not behave the way it reads.
   summary: The code does not do what its shape suggests, or fails on ordinary input.
@@ -726,9 +722,6 @@
   fix: |
     Make the intended behaviour explicit — fix the condition, the operator or the order of operations —
     and cover the case that used to fail with a test.
-  detect:
-    - invocation: [Alignment, AppendFormat, Format, Index, TraceError, TraceInformation, TraceWarning, Write]
-      receiver: [Console, Debug, IFormatProvider, StreamWriter, String, StringBuilder]
 
 - key: QG-CS-SML-0134
   name: Field-like events should be simplified
@@ -1390,7 +1383,7 @@
   effort: 15min
   tags: [avoid_api, generated]
   generated: true
-  status: ready
+  status: planned
   message: This API should be replaced by the current alternative.
   summary: Code calls an API that is unsafe, obsolete or superseded by a better alternative.
   why: |
@@ -1400,10 +1393,6 @@
   fix: |
     Replace the call with the current API, and keep the old one only behind a compatibility layer that is
     documented and dated.
-  detect:
-    - creation: [Explicit]
-    - invocation: [foreach]
-
 - key: QG-CS-SML-0176
   name: Method calls should be simplified
   languages: [cs]
@@ -1430,7 +1419,7 @@
   effort: 15min
   tags: [avoid_api, generated]
   generated: true
-  status: ready
+  status: planned
   message: This API should be replaced by the current alternative.
   summary: Code calls an API that is unsafe, obsolete or superseded by a better alternative.
   why: |
@@ -1440,11 +1429,6 @@
   fix: |
     Replace the call with the current API, and keep the old one only behind a compatibility layer that is
     documented and dated.
-  detect:
-    - member: [GC.SuppressFinalize]
-    - invocation: [SuppressFinalize]
-      receiver: [GC]
-
 - key: QG-CS-SML-0178
   name: Redundant parentheses should not be used
   languages: [cs]
@@ -3015,7 +2999,7 @@
   effort: 15min
   tags: [avoid_api, generated]
   generated: true
-  status: ready
+  status: planned
   message: This API should be replaced by the current alternative.
   summary: Code calls an API that is unsafe, obsolete or superseded by a better alternative.
   why: |
@@ -3025,11 +3009,6 @@
   fix: |
     Replace the call with the current API, and keep the old one only behind a compatibility layer that is
     documented and dated.
-  detect:
-    - member: [GC.SuppressFinalize]
-    - invocation: [SuppressFinalize]
-      receiver: [GC]
-
 - key: QG-CS-SML-0249
   name: Conditionals should be simplified
   languages: [cs]
@@ -3057,6 +3036,7 @@
   effort: 15min
   tags: [sml, generated]
   generated: true
+  status: planned
 
   message: This code is harder to read or change than the behaviour requires.
   summary: The code works but is harder to read or change than the behaviour requires.
@@ -3066,8 +3046,6 @@
   fix: |
     Remove what is not used, name what is unclear, and keep one piece of behaviour in one place so the
     next change touches a single spot.
-  detect:
-    - invocation: [foreach]
 
 - key: QG-CS-SML-0251
   name: Assemblies should be simplified
@@ -4592,6 +4570,7 @@
   effort: 15min
   tags: [sml, generated]
   generated: true
+  status: planned
 
   message: This code is harder to read or change than the behaviour requires.
   summary: The code works but is harder to read or change than the behaviour requires.
@@ -4601,9 +4580,6 @@
   fix: |
     Remove what is not used, name what is unclear, and keep one piece of behaviour in one place so the
     next change touches a single spot.
-  detect:
-    - invocation: [ToString]
-      receiver: [DateOnly, DateTime, DateTimeOffset, TimeOnly, TimeSpan]
 
 - key: QG-CS-SML-0322
   name: Outdated constructs should be replaced by the recommended alternative

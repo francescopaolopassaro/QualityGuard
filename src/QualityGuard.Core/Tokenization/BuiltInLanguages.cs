@@ -19,7 +19,7 @@ public static class BuiltInLanguages
         ["if", "else", "for", "foreach", "while", "do", "case", "switch", "catch", "&&", "||", "??", "?"],
         "//", "/*", "*/",
         [new("\"", "\""), new("@\"", "\""), new("$\"", "\""), new("$@\"", "\""), new("@$\"", "\""), new("'", "'"), new("\"\"\"", "\"\"\"")],
-        HashComments: false, NestingBlockComments: false);
+        HashComments: false, NestingBlockComments: false, LineDirectives: true);
 
     public static readonly LanguageInfo Java = new(
         "java", [".java"],
@@ -84,7 +84,7 @@ public static class BuiltInLanguages
         ["if", "else", "for", "while", "do", "case", "switch", "catch", "&&", "||", "?"],
         "//", "/*", "*/",
         SingleDouble,
-        HashComments: false, NestingBlockComments: true);
+        HashComments: false, NestingBlockComments: true, LineDirectives: true);
 
     public static readonly LanguageInfo C = new(
         "c", [".c", ".h"],
@@ -95,7 +95,7 @@ public static class BuiltInLanguages
         ["if", "else", "for", "while", "do", "case", "switch", "&&", "||", "?"],
         "//", "/*", "*/",
         SingleDouble,
-        HashComments: false, NestingBlockComments: false);
+        HashComments: false, NestingBlockComments: false, LineDirectives: true);
 
     public static readonly LanguageInfo Php = new(
         "php", [".php"],
@@ -207,7 +207,7 @@ public static class BuiltInLanguages
         // tokenizer; declaring '""' as a second delimiter made an empty literal open a string that
         // ran to the next '""' in the file — usually several lines of code later.
         [new("\"", "\"")],
-        HashComments: true, NestingBlockComments: false);
+        HashComments: true, NestingBlockComments: false, LineDirectives: true);
 
     public static readonly LanguageInfo Dart = new(
         "dart", [".dart"],

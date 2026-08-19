@@ -111,4 +111,193 @@ public class CSharpPrecisionTests
             """;
         Assert.Empty(Lines(code, "QG-CS-BUG-0003"));
     }
+    [Fact]
+    public void A_directive_is_not_code()
+    {
+        // '#if false' used to open a branch that swallowed the declarations under it, and '#endif'
+        // turned the line after it into a field named 'public'
+        var code = """
+            public class C
+            {
+            #if false
+                [Test]
+                public void Old() { }
+            #endif
+
+                public override string ToString() => "c";
+            }
+            """;
+        Assert.Empty(Lines(code, "QG-CS-SML-0012"));
+    }
+
+    [Fact]
+    public void A_blank_line_inside_a_licence_header_is_not_an_empty_comment()
+    {
+        var code = """
+            // Copyright (c) someone
+            //
+            // Permission is hereby granted, free of charge, to any person
+            public class C
+            {
+            }
+            """;
+        Assert.Empty(Lines(code, "QG-CS-SML-0075"));
+    }
+
+    [Fact]
+    public void A_marker_standing_on_its_own_is_an_empty_comment()
+    {
+        var code = """
+            public class C
+            {
+                public void M()
+                {
+                    //
+                    var x = 1;
+                }
+            }
+            """;
+        Assert.NotEmpty(Lines(code, "QG-CS-SML-0075"));
+    }
+
+    [Fact]
+    public void A_default_written_last_is_where_it_belongs()
+    {
+        var code = """
+            public class C
+            {
+                public int M(int v)
+                {
+                    switch (v)
+                    {
+                        case 1:
+                            return 1;
+                        default:
+                            throw new ArgumentOutOfRangeException();
+                    }
+                }
+            }
+            """;
+        Assert.Empty(Lines(code, "QG-CS-SML-0063"));
+        Assert.Empty(Lines(code, "QG-CS-SML-0064"));
+    }
+
+    [Fact]
+    public void A_default_between_two_cases_is_reported()
+    {
+        var code = """
+            public class C
+            {
+                public int M(int v)
+                {
+                    switch (v)
+                    {
+                        case 1:
+                            return 1;
+                        default:
+                            return 0;
+                        case 2:
+                            return 2;
+                    }
+                }
+            }
+            """;
+        Assert.NotEmpty(Lines(code, "QG-CS-SML-0063"));
+    }
+
+    [Fact]
+    public void A_serialised_example_pasted_in_a_comment_is_not_commented_out_code()
+    {
+        var code = """
+            public class C
+            {
+                public void M()
+                {
+                    Write(o);
+                    // {
+                    //   "$id": "1",
+                    //   "Name": "My Documents"
+                    // }
+                }
+            }
+            """;
+        Assert.Empty(Lines(code, "QG-CS-SML-0524"));
+    }
+
+    [Fact]
+    public void A_block_of_commented_out_statements_is_reported_once()
+    {
+        var code = """
+            public class C
+            {
+                public void M()
+                {
+                    // var reader = new JsonReader(input);
+                    // reader.Read();
+                    // reader.Close();
+                    var x = 1;
+                }
+            }
+            """;
+        Assert.Single(Lines(code, "QG-CS-SML-0524"));
+    }
+
+    [Fact]
+    public void A_stream_that_only_lives_in_memory_is_not_asked_to_be_disposed()
+    {
+        var code = """
+            public class C
+            {
+                public byte[] M(string s)
+                {
+                    MemoryStream ms = new MemoryStream(Encoding.UTF8.GetBytes(s));
+                    return ms.ToArray();
+                }
+            }
+            """;
+        Assert.Empty(Lines(code, "QG-CS-SML-0020"));
+    }
+    [Fact]
+    public void An_italian_comment_is_not_an_unfinished_task()
+    {
+        // "metodo" contains "todo", and matching the marker as a substring turned every
+        // documentation comment on an Italian code base into a task left open
+        var code = """
+            public class C
+            {
+                /// <summary>
+                /// Metodo per pulire le variabili globali
+                /// </summary>
+                public void M()
+                {
+                }
+            }
+            """;
+        Assert.Empty(Lines(code, "QG-CS-SML-0503"));
+    }
+
+    [Fact]
+    public void A_marker_written_as_a_word_is_still_reported()
+    {
+        var code = """
+            public class C
+            {
+                public void M()
+                {
+                    // TODO: handle the empty case
+                    var x = 1;
+                }
+            }
+            """;
+        Assert.NotEmpty(Lines(code, "QG-CS-SML-0503"));
+    }
+
+    [Fact]
+    public void A_generated_file_is_not_scanned_at_all()
+    {
+        // the anchor rewrite corrupted every glob with a '*', so '*.designer.cs' matched nothing and
+        // the default exclusions were silently off
+        var pattern = QualityGuard.Core.Analysis.SourceScanner.GlobToRegex("*.designer.cs");
+        Assert.Matches("^" + pattern[1..], "Page.aspx.designer.cs");
+    }
 }

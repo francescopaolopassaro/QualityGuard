@@ -1,0 +1,107 @@
+# Descriptions for the cloud provider rules implemented in Rules/Languages/CloudRules.cs.
+# They read the file as a tree of blocks (Analysis/ConfigTree.cs), so a setting is judged inside the
+# resource that owns it. Resources whose encryption flag is already read by QG-TF-SEC-0063 are left
+# to that rule, so the same line never carries two ids.
+
+- key: QG-TF-SEC-0071
+  name: Stored data should be encrypted
+  languages: [tf]
+  category: SEC
+  severity: critical
+  effort: 20min
+  cwe: [311]
+  tags: [infrastructure, encryption]
+  summary: A storage resource turns its encryption setting off explicitly.
+  why: |
+    The flag was written by someone, which means the resource was created encrypted and then made
+    plain on purpose. Whatever it holds is readable to anyone who reaches the media underneath it — a
+    snapshot copied for a test, a disk returned at the end of its life, a backup that travels — and
+    none of those paths go through the access control the application relies on.
+  fix: |
+    Remove the flag or set it back on, and name the key the organisation controls so access can be
+    withdrawn without moving the data.
+
+- key: QG-TF-SEC-0072
+  name: A managed database should require an encrypted connection
+  languages: [tf]
+  category: SEC
+  severity: critical
+  effort: 20min
+  cwe: [319]
+  tags: [infrastructure, encryption, network]
+  summary: A managed database is declared without requiring TLS from its clients.
+  why: |
+    When the server accepts both, the weakest client decides: one service configured years ago sends
+    the credentials and every row that follows them in clear, across a network nobody audits. The
+    setting is on the server precisely because the clients cannot be trusted to agree.
+  fix: |
+    Require the encrypted transport on the instance, then fix the clients that fail to connect — the
+    failure is the point, it names them.
+
+- key: QG-TF-SEC-0073
+  name: An encryption key should be rotated
+  languages: [tf]
+  category: SEC
+  severity: major
+  effort: 20min
+  cwe: [320]
+  tags: [infrastructure, encryption]
+  summary: An encryption key is declared with no rotation period.
+  why: |
+    Without rotation one key protects the whole history of what it ever encrypted, so a copy that
+    leaks stays useful forever and covers everything rather than one window. Rotation is also the only
+    thing that makes an old key harmless without re-encrypting anything by hand.
+  fix: |
+    Set a rotation period on the key. Where the provider cannot rotate the key in place, plan the
+    replacement explicitly instead of leaving the field absent.
+
+- key: QG-TF-SEC-0074
+  name: A DNS zone should sign its answers
+  languages: [tf]
+  category: SEC
+  severity: major
+  effort: 20min
+  cwe: [345]
+  tags: [infrastructure, network]
+  summary: A DNS zone is declared without signing, or with signing switched off.
+  why: |
+    An unsigned answer cannot be told apart from one injected on the path, so whoever replies first
+    decides where the traffic for this domain goes. The clients cannot detect it and the certificate
+    the destination presents is issued to whatever name the attacker controls.
+  fix: |
+    Turn signing on for the zone and publish the delegation record at the registrar, otherwise the
+    signatures are never checked.
+
+- key: QG-TF-SEC-0075
+  name: A machine should not accept project-wide keys
+  languages: [tf]
+  category: SEC
+  severity: critical
+  effort: 20min
+  cwe: [284]
+  tags: [infrastructure, access-control]
+  summary: An instance is declared so that keys registered for the whole project can log into it.
+  why: |
+    Access to the machine then follows a list nobody maintains: it grows with every person who needed
+    a shell on any machine in the project, and it is never pruned when they move on. The host that
+    matters ends up as reachable as the least important one.
+  fix: |
+    Block the project keys on the instance and attach the keys that this machine is meant to accept,
+    so the grant is visible where the machine is declared.
+
+- key: QG-TF-SEC-0076
+  name: A role should not be granted over an entire subscription
+  languages: [tf]
+  category: SEC
+  severity: critical
+  effort: 20min
+  cwe: [732]
+  tags: [infrastructure, access-control]
+  summary: A role assignment is scoped to a whole subscription instead of a resource group.
+  why: |
+    The grant covers resources that do not exist yet, created later by people who never read this
+    file, so the permission keeps widening on its own. It also removes any chance of telling from the
+    code what an identity can actually reach.
+  fix: |
+    Scope the assignment to the resource group the identity works in, and add a second assignment
+    where another group is genuinely needed.

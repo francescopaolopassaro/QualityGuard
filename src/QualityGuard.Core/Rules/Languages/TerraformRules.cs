@@ -243,18 +243,77 @@ public sealed class TerraformHardcodedSecretRule : PatternRuleBase
     public override string FixAdvice => "Reference secrets from a secure store or variable instead of a literal.";
     public override string[] Languages => ["tf"];
 
-    private static readonly string[] SecretKeys = ["password", "secret", "token", "api_key"];
+    private static readonly string[] SecretWords =
+        ["password", "passwd", "passphrase", "secret", "token", "apikey", "credential"];
+
+    /// <summary>Two-word spellings, which the word split below would otherwise take apart.</summary>
+    private static readonly string[] SecretPairs =
+        ["api_key", "access_key", "private_key", "secret_key", "auth_key", "client_secret"];
+
+    /// <summary>
+    /// Endings that name a secret rather than hold one: the identifier of a vault entry, the file it
+    /// is read from, the algorithm that protects it. Reading the whole line meant every one of these
+    /// counted as a leak, and on real modules that was most of the reports.
+    /// </summary>
+    private static readonly string[] NamingSuffixes =
+        ["_type", "_id", "_name", "_arn", "_ref", "_file", "_path", "_uri", "_url", "_version",
+         "_algorithm", "_length", "_rotation", "_enabled", "_policy", "_provider", "_field", "_format"];
+
+    /// <summary>Values that declare the absence of a secret, or a switch that happens to be near one.</summary>
+    private static readonly string[] NonSecrets = ["none", "null", "true", "false", "n/a", "-", "auto", "default"];
 
     public override void Execute(IRuleContext context)
     {
-        var lines = context.File.Content.Split('\n');
-        for (var i = 0; i < lines.Length; i++)
+        foreach (var node in context.Config.Descendants())
         {
-            if (!TerraformLine.HasLiteralAssignment(lines[i]))
+            if (node.Children.Count > 0 || node.Value.Length == 0)
                 continue;
-            if (SecretKeys.Any(k => RuleMatchers.LineContains(lines[i], k)))
-                context.Report("Do not hardcode secrets in configuration.", i + 1);
+            if (!NamesASecret(node.Key) || !IsLiteral(node.Value))
+                continue;
+            // the database admin password has its own rule, and one line deserves one id
+            if (node.Key.Equals("master_password", StringComparison.OrdinalIgnoreCase))
+                continue;
+
+            context.Report("This value is a secret written into the configuration, so it is readable "
+                           + "by everyone with the repository and it stays in the history after the "
+                           + "line is changed. Read it from a secret store or a variable instead.",
+                node.Line);
         }
+    }
+
+    private static bool NamesASecret(string key)
+    {
+        var lower = key.ToLowerInvariant();
+        if (lower is "description" or "name" or "type" or "comment")
+            return false;
+        if (NamingSuffixes.Any(s => lower.EndsWith(s, StringComparison.Ordinal)))
+            return false;
+        if (SecretPairs.Any(p => lower.Contains(p, StringComparison.Ordinal)))
+            return true;
+
+        // the word has to be the whole part of the identifier: 'secret_type' names an entry,
+        // 'token_bucket' is a rate limiter, and neither holds anything
+        return lower.Split('_', '-', '.').Any(part => SecretWords.Contains(part, StringComparer.Ordinal));
+    }
+
+    /// <summary>
+    /// Whether the value was written in the file rather than fetched. A reference, an interpolation
+    /// and a function call all mean the secret lives somewhere else, which is the point of the rule.
+    /// </summary>
+    private static bool IsLiteral(string value)
+    {
+        var trimmed = value.Trim();
+        if (trimmed.Length < 3 || NonSecrets.Contains(trimmed, StringComparer.OrdinalIgnoreCase))
+            return false;
+        if (trimmed.Contains("${", StringComparison.Ordinal) || trimmed.Contains('(')
+            || trimmed.StartsWith('[') || trimmed.StartsWith('{'))
+            return false;
+        if (trimmed.All(c => char.IsDigit(c) || c == '.'))
+            return false;
+
+        var head = trimmed.Split('.')[0];
+        return head is not ("var" or "local" or "locals" or "data" or "module" or "each" or "count"
+            or "path" or "self" or "terraform");
     }
 }
 

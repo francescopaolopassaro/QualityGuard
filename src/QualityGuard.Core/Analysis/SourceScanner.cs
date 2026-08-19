@@ -343,7 +343,10 @@ public static class SourceScanner
                 continue;
             // a glob is written against the project ("src/**/*.cs"), while the scanner works with the
             // path the user typed, so the pattern is allowed to start at any directory boundary
-            var pattern = GlobToRegex(glob.Trim()).Replace("^", "^(?:.*/)?", StringComparison.Ordinal);
+            // only the anchor at the front may be rewritten: replacing every '^' also hit the ones
+            // inside character classes, so '*.designer.cs' compiled to a class that refuses dots and
+            // matched nothing — every default exclusion was silently off
+            var pattern = "^(?:.*/)?" + GlobToRegex(glob.Trim())[1..];
             patterns.Add(new Regex(pattern, RegexOptions.IgnoreCase | RegexOptions.CultureInvariant));
         }
         return patterns;

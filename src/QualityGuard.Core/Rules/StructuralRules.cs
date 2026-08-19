@@ -1004,11 +1004,37 @@ public abstract class UnreachableCodeAfterJumpRule : StructuralRuleBase
                 // behind it: 'return withSession { ... }' in Kotlin, and every trailing lambda.
                 if (next.Kind == NodeKind.Block && next.Range.StartLine == children[i].Range.StartLine)
                     continue;
+                // 'return (' followed by the rest of the expression on the next lines: the jump has
+                // not finished yet, and what follows it is its own value, not code left behind
+                if (ExpressionStillOpen(context, children[i]))
+                    continue;
                 context.Report(next, $"This code is unreachable: '{children[i].Text}' on line "
                                      + $"{children[i].Line} always leaves the block first.");
                 break;
             }
         }
+    }
+
+    /// <summary>
+    /// Whether the jump leaves a bracket open on its last line. A parenthesised expression written
+    /// over several lines then continues below it, and reading the continuation as a statement made
+    /// the value of the return look like dead code.
+    /// </summary>
+    private static bool ExpressionStillOpen(IRuleContext context, SyntaxNode jump)
+    {
+        var depth = 0;
+        foreach (var token in context.Tokens)
+        {
+            if (token.Line < jump.Range.StartLine)
+                continue;
+            if (token.Line > jump.Range.EndLine)
+                break;
+            if (token.Text is "(" or "[")
+                depth++;
+            else if (token.Text is ")" or "]")
+                depth--;
+        }
+        return depth > 0;
     }
 }
 
@@ -1611,6 +1637,12 @@ public abstract class IdenticalOperandsRule : StructuralRuleBase
 
     public override void Execute(IRuleContext context)
     {
+        // Without a real parser a Binary node is a guess: prose in a YAML description became
+        // "`X` and `Y`", and a quoted operand lost its quotes, so "a == null || a == \"null\"" read
+        // as the same test twice. Both sides are only comparable on a tree that knows the grammar.
+        if (!HasPreciseTree(context))
+            return;
+
         foreach (var binary in context.Root.OfKind(NodeKind.Binary))
         {
             if (!Operators.Contains(binary.Text, StringComparer.Ordinal))
@@ -2411,6 +2443,11 @@ public abstract class MatchWithoutDefaultRule : StructuralRuleBase
 
     public override void Execute(IRuleContext context)
     {
+        // the generic reader files any key spelled 'match' under NodeKind.Match, so a Gatekeeper
+        // constraint — 'match:' followed by the kinds it applies to — was asked for a default case
+        if (!HasPreciseTree(context))
+            return;
+
         foreach (var match in context.Root.OfKind(NodeKind.Match))
         {
             var body = match.FirstChild(NodeKind.Block);
@@ -2743,6 +2780,23 @@ public abstract class DeadStoreRule : StructuralRuleBase
         if (!HasPreciseTree(context))
             return;
 
+        // Names the type declares. An assignment to one of them inside a method is read by every
+        // other method of the object and by whoever holds it, so it is never dead here — but the
+        // binder sees the write inside the function and files it as a local of that function.
+        var members = new HashSet<string>(StringComparer.Ordinal);
+        foreach (var type in context.Root.OfKind(NodeKind.ClassDeclaration))
+        {
+            foreach (var declaration in type.DescendantsAndSelf())
+            {
+                if (declaration.Kind is not (NodeKind.FieldDeclaration or NodeKind.VariableDeclaration
+                        or NodeKind.PropertyDeclaration)
+                    || declaration.Text.Length == 0
+                    || SyntaxQuery.EnclosingFunction(declaration) != null)
+                    continue;
+                members.Add(declaration.Text);
+            }
+        }
+
         foreach (var symbol in context.Semantics.AllSymbols())
         {
             if (symbol.Scope.Kind is not (ScopeKind.Function or ScopeKind.Block) || symbol.IsParameter)
@@ -2750,6 +2804,8 @@ public abstract class DeadStoreRule : StructuralRuleBase
             // a dotted name is a member of another object: it outlives the statement and is read
             // through the name of the object, which this rule cannot follow
             if (symbol.Name.StartsWith('_') || symbol.Name.Contains('.'))
+                continue;
+            if (members.Contains(symbol.Name))
                 continue;
 
             var usages = symbol.Usages
@@ -2761,6 +2817,7 @@ public abstract class DeadStoreRule : StructuralRuleBase
             // and that is the commoner shape: the assignment is left over from a change
             var last = usages.Count > 0 ? usages[^1] : null;
             if (last is { Kind: UsageKind.Assignment }
+                && !IsCompound(last.Identifier)
                 && !InsideInitializer(last.Identifier) && !SetsAMember(last.Identifier)
                 && !ReadAgainNextTimeRound(last.Identifier, symbol.Name)
                 && usages.Any(u => u.Kind == UsageKind.Reference)
@@ -2871,6 +2928,16 @@ public abstract class DeadStoreRule : StructuralRuleBase
         return parent is { Kind: NodeKind.Assignment }
                && parent.ChildAt(0) is { } left
                && left.DescendantsAndSelf().Contains(identifier);
+    }
+
+    /// <summary>
+    /// Whether the write also reads: '+=' and its relatives take the value that is there, so the
+    /// last one in a loop is what the next round starts from and is never a store nobody reads.
+    /// </summary>
+    private static bool IsCompound(SyntaxNode identifier)
+    {
+        var assignment = identifier.Ancestor(NodeKind.Assignment);
+        return assignment != null && assignment.Text.Length > 1 && assignment.Text.EndsWith('=');
     }
 
     private static bool InsideInitializer(SyntaxNode node)
@@ -3919,6 +3986,11 @@ public abstract class UnusedParameterRule : StructuralRuleBase
             // there because the caller passes it, and removing it breaks the call.
             if (owner != null && owner.ChildrenOf(NodeKind.Attribute).Any())
                 continue;
+            // An event handler is bound to a delegate, so its two parameters are the shape the
+            // framework calls it with — not a choice. This was the single loudest rule on a real
+            // web application, where every button and page hook has this signature.
+            if (owner != null && IsEventHandler(owner))
+                continue;
             // The name of a test's fixture is its request for that fixture, whether or not the body
             // reads it, and a test file is where most of these live.
             if (Rules.Languages.LanguageRuleSupport.IsTestFile(context.File.Path, context.File.FileName))
@@ -3946,6 +4018,21 @@ public abstract class UnusedParameterRule : StructuralRuleBase
             context.Report(declaration.Identifier, $"'{symbol.Name}' is never used in the body; "
                                                    + "remove it or use the value the caller passes.");
         }
+    }
+
+    /// <summary>
+    /// The signature a delegate imposes: a sender and the arguments of the event. Neither can be
+    /// removed, whether or not the body reads them.
+    /// </summary>
+    private static bool IsEventHandler(SyntaxNode owner)
+    {
+        var parameters = owner.FirstChild(NodeKind.ParameterList)?.ChildrenOf(NodeKind.Parameter).ToList();
+        if (parameters is not { Count: 2 })
+            return false;
+        var first = parameters[0].FirstChild(NodeKind.TypeReference)?.Text ?? string.Empty;
+        var second = parameters[1].FirstChild(NodeKind.TypeReference)?.Text ?? string.Empty;
+        return (parameters[0].Text == "sender" && first is "object" or "Object")
+               || second.EndsWith("EventArgs", StringComparison.Ordinal);
     }
 }
 
@@ -7005,38 +7092,73 @@ public abstract class CommentedOutCodeRule : StructuralRuleBase
     public override IssueKind Kind => IssueKind.CodeSmell;
     public override string RemediationEffort => "5min";
 
+    /// <summary>Openings that only code has: prose does not start a branch or a loop.</summary>
+    private static readonly string[] CodeOpenings =
+        ["if (", "for (", "while (", "foreach (", "switch (", "else if (", "await ", "return "];
+
     public override void Execute(IRuleContext context)
     {
-        foreach (var comment in context.Tokens.Where(t => t.Kind == Tokenization.TokenKind.Comment))
+        foreach (var block in Blocks(context))
         {
-            var text = comment.Text.TrimStart('/', '*', '#', '-', ' ', '\t');
-            if (text.Length > 200)
-                continue;
-            if (text.Length < 12 && text.Trim() is not ("{" or "}" or "});" or "};"))
-                continue;
-            // A brace on its own is code: prose does not open blocks. So is a line that ends in a
-            // terminator and carries a call, an assignment or a keyword that only code uses.
-            var trimmed = text.Trim();
-            // a comment that opens a control structure is code whatever it ends with
-            var opensCode = trimmed.StartsWith("if (", StringComparison.Ordinal)
-                            || trimmed.StartsWith("for (", StringComparison.Ordinal)
-                            || trimmed.StartsWith("while (", StringComparison.Ordinal)
-                            || trimmed.StartsWith("foreach (", StringComparison.Ordinal)
-                            || trimmed.StartsWith("switch (", StringComparison.Ordinal)
-                            || trimmed.StartsWith("else if (", StringComparison.Ordinal)
-                            || trimmed.StartsWith("await ", StringComparison.Ordinal)
-                            || trimmed.StartsWith("return ", StringComparison.Ordinal);
-            var looksLikeCode = opensCode
-                                || trimmed is "{" or "}" or "});" or "};"
-                                || ((text.EndsWith(';') || text.EndsWith('{') || text.EndsWith('}'))
-                                    && (text.Contains('=') || text.Contains('(')
-                                        || text.Contains("return") || text.Contains("await ")
-                                        || text.Contains("var ") || text.Contains("new ")));
-            if (!looksLikeCode)
+            // one comment block is one decision for the reader: reporting each of its lines turned a
+            // pasted example into eleven issues in a single file
+            if (!HoldsCode(block))
                 continue;
             context.Report("This comment holds code that no longer runs; delete it — "
-                           + "version control already keeps the history.", comment.Line);
+                           + "version control already keeps the history.", block[0].Line);
         }
+    }
+
+    /// <summary>Runs of comment lines that follow one another, each read as one text.</summary>
+    private static IEnumerable<List<Tokenization.Token>> Blocks(IRuleContext context)
+    {
+        var block = new List<Tokenization.Token>();
+        foreach (var comment in context.Tokens.Where(t => t.Kind == Tokenization.TokenKind.Comment))
+        {
+            if (block.Count > 0 && comment.Line > block[^1].Line + 1)
+            {
+                yield return block;
+                block = [];
+            }
+            block.Add(comment);
+        }
+        if (block.Count > 0)
+            yield return block;
+    }
+
+    private static bool HoldsCode(List<Tokenization.Token> block)
+    {
+        var lines = block.Select(t => t.Text.TrimStart('/', '*', '#', '-', ' ', '	').Trim())
+            .Where(l => l.Length > 0).ToList();
+        if (lines.Count == 0)
+            return false;
+
+        // a serialised object pasted next to the call that produced it: the braces and colons look
+        // like code line by line, and the block is data every time
+        var dataLines = lines.Count(l => l.StartsWith('"') && l.Contains("\":"));
+        if (dataLines * 2 >= lines.Count)
+            return false;
+
+        return lines.Any(Statement);
+    }
+
+    /// <summary>A single line that no prose would produce.</summary>
+    private static bool Statement(string line)
+    {
+        if (line.Length > 200)
+            return false;
+        if (CodeOpenings.Any(o => line.StartsWith(o, StringComparison.Ordinal)))
+            return true;
+        if (!line.EndsWith(';') && !line.EndsWith('{') && !line.EndsWith('}'))
+            return false;
+        // a brace alone belongs to whatever surrounds it, and on its own it is as likely to be the
+        // shape of an example as the remains of a block
+        if (line is "{" or "}" or "});" or "};")
+            return false;
+        return line.Contains('=') || line.Contains('(')
+            || line.Contains("return", StringComparison.Ordinal)
+            || line.Contains("var ", StringComparison.Ordinal)
+            || line.Contains("new ", StringComparison.Ordinal);
     }
 }
 
@@ -7608,7 +7730,11 @@ public abstract class DuplicateTypeNameRule : StructuralRuleBase
                 continue;
             var others = context.Project.FindTypes(type.Text)
                 .Where(t => t.File != context.File.Path
-                            && string.Equals(Container(t.Node, t.File), here, StringComparison.OrdinalIgnoreCase))
+                            && string.Equals(Container(t.Node, t.File), here, StringComparison.OrdinalIgnoreCase)
+                            // a multiplatform project writes one type per target — the same name in
+                            // jvmMain, nativeMain and appleMain is the same type compiled for three
+                            // platforms, and only one of them is ever on the classpath at a time
+                            && !DifferentSourceSet(t.File, context.File.Path))
                 .Select(t => System.IO.Path.GetFileName(t.File))
                 .Distinct()
                 .ToArray();
@@ -7621,6 +7747,28 @@ public abstract class DuplicateTypeNameRule : StructuralRuleBase
                                  + "namespace; a reader cannot tell which one an import refers to.");
         }
     }
+    /// <summary>
+    /// Whether two files belong to different platform source sets of the same project, as in
+    /// src/jvmMain and src/nativeMain. Only one of them is compiled into any given binary.
+    /// </summary>
+    private static bool DifferentSourceSet(string first, string second)
+    {
+        var a = SourceSet(first);
+        var b = SourceSet(second);
+        return a.Length > 0 && b.Length > 0 && !string.Equals(a, b, StringComparison.OrdinalIgnoreCase);
+    }
+
+    private static string SourceSet(string path)
+    {
+        var segments = path.Replace('\\', '/').Split('/');
+        for (var i = 0; i < segments.Length - 1; i++)
+        {
+            if (segments[i] == "src" && segments[i + 1].EndsWith("Main", StringComparison.Ordinal))
+                return segments[i + 1];
+        }
+        return string.Empty;
+    }
+
     /// <summary>
     /// What a type is qualified by: the namespace or package it is declared in, and the folder when
     /// the language does not declare one.
@@ -8796,8 +8944,14 @@ public sealed class UnreleasedResourceRuleJson : UnreleasedResourceRule
 
 public abstract class MismatchedComparisonRule : StructuralRuleBase
 {
+    /// <summary>
+    /// Every spelling of a number the languages use. Kotlin writes them capitalised — 'Long' was
+    /// missing here, so 'byteCount == 0L' was reported as a comparison that can never be true.
+    /// </summary>
     private static readonly string[] Numeric =
-        ["int", "long", "short", "byte", "double", "float", "decimal", "number", "Integer", "Double"];
+        ["int", "long", "short", "byte", "double", "float", "decimal", "number", "Integer", "Double",
+         "Int", "Long", "Short", "Byte", "Float", "Number", "UInt", "ULong", "UShort", "UByte",
+         "BigDecimal", "BigInteger", "Decimal", "Single", "Int32", "Int64", "Int16"];
 
     private static readonly string[] Primitive =
         ["int", "long", "short", "byte", "double", "float", "decimal", "number", "bool", "boolean",

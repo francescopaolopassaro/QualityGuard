@@ -208,4 +208,163 @@ public class InfrastructureRulesTests
             """;
         Assert.Empty(Lines("role.yaml", manifest, "QG-K8-SEC-0023"));
     }
+    [Fact]
+    public void A_key_declared_without_rotation_is_reported()
+    {
+        var template = """
+            resource "google_kms_crypto_key" "db" {
+              name     = "db"
+              key_ring = google_kms_key_ring.db.id
+            }
+            """;
+        Assert.NotEmpty(Lines("kms.tf", template, "QG-TF-SEC-0073"));
+    }
+
+    [Fact]
+    public void The_grants_around_a_key_are_not_keys()
+    {
+        // 'crypto_key' as a substring matched the iam member and the key ring, neither of which
+        // holds key material, and that was most of the reports on real modules
+        var template = """
+            resource "google_kms_crypto_key_iam_member" "member" {
+              crypto_key_id = module.kms.keys["db"]
+              role          = "roles/cloudkms.cryptoKeyEncrypterDecrypter"
+            }
+
+            resource "google_kms_key_ring" "ring" {
+              name     = "ring"
+              location = "europe-west1"
+            }
+            """;
+        Assert.Empty(Lines("kms.tf", template, "QG-TF-SEC-0073"));
+    }
+
+    [Fact]
+    public void An_asymmetric_key_is_not_asked_to_rotate()
+    {
+        var template = """
+            resource "google_kms_crypto_key" "attestor" {
+              name    = "attestor-key"
+              purpose = "ASYMMETRIC_SIGN"
+            }
+            """;
+        Assert.Empty(Lines("kms.tf", template, "QG-TF-SEC-0073"));
+    }
+
+    [Fact]
+    public void A_password_written_into_the_file_is_reported()
+    {
+        var template = """
+            resource "google_service_account_key" "k" {
+              client_secret = "s3cr3t-value"
+            }
+            """;
+        Assert.NotEmpty(Lines("main.tf", template, "QG-TF-SEC-0009"));
+    }
+
+    [Fact]
+    public void A_key_that_names_a_secret_instead_of_holding_one_is_left_alone()
+    {
+        var template = """
+            resource "google_gke_hub_feature_membership" "acm" {
+              secret_type      = "none"
+              token_id         = "projects/p/secrets/token"
+              password         = var.database_password
+              api_key          = data.google_secret_manager_secret_version.key.secret_data
+            }
+
+            output "client_token" {
+              description = "The bearer token for auth."
+              sensitive   = true
+            }
+            """;
+        Assert.Empty(Lines("main.tf", template, "QG-TF-SEC-0009"));
+    }
+
+    [Fact]
+    public void Two_different_string_comparisons_are_not_the_same_expression()
+    {
+        // the generic reader drops the quotes, so 'x == null || x == "null"' read as one test twice
+        var template = """
+            locals {
+              workload_identity_enabled = !(var.identity_namespace == null || var.identity_namespace == "null")
+            }
+            """;
+        Assert.Empty(Lines("main.tf", template, "QG-TF-BUG-0028"));
+    }
+
+    [Fact]
+    public void Prose_in_a_manifest_is_not_an_expression()
+    {
+        var manifest = """
+            apiVersion: blueprints.cloud.google.com/v1alpha1
+            kind: BlueprintMetadata
+            spec:
+              interfaces:
+                variables:
+                  - name: security_posture_mode
+                    description: Valid values are `ENABLED` and `LIMITED`.
+            """;
+        Assert.Empty(Lines("metadata.yaml", manifest, "QG-K8-BUG-0028"));
+    }
+    [Fact]
+    public void A_container_granted_a_host_level_capability_is_reported()
+    {
+        var manifest = """
+            apiVersion: v1
+            kind: Pod
+            spec:
+              containers:
+                - name: inline
+                  image: app:1
+                  securityContext:
+                    capabilities:
+                      add: ["SYS_ADMIN"]
+                - name: listed
+                  image: app:1
+                  securityContext:
+                    capabilities:
+                      add:
+                        - NET_ADMIN
+            """;
+        Assert.Equal(2, Lines("pod.yaml", manifest, "QG-K8-SEC-0007").Count);
+    }
+
+    [Fact]
+    public void A_policy_that_forbids_a_capability_is_not_a_container_that_asks_for_it()
+    {
+        var manifest = """
+            apiVersion: constraints.gatekeeper.sh/v1beta1
+            kind: K8sPSPCapabilities
+            metadata:
+              name: capabilities
+            spec:
+              parameters:
+                allowedCapabilities: []
+                requiredDropCapabilities:
+                  - ALL
+                forbiddenCapabilities:
+                  - SYS_ADMIN
+                  - NET_ADMIN
+            """;
+        Assert.Empty(Lines("policy.yaml", manifest, "QG-K8-SEC-0007"));
+    }
+
+    [Fact]
+    public void A_container_that_drops_everything_and_adds_one_capability_is_left_alone()
+    {
+        var manifest = """
+            apiVersion: v1
+            kind: Pod
+            spec:
+              containers:
+                - name: web
+                  image: app:1
+                  securityContext:
+                    capabilities:
+                      drop: ["ALL"]
+                      add: ["NET_BIND_SERVICE"]
+            """;
+        Assert.Empty(Lines("pod.yaml", manifest, "QG-K8-SEC-0007"));
+    }
 }

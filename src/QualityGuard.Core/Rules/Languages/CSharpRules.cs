@@ -8,6 +8,7 @@ public static class CSharpRuleSet
 {
     public static IReadOnlyList<IRule> All { get; } =
     [
+        new CsEmptyCommentRule(),
         new CsPathTraversalRule(),
         new CsUploadedFileNameRule(),
         new CsMutableCollectionPropertyRule(),
@@ -44,7 +45,6 @@ public static class CSharpRuleSet
         new CsInsecureTempFileRule(),
         new CsStringConcatInLoopRule(),
         new CsImplicitToStringRule(),
-        new CsPublicFieldRule(),
         new CsAsyncWithoutAwaitRule(),
         new CsCountInsteadOfAnyRule(),
         new CsDivisionByZeroRule(),
@@ -1147,31 +1147,6 @@ public sealed class CsImplicitToStringRule : PatternRuleBase
     }
 }
 
-public sealed class CsPublicFieldRule : PatternRuleBase
-{
-    public override string Key => "QG-CS-SML-0016";
-    public override string Name => "Public field should be a property";
-    public override Severity Severity => Severity.Minor;
-    public override IssueKind Kind => IssueKind.CodeSmell;
-    public override string RemediationEffort => "10min";
-    public override string FixAdvice => "Expose the field through a private field and a public property.";
-    public override string[] Languages => ["cs", "vb"];
-
-    public override void Execute(IRuleContext context)
-    {
-        foreach (var field in context.Root.OfKind(QualityGuard.Core.Syntax.NodeKind.FieldDeclaration))
-        {
-            var modifiers = field.ChildrenOf(QualityGuard.Core.Syntax.NodeKind.Modifier)
-                .Select(m => m.Text).ToArray();
-            if (!modifiers.Contains("public") && !modifiers.Contains("protected"))
-                continue;
-            if (modifiers.Contains("const") || modifiers.Contains("readonly"))
-                continue;
-            context.Report(field, "Encapsulate this public field in a property.");
-        }
-    }
-}
-
 public sealed class CsAsyncWithoutAwaitRule : PatternRuleBase
 {
     public override string Key => "QG-CS-SML-0017";
@@ -1274,7 +1249,11 @@ public sealed class CsMissingDisposalRule : PatternRuleBase
     public override void Execute(IRuleContext context)
     {
         var lines = CSharpRuleSet.LinesOf(context);
-        string[] disposables = ["FileStream", "StreamReader", "StreamWriter", "MemoryStream", "SqlConnection", "SqlCommand", "OleDbConnection", "HttpClient", "BinaryReader", "BinaryWriter", "SslStream", "TcpClient"];
+        // Types whose Dispose releases something the runtime cannot reclaim on its own. The ones
+        // that only exist in memory — MemoryStream, StringReader, StringWriter — are deliberately
+        // absent: their Dispose does nothing, and asking for it was every single report this rule
+        // produced on a real repository.
+        string[] disposables = ["FileStream", "StreamReader", "StreamWriter", "SqlConnection", "SqlCommand", "OleDbConnection", "HttpClient", "BinaryReader", "BinaryWriter", "SslStream", "TcpClient"];
         for (var i = 0; i < lines.Length; i++)
         {
             var line = lines[i];
@@ -1831,4 +1810,54 @@ public sealed class CsConstNamingRule : PatternRuleBase
                 context.Report("Name this constant in PascalCase.", tokens[j].Line);
         }
     }
+}
+
+/// <summary>
+/// A comment marker with nothing after it. Read line by line this is one of the loudest rules there
+/// is: every licence header separates its paragraphs with a bare '//', and on a real repository that
+/// was thousands of reports for text that is deliberately blank. A comment is a block, and a block
+/// that says something is not empty — only the marker that stands entirely alone is.
+/// </summary>
+public sealed class CsEmptyCommentRule : RuleBase
+{
+    public override string Key => "QG-CS-SML-0075";
+    public override string Name => "Empty comments should be removed";
+    public override Severity Severity => Severity.Minor;
+    public override IssueKind Kind => IssueKind.CodeSmell;
+    public override string RemediationEffort => "2min";
+    public override string FixAdvice => "Remove the marker, or write the explanation the code needs.";
+    public override string[] Languages => ["cs", "vb"];
+
+    public override void Execute(IRuleContext context)
+    {
+        var comments = context.Tokens.Where(t => t.Kind == TokenKind.Comment).ToList();
+        for (var i = 0; i < comments.Count; i++)
+        {
+            if (Says(comments[i]))
+                continue;
+            // a bare marker inside a run of comment lines is a paragraph break in one text
+            if (i > 0 && comments[i - 1].Line >= comments[i].Line - 1)
+                continue;
+            if (i + 1 < comments.Count && comments[i + 1].Line <= comments[i].Line + 1)
+                continue;
+
+            context.Report("This comment marker has nothing after it, so the line only says that an "
+                           + "explanation was meant to be here. Write it or take the marker away.",
+                comments[i].Line);
+        }
+    }
+
+    /// <summary>
+    /// Whether the line says anything. A run of dashes says "a section starts here", which is a
+    /// decision someone made about the shape of the file — it is decoration, not a marker left
+    /// empty, and reporting it was most of what this rule found on a real application.
+    /// </summary>
+    private static bool Says(Token comment)
+    {
+        var text = comment.Text.Trim(MarkerCharacters);
+        return text.Length > 0;
+    }
+
+    private static readonly char[] MarkerCharacters =
+        ['/', '\'', '*', '#', ' ', '\t', '\r', '\n'];
 }

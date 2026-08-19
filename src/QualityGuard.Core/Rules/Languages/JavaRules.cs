@@ -78,6 +78,16 @@ internal static class LanguageRuleSupport
             || normalized.Contains("/spec/", StringComparison.OrdinalIgnoreCase)
             || normalized.Contains("/__tests__/", StringComparison.OrdinalIgnoreCase))
             return true;
+        // a multiplatform project names the source set after the target it tests: commonTest,
+        // jvmTest, nativeTest. Those directories hold nothing but tests, and reading them as
+        // production code made every deliberate empty catch in them a finding.
+        foreach (var segment in normalized.Split('/'))
+        {
+            if (segment.Length > 4 && !segment.Contains('.')
+                && (segment.EndsWith("Test", StringComparison.Ordinal)
+                    || segment.EndsWith("Tests", StringComparison.Ordinal)))
+                return true;
+        }
 
         // the word has to stand at one end of the name: "Latest" and "Contest" contain "test" and
         // have nothing to do with testing, so the camel-case suffixes are matched exactly

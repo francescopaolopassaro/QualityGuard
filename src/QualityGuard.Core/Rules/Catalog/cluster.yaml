@@ -1,0 +1,82 @@
+- key: QG-K8-SML-0063
+  name: A container should ask for the memory it needs
+  languages: [k8]
+  category: SML
+  severity: major
+  effort: 15min
+  tags: [kubernetes, resources]
+  message: This container declares no memory request.
+  summary: A container is declared without a memory request.
+  why: |
+    The request is what the scheduler reserves before placing the pod. With none, it treats the
+    container as needing nothing and puts it on a node that is already committed elsewhere — and when
+    that node runs short, a pod that asked for nothing is the first thing evicted.
+  fix: |
+    Declare resources.requests.memory, using what the container actually uses at rest as the figure.
+
+- key: QG-K8-SML-0064
+  name: A container should ask for the processor time it needs
+  languages: [k8]
+  category: SML
+  severity: major
+  effort: 15min
+  tags: [kubernetes, resources]
+  message: This container declares no cpu request.
+  summary: A container is declared without a cpu request.
+  why: |
+    Without a request the scheduler assumes the container needs no processor share, so it packs the
+    node and the container is throttled the moment anything else on it becomes busy. The symptom is
+    latency nobody can attribute.
+  fix: |
+    Declare resources.requests.cpu.
+
+- key: QG-K8-SML-0065
+  name: A container should have a ceiling on the storage it writes
+  languages: [k8]
+  category: SML
+  severity: major
+  effort: 15min
+  tags: [kubernetes, resources]
+  message: This container has memory and cpu limits but none for ephemeral storage.
+  summary: A container declares limits without one for ephemeral storage.
+  why: |
+    A log that never rotates, or a cache with no bound, fills the node's disk. The node is then marked
+    out of space and every pod on it is evicted — including ones that had nothing to do with the
+    container that filled it.
+  fix: |
+    Declare resources.limits.ephemeral-storage alongside the limits already there.
+
+- key: QG-K8-SML-0066
+  name: A container should not set the same variable twice
+  languages: [k8]
+  category: SML
+  severity: major
+  effort: 10min
+  tags: [kubernetes, suspicious]
+  message: This environment variable is set more than once in the same container.
+  summary: A container declares the same environment variable twice.
+  why: |
+    The runtime keeps one of the two and does not say which, so the value the process reads is not
+    necessarily the one written last in the file. Two people edited the manifest and neither saw the
+    other's entry.
+  fix: |
+    Keep the value that is meant to apply and delete the other.
+
+- key: QG-K8-SEC-0024
+  name: The container runtime socket should not be mounted into a pod
+  languages: [k8]
+  category: SEC
+  severity: blocker
+  effort: 30min
+  cwe: [284, 250]
+  owasp: [A5]
+  tags: [kubernetes, privilege]
+  message: This mounts the socket the container runtime listens on.
+  summary: A pod mounts the Docker, containerd or CRI-O socket from the host.
+  why: |
+    Anything that can write to that socket can start a container of its own, choosing the image, the
+    mounts and the privileges. That is root on the node, whatever this pod itself was permitted to
+    do, and it escapes every boundary the cluster puts around the workload.
+  fix: |
+    Use the API the cluster offers for the task instead. Where a build genuinely needs a runtime, give
+    it one inside the pod rather than the node's.

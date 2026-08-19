@@ -14,6 +14,8 @@ public static class CSharpAstRuleSet
         new CsEmptyStatementRule(),
         new CsLoopDirectionRule(),
         new CsUnusedPrivateFieldRule(),
+        new CsDefaultClausePositionRule(),
+        new CsEmptySwitchClauseRule(),
         new CsAssignmentInConditionRule(),
         new CsEmptyStringComparisonRule()
     ];
@@ -146,6 +148,78 @@ public sealed class CsUnusedPrivateFieldRule : CSharpAstRuleBase
             if (references.GetValueOrDefault(name) > 1)
                 continue;
             context.Report(field, $"'{name}' is never read; remove the field or use the value it holds.");
+        }
+    }
+}
+
+/// <summary>
+/// A fallback clause written between two cases. Read line by line the rule reported every 'default:'
+/// in any file that mentioned a switch — including the ones already written last, which is where a
+/// default belongs.
+/// </summary>
+public sealed class CsDefaultClausePositionRule : CSharpAstRuleBase
+{
+    public override string Key => "QG-CS-SML-0063";
+    public override string Name => "Default clauses should be first or last";
+    public override Severity Severity => Severity.Minor;
+    public override IssueKind Kind => IssueKind.CodeSmell;
+    public override string RemediationEffort => "5min";
+
+    public override void Execute(IRuleContext context)
+    {
+        foreach (var match in context.Root.OfKind(NodeKind.Match))
+        {
+            var sections = match.FirstChild(NodeKind.Block)?.ChildrenOf(NodeKind.SwitchSection).ToList();
+            if (sections is not { Count: > 2 })
+                continue;
+            for (var i = 1; i < sections.Count - 1; i++)
+            {
+                if (sections[i].Text != "default")
+                    continue;
+                context.Report(sections[i], "This fallback sits between two cases, where a reader "
+                                            + "scanning for it does not look. Move it to the end of "
+                                            + "the switch, or to the top when it guards the rest.");
+            }
+        }
+    }
+}
+
+/// <summary>
+/// A clause with nothing under it. The regex before this asked the line to end after 'default:',
+/// so a clause whose body simply started on the next line counted as empty.
+/// </summary>
+public sealed class CsEmptySwitchClauseRule : CSharpAstRuleBase
+{
+    public override string Key => "QG-CS-SML-0064";
+    public override string Name => "Empty clauses should be removed";
+    public override Severity Severity => Severity.Minor;
+    public override IssueKind Kind => IssueKind.CodeSmell;
+    public override string RemediationEffort => "5min";
+
+    public override void Execute(IRuleContext context)
+    {
+        foreach (var match in context.Root.OfKind(NodeKind.Match))
+        {
+            var sections = match.FirstChild(NodeKind.Block)?.ChildrenOf(NodeKind.SwitchSection).ToList();
+            if (sections == null)
+                continue;
+            for (var i = 0; i < sections.Count; i++)
+            {
+                if (sections[i].Children.Count > 0)
+                    continue;
+                // a case without a body falls through to the next clause on purpose: it is the way
+                // several values are given one handling, and only the last one is really empty
+                if (i < sections.Count - 1 && sections[i].Text != "default")
+                    continue;
+                // the clause may be there to say the value is ignored, and the note says so
+                if (context.Tokens.Any(t => t.Kind == Tokenization.TokenKind.Comment
+                                            && t.Line >= sections[i].Line
+                                            && t.Line <= sections[i].EndLine))
+                    continue;
+                context.Report(sections[i], "This clause has no body, so it either falls through to "
+                                            + "the next one or does nothing at all — and the code does "
+                                            + "not say which was meant.");
+            }
         }
     }
 }

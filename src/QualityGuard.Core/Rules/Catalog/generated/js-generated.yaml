@@ -6176,7 +6176,7 @@
   effort: 15min
   tags: [prefer_api, generated]
   generated: true
-  status: ready
+  status: planned
   message: The platform offers a clearer or safer construct for this.
   summary: A construct is used where the platform offers one that is clearer or safer.
   why: |
@@ -6186,11 +6186,6 @@
   fix: |
     Switch to the recommended construct; the behaviour is the same in the normal case and defined in the
     cases the old form got wrong.
-  detect:
-    - member: [Date.now]
-    - invocation: [now]
-      receiver: [Date]
-
 - key: QG-JS-SML-0300
   name: Default parameters should be replaced by the recommended alternative
   languages: [js, ts]

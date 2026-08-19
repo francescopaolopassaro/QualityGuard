@@ -1,3 +1,4 @@
+using QualityGuard.Core.Analysis;
 using QualityGuard.Core.Models;
 using QualityGuard.Core.Tokenization;
 
@@ -46,7 +47,7 @@ public sealed class KubernetesMissingSecurityContextRule : PatternRuleBase
     }
 }
 
-public sealed class KubernetesAddCapabilitiesRule : PatternRuleBase
+public sealed class KubernetesAddCapabilitiesRule : ConfigRuleBase
 {
     public override string Key => "QG-K8-SEC-0007";
     public override string Name => "Container is granted powerful capabilities";
@@ -56,16 +57,51 @@ public sealed class KubernetesAddCapabilitiesRule : PatternRuleBase
     public override string FixAdvice => "Drop all capabilities and add only the minimal required set.";
     public override string[] Languages => ["k8"];
 
+    /// <summary>Capabilities that hand the container the host: the kernel treats them as root.</summary>
+    private static readonly string[] Dangerous =
+        ["SYS_ADMIN", "NET_ADMIN", "SYS_PTRACE", "SYS_MODULE", "SYS_BOOT", "DAC_READ_SEARCH", "ALL"];
+
     public override void Execute(IRuleContext context)
     {
-        var lines = context.File.Content.Split('\n');
-        for (var i = 0; i < lines.Length; i++)
+        foreach (var container in Containers(context))
         {
-            var line = lines[i];
-            if (RuleMatchers.LineContains(line, "SYS_ADMIN")
-                || RuleMatchers.LineContains(line, "NET_ADMIN")
-                || (RuleMatchers.LineContains(line, "ALL") && RuleMatchers.LineContains(line, "capabilities")))
-                context.Report("Grant only the capabilities the container needs.", i + 1);
+            var added = container.At("securityContext", "capabilities", "add");
+            if (added == null)
+                continue;
+
+            foreach (var (name, line) in Granted(added))
+            {
+                if (!Dangerous.Contains(name, StringComparer.OrdinalIgnoreCase))
+                    continue;
+
+                context.Report($"This container is granted '{name}', which lets it act on the node "
+                               + "rather than inside its own boundary — mounting host paths, reading "
+                               + "other processes, changing the kernel. Drop everything and add back "
+                               + "only what the process actually calls.", line);
+            }
+        }
+    }
+
+    /// <summary>
+    /// The capabilities listed under 'add', however the manifest spells the list: inline between
+    /// brackets, or one item per line — where the reader files the name as the key of the item.
+    /// Matching the name anywhere in the file instead reported the policies written to forbid them.
+    /// </summary>
+    private static IEnumerable<(string Name, int Line)> Granted(ConfigNode added)
+    {
+        if (added.Value.Length > 0)
+        {
+            foreach (var name in added.Value.Split('[', ']', ',', '"', '\''))
+                if (name.Trim().Length > 0)
+                    yield return (name.Trim(), added.Line);
+            yield break;
+        }
+
+        foreach (var item in added.Descendants())
+        {
+            var name = item.Value.Length > 0 ? item.Value : item.Key;
+            if (name.Trim().Length > 0)
+                yield return (name.Trim(), item.Line);
         }
     }
 }

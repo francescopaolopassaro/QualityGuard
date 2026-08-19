@@ -24,7 +24,7 @@ public sealed class SourceTokenizer
         {
             var c = _source[i];
 
-            if (IsLineCommentStart(_source, i))
+            if (IsLineCommentStart(_source, i) || IsDirective(i))
             {
                 i = ReadUntilLineEnd(i, ref line, ref column);
                 continue;
@@ -116,6 +116,26 @@ public sealed class SourceTokenizer
             column += symLen;
         }
         return _tokens;
+    }
+
+    /// <summary>
+    /// A preprocessor directive: '#' as the first thing on the line. Left as code it reads as an
+    /// operator followed by a keyword, so '#if false' opened a branch that swallowed the declarations
+    /// under it and '#endif' turned the next line into a field named 'public'. Every rule downstream
+    /// then reported on something nobody wrote.
+    /// </summary>
+    private bool IsDirective(int i)
+    {
+        if (!_language.LineDirectives || _source[i] != '#')
+            return false;
+        for (var back = i - 1; back >= 0; back--)
+        {
+            if (_source[back] == '\n')
+                break;
+            if (!char.IsWhiteSpace(_source[back]))
+                return false;
+        }
+        return true;
     }
 
     private int ReadUntilLineEnd(int i, ref int line, ref int column)

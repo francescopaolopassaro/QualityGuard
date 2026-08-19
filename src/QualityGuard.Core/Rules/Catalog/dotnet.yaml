@@ -411,6 +411,8 @@
     var user = await repository.GetAsync(id);
 - key: QG-CS-BUG-0010
   name: Exceptions should be rethrown without discarding the stack trace
+  status: superseded
+  superseded_by: QG-CS-BUG-0158
   languages: [cs]
   category: BUG
   severity: major
@@ -429,8 +431,6 @@
     catch (IOException ex) { Log(ex); throw ex; }
   good: |
     catch (IOException ex) { Log(ex); throw; }
-  detect:
-    - line: "^\\s*throw\\s+(ex|e|exception|error)\\s*;"
 
 - key: QG-CS-SML-0018
   name: Emptiness should be tested without counting every element
@@ -511,6 +511,8 @@
     really is expected and harmless, keep the empty block but state the reason in a comment.
 - key: QG-CS-SML-0016
   name: Static fields should not be mutable
+  status: superseded
+  superseded_by: QG-CS-SML-0464
   languages: [cs]
   category: SML
   severity: major

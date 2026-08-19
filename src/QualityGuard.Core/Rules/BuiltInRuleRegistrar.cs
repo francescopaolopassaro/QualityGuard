@@ -70,6 +70,8 @@ public static class BuiltInRuleRegistrar
         ..Languages.TerraformRuleSet.All,
         ..Languages.DockerRuleSet.All,
         ..Languages.KubernetesRuleSet.All,
+        ..Languages.ClusterRuleSet.All,
+        ..Languages.CloudRuleSet.All,
         ..Languages.CCRuleSet.All,
         ..Languages.ShellRuleSet.All,
         ..Languages.CssRuleSet.All,
@@ -114,11 +116,18 @@ public abstract class TodosAndFixmesRule : TextualRuleBase
         "html", "xml", "css", "tf", "dk", "k8", "cf", "json", "dart", "swift"
     ];
 
+    /// <summary>
+    /// The marker has to stand as a word, and in the spelling a marker is written in. Matched as a
+    /// substring without case, 'TODO' is inside the Italian 'metodo' and the Spanish 'todo', so every
+    /// documentation comment on a real code base counted as an unfinished task.
+    /// </summary>
+    private static readonly System.Text.RegularExpressions.Regex Marker =
+        new(@"\b(TODO|FIXME|HACK|XXX)\b|\b(todo|fixme|hack)\s*[:(]",
+            System.Text.RegularExpressions.RegexOptions.CultureInvariant);
+
     public override void Execute(IRuleContext context)
     {
-        foreach (var token in CommentsBetween(context)
-                     .Where(t => t.Text.Contains("TODO", StringComparison.OrdinalIgnoreCase)
-                              || t.Text.Contains("FIXME", StringComparison.OrdinalIgnoreCase)))
+        foreach (var token in CommentsBetween(context).Where(t => Marker.IsMatch(t.Text)))
         {
             context.Report("Take the required action to fix the issue indicated by this comment.", token.Line);
         }
