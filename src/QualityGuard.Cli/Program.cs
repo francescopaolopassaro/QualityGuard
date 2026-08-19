@@ -19,6 +19,10 @@ var paths = ExtractAll(args, "--path", "--dir", "--input", "--file");
 var path = paths.FirstOrDefault();
 var gateFile = ExtractArg(args, "--gate", "--config");
 var sarifOut = ExtractArg(args, "--sarif", "--sarif-out");
+// Reports somebody keeps rather than reads once: one page to open in a browser, one Markdown file
+// to paste into a review or hand to an assistant. Both carry the same data as the console summary.
+var htmlOut = ExtractArg(args, "--html", "--html-out");
+var markdownOut = ExtractArg(args, "--markdown", "--md");
 var sarifIn = ExtractArg(args, "--sarif-in", "--report");
 var coverageFiles = ExtractAll(args, "--coverage", "--coverage-report");
 var newCodeBase = ExtractArg(args, "--base", "--diff-base", "--new-code-base");
@@ -124,6 +128,15 @@ try
 
     if (sarifOut != null)
         SarifWriter.Write(sarifOut, analyses, gateResult);
+
+    if (htmlOut != null || markdownOut != null)
+    {
+        var report = QualityGuard.Cli.Reporting.HtmlReportData.From(analyses, metrics, gateResult);
+        if (htmlOut != null)
+            QualityGuard.Cli.ReportHTML.ReportGenerator.Generate(htmlOut, report);
+        if (markdownOut != null)
+            QualityGuard.Cli.Reporting.MarkdownReport.Write(markdownOut, report);
+    }
 
     return gateResult.Status == QualityGateStatus.Failed ? 1 : 0;
 }

@@ -8,7 +8,7 @@ a configurable Quality Gate and exits with `PASSED` or `FAILED` — no server, n
 dotnet run --project src/QualityGuard.Cli -- --path ./src --by-folder
 ```
 
-**3588 rules across 26 languages**, on a real syntax tree with a semantic model, a project index and
+**3614 rules across 26 languages**, on a real syntax tree with a semantic model, a project index and
 interprocedural taint analysis. Rules ship in a **default profile** — the conventions and stylistic
 checks stay off until `--all-rules` asks for them — because a report where every preference is an
 issue buries the defects that matter.
@@ -146,7 +146,7 @@ Severity and issue kind follow the category: `SEC` → vulnerability (major or a
 
 ## 5. Rules
 
-**3588 rules are loaded**, backed by **4679 catalog entries** (an entry either carries its own
+**3614 rules are loaded**, backed by **4681 catalog entries** (an entry either carries its own
 detection or documents a rule implemented in code). Every rule ships an English name, message,
 summary, *why is this an issue* and *how to fix*.
 
@@ -481,6 +481,10 @@ dotnet run --project src/QualityGuard.Cli -- --path ./src --new-code
 # evaluate overall and new-code coverage from the test runner's reports
 dotnet run --project src/QualityGuard.Cli -- \
   --path ./src --coverage ./artifacts/lcov.info --base origin/main
+
+# export the report as a page to keep and a Markdown file to paste
+dotnet run --project src/QualityGuard.Cli -- \
+  --path ./src --html ./artifacts/report.html --markdown ./artifacts/report.md
 ```
 
 | Option | Function |
@@ -494,6 +498,8 @@ dotnet run --project src/QualityGuard.Cli -- \
 | `--gate <json>` | Custom Quality Gate configuration; falls back to the built-in profile. |
 | `--sarif <out.json>` | Export findings and gate state as SARIF 2.1.0. |
 | `--sarif-in <file>` | Read metrics from an existing SARIF report instead of scanning. |
+| `--html <out.html>` | Write the report as one self-contained page: styles, script and data inside the file. |
+| `--markdown <out.md>` | Write the same report as Markdown, for a pull request, a chat window or an assistant. |
 | `--new-code` | Map finding counts into the `new_*` rating metrics before evaluating the gate. |
 | `--coverage <file>` | Read a coverage report (LCOV, Cobertura or JaCoCo) and feed the gate `coverage`, `line_coverage`, `branch_coverage` and the line/condition counts. Repeatable: reports from every test shard are merged; the tests' own files are left out, and the lines the sources themselves mark as not to be measured (see below) are removed. |
 | `--base <ref>` | Base branch, tag, commit **or date** (`yyyy-MM-dd`) to measure new code against. With `--coverage`, git supplies the lines the current change added or rewrote and the `new_*` coverage metrics are computed on exactly those lines; that same count is recorded as `new_lines` and feeds the gate's 20-line activation floor. A date is resolved to the last commit strictly before it (a date with no matching commit falls back to `HEAD`). Without it `new_lines` and `new_coverage` stay unset, which the gate treats as passed. |
@@ -501,6 +507,57 @@ dotnet run --project src/QualityGuard.Cli -- \
 | `--verbose` | Per-file metrics, taint flow steps and what the scan skipped. |
 | `--rules` | List loaded rules and description coverage. |
 | `--dump-ast` | Print the syntax tree of one file. |
+
+### The exported report
+
+Two formats, one set of numbers. `--html` writes a single page — stylesheet, script and data inside
+the file — that opens on any machine with no server and no companion folder, which is what makes it
+worth keeping or mailing. `--markdown` writes the same report as text: it survives being pasted into
+a pull request, a chat window or a prompt, and an assistant asked to summarise a build reads it
+without help.
+
+**See one:** [`docs/report-example.md`](docs/report-example.md) renders here on GitHub, and
+[`docs/report-example.html`](docs/report-example.html) is the page — GitHub shows its source, so open
+it [rendered through htmlpreview](https://htmlpreview.github.io/?https://github.com/francescopaolopassaro/QualityGuard/blob/main/docs/report-example.html)
+or download the file and open it locally. Both are produced by the command below from `samples/vuln`,
+the deliberately defective sample tree in this repository, so anyone can reproduce them:
+
+```bash
+dotnet run --project src/QualityGuard.Cli -- \
+  --path samples/vuln --html docs/report-example.html --markdown docs/report-example.md
+```
+
+```markdown
+# QualityGuard report
+
+**Quality Gate**: **FAILED**
+
+---
+
+## Summary
+
+| Metric | Value |
+|--------|-------|
+| Files | 26 |
+| NCLOC | 258 |
+| Complexity | 51 |
+| Duplicated Lines | 0% |
+| Technical Debt | 6.7d (41.73%) |
+
+## Quality Metrics
+
+| Category | Count | Rating | Breakdown |
+|----------|-------|--------|-----------|
+| Bugs | 12 | D | Critical: 2, Major: 10, Minor: 0 |
+| Vulnerabilities | 96 | E | Critical: 53, Major: 37 |
+| Code Smells | 65 | C | Critical: 0, Major: 20, Minor: 45 |
+| Security Hotspots | 1 | B | - |
+```
+
+The file continues with the gate conditions, the findings worth acting on — worst severity first,
+with the data flow where taint analysis produced one — the rules that fire most, a per-folder
+breakdown and a short list of what to do first. The page carries the same data with the counts as
+cards and a panel per metric.
 
 ### Coverage exclusions
 
@@ -566,7 +623,7 @@ rule that produces noise is rewritten on the syntax tree or removed, and every f
 was fixed is pinned by a regression test — written next to the shape the rule must still report — so
 the precision cannot be lost again silently.
 
-**593 tests** cover the parsers, the semantic model, taint, the scanner and rule precision. Every
+**609 tests** cover the parsers, the semantic model, taint, the scanner and rule precision. Every
 false positive that was ever fixed has one of them, written next to the shape the rule must still
 report, so precision cannot be lost again in silence.
 

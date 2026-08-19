@@ -28,6 +28,8 @@ public sealed class ProjectIndex
 {
     private readonly Dictionary<string, List<TypeInfo>> _types = new(StringComparer.Ordinal);
     private readonly Dictionary<string, int> _declaredFunctions = new(StringComparer.Ordinal);
+    private readonly Dictionary<string, IReadOnlyList<string>> _parameterNames = new(StringComparer.Ordinal);
+    private readonly HashSet<string> _ambiguousParameters = new(StringComparer.Ordinal);
     private readonly HashSet<string> _invoked = new(StringComparer.Ordinal);
     private readonly Dictionary<string, int> _referenced = new(StringComparer.Ordinal);
     private readonly Dictionary<string, string> _returnTypes = new(StringComparer.Ordinal);
@@ -77,6 +79,22 @@ public sealed class ProjectIndex
             if (function.Text.Length == 0)
                 continue;
             _declaredFunctions[function.Text] = _declaredFunctions.GetValueOrDefault(function.Text) + 1;
+
+            // The names a function calls its parameters, kept only while one answer is possible: two
+            // functions with the same name and different signatures make any conclusion about a call
+            // site a guess, and a rule that reads them has to know that.
+            var parameters = function.FirstChild(NodeKind.ParameterList)?
+                .ChildrenOf(NodeKind.Parameter)
+                .Select(p => p.Text)
+                .Where(n => n.Length > 0)
+                .ToList();
+            if (parameters is { Count: > 0 })
+            {
+                if (_parameterNames.TryGetValue(function.Text, out var seen) && !seen.SequenceEqual(parameters))
+                    _ambiguousParameters.Add(function.Text);
+                else
+                    _parameterNames[function.Text] = parameters;
+            }
 
             var returned = function.FirstChild(NodeKind.TypeReference)?.Text;
             if (string.IsNullOrEmpty(returned))
@@ -281,6 +299,16 @@ public sealed class ProjectIndex
             : null;
 
     public bool IsCalledAnywhere(string name) => _invoked.Contains(name);
+
+    /// <summary>
+    /// The parameter names of a function declared once in the scan, in order. Nothing when the scan
+    /// saw the name more than once with different parameters, because then the call site is unknown.
+    /// </summary>
+    public IReadOnlyList<string>? ParameterNames(string functionName)
+        => !_ambiguousParameters.Contains(functionName)
+           && _parameterNames.TryGetValue(functionName, out var names)
+            ? names
+            : null;
 
     /// <summary>Whether the scan read a function with this name anywhere, however it is reached.</summary>
     public bool IsDeclared(string name) => _declaredFunctions.ContainsKey(name);

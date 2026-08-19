@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>QualityGuard Report</title>
+<style>
+:root{--bg:#f8fafc;--card:#fff;--text:#0f172a;--sub:#64748b;--green:#10b981;--red:#ef4444;--orange:#f59e0b;--blue:#0284c7;--teal:#0f766e;--border:#e2e8f0}
+body{font-family:system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;background:var(--bg);color:var(--text);margin:0;padding:0;line-height:1.5}
+.container{max-width:1200px;margin:0 auto;padding:24px}
+header{background:var(--card);border-bottom:1px solid var(--border);padding:16px 24px;display:flex;justify-content:space-between;align-items:center;position:sticky;top:0;z-index:100;box-shadow:0 1px 3px rgba(0,0,0,.05)}
+.logo-container{width:260px;height:60px}.logo-container svg{width:100%;height:100%}
+.badge{padding:6px 16px;border-radius:20px;font-weight:700;color:#fff;font-size:13px;letter-spacing:.5px;text-transform:uppercase}
+.badge.pass{background:var(--green);box-shadow:0 2px 8px rgba(16,185,129,.3)}.badge.fail{background:var(--red);box-shadow:0 2px 8px rgba(239,68,68,.3)}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:16px;margin:30px 0}
+.card{background:var(--card);padding:20px;border-radius:12px;box-shadow:0 1px 3px rgba(0,0,0,.05);border-left:4px solid var(--blue);transition:all .2s ease}
+.card.clickable{cursor:pointer;border-left-color:var(--sub)}.card.clickable:hover{transform:translateY(-4px);box-shadow:0 8px 16px rgba(0,0,0,.08);border-left-color:var(--blue)}
+.card.clickable.active{border-left-color:var(--blue);background:#f0f9ff;box-shadow:0 0 0 2px var(--blue)}
+.card h3{margin:0 0 8px;font-size:12px;color:var(--sub);text-transform:uppercase;font-weight:700;letter-spacing:.5px}
+.card .value{font-size:32px;font-weight:800;color:var(--text);line-height:1;margin-bottom:8px}
+.card .sub{font-size:13px;color:var(--sub);display:flex;align-items:center;gap:8px}
+.rating{display:inline-flex;align-items:center;justify-content:center;width:24px;height:24px;border-radius:6px;color:#fff;font-weight:800;font-size:13px}
+.rating.A{background:var(--green)}.rating.B{background:#84cc16}.rating.C{background:var(--orange)}.rating.D{background:var(--red)}.rating.E{background:#7f1d1d}
+#detail-panel{background:var(--card);border-radius:12px;box-shadow:0 4px 12px rgba(0,0,0,.08);margin-bottom:30px;overflow:hidden;display:none;animation:slideDown .3s ease-out;border:1px solid var(--border)}
+@keyframes slideDown{from{opacity:0;transform:translateY(-10px)}to{opacity:1;transform:translateY(0)}}
+.panel-header{background:#f8fafc;padding:16px 24px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center}
+.panel-header h2{margin:0;font-size:18px;color:var(--text)}.close-btn{background:none;border:none;font-size:24px;color:var(--sub);cursor:pointer;padding:0 8px}.close-btn:hover{color:var(--red)}
+.panel-content{padding:24px;display:grid;grid-template-columns:1fr 1fr;gap:32px}
+.breakdown-item{margin-bottom:16px}.breakdown-label{display:flex;justify-content:space-between;font-size:13px;font-weight:600;margin-bottom:6px}
+.progress-bg{background:#e2e8f0;height:8px;border-radius:4px;overflow:hidden}.progress-fill{height:100%;border-radius:4px;transition:width .5s ease}
+.fill-critical{background:var(--red)}.fill-major{background:var(--orange)}.fill-minor{background:var(--blue)}
+.rule-item{display:flex;justify-content:space-between;padding:10px 0;border-bottom:1px solid var(--border);font-size:14px}.rule-item:last-child{border-bottom:none}
+.rule-id{font-family:monospace;background:#f1f5f9;padding:2px 6px;border-radius:4px;color:var(--blue);font-weight:600}.rule-count{font-weight:700;color:var(--text)}
+.section{background:var(--card);padding:24px;border-radius:12px;box-shadow:0 1px 3px rgba(0,0,0,.05);margin-bottom:24px}
+.section h2{margin-top:0;border-bottom:2px solid var(--border);padding-bottom:12px;font-size:18px;font-weight:700}
+table{width:100%;border-collapse:collapse;margin-top:10px}th,td{text-align:left;padding:12px 10px;border-bottom:1px solid var(--border);font-size:14px}
+th{background:#f8fafc;font-weight:700;color:var(--sub);font-size:12px;text-transform:uppercase;letter-spacing:.5px}
+.issue-block{background:#fef2f2;border-left:4px solid var(--red);padding:16px;margin-bottom:12px;border-radius:6px}
+.issue-title{font-weight:700;color:var(--red);margin-bottom:4px;font-size:15px}
+.issue-file{font-family:monospace;font-size:13px;color:var(--sub);background:#fff;padding:2px 6px;border-radius:4px;border:1px solid var(--border)}
+.flow{font-size:12px;color:var(--sub);margin-left:16px;margin-top:8px;font-family:monospace;border-left:2px solid #cbd5e1;padding-left:10px}
+.chart-container{width:100%;margin-top:24px;overflow-x:auto}
+.coverage-table{width:100%;border-collapse:collapse}.coverage-table td{padding:8px 0;border-bottom:1px solid var(--border)}.coverage-table .status{font-weight:700;text-transform:uppercase}
+.status.passed{color:var(--green)}.status.failed{color:var(--red)}
+@media(max-width:768px){.panel-content{grid-template-columns:1fr}header{flex-direction:column;gap:16px;align-items:flex-start}.logo-container{width:200px;height:auto}}
+</style>
+</head>
+<body>
+<header>
+    <div class="logo-container">
+        <svg viewBox="0 0 520 120" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <linearGradient id="qg-primary-grad" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#0284C7"/><stop offset="100%" stop-color="#0F766E"/></linearGradient>
+            <linearGradient id="qg-accent-grad" x1="0%" y1="0%" x2="100%" y2="0%"><stop offset="0%" stop-color="#10B981"/><stop offset="100%" stop-color="#0284C7"/></linearGradient>
+            <filter id="subtle-shadow" x="-10%" y="-10%" width="120%" height="120%"><feDropShadow dx="0" dy="2" stdDeviation="3" flood-color="#0F172A" flood-opacity="0.06"/></filter>
+          </defs>
+          <rect width="100%" height="100%" fill="#FFFFFF"/>
+          <g transform="translate(75, 60) scale(0.42)" filter="url(#subtle-shadow)">
+            <path d="M 0,-105 L 75,-70 C 75,20 45,75 0,105 C -45,75 -75,20 -75,-70 Z" fill="none" stroke="url(#qg-primary-grad)" stroke-width="7" stroke-linejoin="round"/>
+            <path d="M 0,-85 L 58,-57 C 58,12 35,58 0,82 C -35,58 -58,12 -58,-57 Z" fill="none" stroke="#CBD5E1" stroke-width="4" stroke-dasharray="6 4"/>
+            <path d="M -35,-20 L -15,10 L 0,-10" fill="none" stroke="url(#qg-accent-grad)" stroke-width="5" stroke-linecap="round"/>
+            <path d="M 35,-20 L 15,10 L 0,-10" fill="none" stroke="url(#qg-accent-grad)" stroke-width="5" stroke-linecap="round"/>
+            <circle cx="-35" cy="-20" r="6" fill="#0284C7"/><circle cx="35" cy="-20" r="6" fill="#0284C7"/><circle cx="0" cy="-10" r="7" fill="#10B981"/>
+            <path d="M -22,25 L -35,38 L -22,51" fill="none" stroke="#0F172A" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M -5,56 L 5,20" fill="none" stroke="url(#qg-primary-grad)" stroke-width="6" stroke-linecap="round"/>
+            <path d="M 22,25 L 35,38 L 22,51" fill="none" stroke="#0F172A" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/>
+            <circle cx="0" cy="70" r="5" fill="#10B981"/>
+          </g>
+          <g transform="translate(330, 0)">
+            <text x="0" y="62" text-anchor="middle" font-family="system-ui,-apple-system,'Segoe UI',Roboto,sans-serif" font-weight="800" font-size="32" letter-spacing="4" fill="#0F172A">QUALITY<tspan fill="url(#qg-primary-grad)">GUARD</tspan></text>
+            <text x="0" y="88" text-anchor="middle" font-family="system-ui,-apple-system,'Segoe UI',Roboto,sans-serif" font-weight="700" font-size="11" letter-spacing="6" fill="#475569">CODE <tspan fill="#0284C7">•</tspan> API <tspan fill="#10B981">•</tspan> SECURITY</text>
+          </g>
+        </svg>
+    </div>
+    <div id="qg-badge" class="badge">Loading...</div>
+</header>
+
+<div class="container">
+    <div id="summary-grid" class="grid"></div>
+    <div id="detail-panel">
+        <div class="panel-header"><h2 id="panel-title">Details</h2><button class="close-btn" onclick="closePanel()">×</button></div>
+        <div class="panel-content">
+            <div id="panel-breakdown"></div>
+            <div id="panel-rules"><h3 style="margin-top:0;font-size:14px;text-transform:uppercase;color:var(--sub)">Rules and details</h3><div id="rules-list"></div></div>
+        </div>
+    </div>
+    <div class="section">
+        <h2>🚨 Critical Issues & Security</h2>
+        <div id="issues-list"></div>
+    </div>
+    <div class="section">
+        <h2>📁 Folder Breakdown</h2>
+        <table id="folder-table"><thead><tr><th>Folder</th><th>Files</th><th>NCLOC</th><th>Bugs</th><th>Vuln</th><th>Smells</th></tr></thead><tbody></tbody></table>
+        <div id="folder-chart" class="chart-container"></div>
+    </div>
+</div>
+
+<script id="report-data" type="application/json">{"qualityGateStatus":"FAILED","conditions":[{"metric":"new_coverage","actual":"not measured","expected":"\u003C 80","status":"OK"},{"metric":"new_duplicated_lines_density","actual":"not measured","expected":"\u003E 3","status":"OK"},{"metric":"new_security_hotspots_reviewed","actual":"0","expected":"\u003C 100","status":"FAILED"},{"metric":"new_reliability_rating","actual":"not measured","expected":"\u003E 1","status":"OK"},{"metric":"new_maintainability_rating","actual":"not measured","expected":"\u003E 1","status":"OK"}],"issues":[{"severity":"BLOCKER","rule":"QG-PY-SEC-0006","message":"Do not hard-code credentials.","file":"demo.py","line":9,"flow":[]},{"severity":"BLOCKER","rule":"QG-PY-SEC-0044","message":"The command goes through a shell, so metacharacters in it are interpreted.","file":"demo.py","line":5,"flow":[]},{"severity":"BLOCKER","rule":"QG-RB-SEC-0006","message":"Do not hard-code credentials.","file":"demo.rb","line":6,"flow":[]},{"severity":"BLOCKER","rule":"QG-RS-SEC-0004","message":"Do not hard-code credentials.","file":"demo.rs","line":21,"flow":[]},{"severity":"BLOCKER","rule":"QG-CS-SEC-0093","message":"The command is built by joining a value into the text, so whatever that value contains becomes part of the statement \u2014 a quote ends the string and the rest is executed. Pass the value as a parameter and leave the text alone.","file":"AspNetDemo.cs","line":16,"flow":[]},{"severity":"BLOCKER","rule":"QG-CS-SEC-0038","message":"This raw SQL statement is built by concatenation or interpolation instead of parameters.","file":"AspNetDemo.cs","line":16,"flow":[]},{"severity":"CRITICAL","rule":"QG-CC-SEC-0001","message":"Make sure this OS command is not built from user input.","file":"demo.c","line":7,"flow":[]},{"severity":"CRITICAL","rule":"QG-CC-SEC-0003","message":"gets cannot bound the input buffer and can overflow it.","file":"demo.c","line":9,"flow":[]},{"severity":"CRITICAL","rule":"QG-CC-SEC-0004","message":"Make sure the format string is not built from user input.","file":"demo.c","line":10,"flow":[]},{"severity":"CRITICAL","rule":"QG-CS-SEC-0001","message":"Sanitize arguments passed to Process.Start.","file":"Demo.cs","line":9,"flow":[]},{"severity":"CRITICAL","rule":"QG-CS-SEC-0002","message":"Use parameterized queries to prevent SQL injection.","file":"Demo.cs","line":11,"flow":[]},{"severity":"CRITICAL","rule":"QG-CS-SEC-0004","message":"Hardcoded credentials must not be committed.","file":"Demo.cs","line":13,"flow":[]},{"severity":"CRITICAL","rule":"QG-GO-SEC-0001","message":"Do not build shell commands from dynamic input.","file":"demo.go","line":11,"flow":[]},{"severity":"CRITICAL","rule":"QG-GO-SEC-0002","message":"Use parameterized queries to prevent SQL injection.","file":"demo.go","line":13,"flow":[]},{"severity":"CRITICAL","rule":"QG-JV-SEC-0002","message":"Make sure the arguments passed to this OS command are not user-controlled.","file":"demo.java","line":6,"flow":[]},{"severity":"CRITICAL","rule":"QG-JV-SEC-0003","message":"Replace this weak cryptographic algorithm \u0027MD5\u0027 with a strong one.","file":"demo.java","line":7,"flow":[]},{"severity":"CRITICAL","rule":"QG-JV-SEC-0004","message":"Make sure this SQL query is not vulnerable to SQL injection.","file":"demo.java","line":9,"flow":[]},{"severity":"CRITICAL","rule":"QG-JV-SEC-0005","message":"Define this credential through configuration or an environment variable.","file":"demo.java","line":10,"flow":[]},{"severity":"CRITICAL","rule":"QG-JS-SEC-0001","message":"Do not evaluate arbitrary code with eval.","file":"demo.js","line":4,"flow":[]},{"severity":"CRITICAL","rule":"QG-JS-SEC-0002","message":"Do not execute operating system commands built from a dynamic argument.","file":"demo.js","line":3,"flow":[]},{"severity":"CRITICAL","rule":"QG-JS-SEC-0004","message":"Do not concatenate user-controlled values into SQL statements.","file":"demo.js","line":7,"flow":[]},{"severity":"CRITICAL","rule":"QG-KT-SEC-0001","message":"Random values must not be used for security-sensitive operations.","file":"demo.kt","line":2,"flow":[]},{"severity":"CRITICAL","rule":"QG-KT-SEC-0001","message":"Random values must not be used for security-sensitive operations.","file":"demo.kt","line":5,"flow":[]},{"severity":"CRITICAL","rule":"QG-KT-SEC-0002","message":"Make sure the arguments passed to this OS command are not user-controlled.","file":"demo.kt","line":6,"flow":[]},{"severity":"CRITICAL","rule":"QG-KT-SEC-0005","message":"Define this credential through configuration or an environment variable.","file":"demo.kt","line":8,"flow":[]},{"severity":"CRITICAL","rule":"QG-PP-SEC-0001","message":"Do not evaluate arbitrary code.","file":"demo.php","line":3,"flow":[]},{"severity":"CRITICAL","rule":"QG-PP-SEC-0003","message":"Sanitize arguments passed to OS command execution.","file":"demo.php","line":4,"flow":[]},{"severity":"CRITICAL","rule":"QG-PP-SEC-0005","message":"Hardcoded credentials must not be committed.","file":"demo.php","line":6,"flow":[]},{"severity":"CRITICAL","rule":"QG-PP-SEC-0010","message":"Unsafe deserialization can lead to code execution.","file":"demo.php","line":7,"flow":[]},{"severity":"CRITICAL","rule":"QG-PY-SEC-0002","message":"Do not build shell commands from dynamic input.","file":"demo.py","line":4,"flow":[]},{"severity":"CRITICAL","rule":"QG-PY-SEC-0002","message":"Do not build shell commands from dynamic input.","file":"demo.py","line":5,"flow":[]},{"severity":"CRITICAL","rule":"QG-PY-SEC-0003","message":"Unsafe deserialization may allow remote code execution.","file":"demo.py","line":6,"flow":[]},{"severity":"CRITICAL","rule":"QG-PY-SEC-0004","message":"Use parameterized queries to prevent SQL injection.","file":"demo.py","line":8,"flow":[]},{"severity":"CRITICAL","rule":"QG-PY-SEC-0040","message":"Assertions are removed when the interpreter runs optimised, so this check can disappear.","file":"demo.py","line":10,"flow":[]},{"severity":"CRITICAL","rule":"QG-RB-SEC-0001","message":"Do not invoke shell commands with dynamic arguments.","file":"demo.rb","line":2,"flow":[]},{"severity":"CRITICAL","rule":"QG-RB-SEC-0003","message":"Unsafe deserialization may allow remote code execution.","file":"demo.rb","line":4,"flow":[]},{"severity":"CRITICAL","rule":"QG-RS-SEC-0002","message":"Use parameterized queries to prevent SQL injection.","file":"demo.rs","line":19,"flow":[]},{"severity":"CRITICAL","rule":"QG-SH-SEC-0001","message":"Do not evaluate dynamic shell code.","file":"demo.sh","line":2,"flow":[]},{"severity":"CRITICAL","rule":"QG-SH-SEC-0003","message":"Do not pipe downloaded scripts directly into a shell.","file":"demo.sh","line":3,"flow":[]},{"severity":"CRITICAL","rule":"QG-SH-SEC-0005","message":"Hardcoded credentials must not be committed.","file":"demo.sh","line":4,"flow":[]},{"severity":"CRITICAL","rule":"QG-SQL-SEC-0003","message":"Do not hardcode credentials in the script.","file":"demo.sql","line":1,"flow":[]},{"severity":"CRITICAL","rule":"QG-CS-SEC-0001","message":"Sanitize arguments passed to Process.Start.","file":"Demo.vb","line":6,"flow":[]},{"severity":"CRITICAL","rule":"QG-CS-SEC-0004","message":"Hardcoded credentials must not be committed.","file":"Demo.vb","line":9,"flow":[]},{"severity":"CRITICAL","rule":"QG-K8-SEC-0001","message":"A privileged container holds every capability of the host and can reach its devices, so escaping it is the same as owning the node. Drop the flag and add only the capabilities the process needs.","file":"deployment.yaml","line":13,"flow":[]},{"severity":"CRITICAL","rule":"QG-DK-SEC-0002","message":"Do not pipe remote scripts directly into a shell.","file":"Dockerfile","line":2,"flow":[]},{"severity":"CRITICAL","rule":"QG-DK-SEC-0005","message":"Do not bake secrets into environment variables.","file":"Dockerfile","line":3,"flow":[]},{"severity":"CRITICAL","rule":"QG-CS-SEC-0002","message":"Use parameterized queries to prevent SQL injection.","file":"AspNetDemo.cs","line":16,"flow":[]},{"severity":"CRITICAL","rule":"QG-CS-BUG-0163","message":"\u0027client\u0027 holds a HttpClient that is never released; declare it in a using or try-with-resources block so it closes on every path, including the exceptional ones.","file":"AspNetDemo.cs","line":19,"flow":[]},{"severity":"CRITICAL","rule":"QG-CS-BUG-0177","message":"\u0027(a\u002B)\u0027 repeats a group that already repeats. On an input that almost matches, the engine tries every way of splitting the text and the match takes exponential time. Rewrite the group so only one level repeats.","file":"AspNetDemo.cs","line":20,"flow":[]},{"severity":"CRITICAL","rule":"QG-CS-SEC-0032","message":"This endpoint accepts state-changing requests without an antiforgery token.","file":"AspNetDemo.cs","line":11,"flow":[]},{"severity":"CRITICAL","rule":"QG-RAZ-SEC-0001","message":"This form is rendered without an antiforgery token.","file":"Home.cshtml","line":2,"flow":[]},{"severity":"CRITICAL","rule":"QG-RAZ-SEC-0002","message":"This expression writes unencoded markup into the page.","file":"Home.cshtml","line":3,"flow":[]},{"severity":"CRITICAL","rule":"QG-TF-SEC-0001","message":"Do not open the resource to the whole internet.","file":"main.tf","line":3,"flow":[]},{"severity":"CRITICAL","rule":"QG-TF-SEC-0002","message":"Do not make the database publicly accessible.","file":"main.tf","line":8,"flow":[]},{"severity":"CRITICAL","rule":"QG-TF-SEC-0006","message":"Encrypt the database storage at rest.","file":"main.tf","line":7,"flow":[]},{"severity":"CRITICAL","rule":"QG-TF-SEC-0010","message":"Do not set the database admin password as a literal.","file":"main.tf","line":9,"flow":[]},{"severity":"CRITICAL","rule":"QG-TF-SEC-0063","message":"\u0027aws_db_instance main\u0027 stores data without encryption at rest, so anyone who reaches the underlying storage \u2014 a stolen snapshot, a misdirected backup, a decommissioned disk \u2014 reads it directly. Enable encryption and name the key the organisation controls.","file":"main.tf","line":7,"flow":[]},{"severity":"CRITICAL","rule":"QG-TF-SEC-0064","message":"This range lets every address on the internet reach the resource. Narrow it to the networks that actually need it \u2014 the exception you make here applies to everyone, including whoever scans the address space next.","file":"main.tf","line":2,"flow":[]},{"severity":"CRITICAL","rule":"QG-TF-SEC-0064","message":"This range lets every address on the internet reach the resource. Narrow it to the networks that actually need it \u2014 the exception you make here applies to everyone, including whoever scans the address space next.","file":"main.tf","line":3,"flow":[]},{"severity":"CRITICAL","rule":"QG-TF-SEC-0064","message":"This resource is published on the internet. Put it behind a private network and reach it through a gateway that authenticates the caller.","file":"main.tf","line":8,"flow":[]},{"severity":"CRITICAL","rule":"QG-XML-SEC-0001","message":"External entities can be exploited for XXE; disable them.","file":"payload.xml","line":3,"flow":[]},{"severity":"MAJOR","rule":"QG-CS-SML-0486","message":"Nothing in \u0027DocumentService\u0027 reads \u0027_reader\u0027. It is private, so nothing outside can either: the declaration and whatever fills it are work that changes nothing.","file":"DocumentService.cs","line":5,"flow":[]},{"severity":"MAJOR","rule":"QG-CC-SEC-0002","message":"This function can overflow the destination buffer.","file":"demo.c","line":8,"flow":[]},{"severity":"MAJOR","rule":"QG-CS-SEC-0003","message":"Replace weak cryptographic primitives with modern algorithms.","file":"Demo.cs","line":10,"flow":[]},{"severity":"MAJOR","rule":"QG-CS-SEC-0005","message":"Use a cryptographically secure random generator.","file":"Demo.cs","line":12,"flow":[]},{"severity":"MAJOR","rule":"QG-CSS-BUG-0001","message":"\u0027z-index: 10\u0027 does nothing here: the browser only stacks an element that has been taken out of the normal flow. Set position to relative, absolute, fixed or sticky, or drop the z-index.","file":"demo.css","line":6,"flow":[]},{"severity":"MAJOR","rule":"QG-GO-SEC-0003","message":"Weak cryptographic hashing function is used.","file":"demo.go","line":5,"flow":[]},{"severity":"MAJOR","rule":"QG-GO-SEC-0003","message":"Weak cryptographic hashing function is used.","file":"demo.go","line":12,"flow":[]},{"severity":"MAJOR","rule":"QG-GO-SEC-0006","message":"math/rand is not cryptographically secure.","file":"demo.go","line":7,"flow":[]},{"severity":"MAJOR","rule":"QG-GO-SEC-0006","message":"math/rand is not cryptographically secure.","file":"demo.go","line":14,"flow":[]},{"severity":"MAJOR","rule":"QG-JS-SEC-0007","message":"Write cookies with the Secure and HttpOnly attributes.","file":"demo.js","line":8,"flow":[]},{"severity":"MAJOR","rule":"QG-JS-SML-0010","message":"This declaration is visible in the whole function however far down it appears, and it can be declared a second time without complaint. The rest of this file already scopes its declarations to the block; use const, or let where the value changes.","file":"demo.js","line":6,"flow":[]},{"severity":"MAJOR","rule":"QG-PP-SEC-0013","message":"Set the Secure and HttpOnly flags on cookies.","file":"demo.php","line":8,"flow":[]},{"severity":"MAJOR","rule":"QG-PP-BUG-0002","message":"Reading a missing key raises a warning and yields null.","file":"demo.php","line":2,"flow":[]},{"severity":"MAJOR","rule":"QG-PY-SEC-0005","message":"Weak cryptographic hashing function is used.","file":"demo.py","line":7,"flow":[]},{"severity":"MAJOR","rule":"QG-PY-SEC-0009","message":"The command is passed to the shell; avoid shell=True.","file":"demo.py","line":5,"flow":[]},{"severity":"MAJOR","rule":"QG-PY-SEC-0010","message":"This check on an argument disappears when Python runs with -O, so the value reaches the rest of the function unvalidated; raise an explicit error instead.","file":"demo.py","line":10,"flow":[]},{"severity":"MAJOR","rule":"QG-RB-SEC-0005","message":"Weak cryptographic hashing function is used.","file":"demo.rb","line":5,"flow":[]},{"severity":"MAJOR","rule":"QG-RB-SEC-0007","message":"Use SecureRandom instead of rand for security-sensitive values.","file":"demo.rb","line":7,"flow":[]},{"severity":"MAJOR","rule":"QG-RS-SEC-0005","message":"rand is not cryptographically secure.","file":"demo.rs","line":24,"flow":[]},{"severity":"MAJOR","rule":"QG-RS-SEC-0007","message":"Replace cleartext HTTP with HTTPS.","file":"demo.rs","line":16,"flow":[]},{"severity":"MAJOR","rule":"QG-RS-SEC-0008","message":"Validate file paths passed to file access calls.","file":"demo.rs","line":13,"flow":[]},{"severity":"MAJOR","rule":"QG-RS-SEC-0009","message":"Validate and allow list URLs passed to the HTTP client.","file":"demo.rs","line":17,"flow":[]},{"severity":"MAJOR","rule":"QG-RS-SEC-0010","message":"Unsafe pointer operation can lead to memory unsafety.","file":"demo.rs","line":28,"flow":[]},{"severity":"MAJOR","rule":"QG-RS-SEC-0012","message":"Shell invocation may allow command injection.","file":"demo.rs","line":6,"flow":[]},{"severity":"MAJOR","rule":"QG-RS-SEC-0014","message":"Sensitive information should not be logged.","file":"demo.rs","line":22,"flow":[]},{"severity":"MAJOR","rule":"QG-RS-SML-0003","message":"Document why this unsafe block is safe.","file":"demo.rs","line":27,"flow":[]},{"severity":"MAJOR","rule":"QG-RS-BUG-0007","message":"This unwrap panics when the value is absent or the operation failed.","file":"demo.rs","line":6,"flow":[]},{"severity":"MAJOR","rule":"QG-RS-BUG-0007","message":"This unwrap panics when the value is absent or the operation failed.","file":"demo.rs","line":13,"flow":[]},{"severity":"MAJOR","rule":"QG-RS-BUG-0007","message":"This unwrap panics when the value is absent or the operation failed.","file":"demo.rs","line":17,"flow":[]},{"severity":"MAJOR","rule":"QG-RS-BUG-0007","message":"This unwrap panics when the value is absent or the operation failed.","file":"demo.rs","line":19,"flow":[]},{"severity":"MAJOR","rule":"QG-SH-SEC-0004","message":"Avoid world-writable permissions.","file":"demo.sh","line":5,"flow":[]},{"severity":"MAJOR","rule":"QG-SH-BUG-0001","message":"Recursive force removal can destroy data; verify the target.","file":"demo.sh","line":6,"flow":[]},{"severity":"MAJOR","rule":"QG-SQL-SEC-0001","message":"Do not grant or revoke privileges on PUBLIC.","file":"demo.sql","line":2,"flow":[]},{"severity":"MAJOR","rule":"QG-SQL-SEC-0002","message":"Avoid granting ALL privileges.","file":"demo.sql","line":2,"flow":[]},{"severity":"MAJOR","rule":"QG-SQL-BUG-0002","message":"Avoid conditions that always evaluate to true (1=1).","file":"demo.sql","line":4,"flow":[]},{"severity":"MAJOR","rule":"QG-TS-SEC-0003","message":"Do not load modules from a dynamically constructed path.","file":"demo.ts","line":2,"flow":[]},{"severity":"MAJOR","rule":"QG-CS-SEC-0003","message":"Replace weak cryptographic primitives with modern algorithms.","file":"Demo.vb","line":7,"flow":[]},{"severity":"MAJOR","rule":"QG-K8-SML-0063","message":"This container asks for no memory, so the scheduler places it as if it needed none and puts it on a node that is already full. The pod is then the first thing evicted when the node runs short. Declare resources.requests.memory.","file":"deployment.yaml","line":7,"flow":[]},{"severity":"MAJOR","rule":"QG-K8-SML-0064","message":"This container asks for no cpu, so the scheduler places it as if it needed none and puts it on a node that is already full. The pod is then the first thing evicted when the node runs short. Declare resources.requests.cpu.","file":"deployment.yaml","line":7,"flow":[]},{"severity":"MAJOR","rule":"QG-K8-SML-0004","message":"This container has no memory or cpu limit, so one runaway process takes the whole node down with it and the scheduler cannot place the pod sensibly. Declare resources.limits, even generously.","file":"deployment.yaml","line":7,"flow":[]},{"severity":"MAJOR","rule":"QG-K8-SML-0001","message":"\u0027nginx:latest\u0027 has no fixed version, so two deployments of the same manifest can run different code and a rollback restores nothing. Pin the tag, or better the digest.","file":"deployment.yaml","line":8,"flow":[]},{"severity":"MAJOR","rule":"QG-DK-SEC-0001","message":"Do not run the container as the root user.","file":"Dockerfile","line":5,"flow":[]},{"severity":"MAJOR","rule":"QG-DK-SEC-0003","message":"Download over HTTPS instead of cleartext HTTP.","file":"Dockerfile","line":2,"flow":[]},{"severity":"MAJOR","rule":"QG-DK-SEC-0007","message":"Avoid world-writable permissions (chmod 777).","file":"Dockerfile","line":4,"flow":[]},{"severity":"MAJOR","rule":"QG-CS-SML-0504","message":"Either remove or fill this block of code.","file":"AspNetDemo.cs","line":20,"flow":[]},{"severity":"MAJOR","rule":"QG-CS-SML-0504","message":"Either remove or fill this block of code.","file":"AspNetDemo.cs","line":21,"flow":[]},{"severity":"MAJOR","rule":"QG-CS-SEC-0010","message":"Set the Secure and HttpOnly flags on cookies.","file":"AspNetDemo.cs","line":17,"flow":[]},{"severity":"MAJOR","rule":"QG-CS-BUG-0001","message":"Async void methods terminate the process on exceptions.","file":"AspNetDemo.cs","line":26,"flow":[]},{"severity":"MAJOR","rule":"QG-CS-SML-0020","message":"Dispose this resource or wrap it in a using statement.","file":"AspNetDemo.cs","line":19,"flow":[]},{"severity":"MAJOR","rule":"QG-CS-SML-0346","message":"A client created here is thrown away with the method, and the socket it opened stays reserved for minutes afterwards. Under any real traffic the machine runs out of ports while the code looks like it is closing everything. Take the client from a factory, or keep one for the lifetime of the service.","file":"AspNetDemo.cs","line":19,"flow":[]},{"severity":"MAJOR","rule":"QG-CS-SML-0516","message":"This handler discards the failure without recording it; log it with context or let it propagate.","file":"AspNetDemo.cs","line":33,"flow":[]},{"severity":"MAJOR","rule":"QG-CS-BUG-0158","message":"Throwing \u0027ex\u0027 again restarts the stack trace here; use a bare throw, or wrap it as the inner exception.","file":"AspNetDemo.cs","line":31,"flow":[]},{"severity":"MAJOR","rule":"QG-CS-SML-0521","message":"\u0027Transfer\u0027 is disabled, so the behaviour it covers is unverified while the suite still reports green.","file":"AspNetDemo.cs","line":10,"flow":[]},{"severity":"MAJOR","rule":"QG-CS-SML-0532","message":"\u0027Cache\u0027 is shared by the whole process and can be replaced by any caller, from any thread; make it read-only or move it behind a scoped service.","file":"AspNetDemo.cs","line":36,"flow":[]},{"severity":"MAJOR","rule":"QG-CS-SML-0541","message":"This handler catches the exception and throws it straight back, so it changes nothing except the stack trace it may reset. Remove the try/catch, or add what the caller cannot know \u2014 context, cleanup, or an exception that names the operation that failed.","file":"AspNetDemo.cs","line":31,"flow":[]},{"severity":"MAJOR","rule":"QG-CS-SML-0067","message":"Reading the request directly bypasses model binding and validation.","file":"AspNetDemo.cs","line":14,"flow":[]},{"severity":"MAJOR","rule":"QG-CS-SML-0042","message":"This log message is assembled before it reaches the logger.","file":"AspNetDemo.cs","line":18,"flow":[]},{"severity":"MAJOR","rule":"QG-CS-SEC-0044","message":"This log statement includes a secret-looking value.","file":"AspNetDemo.cs","line":18,"flow":[]},{"severity":"MAJOR","rule":"QG-CS-SEC-0045","message":"This regular expression runs on user input without a timeout, which allows a denial of service.","file":"AspNetDemo.cs","line":20,"flow":["external input enters the program here (line 14)","tainted value stored in \u0027input\u0027 (line 14)","tainted value reaches this sink (line 20)"]},{"severity":"MAJOR","rule":"QG-CS-PRF-0002","message":"Creating an HttpClient here exhausts sockets; resolve one from IHttpClientFactory instead.","file":"AspNetDemo.cs","line":19,"flow":[]},{"severity":"MAJOR","rule":"QG-RAZ-SEC-0003","message":"A Razor expression is interpolated inside a script block.","file":"Home.cshtml","line":5,"flow":[]},{"severity":"MAJOR","rule":"QG-CS-SEC-0046","message":"Turning this option off disables compiler checks that catch real defects.","file":"Legacy.vb","line":1,"flow":[]},{"severity":"MAJOR","rule":"QG-XAML-SEC-0001","message":"This URI uses plain HTTP, so the content can be read and replaced in transit.","file":"MainWindow.xaml","line":3,"flow":[]},{"severity":"MAJOR","rule":"QG-HTML-SEC-0002","message":"The href of this \u003Ca\u003E runs code instead of pointing somewhere. Whatever the page later writes into that URL becomes script with the privileges of the page, and no content security policy can tell it apart from the code you wrote. Bind a listener from a script file and let the attribute name a destination.","file":"page.html","line":4,"flow":[]},{"severity":"MAJOR","rule":"QG-HTML-SEC-0003","message":"The iframe has no sandbox attribute.","file":"page.html","line":7,"flow":[]},{"severity":"MAJOR","rule":"QG-HTML-CNV-0001","message":"This image has no alternative text, so a screen reader announces its file name or nothing at all. Describe what the image conveys, or set alt=\u0022\u0022 when it is decoration the reader can ignore.","file":"page.html","line":6,"flow":[]},{"severity":"MAJOR","rule":"QG-HTML-SML-0002","message":"The document does not say which language it is written in, so a screen reader pronounces it with the wrong voice and the browser offers the wrong translation. Add lang to the html element.","file":"page.html","line":2,"flow":[]}],"summary":{"files":26,"ncloc":258,"complexity":51,"duplicated":0,"techDebt":"6.7d","techDebtRatio":41.73,"bugs":{"count":12,"rating":"D","category":"Reliability","breakdown":{"critical":2,"major":10},"frequentRules":[{"id":"QG-RS-BUG-0007","name":"This unwrap panics when the value is absent or the operation failed.","count":4},{"id":"QG-CSS-BUG-0001","name":"\u0027z-index: 10\u0027 does nothing here: the browser only stacks an element that has been taken...","count":1},{"id":"QG-PP-BUG-0002","name":"Reading a missing key raises a warning and yields null.","count":1},{"id":"QG-SH-BUG-0001","name":"Recursive force removal can destroy data; verify the target.","count":1},{"id":"QG-SQL-BUG-0002","name":"Avoid conditions that always evaluate to true (1=1).","count":1}]},"vulnerabilities":{"count":96,"rating":"E","category":"Security","breakdown":{"blocker":6,"critical":53,"major":37},"frequentRules":[{"id":"QG-TF-SEC-0064","name":"This range lets every address on the internet reach the resource. Narrow it to the netw...","count":3},{"id":"QG-CS-SEC-0001","name":"Sanitize arguments passed to Process.Start.","count":2},{"id":"QG-CS-SEC-0002","name":"Use parameterized queries to prevent SQL injection.","count":2},{"id":"QG-CS-SEC-0003","name":"Replace weak cryptographic primitives with modern algorithms.","count":2},{"id":"QG-CS-SEC-0004","name":"Hardcoded credentials must not be committed.","count":2}]},"securityHotspots":{"count":1,"rating":"B","category":"Review","breakdown":{"minor":1},"frequentRules":[{"id":"QG-HTML-SEC-0001","name":"\u0027onclick\u0027 puts behaviour in the markup, where it cannot be tested, reused or covered by...","count":1}]},"codeSmells":{"count":65,"rating":"C","category":"Maintainability","breakdown":{"major":20,"minor":45},"frequentRules":[{"id":"QG-CS-SML-0021","name":"This local variable is assigned but never used.","count":7},{"id":"QG-CS-SML-0499","name":"\u0027md5\u0027 is assigned but never read; remove it or use the value it holds.","count":7},{"id":"QG-CS-SML-0475","name":"\u0027DocumentService\u0027 sits in the global namespace, where its name has to be unique across ...","count":4},{"id":"QG-JV-SML-0460","name":"\u0027d\u0027 is assigned but never read; remove it or use the value it holds.","count":2},{"id":"QG-KT-SML-0131","name":"\u0027r\u0027 is assigned but never read; remove it or use the value it holds.","count":2}]}},"folders":[{"name":"vuln","files":20,"ncloc":190,"bugs":8,"vuln":84,"smells":39},{"name":"dotnet","files":4,"ncloc":50,"bugs":4,"vuln":12,"smells":22},{"name":"crossfile","files":2,"ncloc":18,"bugs":0,"vuln":0,"smells":4}]}</script>
+<script>
+const data = JSON.parse(document.getElementById('report-data').textContent);
+let activePanel = null;
+
+const badge = document.getElementById('qg-badge');
+badge.textContent = 'Quality Gate: ' + data.qualityGateStatus;
+badge.classList.add(data.qualityGateStatus.toLowerCase() === 'passed' ? 'pass' : 'fail');
+
+const s = data.summary;
+const cardsConfig = [
+    { id: 'coverage', title: 'Coverage', val: s.coverage || 'N/A', sub: 'Quality Gate', rating: null, color: '#0284c7' },
+    { id: 'bugs', title: 'Bugs', val: s.bugs.count, sub: 'Reliability', rating: s.bugs.rating, color: '#f59e0b' },
+    { id: 'vulnerabilities', title: 'Vulnerabilities', val: s.vulnerabilities.count, sub: 'Security', rating: s.vulnerabilities.rating, color: '#ef4444' },
+    { id: 'codeSmells', title: 'Code Smells', val: s.codeSmells.count, sub: 'Maintainability', rating: s.codeSmells.rating, color: '#0284c7' }
+];
+
+const grid = document.getElementById('summary-grid');
+cardsConfig.forEach(c => {
+    const div = document.createElement('div');
+    div.className = 'card clickable';
+    div.dataset.id = c.id;
+    div.onclick = () => togglePanel(c.id);
+    div.innerHTML = '<h3>' + c.title + '</h3><div class="value">' + c.val + '</div><div class="sub">' + c.sub + (c.rating ? ' <span class="rating ' + c.rating + '">' + c.rating + '</span>' : '') + '</div>';
+    grid.appendChild(div);
+});
+
+function togglePanel(id) {
+    const panel = document.getElementById('detail-panel');
+    const cards = document.querySelectorAll('.card.clickable');
+    if (activePanel === id) { closePanel(); return; }
+    activePanel = id;
+    cards.forEach(c => c.classList.toggle('active', c.dataset.id === id));
+    
+    document.getElementById('panel-title').textContent = id.charAt(0).toUpperCase() + id.slice(1).replace(/([A-Z])/g, ' $1').trim() + ' - Details';
+    const bdContainer = document.getElementById('panel-breakdown');
+    const rulesContainer = document.getElementById('rules-list');
+
+    if (id === 'coverage') {
+        let html = '<table class="coverage-table">';
+        data.conditions.forEach(c => {
+            const statusClass = c.status.toLowerCase() === 'passed' ? 'passed' : 'failed';
+            html += '<tr><td><strong>' + c.metric + '</strong></td><td>' + c.actual + ' vs ' + c.expected + '</td><td class="status ' + statusClass + '">' + c.status + '</td></tr>';
+        });
+        html += '</table>';
+        bdContainer.innerHTML = html;
+        rulesContainer.innerHTML = '<p style="color:var(--sub);font-size:14px">Quality gate conditions for this scan.</p>';
+    } else {
+        const metric = data.summary[id];
+        const bd = metric.breakdown;
+        const total = metric.count || 1;
+        let bdHtml = '';
+        const levels = [{ key: 'critical', label: 'Critical', colorClass: 'fill-critical' }, { key: 'major', label: 'Major', colorClass: 'fill-major' }, { key: 'minor', label: 'Minor', colorClass: 'fill-minor' }];
+        levels.forEach(l => {
+            if (bd[l.key] !== undefined) {
+                const pct = ((bd[l.key] / total) * 100).toFixed(1);
+                bdHtml += '<div class="breakdown-item"><div class="breakdown-label"><span>' + l.label + '</span><span>' + bd[l.key] + ' (' + pct + '%)</span></div><div class="progress-bg"><div class="progress-fill ' + l.colorClass + '" style="width: ' + pct + '%"></div></div></div>';
+            }
+        });
+        bdContainer.innerHTML = bdHtml || '<p style="color:var(--sub)">No breakdown available.</p>';
+
+        const rules = metric.frequentRules || [];
+        let rulesHtml = '';
+        if (rules.length > 0) {
+            rules.forEach(r => { rulesHtml += '<div class="rule-item"><div><span class="rule-id">' + r.id + '</span><span style="margin-left:8px;color:var(--text)">' + r.name + '</span></div><span class="rule-count">' + r.count + '</span></div>'; });
+        } else {
+            rulesHtml = '<p style="color:var(--sub);font-size:14px">No rule reported more than once.</p>';
+        }
+        rulesContainer.innerHTML = rulesHtml;
+    }
+    panel.style.display = 'block';
+    panel.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+}
+
+function closePanel() {
+    activePanel = null;
+    document.getElementById('detail-panel').style.display = 'none';
+    document.querySelectorAll('.card.clickable').forEach(c => c.classList.remove('active'));
+}
+
+const issuesList = document.getElementById('issues-list');
+if (data.issues.length === 0) {
+    issuesList.innerHTML = '<p style="color:var(--sub)">No critical issue found.</p>';
+} else {
+    data.issues.forEach(issue => {
+        const div = document.createElement('div');
+        div.className = 'issue-block';
+        let flowHtml = issue.flow.map(f => '<div class="flow">↳ ' + f + '</div>').join('');
+        div.innerHTML = '<div class="issue-title">' + issue.severity + ': ' + issue.rule + '</div><div style="margin-bottom:6px">' + issue.message + '</div><div><span class="issue-file">' + issue.file + ':' + issue.line + '</span></div>' + flowHtml;
+        issuesList.appendChild(div);
+    });
+}
+
+const tbody = document.querySelector('#folder-table tbody');
+data.folders.forEach(f => {
+    const tr = document.createElement('tr');
+    tr.innerHTML = '<td style="font-family:monospace;font-size:13px">' + f.name + '</td><td>' + f.files + '</td><td>' + f.ncloc.toLocaleString() + '</td><td style="color:var(--red);font-weight:600">' + f.bugs + '</td><td style="color:var(--red);font-weight:600">' + f.vuln + '</td><td>' + f.smells + '</td>';
+    tbody.appendChild(tr);
+});
+
+function renderBarChart(containerId, datasets, labels) {
+    const container = document.getElementById(containerId);
+    const width = 800, height = 300, padding = 50;
+    const colors = ['#ef4444', '#f59e0b', '#0284c7'];
+    let maxVal = 0;
+    datasets.forEach(ds => ds.data.forEach(v => { if (v > maxVal) maxVal = v; }));
+    if (maxVal === 0) maxVal = 1;
+    const chartWidth = width - padding * 2, chartHeight = height - padding * 2;
+    const barGroupWidth = chartWidth / labels.length;
+    const barWidth = (barGroupWidth * 0.7) / datasets.length;
+
+    let svg = '<svg viewBox="0 0 ' + width + ' ' + height + '" style="width:100%;height:auto;font-family:sans-serif">';
+    for (let i = 0; i <= 4; i++) {
+        const y = padding + (chartHeight / 4) * i;
+        const val = Math.round(maxVal - (maxVal / 4) * i);
+        svg += '<line x1="' + padding + '" y1="' + y + '" x2="' + (width - padding) + '" y2="' + y + '" stroke="#e2e8f0" stroke-width="1"/>';
+        svg += '<text x="' + (padding - 10) + '" y="' + (y + 4) + '" font-size="11" text-anchor="end" fill="#94a3b8">' + val + '</text>';
+    }
+    svg += '<line x1="' + padding + '" y1="' + padding + '" x2="' + padding + '" y2="' + (height - padding) + '" stroke="#cbd5e1" stroke-width="2"/>';
+    svg += '<line x1="' + padding + '" y1="' + (height - padding) + '" x2="' + (width - padding) + '" y2="' + (height - padding) + '" stroke="#cbd5e1" stroke-width="2"/>';
+
+    labels.forEach((label, i) => {
+        const groupX = padding + (i * barGroupWidth) + (barGroupWidth * 0.15);
+        datasets.forEach((ds, j) => {
+            const val = ds.data[i];
+            const barHeight = (val / maxVal) * chartHeight;
+            const x = groupX + (j * barWidth);
+            const y = height - padding - barHeight;
+            svg += '<path d="M ' + x + ' ' + (y + 4) + ' Q ' + x + ' ' + y + ' ' + (x + 4) + ' ' + y + ' L ' + (x + barWidth - 6) + ' ' + y + ' Q ' + (x + barWidth - 2) + ' ' + y + ' ' + (x + barWidth - 2) + ' ' + (y + 4) + ' L ' + (x + barWidth - 2) + ' ' + (height - padding) + ' L ' + x + ' ' + (height - padding) + ' Z" fill="' + colors[j] + '" opacity="0.9"><title>' + ds.label + ': ' + val + '</title></path>';
+            if (val > 0) svg += '<text x="' + (x + (barWidth / 2) - 1) + '" y="' + (y - 5) + '" font-size="10" text-anchor="middle" fill="#64748b" font-weight="600">' + val + '</text>';
+        });
+        svg += '<text x="' + (groupX + (barWidth * datasets.length / 2)) + '" y="' + (height - padding + 20) + '" font-size="11" text-anchor="middle" fill="#64748b">' + label.split('/').pop() + '</text>';
+    });
+    datasets.forEach((ds, i) => {
+        const lx = padding + (i * 100);
+        svg += '<rect x="' + lx + '" y="15" width="12" height="12" fill="' + colors[i] + '" rx="2"/><text x="' + (lx + 18) + '" y="25" font-size="12" fill="#334155" font-weight="500">' + ds.label + '</text>';
+    });
+    svg += '</svg>';
+    container.innerHTML = svg;
+}
+renderBarChart('folder-chart', [
+    { label: 'Bugs', data: data.folders.map(f => f.bugs) },
+    { label: 'Vuln', data: data.folders.map(f => f.vuln) },
+    { label: 'Smells', data: data.folders.map(f => f.smells) }
+], data.folders.map(f => f.name));
+</script>
+</body>
+</html>

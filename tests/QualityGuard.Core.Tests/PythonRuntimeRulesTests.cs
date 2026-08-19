@@ -149,4 +149,45 @@ public class PythonRuntimeRulesTests
         Assert.Empty(Lines("def go(a, b):\n    if not (a and b):\n        return 1\n    return 0\n",
             "QG-PY-CNV-0007"));
     }
+    [Fact]
+    public void A_closure_built_in_a_loop_over_the_loop_variable_is_reported()
+    {
+        var code = """
+            def build(items):
+                handlers = []
+                for i in items:
+                    handlers.append(lambda: use(i))
+                return handlers
+            """;
+        Assert.NotEmpty(Lines(code, "QG-PY-BUG-0012"));
+    }
+
+    [Fact]
+    public void A_closure_that_binds_the_value_now_is_left_alone()
+    {
+        var code = """
+            def build(items):
+                handlers = []
+                for i in items:
+                    handlers.append(lambda i=i: use(i))
+                return handlers
+            """;
+        Assert.Empty(Lines(code, "QG-PY-BUG-0012"));
+    }
+
+    [Fact]
+    public void A_loop_that_builds_no_closure_is_left_alone()
+    {
+        // the line-based version reported every loop in a file that contained the word 'lambda'
+        var code = """
+            def score(notes, query):
+                scored = []
+                for note in notes:
+                    value = cosine(query, note)
+                    if value > 0:
+                        scored.append((value, note))
+                return scored
+            """;
+        Assert.Empty(Lines(code, "QG-PY-BUG-0012"));
+    }
 }

@@ -300,4 +300,46 @@ public class CSharpPrecisionTests
         var pattern = QualityGuard.Core.Analysis.SourceScanner.GlobToRegex("*.designer.cs");
         Assert.Matches("^" + pattern[1..], "Page.aspx.designer.cs");
     }
+    [Fact]
+    public void Two_arguments_swapped_against_the_declaration_are_reported()
+    {
+        var code = """
+            namespace Demo
+            {
+                public class Geometry
+                {
+                    public double Area(double width, double height) => width * height;
+
+                    public void Use()
+                    {
+                        double width = 3, height = 4;
+                        var wrong = Area(height, width);
+                    }
+                }
+            }
+            """;
+        Assert.NotEmpty(Lines(code, "QG-CS-SML-0133"));
+    }
+
+    [Fact]
+    public void Arguments_in_the_declared_order_are_left_alone()
+    {
+        var code = """
+            namespace Demo
+            {
+                public class Geometry
+                {
+                    public double Area(double width, double height) => width * height;
+
+                    public void Use()
+                    {
+                        double width = 3, height = 4;
+                        var right = Area(width, height);
+                        var computed = Area(width * 2, height);
+                    }
+                }
+            }
+            """;
+        Assert.Empty(Lines(code, "QG-CS-SML-0133"));
+    }
 }

@@ -465,3 +465,35 @@
     name = "unknown";
   good: |
     var name = user.FullName ?? "unknown";
+
+- key: QG-PY-SML-0415
+  name: Arguments should be passed in the order the function declares
+  languages: [py]
+  category: SML
+  severity: major
+  effort: 10min
+  tags: [suspicious, correctness]
+  summary: The call passes variables whose names match the parameters, in a different order.
+  why: |
+    The names line up and the order does not, which is the shape of a swap nobody notices: the types
+    agree, so nothing complains, and the values arrive in the wrong places. Reading the call is not
+    enough to see it — you have to hold the declaration next to it, which is exactly what a review does
+    not do.
+  fix: |
+    Pass each variable where the declaration expects it, or name the arguments explicitly if the
+    language allows it.
+
+- key: QG-KT-SML-0136
+  name: Arguments should be passed in the order the function declares
+  languages: [kt]
+  category: SML
+  severity: major
+  effort: 10min
+  tags: [suspicious, correctness]
+  summary: The call passes variables whose names match the parameters, in a different order.
+  why: |
+    The names line up and the order does not. The types agree, so the code compiles and the values
+    arrive in the wrong places — and the call reads correctly unless the declaration is open next to
+    it.
+  fix: |
+    Pass each variable where the declaration expects it, or use named arguments.

@@ -20,16 +20,16 @@
     next change touches a single spot.
 
 - key: QG-KT-SML-0029
-  name: IP addresses should not be hardcoded in the source
+  name: IP addresses should not be written into the source
   languages: [kt]
   category: SML
   severity: minor
   effort: 15min
   tags: [hardcoded_value, generated]
-  generated: true
-  status: planned
+  generated: false
+  status: ready
   message: This value is fixed in the source and cannot be changed without a rebuild.
-  summary: An address, path or other deployment-specific value is written into the code.
+  summary: An address is fixed in a string literal.
   why: |
     The value is right for exactly one environment. Every other environment needs a code change, so the
     same build cannot be promoted from test to production, and a value that has to be corrected under
@@ -57,16 +57,16 @@
     lives somewhere that gets reviewed.
 
 - key: QG-KT-SML-0031
-  name: Oversized declarations should stay within a size that can be reviewed
+  name: A multi-way branch should not grow past what a reader can hold
   languages: [kt]
   category: SML
   severity: minor
   effort: 15min
   tags: [threshold, generated]
-  generated: true
-  status: planned
+  generated: false
+  status: ready
   message: This construct is larger or more complex than the limit allows.
-  summary: A construct exceeds the size or complexity a reader can follow at once.
+  summary: A when expression has more clauses than anyone reads at once.
   why: |
     Past a certain size, understanding one line means reconstructing everything around it, and testing
     the interesting case means going through the whole entry point. Growth is gradual, so the limit is
@@ -150,16 +150,16 @@
     size at or above the current guidance — and keep the choice in one place so it can be raised.
 
 - key: QG-KT-BUG-0014
-  name: Equals(other: Any?) should assert something
+  name: Equality should test the type of what it was given
   languages: [kt]
   category: BUG
   severity: major
   effort: 15min
   tags: [tests, generated]
-  generated: true
-  status: planned
+  generated: false
+  status: ready
   message: This test cannot fail, so it verifies nothing.
-  summary: A test does not assert, is disabled, or cannot fail.
+  summary: An equality implementation never checks the type of its argument.
   why: |
     A test that cannot fail reports success forever while covering nothing, and the suite keeps its green
     status. That is worse than having no test at all, because it removes the incentive to write one.
@@ -168,16 +168,16 @@
     broken before trusting it again.
 
 - key: QG-KT-BUG-0016
-  name: HashCode and toString should not be used
+  name: The identity of an array is not the value of its contents
   languages: [kt]
   category: BUG
   severity: major
   effort: 15min
   tags: [avoid_api, generated]
-  generated: true
-  status: planned
+  generated: false
+  status: ready
   message: This API should be replaced by the current alternative.
-  summary: Code calls an API that is unsafe, obsolete or superseded by a better alternative.
+  summary: hashCode or toString is called on an array.
   why: |
     The API stays available for compatibility, so nothing fails at build time, but it carries behaviour
     the platform now considers a defect — unchecked input, a weak guarantee, or a cost the replacement

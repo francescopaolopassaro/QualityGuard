@@ -13,6 +13,7 @@ public static class PythonRuntimeRuleSet
 {
     public static IReadOnlyList<IRule> All { get; } =
     [
+        new PythonLoopVariableCapturedRule(),
         new PythonMutableDefaultArgumentRule(),
         new PythonRaiseNonExceptionRule(),
         new PythonDuplicateKeywordArgumentRule(),
@@ -686,6 +687,61 @@ public sealed class PythonParenthesesAfterKeywordRule : PythonRuntimeRuleBase
             context.Report($"'{tokens[i].Text}' is an operator, not a function, and the parentheses "
                            + "make it look like a call. They also stop applying to what a reader "
                            + "expects as soon as a second operand appears.", tokens[i].Line);
+        }
+    }
+}
+
+/// <summary>
+/// A function built inside a loop that reads the loop's own variable. The closure looks the variable
+/// up when it is called, which is after the loop has finished, so every one of them sees the last
+/// value — the list of callbacks behaves as if it held the same one repeated.
+/// </summary>
+public sealed class PythonLoopVariableCapturedRule : RuleBase
+{
+    public override string Key => "QG-PY-BUG-0012";
+    public override string Name => "Loop variables should not be captured by reference in closures";
+    public override Severity Severity => Severity.Major;
+    public override IssueKind Kind => IssueKind.Bug;
+    public override string RemediationEffort => "15min";
+    public override string FixAdvice =>
+        "Bind the current value with a default argument, or build the function in a factory that takes it as a parameter.";
+    public override string[] Languages => ["py"];
+
+    public override void Execute(IRuleContext context)
+    {
+        if (!context.Tree.HasDedicatedParser)
+            return;
+
+        foreach (var loop in context.Root.OfKind(NodeKind.Loop))
+        {
+            // The name the loop assigns on each round. The tree keeps the iterable and not the name,
+            // so it is read from the header itself: 'for <name> in ...'.
+            var header = context.Tokens
+                .Where(t => t.Line == loop.Range.StartLine)
+                .SkipWhile(t => t.Text != "for")
+                .Skip(1)
+                .TakeWhile(t => t.Text != "in")
+                .ToList();
+            if (header.Count != 1 || header[0].Kind != Tokenization.TokenKind.Identifier)
+                continue; // a tuple target names several things: which one is captured is not obvious
+            var variable = header[0].Text;
+
+            foreach (var closure in loop.OfKind(NodeKind.Lambda, NodeKind.FunctionDeclaration))
+            {
+                // a parameter of that name is the binding the fix asks for — 'lambda i=i: use(i)'
+                var parameters = closure.FirstChild(NodeKind.ParameterList);
+                if (parameters != null
+                    && parameters.ChildrenOf(NodeKind.Parameter).Any(p => p.Text == variable))
+                    continue;
+                if (!closure.OfKind(NodeKind.Identifier).Any(i => i.Text == variable))
+                    continue;
+
+                context.Report($"This function reads '{variable}' when it is called rather than when it "
+                               + "is created, and by then the loop has moved on: every function built "
+                               + "here sees the last value. Bind the value now, as a default argument "
+                               + "or through a factory.", closure.Range.StartLine);
+                break; // one report per loop is the decision the reader has to make
+            }
         }
     }
 }

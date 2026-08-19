@@ -339,6 +339,15 @@ public static class StructuralRuleSet
         new FileTooLongRuleKubernetes(),
         new FileTooLongRuleCloudFormation(),
         new FileTooLongRuleJson(),
+        new BooleanThroughBranchRulePhp(),
+        new SwitchFallsThroughRuleJava(),
+        new SwitchFallsThroughRulePhp(),
+        new ArgumentOrderRuleCs(),
+        new ArgumentOrderRuleJava(),
+        new ArgumentOrderRuleJs(),
+        new ArgumentOrderRulePhp(),
+        new ArgumentOrderRulePython(),
+        new ArgumentOrderRuleKotlin(),
         new UnusedParameterRuleCs(),
         new UnusedParameterRuleJava(),
         new UnusedParameterRuleJs(),
@@ -4010,6 +4019,209 @@ public sealed class FileTooLongRuleJson : FileTooLongRule
 {
     public override string Key => "QG-JSON-SML-0020";
     public override string[] Languages => ["json"];
+}
+
+public abstract class BooleanThroughBranchRule : StructuralRuleBase
+{
+    public override string Name => "A condition that is already a boolean should be returned directly";
+    public override Severity Severity => Severity.Minor;
+    public override IssueKind Kind => IssueKind.CodeSmell;
+    public override string RemediationEffort => "5min";
+
+    public override void Execute(IRuleContext context)
+    {
+        if (!HasPreciseTree(context))
+            return;
+
+        foreach (var branch in context.Root.OfKind(NodeKind.If))
+        {
+            var otherwise = branch.FirstChild(NodeKind.Else);
+            if (otherwise == null)
+                continue;
+            if (ReturnedBoolean(branch.FirstChild(NodeKind.Block)) is not { } first
+                || ReturnedBoolean(otherwise.FirstChild(NodeKind.Block) ?? otherwise) is not { } second)
+                continue;
+            // both branches returning the same literal is a different defect, and one this rule
+            // would describe wrongly
+            if (first == second)
+                continue;
+
+            context.Report(branch, "This returns true in one branch and false in the other, so what it "
+                                   + "computes is the condition itself. Return the condition — negated "
+                                   + "if that is what the branches say — and the rule becomes readable "
+                                   + "in one line instead of five.");
+        }
+    }
+
+    /// <summary>The boolean literal a block returns, when returning it is all the block does.</summary>
+    private static string? ReturnedBoolean(SyntaxNode? block)
+    {
+        if (block == null)
+            return null;
+        var statements = block.Kind == NodeKind.Block ? block.Children : [block];
+        if (statements.Count != 1 || statements[0].Kind != NodeKind.Jump)
+            return null;
+        var value = statements[0].ChildAt(0);
+        return value is { Kind: NodeKind.BooleanLiteral } ? value.Text : null;
+    }
+}
+
+public sealed class BooleanThroughBranchRulePhp : BooleanThroughBranchRule
+{
+    public override string Key => "QG-PP-SML-0019";
+    public override string[] Languages => ["php"];
+}
+
+public abstract class SwitchFallsThroughRule : StructuralRuleBase
+{
+    public override string Name => "A switch case should end with a jump";
+    public override Severity Severity => Severity.Major;
+    public override IssueKind Kind => IssueKind.CodeSmell;
+    public override string RemediationEffort => "10min";
+
+    public override void Execute(IRuleContext context)
+    {
+        if (!HasPreciseTree(context))
+            return;
+
+        foreach (var match in context.Root.OfKind(NodeKind.Match))
+        {
+            var sections = match.OfKind(NodeKind.SwitchSection, NodeKind.MatchCase).ToList();
+            for (var i = 0; i < sections.Count - 1; i++)
+            {
+                var section = sections[i];
+                // an empty case shares the body of the next one on purpose: that is how several
+                // values are given one handling, and it is the one shape everybody reads correctly
+                if (section.Children.Count == 0 || EndsTheCase(section))
+                    continue;
+                // 'fall through' written in a comment is the author saying it is deliberate, which is
+                // exactly what this rule asks for — reporting it anyway asks twice
+                if (context.Tokens.Any(t => t.Kind == Tokenization.TokenKind.Comment
+                                            && t.Line >= section.Range.StartLine
+                                            && t.Line <= sections[i + 1].Range.StartLine
+                                            && t.Text.Contains("fall", StringComparison.OrdinalIgnoreCase)))
+                    continue;
+
+                context.Report(section, "This case runs into the one below it, so both bodies execute "
+                                        + "for the value listed here. Where that is meant, it has to be "
+                                        + "said in a comment, because the next reader will take it for "
+                                        + "a missing break.");
+            }
+        }
+    }
+
+    private static bool EndsTheCase(SyntaxNode section)
+    {
+        var last = section.Children.LastOrDefault();
+        if (last == null)
+            return false;
+        if (last.Kind == NodeKind.Jump)
+            return true;
+        // a case whose last statement cannot fall through — a throw inside a branch that always
+        // runs, a block ending in a jump — is closed as well
+        return last.OfKind(NodeKind.Jump).Any(j => j.Text is "return" or "throw" or "break"
+                                                       or "continue" or "goto");
+    }
+}
+
+public sealed class SwitchFallsThroughRuleJava : SwitchFallsThroughRule
+{
+    public override string Key => "QG-JV-SML-0089";
+    public override string[] Languages => ["java"];
+}
+
+public sealed class SwitchFallsThroughRulePhp : SwitchFallsThroughRule
+{
+    public override string Key => "QG-PP-SML-0029";
+    public override string[] Languages => ["php"];
+}
+
+public abstract class ArgumentOrderRule : StructuralRuleBase
+{
+    public override string Name => "Arguments should be passed in the order the function declares";
+    public override Severity Severity => Severity.Major;
+    public override IssueKind Kind => IssueKind.CodeSmell;
+    public override string RemediationEffort => "10min";
+
+    public override void Execute(IRuleContext context)
+    {
+        if (!HasPreciseTree(context))
+            return;
+
+        foreach (var call in SyntaxQuery.Invocations(context.Root))
+        {
+            var declared = context.Project.ParameterNames(SyntaxQuery.InvokedName(call));
+            if (declared is not { Count: > 1 })
+                continue;
+
+            var arguments = SyntaxQuery.Arguments(call);
+            if (arguments.Count != declared.Count)
+                continue;
+            // Every argument has to be a plain name. An expression says nothing about which parameter
+            // the author had in mind, and one of those in the list is enough to make the whole
+            // comparison meaningless.
+            var names = arguments.Select(a => a.Kind == NodeKind.Identifier ? a.Text : string.Empty).ToList();
+            if (names.Any(n => n.Length == 0))
+                continue;
+            // Two arguments with the same name cannot be told apart, so nothing can be concluded
+            var lowered = names.Select(n => n.ToLowerInvariant()).ToList();
+            if (lowered.Distinct(StringComparer.Ordinal).Count() != lowered.Count)
+                continue;
+
+            var expected = declared.Select(d => d.ToLowerInvariant()).ToList();
+            // Each name has to belong to the signature: a caller that names its own variables
+            // differently is saying nothing about the order, and this rule then has no evidence.
+            if (lowered.Any(n => !expected.Contains(n, StringComparer.Ordinal)))
+                continue;
+
+            var misplaced = lowered.Where((name, position) => expected.IndexOf(name) != position).ToList();
+            // One name out of place is how an overload or a wrapper reads; two swapped names is the
+            // mistake this rule exists for, and the reference engine draws the line in the same place.
+            if (misplaced.Count < 2)
+                continue;
+
+            context.Report(call, $"The arguments carry the names of the parameters and not their order: "
+                                 + $"'{string.Join("', '", misplaced)}' are passed where the declaration "
+                                 + "expects the others. It compiles because the types line up, and the "
+                                 + "values arrive swapped.");
+        }
+    }
+}
+
+public sealed class ArgumentOrderRuleCs : ArgumentOrderRule
+{
+    public override string Key => "QG-CS-SML-0133";
+    public override string[] Languages => ["cs", "vb"];
+}
+
+public sealed class ArgumentOrderRuleJava : ArgumentOrderRule
+{
+    public override string Key => "QG-JV-SML-0175";
+    public override string[] Languages => ["java"];
+}
+
+public sealed class ArgumentOrderRuleJs : ArgumentOrderRule
+{
+    public override string Key => "QG-JS-SML-0069";
+    public override string[] Languages => ["js", "ts"];
+}
+
+public sealed class ArgumentOrderRulePhp : ArgumentOrderRule
+{
+    public override string Key => "QG-PP-SML-0071";
+    public override string[] Languages => ["php"];
+}
+
+public sealed class ArgumentOrderRulePython : ArgumentOrderRule
+{
+    public override string Key => "QG-PY-SML-0415";
+    public override string[] Languages => ["py"];
+}
+
+public sealed class ArgumentOrderRuleKotlin : ArgumentOrderRule
+{
+    public override string Key => "QG-KT-SML-0136";
+    public override string[] Languages => ["kt"];
 }
 
 public abstract class UnusedParameterRule : StructuralRuleBase

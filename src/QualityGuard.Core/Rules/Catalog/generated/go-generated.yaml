@@ -39,16 +39,16 @@
     lives somewhere that gets reviewed.
 
 - key: QG-GO-SML-0014
-  name: Switch statements should stay within a size that can be reviewed
+  name: A multi-way branch should not grow past what a reader can hold
   languages: [go]
   category: SML
   severity: minor
   effort: 15min
   tags: [threshold, generated]
-  generated: true
-  status: planned
+  generated: false
+  status: ready
   message: This construct is larger or more complex than the limit allows.
-  summary: A construct exceeds the size or complexity a reader can follow at once.
+  summary: A when expression has more clauses than anyone reads at once.
   why: |
     Past a certain size, understanding one line means reconstructing everything around it, and testing
     the interesting case means going through the whole entry point. Growth is gradual, so the limit is

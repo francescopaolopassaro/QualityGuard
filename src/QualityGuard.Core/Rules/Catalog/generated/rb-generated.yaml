@@ -38,16 +38,16 @@
     next change touches a single spot.
 
 - key: QG-RB-SML-0014
-  name: IP addresses should not be hardcoded in the source
+  name: IP addresses should not be written into the source
   languages: [rb]
   category: SML
   severity: minor
   effort: 15min
   tags: [hardcoded_value, generated]
-  generated: true
-  status: planned
+  generated: false
+  status: ready
   message: This value is fixed in the source and cannot be changed without a rebuild.
-  summary: An address, path or other deployment-specific value is written into the code.
+  summary: An address is fixed in a string literal.
   why: |
     The value is right for exactly one environment. Every other environment needs a code change, so the
     same build cannot be promoted from test to production, and a value that has to be corrected under
@@ -75,16 +75,16 @@
     lives somewhere that gets reviewed.
 
 - key: QG-RB-SML-0017
-  name: Case statements should stay within a size that can be reviewed
+  name: A multi-way branch should not grow past what a reader can hold
   languages: [rb]
   category: SML
   severity: minor
   effort: 15min
   tags: [threshold, generated]
-  generated: true
-  status: planned
+  generated: false
+  status: ready
   message: This construct is larger or more complex than the limit allows.
-  summary: A construct exceeds the size or complexity a reader can follow at once.
+  summary: A when expression has more clauses than anyone reads at once.
   why: |
     Past a certain size, understanding one line means reconstructing everything around it, and testing
     the interesting case means going through the whole entry point. Growth is gradual, so the limit is

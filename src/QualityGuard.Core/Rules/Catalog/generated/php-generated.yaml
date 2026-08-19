@@ -58,16 +58,16 @@
     read-only whatever is not meant to change.
 
 - key: QG-PP-SML-0019
-  name: Return of boolean expressions should be simplified
+  name: A condition that is already a boolean should be returned directly
   languages: [php]
   category: SML
   severity: minor
   effort: 15min
   tags: [sml, generated]
-  generated: true
-  status: planned
+  generated: false
+  status: ready
   message: This code is harder to read or change than the behaviour requires.
-  summary: The code works but is harder to read or change than the behaviour requires.
+  summary: An if-else returns true from one branch and false from the other.
   why: |
     The intent is buried, duplicated, or spread across places that must stay in sync, so every future
     change costs more than it should and carries a risk that has nothing to do with the change itself.
@@ -170,16 +170,16 @@
     and cover the case that used to fail with a test.
 
 - key: QG-PP-SML-0027
-  name: While loop should be replaced by the recommended alternative
+  name: A loop that only tests a condition should be written as a while
   languages: [php]
   category: SML
   severity: minor
   effort: 15min
   tags: [prefer_api, generated]
-  generated: true
-  status: planned
+  generated: false
+  status: ready
   message: The platform offers a clearer or safer construct for this.
-  summary: A construct is used where the platform offers one that is clearer or safer.
+  summary: A for loop declares nothing and steps nothing.
   why: |
     The alternative exists because it removes a class of mistake — a conversion, an allocation, an edge
     case — that the current form leaves to the caller. Using the older form means every reader has to
@@ -207,16 +207,16 @@
     next change touches a single spot.
 
 - key: QG-PP-SML-0029
-  name: Switch cases should be simplified
+  name: A switch case should end with a jump
   languages: [php]
   category: SML
   severity: minor
   effort: 15min
   tags: [sml, generated]
-  generated: true
-  status: planned
+  generated: false
+  status: ready
   message: This code is harder to read or change than the behaviour requires.
-  summary: The code works but is harder to read or change than the behaviour requires.
+  summary: A case runs into the one below it instead of ending.
   why: |
     The intent is buried, duplicated, or spread across places that must stay in sync, so every future
     change costs more than it should and carries a risk that has nothing to do with the change itself.
@@ -243,16 +243,16 @@
     next change touches a single spot.
 
 - key: QG-PP-SML-0031
-  name: IP addresses should not be hardcoded in the source
+  name: IP addresses should not be written into the source
   languages: [php]
   category: SML
   severity: minor
   effort: 15min
   tags: [hardcoded_value, generated]
-  generated: true
-  status: planned
+  generated: false
+  status: ready
   message: This value is fixed in the source and cannot be changed without a rebuild.
-  summary: An address, path or other deployment-specific value is written into the code.
+  summary: An address is fixed in a string literal.
   why: |
     The value is right for exactly one environment. Every other environment needs a code change, so the
     same build cannot be promoted from test to production, and a value that has to be corrected under
@@ -298,16 +298,16 @@
     lives somewhere that gets reviewed.
 
 - key: QG-PP-SML-0035
-  name: Switch statements should stay within a size that can be reviewed
+  name: A multi-way branch should not grow past what a reader can hold
   languages: [php]
   category: SML
   severity: minor
   effort: 15min
   tags: [threshold, generated]
-  generated: true
-  status: planned
+  generated: false
+  status: ready
   message: This construct is larger or more complex than the limit allows.
-  summary: A construct exceeds the size or complexity a reader can follow at once.
+  summary: A when expression has more clauses than anyone reads at once.
   why: |
     Past a certain size, understanding one line means reconstructing everything around it, and testing
     the interesting case means going through the whole entry point. Growth is gradual, so the limit is

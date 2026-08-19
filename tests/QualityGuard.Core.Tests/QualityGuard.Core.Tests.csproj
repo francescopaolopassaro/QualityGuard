@@ -15,6 +15,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\src\QualityGuard.Core\QualityGuard.Core.csproj" />
+    <ProjectReference Include="..\..\src\QualityGuard.Cli\QualityGuard.Cli.csproj" />
   </ItemGroup>
 
 </Project>

@@ -76,6 +76,7 @@ public static class BuiltInRuleRegistrar
         ..Languages.AspNetRuleSet.All,
         ..Languages.XamlRuleSet.All,
         ..Languages.DotNetFrameworkRuleSet.All,
+        ..SharedCheckSet.All,
         ..Languages.CCRuleSet.All,
         ..Languages.ShellRuleSet.All,
         ..Languages.CssRuleSet.All,

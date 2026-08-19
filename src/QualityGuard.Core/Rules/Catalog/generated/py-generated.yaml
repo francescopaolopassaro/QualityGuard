@@ -296,16 +296,16 @@
     lives somewhere that gets reviewed.
 
 - key: QG-PY-SML-0038
-  name: IP addresses should not be hardcoded in the source
+  name: IP addresses should not be written into the source
   languages: [py]
   category: SML
   severity: minor
   effort: 15min
   tags: [hardcoded_value, generated]
-  generated: true
-  status: planned
+  generated: false
+  status: ready
   message: This value is fixed in the source and cannot be changed without a rebuild.
-  summary: An address, path or other deployment-specific value is written into the code.
+  summary: An address is fixed in a string literal.
   why: |
     The value is right for exactly one environment. Every other environment needs a code change, so the
     same build cannot be promoted from test to production, and a value that has to be corrected under

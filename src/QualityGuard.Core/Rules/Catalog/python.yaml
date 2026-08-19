@@ -207,10 +207,6 @@
     handlers = [lambda: use(i) for i in items]
   good: |
     handlers = [lambda i=i: use(i) for i in items]
-  detect:
-    - line: "for\\s+\\w+\\s+in\\s+.*:\\s*$"
-      requires: ["lambda"]
-      absent: ["=i", "= i"]
 
 - key: QG-PY-SML-0017
   name: Wildcard imports should not be used
