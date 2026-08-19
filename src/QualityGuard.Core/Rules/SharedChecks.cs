@@ -19,7 +19,11 @@ public static class SharedCheckSet
         new ArrayHashCodeRuleKotlin(),
         new EqualsWithoutTypeTestRuleKotlin(),
         new TooManyBranchesRuleKotlin(), new TooManyBranchesRulePhp(), new TooManyBranchesRuleGo(),
-        new TooManyBranchesRuleRuby()
+        new TooManyBranchesRuleRuby(),
+        new NullInsteadOfEmptyRuleCs(),
+        new ConstructorCallsOverridableRuleCs(), new ConstructorCallsOverridableRuleJava(),
+        new DebugFeatureRuleKotlin(), new DebugFeatureRulePhp(),
+        new DatabasePasswordRulePhp(), new HostnameVerificationRulePhp()
     ];
 }
 
@@ -424,4 +428,272 @@ public sealed class TooManyBranchesRuleRuby : TooManyBranchesRule
 {
     public override string Key => "QG-RB-SML-0017";
     public override string[] Languages => ["rb"];
+}
+
+/// <summary>
+/// A method that answers with nothing where the caller expects a collection. Every call site then has
+/// to remember the special case, and the one that forgets fails at run time rather than at the point
+/// where the decision was made.
+/// </summary>
+public abstract class NullInsteadOfEmptyRule : StructuralRuleBase
+{
+    private static readonly string[] Collections =
+        ["List", "IList", "IEnumerable", "ICollection", "IReadOnlyList", "IReadOnlyCollection",
+         "Array", "Dictionary", "IDictionary", "HashSet", "ISet", "Queue", "Stack", "Collection"];
+
+    public override string Name => "A method that returns a collection should return an empty one, not nothing";
+    public override Severity Severity => Severity.Major;
+    public override IssueKind Kind => IssueKind.CodeSmell;
+    public override string RemediationEffort => "10min";
+
+    public override void Execute(IRuleContext context)
+    {
+        if (!HasPreciseTree(context))
+            return;
+
+        foreach (var method in context.Root.OfKind(NodeKind.FunctionDeclaration))
+        {
+            var returned = method.FirstChild(NodeKind.TypeReference)?.Text ?? string.Empty;
+            if (returned.Length == 0)
+                continue;
+            var bare = returned.TrimEnd('?').Split('<')[0].Split('[')[0];
+            if (!Collections.Contains(bare, StringComparer.Ordinal) && !returned.EndsWith("[]", StringComparison.Ordinal))
+                continue;
+            // a signature that says it may answer with nothing has made the decision on purpose, and
+            // every caller has been told
+            if (returned.EndsWith('?'))
+                continue;
+
+            var nulls = method.OfKind(NodeKind.Jump)
+                .Where(j => j.Text == "return"
+                            && j.ChildAt(0) is { Kind: NodeKind.NullLiteral or NodeKind.Identifier } value
+                            && value.Text is "null" or "None" or "nil")
+                .ToList();
+            if (nulls.Count == 0)
+                continue;
+
+            context.Report(nulls[0], $"'{method.Text}' promises a collection and answers with nothing "
+                                     + "on this path. Every caller now needs a check before the loop, "
+                                     + "and the one that forgets fails where the collection is used "
+                                     + "instead of here. Return an empty collection.");
+        }
+    }
+}
+
+public sealed class NullInsteadOfEmptyRuleCs : NullInsteadOfEmptyRule
+{
+    public override string Key => "QG-CS-SML-0095";
+    public override string[] Languages => ["cs", "vb"];
+}
+
+/// <summary>
+/// A constructor that calls something a subclass can replace. The replacement runs while the object
+/// is half-built: its own fields are not assigned yet, and nothing in either file says so.
+/// </summary>
+public abstract class ConstructorCallsOverridableRule : StructuralRuleBase
+{
+    public override string Name => "A constructor should not call a method a subclass can replace";
+    public override Severity Severity => Severity.Major;
+    public override IssueKind Kind => IssueKind.CodeSmell;
+    public override string RemediationEffort => "15min";
+
+    public override void Execute(IRuleContext context)
+    {
+        if (!HasPreciseTree(context))
+            return;
+
+        foreach (var type in context.Root.OfKind(NodeKind.ClassDeclaration))
+        {
+            var modifiers = type.ChildrenOf(NodeKind.Modifier).Select(m => m.Text).ToArray();
+            // a type nobody can derive from cannot be surprised this way
+            if (modifiers.Contains("sealed") || modifiers.Contains("final") || modifiers.Contains("static"))
+                continue;
+
+            // the members of this type that a subclass is allowed to replace
+            var overridable = type.OfKind(NodeKind.FunctionDeclaration)
+                .Where(m => m.Ancestor(NodeKind.ClassDeclaration) == type)
+                .Where(m => m.ChildrenOf(NodeKind.Modifier).Select(x => x.Text)
+                    .Any(x => x is "virtual" or "abstract" or "override" or "open"))
+                .Select(m => m.Text)
+                .ToHashSet(StringComparer.Ordinal);
+            if (overridable.Count == 0)
+                continue;
+
+            foreach (var constructor in type.OfKind(NodeKind.ConstructorDeclaration))
+            {
+                foreach (var call in constructor.OfKind(NodeKind.Invocation))
+                {
+                    var name = SyntaxQuery.InvokedName(call);
+                    if (!overridable.Contains(name))
+                        continue;
+                    var receiver = SyntaxQuery.Receiver(call);
+                    if (receiver.Length > 0 && receiver != "this")
+                        continue; // a call on another object is that object's business
+
+                    context.Report(call, $"'{name}' can be replaced by a subclass, and this call runs "
+                                         + "while the object is still being built: the replacement "
+                                         + "sees fields that have not been assigned yet. The failure "
+                                         + "appears in the subclass, which did nothing wrong.");
+                    break;
+                }
+            }
+        }
+    }
+}
+
+public sealed class ConstructorCallsOverridableRuleCs : ConstructorCallsOverridableRule
+{
+    public override string Key => "QG-CS-SML-0115";
+    public override string[] Languages => ["cs", "vb"];
+}
+
+public sealed class ConstructorCallsOverridableRuleJava : ConstructorCallsOverridableRule
+{
+    public override string Key => "QG-JV-SML-0121";
+    public override string[] Languages => ["java"];
+}
+
+/// <summary>
+/// Something left on that only belongs on a developer's machine: a debug flag, a stack trace shown to
+/// the caller, a console that answers over the network. Each one hands an attacker the map.
+/// </summary>
+public abstract class DebugFeatureRule : RuleBase
+{
+    /// <summary>Settings whose value being on is the defect.</summary>
+    private static readonly string[] SwitchedOn =
+        ["debug", "isDebuggable", "debuggable", "display_errors", "WebContentsDebuggingEnabled",
+         "setWebContentsDebuggingEnabled", "APP_DEBUG"];
+
+    public override string Name => "Debugging features should not be left on";
+    public override Severity Severity => Severity.Critical;
+    public override IssueKind Kind => IssueKind.Vulnerability;
+    public override string RemediationEffort => "20min";
+    public override string FixAdvice =>
+        "Drive the setting from configuration and keep it off wherever the application is reachable by somebody else.";
+
+    public override void Execute(IRuleContext context)
+    {
+        var tokens = context.Tokens;
+        for (var i = 0; i < tokens.Count - 2; i++)
+        {
+            if (!SwitchedOn.Contains(tokens[i].Text, StringComparer.OrdinalIgnoreCase))
+                continue;
+            // 'debug = true', 'setWebContentsDebuggingEnabled(true)', "display_errors" => "1"
+            var next = tokens[i + 1].Text;
+            if (next is not ("=" or "(" or ":" or "=>" or ","))
+                continue;
+            var value = tokens[i + 2].Text.Trim('"', '\'');
+            if (value is not ("true" or "True" or "on" or "On" or "1" or "yes"))
+                continue;
+
+            context.Report($"'{tokens[i].Text}' is switched on here. In anything reachable by somebody "
+                           + "else that means stack traces, internal paths and often a console: the "
+                           + "map an attacker would otherwise have to guess at.", tokens[i].Line);
+        }
+    }
+}
+
+public sealed class DebugFeatureRuleKotlin : DebugFeatureRule
+{
+    public override string Key => "QG-KT-SEC-0040";
+    public override string[] Languages => ["kt"];
+}
+
+public sealed class DebugFeatureRulePhp : DebugFeatureRule
+{
+    public override string Key => "QG-PP-SEC-0051";
+    public override string[] Languages => ["php"];
+}
+
+/// <summary>A database reached with no password at all, or with one everybody already knows.</summary>
+public abstract class DatabasePasswordRule : RuleBase
+{
+    private static readonly string[] Known = ["root", "admin", "password", "123456", "changeme", "test"];
+
+    public override string Name => "A database connection needs a password worth having";
+    public override Severity Severity => Severity.Critical;
+    public override IssueKind Kind => IssueKind.Vulnerability;
+    public override string RemediationEffort => "30min";
+    public override string FixAdvice =>
+        "Give the account a generated password, keep it in configuration the deployment supplies, and rotate the one that has been committed.";
+
+    public override void Execute(IRuleContext context)
+    {
+        var tokens = context.Tokens;
+        for (var i = 0; i < tokens.Count - 2; i++)
+        {
+            var name = tokens[i].Text.Trim('"', '\'', '$');
+            if (!name.Equals("password", StringComparison.OrdinalIgnoreCase)
+                && !name.Equals("passwd", StringComparison.OrdinalIgnoreCase)
+                && !name.Equals("pwd", StringComparison.OrdinalIgnoreCase))
+                continue;
+            if (tokens[i + 1].Text is not ("=" or ":" or "=>" or ","))
+                continue;
+
+            var value = tokens[i + 2];
+            if (value.Kind != Tokenization.TokenKind.String)
+                continue;
+            var text = value.Text.Trim();
+            var weak = text.Length == 0 || Known.Contains(text, StringComparer.OrdinalIgnoreCase);
+            if (!weak)
+                continue;
+
+            context.Report(text.Length == 0
+                    ? "The connection is opened with an empty password, so anyone who can reach the "
+                      + "database is already inside it. Network rules are then the only thing between "
+                      + "the data and whoever finds the port."
+                    : $"'{text}' is one of the first passwords anything scanning this port will try. "
+                      + "It is not a placeholder to an attacker; it is a working credential.",
+                value.Line);
+        }
+    }
+}
+
+public sealed class DatabasePasswordRulePhp : DatabasePasswordRule
+{
+    public override string Key => "QG-PP-SEC-0036";
+    public override string[] Languages => ["php"];
+}
+
+/// <summary>
+/// Certificate checking turned off. The connection is still encrypted, which is what makes this hard
+/// to see: it is encrypted to whoever answered.
+/// </summary>
+public abstract class HostnameVerificationRule : RuleBase
+{
+    public override string Name => "The certificate of the other side has to be checked";
+    public override Severity Severity => Severity.Critical;
+    public override IssueKind Kind => IssueKind.Vulnerability;
+    public override string RemediationEffort => "30min";
+    public override string FixAdvice =>
+        "Leave verification on and install the certificate authority the environment needs, rather than turning the check off.";
+
+    public override void Execute(IRuleContext context)
+    {
+        var tokens = context.Tokens;
+        for (var i = 0; i < tokens.Count - 2; i++)
+        {
+            var setting = tokens[i].Text.Trim('"', '\'');
+            var verifying = setting is "CURLOPT_SSL_VERIFYPEER" or "CURLOPT_SSL_VERIFYHOST"
+                or "verify_peer" or "verify_peer_name" or "verify";
+            if (!verifying)
+                continue;
+            if (tokens[i + 1].Text is not ("," or "=>" or "=" or ":"))
+                continue;
+            var value = tokens[i + 2].Text.Trim('"', '\'');
+            if (value is not ("false" or "False" or "0" or "off"))
+                continue;
+
+            context.Report($"'{setting}' is turned off, so the connection accepts any certificate at "
+                           + "all. It is still encrypted — to whoever answered, which may be somebody "
+                           + "sitting between the two ends reading everything in both directions.",
+                tokens[i].Line);
+        }
+    }
+}
+
+public sealed class HostnameVerificationRulePhp : HostnameVerificationRule
+{
+    public override string Key => "QG-PP-SEC-0055";
+    public override string[] Languages => ["php"];
 }

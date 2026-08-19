@@ -122,16 +122,16 @@
     next change touches a single spot.
 
 - key: QG-CS-SML-0095
-  name: Empty arrays and collections should be replaced by the recommended alternative
+  name: A method that returns a collection should return an empty one, not nothing
   languages: [cs]
   category: SML
   severity: minor
   effort: 15min
   tags: [prefer_api, generated]
-  generated: true
-  status: planned
+  generated: false
+  status: ready
   message: The platform offers a clearer or safer construct for this.
-  summary: A construct is used where the platform offers one that is clearer or safer.
+  summary: A method whose type is a collection returns nothing on some path.
   why: |
     The alternative exists because it removes a class of mistake — a conversion, an allocation, an edge
     case — that the current form leaves to the caller. Using the older form means every reader has to
@@ -430,16 +430,16 @@
     documented and dated.
 
 - key: QG-CS-SML-0115
-  name: Constructors should be simplified
+  name: A constructor should not call a method a subclass can replace
   languages: [cs]
   category: SML
   severity: minor
   effort: 15min
   tags: [sml, generated]
-  generated: true
-  status: planned
+  generated: false
+  status: ready
   message: This code is harder to read or change than the behaviour requires.
-  summary: The code works but is harder to read or change than the behaviour requires.
+  summary: A constructor calls a method that a subclass is allowed to override.
   why: |
     The intent is buried, duplicated, or spread across places that must stay in sync, so every future
     change costs more than it should and carries a risk that has nothing to do with the change itself.

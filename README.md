@@ -8,7 +8,7 @@ a configurable Quality Gate and exits with `PASSED` or `FAILED` — no server, n
 dotnet run --project src/QualityGuard.Cli -- --path ./src --by-folder
 ```
 
-**3629 rules across 26 languages**, on a real syntax tree with a semantic model, a project index and
+**3636 rules across 26 languages**, on a real syntax tree with a semantic model, a project index and
 interprocedural taint analysis. Rules ship in a **default profile** — the conventions and stylistic
 checks stay off until `--all-rules` asks for them — because a report where every preference is an
 issue buries the defects that matter.
@@ -146,7 +146,7 @@ Severity and issue kind follow the category: `SEC` → vulnerability (major or a
 
 ## 5. Rules
 
-**3629 rules are loaded**, backed by **4687 catalog entries** (an entry either carries its own
+**3636 rules are loaded**, backed by **4687 catalog entries** (an entry either carries its own
 detection or documents a rule implemented in code). Every rule ships an English name, message,
 summary, *why is this an issue* and *how to fix*.
 
@@ -631,7 +631,7 @@ rule that produces noise is rewritten on the syntax tree or removed, and every f
 was fixed is pinned by a regression test — written next to the shape the rule must still report — so
 the precision cannot be lost again silently.
 
-**619 tests** cover the parsers, the semantic model, taint, the scanner and rule precision. Every
+**624 tests** cover the parsers, the semantic model, taint, the scanner and rule precision. Every
 false positive that was ever fixed has one of them, written next to the shape the rule must still
 report, so precision cannot be lost again in silence.
 
@@ -650,13 +650,13 @@ because they are real legacy rather than a curated library.
 | okio | Kotlin | 44 514 | 582 | **13.1** |
 | ripgrep | Rust | 42 211 | 573 | **13.6** |
 | Alamofire | Swift | 26 592 | 372 | **14.0** |
-| gson | Java | 47 559 | 683 | **14.4** |
-| a Blazor application | C# | 58 349 | 862 | **14.8** |
+| gson | Java | 47 559 | 684 | **14.4** |
+| a Blazor application | C# | 58 425 | 876 | **15.0** |
+| Newtonsoft.Json | C# | 160 646 | 2 406 | **15.0** |
 | cobra, gin | Go | 30 723 | 490 | **15.9** |
 | axios, nest | TypeScript | 36 073 | 644 | **17.9** |
-| Newtonsoft.Json | C# | 126 652 | 2 395 | **18.9** |
-| requests, flask, a private application | Python | 42 955 | 921 | **21.4** |
-| a WebForms application from 2010 | C# | 218 812 | 10 616 | **48.5** |
+| requests, flask, a private application | Python | 42 955 | 866 | **20.2** |
+| a WebForms application from 2010 | C# | 214 434 | 9 793 | **45.7** |
 
 **Scan the whole project, not one extension.** Narrowing a scan to `**/*.cs` leaves the templates out,
 and a field a component only touches from its markup then reads as unused — on the Blazor application

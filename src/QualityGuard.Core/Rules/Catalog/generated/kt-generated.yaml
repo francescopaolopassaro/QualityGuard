@@ -341,16 +341,16 @@
     size at or above the current guidance — and keep the choice in one place so it can be raised.
 
 - key: QG-KT-SEC-0040
-  name: Debugging features should not weaken the security of the application
+  name: Debugging features should not be left on
   languages: [kt]
   category: SEC
   severity: critical
   effort: 15min
   tags: [sec, generated]
-  generated: true
-  status: planned
+  generated: false
+  status: ready
   message: This construct weakens the security of the application.
-  summary: A construct that attackers routinely target is used without the guard it needs.
+  summary: A debugging switch is turned on in code that ships.
   why: |
     The pattern either trusts data the program does not control, or relies on a mechanism that no longer
     offers the protection it appears to offer. Both keep working normally, which is why they survive

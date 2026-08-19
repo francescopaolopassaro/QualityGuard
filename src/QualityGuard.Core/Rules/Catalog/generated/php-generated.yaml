@@ -914,16 +914,16 @@
     - invocation: [secure]
 
 - key: QG-PP-SEC-0036
-  name: Secure password should be replaced by the recommended alternative
+  name: A database connection needs a password worth having
   languages: [php]
   category: SEC
   severity: critical
   effort: 15min
   tags: [prefer_api, generated]
-  generated: true
-  status: planned
+  generated: false
+  status: ready
   message: The platform offers a clearer or safer construct for this.
-  summary: A construct is used where the platform offers one that is clearer or safer.
+  summary: A database is opened with an empty password or with one from the top of every wordlist.
   why: |
     The alternative exists because it removes a class of mistake — a conversion, an allocation, an edge
     case — that the current form leaves to the caller. Using the older form means every reader has to
@@ -1478,16 +1478,16 @@
     - invocation: [createForm, csrf_protection, defaults, extension, framework, loadFromExtension, options, prependExtensionConfig]
 
 - key: QG-PP-SEC-0051
-  name: Debugging features should not weaken the security of the application
+  name: Debugging features should not be left on
   languages: [php]
   category: SEC
   severity: critical
   effort: 15min
   tags: [sec, generated]
-  generated: true
-  status: planned
+  generated: false
+  status: ready
   message: This construct weakens the security of the application.
-  summary: A construct that attackers routinely target is used without the guard it needs.
+  summary: A debugging switch is turned on in code that ships.
   why: |
     The pattern either trusts data the program does not control, or relies on a mechanism that no longer
     offers the protection it appears to offer. Both keep working normally, which is why they survive
@@ -1651,17 +1651,16 @@
     - invocation: [limit, preg_replace]
 
 - key: QG-PP-SEC-0055
-  name: Server hostnames should be verified before use
+  name: The certificate of the other side has to be checked
   languages: [php]
   category: SEC
-  status: planned
+  status: ready
   severity: critical
   effort: 15min
   tags: [verification, generated]
-  generated: true
-
+  generated: false
   message: This value is accepted without the check that proves it is legitimate.
-  summary: A value or a peer is accepted without the check that proves it is legitimate.
+  summary: Certificate or hostname verification is switched off on a connection.
   why: |
     Without verification the program trusts whatever it received, so an attacker who can supply or
     intercept the value decides what happens next. The code keeps working in normal conditions, which is

@@ -130,4 +130,87 @@ public class SharedChecksTests
             """;
         Assert.Empty(Lines("Path.kt", code, "QG-KT-BUG-0014"));
     }
+    [Fact]
+    public void A_method_that_promises_a_collection_and_answers_with_nothing_is_reported()
+    {
+        var code = """
+            public class Repo
+            {
+                public List<string> Names(bool any)
+                {
+                    if (!any)
+                        return null;
+                    return new List<string> { "a" };
+                }
+
+                public List<string>? Optional(bool any)
+                {
+                    if (!any)
+                        return null;
+                    return new List<string> { "a" };
+                }
+            }
+            """;
+        // the signature that admits it may answer with nothing has told every caller already
+        Assert.Single(Lines("Repo.cs", code, "QG-CS-SML-0095"));
+    }
+
+    [Fact]
+    public void A_constructor_calling_a_replaceable_method_is_reported()
+    {
+        var code = """
+            public class Repo
+            {
+                public Repo()
+                {
+                    Load();
+                    Prepare();
+                }
+
+                public virtual void Load() { }
+
+                private void Prepare() { }
+            }
+            """;
+        Assert.Single(Lines("Repo.cs", code, "QG-CS-SML-0115"));
+    }
+
+    [Fact]
+    public void A_sealed_type_cannot_be_surprised_by_a_subclass()
+    {
+        var code = """
+            public sealed class Repo
+            {
+                public Repo()
+                {
+                    Load();
+                }
+
+                public virtual void Load() { }
+            }
+            """;
+        Assert.Empty(Lines("Repo.cs", code, "QG-CS-SML-0115"));
+    }
+
+    [Fact]
+    public void A_database_opened_without_a_password_is_reported()
+    {
+        var code = """
+            <?php
+            $config = ['password' => ''];
+            $other = ['password' => getenv('DB_PASSWORD')];
+            """;
+        Assert.Single(Lines("db.php", code, "QG-PP-SEC-0036"));
+    }
+
+    [Fact]
+    public void Certificate_checking_turned_off_is_reported_and_left_on_is_not()
+    {
+        var code = """
+            <?php
+            curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+            curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 2);
+            """;
+        Assert.Single(Lines("client.php", code, "QG-PP-SEC-0055"));
+    }
 }
