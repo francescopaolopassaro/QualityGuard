@@ -42,6 +42,37 @@ public abstract class CSharpGapRuleBase : RuleBase
     public override string RemediationEffort => "10min";
 
     protected static bool HasTree(IRuleContext context) => context.Tree.HasDedicatedParser;
+    /// <summary>
+    /// Whether the type is a shape rather than an object: nothing but auto-implemented properties,
+    /// no method, no constructor, no field. Something outside fills it by name — a serialiser, an
+    /// ORM, a machine-learning pipeline — and that write is invisible to any scan of the source, so
+    /// its properties are neither unread nor unassigned however the file itself uses them.
+    /// </summary>
+    protected static bool IsDataShape(SyntaxNode type)
+    {
+        var body = type.FirstChild(NodeKind.Block);
+        if (body == null)
+            return false;
+        var properties = 0;
+        foreach (var member in body.Children)
+        {
+            switch (member.Kind)
+            {
+                case NodeKind.PropertyDeclaration:
+                    // a property with a body computes something: the type has behaviour after all
+                    if (member.OfKind(NodeKind.Accessor).Any(a => a.FirstChild(NodeKind.Block) != null))
+                        return false;
+                    properties++;
+                    break;
+                case NodeKind.FunctionDeclaration:
+                case NodeKind.ConstructorDeclaration:
+                case NodeKind.FieldDeclaration:
+                    return false;
+            }
+        }
+        return properties > 0;
+    }
+
 }
 
 public sealed class CsTypeNameCasingRule : CSharpGapRuleBase
@@ -501,6 +532,9 @@ public sealed class CsUnusedPrivateMemberRule : CSharpGapRuleBase
             if (body == null)
                 continue;
 
+            if (IsDataShape(type))
+                continue;
+
             foreach (var member in body.Children
                          .Where(c => c.Kind is NodeKind.FieldDeclaration or NodeKind.PropertyDeclaration))
             {
@@ -805,6 +839,8 @@ public sealed class CsUnassignedAutoPropertyRule : CSharpGapRuleBase
             var typeIsPrivate = type.ChildrenOf(NodeKind.Modifier).Any(m => m.Text == "private");
             if (!typeIsPrivate)
                 continue; // a public type is filled from outside, and this file cannot see where
+            if (IsDataShape(type))
+                continue;
 
             foreach (var property in body.ChildrenOf(NodeKind.PropertyDeclaration))
             {

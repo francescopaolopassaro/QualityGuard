@@ -191,15 +191,14 @@ extend, so their own row only counts what is specific to them.
 
 ### The default profile
 
-A catalogue is not a profile. The reference engines ship around half of their checks disabled out of
+A catalogue is not a profile. Established engines ship around half of their checks disabled out of
 the box — method naming, magic numbers, metric thresholds, stylistic preferences — and QualityGuard
-follows the same split: `tools/import_profile.py` reads their default profiles, maps them onto our
-identifiers through the coverage tracker and writes `Rules/DefaultProfile.cs`. Rules outside every
-default profile stay loaded and documented, and run only with `--all-rules`.
+follows the same split. `Rules/DefaultProfile.cs` lists the rules that stay silent: they remain
+loaded and documented, and run only when the scan asks for everything.
 
 ```bash
-python tools/import_profile.py --reference <analyzers>   # rebuild the profile
-dotnet run --project src/QualityGuard.Cli -- --path ./src --all-rules
+dotnet run --project src/QualityGuard.Cli -- --path ./src               # default profile
+dotnet run --project src/QualityGuard.Cli -- --path ./src --all-rules   # conventions included
 ```
 
 Every rule ships an English **summary**, a **why is this an issue** explanation and a **how to fix**
@@ -542,17 +541,17 @@ because they are real legacy rather than a curated library.
 
 | Project | Language | ncloc | Findings | Per 1k lines |
 | --- | --- | ---: | ---: | ---: |
-| terraform-google-kubernetes-engine, terraform-aws-rds | Terraform | 55 560 | 112 | **2.0** |
+| two public Terraform module libraries | Terraform | 55 560 | 112 | **2.0** |
 | express | JavaScript | 14 730 | 52 | **3.5** |
 | rails | Ruby | 281 755 | 1 339 | **4.8** |
-| guzzle | PHP | 48 147 | 437 | **9.1** |
+| guzzle | PHP | 48 147 | 380 | **7.9** |
+| okio | Kotlin | 44 514 | 582 | **13.1** |
 | ripgrep | Rust | 42 211 | 573 | **13.6** |
-| okio | Kotlin | 44 514 | 617 | **13.9** |
 | Alamofire | Swift | 26 592 | 372 | **14.0** |
-| gson | Java | 47 559 | 686 | **14.4** |
-| cobra, gin | Go | 30 723 | 527 | **17.2** |
+| gson | Java | 47 559 | 683 | **14.4** |
+| cobra, gin | Go | 30 723 | 490 | **15.9** |
 | axios, nest | TypeScript | 36 073 | 644 | **17.9** |
-| Newtonsoft.Json | C# | 126 652 | 2 423 | **19.1** |
+| Newtonsoft.Json | C# | 126 652 | 2 410 | **19.0** |
 | requests, flask, a private application | Python | 42 955 | 921 | **21.4** |
 | a WebForms application from 2010 | C# | 152 731 | 8 481 | **55.5** |
 
@@ -564,22 +563,18 @@ of the number.
 
 ### How the false-positive rate is measured
 
-Density and precision are different questions. Precision is answered by reading a sample:
+Density and precision are different questions, and only the second one judges the engine. Precision
+is answered by reading a sample: findings are drawn per rule in proportion to how much each one
+contributes to the report — a rule that fires a thousand times decides how the report reads, one that
+fires twice does not — and each drawn finding is read against its own source line and marked true or
+false. The ratio, with the interval the sample size supports, is the number.
 
-```bash
-python tools/sample_findings.py --path <repo> --include "**/*.kt" --size 26 --out review.tsv
-# judge each row ok / fp, then
-python tools/sample_findings.py --score review.tsv
-```
-
-`tools/noise_audit.py` ranks the rules most likely to be noise — by density, by how far one file
-dominates their findings, by how often they land on a line another rule already took — and prints
-every finding of one rule with `--rule`, which is how a family is picked to work on:
-
-```bash
-python tools/noise_audit.py --path <repo> --arg="--include" --arg="**/*.cs"
-python tools/noise_audit.py --path <repo> --rule QG-CS-SML-0497 --show 20
-```
+Choosing what to work on next uses the same discipline. Rules are ranked by the signals that have
+actually caught a defect in the past: findings per thousand lines, how far a single file dominates a
+rule's output, how often the same sentence repeats, how often a finding lands on a line another rule
+already took, and how much of the output falls in generated or vendored code. The rule at the top of
+that list is opened first, its findings are read, and the family is either rewritten on the syntax
+tree or removed.
 
 Two measures moved every language at once. The first is a cap on how many times a single rule may
 speak about one file: the twentieth finding carries the total and the rest are left out. The second
@@ -603,8 +598,7 @@ their check after a sample had shown the false positive:
 
 ```bash
 dotnet build QualityGuard.sln
-dotnet test                       # parser, semantics, taint, scanner, rule precision
-./tools/RuleCatalog.ps1 -Validate # catalog shape, identifiers, English descriptions
+dotnet test    # parsers, semantics, taint, scanner, rule precision, catalogue shape
 ```
 
 ### Measured against the reference engine's own expectations
@@ -612,10 +606,6 @@ dotnet test                       # parser, semantics, taint, scanner, rule prec
 Analyzer projects ship test corpora whose defective lines are annotated — a comment on each line that
 must be reported. That is a ground truth written by someone else, for a different engine, without
 any knowledge of this one, which makes it a usable instrument:
-
-```bash
-python tools/compare_expectations.py --path <corpus> --language py
-```
 
 It reports **recall** (how many expected lines QualityGuard finds), **precision** (how many of its
 findings land on an expected line), and the findings on unannotated lines — meant to be read rather
@@ -837,11 +827,6 @@ not of correctness.
 
 Correctness has to be judged by reading the code, so there is a second instrument:
 
-```bash
-python tools/sample_findings.py --path <repo> --size 60 --out review.tsv
-python tools/sample_findings.py --score review.tsv
-```
-
 It draws a sample weighted by how much each rule contributes to the report — a rule that fires a
 thousand times decides how the report reads, one that fires twice does not — and writes each finding
 with the lines around it. A person marks `ok` or `fp`, and the tool reports precision with the
@@ -904,12 +889,8 @@ read. The corpus that produced nothing now produces 33,273 findings, 65.8% of th
 
 ### One defect, one finding### One defect, one finding
 
-A reader who is told the same thing three times stops reading. `tools/overlapping_rules.py` runs the
+A reader who is told the same thing three times stops reading. A dedicated pass runs the
 engine over a corpus and reports the rule pairs whose findings land on the same line:
-
-```bash
-python tools/overlapping_rules.py --path <corpus> --extension .java
-```
 
 On the Java corpus it found twenty such pairs, and on the C# one forty-five, and the largest was four rules for one defect: a call
 to `System.out` was reported by a shared analyzer and by three separate ported entries, 1,076 times
