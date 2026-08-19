@@ -8,7 +8,7 @@ a configurable Quality Gate and exits with `PASSED` or `FAILED` — no server, n
 dotnet run --project src/QualityGuard.Cli -- --path ./src --by-folder
 ```
 
-**3570 rules across 26 languages**, on a real syntax tree with a semantic model, a project index and
+**3574 rules across 26 languages**, on a real syntax tree with a semantic model, a project index and
 interprocedural taint analysis. Rules ship in a **default profile** — the conventions and stylistic
 checks stay off until `--all-rules` asks for them — because a report where every preference is an
 issue buries the defects that matter.
@@ -146,7 +146,7 @@ Severity and issue kind follow the category: `SEC` → vulnerability (major or a
 
 ## 5. Rules
 
-**3570 rules are loaded**, backed by **4665 catalog entries** (an entry either carries its own
+**3574 rules are loaded**, backed by **4669 catalog entries** (an entry either carries its own
 detection or documents a rule implemented in code). Every rule ships an English name, message,
 summary, *why is this an issue* and *how to fix*.
 
@@ -183,11 +183,26 @@ read as a tree of keys and blocks.
 | Shell | `SH` | 12 | structural parser |
 | SQL | `SQL` | 9 | structural parser |
 | TypeScript-specific | `TS` | 9 | dedicated parser |
-| Razor / XAML | `RAZ`, `XAML` | 7 | markup reader |
+| Razor / Blazor | `RAZ` | 8 | C# parser over the `@code` block, markup reader over the rest |
+| XAML | `XAML` | 3 | markup reader |
 | Scala | — | — | catalogue mapped, rules not written yet |
 
 TypeScript, Sass, SCSS, Less, JSX/TSX and VB.NET are analysed by the rules of the language they
 extend, so their own row only counts what is specific to them.
+
+### Razor and Blazor
+
+A component is one class written across two files: `Counter.razor` holds the markup and an `@code`
+block, `Counter.razor.cs` holds the rest as a partial class. QualityGuard reads it the way the
+compiler does — the `@code` block is parsed as C# and every C# rule runs on it, while the markup is
+read as markup. The two halves are joined by name, so a field declared in the code-behind and used
+only from the markup counts as used, and the other way round.
+
+Getting that wrong is expensive: parsing a whole `.razor` file as C# turns the prose in the markup
+into expressions, and treating the file as pure markup makes every field of every component look
+dead. Four rules are specific to components — a query-string parameter whose type the framework
+cannot bind, a `[JSInvokable]` method that is not public, a query parameter in a component no route
+reaches, and an event handler written as a lambda inside a markup loop.
 
 ### The default profile
 
@@ -529,7 +544,7 @@ rule that produces noise is rewritten on the syntax tree or removed, and every f
 was fixed is pinned by a regression test — written next to the shape the rule must still report — so
 the precision cannot be lost again silently.
 
-**575 tests** cover the parsers, the semantic model, taint, the scanner and rule precision. Every
+**580 tests** cover the parsers, the semantic model, taint, the scanner and rule precision. Every
 false positive that was ever fixed has one of them, written next to the shape the rule must still
 report, so precision cannot be lost again in silence.
 
@@ -549,11 +564,16 @@ because they are real legacy rather than a curated library.
 | ripgrep | Rust | 42 211 | 573 | **13.6** |
 | Alamofire | Swift | 26 592 | 372 | **14.0** |
 | gson | Java | 47 559 | 683 | **14.4** |
+| a Blazor application | C# | 58 349 | 862 | **14.8** |
 | cobra, gin | Go | 30 723 | 490 | **15.9** |
 | axios, nest | TypeScript | 36 073 | 644 | **17.9** |
-| Newtonsoft.Json | C# | 126 652 | 2 410 | **19.0** |
+| Newtonsoft.Json | C# | 126 652 | 2 395 | **18.9** |
 | requests, flask, a private application | Python | 42 955 | 921 | **21.4** |
-| a WebForms application from 2010 | C# | 152 731 | 8 481 | **55.5** |
+| a WebForms application from 2010 | C# | 218 812 | 10 616 | **48.5** |
+
+**Scan the whole project, not one extension.** Narrowing a scan to `**/*.cs` leaves the templates out,
+and a field a component only touches from its markup then reads as unused — on the Blazor application
+above, doing that produced 570 findings that all went away once the `.razor` files were in the scan.
 
 The last row is the point of the table rather than an embarrassment: **density measures the code, not
 the engine**. That application really does carry a thousand trivial properties wrapping a field, eight

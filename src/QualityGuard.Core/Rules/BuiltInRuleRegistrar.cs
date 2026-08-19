@@ -72,6 +72,7 @@ public static class BuiltInRuleRegistrar
         ..Languages.KubernetesRuleSet.All,
         ..Languages.ClusterRuleSet.All,
         ..Languages.CloudRuleSet.All,
+        ..Languages.BlazorRuleSet.All,
         ..Languages.CCRuleSet.All,
         ..Languages.ShellRuleSet.All,
         ..Languages.CssRuleSet.All,

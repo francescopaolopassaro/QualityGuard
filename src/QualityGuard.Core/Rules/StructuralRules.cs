@@ -2467,10 +2467,11 @@ public abstract class MatchWithoutDefaultRule : StructuralRuleBase
                 continue;
             var hasDefault = body.DescendantsAndSelf()
                 .Any(n => n.Tokens.Count > 0 && n.Tokens[0].Text is "default" or "else" or "_");
-            // A Kotlin 'when' whose value is used has to cover every case or the code does not
-            // compile, and one that branches on an enum or a sealed hierarchy already does. Asking
-            // for an 'else' there asks for a branch the compiler would call unreachable.
-            if (!hasDefault && context.Language.LanguageKey == "kt" && IsAlreadyExhaustive(match, body))
+            // A 'when' or a switch expression whose value is used has to cover every case or the
+            // code does not compile, and one that branches on an enum or a sealed hierarchy already
+            // does. Asking for a default there asks for a branch the compiler calls unreachable.
+            if (!hasDefault && context.Language.LanguageKey is "kt" or "cs" or "vb"
+                && IsAlreadyExhaustive(match, body))
                 continue;
             if (!hasDefault)
                 context.Report(match, "No branch handles the values that are not listed; add a default case "

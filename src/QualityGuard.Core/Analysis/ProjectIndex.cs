@@ -119,8 +119,10 @@ public sealed class ProjectIndex
 
     private void AddTemplateReferences(FileAnalysis analysis)
     {
-        if (analysis.Tree.HasDedicatedParser)
-            return;
+        // A Razor component is one class written in two files: the markup names members declared in
+        // the code-behind, and the code-behind uses members declared in '@code'. The file is parsed
+        // as C# and is still a template, so the check on the parser has to come second — with it
+        // first, every field a component only touches from its markup read as unused.
         var language = analysis.File.Language?.LanguageKey ?? string.Empty;
         if (!TemplateLanguages.Contains(language, StringComparer.OrdinalIgnoreCase))
             return;

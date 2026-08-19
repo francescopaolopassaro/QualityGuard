@@ -412,7 +412,7 @@ public sealed class CsUnsafeDeserializationRule : PatternRuleBase
     }
 }
 
-public sealed class CsSwitchDefaultRule : PatternRuleBase
+public sealed class CsSwitchDefaultRule : RuleBase
 {
     public override string Key => "QG-CS-SML-0003";
     public override string Name => "Switch statements without a default clause";
@@ -424,33 +424,21 @@ public sealed class CsSwitchDefaultRule : PatternRuleBase
 
     public override void Execute(IRuleContext context)
     {
-        var tokens = context.Tokens;
-        for (var i = 0; i < tokens.Count; i++)
+        if (!context.Tree.HasDedicatedParser)
+            return;
+
+        foreach (var statement in context.Root.OfKind(QualityGuard.Core.Syntax.NodeKind.Match))
         {
-            if (!CSharpRuleSet.IsWord(tokens[i], "switch")) continue;
-            var braceSeen = false;
-            var depth = 0;
-            var hasDefault = false;
-            for (var j = i + 1; j < tokens.Count; j++)
-            {
-                var t = tokens[j];
-                if (t.Text == "{")
-                {
-                    braceSeen = true;
-                    depth++;
-                    continue;
-                }
-                if (t.Text == "}")
-                {
-                    if (!braceSeen) break;
-                    depth--;
-                    if (depth == 0) break;
-                    continue;
-                }
-                if (CSharpRuleSet.IsWord(t, "default")) hasDefault = true;
-            }
-            if (braceSeen && !hasDefault)
-                context.Report("Add a default clause to this switch statement.", tokens[i].Line);
+            var body = statement.FirstChild(QualityGuard.Core.Syntax.NodeKind.Block);
+            var sections = body?.ChildrenOf(QualityGuard.Core.Syntax.NodeKind.SwitchSection).ToList();
+            if (sections is not { Count: > 0 })
+                continue;
+            if (sections.Any(section => section.Text is "default" or "_"))
+                continue;
+
+            context.Report("This switch has no default clause, so a value nobody listed passes "
+                           + "through it without anything happening — and the next value added to "
+                           + "the type it switches on will do the same.", statement.Line);
         }
     }
 }

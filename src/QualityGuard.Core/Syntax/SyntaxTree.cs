@@ -43,6 +43,52 @@ public sealed class SyntaxTree
         return kept;
     }
 
+
+    /// <summary>
+    /// The C# of a Razor component. A '.razor' file is markup with the code in '@code' and
+    /// '@functions' blocks, and the reference engines analyse it as C# for exactly that reason.
+    /// Handing the whole file to the C# parser read the prose as expressions — "This component is
+    /// defined in the library" became a chain of comparisons — so only the code blocks are kept, with
+    /// their own line numbers, wrapped in a class so their members parse as members.
+    /// </summary>
+    private static IReadOnlyList<Tokenization.Token> RazorCode(IReadOnlyList<Tokenization.Token> tokens)
+    {
+        var kept = new List<Tokenization.Token>();
+        for (var i = 0; i < tokens.Count; i++)
+        {
+            if (tokens[i].Text != "@" || i + 1 >= tokens.Count)
+                continue;
+            if (tokens[i + 1].Text is not ("code" or "functions"))
+                continue;
+
+            var open = i + 2;
+            while (open < tokens.Count && tokens[open].Text != "{")
+                open++;
+            if (open >= tokens.Count)
+                break;
+
+            var depth = 0;
+            var end = open;
+            for (; end < tokens.Count; end++)
+            {
+                if (tokens[end].Text == "{")
+                    depth++;
+                else if (tokens[end].Text == "}" && --depth == 0)
+                    break;
+            }
+            if (end >= tokens.Count)
+                end = tokens.Count - 1;
+
+            var line = tokens[open].Line;
+            kept.Add(new Tokenization.Token(Tokenization.TokenKind.Keyword, "class", line, 1));
+            kept.Add(new Tokenization.Token(Tokenization.TokenKind.Identifier, "Component", line, 1));
+            for (var t = open; t <= end; t++)
+                kept.Add(tokens[t]);
+            i = end;
+        }
+        return kept;
+    }
+
     /// <summary>
     /// Builds the tree with the dedicated parser of the language when there is one, and with the generic
     /// structural parser otherwise. Dedicated parsers give a real grammar-driven AST.
@@ -52,7 +98,8 @@ public sealed class SyntaxTree
         var profile = SyntaxProfile.For(language.LanguageKey);
         var dedicated = language.LanguageKey is LanguageKeys.CSharp or LanguageKeys.Java
             or LanguageKeys.Go or LanguageKeys.JavaScript or LanguageKeys.TypeScript
-            or LanguageKeys.Python or LanguageKeys.Dart or LanguageKeys.Php or LanguageKeys.Kotlin;
+            or LanguageKeys.Python or LanguageKeys.Dart or LanguageKeys.Php or LanguageKeys.Kotlin
+            or LanguageKeys.Razor;
         var root = language.LanguageKey switch
         {
             LanguageKeys.CSharp => CSharp.CSharpParser.Parse(tokens, language),
@@ -67,6 +114,7 @@ public sealed class SyntaxTree
             LanguageKeys.Php => CSharp.CSharpParser.Parse(WithoutPhpMarkers(tokens), language,
                 CSharp.CFamilyDialect.Php),
             LanguageKeys.Kotlin => CSharp.CSharpParser.Parse(tokens, language, CSharp.CFamilyDialect.Kotlin),
+            LanguageKeys.Razor => CSharp.CSharpParser.Parse(RazorCode(tokens), language),
             _ => StructureParser.Parse(tokens, profile)
         };
         return new SyntaxTree

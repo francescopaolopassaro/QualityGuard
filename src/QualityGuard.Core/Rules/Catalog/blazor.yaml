@@ -1,0 +1,71 @@
+# Descriptions for the component rules implemented in Rules/Languages/BlazorRules.cs. A component is
+# one class written across a markup file and a code-behind, and the framework reaches into it by name
+# — from the query string, from JavaScript, from the markup — so these mistakes compile and fail at
+# run time. The engine reads the '@code' block of a .razor file as C#, which is what makes them
+# visible at all.
+
+- key: QG-CS-BUG-0190
+  name: A parameter read from the query string must have a type the framework can bind
+  languages: [cs, raz]
+  category: BUG
+  severity: major
+  effort: 10min
+  tags: [components, binding]
+  summary: A property marked as coming from the query string is declared with a type the framework cannot read.
+  why: |
+    The framework reads a query string into a small set of types. Given anything else it does not fail:
+    it leaves the property at its default and renders the page as though the parameter had never been
+    passed. The bug shows up as a screen that is empty for no visible reason, and the code that looks
+    wrong is the one that reads the property rather than the one that declared it.
+  fix: |
+    Declare the property as one of the types the framework binds — a string, a number, a bool, a date
+    or a Guid, optionally nullable or an array of one — and convert to your own type inside the
+    component.
+
+- key: QG-CS-BUG-0191
+  name: A method called from JavaScript must be public
+  languages: [cs, raz]
+  category: BUG
+  severity: major
+  effort: 10min
+  tags: [components, interop]
+  summary: A method marked as callable from JavaScript is not public.
+  why: |
+    The attribute is the whole contract: JavaScript names the method as a string, and the runtime looks
+    it up when the call arrives. A method that is not public is not found, so the call fails where
+    nobody is watching — in the browser, at run time, long after the code compiled.
+  fix: |
+    Make the method public, or remove the attribute if nothing on the JavaScript side calls it.
+
+- key: QG-CS-SML-0555
+  name: A query string parameter only reaches a component with a route
+  languages: [cs, raz]
+  category: SML
+  severity: major
+  effort: 10min
+  tags: [components, binding]
+  summary: A parameter is taken from the query string in a component that no route reaches.
+  why: |
+    Only a routable component is rendered from a URL, and only then is there a query string to read.
+    In a component that another one renders, the parameter is filled by the parent through its
+    attributes; the query attribute is silently ignored and the value never arrives.
+  fix: |
+    Give the component a route if it is meant to be reached by URL, or take the value as an ordinary
+    component parameter passed by whoever renders it.
+
+- key: QG-CS-SML-0556
+  name: A handler written as a lambda inside a markup loop is rebuilt on every render
+  languages: [raz]
+  category: SML
+  severity: minor
+  effort: 15min
+  tags: [components, performance]
+  summary: An event handler in a loop is written as a lambda, so a new delegate is created per item per render.
+  why: |
+    The markup inside a loop runs once per item, and a lambda there is a new object each time. The
+    framework compares handlers to decide what changed, so rows that are identical are redrawn anyway.
+    On a short list nobody notices; on a long one the page stutters for a reason that is invisible in
+    the profiler, because the cost is spread across every row.
+  fix: |
+    Call a method and pass the item to it, so the same handler is used for every render, or capture the
+    item in a field the method reads.
