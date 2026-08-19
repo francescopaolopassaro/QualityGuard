@@ -260,16 +260,16 @@
     next change touches a single spot.
 
 - key: QG-PY-BUG-0026
-  name: Function parameters initial values should match the behaviour the code describes
+  name: A parameter should be read before it is replaced
   languages: [py]
   category: BUG
   severity: major
   effort: 15min
   tags: [bug, generated]
-  generated: true
-  status: planned
+  generated: false
+  status: ready
   message: This code does not behave the way it reads.
-  summary: The code does not do what its shape suggests, or fails on ordinary input.
+  summary: A parameter is overwritten before anything reads the value the caller passed.
   why: |
     Written this way the code works by accident or breaks on values that are perfectly normal, and the
     mistake is easy to miss in review because the intent reads correctly.
@@ -393,16 +393,16 @@
     broken before trusting it again.
 
 - key: QG-PY-SML-0043
-  name: Field should not be duplicated
+  name: A member should not repeat the name of its type
   languages: [py]
   category: SML
   severity: minor
   effort: 15min
   tags: [duplication, generated]
-  generated: true
-  status: planned
+  generated: false
+  status: ready
   message: This code or value is duplicated.
-  summary: The same code or value appears more than once.
+  summary: A field or property carries the same name as the type that declares it.
   why: |
     Copies drift apart the first time one of them is fixed, and nothing links them, so the bug is fixed
     in one place and stays in the other. Readers also cannot tell which copy is authoritative.
@@ -509,16 +509,16 @@
     Remove what is not used, name what is unclear, and keep one piece of behaviour in one place so the
     next change touches a single spot.
 - key: QG-PY-SML-0050
-  name: Boolean checks should be simplified
+  name: A comparison should be written with the operator that means it
   languages: [py]
   category: SML
   severity: minor
   effort: 15min
   tags: [sml, generated]
-  generated: true
-  status: planned
+  generated: false
+  status: ready
   message: This code is harder to read or change than the behaviour requires.
-  summary: The code works but is harder to read or change than the behaviour requires.
+  summary: A comparison is wrapped in a negation instead of using the opposite operator.
   why: |
     The intent is buried, duplicated, or spread across places that must stay in sync, so every future
     change costs more than it should and carries a risk that has nothing to do with the change itself.
@@ -797,16 +797,16 @@
     Switch to the recommended construct; the behaviour is the same in the normal case and defined in the
     cases the old form got wrong.
 - key: QG-PY-SML-0062
-  name: Functions returns should be simplified
+  name: A function with branches should not always answer the same thing
   languages: [py]
   category: SML
   severity: minor
   effort: 15min
   tags: [sml, generated]
-  generated: true
-  status: planned
+  generated: false
+  status: ready
   message: This code is harder to read or change than the behaviour requires.
-  summary: The code works but is harder to read or change than the behaviour requires.
+  summary: Every return of a function hands back the same literal.
   why: |
     The intent is buried, duplicated, or spread across places that must stay in sync, so every future
     change costs more than it should and carries a risk that has nothing to do with the change itself.
@@ -873,16 +873,16 @@
     Make the intended behaviour explicit — fix the condition, the operator or the order of operations —
     and cover the case that used to fail with a test.
 - key: QG-PY-BUG-0044
-  name: Collection content should match the behaviour the code describes
+  name: A collection entry should not be written twice in a row
   languages: [py]
   category: BUG
   severity: major
   effort: 15min
   tags: [bug, generated]
-  generated: true
-  status: planned
+  generated: false
+  status: ready
   message: This code does not behave the way it reads.
-  summary: The code does not do what its shape suggests, or fails on ordinary input.
+  summary: The same key or index is assigned twice with nothing reading it in between.
   why: |
     Written this way the code works by accident or breaks on values that are perfectly normal, and the
     mistake is easy to miss in review because the intent reads correctly.
@@ -891,17 +891,16 @@
     and cover the case that used to fail with a test.
 
 - key: QG-PY-SML-0066
-  name: Functions and methods should not be duplicated
+  name: Two methods should not share the same implementation
   languages: [py]
   category: SML
-  status: planned
+  status: ready
   severity: minor
   effort: 15min
   tags: [duplication, generated]
-  generated: true
-
+  generated: false
   message: This code or value is duplicated.
-  summary: The same code or value appears more than once.
+  summary: Two methods of the same type have identical bodies.
   why: |
     Copies drift apart the first time one of them is fixed, and nothing links them, so the bug is fixed
     in one place and stays in the other. Readers also cannot tell which copy is authoritative.

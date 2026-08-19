@@ -213,4 +213,159 @@ public class SharedChecksTests
             """;
         Assert.Single(Lines("client.php", code, "QG-PP-SEC-0055"));
     }
+    [Fact]
+    public void Two_methods_with_the_same_body_are_reported()
+    {
+        var code = """
+            public class Order
+            {
+                public int Total(IEnumerable<int> values)
+                {
+                    var sum = 0;
+                    foreach (var value in values)
+                        sum += value;
+                    return sum;
+                }
+
+                public int Count(IEnumerable<int> values)
+                {
+                    var sum = 0;
+                    foreach (var value in values)
+                        sum += value;
+                    return sum;
+                }
+            }
+            """;
+        Assert.Single(Lines("Order.cs", code, "QG-CS-SML-0291"));
+    }
+
+    [Fact]
+    public void Extension_points_that_all_return_the_default_are_left_alone()
+    {
+        // a base class of hooks looks identical on purpose: that shape is the contract
+        var code = """
+            public class Proxy
+            {
+                public virtual bool TryConvert(object instance, out object? result)
+                {
+                    result = null;
+                    return false;
+                }
+
+                public virtual bool TryCreate(object instance, out object? result)
+                {
+                    result = null;
+                    return false;
+                }
+            }
+            """;
+        Assert.Empty(Lines("Proxy.cs", code, "QG-CS-SML-0291"));
+    }
+
+    [Fact]
+    public void A_negated_comparison_is_reported()
+    {
+        var code = """
+            def check(a, b):
+                if not (a == b):
+                    return False
+                return True
+            """;
+        Assert.NotEmpty(Lines("check.py", code, "QG-PY-SML-0050"));
+    }
+
+    [Fact]
+    public void A_hash_built_from_a_field_that_can_change_is_reported()
+    {
+        var code = """
+            public class Order
+            {
+                private int _quantity;
+                private readonly string _code = "x";
+
+                public override int GetHashCode()
+                {
+                    return _quantity.GetHashCode() ^ _code.GetHashCode();
+                }
+            }
+            """;
+        Assert.NotEmpty(Lines("Order.cs", code, "QG-CS-BUG-0047"));
+    }
+
+    [Fact]
+    public void A_hash_built_only_from_values_that_cannot_change_is_left_alone()
+    {
+        var code = """
+            public class Order
+            {
+                private readonly string _code = "x";
+
+                public override int GetHashCode()
+                {
+                    return _code.GetHashCode();
+                }
+            }
+            """;
+        Assert.Empty(Lines("Order.cs", code, "QG-CS-BUG-0047"));
+    }
+    [Fact]
+    public void A_parameter_replaced_before_it_is_read_is_reported()
+    {
+        var code = """
+            def normalise(path, mode):
+                path = "/tmp"
+                mode = mode.strip()
+                return path + mode
+            """;
+        // 'mode' is derived from itself, which is a normalisation and not a loss
+        Assert.Single(Lines("paths.py", code, "QG-PY-BUG-0026"));
+    }
+
+    [Fact]
+    public void The_same_entry_written_twice_is_reported_and_an_append_is_not()
+    {
+        var written = """
+            def fill(data, key):
+                data[key] = 1
+                data[key] = 2
+                return data
+            """;
+        var accumulated = """
+            def accumulate(counts, key):
+                counts[key] = 0
+                counts[key] = counts[key] + 1
+                return counts
+            """;
+        Assert.Single(Lines("fill.py", written, "QG-PY-BUG-0044"));
+        Assert.Empty(Lines("fill.py", accumulated, "QG-PY-BUG-0044"));
+    }
+
+    [Fact]
+    public void A_function_that_always_answers_the_same_literal_is_reported()
+    {
+        var code = """
+            def always(flag):
+                if flag:
+                    return 42
+                return 42
+            """;
+        Assert.NotEmpty(Lines("always.py", code, "QG-PY-SML-0062"));
+    }
+
+    [Fact]
+    public void The_same_variable_returned_from_two_branches_is_left_alone()
+    {
+        // the variable holds whatever its branch computed: reading the text as the value reported
+        // every function written this way
+        var code = """
+            def decide(flag):
+                result = 0
+                if flag:
+                    result = compute()
+                    return result
+                result = fallback()
+                return result
+            """;
+        Assert.Empty(Lines("decide.py", code, "QG-PY-SML-0062"));
+    }
 }

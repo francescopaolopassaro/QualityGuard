@@ -113,16 +113,16 @@
     documented and dated.
 
 - key: QG-KT-SML-0034
-  name: Boolean checks should be simplified
+  name: A comparison should be written with the operator that means it
   languages: [kt]
   category: SML
   severity: minor
   effort: 15min
   tags: [sml, generated]
-  generated: true
-  status: planned
+  generated: false
+  status: ready
   message: This code is harder to read or change than the behaviour requires.
-  summary: The code works but is harder to read or change than the behaviour requires.
+  summary: A comparison is wrapped in a negation instead of using the opposite operator.
   why: |
     The intent is buried, duplicated, or spread across places that must stay in sync, so every future
     change costs more than it should and carries a risk that has nothing to do with the change itself.
@@ -304,16 +304,16 @@
     description of what the program does.
 
 - key: QG-KT-SML-0035
-  name: Functions should not be duplicated
+  name: Two methods should not share the same implementation
   languages: [kt]
   category: SML
   severity: minor
   effort: 15min
   tags: [duplication, generated]
-  generated: true
-  status: planned
+  generated: false
+  status: ready
   message: This code or value is duplicated.
-  summary: The same code or value appears more than once.
+  summary: Two methods of the same type have identical bodies.
   why: |
     Copies drift apart the first time one of them is fixed, and nothing links them, so the bug is fixed
     in one place and stays in the other. Readers also cannot tell which copy is authoritative.

@@ -23,7 +23,18 @@ public static class SharedCheckSet
         new NullInsteadOfEmptyRuleCs(),
         new ConstructorCallsOverridableRuleCs(), new ConstructorCallsOverridableRuleJava(),
         new DebugFeatureRuleKotlin(), new DebugFeatureRulePhp(),
-        new DatabasePasswordRulePhp(), new HostnameVerificationRulePhp()
+        new DatabasePasswordRulePhp(), new HostnameVerificationRulePhp(),
+        new IdenticalBodiesRuleCs(), new IdenticalBodiesRuleJava(), new IdenticalBodiesRuleKotlin(),
+        new IdenticalBodiesRulePhp(), new IdenticalBodiesRulePython(), new IdenticalBodiesRuleGo(),
+        new IdenticalBodiesRuleRuby(),
+        new InvertedBooleanCheckRuleKotlin(), new InvertedBooleanCheckRulePython(),
+        new InvertedBooleanCheckRulePhp(), new InvertedBooleanCheckRuleGo(),
+        new FieldNamedAfterTypeRuleJava(), new FieldNamedAfterTypeRulePython(),
+        new HashCodeOnMutableFieldRuleCs(),
+        new ParameterOverwrittenRulePhp(), new ParameterOverwrittenRulePython(),
+        new CollectionOverwrittenRuleCs(), new CollectionOverwrittenRuleJava(),
+        new CollectionOverwrittenRulePhp(), new CollectionOverwrittenRulePython(),
+        new InvariantReturnRulePython()
     ];
 }
 
@@ -696,4 +707,518 @@ public sealed class HostnameVerificationRulePhp : HostnameVerificationRule
 {
     public override string Key => "QG-PP-SEC-0055";
     public override string[] Languages => ["php"];
+}
+
+/// <summary>
+/// Two methods of the same type with the same body. One of them was copied, and from then on a fix
+/// applied to one is a fix missing from the other — the pair drifts apart silently, because nothing
+/// links them.
+/// </summary>
+public abstract class IdenticalBodiesRule : StructuralRuleBase
+{
+    public override string Name => "Two methods should not share the same implementation";
+    public override Severity Severity => Severity.Major;
+    public override IssueKind Kind => IssueKind.CodeSmell;
+    public override string RemediationEffort => "15min";
+
+    public override void Execute(IRuleContext context)
+    {
+        if (!HasPreciseTree(context))
+            return;
+
+        foreach (var type in context.Root.OfKind(NodeKind.ClassDeclaration))
+        {
+            var seen = new Dictionary<string, SyntaxNode>(StringComparer.Ordinal);
+            foreach (var method in type.OfKind(NodeKind.FunctionDeclaration))
+            {
+                if (method.Ancestor(NodeKind.ClassDeclaration) != type || method.Text.Length == 0)
+                    continue;
+                // A method somebody is meant to replace is an extension point, and a base class full
+                // of them looks identical on purpose: 'result = null; return false;' repeated once
+                // per operation is the contract, not a copy. That was every report on one library.
+                if (method.ChildrenOf(NodeKind.Modifier).Select(m => m.Text)
+                    .Any(m => m is "virtual" or "abstract" or "override" or "open" or "partial"))
+                    continue;
+
+                var body = SyntaxQuery.Body(method);
+                // One statement is a delegation, a guard or a single call: dozens of methods in any
+                // class look alike at that size and none of them is a copy worth reporting. The
+                // reference engine draws the line at two statements, and so does this.
+                if (body is not { Children.Count: >= 2 })
+                    continue;
+
+                var shape = Shape(context, body);
+                if (shape.Length == 0)
+                    continue;
+                if (!seen.TryGetValue(shape, out var first))
+                {
+                    seen[shape] = method;
+                    continue;
+                }
+                if (first.Text == method.Text)
+                    continue; // an overload pair, which shares a body on purpose
+
+                context.Report(method, $"'{method.Text}' does exactly what '{first.Text}' does on line "
+                                       + $"{first.Line}, statement for statement. Nothing links the two, "
+                                       + "so the next fix lands in one of them and the other keeps the "
+                                       + "old behaviour. Call one from the other, or give the shared "
+                                       + "part a name.");
+            }
+        }
+    }
+    /// <summary>
+    /// The body as the words it is made of. The tokens of the file are read between the lines the
+    /// body spans rather than the tokens the node carries: an indentation-driven tree keeps them on
+    /// the statements, not on the block, and the comparison would silently see nothing.
+    /// </summary>
+    private static string Shape(IRuleContext context, SyntaxNode body)
+    {
+        // An indentation-driven block starts on the line of the declaration, so reading from there
+        // would put the method's own name into the comparison and no two bodies would ever match.
+        var first = body.Children[0].Range.StartLine;
+        return string.Join(' ', context.Tokens
+            .Where(t => t.Kind != Tokenization.TokenKind.Comment
+                        && t.Line >= first && t.Line <= body.Range.EndLine)
+            .Select(t => t.Text));
+    }
+}
+
+public sealed class IdenticalBodiesRuleCs : IdenticalBodiesRule
+{
+    public override string Key => "QG-CS-SML-0291";
+    public override string[] Languages => ["cs", "vb"];
+}
+
+public sealed class IdenticalBodiesRuleJava : IdenticalBodiesRule
+{
+    public override string Key => "QG-JV-SML-0263";
+    public override string[] Languages => ["java"];
+}
+
+public sealed class IdenticalBodiesRuleKotlin : IdenticalBodiesRule
+{
+    public override string Key => "QG-KT-SML-0035";
+    public override string[] Languages => ["kt"];
+}
+
+public sealed class IdenticalBodiesRulePhp : IdenticalBodiesRule
+{
+    public override string Key => "QG-PP-SML-0084";
+    public override string[] Languages => ["php"];
+}
+
+public sealed class IdenticalBodiesRulePython : IdenticalBodiesRule
+{
+    public override string Key => "QG-PY-SML-0066";
+    public override string[] Languages => ["py"];
+}
+
+public sealed class IdenticalBodiesRuleGo : IdenticalBodiesRule
+{
+    public override string Key => "QG-GO-SML-0017";
+    public override string[] Languages => ["go"];
+}
+
+public sealed class IdenticalBodiesRuleRuby : IdenticalBodiesRule
+{
+    public override string Key => "QG-RB-SML-0020";
+    public override string[] Languages => ["rb"];
+}
+
+/// <summary>
+/// A comparison wrapped in a negation. The language has the opposite operator, and reading the
+/// negated form means holding two things in mind where one would do.
+/// </summary>
+public abstract class InvertedBooleanCheckRule : StructuralRuleBase
+{
+    private static readonly Dictionary<string, string> Opposite = new(StringComparer.Ordinal)
+    {
+        ["=="] = "!=", ["!="] = "==", ["<"] = ">=", [">"] = "<=", ["<="] = ">", [">="] = "<",
+        ["==="] = "!==", ["!=="] = "===", ["is"] = "is not"
+    };
+
+    public override string Name => "A comparison should be written with the operator that means it";
+    public override Severity Severity => Severity.Minor;
+    public override IssueKind Kind => IssueKind.CodeSmell;
+    public override string RemediationEffort => "5min";
+
+    public override void Execute(IRuleContext context)
+    {
+        if (!HasPreciseTree(context))
+            return;
+
+        foreach (var unary in context.Root.OfKind(NodeKind.Unary))
+        {
+            if (unary.Text is not ("!" or "not"))
+                continue;
+            var inner = unary.ChildAt(0);
+            // the negation has to apply to the comparison as a whole, which is what the parentheses
+            // around it say
+            if (inner is { Kind: NodeKind.Parenthesized })
+                inner = inner.ChildAt(0);
+            if (inner is not { Kind: NodeKind.Binary } comparison)
+                continue;
+            if (!Opposite.TryGetValue(comparison.Text, out var direct))
+                continue;
+
+            context.Report(unary, $"This negates a comparison instead of writing it: '{direct}' says "
+                                  + "the same thing in one step, and a reader stops having to invert "
+                                  + "it in their head.");
+        }
+    }
+}
+
+public sealed class InvertedBooleanCheckRuleKotlin : InvertedBooleanCheckRule
+{
+    public override string Key => "QG-KT-SML-0034";
+    public override string[] Languages => ["kt"];
+}
+
+public sealed class InvertedBooleanCheckRulePython : InvertedBooleanCheckRule
+{
+    public override string Key => "QG-PY-SML-0050";
+    public override string[] Languages => ["py"];
+}
+
+public sealed class InvertedBooleanCheckRulePhp : InvertedBooleanCheckRule
+{
+    public override string Key => "QG-PP-SML-0052";
+    public override string[] Languages => ["php"];
+}
+
+public sealed class InvertedBooleanCheckRuleGo : InvertedBooleanCheckRule
+{
+    public override string Key => "QG-GO-SML-0015";
+    public override string[] Languages => ["go"];
+}
+
+/// <summary>
+/// A member named after the type that holds it. Every mention afterwards has to be read twice —
+/// 'Order.Order' — and the two are impossible to tell apart in a search.
+/// </summary>
+public abstract class FieldNamedAfterTypeRule : StructuralRuleBase
+{
+    public override string Name => "A member should not repeat the name of its type";
+    public override Severity Severity => Severity.Minor;
+    public override IssueKind Kind => IssueKind.CodeSmell;
+    public override string RemediationEffort => "10min";
+
+    public override void Execute(IRuleContext context)
+    {
+        if (!HasPreciseTree(context))
+            return;
+
+        foreach (var type in context.Root.OfKind(NodeKind.ClassDeclaration))
+        {
+            if (type.Text.Length == 0)
+                continue;
+            foreach (var member in type.OfKind(NodeKind.FieldDeclaration, NodeKind.PropertyDeclaration))
+            {
+                if (member.Ancestor(NodeKind.ClassDeclaration) != type)
+                    continue;
+                var name = member.Text.TrimStart('_');
+                if (!string.Equals(name, type.Text, StringComparison.OrdinalIgnoreCase))
+                    continue;
+
+                context.Report(member, $"'{member.Text}' carries the name of the type that holds it, so "
+                                       + $"every use reads as '{type.Text}.{member.Text}' and a search "
+                                       + "for one finds the other. Name it for what it holds.");
+            }
+        }
+    }
+}
+
+public sealed class FieldNamedAfterTypeRuleJava : FieldNamedAfterTypeRule
+{
+    public override string Key => "QG-JV-SML-0122";
+    public override string[] Languages => ["java"];
+}
+
+public sealed class FieldNamedAfterTypeRulePython : FieldNamedAfterTypeRule
+{
+    public override string Key => "QG-PY-SML-0043";
+    public override string[] Languages => ["py"];
+}
+
+/// <summary>
+/// A hash built from something that changes. The object is filed under one hash and later answers
+/// with another, so the set that contains it can no longer find it — including to remove it.
+/// </summary>
+public abstract class HashCodeOnMutableFieldRule : StructuralRuleBase
+{
+    public override string Name => "A hash should be built from values that do not change";
+    public override Severity Severity => Severity.Major;
+    public override IssueKind Kind => IssueKind.Bug;
+    public override string RemediationEffort => "20min";
+
+    public override void Execute(IRuleContext context)
+    {
+        if (!HasPreciseTree(context))
+            return;
+
+        foreach (var type in context.Root.OfKind(NodeKind.ClassDeclaration))
+        {
+            var mutable = type.OfKind(NodeKind.FieldDeclaration)
+                .Where(f => f.Ancestor(NodeKind.ClassDeclaration) == type)
+                .Where(f => !f.ChildrenOf(NodeKind.Modifier).Select(m => m.Text)
+                    .Any(m => m is "readonly" or "const" or "final" or "static"))
+                .Select(f => f.Text)
+                .Where(n => n.Length > 0)
+                .ToHashSet(StringComparer.Ordinal);
+            if (mutable.Count == 0)
+                continue;
+
+            foreach (var method in type.OfKind(NodeKind.FunctionDeclaration))
+            {
+                if (method.Text is not ("GetHashCode" or "hashCode"))
+                    continue;
+                var used = method.OfKind(NodeKind.Identifier)
+                    .Select(i => i.Text)
+                    .FirstOrDefault(mutable.Contains);
+                if (used == null)
+                    continue;
+
+                context.Report(method, $"The hash is built from '{used}', which can change after the "
+                                       + "object has been put in a set or used as a key. From that "
+                                       + "moment the collection looks in the wrong bucket: the object "
+                                       + "is in there and cannot be found, not even to remove it.");
+                break;
+            }
+        }
+    }
+}
+
+public sealed class HashCodeOnMutableFieldRuleCs : HashCodeOnMutableFieldRule
+{
+    public override string Key => "QG-CS-BUG-0047";
+    public override string[] Languages => ["cs", "vb"];
+}
+
+/// <summary>
+/// A parameter written over before anything reads it. The value the caller sent is gone, and the
+/// signature still says the function takes it — so a reader tracing where that argument goes finds
+/// nothing, and the caller keeps computing something nobody uses.
+/// </summary>
+public abstract class ParameterOverwrittenRule : StructuralRuleBase
+{
+    public override string Name => "A parameter should be read before it is replaced";
+    public override Severity Severity => Severity.Major;
+    public override IssueKind Kind => IssueKind.Bug;
+    public override string RemediationEffort => "10min";
+
+    public override void Execute(IRuleContext context)
+    {
+        if (!HasPreciseTree(context))
+            return;
+
+        foreach (var function in SyntaxQuery.Functions(context.Root))
+        {
+            var body = SyntaxQuery.Body(function);
+            var parameters = function.FirstChild(NodeKind.ParameterList)?
+                .ChildrenOf(NodeKind.Parameter).Select(p => p.Text).ToHashSet(StringComparer.Ordinal);
+            if (body == null || parameters is not { Count: > 0 })
+                continue;
+
+            foreach (var name in parameters)
+            {
+                if (name.Length == 0)
+                    continue;
+                var uses = body.OfKind(NodeKind.Identifier).Where(i => i.Text == name).ToList();
+                if (uses.Count == 0)
+                    continue;
+
+                var first = uses[0];
+                var assignment = first.Parent;
+                // the first thing that happens to it has to be a plain replacement: '+=' reads it,
+                // and a name inside a larger expression is being used rather than overwritten
+                if (assignment is not { Kind: NodeKind.Assignment } || assignment.Text != "="
+                    || assignment.ChildAt(0) != first)
+                    continue;
+                // a value derived from the parameter itself is a normalisation, not a loss
+                if (assignment.ChildAt(1)?.OfKind(NodeKind.Identifier).Any(i => i.Text == name) == true)
+                    continue;
+
+                context.Report(first, $"'{name}' is replaced before anything reads it, so whatever the "
+                                      + "caller passed is thrown away. The signature still asks for it, "
+                                      + "and everyone calling this function still computes it.");
+            }
+        }
+    }
+}
+
+public sealed class ParameterOverwrittenRulePhp : ParameterOverwrittenRule
+{
+    public override string Key => "QG-PP-BUG-0004";
+    public override string[] Languages => ["php"];
+}
+
+public sealed class ParameterOverwrittenRulePython : ParameterOverwrittenRule
+{
+    public override string Key => "QG-PY-BUG-0026";
+    public override string[] Languages => ["py"];
+}
+
+/// <summary>
+/// The same key or index written twice in a row with nothing reading it in between. One of the two
+/// values was meant for somewhere else.
+/// </summary>
+public abstract class CollectionOverwrittenRule : StructuralRuleBase
+{
+    public override string Name => "A collection entry should not be written twice in a row";
+    public override Severity Severity => Severity.Major;
+    public override IssueKind Kind => IssueKind.Bug;
+    public override string RemediationEffort => "10min";
+
+    public override void Execute(IRuleContext context)
+    {
+        if (!HasPreciseTree(context))
+            return;
+
+        foreach (var block in Blocks(context))
+        {
+            string? previous = null;
+            var previousLine = 0;
+            foreach (var statement in block.Children)
+            {
+                var target = statement.Kind == NodeKind.ExpressionStatement
+                    ? statement.ChildAt(0)
+                    : statement;
+                if (target is not { Kind: NodeKind.Assignment } assignment || assignment.Text != "=")
+                {
+                    previous = null;
+                    continue;
+                }
+                var written = assignment.ChildAt(0);
+                if (written is not { Kind: NodeKind.Index })
+                {
+                    previous = null;
+                    continue;
+                }
+
+                var entry = EntryOf(written);
+                // '$parts[] = ...' appends: PHP writes it with no key at all, and every line adds an
+                // element rather than replacing one
+                if (written.Children.Count < 2 || written.Tokens.Any(t => t.Text == "[")
+                    && written.DescendantsAndSelf().Count(n => n.Kind != NodeKind.Index) < 2)
+                {
+                    previous = null;
+                    continue;
+                }
+                if (entry.Length == 0)
+                {
+                    previous = null;
+                    continue;
+                }
+                // the value written second may well be built from the first: 'total[k] = total[k] + 1'
+                if (assignment.ChildAt(1)?.OfKind(NodeKind.Index).Any(i => EntryOf(i) == entry) == true)
+                {
+                    previous = entry;
+                    previousLine = statement.Range.StartLine;
+                    continue;
+                }
+
+                if (entry == previous)
+                {
+                    context.Report(statement, $"This writes the same entry as line {previousLine} with "
+                                              + "nothing reading it in between, so the first value never "
+                                              + "existed as far as the program is concerned. One of the "
+                                              + "two was meant for another key.");
+                }
+                previous = entry;
+                previousLine = statement.Range.StartLine;
+            }
+        }
+    }
+    /// <summary>
+    /// The words that identify one entry — the collection and the key together. Reading only the
+    /// tokens the node carries left both sides empty on an indentation-driven tree, and two different
+    /// keys then compared equal.
+    /// </summary>
+    private static string EntryOf(SyntaxNode access)
+        => string.Join(' ', access.DescendantsAndSelf().SelectMany(n => n.Tokens).Select(t => t.Text));
+}
+
+public sealed class CollectionOverwrittenRuleCs : CollectionOverwrittenRule
+{
+    public override string Key => "QG-CS-BUG-0084";
+    public override string[] Languages => ["cs", "vb"];
+}
+
+public sealed class CollectionOverwrittenRuleJava : CollectionOverwrittenRule
+{
+    public override string Key => "QG-JV-BUG-0107";
+    public override string[] Languages => ["java"];
+}
+
+public sealed class CollectionOverwrittenRulePhp : CollectionOverwrittenRule
+{
+    public override string Key => "QG-PP-BUG-0021";
+    public override string[] Languages => ["php"];
+}
+
+public sealed class CollectionOverwrittenRulePython : CollectionOverwrittenRule
+{
+    public override string Key => "QG-PY-BUG-0044";
+    public override string[] Languages => ["py"];
+}
+
+/// <summary>
+/// A function whose every exit hands back the same value. The branches inside it decide nothing the
+/// caller can see, which usually means the result was supposed to differ and does not.
+/// </summary>
+public abstract class InvariantReturnRule : StructuralRuleBase
+{
+    public override string Name => "A function with branches should not always answer the same thing";
+    public override Severity Severity => Severity.Major;
+    public override IssueKind Kind => IssueKind.CodeSmell;
+    public override string RemediationEffort => "15min";
+
+    public override void Execute(IRuleContext context)
+    {
+        if (!HasPreciseTree(context))
+            return;
+
+        foreach (var function in SyntaxQuery.Functions(context.Root))
+        {
+            var body = SyntaxQuery.Body(function);
+            if (body == null)
+                continue;
+
+            var returns = body.OfKind(NodeKind.Jump)
+                .Where(j => j.Text == "return" && j.ChildAt(0) != null)
+                // a return inside a nested function belongs to that one
+                .Where(j => SyntaxQuery.EnclosingFunction(j) == function)
+                .ToList();
+            if (returns.Count < 2)
+                continue;
+
+            // Only a literal says the answer cannot differ. The same variable returned from two
+            // branches is the ordinary shape — it holds whatever that branch computed — and reading
+            // the text as the value reported every function written that way.
+            if (returns.Any(r => r.ChildAt(0)!.Kind is not (NodeKind.NumberLiteral
+                    or NodeKind.StringLiteral or NodeKind.BooleanLiteral)))
+                continue;
+
+            var values = returns
+                .Select(r => string.Join(' ', r.ChildAt(0)!.Tokens.Select(t => t.Text)))
+                .ToList();
+            if (values.Any(v => v.Length == 0) || values.Distinct(StringComparer.Ordinal).Count() != 1)
+                continue;
+            // 'return None' repeated is how a guard clause and its fall-through are written, and the
+            // caller reads nothing into it
+            if (values[0] is "None" or "null" or "nil" or "undefined")
+                continue;
+
+            context.Report(returns[0], $"Every exit of '{function.Text}' hands back {values[0]}, so the "
+                                       + "branches decide nothing the caller can see. Either the result "
+                                       + "was meant to differ, or the function does not need to return "
+                                       + "anything at all.");
+        }
+    }
+}
+
+public sealed class InvariantReturnRulePython : InvariantReturnRule
+{
+    public override string Key => "QG-PY-SML-0062";
+    public override string[] Languages => ["py"];
 }

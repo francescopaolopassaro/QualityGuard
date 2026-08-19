@@ -1305,16 +1305,16 @@
     next change touches a single spot.
 
 - key: QG-JV-SML-0122
-  name: Field should not be duplicated
+  name: A member should not repeat the name of its type
   languages: [java]
   category: SML
   severity: minor
   effort: 15min
   tags: [duplication, generated]
-  generated: true
-  status: planned
+  generated: false
+  status: ready
   message: This code or value is duplicated.
-  summary: The same code or value appears more than once.
+  summary: A field or property carries the same name as the type that declares it.
   why: |
     Copies drift apart the first time one of them is fixed, and nothing links them, so the bug is fixed
     in one place and stays in the other. Readers also cannot tell which copy is authoritative.
@@ -4657,16 +4657,16 @@
     next change touches a single spot.
 
 - key: QG-JV-BUG-0107
-  name: Map values should match the behaviour the code describes
+  name: A collection entry should not be written twice in a row
   languages: [java]
   category: BUG
   severity: major
   effort: 15min
   tags: [bug, generated]
-  generated: true
-  status: planned
+  generated: false
+  status: ready
   message: This code does not behave the way it reads.
-  summary: The code does not do what its shape suggests, or fails on ordinary input.
+  summary: The same key or index is assigned twice with nothing reading it in between.
   why: |
     Written this way the code works by accident or breaks on values that are perfectly normal, and the
     mistake is easy to miss in review because the intent reads correctly.
@@ -4675,16 +4675,16 @@
     and cover the case that used to fail with a test.
 
 - key: QG-JV-SML-0263
-  name: Methods should not be duplicated
+  name: Two methods should not share the same implementation
   languages: [java]
   category: SML
   severity: minor
   effort: 15min
   tags: [duplication, generated]
-  generated: true
-  status: planned
+  generated: false
+  status: ready
   message: This code or value is duplicated.
-  summary: The same code or value appears more than once.
+  summary: Two methods of the same type have identical bodies.
   why: |
     Copies drift apart the first time one of them is fixed, and nothing links them, so the bug is fixed
     in one place and stays in the other. Readers also cannot tell which copy is authoritative.

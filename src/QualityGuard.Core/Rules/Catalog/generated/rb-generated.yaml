@@ -130,16 +130,16 @@
     next change touches a single spot.
 
 - key: QG-RB-SML-0020
-  name: Methods should not be duplicated
+  name: Two methods should not share the same implementation
   languages: [rb]
   category: SML
   severity: minor
   effort: 15min
   tags: [duplication, generated]
-  generated: true
-  status: planned
+  generated: false
+  status: ready
   message: This code or value is duplicated.
-  summary: The same code or value appears more than once.
+  summary: Two methods of the same type have identical bodies.
   why: |
     Copies drift apart the first time one of them is fixed, and nothing links them, so the bug is fixed
     in one place and stays in the other. Readers also cannot tell which copy is authoritative.
