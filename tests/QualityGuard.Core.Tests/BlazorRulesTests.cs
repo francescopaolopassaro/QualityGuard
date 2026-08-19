@@ -50,7 +50,7 @@ public class BlazorRulesTests
                 public int Page { get; set; }
             }
             """;
-        Assert.Single(Lines("Orders.razor", component, "QG-CS-BUG-0190"));
+        Assert.Single(Lines("Orders.razor", component, "QG-CS-BUG-0096"));
     }
 
     [Fact]
@@ -65,7 +65,7 @@ public class BlazorRulesTests
                 public void OnResized() { }
             }
             """;
-        Assert.Single(Lines("Scroll.razor", component, "QG-CS-BUG-0191"));
+        Assert.Single(Lines("Scroll.razor", component, "QG-CS-BUG-0097"));
     }
 
     [Fact]
@@ -81,7 +81,7 @@ public class BlazorRulesTests
                 private void Remove(Order item) { }
             }
             """;
-        Assert.NotEmpty(Lines("List.razor", component, "QG-CS-SML-0556"));
+        Assert.NotEmpty(Lines("List.razor", component, "QG-CS-SML-0339"));
     }
 
     [Fact]
@@ -97,6 +97,166 @@ public class BlazorRulesTests
                 private void Remove() { }
             }
             """;
-        Assert.Empty(Lines("List.razor", component, "QG-CS-SML-0556"));
+        Assert.Empty(Lines("List.razor", component, "QG-CS-SML-0339"));
+    }
+    [Fact]
+    public void An_api_controller_that_never_renders_a_view_is_reported()
+    {
+        var code = """
+            namespace Demo
+            {
+                [ApiController]
+                public class OrdersController : Controller
+                {
+                    [HttpGet("orders")]
+                    public IActionResult List() => Ok();
+                }
+            }
+            """;
+        Assert.NotEmpty(Lines("OrdersController.cs", code, "QG-CS-SML-0345"));
+    }
+
+    [Fact]
+    public void An_api_controller_that_does_render_views_is_left_alone()
+    {
+        // deriving from the lighter base would stop compiling, so asking for it asks for nothing
+        var code = """
+            namespace Demo
+            {
+                [ApiController]
+                public class ViewsController : Controller
+                {
+                    [HttpGet("all")]
+                    public IActionResult All() => View("list");
+                }
+            }
+            """;
+        Assert.Empty(Lines("ViewsController.cs", code, "QG-CS-SML-0345"));
+    }
+
+    [Fact]
+    public void A_route_written_with_a_backslash_is_reported()
+    {
+        var code = """
+            namespace Demo
+            {
+                public class OrdersController : ControllerBase
+                {
+                    [HttpPost(@"orders\create")]
+                    public IActionResult Create() => Ok();
+                }
+            }
+            """;
+        Assert.NotEmpty(Lines("OrdersController.cs", code, "QG-CS-BUG-0099"));
+    }
+
+    [Fact]
+    public void A_parameter_that_contradicts_its_route_constraint_is_reported()
+    {
+        var component = """
+            @page "/orders/{Id:int}"
+
+            @code {
+                [Parameter]
+                public string Id { get; set; } = "";
+            }
+            """;
+        Assert.NotEmpty(Lines("Detail.razor", component, "QG-CS-BUG-0098"));
+    }
+
+    [Fact]
+    public void A_parameter_that_matches_its_route_constraint_is_left_alone()
+    {
+        var component = """
+            @page "/orders/{Id:int}"
+
+            @code {
+                [Parameter]
+                public int Id { get; set; }
+            }
+            """;
+        Assert.Empty(Lines("Detail.razor", component, "QG-CS-BUG-0098"));
+    }
+    [Fact]
+    public void A_component_parameter_that_is_not_public_is_reported()
+    {
+        var component = """
+            @code {
+                [Parameter]
+                private string Title { get; set; } = "";
+
+                [Parameter]
+                public string Subtitle { get; set; } = "";
+            }
+            """;
+        Assert.Single(Lines("Widget.razor", component, "QG-CS-BUG-0193"));
+    }
+
+    [Fact]
+    public void A_parameter_attribute_on_a_field_is_reported()
+    {
+        var component = """
+            @code {
+                [Parameter]
+                public string Subtitle = "";
+            }
+            """;
+        Assert.NotEmpty(Lines("Widget.razor", component, "QG-CS-BUG-0194"));
+    }
+
+    [Fact]
+    public void An_async_void_method_in_a_component_is_reported()
+    {
+        var component = """
+            @code {
+                private async void OnMoved(object sender, EventArgs e)
+                {
+                    await Load();
+                }
+
+                private async Task Reload()
+                {
+                    await Load();
+                }
+            }
+            """;
+        Assert.Single(Lines("Widget.razor", component, "QG-CS-BUG-0195"));
+    }
+
+    [Fact]
+    public void A_subscription_the_component_releases_is_left_alone()
+    {
+        var component = """
+            @code {
+                protected override void OnInitialized()
+                {
+                    Navigation.LocationChanged += OnMoved;
+                }
+
+                public void Dispose()
+                {
+                    Navigation.LocationChanged -= OnMoved;
+                }
+
+                private void OnMoved(object sender, EventArgs e) { }
+            }
+            """;
+        Assert.Empty(Lines("Widget.razor", component, "QG-CS-BUG-0196"));
+    }
+
+    [Fact]
+    public void A_subscription_nothing_releases_is_reported()
+    {
+        var component = """
+            @code {
+                protected override void OnInitialized()
+                {
+                    Navigation.LocationChanged += OnMoved;
+                }
+
+                private void OnMoved(object sender, EventArgs e) { }
+            }
+            """;
+        Assert.NotEmpty(Lines("Widget.razor", component, "QG-CS-BUG-0196"));
     }
 }

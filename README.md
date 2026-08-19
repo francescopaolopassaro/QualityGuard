@@ -8,7 +8,7 @@ a configurable Quality Gate and exits with `PASSED` or `FAILED` — no server, n
 dotnet run --project src/QualityGuard.Cli -- --path ./src --by-folder
 ```
 
-**3574 rules across 26 languages**, on a real syntax tree with a semantic model, a project index and
+**3588 rules across 26 languages**, on a real syntax tree with a semantic model, a project index and
 interprocedural taint analysis. Rules ship in a **default profile** — the conventions and stylistic
 checks stay off until `--all-rules` asks for them — because a report where every preference is an
 issue buries the defects that matter.
@@ -146,7 +146,7 @@ Severity and issue kind follow the category: `SEC` → vulnerability (major or a
 
 ## 5. Rules
 
-**3574 rules are loaded**, backed by **4669 catalog entries** (an entry either carries its own
+**3588 rules are loaded**, backed by **4679 catalog entries** (an entry either carries its own
 detection or documents a rule implemented in code). Every rule ships an English name, message,
 summary, *why is this an issue* and *how to fix*.
 
@@ -162,7 +162,7 @@ read as a tree of keys and blocks.
 | Java | `JV` | 551 | dedicated parser |
 | JavaScript | `JS` | 461 | dedicated parser |
 | Python | `PY` | 420 | dedicated parser |
-| C# / VB.NET | `CS` | 382 | dedicated parser |
+| C# / VB.NET | `CS` | 396 | dedicated parser |
 | Kotlin | `KT` | 172 | dedicated parser (C-family dialect) |
 | PHP | `PP` | 164 | dedicated parser |
 | HTML | `HTML` | 132 | markup reader |
@@ -184,7 +184,7 @@ read as a tree of keys and blocks.
 | SQL | `SQL` | 9 | structural parser |
 | TypeScript-specific | `TS` | 9 | dedicated parser |
 | Razor / Blazor | `RAZ` | 8 | C# parser over the `@code` block, markup reader over the rest |
-| XAML | `XAML` | 3 | markup reader |
+| XAML / WPF / WinUI / Avalonia | `XAML` | 8 | markup reader, joined to the class behind it |
 | Scala | — | — | catalogue mapped, rules not written yet |
 
 TypeScript, Sass, SCSS, Less, JSX/TSX and VB.NET are analysed by the rules of the language they
@@ -203,6 +203,28 @@ into expressions, and treating the file as pure markup makes every field of ever
 dead. Four rules are specific to components — a query-string parameter whose type the framework
 cannot bind, a `[JSInvokable]` method that is not public, a query parameter in a component no route
 reaches, and an event handler written as a lambda inside a markup loop.
+
+### Frameworks
+
+A .NET application is not written against the language, it is written against libraries, and the
+mistakes that cost the most live there. These are read on the tree, with the receiver resolved where
+the declaration is in the scan:
+
+* **Entity Framework** — a query inside a loop, which asks the database once per item and only hurts
+  once the data grows; changes saved per item instead of per batch; rows materialised and then
+  filtered in memory; a synchronous call to the database inside a method written to be asynchronous.
+* **Dapper and raw ADO** — a statement assembled from values instead of receiving them as parameters.
+* **HTTP** — a client created per call, which reserves a socket for minutes after it is disposed and
+  exhausts the machine's ports under traffic.
+* **Blazor** — a parameter the framework cannot set or cannot bind from the query string, a method
+  JavaScript is told to call and cannot, an `async void` handler whose failure takes the circuit down,
+  a subscription the component never releases, a handler rebuilt for every row of a loop.
+* **ASP.NET** — an API controller carrying the machinery for views it never renders, actions whose
+  routes are all absolute, a route with no controller route to be relative to, a template written with
+  a backslash.
+* **WPF, WinUI and Avalonia** — the same reading serves all three: a name that identifies two
+  elements, a static resource key that resolves nowhere, an event bound to a handler no class
+  declares, a two-way binding with no path, a credential written into the markup.
 
 ### The default profile
 
@@ -544,7 +566,7 @@ rule that produces noise is rewritten on the syntax tree or removed, and every f
 was fixed is pinned by a regression test — written next to the shape the rule must still report — so
 the precision cannot be lost again silently.
 
-**580 tests** cover the parsers, the semantic model, taint, the scanner and rule precision. Every
+**593 tests** cover the parsers, the semantic model, taint, the scanner and rule precision. Every
 false positive that was ever fixed has one of them, written next to the shape the rule must still
 report, so precision cannot be lost again in silence.
 

@@ -1,0 +1,79 @@
+# Descriptions for the desktop markup rules implemented in Rules/Languages/XamlRules.cs. WPF, WinUI
+# and Avalonia describe a window the same way and bind it to a class written next to it, so the same
+# reading serves all three. Everything here fails when the screen is built, not when it is compiled.
+
+- key: QG-XAML-BUG-0001
+  name: A name should identify one element
+  languages: [xaml]
+  category: BUG
+  severity: major
+  effort: 10min
+  tags: [desktop, markup]
+  summary: Two elements in the same file carry the same name.
+  why: |
+    The name becomes a field in the class behind the markup, and one field can only point at one
+    element. The code-behind then reads or updates a control that is not the one the markup shows it
+    reaching, and the screen behaves as if half the code were missing.
+  fix: |
+    Give each element its own name, or drop the name from the elements the code never touches.
+
+- key: QG-XAML-BUG-0002
+  name: A static resource should be defined before it is used
+  languages: [xaml]
+  category: BUG
+  severity: major
+  effort: 10min
+  tags: [desktop, markup]
+  summary: A static resource key is used in a file that declares resources but not that one.
+  why: |
+    A static reference is resolved while the element is being created, so a key that exists nowhere
+    throws at that moment: the screen does not open. It reads as a layout failure and it is a typo.
+  fix: |
+    Define the resource in this file or in a dictionary it merges, or correct the key.
+
+- key: QG-XAML-BUG-0003
+  name: An event named in the markup needs a handler in the class behind it
+  languages: [xaml]
+  category: BUG
+  severity: major
+  effort: 10min
+  tags: [desktop, markup]
+  summary: The markup names an event handler that the scanned code does not declare.
+  why: |
+    The handler is bound by name when the element is created. A name nobody implements throws there,
+    so the window fails to open — and the failure points at the markup rather than at the method that
+    was renamed or deleted.
+  fix: |
+    Implement the handler in the class behind the markup, or bind the event to the method that
+    replaced it.
+
+- key: QG-XAML-SML-0002
+  name: A two-way binding should say which property it writes to
+  languages: [xaml]
+  category: SML
+  severity: minor
+  effort: 10min
+  tags: [desktop, binding]
+  summary: A two-way binding declares its mode and no path.
+  why: |
+    Without a path the binding writes back to the bound object itself, which is almost never what the
+    author meant. The value appears to arrive and never returns, and the mode makes the intent look
+    explicit.
+  fix: |
+    Name the property the value belongs to.
+
+- key: QG-XAML-SEC-0003
+  name: Markup should not carry a credential
+  languages: [xaml]
+  category: SEC
+  severity: critical
+  effort: 30min
+  cwe: [798]
+  tags: [desktop, secrets]
+  summary: A connection string or key with a password is written into the markup.
+  why: |
+    The markup ships inside the application, so the secret travels to every machine it is installed on
+    and is readable by anyone who has a copy. Rotating it means shipping a new build.
+  fix: |
+    Read the value from configuration the deployment supplies, and keep the markup free of anything
+    that has to stay private.

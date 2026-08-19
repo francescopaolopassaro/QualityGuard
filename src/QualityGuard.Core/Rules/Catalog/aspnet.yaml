@@ -1,0 +1,79 @@
+# Descriptions for the web rules implemented in Rules/Languages/AspNetRules.cs. Everything here is
+# decided by attributes the framework reads at start-up, so the mistake compiles: what breaks is the
+# address that answers, or the value that never arrives.
+
+- key: QG-CS-SML-0345
+  name: An API controller should derive from the base without views
+  languages: [cs]
+  category: SML
+  severity: major
+  effort: 10min
+  tags: [web, design]
+  summary: A controller marked as an API derives from the base class that renders views without using it.
+  why: |
+    The view-aware base brings along view lookup, temporary data and the filters that go with them.
+    A controller that answers with data uses none of it, and carrying it makes the type harder to read
+    and slower to construct — while hiding the fact that this endpoint has nothing to do with pages.
+  fix: |
+    Derive from the base class without views. If the controller does render views, it is not an API
+    controller: take the attribute off instead.
+
+- key: QG-CS-SML-0341
+  name: Action routes should be relative to the route of their controller
+  languages: [cs]
+  category: SML
+  severity: major
+  effort: 15min
+  tags: [web, routing]
+  summary: Every action of the controller writes its own absolute path.
+  why: |
+    With every path absolute the route on the controller means nothing, and the group of endpoints has
+    no common prefix anywhere in the code. Moving them, versioning them or putting them behind a
+    different segment means editing each one and hoping none was missed.
+  fix: |
+    Put the shared prefix on the controller and write each action relative to it.
+
+- key: QG-CS-SML-0343
+  name: A controller whose actions carry a route needs one of its own
+  languages: [cs]
+  category: SML
+  severity: major
+  effort: 10min
+  tags: [web, routing]
+  summary: Actions declare relative paths in a controller that has no route of its own.
+  why: |
+    A relative path is relative to something. Without a route on the controller that something is
+    whatever conventional route the application happens to configure, so the address an action answers
+    on cannot be read from the action — and changes to start-up silently move it.
+  fix: |
+    Declare the route on the controller, so each action states the rest of its own path.
+
+- key: QG-CS-BUG-0099
+  name: A route template should be written with forward slashes
+  languages: [cs]
+  category: BUG
+  severity: major
+  effort: 5min
+  tags: [web, routing]
+  summary: A route template separates its segments with a backslash.
+  why: |
+    Routing splits a path on the forward slash and nothing else, so a backslash is an ordinary
+    character inside one long segment. The endpoint exists at an address nobody will type, and the one
+    the code appears to serve answers with a not-found.
+  fix: |
+    Write the template with forward slashes.
+
+- key: QG-CS-BUG-0098
+  name: A component parameter should have the type its route constrains it to
+  languages: [cs, raz]
+  category: BUG
+  severity: major
+  effort: 10min
+  tags: [components, routing]
+  summary: A route constrains a segment to one type and the component declares the parameter as another.
+  why: |
+    The two statements contradict each other and the framework believes the route: an address that
+    matches is accepted, the value fails to convert, and the component renders with the parameter left
+    at its default. Nothing in the log explains it, because nothing failed.
+  fix: |
+    Declare the property with the type the route constrains the segment to, or relax the constraint.

@@ -68,7 +68,15 @@ public static class SourceScanner
     [
         "bootstrap", "jquery", "fontawesome", "font-awesome", "devexpress", "devextreme", "select2",
         "datatables", "moment", "popper", "chartjs", "chart.js", "tinymce", "ckeditor", "kendo",
-        "syncfusion", "telerik", "materialize", "foundation", "semantic-ui", "primeng", "swiper"
+        "syncfusion", "telerik", "materialize", "foundation", "semantic-ui", "primeng", "swiper",
+        // widgets an application copies into its own tree rather than installing: nobody edits them,
+        // and their stylesheets alone produced hundreds of findings on one real application
+        "jstree", "fullcalendar", "highcharts", "leaflet", "codemirror", "ace-builds", "dropzone",
+        "toastr", "sweetalert", "lodash", "underscore", "knockout", "angular", "backbone", "ember",
+        "prototype", "scriptaculous", "modernizr", "requirejs", "systemjs", "handlebars", "mustache",
+        "d3", "three", "pdfjs", "pdf.js", "quill", "summernote", "trumbowyg", "cropper", "flatpickr",
+        "daterangepicker", "bootstrap-datepicker", "colorpicker", "chosen", "multiselect", "signalr",
+        "toastify", "notyf", "nprogress", "clipboard", "sortable", "dragula", "masonry", "isotope"
     ];
 
     /// <summary>Files that are produced by a tool: reviewing them is reviewing the generator.</summary>

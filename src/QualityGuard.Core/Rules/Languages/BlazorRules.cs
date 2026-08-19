@@ -17,7 +17,11 @@ public static class BlazorRuleSet
         new BlazorQueryParameterTypeRule(),
         new BlazorJsInvokableVisibilityRule(),
         new BlazorQueryParameterOutsideRouteRule(),
-        new BlazorLambdaInMarkupLoopRule()
+        new BlazorLambdaInMarkupLoopRule(),
+        new BlazorParameterVisibilityRule(),
+        new BlazorParameterOnFieldRule(),
+        new BlazorAsyncVoidHandlerRule(),
+        new BlazorSubscriptionWithoutDisposeRule()
     ];
 }
 
@@ -50,7 +54,7 @@ public sealed class BlazorQueryParameterTypeRule : BlazorRuleBase
         "Double", "float", "Single", "Guid", "int", "Int32", "long", "Int64", "string", "String"
     ];
 
-    public override string Key => "QG-CS-BUG-0190";
+    public override string Key => "QG-CS-BUG-0096";
     public override string Name => "A parameter read from the query string must have a type the framework can bind";
 
     public override void Execute(IRuleContext context)
@@ -76,7 +80,7 @@ public sealed class BlazorQueryParameterTypeRule : BlazorRuleBase
 
 public sealed class BlazorJsInvokableVisibilityRule : BlazorRuleBase
 {
-    public override string Key => "QG-CS-BUG-0191";
+    public override string Key => "QG-CS-BUG-0097";
     public override string Name => "A method called from JavaScript must be public";
 
     public override void Execute(IRuleContext context)
@@ -102,7 +106,7 @@ public sealed class BlazorJsInvokableVisibilityRule : BlazorRuleBase
 
 public sealed class BlazorQueryParameterOutsideRouteRule : BlazorRuleBase
 {
-    public override string Key => "QG-CS-SML-0555";
+    public override string Key => "QG-CS-SML-0340";
     public override IssueKind Kind => IssueKind.CodeSmell;
     public override string Name => "A query string parameter only reaches a component with a route";
 
@@ -131,7 +135,7 @@ public sealed class BlazorQueryParameterOutsideRouteRule : BlazorRuleBase
 
 public sealed class BlazorLambdaInMarkupLoopRule : BlazorRuleBase
 {
-    public override string Key => "QG-CS-SML-0556";
+    public override string Key => "QG-CS-SML-0339";
     public override IssueKind Kind => IssueKind.CodeSmell;
     public override Severity Severity => Severity.Minor;
     public override string RemediationEffort => "15min";
@@ -174,6 +178,123 @@ public sealed class BlazorLambdaInMarkupLoopRule : BlazorRuleBase
                            + "delegate for every item on every render and the framework redraws rows "
                            + "that did not change. Call a method with the item as its argument.",
                 i + 1);
+        }
+    }
+}
+
+public sealed class BlazorParameterVisibilityRule : BlazorRuleBase
+{
+    public override string Key => "QG-CS-BUG-0193";
+    public override string Name => "A component parameter must be public";
+
+    public override void Execute(IRuleContext context)
+    {
+        if (!context.Tree.HasDedicatedParser)
+            return;
+
+        foreach (var property in context.Root.OfKind(NodeKind.PropertyDeclaration))
+        {
+            // Only a plain parameter has to be public. A cascading one is resolved through the
+            // component's own metadata, and component libraries declare theirs private on purpose —
+            // reporting those was every finding this rule made on a real application.
+            if (!HasAttribute(property, "Parameter") || HasAttribute(property, "CascadingParameter"))
+                continue;
+            var modifiers = property.ChildrenOf(NodeKind.Modifier).Select(m => m.Text).ToArray();
+            if (modifiers.Contains("public"))
+                continue;
+
+            context.Report($"'{property.Text}' is declared as a component parameter and is not public, "
+                           + "so the framework cannot set it: whoever renders the component passes a "
+                           + "value that goes nowhere, and the component uses its default instead.",
+                property.Range.StartLine);
+        }
+    }
+}
+
+public sealed class BlazorParameterOnFieldRule : BlazorRuleBase
+{
+    public override string Key => "QG-CS-BUG-0194";
+    public override string Name => "A component parameter has to be a property";
+
+    public override void Execute(IRuleContext context)
+    {
+        if (!context.Tree.HasDedicatedParser)
+            return;
+
+        foreach (var field in context.Root.OfKind(NodeKind.FieldDeclaration))
+        {
+            if (!HasAttribute(field, "Parameter") && !HasAttribute(field, "CascadingParameter"))
+                continue;
+            // a field with an initialiser and no accessors is the shape the framework cannot assign
+            if (field.OfKind(NodeKind.Accessor).Any())
+                continue;
+
+            context.Report($"'{field.Text}' carries the parameter attribute on a field. The framework "
+                           + "assigns parameters through properties only, so this one is never set and "
+                           + "the attribute reads as a promise the code does not keep.",
+                field.Range.StartLine);
+        }
+    }
+}
+
+public sealed class BlazorAsyncVoidHandlerRule : BlazorRuleBase
+{
+    public override string Key => "QG-CS-BUG-0195";
+    public override string Name => "An asynchronous component method should return a task";
+
+    public override void Execute(IRuleContext context)
+    {
+        if (context.Language.LanguageKey != "raz" || !context.Tree.HasDedicatedParser)
+            return;
+
+        foreach (var method in context.Root.OfKind(NodeKind.FunctionDeclaration))
+        {
+            var modifiers = method.ChildrenOf(NodeKind.Modifier).Select(m => m.Text).ToArray();
+            if (!modifiers.Contains("async"))
+                continue;
+            var returns = method.FirstChild(NodeKind.TypeReference)?.Text ?? string.Empty;
+            if (returns != "void")
+                continue;
+
+            context.Report($"'{method.Text}' is asynchronous and returns nothing, so the component "
+                           + "cannot wait for it and cannot see it fail: an exception inside it is "
+                           + "raised on a thread with no handler and takes the circuit down. Return a "
+                           + "task and let the caller await it.", method.Range.StartLine);
+        }
+    }
+}
+
+public sealed class BlazorSubscriptionWithoutDisposeRule : BlazorRuleBase
+{
+    public override string Key => "QG-CS-BUG-0196";
+    public override string RemediationEffort => "15min";
+    public override string Name => "A component that subscribes to an event has to unsubscribe";
+
+    public override void Execute(IRuleContext context)
+    {
+        if (context.Language.LanguageKey != "raz" || !context.Tree.HasDedicatedParser)
+            return;
+
+        foreach (var type in context.Root.OfKind(NodeKind.ClassDeclaration))
+        {
+            var subscriptions = type.OfKind(NodeKind.Assignment)
+                .Where(a => a.Text == "+=" && a.ChildAt(0)?.Kind == NodeKind.MemberSelect)
+                .ToList();
+            if (subscriptions.Count == 0)
+                continue;
+            // Unsubscribing is what Dispose is for here, and '-=' anywhere in the component is the
+            // shape that does it. Either one present means the author has thought about the lifetime.
+            var releases = type.OfKind(NodeKind.Assignment).Any(a => a.Text == "-=");
+            var disposes = type.OfKind(NodeKind.FunctionDeclaration)
+                .Any(m => m.Text is "Dispose" or "DisposeAsync");
+            if (releases || disposes)
+                continue;
+
+            context.Report("This component subscribes to an event and never lets go of it. The "
+                           + "publisher keeps a reference to a component the user has navigated away "
+                           + "from, so it stays alive and keeps handling events for a screen that is "
+                           + "no longer there. Unsubscribe in Dispose.",
+                subscriptions[0].Range.StartLine);
         }
     }
 }

@@ -17,10 +17,10 @@
     "CF-PRF": 2,
     "CF-SEC": 33,
     "CF-SML": 56,
-    "CS-BUG": 193,
+    "CS-BUG": 199,
     "CS-CNV": 16,
-    "CS-PRF": 9,
-    "CS-SEC": 101,
+    "CS-PRF": 13,
+    "CS-SEC": 102,
     "CS-SML": 557,
     "CSS-BUG": 72,
     "CSS-CNV": 4,
@@ -113,12 +113,13 @@
     "TS-BUG": 2,
     "TS-SEC": 5,
     "TS-SML": 6,
-    "XAML-SEC": 3,
-    "XAML-SML": 2,
+    "XAML-SEC": 4,
+    "XAML-SML": 4,
     "XML-BUG": 47,
     "XML-CNV": 3,
     "XML-PRF": 2,
     "XML-SEC": 19,
-    "XML-SML": 63
+    "XML-SML": 63,
+    "XAML-BUG": 4
   }
 }

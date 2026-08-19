@@ -4,7 +4,7 @@
 # run time. The engine reads the '@code' block of a .razor file as C#, which is what makes them
 # visible at all.
 
-- key: QG-CS-BUG-0190
+- key: QG-CS-BUG-0096
   name: A parameter read from the query string must have a type the framework can bind
   languages: [cs, raz]
   category: BUG
@@ -22,7 +22,7 @@
     or a Guid, optionally nullable or an array of one — and convert to your own type inside the
     component.
 
-- key: QG-CS-BUG-0191
+- key: QG-CS-BUG-0097
   name: A method called from JavaScript must be public
   languages: [cs, raz]
   category: BUG
@@ -37,7 +37,7 @@
   fix: |
     Make the method public, or remove the attribute if nothing on the JavaScript side calls it.
 
-- key: QG-CS-SML-0555
+- key: QG-CS-SML-0340
   name: A query string parameter only reaches a component with a route
   languages: [cs, raz]
   category: SML
@@ -53,7 +53,7 @@
     Give the component a route if it is meant to be reached by URL, or take the value as an ordinary
     component parameter passed by whoever renders it.
 
-- key: QG-CS-SML-0556
+- key: QG-CS-SML-0339
   name: A handler written as a lambda inside a markup loop is rebuilt on every render
   languages: [raz]
   category: SML
@@ -69,3 +69,67 @@
   fix: |
     Call a method and pass the item to it, so the same handler is used for every render, or capture the
     item in a field the method reads.
+
+- key: QG-CS-BUG-0193
+  name: A component parameter must be public
+  languages: [cs, raz]
+  category: BUG
+  severity: major
+  effort: 10min
+  tags: [components, binding]
+  summary: A property marked as a component parameter is not public.
+  why: |
+    The framework assigns parameters from outside the component, which it can only do through a public
+    property. A parameter that is not public is never written: whoever renders the component passes a
+    value and the component quietly uses its default, so the screen is wrong without anything failing.
+  fix: |
+    Make the property public. If the value is meant to stay internal, it is not a parameter — drop the
+    attribute.
+
+- key: QG-CS-BUG-0194
+  name: A component parameter has to be a property
+  languages: [cs, raz]
+  category: BUG
+  severity: major
+  effort: 10min
+  tags: [components, binding]
+  summary: The parameter attribute is placed on a field instead of a property.
+  why: |
+    Parameters are assigned through properties, so the attribute on a field does nothing at all. The
+    declaration reads like a contract with the caller and there is none: the field keeps whatever it
+    was initialised with, for every render and every caller.
+  fix: |
+    Turn the field into a public property with a getter and a setter.
+
+- key: QG-CS-BUG-0195
+  name: An asynchronous component method should return a task
+  languages: [raz]
+  category: BUG
+  severity: major
+  effort: 10min
+  tags: [components, async]
+  summary: An async method in a component returns void instead of a task.
+  why: |
+    Nothing can await a method that returns nothing, so the component cannot know when the work
+    finished and cannot see it fail. An exception raised inside it surfaces on a thread with no
+    handler, which in a server-rendered application takes the whole circuit down and disconnects the
+    user from a screen that looked fine.
+  fix: |
+    Return a task. Where the framework itself calls the method as an event handler, do the work in a
+    method that returns a task and await it.
+
+- key: QG-CS-BUG-0196
+  name: A component that subscribes to an event has to unsubscribe
+  languages: [raz]
+  category: BUG
+  severity: major
+  effort: 15min
+  tags: [components, lifetime]
+  summary: A component subscribes to an event and never releases the subscription.
+  why: |
+    The publisher holds a reference to the handler, and through it to the component. Navigating away
+    does not release it: the component stays alive, keeps receiving events and keeps updating a screen
+    nobody is looking at. In a long session the same component accumulates one copy per visit.
+  fix: |
+    Implement disposal on the component and unsubscribe there, with the same handler instance used to
+    subscribe.

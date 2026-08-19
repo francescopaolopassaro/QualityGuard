@@ -1,0 +1,95 @@
+# Descriptions for the framework rules implemented in Rules/Languages/DotNetFrameworkRules.cs: the
+# ORM, the micro-ORM and the HTTP client an application is actually written against. None of these
+# shows up in a review of one method — what they cost only appears under real data and real traffic.
+
+- key: QG-CS-PRF-0009
+  name: A query inside a loop asks the database once per iteration
+  languages: [cs, raz]
+  category: PRF
+  severity: major
+  effort: 20min
+  tags: [orm, performance]
+  summary: A database query runs inside a loop, once per item.
+  why: |
+    The cost is invisible while the list is short and grows with the data: ten items are ten round
+    trips nobody notices, ten thousand are ten thousand and the page stops answering. The method that
+    becomes slow is not the one that changed — the data did.
+  fix: |
+    Read what the loop needs in a single query before it starts, and look the items up in memory.
+
+- key: QG-CS-PRF-0010
+  name: Changes should be saved once, not once per item
+  languages: [cs, raz]
+  category: PRF
+  severity: major
+  effort: 20min
+  tags: [orm, performance]
+  summary: Changes are saved inside the loop that produces them.
+  why: |
+    Each save is its own transaction and its own round trip. Beyond the cost, a failure halfway
+    through leaves the first half of the work committed and the rest not, which is the hardest kind of
+    state to reason about afterwards.
+  fix: |
+    Make the changes in the loop and save once after it, so the batch either lands or does not.
+
+- key: QG-CS-PRF-0011
+  name: A query should filter in the database, not after it
+  languages: [cs, raz]
+  category: PRF
+  severity: major
+  effort: 20min
+  tags: [orm, performance]
+  summary: The rows are materialised first and filtered in memory afterwards.
+  why: |
+    Materialising sends the whole table across the connection so the application can throw most of it
+    away. It works in development, where the table has a hundred rows, and falls over in production
+    for a reason that is not visible in the code — the condition is right there, one call too late.
+  fix: |
+    Put the condition before the call that runs the query, so the database returns the rows you want.
+
+- key: QG-CS-BUG-0197
+  name: An asynchronous method should not wait for the database synchronously
+  languages: [cs, raz]
+  category: BUG
+  severity: major
+  effort: 15min
+  tags: [orm, async]
+  summary: A synchronous database call sits inside an async method.
+  why: |
+    The method was written to release its thread while the database answers, and this call holds it
+    instead. Under load the pool fills with threads waiting on a network round trip and the
+    application stops accepting work — while every method involved still looks asynchronous.
+  fix: |
+    Call the asynchronous form and await it.
+
+- key: QG-CS-SEC-0101
+  name: A query passed to the data layer should carry parameters, not concatenated values
+  languages: [cs, raz]
+  category: SEC
+  severity: critical
+  effort: 30min
+  cwe: [89]
+  owasp: [A1]
+  tags: [sql, injection]
+  summary: A SQL statement is assembled from values instead of receiving them as parameters.
+  why: |
+    Whatever the values contain becomes part of the command: a quote ends the string, and everything
+    after it is executed. It is the oldest way to lose a database, and it survives because the code
+    reads naturally — the value is right where it belongs in the sentence.
+  fix: |
+    Pass the values as parameters and let the driver send them separately from the statement.
+
+- key: QG-CS-SML-0346
+  name: An HTTP client should be reused rather than created per call
+  languages: [cs, raz]
+  category: SML
+  severity: major
+  effort: 20min
+  tags: [http, performance]
+  summary: An HTTP client is created inside the method that makes the call.
+  why: |
+    Disposing the client does not release the socket immediately: it stays reserved for minutes. A
+    method called often exhausts the machine's ports while the code appears to close everything it
+    opens, and the failure arrives as connection errors that have nothing to do with the remote side.
+  fix: |
+    Take the client from a factory, or keep one for the lifetime of the service that uses it.

@@ -282,6 +282,12 @@ public sealed class ProjectIndex
 
     public bool IsCalledAnywhere(string name) => _invoked.Contains(name);
 
+    /// <summary>Whether the scan read a function with this name anywhere, however it is reached.</summary>
+    public bool IsDeclared(string name) => _declaredFunctions.ContainsKey(name);
+
+    /// <summary>Whether the scan saw any code at all, as opposed to markup and configuration only.</summary>
+    public bool SawCode => _declaredFunctions.Count > 0;
+
     public int ReferenceCount(string name) => _referenced.GetValueOrDefault(name);
 
     public bool IsDeclaredMoreThanOnce(string typeName) => FindTypes(typeName).Count > 1;
