@@ -8,7 +8,7 @@ a configurable Quality Gate and exits with `PASSED` or `FAILED` — no server, n
 dotnet run --project src/QualityGuard.Cli -- --path ./src --by-folder
 ```
 
-**3614 rules across 26 languages**, on a real syntax tree with a semantic model, a project index and
+**3629 rules across 26 languages**, on a real syntax tree with a semantic model, a project index and
 interprocedural taint analysis. Rules ship in a **default profile** — the conventions and stylistic
 checks stay off until `--all-rules` asks for them — because a report where every preference is an
 issue buries the defects that matter.
@@ -146,7 +146,7 @@ Severity and issue kind follow the category: `SEC` → vulnerability (major or a
 
 ## 5. Rules
 
-**3614 rules are loaded**, backed by **4681 catalog entries** (an entry either carries its own
+**3629 rules are loaded**, backed by **4687 catalog entries** (an entry either carries its own
 detection or documents a rule implemented in code). Every rule ships an English name, message,
 summary, *why is this an issue* and *how to fix*.
 
@@ -225,6 +225,14 @@ the declaration is in the scan:
 * **WPF, WinUI and Avalonia** — the same reading serves all three: a name that identifies two
   elements, a static resource key that resolves nowhere, an event bound to a handler no class
   declares, a two-way binding with no path, a credential written into the markup.
+
+Security has its own set, read the same way. In code: a password salt or an initialisation vector
+written into the source, a cipher left in codebook mode or with an attackable padding, a key
+generated below what is worth generating, the secret that signs tokens committed with the code. In
+infrastructure: storage a permission opens to everyone, the block on public access switched off,
+versioning disabled, backups kept for less than a week, a service that answers anonymous callers, a
+gateway route with no authorization — with the preflight route left alone, because that one is
+supposed to be open.
 
 ### The default profile
 
@@ -623,7 +631,7 @@ rule that produces noise is rewritten on the syntax tree or removed, and every f
 was fixed is pinned by a regression test — written next to the shape the rule must still report — so
 the precision cannot be lost again silently.
 
-**609 tests** cover the parsers, the semantic model, taint, the scanner and rule precision. Every
+**619 tests** cover the parsers, the semantic model, taint, the scanner and rule precision. Every
 false positive that was ever fixed has one of them, written next to the shape the rule must still
 report, so precision cannot be lost again in silence.
 

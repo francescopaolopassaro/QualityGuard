@@ -2629,16 +2629,16 @@
     missing, and treat the committed value as compromised: rotate it before removing it.
 
 - key: QG-PY-SEC-0078
-  name: JWT secret keys should not be committed with the source
+  name: The key that signs a token should not be in the source
   languages: [py]
   category: SEC
   severity: critical
   effort: 15min
   tags: [secret, generated]
-  generated: true
-  status: planned
+  generated: false
+  status: ready
   message: This value looks like a credential committed with the source.
-  summary: A credential, key or token appears directly in the source instead of coming from a secret store.
+  summary: The secret used to sign or verify tokens is written into the code.
   why: |
     Anything committed with the code is readable by everyone who can clone the repository, and it
     survives in the history even after being deleted. Scanners find these values within minutes of a

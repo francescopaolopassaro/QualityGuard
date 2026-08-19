@@ -1,0 +1,101 @@
+# Descriptions for the storage and endpoint rules implemented in Rules/Languages/CloudStorageRules.cs.
+# Each of these is one line in a template and none of them fails at apply time: the infrastructure
+# comes up healthy and wrong, which is why they are worth a rule rather than a review.
+
+- key: QG-TF-SEC-0077
+  name: Storage should not be readable by everyone
+  languages: [tf]
+  category: SEC
+  severity: critical
+  effort: 20min
+  cwe: [732]
+  owasp: [A1]
+  tags: [infrastructure, access-control]
+  summary: A bucket or container is created with a permission that grants access to anyone.
+  why: |
+    A canned permission of this kind hands out the object list along with the objects, to callers who
+    have not signed in at all. Nothing afterwards announces it: the bucket behaves exactly like a
+    working one, and the first sign of the mistake is usually somebody else's copy of the data.
+  fix: |
+    Grant the access to the identities that need it, and keep the bucket private by default.
+
+- key: QG-TF-SEC-0078
+  name: A bucket should keep the block on public access
+  languages: [tf]
+  category: SEC
+  severity: critical
+  effort: 20min
+  cwe: [732]
+  tags: [infrastructure, access-control]
+  summary: The account-level block on public access is switched off for a bucket.
+  why: |
+    The block exists so that no policy written anywhere else can open the bucket — not by a person in
+    a hurry, not by another template, not by a tool with broad permissions. Turning it off removes the
+    one control that does not depend on everybody else being careful.
+  fix: |
+    Leave every part of the public access block enabled, and grant access through policies scoped to
+    the callers that need it.
+
+- key: QG-TF-SEC-0079
+  name: Object storage should keep previous versions
+  languages: [tf]
+  category: SEC
+  severity: major
+  effort: 15min
+  tags: [infrastructure, resilience]
+  summary: Versioning is disabled or suspended on object storage.
+  why: |
+    Without versions an overwrite and a delete are both final. That covers the ordinary accident and
+    the deliberate one alike: encryption in place is exactly what ransomware does, and with no earlier
+    version there is nothing to go back to.
+  fix: |
+    Enable versioning, and set a lifecycle rule if the cost of keeping old versions matters.
+
+- key: QG-TF-SEC-0080
+  name: Backups should be kept long enough to be useful
+  languages: [tf]
+  category: SEC
+  severity: major
+  effort: 15min
+  tags: [infrastructure, resilience]
+  summary: A backup retention period is shorter than a week.
+  why: |
+    Damage is noticed later than it happens: a bad migration on a Friday, a corruption nobody reads
+    until the weekly report. A retention measured in a day or two means the last good copy is gone
+    before anyone knows they need it.
+  fix: |
+    Keep at least a week, and longer where the data cannot be reconstructed from anywhere else.
+
+- key: QG-TF-SEC-0081
+  name: A managed service should not answer anonymous callers
+  languages: [tf]
+  category: SEC
+  severity: critical
+  effort: 20min
+  cwe: [284]
+  tags: [infrastructure, network]
+  summary: A resource is configured to accept connections from callers that have not identified themselves.
+  why: |
+    Whatever authentication lives inside the application then becomes the only control, reachable from
+    the whole internet and scanned continuously. The address space is probed all day long, so the
+    window between deploying this and it being found is short.
+  fix: |
+    Reach the service through a private endpoint, or list the networks allowed to connect.
+
+- key: QG-TF-SEC-0082
+  name: An API endpoint should say who may call it
+  languages: [tf]
+  category: SEC
+  severity: critical
+  effort: 20min
+  cwe: [306]
+  owasp: [A1]
+  tags: [infrastructure, access-control]
+  summary: A gateway route accepts requests with no authorization configured.
+  why: |
+    Every check that matters then lives in the handler, and one handler that forgets is a public API.
+    The gateway can refuse the request before it reaches any code at all, which is both cheaper and
+    harder to get wrong.
+  fix: |
+    Attach an authorizer, or require a key the gateway verifies. A preflight route is the exception
+    and needs no authorization.

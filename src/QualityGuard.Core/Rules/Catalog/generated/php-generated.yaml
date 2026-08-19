@@ -1415,16 +1415,16 @@
     function or constant.
 
 - key: QG-PP-SEC-0048
-  name: Cryptographic keys should use current cryptographic parameters
+  name: A generated key should be long enough to be worth generating
   languages: [php]
   category: SEC
   severity: critical
   effort: 15min
   tags: [crypto, generated]
-  generated: true
-  status: planned
+  generated: false
+  status: ready
   message: This cryptographic choice no longer provides the protection it suggests.
-  summary: A cryptographic primitive, mode or key size that is no longer considered safe is used.
+  summary: A key is generated below the size considered out of reach today.
   why: |
     Broken primitives keep producing output that looks correct, so nothing fails while the protection is
     already gone. Data encrypted today is often kept for years, which means an algorithm that is merely

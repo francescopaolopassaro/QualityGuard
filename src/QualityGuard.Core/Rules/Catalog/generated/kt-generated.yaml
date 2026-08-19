@@ -131,16 +131,16 @@
     next change touches a single spot.
 
 - key: QG-KT-SEC-0037
-  name: Password hashing functions should use current cryptographic parameters
+  name: The salt of a password hash has to be unpredictable
   languages: [kt]
   category: SEC
   severity: critical
   effort: 15min
   tags: [crypto, generated]
-  generated: true
-  status: planned
+  generated: false
+  status: ready
   message: This cryptographic choice no longer provides the protection it suggests.
-  summary: A cryptographic primitive, mode or key size that is no longer considered safe is used.
+  summary: A password hash is derived with a salt written into the source.
   why: |
     Broken primitives keep producing output that looks correct, so nothing fails while the protection is
     already gone. Data encrypted today is often kept for years, which means an algorithm that is merely
@@ -266,16 +266,16 @@
     and cover the case that used to fail with a test.
 
 - key: QG-KT-SEC-0038
-  name: Cipher Block Chaining IVs should use current cryptographic parameters
+  name: An initialisation vector has to be unpredictable
   languages: [kt]
   category: SEC
   severity: critical
   effort: 15min
   tags: [crypto, generated]
-  generated: true
-  status: planned
+  generated: false
+  status: ready
   message: This cryptographic choice no longer provides the protection it suggests.
-  summary: A cryptographic primitive, mode or key size that is no longer considered safe is used.
+  summary: A cipher is initialised with a vector fixed in the source.
   why: |
     Broken primitives keep producing output that looks correct, so nothing fails while the protection is
     already gone. Data encrypted today is often kept for years, which means an algorithm that is merely
@@ -322,16 +322,16 @@
     function or constant.
 
 - key: QG-KT-SEC-0039
-  name: Cryptographic keys should use current cryptographic parameters
+  name: A generated key should be long enough to be worth generating
   languages: [kt]
   category: SEC
   severity: critical
   effort: 15min
   tags: [crypto, generated]
-  generated: true
-  status: planned
+  generated: false
+  status: ready
   message: This cryptographic choice no longer provides the protection it suggests.
-  summary: A cryptographic primitive, mode or key size that is no longer considered safe is used.
+  summary: A key is generated below the size considered out of reach today.
   why: |
     Broken primitives keep producing output that looks correct, so nothing fails while the protection is
     already gone. Data encrypted today is often kept for years, which means an algorithm that is merely
@@ -417,16 +417,16 @@
     permissions from a properly secured parent instead of widening the resource itself.
 
 - key: QG-KT-SEC-0043
-  name: Encryption algorithms should use current cryptographic parameters
+  name: A cipher should be used with a mode that hides the shape of the data
   languages: [kt]
   category: SEC
   severity: critical
   effort: 15min
   tags: [crypto, generated]
-  generated: true
-  status: planned
+  generated: false
+  status: ready
   message: This cryptographic choice no longer provides the protection it suggests.
-  summary: A cryptographic primitive, mode or key size that is no longer considered safe is used.
+  summary: A transformation asks for codebook mode or for a padding with known attacks.
   why: |
     Broken primitives keep producing output that looks correct, so nothing fails while the protection is
     already gone. Data encrypted today is often kept for years, which means an algorithm that is merely

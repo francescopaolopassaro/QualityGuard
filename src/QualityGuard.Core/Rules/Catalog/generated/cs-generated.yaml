@@ -529,16 +529,16 @@
     next change touches a single spot.
 
 - key: QG-CS-SEC-0067
-  name: Password hashing functions should use current cryptographic parameters
+  name: The salt of a password hash has to be unpredictable
   languages: [cs]
   category: SEC
   severity: critical
   effort: 15min
   tags: [crypto, generated]
-  generated: true
-  status: planned
+  generated: false
+  status: ready
   message: This cryptographic choice no longer provides the protection it suggests.
-  summary: A cryptographic primitive, mode or key size that is no longer considered safe is used.
+  summary: A password hash is derived with a salt written into the source.
   why: |
     Broken primitives keep producing output that looks correct, so nothing fails while the protection is
     already gone. Data encrypted today is often kept for years, which means an algorithm that is merely
@@ -1783,16 +1783,16 @@
       receiver: [IQueryable]
 
 - key: QG-CS-SEC-0071
-  name: Cipher Block Chaining IVs should use current cryptographic parameters
+  name: An initialisation vector has to be unpredictable
   languages: [cs]
   category: SEC
   severity: critical
   effort: 15min
   tags: [crypto, generated]
-  generated: true
-  status: planned
+  generated: false
+  status: ready
   message: This cryptographic choice no longer provides the protection it suggests.
-  summary: A cryptographic primitive, mode or key size that is no longer considered safe is used.
+  summary: A cipher is initialised with a vector fixed in the source.
   why: |
     Broken primitives keep producing output that looks correct, so nothing fails while the protection is
     already gone. Data encrypted today is often kept for years, which means an algorithm that is merely
@@ -4968,16 +4968,16 @@
     next change touches a single spot.
 
 - key: QG-CS-SEC-0082
-  name: JWT secret keys should not be committed with the source
+  name: The key that signs a token should not be in the source
   languages: [cs]
   category: SEC
   severity: critical
   effort: 15min
   tags: [secret, generated]
-  generated: true
-  status: planned
+  generated: false
+  status: ready
   message: This value looks like a credential committed with the source.
-  summary: A credential, key or token appears directly in the source instead of coming from a secret store.
+  summary: The secret used to sign or verify tokens is written into the code.
   why: |
     Anything committed with the code is readable by everyone who can clone the repository, and it
     survives in the history even after being deleted. Scanners find these values within minutes of a

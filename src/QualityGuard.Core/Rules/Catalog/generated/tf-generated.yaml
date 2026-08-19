@@ -65,7 +65,8 @@
   effort: 15min
   tags: [sec, generated]
   generated: true
-  status: planned
+  status: superseded
+  superseded_by: QG-TF-SEC-0079
   message: This construct weakens the security of the application.
   summary: A construct that attackers routinely target is used without the guard it needs.
   why: |
@@ -122,7 +123,8 @@
   effort: 15min
   tags: [permissions, generated]
   generated: true
-  status: planned
+  status: superseded
+  superseded_by: QG-TF-SEC-0077
   message: This grants wider access than the operation needs.
   summary: A resource is created or shared with permissions wider than the task requires.
   why: |
@@ -141,7 +143,8 @@
   effort: 15min
   tags: [permissions, generated]
   generated: true
-  status: planned
+  status: superseded
+  superseded_by: QG-TF-SEC-0078
   message: This grants wider access than the operation needs.
   summary: A resource is created or shared with permissions wider than the task requires.
   why: |
@@ -160,7 +163,8 @@
   effort: 15min
   tags: [sec, generated]
   generated: true
-  status: planned
+  status: superseded
+  superseded_by: QG-TF-SEC-0082
   message: This construct weakens the security of the application.
   summary: A construct that attackers routinely target is used without the guard it needs.
   why: |
@@ -179,7 +183,8 @@
   effort: 15min
   tags: [sec, generated]
   generated: true
-  status: planned
+  status: superseded
+  superseded_by: QG-TF-SEC-0080
   message: This construct weakens the security of the application.
   summary: A construct that attackers routinely target is used without the guard it needs.
   why: |
@@ -255,7 +260,8 @@
   effort: 15min
   tags: [permissions, generated]
   generated: true
-  status: planned
+  status: superseded
+  superseded_by: QG-TF-SEC-0081
   message: This grants wider access than the operation needs.
   summary: A resource is created or shared with permissions wider than the task requires.
   why: |
@@ -350,7 +356,8 @@
   effort: 15min
   tags: [sec, generated]
   generated: true
-  status: planned
+  status: superseded
+  superseded_by: QG-TF-SEC-0076
   message: This construct weakens the security of the application.
   summary: A construct that attackers routinely target is used without the guard it needs.
   why: |
@@ -369,7 +376,8 @@
   effort: 15min
   tags: [protection_off, generated]
   generated: true
-  status: planned
+  status: superseded
+  superseded_by: QG-TF-SEC-0071
   message: A protection provided by the platform is switched off here.
   summary: A safety mechanism the platform provides is switched off.
   why: |
@@ -407,7 +415,8 @@
   effort: 15min
   tags: [sec, generated]
   generated: true
-  status: planned
+  status: superseded
+  superseded_by: QG-TF-SEC-0073
   message: This construct weakens the security of the application.
   summary: A construct that attackers routinely target is used without the guard it needs.
   why: |
@@ -426,7 +435,8 @@
   effort: 15min
   tags: [sec, generated]
   generated: true
-  status: planned
+  status: superseded
+  superseded_by: QG-TF-SEC-0074
   message: This construct weakens the security of the application.
   summary: A construct that attackers routinely target is used without the guard it needs.
   why: |
@@ -445,7 +455,8 @@
   effort: 15min
   tags: [crypto, generated]
   generated: true
-  status: planned
+  status: superseded
+  superseded_by: QG-TF-SEC-0072
   message: This cryptographic choice no longer provides the protection it suggests.
   summary: A cryptographic primitive, mode or key size that is no longer considered safe is used.
   why: |
@@ -483,7 +494,8 @@
   effort: 15min
   tags: [permissions, generated]
   generated: true
-  status: planned
+  status: superseded
+  superseded_by: QG-TF-SEC-0075
   message: This grants wider access than the operation needs.
   summary: A resource is created or shared with permissions wider than the task requires.
   why: |

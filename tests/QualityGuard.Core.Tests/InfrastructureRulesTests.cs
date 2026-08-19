@@ -367,4 +367,85 @@ public class InfrastructureRulesTests
             """;
         Assert.Empty(Lines("pod.yaml", manifest, "QG-K8-SEC-0007"));
     }
+    [Fact]
+    public void A_bucket_permission_that_grants_everyone_is_reported()
+    {
+        var template = """
+            resource "aws_s3_bucket_acl" "logs" {
+              bucket = "logs"
+              acl    = "public-read"
+            }
+
+            resource "aws_s3_bucket_acl" "private" {
+              bucket = "private"
+              acl    = "private"
+            }
+            """;
+        Assert.Single(Lines("storage.tf", template, "QG-TF-SEC-0077"));
+    }
+
+    [Fact]
+    public void A_public_access_block_switched_off_is_reported()
+    {
+        var template = """
+            resource "aws_s3_bucket_public_access_block" "logs" {
+              bucket            = "logs"
+              block_public_acls = false
+            }
+            """;
+        Assert.NotEmpty(Lines("storage.tf", template, "QG-TF-SEC-0078"));
+    }
+
+    [Fact]
+    public void Versioning_that_is_suspended_is_reported_and_enabled_is_not()
+    {
+        var suspended = """
+            resource "aws_s3_bucket_versioning" "logs" {
+              versioning_configuration {
+                status = "Suspended"
+              }
+            }
+            """;
+        var enabled = """
+            resource "aws_s3_bucket_versioning" "logs" {
+              versioning_configuration {
+                status = "Enabled"
+              }
+            }
+            """;
+        Assert.NotEmpty(Lines("storage.tf", suspended, "QG-TF-SEC-0079"));
+        Assert.Empty(Lines("storage.tf", enabled, "QG-TF-SEC-0079"));
+    }
+
+    [Fact]
+    public void A_retention_shorter_than_a_week_is_reported()
+    {
+        var template = """
+            resource "aws_db_instance" "main" {
+              backup_retention_period = 1
+            }
+
+            resource "aws_db_instance" "other" {
+              backup_retention_period = 30
+            }
+            """;
+        Assert.Single(Lines("db.tf", template, "QG-TF-SEC-0080"));
+    }
+
+    [Fact]
+    public void A_preflight_route_needs_no_authorization()
+    {
+        var template = """
+            resource "aws_api_gateway_method" "open" {
+              http_method   = "GET"
+              authorization = "NONE"
+            }
+
+            resource "aws_api_gateway_method" "preflight" {
+              http_method   = "OPTIONS"
+              authorization = "NONE"
+            }
+            """;
+        Assert.Single(Lines("api.tf", template, "QG-TF-SEC-0082"));
+    }
 }
