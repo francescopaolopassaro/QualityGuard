@@ -1,0 +1,452 @@
+# Catalogue entries written in one pass, one per defect this language still lacks a check for.
+# Every entry is documentation and carries no detection, so none of them reports anything: a
+# detection is written by hand, against the shape the defect actually has, and measured before
+# the entry stops being planned.
+
+- key: QG-SC-SML-0001
+  name: Methods should not be empty
+  languages: [scala]
+  category: SML
+  severity: critical
+  effort: 5min
+  status: planned
+  generated: true
+  tags: [suspicious]
+  summary: Code that no longer takes part in anything is still here.
+  why: |
+    It has to be read, understood and kept compiling by everyone who passes through, and it gives
+    nothing back. Worse, it suggests a purpose that no longer exists.
+  fix: |
+    Remove it: the history keeps it if it is ever needed again.
+
+- key: QG-SC-SML-0002
+  name: Mergeable "if" statements should be combined
+  languages: [scala]
+  category: SML
+  severity: major
+  effort: 5min
+  status: planned
+  generated: true
+  tags: [clumsy]
+  summary: The code does not behave the way it reads.
+  why: |
+    Written this way it works by accident or fails on ordinary input, and the mistake survives
+    review because the intent reads correctly.
+  fix: |
+    Make the intended behaviour explicit, and cover the case that used to fail with a test.
+
+- key: QG-SC-SML-0003
+  name: Boolean literals should not be redundant
+  languages: [scala]
+  category: SML
+  severity: minor
+  effort: 5min
+  status: planned
+  generated: true
+  tags: [clumsy]
+  summary: Code that no longer takes part in anything is still here.
+  why: |
+    It has to be read, understood and kept compiling by everyone who passes through, and it gives
+    nothing back. Worse, it suggests a purpose that no longer exists.
+  fix: |
+    Remove it: the history keeps it if it is ever needed again.
+
+- key: QG-SC-SML-0004
+  name: Unused "private" methods should be removed
+  languages: [scala]
+  category: SML
+  severity: major
+  effort: 2min
+  status: planned
+  generated: true
+  tags: [unused]
+  summary: Code that no longer takes part in anything is still here.
+  why: |
+    It has to be read, understood and kept compiling by everyone who passes through, and it gives
+    nothing back. Worse, it suggests a purpose that no longer exists.
+  fix: |
+    Remove it: the history keeps it if it is ever needed again.
+
+- key: QG-SC-SML-0005
+  name: IP addresses should not be hardcoded
+  languages: [scala]
+  category: SML
+  severity: minor
+  effort: 30min
+  status: planned
+  generated: true
+  tags: [former-hotspot]
+  summary: The code does not behave the way it reads.
+  why: |
+    Written this way it works by accident or fails on ordinary input, and the mistake survives
+    review because the intent reads correctly.
+  fix: |
+    Make the intended behaviour explicit, and cover the case that used to fail with a test.
+
+- key: QG-SC-SML-0006
+  name: Unused local variables should be removed
+  languages: [scala]
+  category: SML
+  severity: minor
+  effort: 5min
+  status: planned
+  generated: true
+  tags: [unused]
+  summary: Code that no longer takes part in anything is still here.
+  why: |
+    It has to be read, understood and kept compiling by everyone who passes through, and it gives
+    nothing back. Worse, it suggests a purpose that no longer exists.
+  fix: |
+    Remove it: the history keeps it if it is ever needed again.
+
+- key: QG-SC-SML-0007
+  name: Boolean checks should not be inverted
+  languages: [scala]
+  category: SML
+  severity: minor
+  effort: 2min
+  status: planned
+  generated: true
+  tags: [pitfall]
+  summary: The code does not behave the way it reads.
+  why: |
+    Written this way it works by accident or fails on ordinary input, and the mistake survives
+    review because the intent reads correctly.
+  fix: |
+    Make the intended behaviour explicit, and cover the case that used to fail with a test.
+
+- key: QG-SC-SML-0008
+  name: Cognitive Complexity of functions should not be too high
+  languages: [scala]
+  category: SML
+  severity: critical
+  effort: 15min
+  status: planned
+  generated: true
+  tags: [brain-overload]
+  summary: A piece of code has grown past what can be held in mind at once.
+  why: |
+    The size is the defect: every change to it costs more than it should and carries a risk that has
+    nothing to do with the change itself.
+  fix: |
+    Split it along the responsibilities it has accumulated.
+
+- key: QG-SC-SML-0009
+  name: Expressions should not be too complex
+  languages: [scala]
+  category: SML
+  severity: critical
+  effort: 15min
+  status: planned
+  generated: true
+  tags: [brain-overload]
+  summary: A piece of code has grown past what can be held in mind at once.
+  why: |
+    The size is the defect: every change to it costs more than it should and carries a risk that has
+    nothing to do with the change itself.
+  fix: |
+    Split it along the responsibilities it has accumulated.
+
+- key: QG-SC-SML-0010
+  name: "if ... else if" constructs should end with "else" clauses
+  languages: [scala]
+  category: SML
+  severity: critical
+  effort: 5min
+  status: planned
+  generated: true
+  tags: []
+  summary: The code does not behave the way it reads.
+  why: |
+    Written this way it works by accident or fails on ordinary input, and the mistake survives
+    review because the intent reads correctly.
+  fix: |
+    Make the intended behaviour explicit, and cover the case that used to fail with a test.
+
+- key: QG-SC-SML-0011
+  name: "match" statements should not be nested
+  languages: [scala]
+  category: SML
+  severity: critical
+  effort: 10min
+  status: planned
+  generated: true
+  tags: [pitfall]
+  summary: A piece of code has grown past what can be held in mind at once.
+  why: |
+    The size is the defect: every change to it costs more than it should and carries a risk that has
+    nothing to do with the change itself.
+  fix: |
+    Split it along the responsibilities it has accumulated.
+
+- key: QG-SC-SML-0012
+  name: Unused function parameters should be removed
+  languages: [scala]
+  category: SML
+  severity: major
+  effort: 5min
+  status: planned
+  generated: true
+  tags: [unused]
+  summary: Code that no longer takes part in anything is still here.
+  why: |
+    It has to be read, understood and kept compiling by everyone who passes through, and it gives
+    nothing back. Worse, it suggests a purpose that no longer exists.
+  fix: |
+    Remove it: the history keeps it if it is ever needed again.
+
+- key: QG-SC-SML-0013
+  name: Two branches in a conditional structure should not have exactly the same implementation
+  languages: [scala]
+  category: SML
+  severity: major
+  effort: 10min
+  status: planned
+  generated: true
+  tags: [design, suspicious]
+  summary: The control flow does not do what it reads as doing.
+  why: |
+    A branch that cannot be taken, a loop that cannot end, a condition that is always the same: the
+    code states an intent the machine does not carry out, and review reads the intent.
+  fix: |
+    Make the flow say what it does, and remove what cannot happen.
+
+- key: QG-SC-SML-0014
+  name: Methods should not have identical implementations
+  languages: [scala]
+  category: SML
+  severity: major
+  effort: 15min
+  status: planned
+  generated: true
+  tags: [confusing, duplicate, suspicious]
+  summary: The code does not behave the way it reads.
+  why: |
+    Written this way it works by accident or fails on ordinary input, and the mistake survives
+    review because the intent reads correctly.
+  fix: |
+    Make the intended behaviour explicit, and cover the case that used to fail with a test.
+
+- key: QG-SC-SML-0015
+  name: Multi-line comments should not be empty
+  languages: [scala]
+  category: SML
+  severity: minor
+  effort: 1min
+  status: planned
+  generated: true
+  tags: []
+  summary: Code that no longer takes part in anything is still here.
+  why: |
+    It has to be read, understood and kept compiling by everyone who passes through, and it gives
+    nothing back. Worse, it suggests a purpose that no longer exists.
+  fix: |
+    Remove it: the history keeps it if it is ever needed again.
+
+- key: QG-SC-SML-0016
+  name: "match case" clauses should not have too many lines of code
+  languages: [scala]
+  category: SML
+  severity: major
+  effort: 5min
+  status: planned
+  generated: true
+  tags: [brain-overload]
+  summary: The control flow does not do what it reads as doing.
+  why: |
+    A branch that cannot be taken, a loop that cannot end, a condition that is always the same: the
+    code states an intent the machine does not carry out, and review reads the intent.
+  fix: |
+    Make the flow say what it does, and remove what cannot happen.
+
+- key: QG-SC-SML-0017
+  name: Track lack of copyright and license headers
+  languages: [scala]
+  category: SML
+  severity: blocker
+  effort: 5min
+  status: planned
+  generated: true
+  tags: [convention]
+  summary: A name does not follow the convention the rest of the code uses.
+  why: |
+    Conventions let a reader infer what something is from its shape alone. A deviation costs a
+    lookup every time, and makes searches and automated refactoring less reliable.
+  fix: |
+    Rename it to match the convention used around it.
+
+- key: QG-SC-SML-0018
+  name: Control flow statements "if", "for", "while", "match" and "try" should not be nested too deeply
+  languages: [scala]
+  category: SML
+  severity: critical
+  effort: 10min
+  status: planned
+  generated: true
+  tags: [brain-overload]
+  summary: A piece of code has grown past what can be held in mind at once.
+  why: |
+    The size is the defect: every change to it costs more than it should and carries a risk that has
+    nothing to do with the change itself.
+  fix: |
+    Split it along the responsibilities it has accumulated.
+
+- key: QG-SC-SML-0019
+  name: Lines should not be too long
+  languages: [scala]
+  category: SML
+  severity: major
+  effort: 1min
+  status: planned
+  generated: true
+  tags: [convention]
+  summary: A name does not follow the convention the rest of the code uses.
+  why: |
+    Conventions let a reader infer what something is from its shape alone. A deviation costs a
+    lookup every time, and makes searches and automated refactoring less reliable.
+  fix: |
+    Rename it to match the convention used around it.
+
+- key: QG-SC-SML-0020
+  name: Files should not have too many lines of code
+  languages: [scala]
+  category: SML
+  severity: major
+  effort: 1h
+  status: planned
+  generated: true
+  tags: [brain-overload]
+  summary: A piece of code has grown past what can be held in mind at once.
+  why: |
+    The size is the defect: every change to it costs more than it should and carries a risk that has
+    nothing to do with the change itself.
+  fix: |
+    Split it along the responsibilities it has accumulated.
+
+- key: QG-SC-SML-0021
+  name: Tabulation characters should not be used
+  languages: [scala]
+  category: SML
+  severity: minor
+  effort: 2min
+  status: planned
+  generated: true
+  tags: [convention]
+  summary: A name does not follow the convention the rest of the code uses.
+  why: |
+    Conventions let a reader infer what something is from its shape alone. A deviation costs a
+    lookup every time, and makes searches and automated refactoring less reliable.
+  fix: |
+    Rename it to match the convention used around it.
+
+- key: QG-SC-SML-0022
+  name: Statements should be on separate lines
+  languages: [scala]
+  category: SML
+  severity: major
+  effort: 1min
+  status: planned
+  generated: true
+  tags: [convention]
+  summary: A name does not follow the convention the rest of the code uses.
+  why: |
+    Conventions let a reader infer what something is from its shape alone. A deviation costs a
+    lookup every time, and makes searches and automated refactoring less reliable.
+  fix: |
+    Rename it to match the convention used around it.
+
+- key: QG-SC-SML-0023
+  name: Methods should not have too many lines of code
+  languages: [scala]
+  category: SML
+  severity: major
+  effort: 20min
+  status: planned
+  generated: true
+  tags: [brain-overload]
+  summary: A piece of code has grown past what can be held in mind at once.
+  why: |
+    The size is the defect: every change to it costs more than it should and carries a risk that has
+    nothing to do with the change itself.
+  fix: |
+    Split it along the responsibilities it has accumulated.
+
+- key: QG-SC-BUG-0001
+  name: Useless "if(true) {...}" and "if(false){...}" blocks should be removed
+  languages: [scala]
+  category: BUG
+  severity: major
+  effort: 2min
+  status: planned
+  generated: true
+  tags: [cwe]
+  summary: Shared state is reached without the coordination that makes it safe.
+  why: |
+    It works every time it is tested and fails under load, on a machine with more cores, once. That
+    is the hardest kind of defect to reproduce and the easiest to write.
+  fix: |
+    Guard the shared state, or give each caller its own copy.
+
+- key: QG-SC-BUG-0002
+  name: Variables should not be self-assigned
+  languages: [scala]
+  category: BUG
+  severity: major
+  effort: 3min
+  status: planned
+  generated: true
+  tags: []
+  summary: The code does not behave the way it reads.
+  why: |
+    Written this way it works by accident or fails on ordinary input, and the mistake survives
+    review because the intent reads correctly.
+  fix: |
+    Make the intended behaviour explicit, and cover the case that used to fail with a test.
+
+- key: QG-SC-BUG-0003
+  name: All code should be reachable
+  languages: [scala]
+  category: BUG
+  severity: major
+  effort: 5min
+  status: planned
+  generated: true
+  tags: [cwe, unused]
+  summary: Code that no longer takes part in anything is still here.
+  why: |
+    It has to be read, understood and kept compiling by everyone who passes through, and it gives
+    nothing back. Worse, it suggests a purpose that no longer exists.
+  fix: |
+    Remove it: the history keeps it if it is ever needed again.
+
+- key: QG-SC-BUG-0004
+  name: Related "if"/"else if" statements and "case" in a "match" should not have the same condition
+  languages: [scala]
+  category: BUG
+  severity: major
+  effort: 10min
+  status: planned
+  generated: true
+  tags: [unused, pitfall]
+  summary: The control flow does not do what it reads as doing.
+  why: |
+    A branch that cannot be taken, a loop that cannot end, a condition that is always the same: the
+    code states an intent the machine does not carry out, and review reads the intent.
+  fix: |
+    Make the flow say what it does, and remove what cannot happen.
+
+- key: QG-SC-BUG-0005
+  name: All branches in a conditional structure should not have exactly the same implementation
+  languages: [scala]
+  category: BUG
+  severity: major
+  effort: 15min
+  status: planned
+  generated: true
+  tags: []
+  summary: The control flow does not do what it reads as doing.
+  why: |
+    A branch that cannot be taken, a loop that cannot end, a condition that is always the same: the
+    code states an intent the machine does not carry out, and review reads the intent.
+  fix: |
+    Make the flow say what it does, and remove what cannot happen.

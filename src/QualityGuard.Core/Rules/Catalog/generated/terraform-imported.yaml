@@ -1,0 +1,404 @@
+# Catalogue entries written in one pass, one per defect this language still lacks a check for.
+# Every entry is documentation and carries no detection, so none of them reports anything: a
+# detection is written by hand, against the shape the defect actually has, and measured before
+# the entry stops being planned.
+
+- key: QG-TF-SEC-0083
+  name: Clear-text protocols should not be used
+  languages: [tf]
+  category: SEC
+  severity: minor
+  effort: 30min
+  status: planned
+  generated: true
+  tags: [aws, azure, gcp, cwe]
+  summary: The code does not behave the way it reads.
+  why: |
+    Written this way it works by accident or fails on ordinary input, and the mistake survives
+    review because the intent reads correctly.
+  fix: |
+    Make the intended behaviour explicit, and cover the case that used to fail with a test.
+
+- key: QG-TF-SEC-0084
+  name: S3 buckets should enforce HTTPS-only access
+  languages: [tf]
+  category: SEC
+  severity: minor
+  effort: 10min
+  status: planned
+  generated: true
+  tags: [aws, cwe, former-hotspot]
+  summary: Something is reachable by callers who should not reach it.
+  why: |
+    Access granted this broadly is never noticed afterwards: nothing fails, and the surface stays
+    open for as long as the resource exists.
+  fix: |
+    Grant the access to the identities that need it and to nothing else.
+
+- key: QG-TF-SEC-0085
+  name: Cloud resources logging should not be disabled
+  languages: [tf]
+  category: SEC
+  severity: major
+  effort: 30min
+  status: planned
+  generated: true
+  tags: [aws, gcp, cwe, former-hotspot]
+  summary: Something the runtime cannot reclaim on its own is not released.
+  why: |
+    Handles, sockets and connections are finite. The failure appears far from here, under load, as
+    an exhaustion nobody can attribute to a single line.
+  fix: |
+    Release it on every path, including the exceptional one.
+
+- key: QG-TF-SEC-0086
+  name: High-privilege Microsoft Entra ID built-in roles should not be assigned
+  languages: [tf]
+  category: SEC
+  severity: major
+  effort: 30min
+  status: planned
+  generated: true
+  tags: [azure, former-hotspot]
+  summary: Something is reachable by callers who should not reach it.
+  why: |
+    Access granted this broadly is never noticed afterwards: nothing fails, and the surface stays
+    open for as long as the resource exists.
+  fix: |
+    Grant the access to the identities that need it and to nothing else.
+
+- key: QG-TF-SEC-0087
+  name: Managed Identities should be used for Azure resources that authenticate to other services
+  languages: [tf]
+  category: SEC
+  severity: major
+  effort: 1h
+  status: planned
+  generated: true
+  tags: [azure, former-hotspot]
+  summary: Something is reachable by callers who should not reach it.
+  why: |
+    Access granted this broadly is never noticed afterwards: nothing fails, and the surface stays
+    open for as long as the resource exists.
+  fix: |
+    Grant the access to the identities that need it and to nothing else.
+
+- key: QG-TF-SEC-0088
+  name: Azure resource-specific admin accounts should not be enabled
+  languages: [tf]
+  category: SEC
+  severity: major
+  effort: 5min
+  status: planned
+  generated: true
+  tags: [azure, former-hotspot]
+  summary: Something the runtime cannot reclaim on its own is not released.
+  why: |
+    Handles, sockets and connections are finite. The failure appears far from here, under load, as
+    an exhaustion nobody can attribute to a single line.
+  fix: |
+    Release it on every path, including the exceptional one.
+
+- key: QG-TF-SEC-0089
+  name: High-privilege Azure built-in roles should not be assigned
+  languages: [tf]
+  category: SEC
+  severity: major
+  effort: 30min
+  status: planned
+  generated: true
+  tags: [azure, former-hotspot]
+  summary: Something is reachable by callers who should not reach it.
+  why: |
+    Access granted this broadly is never noticed afterwards: nothing fails, and the surface stays
+    open for as long as the resource exists.
+  fix: |
+    Grant the access to the identities that need it and to nothing else.
+
+- key: QG-TF-SEC-0090
+  name: Client certificate authentication should be enabled on Azure service-to-service endpoints
+  languages: [tf]
+  category: SEC
+  severity: major
+  effort: 1h
+  status: planned
+  generated: true
+  tags: [cwe, azure, former-hotspot]
+  summary: Cryptography is used in a way that does not give the protection it appears to.
+  why: |
+    The code still runs and the data still looks protected, which is what makes this expensive to
+    find: nothing fails until somebody who should not be able to read the data reads it.
+  fix: |
+    Use the current recommended algorithm and parameters, and let the platform choose what it can.
+
+- key: QG-TF-SEC-0091
+  name: Azure Role-Based Access Control should not be disabled
+  languages: [tf]
+  category: SEC
+  severity: major
+  effort: 1h
+  status: planned
+  generated: true
+  tags: [cwe, azure, former-hotspot]
+  summary: Something is reachable by callers who should not reach it.
+  why: |
+    Access granted this broadly is never noticed afterwards: nothing fails, and the surface stays
+    open for as long as the resource exists.
+  fix: |
+    Grant the access to the identities that need it and to nothing else.
+
+- key: QG-TF-SEC-0092
+  name: Azure custom roles should not grant subscription Owner capabilities
+  languages: [tf]
+  category: SEC
+  severity: major
+  effort: 30min
+  status: planned
+  generated: true
+  tags: [azure]
+  summary: Something is reachable by callers who should not reach it.
+  why: |
+    Access granted this broadly is never noticed afterwards: nothing fails, and the surface stays
+    open for as long as the resource exists.
+  fix: |
+    Grant the access to the identities that need it and to nothing else.
+
+- key: QG-TF-SEC-0093
+  name: GCP IAM policies should not grant highly privileged roles
+  languages: [tf]
+  category: SEC
+  severity: major
+  effort: 5min
+  status: planned
+  generated: true
+  tags: [cwe, former-hotspot, gcp]
+  summary: Something is reachable by callers who should not reach it.
+  why: |
+    Access granted this broadly is never noticed afterwards: nothing fails, and the surface stays
+    open for as long as the resource exists.
+  fix: |
+    Grant the access to the identities that need it and to nothing else.
+
+- key: QG-TF-SEC-0094
+  name: GCP resources should not be publicly accessible
+  languages: [tf]
+  category: SEC
+  severity: major
+  effort: 5min
+  status: planned
+  generated: true
+  tags: [gcp, cwe-732, former-hotspot]
+  summary: Something is reachable by callers who should not reach it.
+  why: |
+    Access granted this broadly is never noticed afterwards: nothing fails, and the surface stays
+    open for as long as the resource exists.
+  fix: |
+    Grant the access to the identities that need it and to nothing else.
+
+- key: QG-TF-SEC-0095
+  name: GCP IAM custom roles should not grant excessive sensitive permissions
+  languages: [tf]
+  category: SEC
+  severity: major
+  effort: 15min
+  status: planned
+  generated: true
+  tags: [cwe, former-hotspot, gcp]
+  summary: Something is reachable by callers who should not reach it.
+  why: |
+    Access granted this broadly is never noticed afterwards: nothing fails, and the surface stays
+    open for as long as the resource exists.
+  fix: |
+    Grant the access to the identities that need it and to nothing else.
+
+- key: QG-TF-SEC-0096
+  name: GCP App Engine handlers should require TLS
+  languages: [tf]
+  category: SEC
+  severity: major
+  effort: 30min
+  status: planned
+  generated: true
+  tags: [cwe, former-hotspot, gcp]
+  summary: Cryptography is used in a way that does not give the protection it appears to.
+  why: |
+    The code still runs and the data still looks protected, which is what makes this expensive to
+    find: nothing fails until somebody who should not be able to read the data reads it.
+  fix: |
+    Use the current recommended algorithm and parameters, and let the platform choose what it can.
+
+- key: QG-TF-SEC-0097
+  name: GCP IAM custom roles should not allow privilege escalation
+  languages: [tf]
+  category: SEC
+  severity: major
+  effort: 15min
+  status: planned
+  generated: true
+  tags: [cwe, former-hotspot, gcp]
+  summary: Something is reachable by callers who should not reach it.
+  why: |
+    Access granted this broadly is never noticed afterwards: nothing fails, and the surface stays
+    open for as long as the resource exists.
+  fix: |
+    Grant the access to the identities that need it and to nothing else.
+
+- key: QG-TF-SEC-0098
+  name: Legacy Attribute-Based Access Control should not be enabled for GKE clusters
+  languages: [tf]
+  category: SEC
+  severity: major
+  effort: 1h
+  status: planned
+  generated: true
+  tags: [cwe, former-hotspot, gcp]
+  summary: Something is reachable by callers who should not reach it.
+  why: |
+    Access granted this broadly is never noticed afterwards: nothing fails, and the surface stays
+    open for as long as the resource exists.
+  fix: |
+    Grant the access to the identities that need it and to nothing else.
+
+- key: QG-TF-SEC-0099
+  name: Google Cloud load balancers SSL policies should not offer weak cipher suites
+  languages: [tf]
+  category: SEC
+  severity: major
+  effort: 5min
+  status: planned
+  generated: true
+  tags: [cwe, gcp]
+  summary: Cryptography is used in a way that does not give the protection it appears to.
+  why: |
+    The code still runs and the data still looks protected, which is what makes this expensive to
+    find: nothing fails until somebody who should not be able to read the data reads it.
+  fix: |
+    Use the current recommended algorithm and parameters, and let the platform choose what it can.
+
+- key: QG-TF-SEC-0100
+  name: GCP Cloud Storage buckets should have object versioning enabled
+  languages: [tf]
+  category: SEC
+  severity: minor
+  effort: 5min
+  status: planned
+  generated: true
+  tags: [former-hotspot, gcp]
+  summary: The code does not behave the way it reads.
+  why: |
+    Written this way it works by accident or fails on ordinary input, and the mistake survives
+    review because the intent reads correctly.
+  fix: |
+    Make the intended behaviour explicit, and cover the case that used to fail with a test.
+
+- key: QG-TF-SEC-0101
+  name: Log retention period should be long enough to support security investigations
+  languages: [tf]
+  category: SEC
+  severity: major
+  effort: 5min
+  status: planned
+  generated: true
+  tags: [azure, gcp, former-hotspot]
+  summary: The code does not behave the way it reads.
+  why: |
+    Written this way it works by accident or fails on ordinary input, and the mistake survives
+    review because the intent reads correctly.
+  fix: |
+    Make the intended behaviour explicit, and cover the case that used to fail with a test.
+
+- key: QG-TF-SEC-0102
+  name: GCP Cloud Audit Logs exemptions should not be configured for project members
+  languages: [tf]
+  category: SEC
+  severity: major
+  effort: 30min
+  status: planned
+  generated: true
+  tags: [former-hotspot, gcp]
+  summary: The code does not behave the way it reads.
+  why: |
+    Written this way it works by accident or fails on ordinary input, and the mistake survives
+    review because the intent reads correctly.
+  fix: |
+    Make the intended behaviour explicit, and cover the case that used to fail with a test.
+
+- key: QG-TF-SEC-0103
+  name: Azure Key Vaults should enable purge protection
+  languages: [tf]
+  category: SEC
+  severity: major
+  effort: 5min
+  status: planned
+  generated: true
+  tags: [azure, cwe]
+  summary: The code does not behave the way it reads.
+  why: |
+    Written this way it works by accident or fails on ordinary input, and the mistake survives
+    review because the intent reads correctly.
+  fix: |
+    Make the intended behaviour explicit, and cover the case that used to fail with a test.
+
+- key: QG-TF-SEC-0104
+  name: GCP Cloud Storage buckets should enforce uniform bucket-level access
+  languages: [tf]
+  category: SEC
+  severity: major
+  effort: 5min
+  status: planned
+  generated: true
+  tags: [cwe, gcp]
+  summary: Something is reachable by callers who should not reach it.
+  why: |
+    Access granted this broadly is never noticed afterwards: nothing fails, and the surface stays
+    open for as long as the resource exists.
+  fix: |
+    Grant the access to the identities that need it and to nothing else.
+
+- key: QG-TF-SEC-0105
+  name: S3 buckets should have MFA delete enabled
+  languages: [tf]
+  category: SEC
+  severity: minor
+  effort: 5min
+  status: planned
+  generated: true
+  tags: [cwe, former-hotspot]
+  summary: The code does not behave the way it reads.
+  why: |
+    Written this way it works by accident or fails on ordinary input, and the mistake survives
+    review because the intent reads correctly.
+  fix: |
+    Make the intended behaviour explicit, and cover the case that used to fail with a test.
+
+- key: QG-TF-SML-0055
+  name: AWS resource tags should have valid format
+  languages: [tf]
+  category: SML
+  severity: minor
+  effort: 5min
+  status: planned
+  generated: true
+  tags: []
+  summary: Something the runtime cannot reclaim on its own is not released.
+  why: |
+    Handles, sockets and connections are finite. The failure appears far from here, under load, as
+    an exhaustion nobody can attribute to a single line.
+  fix: |
+    Release it on every path, including the exceptional one.
+
+- key: QG-TF-SML-0056
+  name: Terraform parsing failure
+  languages: [tf]
+  category: SML
+  severity: major
+  effort: 30min
+  status: planned
+  generated: true
+  tags: [suspicious]
+  summary: The code does not behave the way it reads.
+  why: |
+    Written this way it works by accident or fails on ordinary input, and the mistake survives
+    review because the intent reads correctly.
+  fix: |
+    Make the intended behaviour explicit, and cover the case that used to fail with a test.

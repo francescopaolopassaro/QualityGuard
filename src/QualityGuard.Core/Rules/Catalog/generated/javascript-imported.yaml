@@ -1,0 +1,1924 @@
+# Catalogue entries written in one pass, one per defect this language still lacks a check for.
+# Every entry is documentation and carries no detection, so none of them reports anything: a
+# detection is written by hand, against the shape the defect actually has, and measured before
+# the entry stops being planned.
+
+- key: QG-JS-SEC-0100
+  name: Remote artifacts should not be used without integrity checks
+  languages: [js]
+  category: SEC
+  severity: minor
+  effort: 5min
+  status: planned
+  generated: true
+  tags: [cwe, type-dependent, former-hotspot]
+  summary: The code does not behave the way it reads.
+  why: |
+    Written this way it works by accident or fails on ordinary input, and the mistake survives
+    review because the intent reads correctly.
+  fix: |
+    Make the intended behaviour explicit, and cover the case that used to fail with a test.
+
+- key: QG-JS-SEC-0101
+  name: Web SQL databases should not be used
+  languages: [js]
+  category: SEC
+  severity: blocker
+  effort: 2h
+  status: planned
+  generated: true
+  tags: [type-dependent]
+  summary: Input decides part of something the program then executes.
+  why: |
+    Whatever the caller sends becomes part of the instruction rather than part of the data. The code
+    reads naturally, because the value sits exactly where it belongs in the sentence.
+  fix: |
+    Keep the instruction fixed and pass the values separately, so no input can change its shape.
+
+- key: QG-JS-SEC-0102
+  name: "alert(...)" should not be used
+  languages: [js]
+  category: SEC
+  severity: minor
+  effort: 10min
+  status: planned
+  generated: true
+  tags: []
+  summary: The code does not behave the way it reads.
+  why: |
+    Written this way it works by accident or fails on ordinary input, and the mistake survives
+    review because the intent reads correctly.
+  fix: |
+    Make the intended behaviour explicit, and cover the case that used to fail with a test.
+
+- key: QG-JS-SEC-0103
+  name: Debugger statements should not be used
+  languages: [js]
+  category: SEC
+  severity: minor
+  effort: 5min
+  status: planned
+  generated: true
+  tags: []
+  summary: The code does not behave the way it reads.
+  why: |
+    Written this way it works by accident or fails on ordinary input, and the mistake survives
+    review because the intent reads correctly.
+  fix: |
+    Make the intended behaviour explicit, and cover the case that used to fail with a test.
+
+- key: QG-JS-SEC-0104
+  name: Sensitive permissions should not be requested unnecessarily
+  languages: [js]
+  category: SEC
+  severity: major
+  effort: 5min
+  status: planned
+  generated: true
+  tags: [cwe, privacy, former-hotspot]
+  summary: Something is reachable by callers who should not reach it.
+  why: |
+    Access granted this broadly is never noticed afterwards: nothing fails, and the surface stays
+    open for as long as the resource exists.
+  fix: |
+    Grant the access to the identities that need it and to nothing else.
+
+- key: QG-JS-SEC-0105
+  name: Hidden files should not be served statically
+  languages: [js]
+  category: SEC
+  severity: major
+  effort: 5min
+  status: planned
+  generated: true
+  tags: [cwe, express.js, former-hotspot]
+  summary: The code does not behave the way it reads.
+  why: |
+    Written this way it works by accident or fails on ordinary input, and the mistake survives
+    review because the intent reads correctly.
+  fix: |
+    Make the intended behaviour explicit, and cover the case that used to fail with a test.
+
+- key: QG-JS-SEC-0106
+  name: Content Security Policy frame-ancestors directive should not be disabled
+  languages: [js]
+  category: SEC
+  severity: minor
+  effort: 60min
+  status: planned
+  generated: true
+  tags: [cwe, express.js, former-hotspot]
+  summary: The code does not behave the way it reads.
+  why: |
+    Written this way it works by accident or fails on ordinary input, and the mistake survives
+    review because the intent reads correctly.
+  fix: |
+    Make the intended behaviour explicit, and cover the case that used to fail with a test.
+
+- key: QG-JS-SEC-0107
+  name: Confidential information should not be logged
+  languages: [js]
+  category: SEC
+  severity: minor
+  effort: 60min
+  status: planned
+  generated: true
+  tags: [cwe, privacy, former-hotspot]
+  summary: The code does not behave the way it reads.
+  why: |
+    Written this way it works by accident or fails on ordinary input, and the mistake survives
+    review because the intent reads correctly.
+  fix: |
+    Make the intended behaviour explicit, and cover the case that used to fail with a test.
+
+- key: QG-JS-SEC-0108
+  name: Client IP address should not be forwarded to proxies
+  languages: [js]
+  category: SEC
+  severity: minor
+  effort: 5min
+  status: planned
+  generated: true
+  tags: [privacy, express.js, former-hotspot]
+  summary: The code does not behave the way it reads.
+  why: |
+    Written this way it works by accident or fails on ordinary input, and the mistake survives
+    review because the intent reads correctly.
+  fix: |
+    Make the intended behaviour explicit, and cover the case that used to fail with a test.
+
+- key: QG-JS-SML-0444
+  name: Constructors should not contain asynchronous operations
+  languages: [js]
+  category: SML
+  severity: critical
+  effort: 5min
+  status: planned
+  generated: true
+  tags: [type-dependent, es2017]
+  summary: Shared state is reached without the coordination that makes it safe.
+  why: |
+    It works every time it is tested and fails under load, on a machine with more cores, once. That
+    is the hardest kind of defect to reproduce and the easiest to write.
+  fix: |
+    Guard the shared state, or give each caller its own copy.
+
+- key: QG-JS-SML-0445
+  name: Arguments to built-in functions should match documented types
+  languages: [js]
+  category: SML
+  severity: major
+  effort: 5min
+  status: planned
+  generated: true
+  tags: [type-dependent]
+  summary: The code does not behave the way it reads.
+  why: |
+    Written this way it works by accident or fails on ordinary input, and the mistake survives
+    review because the intent reads correctly.
+  fix: |
+    Make the intended behaviour explicit, and cover the case that used to fail with a test.
+
+- key: QG-JS-SML-0446
+  name: Type predicates should be used
+  languages: [js]
+  category: SML
+  severity: minor
+  effort: 2min
+  status: planned
+  generated: true
+  tags: [proficiency]
+  summary: An API is used where a better one exists.
+  why: |
+    The older form usually costs something the newer one does not, and it is on its way out: a
+    conversion, an allocation, a case it handles wrongly.
+  fix: |
+    Use the current API, and keep the old one only behind a documented compatibility layer.
+
+- key: QG-JS-SML-0447
+  name: "undefined" should not be passed as the value of optional parameters
+  languages: [js]
+  category: SML
+  severity: major
+  effort: 1min
+  status: planned
+  generated: true
+  tags: [confusing, type-dependent]
+  summary: A value that can be absent is used as though it always exists.
+  why: |
+    The path that produces the absence is usually the rare one, so this survives testing and arrives
+    in production as a failure with no obvious cause.
+  fix: |
+    Handle the absent case where it arises, or make the type say the value is always there.
+
+- key: QG-JS-SML-0448
+  name: Optional property declarations should not use both '?' and 'undefined' syntax
+  languages: [js]
+  category: SML
+  severity: major
+  effort: 1min
+  status: planned
+  generated: true
+  tags: [redundant, type-dependent]
+  summary: A value that can be absent is used as though it always exists.
+  why: |
+    The path that produces the absence is usually the rare one, so this survives testing and arrives
+    in production as a failure with no obvious cause.
+  fix: |
+    Handle the absent case where it arises, or make the type say the value is always there.
+
+- key: QG-JS-SML-0449
+  name: The most specific assertion should be used
+  languages: [js]
+  category: SML
+  severity: minor
+  effort: 1min
+  status: planned
+  generated: true
+  tags: [tests, jest, vitest, chai]
+  summary: An API is used where a better one exists.
+  why: |
+    The older form usually costs something the newer one does not, and it is on its way out: a
+    conversion, an allocation, a case it handles wrongly.
+  fix: |
+    Use the current API, and keep the old one only behind a documented compatibility layer.
+
+- key: QG-JS-SML-0450
+  name: Tests should check which exception is thrown
+  languages: [js]
+  category: SML
+  severity: major
+  effort: 5min
+  status: planned
+  generated: true
+  tags: [tests, chai, mocha, editable-source]
+  summary: The code does not behave the way it reads.
+  why: |
+    Written this way it works by accident or fails on ordinary input, and the mistake survives
+    review because the intent reads correctly.
+  fix: |
+    Make the intended behaviour explicit, and cover the case that used to fail with a test.
+
+- key: QG-JS-SML-0451
+  name: JSX list components keys should match up between renders
+  languages: [js]
+  category: SML
+  severity: major
+  effort: 5min
+  status: planned
+  generated: true
+  tags: [react, jsx, performance]
+  summary: The code does not behave the way it reads.
+  why: |
+    Written this way it works by accident or fails on ordinary input, and the mistake survives
+    review because the intent reads correctly.
+  fix: |
+    Make the intended behaviour explicit, and cover the case that used to fail with a test.
+
+- key: QG-JS-SML-0452
+  name: Calls to ".call()" and ".apply()" methods should not be redundant
+  languages: [js]
+  category: SML
+  severity: major
+  effort: 5min
+  status: planned
+  generated: true
+  tags: [editable-source]
+  summary: Code that no longer takes part in anything is still here.
+  why: |
+    It has to be read, understood and kept compiling by everyone who passes through, and it gives
+    nothing back. Worse, it suggests a purpose that no longer exists.
+  fix: |
+    Remove it: the history keeps it if it is ever needed again.
+
+- key: QG-JS-SML-0453
+  name: Non-interactive DOM elements should not have interactive ARIA roles
+  languages: [js]
+  category: SML
+  severity: major
+  effort: 5min
+  status: planned
+  generated: true
+  tags: [accessibility, react]
+  summary: Something is reachable by callers who should not reach it.
+  why: |
+    Access granted this broadly is never noticed afterwards: nothing fails, and the surface stays
+    open for as long as the resource exists.
+  fix: |
+    Grant the access to the identities that need it and to nothing else.
+
+- key: QG-JS-SML-0454
+  name: Label elements should have a text label and an associated control
+  languages: [js]
+  category: SML
+  severity: major
+  effort: 5min
+  status: planned
+  generated: true
+  tags: [accessibility, react]
+  summary: Something is reachable by callers who should not reach it.
+  why: |
+    Access granted this broadly is never noticed afterwards: nothing fails, and the surface stays
+    open for as long as the resource exists.
+  fix: |
+    Grant the access to the identities that need it and to nothing else.
+
+- key: QG-JS-SML-0455
+  name: Built-in constructors should be called consistently with or without "new"
+  languages: [js]
+  category: SML
+  severity: minor
+  effort: 5 min
+  status: planned
+  generated: true
+  tags: [convention]
+  summary: A name does not follow the convention the rest of the code uses.
+  why: |
+    Conventions let a reader infer what something is from its shape alone. A deviation costs a
+    lookup every time, and makes searches and automated refactoring less reliable.
+  fix: |
+    Rename it to match the convention used around it.
+
+- key: QG-JS-SML-0456
+  name: "indexOf()" and "lastIndexOf()" should be used instead of "findIndex()" and "findLastIndex()" for simple equality searches
+  languages: [js]
+  category: SML
+  severity: minor
+  effort: 2 min
+  status: planned
+  generated: true
+  tags: [performance, javascript, array, editable-source]
+  summary: An API is used where a better one exists.
+  why: |
+    The older form usually costs something the newer one does not, and it is on its way out: a
+    conversion, an allocation, a case it handles wrongly.
+  fix: |
+    Use the current API, and keep the old one only behind a documented compatibility layer.
+
+- key: QG-JS-SML-0457
+  name: Complex index access patterns should be replaced with ".at()" method
+  languages: [js]
+  category: SML
+  severity: minor
+  effort: 5 min
+  status: planned
+  generated: true
+  tags: [performance, es2022, readability, type-dependent]
+  summary: Something is reachable by callers who should not reach it.
+  why: |
+    Access granted this broadly is never noticed afterwards: nothing fails, and the surface stays
+    open for as long as the resource exists.
+  fix: |
+    Grant the access to the identities that need it and to nothing else.
+
+- key: QG-JS-SML-0458
+  name: Use "Date.now()" instead of creating Date objects to get current timestamp
+  languages: [js]
+  category: SML
+  severity: minor
+  effort: 2 min
+  status: planned
+  generated: true
+  tags: [performance, readability, editable-source]
+  summary: An API is used where a better one exists.
+  why: |
+    The older form usually costs something the newer one does not, and it is on its way out: a
+    conversion, an allocation, a case it handles wrongly.
+  fix: |
+    Use the current API, and keep the old one only behind a documented compatibility layer.
+
+- key: QG-JS-SML-0459
+  name: DOM nodes should be removed using "remove()" instead of "removeChild()"
+  languages: [js]
+  category: SML
+  severity: major
+  effort: 2 min
+  status: planned
+  generated: true
+  tags: [javascript, dom, modernize, editable-source]
+  summary: Code that no longer takes part in anything is still here.
+  why: |
+    It has to be read, understood and kept compiling by everyone who passes through, and it gives
+    nothing back. Worse, it suggests a purpose that no longer exists.
+  fix: |
+    Remove it: the history keeps it if it is ever needed again.
+
+- key: QG-JS-SML-0460
+  name: Test and suite titles should not be empty or whitespace-only
+  languages: [js]
+  category: SML
+  severity: major
+  effort: 2min
+  status: planned
+  generated: true
+  tags: [tests, confusing, jest, mocha]
+  summary: Code that no longer takes part in anything is still here.
+  why: |
+    It has to be read, understood and kept compiling by everyone who passes through, and it gives
+    nothing back. Worse, it suggests a purpose that no longer exists.
+  fix: |
+    Remove it: the history keeps it if it is ever needed again.
+
+- key: QG-JS-SML-0461
+  name: Lifecycle hooks should not be interleaved with test cases or nested suites
+  languages: [js]
+  category: SML
+  severity: major
+  effort: 5min
+  status: planned
+  generated: true
+  tags: [tests, jest, vitest, mocha]
+  summary: The control flow does not do what it reads as doing.
+  why: |
+    A branch that cannot be taken, a loop that cannot end, a condition that is always the same: the
+    code states an intent the machine does not carry out, and review reads the intent.
+  fix: |
+    Make the flow say what it does, and remove what cannot happen.
+
+- key: QG-JS-SML-0462
+  name: Assertions should be placed inside test cases or hooks
+  languages: [js]
+  category: SML
+  severity: major
+  effort: 5min
+  status: planned
+  generated: true
+  tags: [tests, pitfall, jest, vitest]
+  summary: The control flow does not do what it reads as doing.
+  why: |
+    A branch that cannot be taken, a loop that cannot end, a condition that is always the same: the
+    code states an intent the machine does not carry out, and review reads the intent.
+  fix: |
+    Make the flow say what it does, and remove what cannot happen.
+
+- key: QG-JS-SML-0463
+  name: Inline snapshots should not contain interpolations
+  languages: [js]
+  category: SML
+  severity: major
+  effort: 5min
+  status: planned
+  generated: true
+  tags: [tests, jest, vitest, editable-source]
+  summary: The code does not behave the way it reads.
+  why: |
+    Written this way it works by accident or fails on ordinary input, and the mistake survives
+    review because the intent reads correctly.
+  fix: |
+    Make the intended behaviour explicit, and cover the case that used to fail with a test.
+
+- key: QG-JS-SML-0464
+  name: "<button>" elements should have an explicit "type" attribute
+  languages: [js]
+  category: SML
+  severity: major
+  effort: 2min
+  status: planned
+  generated: true
+  tags: [react, vue]
+  summary: The code does not behave the way it reads.
+  why: |
+    Written this way it works by accident or fails on ordinary input, and the mistake survives
+    review because the intent reads correctly.
+  fix: |
+    Make the intended behaviour explicit, and cover the case that used to fail with a test.
+
+- key: QG-JS-SML-0465
+  name: Vue components should not use the deprecated "vue-class-component" or "vue-property-decorator" libraries
+  languages: [js]
+  category: SML
+  severity: minor
+  effort: 5min
+  status: planned
+  generated: true
+  tags: [vue]
+  summary: An API is used where a better one exists.
+  why: |
+    The older form usually costs something the newer one does not, and it is on its way out: a
+    conversion, an allocation, a case it handles wrongly.
+  fix: |
+    Use the current API, and keep the old one only behind a documented compatibility layer.
+
+- key: QG-JS-SML-0466
+  name: "if ... else if" constructs should end with "else" clauses
+  languages: [js]
+  category: SML
+  severity: critical
+  effort: 5min
+  status: planned
+  generated: true
+  tags: []
+  summary: The code does not behave the way it reads.
+  why: |
+    Written this way it works by accident or fails on ordinary input, and the mistake survives
+    review because the intent reads correctly.
+  fix: |
+    Make the intended behaviour explicit, and cover the case that used to fail with a test.
+
+- key: QG-JS-SML-0467
+  name: Track lack of copyright and license headers
+  languages: [js]
+  category: SML
+  severity: blocker
+  effort: 5min
+  status: planned
+  generated: true
+  tags: [convention]
+  summary: A name does not follow the convention the rest of the code uses.
+  why: |
+    Conventions let a reader infer what something is from its shape alone. A deviation costs a
+    lookup every time, and makes searches and automated refactoring less reliable.
+  fix: |
+    Rename it to match the convention used around it.
+
+- key: QG-JS-SML-0468
+  name: "strict" mode should be used with caution
+  languages: [js]
+  category: SML
+  severity: critical
+  effort: 5min
+  status: planned
+  generated: true
+  tags: [cross-browser, user-experience]
+  summary: An API is used where a better one exists.
+  why: |
+    The older form usually costs something the newer one does not, and it is on its way out: a
+    conversion, an allocation, a case it handles wrongly.
+  fix: |
+    Use the current API, and keep the old one only behind a documented compatibility layer.
+
+- key: QG-JS-SML-0469
+  name: "switch" statements should not be nested
+  languages: [js]
+  category: SML
+  severity: critical
+  effort: 10min
+  status: planned
+  generated: true
+  tags: [pitfall]
+  summary: The control flow does not do what it reads as doing.
+  why: |
+    A branch that cannot be taken, a loop that cannot end, a condition that is always the same: the
+    code states an intent the machine does not carry out, and review reads the intent.
+  fix: |
+    Make the flow say what it does, and remove what cannot happen.
+
+- key: QG-JS-SML-0470
+  name: Wildcard imports should not be used
+  languages: [js]
+  category: SML
+  severity: critical
+  effort: 5min
+  status: planned
+  generated: true
+  tags: [es2015, pitfall]
+  summary: The code does not behave the way it reads.
+  why: |
+    Written this way it works by accident or fails on ordinary input, and the mistake survives
+    review because the intent reads correctly.
+  fix: |
+    Make the intended behaviour explicit, and cover the case that used to fail with a test.
+
+- key: QG-JS-SML-0471
+  name: Unchanged variables should be marked as "const"
+  languages: [js]
+  category: SML
+  severity: critical
+  effort: 2min
+  status: planned
+  generated: true
+  tags: [es2015]
+  summary: The code does not behave the way it reads.
+  why: |
+    Written this way it works by accident or fails on ordinary input, and the mistake survives
+    review because the intent reads correctly.
+  fix: |
+    Make the intended behaviour explicit, and cover the case that used to fail with a test.
+
+- key: QG-JS-SML-0472
+  name: Class methods should be used instead of "prototype" assignments
+  languages: [js]
+  category: SML
+  severity: critical
+  effort: 5min
+  status: planned
+  generated: true
+  tags: [es2015, type-dependent]
+  summary: An API is used where a better one exists.
+  why: |
+    The older form usually costs something the newer one does not, and it is on its way out: a
+    conversion, an allocation, a case it handles wrongly.
+  fix: |
+    Use the current API, and keep the old one only behind a documented compatibility layer.
+
+- key: QG-JS-SML-0473
+  name: A conditionally executed single line should be denoted by indentation
+  languages: [js]
+  category: SML
+  severity: critical
+  effort: 10min
+  status: planned
+  generated: true
+  tags: []
+  summary: The control flow does not do what it reads as doing.
+  why: |
+    A branch that cannot be taken, a loop that cannot end, a condition that is always the same: the
+    code states an intent the machine does not carry out, and review reads the intent.
+  fix: |
+    Make the flow say what it does, and remove what cannot happen.
+
+- key: QG-JS-SML-0474
+  name: Components, Directives, and Pipes should use standalone architecture
+  languages: [js]
+  category: SML
+  severity: blocker
+  effort: 5 min
+  status: planned
+  generated: true
+  tags: [angular]
+  summary: The code does not behave the way it reads.
+  why: |
+    Written this way it works by accident or fails on ordinary input, and the mistake survives
+    review because the intent reads correctly.
+  fix: |
+    Make the intended behaviour explicit, and cover the case that used to fail with a test.
+
+- key: QG-JS-SML-0475
+  name: Lines should not be too long
+  languages: [js]
+  category: SML
+  severity: major
+  effort: 1min
+  status: planned
+  generated: true
+  tags: []
+  summary: A piece of code has grown past what can be held in mind at once.
+  why: |
+    The size is the defect: every change to it costs more than it should and carries a risk that has
+    nothing to do with the change itself.
+  fix: |
+    Split it along the responsibilities it has accumulated.
+
+- key: QG-JS-SML-0476
+  name: Files should not have too many lines of code
+  languages: [js]
+  category: SML
+  severity: major
+  effort: 1h
+  status: planned
+  generated: true
+  tags: [brain-overload]
+  summary: A piece of code has grown past what can be held in mind at once.
+  why: |
+    The size is the defect: every change to it costs more than it should and carries a risk that has
+    nothing to do with the change itself.
+  fix: |
+    Split it along the responsibilities it has accumulated.
+
+- key: QG-JS-SML-0477
+  name: Tabulation characters should not be used
+  languages: [js]
+  category: SML
+  severity: minor
+  effort: 2min
+  status: planned
+  generated: true
+  tags: []
+  summary: The code does not behave the way it reads.
+  why: |
+    Written this way it works by accident or fails on ordinary input, and the mistake survives
+    review because the intent reads correctly.
+  fix: |
+    Make the intended behaviour explicit, and cover the case that used to fail with a test.
+
+- key: QG-JS-SML-0478
+  name: Standard outputs should not be used directly to log anything
+  languages: [js]
+  category: SML
+  severity: major
+  effort: 10min
+  status: planned
+  generated: true
+  tags: [bad-practice, user-experience]
+  summary: The code does not behave the way it reads.
+  why: |
+    Written this way it works by accident or fails on ordinary input, and the mistake survives
+    review because the intent reads correctly.
+  fix: |
+    Make the intended behaviour explicit, and cover the case that used to fail with a test.
+
+- key: QG-JS-SML-0479
+  name: Mergeable "if" statements should be combined
+  languages: [js]
+  category: SML
+  severity: major
+  effort: 5min
+  status: planned
+  generated: true
+  tags: [clumsy]
+  summary: The code does not behave the way it reads.
+  why: |
+    Written this way it works by accident or fails on ordinary input, and the mistake survives
+    review because the intent reads correctly.
+  fix: |
+    Make the intended behaviour explicit, and cover the case that used to fail with a test.
+
+- key: QG-JS-SML-0480
+  name: Magic numbers should not be used
+  languages: [js]
+  category: SML
+  severity: major
+  effort: 5min
+  status: planned
+  generated: true
+  tags: [brain-overload]
+  summary: The code does not behave the way it reads.
+  why: |
+    Written this way it works by accident or fails on ordinary input, and the mistake survives
+    review because the intent reads correctly.
+  fix: |
+    Make the intended behaviour explicit, and cover the case that used to fail with a test.
+
+- key: QG-JS-SML-0481
+  name: Variables should not be shadowed
+  languages: [js]
+  category: SML
+  severity: major
+  effort: 5min
+  status: planned
+  generated: true
+  tags: [suspicious, pitfall]
+  summary: The code does not behave the way it reads.
+  why: |
+    Written this way it works by accident or fails on ordinary input, and the mistake survives
+    review because the intent reads correctly.
+  fix: |
+    Make the intended behaviour explicit, and cover the case that used to fail with a test.
+
+- key: QG-JS-SML-0482
+  name: Files should end with a newline
+  languages: [js]
+  category: SML
+  severity: minor
+  effort: 1min
+  status: planned
+  generated: true
+  tags: []
+  summary: The code does not behave the way it reads.
+  why: |
+    Written this way it works by accident or fails on ordinary input, and the mistake survives
+    review because the intent reads correctly.
+  fix: |
+    Make the intended behaviour explicit, and cover the case that used to fail with a test.
+
+- key: QG-JS-SML-0483
+  name: Lines should not end with trailing whitespaces
+  languages: [js]
+  category: SML
+  severity: minor
+  effort: 1min
+  status: planned
+  generated: true
+  tags: []
+  summary: A piece of code has grown past what can be held in mind at once.
+  why: |
+    The size is the defect: every change to it costs more than it should and carries a risk that has
+    nothing to do with the change itself.
+  fix: |
+    Split it along the responsibilities it has accumulated.
+
+- key: QG-JS-SML-0484
+  name: Statements should be on separate lines
+  languages: [js]
+  category: SML
+  severity: major
+  effort: 1min
+  status: planned
+  generated: true
+  tags: []
+  summary: A piece of code has grown past what can be held in mind at once.
+  why: |
+    The size is the defect: every change to it costs more than it should and carries a risk that has
+    nothing to do with the change itself.
+  fix: |
+    Split it along the responsibilities it has accumulated.
+
+- key: QG-JS-SML-0485
+  name: Track comments matching a regular expression
+  languages: [js]
+  category: SML
+  severity: major
+  effort: 0min
+  status: planned
+  generated: true
+  tags: []
+  summary: The code does not behave the way it reads.
+  why: |
+    Written this way it works by accident or fails on ordinary input, and the mistake survives
+    review because the intent reads correctly.
+  fix: |
+    Make the intended behaviour explicit, and cover the case that used to fail with a test.
+
+- key: QG-JS-SML-0486
+  name: Sections of code should not be commented out
+  languages: [js]
+  category: SML
+  severity: major
+  effort: 5min
+  status: planned
+  generated: true
+  tags: [unused, editable-source]
+  summary: Code that no longer takes part in anything is still here.
+  why: |
+    It has to be read, understood and kept compiling by everyone who passes through, and it gives
+    nothing back. Worse, it suggests a purpose that no longer exists.
+  fix: |
+    Remove it: the history keeps it if it is ever needed again.
+
+- key: QG-JS-SML-0487
+  name: Track uses of "NOSONAR" comments
+  languages: [js]
+  category: SML
+  severity: major
+  effort: 1min
+  status: planned
+  generated: true
+  tags: [bad-practice]
+  summary: The code does not behave the way it reads.
+  why: |
+    Written this way it works by accident or fails on ordinary input, and the mistake survives
+    review because the intent reads correctly.
+  fix: |
+    Make the intended behaviour explicit, and cover the case that used to fail with a test.
+
+- key: QG-JS-SML-0488
+  name: Loops should not contain more than a single "break" or "continue" statement
+  languages: [js]
+  category: SML
+  severity: minor
+  effort: 15min
+  status: planned
+  generated: true
+  tags: [brain-overload]
+  summary: The control flow does not do what it reads as doing.
+  why: |
+    A branch that cannot be taken, a loop that cannot end, a condition that is always the same: the
+    code states an intent the machine does not carry out, and review reads the intent.
+  fix: |
+    Make the flow say what it does, and remove what cannot happen.
+
+- key: QG-JS-SML-0489
+  name: Comments should not be located at the end of lines of code
+  languages: [js]
+  category: SML
+  severity: minor
+  effort: 1min
+  status: planned
+  generated: true
+  tags: []
+  summary: A piece of code has grown past what can be held in mind at once.
+  why: |
+    The size is the defect: every change to it costs more than it should and carries a risk that has
+    nothing to do with the change itself.
+  fix: |
+    Split it along the responsibilities it has accumulated.
+
+- key: QG-JS-SML-0490
+  name: Statements should end with semicolons
+  languages: [js]
+  category: SML
+  severity: minor
+  effort: 1min
+  status: planned
+  generated: true
+  tags: []
+  summary: The code does not behave the way it reads.
+  why: |
+    Written this way it works by accident or fails on ordinary input, and the mistake survives
+    review because the intent reads correctly.
+  fix: |
+    Make the intended behaviour explicit, and cover the case that used to fail with a test.
+
+- key: QG-JS-SML-0491
+  name: Quotes for string literals should be used consistently
+  languages: [js]
+  category: SML
+  severity: major
+  effort: 1min
+  status: planned
+  generated: true
+  tags: []
+  summary: An API is used where a better one exists.
+  why: |
+    The older form usually costs something the newer one does not, and it is on its way out: a
+    conversion, an allocation, a case it handles wrongly.
+  fix: |
+    Use the current API, and keep the old one only behind a documented compatibility layer.
+
+- key: QG-JS-SML-0492
+  name: Local variables should not be declared and then immediately returned or thrown
+  languages: [js]
+  category: SML
+  severity: minor
+  effort: 2min
+  status: planned
+  generated: true
+  tags: [clumsy, type-dependent]
+  summary: The code does not behave the way it reads.
+  why: |
+    Written this way it works by accident or fails on ordinary input, and the mistake survives
+    review because the intent reads correctly.
+  fix: |
+    Make the intended behaviour explicit, and cover the case that used to fail with a test.
+
+- key: QG-JS-SML-0493
+  name: Array constructors should not be used
+  languages: [js]
+  category: SML
+  severity: minor
+  effort: 5min
+  status: planned
+  generated: true
+  tags: [suspicious]
+  summary: The code does not behave the way it reads.
+  why: |
+    Written this way it works by accident or fails on ordinary input, and the mistake survives
+    review because the intent reads correctly.
+  fix: |
+    Make the intended behaviour explicit, and cover the case that used to fail with a test.
+
+- key: QG-JS-SML-0494
+  name: Trailing commas should not be used
+  languages: [js]
+  category: SML
+  severity: minor
+  effort: 1min
+  status: planned
+  generated: true
+  tags: []
+  summary: The code does not behave the way it reads.
+  why: |
+    Written this way it works by accident or fails on ordinary input, and the mistake survives
+    review because the intent reads correctly.
+  fix: |
+    Make the intended behaviour explicit, and cover the case that used to fail with a test.
+
+- key: QG-JS-SML-0495
+  name: The ternary operator should not be used
+  languages: [js]
+  category: SML
+  severity: major
+  effort: 5min
+  status: planned
+  generated: true
+  tags: [brain-overload]
+  summary: The code does not behave the way it reads.
+  why: |
+    Written this way it works by accident or fails on ordinary input, and the mistake survives
+    review because the intent reads correctly.
+  fix: |
+    Make the intended behaviour explicit, and cover the case that used to fail with a test.
+
+- key: QG-JS-SML-0496
+  name: "undefined" should not be assigned
+  languages: [js]
+  category: SML
+  severity: minor
+  effort: 2min
+  status: planned
+  generated: true
+  tags: [suspicious]
+  summary: A value that can be absent is used as though it always exists.
+  why: |
+    The path that produces the absence is usually the rare one, so this survives testing and arrives
+    in production as a failure with no obvious cause.
+  fix: |
+    Handle the absent case where it arises, or make the type say the value is always there.
+
+- key: QG-JS-SML-0497
+  name: JavaScript parser failure
+  languages: [js]
+  category: SML
+  severity: major
+  effort: 30min
+  status: planned
+  generated: true
+  tags: [suspicious]
+  summary: The code does not behave the way it reads.
+  why: |
+    Written this way it works by accident or fails on ordinary input, and the mistake survives
+    review because the intent reads correctly.
+  fix: |
+    Make the intended behaviour explicit, and cover the case that used to fail with a test.
+
+- key: QG-JS-SML-0498
+  name: Property getters and setters should come in pairs
+  languages: [js]
+  category: SML
+  severity: major
+  effort: 5min
+  status: planned
+  generated: true
+  tags: [pitfall]
+  summary: The code does not behave the way it reads.
+  why: |
+    Written this way it works by accident or fails on ordinary input, and the mistake survives
+    review because the intent reads correctly.
+  fix: |
+    Make the intended behaviour explicit, and cover the case that used to fail with a test.
+
+- key: QG-JS-SML-0499
+  name: Object literal syntax should be used
+  languages: [js]
+  category: SML
+  severity: minor
+  effort: 15min
+  status: planned
+  generated: true
+  tags: [clumsy]
+  summary: An API is used where a better one exists.
+  why: |
+    The older form usually costs something the newer one does not, and it is on its way out: a
+    conversion, an allocation, a case it handles wrongly.
+  fix: |
+    Use the current API, and keep the old one only behind a documented compatibility layer.
+
+- key: QG-JS-SML-0500
+  name: Comparison operators should not be used with strings
+  languages: [js]
+  category: SML
+  severity: major
+  effort: 5min
+  status: planned
+  generated: true
+  tags: [type-dependent]
+  summary: The code does not behave the way it reads.
+  why: |
+    Written this way it works by accident or fails on ordinary input, and the mistake survives
+    review because the intent reads correctly.
+  fix: |
+    Make the intended behaviour explicit, and cover the case that used to fail with a test.
+
+- key: QG-JS-SML-0501
+  name: Primitive types should be omitted from initialized or defaulted declarations
+  languages: [js]
+  category: SML
+  severity: minor
+  effort: 1min
+  status: planned
+  generated: true
+  tags: [finding, clumsy]
+  summary: The code does not behave the way it reads.
+  why: |
+    Written this way it works by accident or fails on ordinary input, and the mistake survives
+    review because the intent reads correctly.
+  fix: |
+    Make the intended behaviour explicit, and cover the case that used to fail with a test.
+
+- key: QG-JS-SML-0502
+  name: Default export names and file names should match
+  languages: [js]
+  category: SML
+  severity: minor
+  effort: 5min
+  status: planned
+  generated: true
+  tags: [convention, es2015, confusing]
+  summary: A name does not follow the convention the rest of the code uses.
+  why: |
+    Conventions let a reader infer what something is from its shape alone. A deviation costs a
+    lookup every time, and makes searches and automated refactoring less reliable.
+  fix: |
+    Rename it to match the convention used around it.
+
+- key: QG-JS-SML-0503
+  name: Strings and non-strings should not be added
+  languages: [js]
+  category: SML
+  severity: minor
+  effort: 15min
+  status: planned
+  generated: true
+  tags: [confusing, type-dependent]
+  summary: The code does not behave the way it reads.
+  why: |
+    Written this way it works by accident or fails on ordinary input, and the mistake survives
+    review because the intent reads correctly.
+  fix: |
+    Make the intended behaviour explicit, and cover the case that used to fail with a test.
+
+- key: QG-JS-SML-0504
+  name: Object literal shorthand syntax should be used
+  languages: [js]
+  category: SML
+  severity: minor
+  effort: 1min
+  status: planned
+  generated: true
+  tags: [convention, es2015]
+  summary: A name does not follow the convention the rest of the code uses.
+  why: |
+    Conventions let a reader infer what something is from its shape alone. A deviation costs a
+    lookup every time, and makes searches and automated refactoring less reliable.
+  fix: |
+    Rename it to match the convention used around it.
+
+- key: QG-JS-SML-0505
+  name: Shorthand object properties should be grouped at the beginning or end of an object declaration
+  languages: [js]
+  category: SML
+  severity: minor
+  effort: 1min
+  status: planned
+  generated: true
+  tags: [convention, es2015]
+  summary: A name does not follow the convention the rest of the code uses.
+  why: |
+    Conventions let a reader infer what something is from its shape alone. A deviation costs a
+    lookup every time, and makes searches and automated refactoring less reliable.
+  fix: |
+    Rename it to match the convention used around it.
+
+- key: QG-JS-SML-0506
+  name: Template strings should be used instead of concatenation
+  languages: [js]
+  category: SML
+  severity: minor
+  effort: 5min
+  status: planned
+  generated: true
+  tags: [es2015, clumsy]
+  summary: An API is used where a better one exists.
+  why: |
+    The older form usually costs something the newer one does not, and it is on its way out: a
+    conversion, an allocation, a case it handles wrongly.
+  fix: |
+    Use the current API, and keep the old one only behind a documented compatibility layer.
+
+- key: QG-JS-SML-0507
+  name: "arguments" should not be accessed directly
+  languages: [js]
+  category: SML
+  severity: major
+  effort: 5min
+  status: planned
+  generated: true
+  tags: [api-design, es2015]
+  summary: Something is reachable by callers who should not reach it.
+  why: |
+    Access granted this broadly is never noticed afterwards: nothing fails, and the surface stays
+    open for as long as the resource exists.
+  fix: |
+    Grant the access to the identities that need it and to nothing else.
+
+- key: QG-JS-SML-0508
+  name: Destructuring syntax should be used for assignments
+  languages: [js]
+  category: SML
+  severity: minor
+  effort: 5min
+  status: planned
+  generated: true
+  tags: [es2015, clumsy]
+  summary: An API is used where a better one exists.
+  why: |
+    The older form usually costs something the newer one does not, and it is on its way out: a
+    conversion, an allocation, a case it handles wrongly.
+  fix: |
+    Use the current API, and keep the old one only behind a documented compatibility layer.
+
+- key: QG-JS-SML-0509
+  name: Function constructors should not be used
+  languages: [js]
+  category: SML
+  severity: major
+  effort: 5min
+  status: planned
+  generated: true
+  tags: []
+  summary: The code does not behave the way it reads.
+  why: |
+    Written this way it works by accident or fails on ordinary input, and the mistake survives
+    review because the intent reads correctly.
+  fix: |
+    Make the intended behaviour explicit, and cover the case that used to fail with a test.
+
+- key: QG-JS-SML-0510
+  name: Braces and parentheses should be used consistently with arrow functions
+  languages: [js]
+  category: SML
+  severity: minor
+  effort: 2min
+  status: planned
+  generated: true
+  tags: [convention, es2015]
+  summary: Shared state is reached without the coordination that makes it safe.
+  why: |
+    It works every time it is tested and fails under load, on a machine with more cores, once. That
+    is the hardest kind of defect to reproduce and the easiest to write.
+  fix: |
+    Guard the shared state, or give each caller its own copy.
+
+- key: QG-JS-SML-0511
+  name: "import" should be used to include external code
+  languages: [js]
+  category: SML
+  severity: minor
+  effort: 5min
+  status: planned
+  generated: true
+  tags: [convention, es2015, obsolete, type-dependent]
+  summary: A name does not follow the convention the rest of the code uses.
+  why: |
+    Conventions let a reader infer what something is from its shape alone. A deviation costs a
+    lookup every time, and makes searches and automated refactoring less reliable.
+  fix: |
+    Rename it to match the convention used around it.
+
+- key: QG-JS-SML-0512
+  name: Trailing commas should be used
+  languages: [js]
+  category: SML
+  severity: major
+  effort: 2min
+  status: planned
+  generated: true
+  tags: []
+  summary: An API is used where a better one exists.
+  why: |
+    The older form usually costs something the newer one does not, and it is on its way out: a
+    conversion, an allocation, a case it handles wrongly.
+  fix: |
+    Use the current API, and keep the old one only behind a documented compatibility layer.
+
+- key: QG-JS-SML-0513
+  name: Arithmetic operations should not result in "NaN"
+  languages: [js]
+  category: SML
+  severity: major
+  effort: 10min
+  status: planned
+  generated: true
+  tags: [type-dependent]
+  summary: The code does not behave the way it reads.
+  why: |
+    Written this way it works by accident or fails on ordinary input, and the mistake survives
+    review because the intent reads correctly.
+  fix: |
+    Make the intended behaviour explicit, and cover the case that used to fail with a test.
+
+- key: QG-JS-SML-0514
+  name: Values not convertible to numbers should not be used in numeric comparisons
+  languages: [js]
+  category: SML
+  severity: major
+  effort: 10min
+  status: planned
+  generated: true
+  tags: [type-dependent]
+  summary: The code does not behave the way it reads.
+  why: |
+    Written this way it works by accident or fails on ordinary input, and the mistake survives
+    review because the intent reads correctly.
+  fix: |
+    Make the intended behaviour explicit, and cover the case that used to fail with a test.
+
+- key: QG-JS-SML-0515
+  name: Arithmetic operators should only have numbers as operands
+  languages: [js]
+  category: SML
+  severity: major
+  effort: 2min
+  status: planned
+  generated: true
+  tags: [confusing, type-dependent]
+  summary: The code does not behave the way it reads.
+  why: |
+    Written this way it works by accident or fails on ordinary input, and the mistake survives
+    review because the intent reads correctly.
+  fix: |
+    Make the intended behaviour explicit, and cover the case that used to fail with a test.
+
+- key: QG-JS-SML-0516
+  name: Variables and functions should not be declared in the global scope
+  languages: [js]
+  category: SML
+  severity: major
+  effort: 5min
+  status: planned
+  generated: true
+  tags: []
+  summary: The code does not behave the way it reads.
+  why: |
+    Written this way it works by accident or fails on ordinary input, and the mistake survives
+    review because the intent reads correctly.
+  fix: |
+    Make the intended behaviour explicit, and cover the case that used to fail with a test.
+
+- key: QG-JS-SML-0517
+  name: Functions should use "return" consistently
+  languages: [js]
+  category: SML
+  severity: major
+  effort: 20min
+  status: planned
+  generated: true
+  tags: [api-design, confusing, type-dependent]
+  summary: The code does not behave the way it reads.
+  why: |
+    Written this way it works by accident or fails on ordinary input, and the mistake survives
+    review because the intent reads correctly.
+  fix: |
+    Make the intended behaviour explicit, and cover the case that used to fail with a test.
+
+- key: QG-JS-SML-0518
+  name: Method overloads should be grouped together
+  languages: [js]
+  category: SML
+  severity: minor
+  effort: 1min
+  status: planned
+  generated: true
+  tags: [convention]
+  summary: A name does not follow the convention the rest of the code uses.
+  why: |
+    Conventions let a reader infer what something is from its shape alone. A deviation costs a
+    lookup every time, and makes searches and automated refactoring less reliable.
+  fix: |
+    Rename it to match the convention used around it.
+
+- key: QG-JS-SML-0519
+  name: Type assertions should use "as"
+  languages: [js]
+  category: SML
+  severity: minor
+  effort: 5min
+  status: planned
+  generated: true
+  tags: [confusing]
+  summary: The code does not behave the way it reads.
+  why: |
+    Written this way it works by accident or fails on ordinary input, and the mistake survives
+    review because the intent reads correctly.
+  fix: |
+    Make the intended behaviour explicit, and cover the case that used to fail with a test.
+
+- key: QG-JS-SML-0520
+  name: Default type parameters should be omitted
+  languages: [js]
+  category: SML
+  severity: minor
+  effort: 2min
+  status: planned
+  generated: true
+  tags: [clumsy, type-dependent]
+  summary: A piece of code has grown past what can be held in mind at once.
+  why: |
+    The size is the defect: every change to it costs more than it should and carries a risk that has
+    nothing to do with the change itself.
+  fix: |
+    Split it along the responsibilities it has accumulated.
+
+- key: QG-JS-SML-0521
+  name: The "any" type should not be used
+  languages: [js]
+  category: SML
+  severity: major
+  effort: 5min
+  status: planned
+  generated: true
+  tags: [pitfall]
+  summary: The code does not behave the way it reads.
+  why: |
+    Written this way it works by accident or fails on ordinary input, and the mistake survives
+    review because the intent reads correctly.
+  fix: |
+    Make the intended behaviour explicit, and cover the case that used to fail with a test.
+
+- key: QG-JS-SML-0522
+  name: Primitive return types should be used
+  languages: [js]
+  category: SML
+  severity: minor
+  effort: 2min
+  status: planned
+  generated: true
+  tags: [proficiency, type-dependent]
+  summary: An API is used where a better one exists.
+  why: |
+    The older form usually costs something the newer one does not, and it is on its way out: a
+    conversion, an allocation, a case it handles wrongly.
+  fix: |
+    Use the current API, and keep the old one only behind a documented compatibility layer.
+
+- key: QG-JS-SML-0523
+  name: "await" should not be used redundantly
+  languages: [js]
+  category: SML
+  severity: minor
+  effort: 1min
+  status: planned
+  generated: true
+  tags: [redundant, es2017]
+  summary: Code that no longer takes part in anything is still here.
+  why: |
+    It has to be read, understood and kept compiling by everyone who passes through, and it gives
+    nothing back. Worse, it suggests a purpose that no longer exists.
+  fix: |
+    Remove it: the history keeps it if it is ever needed again.
+
+- key: QG-JS-SML-0524
+  name: "this" should not be assigned to variables
+  languages: [js]
+  category: SML
+  severity: major
+  effort: 10min
+  status: planned
+  generated: true
+  tags: [clumsy]
+  summary: The code does not behave the way it reads.
+  why: |
+    Written this way it works by accident or fails on ordinary input, and the mistake survives
+    review because the intent reads correctly.
+  fix: |
+    Make the intended behaviour explicit, and cover the case that used to fail with a test.
+
+- key: QG-JS-SML-0525
+  name: Dependencies should be explicit
+  languages: [js]
+  category: SML
+  severity: major
+  effort: 2min
+  status: planned
+  generated: true
+  tags: []
+  summary: The code does not behave the way it reads.
+  why: |
+    Written this way it works by accident or fails on ordinary input, and the mistake survives
+    review because the intent reads correctly.
+  fix: |
+    Make the intended behaviour explicit, and cover the case that used to fail with a test.
+
+- key: QG-JS-SML-0526
+  name: Union types should not have too many elements
+  languages: [js]
+  category: SML
+  severity: major
+  effort: 5min
+  status: planned
+  generated: true
+  tags: [brain-overload]
+  summary: A piece of code has grown past what can be held in mind at once.
+  why: |
+    The size is the defect: every change to it costs more than it should and carries a risk that has
+    nothing to do with the change itself.
+  fix: |
+    Split it along the responsibilities it has accumulated.
+
+- key: QG-JS-SML-0527
+  name: Optional boolean parameters should have default value
+  languages: [js]
+  category: SML
+  severity: major
+  effort: 5min
+  status: planned
+  generated: true
+  tags: []
+  summary: A value that can be absent is used as though it always exists.
+  why: |
+    The path that produces the absence is usually the rare one, so this survives testing and arrives
+    in production as a failure with no obvious cause.
+  fix: |
+    Handle the absent case where it arises, or make the type say the value is always there.
+
+- key: QG-JS-SML-0528
+  name: Expanding archive files should not be done without controlling resource consumption
+  languages: [js]
+  category: SML
+  severity: major
+  effort: 10min
+  status: planned
+  generated: true
+  tags: [cwe, former-hotspot]
+  summary: Something the runtime cannot reclaim on its own is not released.
+  why: |
+    Handles, sockets and connections are finite. The failure appears far from here, under load, as
+    an exhaustion nobody can attribute to a single line.
+  fix: |
+    Release it on every path, including the exceptional one.
+
+- key: QG-JS-SML-0529
+  name: Disallow `.bind()` and arrow functions in JSX props
+  languages: [js]
+  category: SML
+  severity: major
+  effort: 5min
+  status: planned
+  generated: true
+  tags: [react, jsx, performance]
+  summary: The code does not behave the way it reads.
+  why: |
+    Written this way it works by accident or fails on ordinary input, and the mistake survives
+    review because the intent reads correctly.
+  fix: |
+    Make the intended behaviour explicit, and cover the case that used to fail with a test.
+
+- key: QG-JS-SML-0530
+  name: JSX special characters should be escaped
+  languages: [js]
+  category: SML
+  severity: major
+  effort: 5min
+  status: planned
+  generated: true
+  tags: [react, jsx]
+  summary: The code does not behave the way it reads.
+  why: |
+    Written this way it works by accident or fails on ordinary input, and the mistake survives
+    review because the intent reads correctly.
+  fix: |
+    Make the intended behaviour explicit, and cover the case that used to fail with a test.
+
+- key: QG-JS-SML-0531
+  name: React components should validate prop types
+  languages: [js]
+  category: SML
+  severity: major
+  effort: 5min
+  status: planned
+  generated: true
+  tags: [react, editable-source]
+  summary: The code does not behave the way it reads.
+  why: |
+    Written this way it works by accident or fails on ordinary input, and the mistake survives
+    review because the intent reads correctly.
+  fix: |
+    Make the intended behaviour explicit, and cover the case that used to fail with a test.
+
+- key: QG-JS-SML-0532
+  name: Use "for...of" loops instead of "forEach" method calls
+  languages: [js]
+  category: SML
+  severity: minor
+  effort: 5 min
+  status: planned
+  generated: true
+  tags: [performance, readability, type-dependent, es2015]
+  summary: The control flow does not do what it reads as doing.
+  why: |
+    A branch that cannot be taken, a loop that cannot end, a condition that is always the same: the
+    code states an intent the machine does not carry out, and review reads the intent.
+  fix: |
+    Make the flow say what it does, and remove what cannot happen.
+
+- key: QG-JS-SML-0533
+  name: Member access from await expressions should use destructuring or intermediate variables
+  languages: [js]
+  category: SML
+  severity: minor
+  effort: 2 min
+  status: planned
+  generated: true
+  tags: [readability, async, es2017]
+  summary: Something is reachable by callers who should not reach it.
+  why: |
+    Access granted this broadly is never noticed afterwards: nothing fails, and the surface stays
+    open for as long as the resource exists.
+  fix: |
+    Grant the access to the identities that need it and to nothing else.
+
+- key: QG-JS-SML-0534
+  name: Traditional for loops should be replaced with for-of loops
+  languages: [js]
+  category: SML
+  severity: minor
+  effort: 5 min
+  status: planned
+  generated: true
+  tags: [convention, es6]
+  summary: The control flow does not do what it reads as doing.
+  why: |
+    A branch that cannot be taken, a loop that cannot end, a condition that is always the same: the
+    code states an intent the machine does not carry out, and review reads the intent.
+  fix: |
+    Make the flow say what it does, and remove what cannot happen.
+
+- key: QG-JS-SML-0535
+  name: Negated conditions should be avoided when an else clause is present
+  languages: [js]
+  category: SML
+  severity: minor
+  effort: 2 min
+  status: planned
+  generated: true
+  tags: [readability, editable-source]
+  summary: The control flow does not do what it reads as doing.
+  why: |
+    A branch that cannot be taken, a loop that cannot end, a condition that is always the same: the
+    code states an intent the machine does not carry out, and review reads the intent.
+  fix: |
+    Make the flow say what it does, and remove what cannot happen.
+
+- key: QG-JS-SML-0536
+  name: Number literals should not have unnecessary decimal points or trailing zeros
+  languages: [js]
+  category: SML
+  severity: minor
+  effort: 1 min
+  status: planned
+  generated: true
+  tags: [formatting, consistency, editable-source]
+  summary: The code does not behave the way it reads.
+  why: |
+    Written this way it works by accident or fails on ordinary input, and the mistake survives
+    review because the intent reads correctly.
+  fix: |
+    Make the intended behaviour explicit, and cover the case that used to fail with a test.
+
+- key: QG-JS-SML-0537
+  name: Use "globalThis" instead of "window", "self", or "global"
+  languages: [js]
+  category: SML
+  severity: minor
+  effort: 2 min
+  status: planned
+  generated: true
+  tags: [es2020, portability]
+  summary: An API is used where a better one exists.
+  why: |
+    The older form usually costs something the newer one does not, and it is on its way out: a
+    conversion, an allocation, a case it handles wrongly.
+  fix: |
+    Use the current API, and keep the old one only behind a documented compatibility layer.
+
+- key: QG-JS-SML-0538
+  name: Use "RegExp.test()" instead of "String.match()" or "RegExp.exec()" when only checking for pattern existence
+  languages: [js]
+  category: SML
+  severity: major
+  effort: 2 min
+  status: planned
+  generated: true
+  tags: [performance]
+  summary: An API is used where a better one exists.
+  why: |
+    The older form usually costs something the newer one does not, and it is on its way out: a
+    conversion, an allocation, a case it handles wrongly.
+  fix: |
+    Use the current API, and keep the old one only behind a documented compatibility layer.
+
+- key: QG-JS-SML-0539
+  name: Increment (++) and decrement (--) operators should not be used in a method call or mixed with other operators in an expression
+  languages: [js]
+  category: SML
+  severity: major
+  effort: 5min
+  status: planned
+  generated: true
+  tags: []
+  summary: The code does not behave the way it reads.
+  why: |
+    Written this way it works by accident or fails on ordinary input, and the mistake survives
+    review because the intent reads correctly.
+  fix: |
+    Make the intended behaviour explicit, and cover the case that used to fail with a test.
+
+- key: QG-JS-SML-0540
+  name: "continue" should not be used
+  languages: [js]
+  category: SML
+  severity: minor
+  effort: 1h
+  status: planned
+  generated: true
+  tags: [bad-practice]
+  summary: The code does not behave the way it reads.
+  why: |
+    Written this way it works by accident or fails on ordinary input, and the mistake survives
+    review because the intent reads correctly.
+  fix: |
+    Make the intended behaviour explicit, and cover the case that used to fail with a test.
+
+- key: QG-JS-BUG-0198
+  name: "new" should only be used with functions and classes
+  languages: [js]
+  category: BUG
+  severity: major
+  effort: 10min
+  status: planned
+  generated: true
+  tags: [type-dependent]
+  summary: The code does not behave the way it reads.
+  why: |
+    Written this way it works by accident or fails on ordinary input, and the mistake survives
+    review because the intent reads correctly.
+  fix: |
+    Make the intended behaviour explicit, and cover the case that used to fail with a test.
+
+- key: QG-JS-BUG-0199
+  name: React components should not render non-boolean condition values
+  languages: [js]
+  category: BUG
+  severity: major
+  effort: 5min
+  status: planned
+  generated: true
+  tags: [react, type-dependent]
+  summary: The control flow does not do what it reads as doing.
+  why: |
+    A branch that cannot be taken, a loop that cannot end, a condition that is always the same: the
+    code states an intent the machine does not carry out, and review reads the intent.
+  fix: |
+    Make the flow say what it does, and remove what cannot happen.
+
+- key: QG-JS-BUG-0200
+  name: "Array.reduce()" calls should include an initial value
+  languages: [js]
+  category: BUG
+  severity: major
+  effort: 2min
+  status: planned
+  generated: true
+  tags: [type-dependent]
+  summary: The code does not behave the way it reads.
+  why: |
+    Written this way it works by accident or fails on ordinary input, and the mistake survives
+    review because the intent reads correctly.
+  fix: |
+    Make the intended behaviour explicit, and cover the case that used to fail with a test.
+
+- key: QG-JS-BUG-0201
+  name: Test and hook callbacks should use a single completion style
+  languages: [js]
+  category: BUG
+  severity: major
+  effort: 5min
+  status: planned
+  generated: true
+  tags: [tests, async, jest, mocha]
+  summary: The code does not behave the way it reads.
+  why: |
+    Written this way it works by accident or fails on ordinary input, and the mistake survives
+    review because the intent reads correctly.
+  fix: |
+    Make the intended behaviour explicit, and cover the case that used to fail with a test.
+
+- key: QG-JS-BUG-0202
+  name: Vue component prop types should be constructors
+  languages: [js]
+  category: BUG
+  severity: major
+  effort: 5min
+  status: planned
+  generated: true
+  tags: [vue]
+  summary: The code does not behave the way it reads.
+  why: |
+    Written this way it works by accident or fails on ordinary input, and the mistake survives
+    review because the intent reads correctly.
+  fix: |
+    Make the intended behaviour explicit, and cover the case that used to fail with a test.
+
+- key: QG-JS-BUG-0203
+  name: Variables should be defined before being used
+  languages: [js]
+  category: BUG
+  severity: blocker
+  effort: 10min
+  status: planned
+  generated: true
+  tags: []
+  summary: The code does not behave the way it reads.
+  why: |
+    Written this way it works by accident or fails on ordinary input, and the mistake survives
+    review because the intent reads correctly.
+  fix: |
+    Make the intended behaviour explicit, and cover the case that used to fail with a test.
+
+- key: QG-JS-BUG-0204
+  name: Results of operations on strings should not be ignored
+  languages: [js]
+  category: BUG
+  severity: major
+  effort: 20min
+  status: planned
+  generated: true
+  tags: [type-dependent]
+  summary: The code does not behave the way it reads.
+  why: |
+    Written this way it works by accident or fails on ordinary input, and the mistake survives
+    review because the intent reads correctly.
+  fix: |
+    Make the intended behaviour explicit, and cover the case that used to fail with a test.
+
+- key: QG-JS-BUG-0205
+  name: Function declarations should not be made within blocks
+  languages: [js]
+  category: BUG
+  severity: minor
+  effort: 5min
+  status: planned
+  generated: true
+  tags: [cross-browser, user-experience]
+  summary: Shared state is reached without the coordination that makes it safe.
+  why: |
+    It works every time it is tested and fails under load, on a machine with more cores, once. That
+    is the hardest kind of defect to reproduce and the easiest to write.
+  fix: |
+    Guard the shared state, or give each caller its own copy.
+
+- key: QG-JS-BUG-0206
+  name: "for...in" loops should filter properties before acting on them
+  languages: [js]
+  category: BUG
+  severity: major
+  effort: 5min
+  status: planned
+  generated: true
+  tags: []
+  summary: The control flow does not do what it reads as doing.
+  why: |
+    A branch that cannot be taken, a loop that cannot end, a condition that is always the same: the
+    code states an intent the machine does not carry out, and review reads the intent.
+  fix: |
+    Make the flow say what it does, and remove what cannot happen.
+
+- key: QG-JS-BUG-0207
+  name: Built-in objects should not be overridden
+  languages: [js]
+  category: BUG
+  severity: major
+  effort: 20min
+  status: planned
+  generated: true
+  tags: [confusing]
+  summary: The code does not behave the way it reads.
+  why: |
+    Written this way it works by accident or fails on ordinary input, and the mistake survives
+    review because the intent reads correctly.
+  fix: |
+    Make the intended behaviour explicit, and cover the case that used to fail with a test.
+
+- key: QG-JS-BUG-0208
+  name: The base should be provided to "parseInt"
+  languages: [js]
+  category: BUG
+  severity: minor
+  effort: 2min
+  status: planned
+  generated: true
+  tags: [user-experience]
+  summary: The code does not behave the way it reads.
+  why: |
+    Written this way it works by accident or fails on ordinary input, and the mistake survives
+    review because the intent reads correctly.
+  fix: |
+    Make the intended behaviour explicit, and cover the case that used to fail with a test.
+
+- key: QG-JS-BUG-0209
+  name: Template literal placeholder syntax should not be used in regular strings
+  languages: [js]
+  category: BUG
+  severity: major
+  effort: 1min
+  status: planned
+  generated: true
+  tags: [es2015]
+  summary: The code does not behave the way it reads.
+  why: |
+    Written this way it works by accident or fails on ordinary input, and the mistake survives
+    review because the intent reads correctly.
+  fix: |
+    Make the intended behaviour explicit, and cover the case that used to fail with a test.
+
+- key: QG-JS-BUG-0210
+  name: Regular expressions using Unicode character classes or property escapes should enable the unicode flag
+  languages: [js]
+  category: BUG
+  severity: minor
+  effort: 5min
+  status: planned
+  generated: true
+  tags: [regex, type-dependent]
+  summary: The code does not behave the way it reads.
+  why: |
+    Written this way it works by accident or fails on ordinary input, and the mistake survives
+    review because the intent reads correctly.
+  fix: |
+    Make the intended behaviour explicit, and cover the case that used to fail with a test.
+
+- key: QG-JS-BUG-0211
+  name: React Hooks should be properly called
+  languages: [js]
+  category: BUG
+  severity: major
+  effort: 10min
+  status: planned
+  generated: true
+  tags: [react]
+  summary: The code does not behave the way it reads.
+  why: |
+    Written this way it works by accident or fails on ordinary input, and the mistake survives
+    review because the intent reads correctly.
+  fix: |
+    Make the intended behaviour explicit, and cover the case that used to fail with a test.

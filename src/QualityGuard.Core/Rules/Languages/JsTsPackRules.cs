@@ -48,8 +48,12 @@ public sealed class JsGlobalThisRule : JsPackRuleBase
         {
             if (access.ChildAt(0) is not { Kind: NodeKind.Identifier, Text: "this" })
                 continue;
-            // inside a class or a function 'this' is the receiver, which is the ordinary use
-            if (access.Ancestor(NodeKind.ClassDeclaration) != null
+            // Inside a class, a function, a lambda or an object literal 'this' is the receiver and
+            // the use is ordinary. A shorthand method of an object literal does not reach the tree as
+            // a function declaration, so the literal itself has to be checked — without that, every
+            // method of every object in a bundled library was reported.
+            if (access.Ancestor(NodeKind.ClassDeclaration, NodeKind.Lambda, NodeKind.ObjectInitializer,
+                    NodeKind.ObjectCreation, NodeKind.FunctionDeclaration) != null
                 || SyntaxQuery.EnclosingFunction(access) != null)
                 continue;
 

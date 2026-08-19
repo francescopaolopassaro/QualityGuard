@@ -1,0 +1,516 @@
+# Catalogue entries written in one pass, one per defect this language still lacks a check for.
+# Every entry is documentation and carries no detection, so none of them reports anything: a
+# detection is written by hand, against the shape the defect actually has, and measured before
+# the entry stops being planned.
+
+- key: QG-HTML-SEC-0011
+  name: Sandboxing should be enabled
+  languages: [html]
+  category: SEC
+  severity: critical
+  effort: 5min
+  status: planned
+  generated: true
+  tags: []
+  summary: The code does not behave the way it reads.
+  why: |
+    Written this way it works by accident or fails on ordinary input, and the mistake survives
+    review because the intent reads correctly.
+  fix: |
+    Make the intended behaviour explicit, and cover the case that used to fail with a test.
+
+- key: QG-HTML-SEC-0012
+  name: webSecurity should be enabled
+  languages: [html]
+  category: SEC
+  severity: major
+  effort: 5min
+  status: planned
+  generated: true
+  tags: []
+  summary: The code does not behave the way it reads.
+  why: |
+    Written this way it works by accident or fails on ordinary input, and the mistake survives
+    review because the intent reads correctly.
+  fix: |
+    Make the intended behaviour explicit, and cover the case that used to fail with a test.
+
+- key: QG-HTML-BUG-0072
+  name: HTML elements should have unique "id" attribute values
+  languages: [html]
+  category: BUG
+  severity: critical
+  effort: 5 min
+  status: planned
+  generated: true
+  tags: [html, accessibility, web]
+  summary: Something is reachable by callers who should not reach it.
+  why: |
+    Access granted this broadly is never noticed afterwards: nothing fails, and the surface stays
+    open for as long as the resource exists.
+  fix: |
+    Grant the access to the identities that need it and to nothing else.
+
+- key: QG-HTML-BUG-0073
+  name: Tables used for layout should not include semantic markup
+  languages: [html]
+  category: BUG
+  severity: critical
+  effort: 5min
+  status: planned
+  generated: true
+  tags: [accessibility, wcag2-a]
+  summary: Something is reachable by callers who should not reach it.
+  why: |
+    Access granted this broadly is never noticed afterwards: nothing fails, and the surface stays
+    open for as long as the resource exists.
+  fix: |
+    Grant the access to the identities that need it and to nothing else.
+
+- key: QG-HTML-BUG-0074
+  name: Table cells should reference their headers
+  languages: [html]
+  category: BUG
+  severity: critical
+  effort: 5min
+  status: planned
+  generated: true
+  tags: [accessibility, wcag2-a]
+  summary: Something is reachable by callers who should not reach it.
+  why: |
+    Access granted this broadly is never noticed afterwards: nothing fails, and the surface stays
+    open for as long as the resource exists.
+  fix: |
+    Grant the access to the identities that need it and to nothing else.
+
+- key: QG-HTML-BUG-0075
+  name: "<html>" or "<body>" element should have a language attribute
+  languages: [html]
+  category: BUG
+  severity: major
+  effort: 2min
+  status: planned
+  generated: true
+  tags: [accessibility, wcag2-a]
+  summary: Something is reachable by callers who should not reach it.
+  why: |
+    Access granted this broadly is never noticed afterwards: nothing fails, and the surface stays
+    open for as long as the resource exists.
+  fix: |
+    Grant the access to the identities that need it and to nothing else.
+
+- key: QG-HTML-SML-0148
+  name: "aria-label" or "aria-labelledby" attributes should be used to differentiate similar elements
+  languages: [html]
+  category: SML
+  severity: major
+  effort: 5min
+  status: planned
+  generated: true
+  tags: [accessibility, wcag2-a]
+  summary: Something is reachable by callers who should not reach it.
+  why: |
+    Access granted this broadly is never noticed afterwards: nothing fails, and the surface stays
+    open for as long as the resource exists.
+  fix: |
+    Grant the access to the identities that need it and to nothing else.
+
+- key: QG-HTML-SML-0149
+  name: DOM elements with the `aria-activedescendant` property should be accessible via the tab key
+  languages: [html]
+  category: SML
+  severity: major
+  effort: 5min
+  status: planned
+  generated: true
+  tags: [accessibility]
+  summary: Something is reachable by callers who should not reach it.
+  why: |
+    Access granted this broadly is never noticed afterwards: nothing fails, and the surface stays
+    open for as long as the resource exists.
+  fix: |
+    Grant the access to the identities that need it and to nothing else.
+
+- key: QG-HTML-SML-0150
+  name: DOM elements should use the "autocomplete" attribute correctly
+  languages: [html]
+  category: SML
+  severity: major
+  effort: 5min
+  status: planned
+  generated: true
+  tags: [accessibility]
+  summary: Something is reachable by callers who should not reach it.
+  why: |
+    Access granted this broadly is never noticed afterwards: nothing fails, and the surface stays
+    open for as long as the resource exists.
+  fix: |
+    Grant the access to the identities that need it and to nothing else.
+
+- key: QG-HTML-SML-0151
+  name: Non-interactive DOM elements should not have interactive ARIA roles
+  languages: [html]
+  category: SML
+  severity: major
+  effort: 5min
+  status: planned
+  generated: true
+  tags: [accessibility]
+  summary: Something is reachable by callers who should not reach it.
+  why: |
+    Access granted this broadly is never noticed afterwards: nothing fails, and the surface stays
+    open for as long as the resource exists.
+  fix: |
+    Grant the access to the identities that need it and to nothing else.
+
+- key: QG-HTML-SML-0152
+  name: Interactive DOM elements should not have non-interactive ARIA roles
+  languages: [html]
+  category: SML
+  severity: major
+  effort: 5min
+  status: planned
+  generated: true
+  tags: [accessibility]
+  summary: Something is reachable by callers who should not reach it.
+  why: |
+    Access granted this broadly is never noticed afterwards: nothing fails, and the surface stays
+    open for as long as the resource exists.
+  fix: |
+    Grant the access to the identities that need it and to nothing else.
+
+- key: QG-HTML-SML-0153
+  name: Anchor tags should not be used as buttons
+  languages: [html]
+  category: SML
+  severity: major
+  effort: 5min
+  status: planned
+  generated: true
+  tags: [accessibility]
+  summary: Something is reachable by callers who should not reach it.
+  why: |
+    Access granted this broadly is never noticed afterwards: nothing fails, and the surface stays
+    open for as long as the resource exists.
+  fix: |
+    Grant the access to the identities that need it and to nothing else.
+
+- key: QG-HTML-SML-0154
+  name: Non-interactive DOM elements should not have the `tabindex` attribute
+  languages: [html]
+  category: SML
+  severity: major
+  effort: 5min
+  status: planned
+  generated: true
+  tags: [accessibility]
+  summary: Something is reachable by callers who should not reach it.
+  why: |
+    Access granted this broadly is never noticed afterwards: nothing fails, and the surface stays
+    open for as long as the resource exists.
+  fix: |
+    Grant the access to the identities that need it and to nothing else.
+
+- key: QG-HTML-SML-0155
+  name: Non-interactive elements shouldn't have event handlers
+  languages: [html]
+  category: SML
+  severity: major
+  effort: 5min
+  status: planned
+  generated: true
+  tags: [accessibility]
+  summary: Something is reachable by callers who should not reach it.
+  why: |
+    Access granted this broadly is never noticed afterwards: nothing fails, and the surface stays
+    open for as long as the resource exists.
+  fix: |
+    Grant the access to the identities that need it and to nothing else.
+
+- key: QG-HTML-SML-0156
+  name: Non-interactive DOM elements should not have an interactive handler
+  languages: [html]
+  category: SML
+  severity: major
+  effort: 5min
+  status: planned
+  generated: true
+  tags: [accessibility]
+  summary: Something is reachable by callers who should not reach it.
+  why: |
+    Access granted this broadly is never noticed afterwards: nothing fails, and the surface stays
+    open for as long as the resource exists.
+  fix: |
+    Grant the access to the identities that need it and to nothing else.
+
+- key: QG-HTML-SML-0157
+  name: Elements with an interactive role should support focus
+  languages: [html]
+  category: SML
+  severity: major
+  effort: 5min
+  status: planned
+  generated: true
+  tags: [accessibility]
+  summary: Something is reachable by callers who should not reach it.
+  why: |
+    Access granted this broadly is never noticed afterwards: nothing fails, and the surface stays
+    open for as long as the resource exists.
+  fix: |
+    Grant the access to the identities that need it and to nothing else.
+
+- key: QG-HTML-SML-0158
+  name: Visible label text should be part of the accessible name
+  languages: [html]
+  category: SML
+  severity: major
+  effort: 5 min
+  status: planned
+  generated: true
+  tags: [accessibility, wcag, a11y, usability]
+  summary: Something is reachable by callers who should not reach it.
+  why: |
+    Access granted this broadly is never noticed afterwards: nothing fails, and the surface stays
+    open for as long as the resource exists.
+  fix: |
+    Grant the access to the identities that need it and to nothing else.
+
+- key: QG-HTML-SML-0159
+  name: HTML "<table>" should not be used for layout purposes
+  languages: [html]
+  category: SML
+  severity: major
+  effort: 30min
+  status: planned
+  generated: true
+  tags: [accessibility]
+  summary: Something is reachable by callers who should not reach it.
+  why: |
+    Access granted this broadly is never noticed afterwards: nothing fails, and the surface stays
+    open for as long as the resource exists.
+  fix: |
+    Grant the access to the identities that need it and to nothing else.
+
+- key: QG-HTML-SML-0160
+  name: ARIA properties in DOM elements should have valid values
+  languages: [html]
+  category: SML
+  severity: major
+  effort: 5min
+  status: planned
+  generated: true
+  tags: [accessibility]
+  summary: Something is reachable by callers who should not reach it.
+  why: |
+    Access granted this broadly is never noticed afterwards: nothing fails, and the surface stays
+    open for as long as the resource exists.
+  fix: |
+    Grant the access to the identities that need it and to nothing else.
+
+- key: QG-HTML-SML-0161
+  name: DOM elements with ARIA roles should have the required properties
+  languages: [html]
+  category: SML
+  severity: major
+  effort: 5min
+  status: planned
+  generated: true
+  tags: [accessibility]
+  summary: Something is reachable by callers who should not reach it.
+  why: |
+    Access granted this broadly is never noticed afterwards: nothing fails, and the surface stays
+    open for as long as the resource exists.
+  fix: |
+    Grant the access to the identities that need it and to nothing else.
+
+- key: QG-HTML-SML-0162
+  name: DOM elements with ARIA role should only have supported properties
+  languages: [html]
+  category: SML
+  severity: major
+  effort: 5min
+  status: planned
+  generated: true
+  tags: [accessibility]
+  summary: Something is reachable by callers who should not reach it.
+  why: |
+    Access granted this broadly is never noticed afterwards: nothing fails, and the surface stays
+    open for as long as the resource exists.
+  fix: |
+    Grant the access to the identities that need it and to nothing else.
+
+- key: QG-HTML-SML-0163
+  name: Prefer tag over ARIA role
+  languages: [html]
+  category: SML
+  severity: major
+  effort: 5min
+  status: planned
+  generated: true
+  tags: [accessibility]
+  summary: Something is reachable by callers who should not reach it.
+  why: |
+    Access granted this broadly is never noticed afterwards: nothing fails, and the surface stays
+    open for as long as the resource exists.
+  fix: |
+    Grant the access to the identities that need it and to nothing else.
+
+- key: QG-HTML-SML-0164
+  name: DOM elements with ARIA roles should have a valid non-abstract role
+  languages: [html]
+  category: SML
+  severity: major
+  effort: 5min
+  status: planned
+  generated: true
+  tags: [react, accessibility]
+  summary: Something is reachable by callers who should not reach it.
+  why: |
+    Access granted this broadly is never noticed afterwards: nothing fails, and the surface stays
+    open for as long as the resource exists.
+  fix: |
+    Grant the access to the identities that need it and to nothing else.
+
+- key: QG-HTML-SML-0165
+  name: No redundant ARIA role
+  languages: [html]
+  category: SML
+  severity: major
+  effort: 5min
+  status: planned
+  generated: true
+  tags: [accessibility, react]
+  summary: Something is reachable by callers who should not reach it.
+  why: |
+    Access granted this broadly is never noticed afterwards: nothing fails, and the surface stays
+    open for as long as the resource exists.
+  fix: |
+    Grant the access to the identities that need it and to nothing else.
+
+- key: QG-HTML-SML-0166
+  name: No ARIA role or property for unsupported DOM elements
+  languages: [html]
+  category: SML
+  severity: major
+  effort: 5min
+  status: planned
+  generated: true
+  tags: [react, accessibility]
+  summary: Something is reachable by callers who should not reach it.
+  why: |
+    Access granted this broadly is never noticed afterwards: nothing fails, and the surface stays
+    open for as long as the resource exists.
+  fix: |
+    Grant the access to the identities that need it and to nothing else.
+
+- key: QG-HTML-SML-0167
+  name: Web pages should not contain absolute URIs
+  languages: [html]
+  category: SML
+  severity: major
+  effort: 5min
+  status: planned
+  generated: true
+  tags: []
+  summary: The code does not behave the way it reads.
+  why: |
+    Written this way it works by accident or fails on ordinary input, and the mistake survives
+    review because the intent reads correctly.
+  fix: |
+    Make the intended behaviour explicit, and cover the case that used to fail with a test.
+
+- key: QG-HTML-SML-0168
+  name: Track lack of required attributes
+  languages: [html]
+  category: SML
+  severity: major
+  effort: 5min
+  status: planned
+  generated: true
+  tags: []
+  summary: The code does not behave the way it reads.
+  why: |
+    Written this way it works by accident or fails on ordinary input, and the mistake survives
+    review because the intent reads correctly.
+  fix: |
+    Make the intended behaviour explicit, and cover the case that used to fail with a test.
+
+- key: QG-HTML-SML-0169
+  name: Track uses of disallowed elements
+  languages: [html]
+  category: SML
+  severity: major
+  effort: 10min
+  status: planned
+  generated: true
+  tags: []
+  summary: The code does not behave the way it reads.
+  why: |
+    Written this way it works by accident or fails on ordinary input, and the mistake survives
+    review because the intent reads correctly.
+  fix: |
+    Make the intended behaviour explicit, and cover the case that used to fail with a test.
+
+- key: QG-HTML-SML-0170
+  name: Enforce the HTML "lang" attribute against a configured list of ISO 639-1 language codes
+  languages: [html]
+  category: SML
+  severity: major
+  effort: 5min
+  status: planned
+  generated: true
+  tags: [accessibility]
+  summary: Something is reachable by callers who should not reach it.
+  why: |
+    Access granted this broadly is never noticed afterwards: nothing fails, and the surface stays
+    open for as long as the resource exists.
+  fix: |
+    Grant the access to the identities that need it and to nothing else.
+
+- key: QG-HTML-SML-0171
+  name: "<form>" tags should have an explicit valid "method" attribute
+  languages: [html]
+  category: SML
+  severity: minor
+  effort: 2min
+  status: planned
+  generated: true
+  tags: [convention]
+  summary: A name does not follow the convention the rest of the code uses.
+  why: |
+    Conventions let a reader infer what something is from its shape alone. A deviation costs a
+    lookup every time, and makes searches and automated refactoring less reliable.
+  fix: |
+    Rename it to match the convention used around it.
+
+- key: QG-HTML-SML-0172
+  name: Track breaches of an XPath rule
+  languages: [html]
+  category: SML
+  severity: major
+  effort: 5min
+  status: planned
+  generated: true
+  tags: []
+  summary: Input decides part of something the program then executes.
+  why: |
+    Whatever the caller sends becomes part of the instruction rather than part of the data. The code
+    reads naturally, because the value sits exactly where it belongs in the sentence.
+  fix: |
+    Keep the instruction fixed and pass the values separately, so no input can change its shape.
+
+- key: QG-HTML-SML-0173
+  name: Track lack of required an element with the required "id"
+  languages: [html]
+  category: SML
+  severity: major
+  effort: 10min
+  status: planned
+  generated: true
+  tags: [convention]
+  summary: A name does not follow the convention the rest of the code uses.
+  why: |
+    Conventions let a reader infer what something is from its shape alone. A deviation costs a
+    lookup every time, and makes searches and automated refactoring less reliable.
+  fix: |
+    Rename it to match the convention used around it.

@@ -1,0 +1,196 @@
+# Catalogue entries written in one pass, one per defect this language still lacks a check for.
+# Every entry is documentation and carries no detection, so none of them reports anything: a
+# detection is written by hand, against the shape the defect actually has, and measured before
+# the entry stops being planned.
+
+- key: QG-CF-SEC-0033
+  name: S3 buckets should not grant access to all users or authenticated users
+  languages: [cf]
+  category: SEC
+  severity: blocker
+  effort: 5min
+  status: planned
+  generated: true
+  tags: [aws, cwe, former-hotspot]
+  summary: Something is reachable by callers who should not reach it.
+  why: |
+    Access granted this broadly is never noticed afterwards: nothing fails, and the surface stays
+    open for as long as the resource exists.
+  fix: |
+    Grant the access to the identities that need it and to nothing else.
+
+- key: QG-CF-SEC-0034
+  name: Amazon S3 bucket public access should be fully blocked
+  languages: [cf]
+  category: SEC
+  severity: critical
+  effort: 30min
+  status: planned
+  generated: true
+  tags: [aws, cwe, former-hotspot]
+  summary: Something is reachable by callers who should not reach it.
+  why: |
+    Access granted this broadly is never noticed afterwards: nothing fails, and the surface stays
+    open for as long as the resource exists.
+  fix: |
+    Grant the access to the identities that need it and to nothing else.
+
+- key: QG-CF-SEC-0035
+  name: AWS API Gateway should require authentication
+  languages: [cf]
+  category: SEC
+  severity: blocker
+  effort: 15min
+  status: planned
+  generated: true
+  tags: [aws, cwe, former-hotspot]
+  summary: Something is reachable by callers who should not reach it.
+  why: |
+    Access granted this broadly is never noticed afterwards: nothing fails, and the surface stays
+    open for as long as the resource exists.
+  fix: |
+    Grant the access to the identities that need it and to nothing else.
+
+- key: QG-CF-SEC-0036
+  name: Clear-text protocols should not be used
+  languages: [cf]
+  category: SEC
+  severity: minor
+  effort: 30min
+  status: planned
+  generated: true
+  tags: [aws, cwe, former-hotspot]
+  summary: The code does not behave the way it reads.
+  why: |
+    Written this way it works by accident or fails on ordinary input, and the mistake survives
+    review because the intent reads correctly.
+  fix: |
+    Make the intended behaviour explicit, and cover the case that used to fail with a test.
+
+- key: QG-CF-SEC-0037
+  name: S3 buckets should enforce HTTPS-only access
+  languages: [cf]
+  category: SEC
+  severity: minor
+  effort: 10min
+  status: planned
+  generated: true
+  tags: [aws, cwe, former-hotspot]
+  summary: Something is reachable by callers who should not reach it.
+  why: |
+    Access granted this broadly is never noticed afterwards: nothing fails, and the surface stays
+    open for as long as the resource exists.
+  fix: |
+    Grant the access to the identities that need it and to nothing else.
+
+- key: QG-CF-SEC-0038
+  name: Amazon S3 buckets should have versioning enabled
+  languages: [cf]
+  category: SEC
+  severity: minor
+  effort: 5min
+  status: planned
+  generated: true
+  tags: [aws, former-hotspot]
+  summary: The code does not behave the way it reads.
+  why: |
+    Written this way it works by accident or fails on ordinary input, and the mistake survives
+    review because the intent reads correctly.
+  fix: |
+    Make the intended behaviour explicit, and cover the case that used to fail with a test.
+
+- key: QG-CF-SEC-0039
+  name: Cloud resources logging should not be disabled
+  languages: [cf]
+  category: SEC
+  severity: major
+  effort: 30min
+  status: planned
+  generated: true
+  tags: [aws, cwe, former-hotspot]
+  summary: Something the runtime cannot reclaim on its own is not released.
+  why: |
+    Handles, sockets and connections are finite. The failure appears far from here, under load, as
+    an exhaustion nobody can attribute to a single line.
+  fix: |
+    Release it on every path, including the exceptional one.
+
+- key: QG-CF-SEC-0040
+  name: Backup retention period should be sufficient
+  languages: [cf]
+  category: SEC
+  severity: major
+  effort: 5min
+  status: planned
+  generated: true
+  tags: [aws, former-hotspot]
+  summary: The code does not behave the way it reads.
+  why: |
+    Written this way it works by accident or fails on ordinary input, and the mistake survives
+    review because the intent reads correctly.
+  fix: |
+    Make the intended behaviour explicit, and cover the case that used to fail with a test.
+
+- key: QG-CF-SML-0056
+  name: "Log Groups" should be configured with a retention policy
+  languages: [cf]
+  category: SML
+  severity: critical
+  effort: 5min
+  status: planned
+  generated: true
+  tags: [convention, aws]
+  summary: A name does not follow the convention the rest of the code uses.
+  why: |
+    Conventions let a reader infer what something is from its shape alone. A deviation costs a
+    lookup every time, and makes searches and automated refactoring less reliable.
+  fix: |
+    Rename it to match the convention used around it.
+
+- key: QG-CF-SML-0057
+  name: "Log Groups" should be declared explicitly
+  languages: [cf]
+  category: SML
+  severity: major
+  effort: 5min
+  status: planned
+  generated: true
+  tags: [convention, aws]
+  summary: A name does not follow the convention the rest of the code uses.
+  why: |
+    Conventions let a reader infer what something is from its shape alone. A deviation costs a
+    lookup every time, and makes searches and automated refactoring less reliable.
+  fix: |
+    Rename it to match the convention used around it.
+
+- key: QG-CF-SML-0058
+  name: AWS resource tags should have valid format
+  languages: [cf]
+  category: SML
+  severity: minor
+  effort: 5min
+  status: planned
+  generated: true
+  tags: []
+  summary: Something the runtime cannot reclaim on its own is not released.
+  why: |
+    Handles, sockets and connections are finite. The failure appears far from here, under load, as
+    an exhaustion nobody can attribute to a single line.
+  fix: |
+    Release it on every path, including the exceptional one.
+
+- key: QG-CF-SML-0059
+  name: CloudFormation parsing failure
+  languages: [cf]
+  category: SML
+  severity: major
+  effort: 30min
+  status: planned
+  generated: true
+  tags: [suspicious]
+  summary: The code does not behave the way it reads.
+  why: |
+    Written this way it works by accident or fails on ordinary input, and the mistake survives
+    review because the intent reads correctly.
+  fix: |
+    Make the intended behaviour explicit, and cover the case that used to fail with a test.

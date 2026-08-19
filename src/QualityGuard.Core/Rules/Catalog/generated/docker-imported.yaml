@@ -1,0 +1,164 @@
+# Catalogue entries written in one pass, one per defect this language still lacks a check for.
+# Every entry is documentation and carries no detection, so none of them reports anything: a
+# detection is written by hand, against the shape the defect actually has, and measured before
+# the entry stops being planned.
+
+- key: QG-DK-SEC-0020
+  name: Permissions of sensitive mount points should be restrictive
+  languages: [docker]
+  category: SEC
+  severity: critical
+  effort: 15min
+  status: planned
+  generated: true
+  tags: [dockerfile, cwe]
+  summary: Something is reachable by callers who should not reach it.
+  why: |
+    Access granted this broadly is never noticed afterwards: nothing fails, and the surface stays
+    open for as long as the resource exists.
+  fix: |
+    Grant the access to the identities that need it and to nothing else.
+
+- key: QG-DK-SEC-0021
+  name: Builder sandboxes should not be disabled
+  languages: [docker]
+  category: SEC
+  severity: critical
+  effort: 30min
+  status: planned
+  generated: true
+  tags: [dockerfile, cwe, former-hotspot]
+  summary: The code does not behave the way it reads.
+  why: |
+    Written this way it works by accident or fails on ordinary input, and the mistake survives
+    review because the intent reads correctly.
+  fix: |
+    Make the intended behaviour explicit, and cover the case that used to fail with a test.
+
+- key: QG-DK-SEC-0022
+  name: Debugging features should not be enabled in production
+  languages: [docker]
+  category: SEC
+  severity: minor
+  effort: 1min
+  status: planned
+  generated: true
+  tags: [cwe, error-handling, debug, user-experience]
+  summary: The code does not behave the way it reads.
+  why: |
+    Written this way it works by accident or fails on ordinary input, and the mistake survives
+    review because the intent reads correctly.
+  fix: |
+    Make the intended behaviour explicit, and cover the case that used to fail with a test.
+
+- key: QG-DK-SEC-0023
+  name: Containers should not share the host operating system namespaces
+  languages: [docker]
+  category: SEC
+  severity: major
+  effort: 60min
+  status: planned
+  generated: true
+  tags: [docker, cwe, former-hotspot]
+  summary: A name does not follow the convention the rest of the code uses.
+  why: |
+    Conventions let a reader infer what something is from its shape alone. A deviation costs a
+    lookup every time, and makes searches and automated refactoring less reliable.
+  fix: |
+    Rename it to match the convention used around it.
+
+- key: QG-DK-SEC-0024
+  name: Sensitive resources copied to Docker images should not be owned or writable by non-root users
+  languages: [docker]
+  category: SEC
+  severity: minor
+  effort: 20min
+  status: planned
+  generated: true
+  tags: [dockerfile, cwe, former-hotspot]
+  summary: Something the runtime cannot reclaim on its own is not released.
+  why: |
+    Handles, sockets and connections are finite. The failure appears far from here, under load, as
+    an exhaustion nobody can attribute to a single line.
+  fix: |
+    Release it on every path, including the exceptional one.
+
+- key: QG-DK-BUG-0049
+  name: Malformed JSON in Exec form leads to unexpected behavior
+  languages: [docker]
+  category: BUG
+  severity: critical
+  effort: 5min
+  status: planned
+  generated: true
+  tags: []
+  summary: The code does not behave the way it reads.
+  why: |
+    Written this way it works by accident or fails on ordinary input, and the mistake survives
+    review because the intent reads correctly.
+  fix: |
+    Make the intended behaviour explicit, and cover the case that used to fail with a test.
+
+- key: QG-DK-BUG-0050
+  name: Access variable which is not available in the current scope
+  languages: [docker]
+  category: BUG
+  severity: major
+  effort: 5min
+  status: planned
+  generated: true
+  tags: []
+  summary: Something is reachable by callers who should not reach it.
+  why: |
+    Access granted this broadly is never noticed afterwards: nothing fails, and the surface stays
+    open for as long as the resource exists.
+  fix: |
+    Grant the access to the identities that need it and to nothing else.
+
+- key: QG-DK-SML-0069
+  name: Too long RUN instruction should be split into multiple lines
+  languages: [docker]
+  category: SML
+  severity: minor
+  effort: 2min
+  status: planned
+  generated: true
+  tags: []
+  summary: A piece of code has grown past what can be held in mind at once.
+  why: |
+    The size is the defect: every change to it costs more than it should and carries a risk that has
+    nothing to do with the change itself.
+  fix: |
+    Split it along the responsibilities it has accumulated.
+
+- key: QG-DK-SML-0070
+  name: Descriptive labels are mandatory
+  languages: [docker]
+  category: SML
+  severity: major
+  effort: 2min
+  status: planned
+  generated: true
+  tags: []
+  summary: The code does not behave the way it reads.
+  why: |
+    Written this way it works by accident or fails on ordinary input, and the mistake survives
+    review because the intent reads correctly.
+  fix: |
+    Make the intended behaviour explicit, and cover the case that used to fail with a test.
+
+- key: QG-DK-SML-0071
+  name: Dockerfile parsing failure
+  languages: [docker]
+  category: SML
+  severity: major
+  effort: 30min
+  status: planned
+  generated: true
+  tags: [suspicious]
+  summary: The code does not behave the way it reads.
+  why: |
+    Written this way it works by accident or fails on ordinary input, and the mistake survives
+    review because the intent reads correctly.
+  fix: |
+    Make the intended behaviour explicit, and cover the case that used to fail with a test.

@@ -1,0 +1,1540 @@
+# Catalogue entries written in one pass, one per defect this language still lacks a check for.
+# Every entry is documentation and carries no detection, so none of them reports anything: a
+# detection is written by hand, against the shape the defect actually has, and measured before
+# the entry stops being planned.
+
+- key: QG-PP-SEC-0070
+  name: Authorizations should be based on strong decisions
+  languages: [php]
+  category: SEC
+  severity: major
+  effort: 30min
+  status: planned
+  generated: true
+  tags: [cwe]
+  summary: Something is reachable by callers who should not reach it.
+  why: |
+    Access granted this broadly is never noticed afterwards: nothing fails, and the surface stays
+    open for as long as the resource exists.
+  fix: |
+    Grant the access to the identities that need it and to nothing else.
+
+- key: QG-PP-SEC-0071
+  name: Disable direct file editing in WordPress admin interface
+  languages: [php]
+  category: SEC
+  severity: major
+  effort: 5min
+  status: planned
+  generated: true
+  tags: [cwe, former-hotspot]
+  summary: The code does not behave the way it reads.
+  why: |
+    Written this way it works by accident or fails on ordinary input, and the mistake survives
+    review because the intent reads correctly.
+  fix: |
+    Make the intended behaviour explicit, and cover the case that used to fail with a test.
+
+- key: QG-PP-SEC-0072
+  name: Automatic updates should not be disabled
+  languages: [php]
+  category: SEC
+  severity: major
+  effort: 5min
+  status: planned
+  generated: true
+  tags: [former-hotspot]
+  summary: The code does not behave the way it reads.
+  why: |
+    Written this way it works by accident or fails on ordinary input, and the mistake survives
+    review because the intent reads correctly.
+  fix: |
+    Make the intended behaviour explicit, and cover the case that used to fail with a test.
+
+- key: QG-PP-SEC-0073
+  name: External requests should be restricted in WordPress to prevent data leaks and SSRF
+  languages: [php]
+  category: SEC
+  severity: major
+  effort: 5min
+  status: planned
+  generated: true
+  tags: [cwe, former-hotspot]
+  summary: Something the runtime cannot reclaim on its own is not released.
+  why: |
+    Handles, sockets and connections are finite. The failure appears far from here, under load, as
+    an exhaustion nobody can attribute to a single line.
+  fix: |
+    Release it on every path, including the exceptional one.
+
+- key: QG-PP-SEC-0074
+  name: Prevent unauthenticated WordPress database repair for enhanced security
+  languages: [php]
+  category: SEC
+  severity: major
+  effort: 5min
+  status: planned
+  generated: true
+  tags: [former-hotspot]
+  summary: Something is reachable by callers who should not reach it.
+  why: |
+    Access granted this broadly is never noticed afterwards: nothing fails, and the surface stays
+    open for as long as the resource exists.
+  fix: |
+    Grant the access to the identities that need it and to nothing else.
+
+- key: QG-PP-SEC-0075
+  name: Prevent unfiltered HTML exposure in WordPress for enhanced security
+  languages: [php]
+  category: SEC
+  severity: major
+  effort: 5min
+  status: planned
+  generated: true
+  tags: [cwe, former-hotspot]
+  summary: The code does not behave the way it reads.
+  why: |
+    Written this way it works by accident or fails on ordinary input, and the mistake survives
+    review because the intent reads correctly.
+  fix: |
+    Make the intended behaviour explicit, and cover the case that used to fail with a test.
+
+- key: QG-PP-SEC-0076
+  name: Cryptographic RSA algorithms should always incorporate OAEP (Optimal Asymmetric Encryption Padding)
+  languages: [php]
+  category: SEC
+  severity: critical
+  effort: 20min
+  status: planned
+  generated: true
+  tags: [cwe]
+  summary: Cryptography is used in a way that does not give the protection it appears to.
+  why: |
+    The code still runs and the data still looks protected, which is what makes this expensive to
+    find: nothing fails until somebody who should not be able to read the data reads it.
+  fix: |
+    Use the current recommended algorithm and parameters, and let the platform choose what it can.
+
+- key: QG-PP-SEC-0077
+  name: Neither DES (Data Encryption Standard) nor DESede (3DES) should be used
+  languages: [php]
+  category: SEC
+  severity: blocker
+  effort: 20min
+  status: planned
+  generated: true
+  tags: [cwe]
+  summary: Cryptography is used in a way that does not give the protection it appears to.
+  why: |
+    The code still runs and the data still looks protected, which is what makes this expensive to
+    find: nothing fails until somebody who should not be able to read the data reads it.
+  fix: |
+    Use the current recommended algorithm and parameters, and let the platform choose what it can.
+
+- key: QG-PP-SEC-0078
+  name: "open_basedir" should limit file access
+  languages: [php]
+  category: SEC
+  severity: blocker
+  effort: 15min
+  status: planned
+  generated: true
+  tags: [cwe, php-ini]
+  summary: Something is reachable by callers who should not reach it.
+  why: |
+    Access granted this broadly is never noticed afterwards: nothing fails, and the surface stays
+    open for as long as the resource exists.
+  fix: |
+    Grant the access to the identities that need it and to nothing else.
+
+- key: QG-PP-SEC-0079
+  name: "allow_url_fopen" and "allow_url_include" should be disabled
+  languages: [php]
+  category: SEC
+  severity: blocker
+  effort: 15min
+  status: planned
+  generated: true
+  tags: [cwe, php-ini]
+  summary: The code does not behave the way it reads.
+  why: |
+    Written this way it works by accident or fails on ordinary input, and the mistake survives
+    review because the intent reads correctly.
+  fix: |
+    Make the intended behaviour explicit, and cover the case that used to fail with a test.
+
+- key: QG-PP-SEC-0080
+  name: "session.use_trans_sid" should not be enabled
+  languages: [php]
+  category: SEC
+  severity: blocker
+  effort: 5min
+  status: planned
+  generated: true
+  tags: [php-ini]
+  summary: The code does not behave the way it reads.
+  why: |
+    Written this way it works by accident or fails on ordinary input, and the mistake survives
+    review because the intent reads correctly.
+  fix: |
+    Make the intended behaviour explicit, and cover the case that used to fail with a test.
+
+- key: QG-PP-SEC-0081
+  name: "enable_dl" should be disabled
+  languages: [php]
+  category: SEC
+  severity: blocker
+  effort: 5min
+  status: planned
+  generated: true
+  tags: [php-ini]
+  summary: The code does not behave the way it reads.
+  why: |
+    Written this way it works by accident or fails on ordinary input, and the mistake survives
+    review because the intent reads correctly.
+  fix: |
+    Make the intended behaviour explicit, and cover the case that used to fail with a test.
+
+- key: QG-PP-SEC-0082
+  name: "file_uploads" should be disabled
+  languages: [php]
+  category: SEC
+  severity: blocker
+  effort: 5min
+  status: planned
+  generated: true
+  tags: []
+  summary: The code does not behave the way it reads.
+  why: |
+    Written this way it works by accident or fails on ordinary input, and the mistake survives
+    review because the intent reads correctly.
+  fix: |
+    Make the intended behaviour explicit, and cover the case that used to fail with a test.
+
+- key: QG-PP-SEC-0083
+  name: "cgi.force_redirect" should be enabled
+  languages: [php]
+  category: SEC
+  severity: major
+  effort: 2min
+  status: planned
+  generated: true
+  tags: [cwe, php-ini]
+  summary: The code does not behave the way it reads.
+  why: |
+    Written this way it works by accident or fails on ordinary input, and the mistake survives
+    review because the intent reads correctly.
+  fix: |
+    Make the intended behaviour explicit, and cover the case that used to fail with a test.
+
+- key: QG-PP-SEC-0084
+  name: Secret keys and salt values should be robust
+  languages: [php]
+  category: SEC
+  severity: major
+  effort: 5min
+  status: planned
+  generated: true
+  tags: []
+  summary: A value that has to stay private is written where the code is kept.
+  why: |
+    Anyone with a copy of the repository has the value, and that includes every clone, every fork
+    and every build artefact. Changing it means shipping, so in practice it is never changed.
+  fix: |
+    Read the value from configuration the deployment supplies, and rotate the one already committed.
+
+- key: QG-PP-SEC-0085
+  name: "sleep" should not be called
+  languages: [php]
+  category: SEC
+  severity: minor
+  effort: 15min
+  status: planned
+  generated: true
+  tags: []
+  summary: The code does not behave the way it reads.
+  why: |
+    Written this way it works by accident or fails on ordinary input, and the mistake survives
+    review because the intent reads correctly.
+  fix: |
+    Make the intended behaviour explicit, and cover the case that used to fail with a test.
+
+- key: QG-PP-SEC-0086
+  name: Session-management cookies should not be persistent
+  languages: [php]
+  category: SEC
+  severity: critical
+  effort: 5min
+  status: planned
+  generated: true
+  tags: [php-ini]
+  summary: The code does not behave the way it reads.
+  why: |
+    Written this way it works by accident or fails on ordinary input, and the mistake survives
+    review because the intent reads correctly.
+  fix: |
+    Make the intended behaviour explicit, and cover the case that used to fail with a test.
+
+- key: QG-PP-SML-0167
+  name: References should not be passed to function calls
+  languages: [php]
+  category: SML
+  severity: critical
+  effort: 15min
+  status: planned
+  generated: true
+  tags: [cwe, performance, obsolete, pitfall]
+  summary: An API is used where a better one exists.
+  why: |
+    The older form usually costs something the newer one does not, and it is on its way out: a
+    conversion, an allocation, a case it handles wrongly.
+  fix: |
+    Use the current API, and keep the old one only behind a documented compatibility layer.
+
+- key: QG-PP-SML-0168
+  name: Test class names should end with "Test"
+  languages: [php]
+  category: SML
+  severity: blocker
+  effort: 2min
+  status: planned
+  generated: true
+  tags: [tests, phpunit]
+  summary: A name does not follow the convention the rest of the code uses.
+  why: |
+    Conventions let a reader infer what something is from its shape alone. A deviation costs a
+    lookup every time, and makes searches and automated refactoring less reliable.
+  fix: |
+    Rename it to match the convention used around it.
+
+- key: QG-PP-SML-0169
+  name: Generic exceptions ErrorException, RuntimeException and Exception should not be thrown
+  languages: [php]
+  category: SML
+  severity: major
+  effort: 20min
+  status: planned
+  generated: true
+  tags: [cwe, error-handling]
+  summary: The code does not behave the way it reads.
+  why: |
+    Written this way it works by accident or fails on ordinary input, and the mistake survives
+    review because the intent reads correctly.
+  fix: |
+    Make the intended behaviour explicit, and cover the case that used to fail with a test.
+
+- key: QG-PP-SML-0170
+  name: Modifiers should be declared in the correct order
+  languages: [php]
+  category: SML
+  severity: minor
+  effort: 2min
+  status: planned
+  generated: true
+  tags: [convention]
+  summary: A name does not follow the convention the rest of the code uses.
+  why: |
+    Conventions let a reader infer what something is from its shape alone. A deviation costs a
+    lookup every time, and makes searches and automated refactoring less reliable.
+  fix: |
+    Rename it to match the convention used around it.
+
+- key: QG-PP-SML-0171
+  name: "empty()" should be used to test for emptiness
+  languages: [php]
+  category: SML
+  severity: minor
+  effort: 2min
+  status: planned
+  generated: true
+  tags: [clumsy]
+  summary: Code that no longer takes part in anything is still here.
+  why: |
+    It has to be read, understood and kept compiling by everyone who passes through, and it gives
+    nothing back. Worse, it suggests a purpose that no longer exists.
+  fix: |
+    Remove it: the history keeps it if it is ever needed again.
+
+- key: QG-PP-SML-0172
+  name: "for" loop stop conditions should be invariant
+  languages: [php]
+  category: SML
+  severity: major
+  effort: 10min
+  status: planned
+  generated: true
+  tags: [pitfall]
+  summary: The control flow does not do what it reads as doing.
+  why: |
+    A branch that cannot be taken, a loop that cannot end, a condition that is always the same: the
+    code states an intent the machine does not carry out, and review reads the intent.
+  fix: |
+    Make the flow say what it does, and remove what cannot happen.
+
+- key: QG-PP-SML-0173
+  name: "switch" statements should have at least 3 "case" clauses
+  languages: [php]
+  category: SML
+  severity: minor
+  effort: 5min
+  status: planned
+  generated: true
+  tags: [bad-practice]
+  summary: The control flow does not do what it reads as doing.
+  why: |
+    A branch that cannot be taken, a loop that cannot end, a condition that is always the same: the
+    code states an intent the machine does not carry out, and review reads the intent.
+  fix: |
+    Make the flow say what it does, and remove what cannot happen.
+
+- key: QG-PP-SML-0174
+  name: "__construct" functions should not make PHP 4-style calls to parent constructors
+  languages: [php]
+  category: SML
+  severity: major
+  effort: 2min
+  status: planned
+  generated: true
+  tags: [convention]
+  summary: A name does not follow the convention the rest of the code uses.
+  why: |
+    Conventions let a reader infer what something is from its shape alone. A deviation costs a
+    lookup every time, and makes searches and automated refactoring less reliable.
+  fix: |
+    Rename it to match the convention used around it.
+
+- key: QG-PP-SML-0175
+  name: A reason should be provided when skipping a test
+  languages: [php]
+  category: SML
+  severity: major
+  effort: 10min
+  status: planned
+  generated: true
+  tags: [tests, bad-practice, confusing, phpunit]
+  summary: The code does not behave the way it reads.
+  why: |
+    Written this way it works by accident or fails on ordinary input, and the mistake survives
+    review because the intent reads correctly.
+  fix: |
+    Make the intended behaviour explicit, and cover the case that used to fail with a test.
+
+- key: QG-PP-SML-0176
+  name: "<?php" and "<?=" tags should be used
+  languages: [php]
+  category: SML
+  severity: minor
+  effort: 2min
+  status: planned
+  generated: true
+  tags: [convention, psr1]
+  summary: A name does not follow the convention the rest of the code uses.
+  why: |
+    Conventions let a reader infer what something is from its shape alone. A deviation costs a
+    lookup every time, and makes searches and automated refactoring less reliable.
+  fix: |
+    Rename it to match the convention used around it.
+
+- key: QG-PP-SML-0177
+  name: PHP keywords and constants "true", "false", "null" should be lower case
+  languages: [php]
+  category: SML
+  severity: minor
+  effort: 1min
+  status: planned
+  generated: true
+  tags: [convention, psr2]
+  summary: A value that can be absent is used as though it always exists.
+  why: |
+    The path that produces the absence is usually the rare one, so this survives testing and arrives
+    in production as a failure with no obvious cause.
+  fix: |
+    Handle the absent case where it arises, or make the type say the value is always there.
+
+- key: QG-PP-SML-0178
+  name: "elseif" keyword should be used in place of "else if" keywords
+  languages: [php]
+  category: SML
+  severity: minor
+  effort: 2min
+  status: planned
+  generated: true
+  tags: [convention]
+  summary: A name does not follow the convention the rest of the code uses.
+  why: |
+    Conventions let a reader infer what something is from its shape alone. A deviation costs a
+    lookup every time, and makes searches and automated refactoring less reliable.
+  fix: |
+    Rename it to match the convention used around it.
+
+- key: QG-PP-SML-0179
+  name: "&&" and "||" should be used
+  languages: [php]
+  category: SML
+  severity: minor
+  effort: 5min
+  status: planned
+  generated: true
+  tags: [suspicious]
+  summary: An API is used where a better one exists.
+  why: |
+    The older form usually costs something the newer one does not, and it is on its way out: a
+    conversion, an allocation, a case it handles wrongly.
+  fix: |
+    Use the current API, and keep the old one only behind a documented compatibility layer.
+
+- key: QG-PP-SML-0180
+  name: Functions should use "return" consistently
+  languages: [php]
+  category: SML
+  severity: major
+  effort: 20min
+  status: planned
+  generated: true
+  tags: [api-design, confusing]
+  summary: The code does not behave the way it reads.
+  why: |
+    Written this way it works by accident or fails on ordinary input, and the mistake survives
+    review because the intent reads correctly.
+  fix: |
+    Make the intended behaviour explicit, and cover the case that used to fail with a test.
+
+- key: QG-PP-SML-0181
+  name: Regular expressions should not contain empty groups
+  languages: [php]
+  category: SML
+  severity: major
+  effort: 5min
+  status: planned
+  generated: true
+  tags: [regex]
+  summary: Code that no longer takes part in anything is still here.
+  why: |
+    It has to be read, understood and kept compiling by everyone who passes through, and it gives
+    nothing back. Worse, it suggests a purpose that no longer exists.
+  fix: |
+    Remove it: the history keeps it if it is ever needed again.
+
+- key: QG-PP-SML-0182
+  name: Non-capturing groups without quantifier should not be used
+  languages: [php]
+  category: SML
+  severity: major
+  effort: 5min
+  status: planned
+  generated: true
+  tags: [regex]
+  summary: The code does not behave the way it reads.
+  why: |
+    Written this way it works by accident or fails on ordinary input, and the mistake survives
+    review because the intent reads correctly.
+  fix: |
+    Make the intended behaviour explicit, and cover the case that used to fail with a test.
+
+- key: QG-PP-SML-0183
+  name: Conditionals should start on new lines
+  languages: [php]
+  category: SML
+  severity: critical
+  effort: 10min
+  status: planned
+  generated: true
+  tags: [suspicious]
+  summary: The control flow does not do what it reads as doing.
+  why: |
+    A branch that cannot be taken, a loop that cannot end, a condition that is always the same: the
+    code states an intent the machine does not carry out, and review reads the intent.
+  fix: |
+    Make the flow say what it does, and remove what cannot happen.
+
+- key: QG-PP-SML-0184
+  name: A conditionally executed single line should be denoted by indentation
+  languages: [php]
+  category: SML
+  severity: critical
+  effort: 10min
+  status: planned
+  generated: true
+  tags: [confusing, suspicious]
+  summary: The control flow does not do what it reads as doing.
+  why: |
+    A branch that cannot be taken, a loop that cannot end, a condition that is always the same: the
+    code states an intent the machine does not carry out, and review reads the intent.
+  fix: |
+    Make the flow say what it does, and remove what cannot happen.
+
+- key: QG-PP-SML-0185
+  name: "if ... else if" constructs should end with "else" clauses
+  languages: [php]
+  category: SML
+  severity: critical
+  effort: 5min
+  status: planned
+  generated: true
+  tags: []
+  summary: The code does not behave the way it reads.
+  why: |
+    Written this way it works by accident or fails on ordinary input, and the mistake survives
+    review because the intent reads correctly.
+  fix: |
+    Make the intended behaviour explicit, and cover the case that used to fail with a test.
+
+- key: QG-PP-SML-0186
+  name: Octal values should not be used
+  languages: [php]
+  category: SML
+  severity: blocker
+  effort: 5min
+  status: planned
+  generated: true
+  tags: [pitfall]
+  summary: The code does not behave the way it reads.
+  why: |
+    Written this way it works by accident or fails on ordinary input, and the mistake survives
+    review because the intent reads correctly.
+  fix: |
+    Make the intended behaviour explicit, and cover the case that used to fail with a test.
+
+- key: QG-PP-SML-0187
+  name: "switch" statements should not be nested
+  languages: [php]
+  category: SML
+  severity: critical
+  effort: 10min
+  status: planned
+  generated: true
+  tags: [pitfall]
+  summary: The control flow does not do what it reads as doing.
+  why: |
+    A branch that cannot be taken, a loop that cannot end, a condition that is always the same: the
+    code states an intent the machine does not carry out, and review reads the intent.
+  fix: |
+    Make the flow say what it does, and remove what cannot happen.
+
+- key: QG-PP-SML-0188
+  name: Functions and variables should not be defined outside of classes
+  languages: [php]
+  category: SML
+  severity: blocker
+  effort: 15min
+  status: planned
+  generated: true
+  tags: [design]
+  summary: The code does not behave the way it reads.
+  why: |
+    Written this way it works by accident or fails on ordinary input, and the mistake survives
+    review because the intent reads correctly.
+  fix: |
+    Make the intended behaviour explicit, and cover the case that used to fail with a test.
+
+- key: QG-PP-SML-0189
+  name: "global" should not be used
+  languages: [php]
+  category: SML
+  severity: critical
+  effort: 30min
+  status: planned
+  generated: true
+  tags: [convention]
+  summary: A name does not follow the convention the rest of the code uses.
+  why: |
+    Conventions let a reader infer what something is from its shape alone. A deviation costs a
+    lookup every time, and makes searches and automated refactoring less reliable.
+  fix: |
+    Rename it to match the convention used around it.
+
+- key: QG-PP-SML-0190
+  name: Parentheses should not be used for calls to "echo"
+  languages: [php]
+  category: SML
+  severity: critical
+  effort: 2min
+  status: planned
+  generated: true
+  tags: []
+  summary: The code does not behave the way it reads.
+  why: |
+    Written this way it works by accident or fails on ordinary input, and the mistake survives
+    review because the intent reads correctly.
+  fix: |
+    Make the intended behaviour explicit, and cover the case that used to fail with a test.
+
+- key: QG-PP-SML-0191
+  name: OS process signal parameters should be validated
+  languages: [php]
+  category: SML
+  severity: critical
+  effort: 30min
+  status: planned
+  generated: true
+  tags: [cwe, former-hotspot]
+  summary: A piece of code has grown past what can be held in mind at once.
+  why: |
+    The size is the defect: every change to it costs more than it should and carries a risk that has
+    nothing to do with the change itself.
+  fix: |
+    Split it along the responsibilities it has accumulated.
+
+- key: QG-PP-SML-0192
+  name: URIs should not be hardcoded
+  languages: [php]
+  category: SML
+  severity: minor
+  effort: 20min
+  status: planned
+  generated: true
+  tags: []
+  summary: The code does not behave the way it reads.
+  why: |
+    Written this way it works by accident or fails on ordinary input, and the mistake survives
+    review because the intent reads correctly.
+  fix: |
+    Make the intended behaviour explicit, and cover the case that used to fail with a test.
+
+- key: QG-PP-SML-0193
+  name: Files should end with a newline
+  languages: [php]
+  category: SML
+  severity: minor
+  effort: 1min
+  status: planned
+  generated: true
+  tags: [convention]
+  summary: A name does not follow the convention the rest of the code uses.
+  why: |
+    Conventions let a reader infer what something is from its shape alone. A deviation costs a
+    lookup every time, and makes searches and automated refactoring less reliable.
+  fix: |
+    Rename it to match the convention used around it.
+
+- key: QG-PP-SML-0194
+  name: Lines should not end with trailing whitespaces
+  languages: [php]
+  category: SML
+  severity: minor
+  effort: 1min
+  status: planned
+  generated: true
+  tags: [convention, psr2]
+  summary: A name does not follow the convention the rest of the code uses.
+  why: |
+    Conventions let a reader infer what something is from its shape alone. A deviation costs a
+    lookup every time, and makes searches and automated refactoring less reliable.
+  fix: |
+    Rename it to match the convention used around it.
+
+- key: QG-PP-SML-0195
+  name: Closing tag "?>" should be omitted on files containing only PHP
+  languages: [php]
+  category: SML
+  severity: minor
+  effort: 2min
+  status: planned
+  generated: true
+  tags: [per, bad-practice]
+  summary: The code does not behave the way it reads.
+  why: |
+    Written this way it works by accident or fails on ordinary input, and the mistake survives
+    review because the intent reads correctly.
+  fix: |
+    Make the intended behaviour explicit, and cover the case that used to fail with a test.
+
+- key: QG-PP-SML-0196
+  name: Reflection should not be used to increase accessibility of classes, methods, or fields
+  languages: [php]
+  category: SML
+  severity: major
+  effort: 30min
+  status: planned
+  generated: true
+  tags: []
+  summary: Something is reachable by callers who should not reach it.
+  why: |
+    Access granted this broadly is never noticed afterwards: nothing fails, and the surface stays
+    open for as long as the resource exists.
+  fix: |
+    Grant the access to the identities that need it and to nothing else.
+
+- key: QG-PP-SML-0197
+  name: Regular expression quantifiers and character classes should be used concisely
+  languages: [php]
+  category: SML
+  severity: minor
+  effort: 5min
+  status: planned
+  generated: true
+  tags: [regex]
+  summary: An API is used where a better one exists.
+  why: |
+    The older form usually costs something the newer one does not, and it is on its way out: a
+    conversion, an allocation, a case it handles wrongly.
+  fix: |
+    Use the current API, and keep the old one only behind a documented compatibility layer.
+
+- key: QG-PP-SML-0198
+  name: Assignments should not be made from within sub-expressions
+  languages: [php]
+  category: SML
+  severity: major
+  effort: 5min
+  status: planned
+  generated: true
+  tags: [cwe, suspicious]
+  summary: The code does not behave the way it reads.
+  why: |
+    Written this way it works by accident or fails on ordinary input, and the mistake survives
+    review because the intent reads correctly.
+  fix: |
+    Make the intended behaviour explicit, and cover the case that used to fail with a test.
+
+- key: QG-PP-SML-0199
+  name: "switch case" clauses should not have too many lines of code
+  languages: [php]
+  category: SML
+  severity: major
+  effort: 5min
+  status: planned
+  generated: true
+  tags: [brain-overload]
+  summary: The control flow does not do what it reads as doing.
+  why: |
+    A branch that cannot be taken, a loop that cannot end, a condition that is always the same: the
+    code states an intent the machine does not carry out, and review reads the intent.
+  fix: |
+    Make the flow say what it does, and remove what cannot happen.
+
+- key: QG-PP-SML-0200
+  name: Comments should not be located at the end of lines of code
+  languages: [php]
+  category: SML
+  severity: minor
+  effort: 1min
+  status: planned
+  generated: true
+  tags: [convention]
+  summary: A name does not follow the convention the rest of the code uses.
+  why: |
+    Conventions let a reader infer what something is from its shape alone. A deviation costs a
+    lookup every time, and makes searches and automated refactoring less reliable.
+  fix: |
+    Rename it to match the convention used around it.
+
+- key: QG-PP-SML-0201
+  name: Source code should comply with formatting standards
+  languages: [php]
+  category: SML
+  severity: minor
+  effort: 1min
+  status: planned
+  generated: true
+  tags: [convention, per]
+  summary: A name does not follow the convention the rest of the code uses.
+  why: |
+    Conventions let a reader infer what something is from its shape alone. A deviation costs a
+    lookup every time, and makes searches and automated refactoring less reliable.
+  fix: |
+    Rename it to match the convention used around it.
+
+- key: QG-PP-SML-0202
+  name: "final" should not be used redundantly
+  languages: [php]
+  category: SML
+  severity: minor
+  effort: 2min
+  status: planned
+  generated: true
+  tags: [convention]
+  summary: A name does not follow the convention the rest of the code uses.
+  why: |
+    Conventions let a reader infer what something is from its shape alone. A deviation costs a
+    lookup every time, and makes searches and automated refactoring less reliable.
+  fix: |
+    Rename it to match the convention used around it.
+
+- key: QG-PP-SML-0203
+  name: String literals should not be concatenated
+  languages: [php]
+  category: SML
+  severity: minor
+  effort: 5min
+  status: planned
+  generated: true
+  tags: [clumsy]
+  summary: The code does not behave the way it reads.
+  why: |
+    Written this way it works by accident or fails on ordinary input, and the mistake survives
+    review because the intent reads correctly.
+  fix: |
+    Make the intended behaviour explicit, and cover the case that used to fail with a test.
+
+- key: QG-PP-SML-0204
+  name: Colors should be defined in upper case
+  languages: [php]
+  category: SML
+  severity: minor
+  effort: 2min
+  status: planned
+  generated: true
+  tags: [convention]
+  summary: The control flow does not do what it reads as doing.
+  why: |
+    A branch that cannot be taken, a loop that cannot end, a condition that is always the same: the
+    code states an intent the machine does not carry out, and review reads the intent.
+  fix: |
+    Make the flow say what it does, and remove what cannot happen.
+
+- key: QG-PP-SML-0205
+  name: Superglobals should not be accessed directly
+  languages: [php]
+  category: SML
+  severity: minor
+  effort: 15min
+  status: planned
+  generated: true
+  tags: [bad-practice]
+  summary: Something is reachable by callers who should not reach it.
+  why: |
+    Access granted this broadly is never noticed afterwards: nothing fails, and the surface stays
+    open for as long as the resource exists.
+  fix: |
+    Grant the access to the identities that need it and to nothing else.
+
+- key: QG-PP-SML-0206
+  name: "php_sapi_name()" should not be used
+  languages: [php]
+  category: SML
+  severity: major
+  effort: 5min
+  status: planned
+  generated: true
+  tags: [performance]
+  summary: A name does not follow the convention the rest of the code uses.
+  why: |
+    Conventions let a reader infer what something is from its shape alone. A deviation costs a
+    lookup every time, and makes searches and automated refactoring less reliable.
+  fix: |
+    Rename it to match the convention used around it.
+
+- key: QG-PP-SML-0207
+  name: Perl-style comments should not be used
+  languages: [php]
+  category: SML
+  severity: minor
+  effort: 2min
+  status: planned
+  generated: true
+  tags: [convention]
+  summary: A name does not follow the convention the rest of the code uses.
+  why: |
+    Conventions let a reader infer what something is from its shape alone. A deviation costs a
+    lookup every time, and makes searches and automated refactoring less reliable.
+  fix: |
+    Rename it to match the convention used around it.
+
+- key: QG-PP-SML-0208
+  name: The names of methods with boolean return values should start with "is" or "has"
+  languages: [php]
+  category: SML
+  severity: major
+  effort: 15min
+  status: planned
+  generated: true
+  tags: [convention]
+  summary: A name does not follow the convention the rest of the code uses.
+  why: |
+    Conventions let a reader infer what something is from its shape alone. A deviation costs a
+    lookup every time, and makes searches and automated refactoring less reliable.
+  fix: |
+    Rename it to match the convention used around it.
+
+- key: QG-PP-SML-0209
+  name: Alias functions should not be used
+  languages: [php]
+  category: SML
+  severity: minor
+  effort: 5min
+  status: planned
+  generated: true
+  tags: [obsolete]
+  summary: An API is used where a better one exists.
+  why: |
+    The older form usually costs something the newer one does not, and it is on its way out: a
+    conversion, an allocation, a case it handles wrongly.
+  fix: |
+    Use the current API, and keep the old one only behind a documented compatibility layer.
+
+- key: QG-PP-SML-0210
+  name: Class constructors should not create other objects
+  languages: [php]
+  category: SML
+  severity: major
+  effort: 10min
+  status: planned
+  generated: true
+  tags: [design]
+  summary: The code does not behave the way it reads.
+  why: |
+    Written this way it works by accident or fails on ordinary input, and the mistake survives
+    review because the intent reads correctly.
+  fix: |
+    Make the intended behaviour explicit, and cover the case that used to fail with a test.
+
+- key: QG-PP-SML-0211
+  name: Duplicate values should not be passed as arguments
+  languages: [php]
+  category: SML
+  severity: major
+  effort: 5min
+  status: planned
+  generated: true
+  tags: []
+  summary: The code does not behave the way it reads.
+  why: |
+    Written this way it works by accident or fails on ordinary input, and the mistake survives
+    review because the intent reads correctly.
+  fix: |
+    Make the intended behaviour explicit, and cover the case that used to fail with a test.
+
+- key: QG-PP-SML-0212
+  name: Expanding archive files should not be done without controlling resource consumption
+  languages: [php]
+  category: SML
+  severity: major
+  effort: 10min
+  status: planned
+  generated: true
+  tags: [cwe, former-hotspot]
+  summary: Something the runtime cannot reclaim on its own is not released.
+  why: |
+    Handles, sockets and connections are finite. The failure appears far from here, under load, as
+    an exhaustion nobody can attribute to a single line.
+  fix: |
+    Release it on every path, including the exceptional one.
+
+- key: QG-PP-SML-0213
+  name: Unicode-aware versions of character classes should be preferred
+  languages: [php]
+  category: SML
+  severity: minor
+  effort: 5min
+  status: planned
+  generated: true
+  tags: [regex]
+  summary: An API is used where a better one exists.
+  why: |
+    The older form usually costs something the newer one does not, and it is on its way out: a
+    conversion, an allocation, a case it handles wrongly.
+  fix: |
+    Use the current API, and keep the old one only behind a documented compatibility layer.
+
+- key: QG-PP-SML-0214
+  name: Test methods should be discoverable
+  languages: [php]
+  category: SML
+  severity: major
+  effort: 2min
+  status: planned
+  generated: true
+  tags: [tests, unused, phpunit]
+  summary: Code that no longer takes part in anything is still here.
+  why: |
+    It has to be read, understood and kept compiling by everyone who passes through, and it gives
+    nothing back. Worse, it suggests a purpose that no longer exists.
+  fix: |
+    Remove it: the history keeps it if it is ever needed again.
+
+- key: QG-PP-SML-0215
+  name: Framework-provided functions should be used to test exceptions
+  languages: [php]
+  category: SML
+  severity: minor
+  effort: 5min
+  status: planned
+  generated: true
+  tags: [tests, phpunit]
+  summary: An API is used where a better one exists.
+  why: |
+    The older form usually costs something the newer one does not, and it is on its way out: a
+    conversion, an allocation, a case it handles wrongly.
+  fix: |
+    Use the current API, and keep the old one only behind a documented compatibility layer.
+
+- key: QG-PP-SML-0216
+  name: Increment (++) and decrement (--) operators should not be used in a method call or mixed with other operators in an expression
+  languages: [php]
+  category: SML
+  severity: major
+  effort: 5min
+  status: planned
+  generated: true
+  tags: []
+  summary: The code does not behave the way it reads.
+  why: |
+    Written this way it works by accident or fails on ordinary input, and the mistake survives
+    review because the intent reads correctly.
+  fix: |
+    Make the intended behaviour explicit, and cover the case that used to fail with a test.
+
+- key: QG-PP-SML-0217
+  name: Track lack of copyright and license headers
+  languages: [php]
+  category: SML
+  severity: blocker
+  effort: 5min
+  status: planned
+  generated: true
+  tags: [convention]
+  summary: A name does not follow the convention the rest of the code uses.
+  why: |
+    Conventions let a reader infer what something is from its shape alone. A deviation costs a
+    lookup every time, and makes searches and automated refactoring less reliable.
+  fix: |
+    Rename it to match the convention used around it.
+
+- key: QG-PP-SML-0218
+  name: Classes should not be coupled to too many other classes
+  languages: [php]
+  category: SML
+  severity: major
+  effort: 2h
+  status: planned
+  generated: true
+  tags: [brain-overload]
+  summary: A piece of code has grown past what can be held in mind at once.
+  why: |
+    The size is the defect: every change to it costs more than it should and carries a risk that has
+    nothing to do with the change itself.
+  fix: |
+    Split it along the responsibilities it has accumulated.
+
+- key: QG-PP-SML-0219
+  name: Files should not contain inline HTML
+  languages: [php]
+  category: SML
+  severity: major
+  effort: 10min
+  status: planned
+  generated: true
+  tags: [convention, brain-overload]
+  summary: A name does not follow the convention the rest of the code uses.
+  why: |
+    Conventions let a reader infer what something is from its shape alone. A deviation costs a
+    lookup every time, and makes searches and automated refactoring less reliable.
+  fix: |
+    Rename it to match the convention used around it.
+
+- key: QG-PP-SML-0220
+  name: Configuration should not be changed dynamically
+  languages: [php]
+  category: SML
+  severity: major
+  effort: 5min
+  status: planned
+  generated: true
+  tags: [suspicious]
+  summary: The code does not behave the way it reads.
+  why: |
+    Written this way it works by accident or fails on ordinary input, and the mistake survives
+    review because the intent reads correctly.
+  fix: |
+    Make the intended behaviour explicit, and cover the case that used to fail with a test.
+
+- key: QG-PP-SML-0221
+  name: Lines should not be too long
+  languages: [php]
+  category: SML
+  severity: major
+  effort: 1min
+  status: planned
+  generated: true
+  tags: [convention]
+  summary: A name does not follow the convention the rest of the code uses.
+  why: |
+    Conventions let a reader infer what something is from its shape alone. A deviation costs a
+    lookup every time, and makes searches and automated refactoring less reliable.
+  fix: |
+    Rename it to match the convention used around it.
+
+- key: QG-PP-SML-0222
+  name: Files should not have too many lines of code
+  languages: [php]
+  category: SML
+  severity: major
+  effort: 1h
+  status: planned
+  generated: true
+  tags: [brain-overload]
+  summary: A piece of code has grown past what can be held in mind at once.
+  why: |
+    The size is the defect: every change to it costs more than it should and carries a risk that has
+    nothing to do with the change itself.
+  fix: |
+    Split it along the responsibilities it has accumulated.
+
+- key: QG-PP-SML-0223
+  name: Statements should be on separate lines
+  languages: [php]
+  category: SML
+  severity: major
+  effort: 1min
+  status: planned
+  generated: true
+  tags: [convention, psr2]
+  summary: A name does not follow the convention the rest of the code uses.
+  why: |
+    Conventions let a reader infer what something is from its shape alone. A deviation costs a
+    lookup every time, and makes searches and automated refactoring less reliable.
+  fix: |
+    Rename it to match the convention used around it.
+
+- key: QG-PP-SML-0224
+  name: Only LF character (Unix-like) should be used to end lines
+  languages: [php]
+  category: SML
+  severity: minor
+  effort: 2min
+  status: planned
+  generated: true
+  tags: [convention, psr2]
+  summary: A name does not follow the convention the rest of the code uses.
+  why: |
+    Conventions let a reader infer what something is from its shape alone. A deviation costs a
+    lookup every time, and makes searches and automated refactoring less reliable.
+  fix: |
+    Rename it to match the convention used around it.
+
+- key: QG-PP-SML-0225
+  name: Files should contain only one top-level class or interface each
+  languages: [php]
+  category: SML
+  severity: major
+  effort: 15min
+  status: planned
+  generated: true
+  tags: [brain-overload]
+  summary: The code does not behave the way it reads.
+  why: |
+    Written this way it works by accident or fails on ordinary input, and the mistake survives
+    review because the intent reads correctly.
+  fix: |
+    Make the intended behaviour explicit, and cover the case that used to fail with a test.
+
+- key: QG-PP-SML-0226
+  name: Deprecated features should not be used
+  languages: [php]
+  category: SML
+  severity: major
+  effort: 15min
+  status: planned
+  generated: true
+  tags: [obsolete]
+  summary: An API is used where a better one exists.
+  why: |
+    The older form usually costs something the newer one does not, and it is on its way out: a
+    conversion, an allocation, a case it handles wrongly.
+  fix: |
+    Use the current API, and keep the old one only behind a documented compatibility layer.
+
+- key: QG-PP-SML-0227
+  name: Classes should not have too many lines of code
+  languages: [php]
+  category: SML
+  severity: major
+  effort: 1h
+  status: planned
+  generated: true
+  tags: [brain-overload]
+  summary: A piece of code has grown past what can be held in mind at once.
+  why: |
+    The size is the defect: every change to it costs more than it should and carries a risk that has
+    nothing to do with the change itself.
+  fix: |
+    Split it along the responsibilities it has accumulated.
+
+- key: QG-PP-SML-0228
+  name: PHP parser failure
+  languages: [php]
+  category: SML
+  severity: major
+  effort: 30min
+  status: planned
+  generated: true
+  tags: [suspicious]
+  summary: The code does not behave the way it reads.
+  why: |
+    Written this way it works by accident or fails on ordinary input, and the mistake survives
+    review because the intent reads correctly.
+  fix: |
+    Make the intended behaviour explicit, and cover the case that used to fail with a test.
+
+- key: QG-PP-BUG-0092
+  name: Class of caught exception should be defined
+  languages: [php]
+  category: BUG
+  severity: blocker
+  effort: 5min
+  status: planned
+  generated: true
+  tags: [pitfall]
+  summary: The code does not behave the way it reads.
+  why: |
+    Written this way it works by accident or fails on ordinary input, and the mistake survives
+    review because the intent reads correctly.
+  fix: |
+    Make the intended behaviour explicit, and cover the case that used to fail with a test.
+
+- key: QG-PP-BUG-0093
+  name: Regex patterns following a possessive quantifier should not always fail
+  languages: [php]
+  category: BUG
+  severity: critical
+  effort: 15min
+  status: planned
+  generated: true
+  tags: [regex]
+  summary: The control flow does not do what it reads as doing.
+  why: |
+    A branch that cannot be taken, a loop that cannot end, a condition that is always the same: the
+    code states an intent the machine does not carry out, and review reads the intent.
+  fix: |
+    Make the flow say what it does, and remove what cannot happen.
+
+- key: QG-PP-BUG-0094
+  name: Regex lookahead assertions should not be contradictory
+  languages: [php]
+  category: BUG
+  severity: critical
+  effort: 20min
+  status: planned
+  generated: true
+  tags: [regex]
+  summary: The code does not behave the way it reads.
+  why: |
+    Written this way it works by accident or fails on ordinary input, and the mistake survives
+    review because the intent reads correctly.
+  fix: |
+    Make the intended behaviour explicit, and cover the case that used to fail with a test.
+
+- key: QG-PP-BUG-0095
+  name: All "catch" blocks should be able to catch exceptions
+  languages: [php]
+  category: BUG
+  severity: major
+  effort: 5min
+  status: planned
+  generated: true
+  tags: [unused]
+  summary: Shared state is reached without the coordination that makes it safe.
+  why: |
+    It works every time it is tested and fails under load, on a machine with more cores, once. That
+    is the hardest kind of defect to reproduce and the easiest to write.
+  fix: |
+    Guard the shared state, or give each caller its own copy.
+
+- key: QG-PP-BUG-0096
+  name: Repeated patterns in regular expressions should not match the empty string
+  languages: [php]
+  category: BUG
+  severity: minor
+  effort: 5min
+  status: planned
+  generated: true
+  tags: [regex]
+  summary: Code that no longer takes part in anything is still here.
+  why: |
+    It has to be read, understood and kept compiling by everyone who passes through, and it gives
+    nothing back. Worse, it suggests a purpose that no longer exists.
+  fix: |
+    Remove it: the history keeps it if it is ever needed again.
+
+- key: QG-PP-BUG-0097
+  name: Alternatives in regular expressions should be grouped when used with anchors
+  languages: [php]
+  category: BUG
+  severity: major
+  effort: 10min
+  status: planned
+  generated: true
+  tags: [regex]
+  summary: The code does not behave the way it reads.
+  why: |
+    Written this way it works by accident or fails on ordinary input, and the mistake survives
+    review because the intent reads correctly.
+  fix: |
+    Make the intended behaviour explicit, and cover the case that used to fail with a test.
+
+- key: QG-PP-BUG-0098
+  name: Unicode Grapheme Clusters should be avoided inside regex character classes
+  languages: [php]
+  category: BUG
+  severity: major
+  effort: 5min
+  status: planned
+  generated: true
+  tags: [regex]
+  summary: The code does not behave the way it reads.
+  why: |
+    Written this way it works by accident or fails on ordinary input, and the mistake survives
+    review because the intent reads correctly.
+  fix: |
+    Make the intended behaviour explicit, and cover the case that used to fail with a test.
+
+- key: QG-PP-BUG-0099
+  name: Variables should be initialized before use
+  languages: [php]
+  category: BUG
+  severity: major
+  effort: 15min
+  status: planned
+  generated: true
+  tags: [cwe, symbolic-execution]
+  summary: The code does not behave the way it reads.
+  why: |
+    Written this way it works by accident or fails on ordinary input, and the mistake survives
+    review because the intent reads correctly.
+  fix: |
+    Make the intended behaviour explicit, and cover the case that used to fail with a test.
+
+- key: QG-PP-BUG-0100
+  name: "exit(...)" and "die(...)" statements should not be used
+  languages: [php]
+  category: BUG
+  severity: blocker
+  effort: 20min
+  status: planned
+  generated: true
+  tags: []
+  summary: The code does not behave the way it reads.
+  why: |
+    Written this way it works by accident or fails on ordinary input, and the mistake survives
+    review because the intent reads correctly.
+  fix: |
+    Make the intended behaviour explicit, and cover the case that used to fail with a test.
+
+- key: QG-PP-BUG-0101
+  name: Only one method invocation is expected when testing exceptions
+  languages: [php]
+  category: BUG
+  severity: critical
+  effort: 5min
+  status: planned
+  generated: true
+  tags: [tests, phpunit]
+  summary: The code does not behave the way it reads.
+  why: |
+    Written this way it works by accident or fails on ordinary input, and the mistake survives
+    review because the intent reads correctly.
+  fix: |
+    Make the intended behaviour explicit, and cover the case that used to fail with a test.
+
+- key: QG-PP-BUG-0102
+  name: Assertions should not be made at the end of blocks expecting an exception
+  languages: [php]
+  category: BUG
+  severity: critical
+  effort: 5min
+  status: planned
+  generated: true
+  tags: [tests, pitfall, phpunit]
+  summary: Shared state is reached without the coordination that makes it safe.
+  why: |
+    It works every time it is tested and fails under load, on a machine with more cores, once. That
+    is the hardest kind of defect to reproduce and the easiest to write.
+  fix: |
+    Guard the shared state, or give each caller its own copy.
+
+- key: QG-PP-BUG-0103
+  name: Unary prefix operators should not be repeated
+  languages: [php]
+  category: BUG
+  severity: major
+  effort: 5min
+  status: planned
+  generated: true
+  tags: []
+  summary: The code does not behave the way it reads.
+  why: |
+    Written this way it works by accident or fails on ordinary input, and the mistake survives
+    review because the intent reads correctly.
+  fix: |
+    Make the intended behaviour explicit, and cover the case that used to fail with a test.
+
+- key: QG-PP-BUG-0104
+  name: Array or Countable object count comparisons should make sense
+  languages: [php]
+  category: BUG
+  severity: major
+  effort: 2min
+  status: planned
+  generated: true
+  tags: [confusing]
+  summary: The code does not behave the way it reads.
+  why: |
+    Written this way it works by accident or fails on ordinary input, and the mistake survives
+    review because the intent reads correctly.
+  fix: |
+    Make the intended behaviour explicit, and cover the case that used to fail with a test.
+
+- key: QG-PP-BUG-0105
+  name: Files should not contain characters before "<?php"
+  languages: [php]
+  category: BUG
+  severity: minor
+  effort: 2min
+  status: planned
+  generated: true
+  tags: [user-experience]
+  summary: The code does not behave the way it reads.
+  why: |
+    Written this way it works by accident or fails on ordinary input, and the mistake survives
+    review because the intent reads correctly.
+  fix: |
+    Make the intended behaviour explicit, and cover the case that used to fail with a test.
+
+- key: QG-PP-BUG-0106
+  name: Errors should not be silenced
+  languages: [php]
+  category: BUG
+  severity: minor
+  effort: 30min
+  status: planned
+  generated: true
+  tags: [pitfall]
+  summary: The code does not behave the way it reads.
+  why: |
+    Written this way it works by accident or fails on ordinary input, and the mistake survives
+    review because the intent reads correctly.
+  fix: |
+    Make the intended behaviour explicit, and cover the case that used to fail with a test.
+
+- key: QG-PP-BUG-0107
+  name: Files that define symbols should not cause side-effects
+  languages: [php]
+  category: BUG
+  severity: major
+  effort: 5min
+  status: planned
+  generated: true
+  tags: [psr1, user-experience]
+  summary: The code does not behave the way it reads.
+  why: |
+    Written this way it works by accident or fails on ordinary input, and the mistake survives
+    review because the intent reads correctly.
+  fix: |
+    Make the intended behaviour explicit, and cover the case that used to fail with a test.
+
+- key: QG-PP-BUG-0108
+  name: Static members should be referenced with "static::"
+  languages: [php]
+  category: BUG
+  severity: minor
+  effort: 2min
+  status: planned
+  generated: true
+  tags: [pitfall]
+  summary: The code does not behave the way it reads.
+  why: |
+    Written this way it works by accident or fails on ordinary input, and the mistake survives
+    review because the intent reads correctly.
+  fix: |
+    Make the intended behaviour explicit, and cover the case that used to fail with a test.

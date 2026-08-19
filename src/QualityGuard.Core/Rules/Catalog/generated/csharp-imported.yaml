@@ -1,0 +1,3540 @@
+# Catalogue entries written in one pass, one per defect this language still lacks a check for.
+# Every entry is documentation and carries no detection, so none of them reports anything: a
+# detection is written by hand, against the shape the defect actually has, and measured before
+# the entry stops being planned.
+
+- key: QG-CS-SEC-0102
+  name: Custom cryptographic algorithms should not be used
+  languages: [cs]
+  category: SEC
+  severity: critical
+  effort: 1d
+  status: planned
+  generated: true
+  tags: [cwe, former-hotspot]
+  summary: Cryptography is used in a way that does not give the protection it appears to.
+  why: |
+    The code still runs and the data still looks protected, which is what makes this expensive to
+    find: nothing fails until somebody who should not be able to read the data reads it.
+  fix: |
+    Use the current recommended algorithm and parameters, and let the platform choose what it can.
+
+- key: QG-CS-SEC-0103
+  name: Members should not have conflicting transparency annotations
+  languages: [cs]
+  category: SEC
+  severity: major
+  effort: 5min
+  status: planned
+  generated: true
+  tags: [pitfall]
+  summary: The code does not behave the way it reads.
+  why: |
+    Written this way it works by accident or fails on ordinary input, and the mistake survives
+    review because the intent reads correctly.
+  fix: |
+    Make the intended behaviour explicit, and cover the case that used to fail with a test.
+
+- key: QG-CS-SEC-0104
+  name: "CoSetProxyBlanket" and "CoInitializeSecurity" should not be used
+  languages: [cs]
+  category: SEC
+  severity: blocker
+  effort: 20min
+  status: planned
+  generated: true
+  tags: []
+  summary: The code does not behave the way it reads.
+  why: |
+    Written this way it works by accident or fails on ordinary input, and the mistake survives
+    review because the intent reads correctly.
+  fix: |
+    Make the intended behaviour explicit, and cover the case that used to fail with a test.
+
+- key: QG-CS-SEC-0105
+  name: Serialization constructors should be secured
+  languages: [cs]
+  category: SEC
+  severity: major
+  effort: 5min
+  status: planned
+  generated: true
+  tags: [serialization]
+  summary: The code does not behave the way it reads.
+  why: |
+    Written this way it works by accident or fails on ordinary input, and the mistake survives
+    review because the intent reads correctly.
+  fix: |
+    Make the intended behaviour explicit, and cover the case that used to fail with a test.
+
+- key: QG-CS-SML-0557
+  name: Method overrides should not change parameter defaults
+  languages: [cs]
+  category: SML
+  severity: critical
+  effort: 2min
+  status: planned
+  generated: true
+  tags: [pitfall]
+  summary: The code does not behave the way it reads.
+  why: |
+    Written this way it works by accident or fails on ordinary input, and the mistake survives
+    review because the intent reads correctly.
+  fix: |
+    Make the intended behaviour explicit, and cover the case that used to fail with a test.
+
+- key: QG-CS-SML-0558
+  name: Invalid casts should be avoided
+  languages: [cs]
+  category: SML
+  severity: critical
+  effort: 20min
+  status: planned
+  generated: true
+  tags: [cwe, suspicious]
+  summary: The code does not behave the way it reads.
+  why: |
+    Written this way it works by accident or fails on ordinary input, and the mistake survives
+    review because the intent reads correctly.
+  fix: |
+    Make the intended behaviour explicit, and cover the case that used to fail with a test.
+
+- key: QG-CS-SML-0559
+  name: Field-like events should not be virtual
+  languages: [cs]
+  category: SML
+  severity: critical
+  effort: 20min
+  status: planned
+  generated: true
+  tags: []
+  summary: The code does not behave the way it reads.
+  why: |
+    Written this way it works by accident or fails on ordinary input, and the mistake survives
+    review because the intent reads correctly.
+  fix: |
+    Make the intended behaviour explicit, and cover the case that used to fail with a test.
+
+- key: QG-CS-SML-0560
+  name: Flags enumerations zero-value members should be named "None"
+  languages: [cs]
+  category: SML
+  severity: critical
+  effort: 5min
+  status: planned
+  generated: true
+  tags: [convention]
+  summary: A value that can be absent is used as though it always exists.
+  why: |
+    The path that produces the absence is usually the rare one, so this survives testing and arrives
+    in production as a failure with no obvious cause.
+  fix: |
+    Handle the absent case where it arises, or make the type say the value is always there.
+
+- key: QG-CS-SML-0561
+  name: Properties should not make collection or array copies
+  languages: [cs]
+  category: SML
+  severity: critical
+  effort: 5min
+  status: planned
+  generated: true
+  tags: [api-design, performance]
+  summary: The code does not behave the way it reads.
+  why: |
+    Written this way it works by accident or fails on ordinary input, and the mistake survives
+    review because the intent reads correctly.
+  fix: |
+    Make the intended behaviour explicit, and cover the case that used to fail with a test.
+
+- key: QG-CS-SML-0562
+  name: Whitespace and control characters in string literals should be explicit
+  languages: [cs]
+  category: SML
+  severity: critical
+  effort: 10min
+  status: planned
+  generated: true
+  tags: [pitfall]
+  summary: The code does not behave the way it reads.
+  why: |
+    Written this way it works by accident or fails on ordinary input, and the mistake survives
+    review because the intent reads correctly.
+  fix: |
+    Make the intended behaviour explicit, and cover the case that used to fail with a test.
+
+- key: QG-CS-SML-0563
+  name: Instance members should not write to "static" fields
+  languages: [cs]
+  category: SML
+  severity: critical
+  effort: 20min
+  status: planned
+  generated: true
+  tags: [multi-threading]
+  summary: Shared state is reached without the coordination that makes it safe.
+  why: |
+    It works every time it is tested and fails under load, on a machine with more cores, once. That
+    is the hardest kind of defect to reproduce and the easiest to write.
+  fix: |
+    Guard the shared state, or give each caller its own copy.
+
+- key: QG-CS-SML-0564
+  name: "is" should not be used with "this"
+  languages: [cs]
+  category: SML
+  severity: blocker
+  effort: 30min
+  status: planned
+  generated: true
+  tags: [api-design, bad-practice]
+  summary: The code does not behave the way it reads.
+  why: |
+    Written this way it works by accident or fails on ordinary input, and the mistake survives
+    review because the intent reads correctly.
+  fix: |
+    Make the intended behaviour explicit, and cover the case that used to fail with a test.
+
+- key: QG-CS-SML-0565
+  name: "value" contextual keyword should be used
+  languages: [cs]
+  category: SML
+  severity: blocker
+  effort: 5min
+  status: planned
+  generated: true
+  tags: [pitfall]
+  summary: An API is used where a better one exists.
+  why: |
+    The older form usually costs something the newer one does not, and it is on its way out: a
+    conversion, an allocation, a case it handles wrongly.
+  fix: |
+    Use the current API, and keep the old one only behind a documented compatibility layer.
+
+- key: QG-CS-SML-0566
+  name: Method overloads with default parameter values should not overlap
+  languages: [cs]
+  category: SML
+  severity: blocker
+  effort: 10min
+  status: planned
+  generated: true
+  tags: [unused, pitfall]
+  summary: Code that no longer takes part in anything is still here.
+  why: |
+    It has to be read, understood and kept compiling by everyone who passes through, and it gives
+    nothing back. Worse, it suggests a purpose that no longer exists.
+  fix: |
+    Remove it: the history keeps it if it is ever needed again.
+
+- key: QG-CS-SML-0567
+  name: Type should not be examined on "System.Type" instances
+  languages: [cs]
+  category: SML
+  severity: blocker
+  effort: 5min
+  status: planned
+  generated: true
+  tags: [suspicious]
+  summary: The code does not behave the way it reads.
+  why: |
+    Written this way it works by accident or fails on ordinary input, and the mistake survives
+    review because the intent reads correctly.
+  fix: |
+    Make the intended behaviour explicit, and cover the case that used to fail with a test.
+
+- key: QG-CS-SML-0568
+  name: "[Optional]" should not be used on "ref" or "out" parameters
+  languages: [cs]
+  category: SML
+  severity: critical
+  effort: 2min
+  status: planned
+  generated: true
+  tags: [pitfall]
+  summary: A value that can be absent is used as though it always exists.
+  why: |
+    The path that produces the absence is usually the rare one, so this survives testing and arrives
+    in production as a failure with no obvious cause.
+  fix: |
+    Handle the absent case where it arises, or make the type say the value is always there.
+
+- key: QG-CS-SML-0569
+  name: "params" should not be introduced on overrides
+  languages: [cs]
+  category: SML
+  severity: critical
+  effort: 1min
+  status: planned
+  generated: true
+  tags: [confusing]
+  summary: The code does not behave the way it reads.
+  why: |
+    Written this way it works by accident or fails on ordinary input, and the mistake survives
+    review because the intent reads correctly.
+  fix: |
+    Make the intended behaviour explicit, and cover the case that used to fail with a test.
+
+- key: QG-CS-SML-0570
+  name: Exception types should be "public"
+  languages: [cs]
+  category: SML
+  severity: critical
+  effort: 5min
+  status: planned
+  generated: true
+  tags: [error-handling, api-design]
+  summary: Something is reachable by callers who should not reach it.
+  why: |
+    Access granted this broadly is never noticed afterwards: nothing fails, and the surface stays
+    open for as long as the resource exists.
+  fix: |
+    Grant the access to the identities that need it and to nothing else.
+
+- key: QG-CS-SML-0571
+  name: Assemblies should have version information
+  languages: [cs]
+  category: SML
+  severity: critical
+  effort: 2min
+  status: planned
+  generated: true
+  tags: [pitfall]
+  summary: The code does not behave the way it reads.
+  why: |
+    Written this way it works by accident or fails on ordinary input, and the mistake survives
+    review because the intent reads correctly.
+  fix: |
+    Make the intended behaviour explicit, and cover the case that used to fail with a test.
+
+- key: QG-CS-SML-0572
+  name: Threads should not lock on objects with weak identity
+  languages: [cs]
+  category: SML
+  severity: critical
+  effort: 10min
+  status: planned
+  generated: true
+  tags: [multi-threading, pitfall]
+  summary: Shared state is reached without the coordination that makes it safe.
+  why: |
+    It works every time it is tested and fails under load, on a machine with more cores, once. That
+    is the hardest kind of defect to reproduce and the easiest to write.
+  fix: |
+    Guard the shared state, or give each caller its own copy.
+
+- key: QG-CS-SML-0573
+  name: Identifiers should not conflict with the C# 14 "field" contextual keyword
+  languages: [cs]
+  category: SML
+  severity: critical
+  effort: 5 min
+  status: planned
+  generated: true
+  tags: [csharp-14, compatibility, upgrade]
+  summary: A name does not follow the convention the rest of the code uses.
+  why: |
+    Conventions let a reader infer what something is from its shape alone. A deviation costs a
+    lookup every time, and makes searches and automated refactoring less reliable.
+  fix: |
+    Rename it to match the convention used around it.
+
+- key: QG-CS-SML-0574
+  name: Unnecessary mathematical comparisons should not be made
+  languages: [cs]
+  category: SML
+  severity: critical
+  effort: 15min
+  status: planned
+  generated: true
+  tags: [suspicious]
+  summary: The code does not behave the way it reads.
+  why: |
+    Written this way it works by accident or fails on ordinary input, and the mistake survives
+    review because the intent reads correctly.
+  fix: |
+    Make the intended behaviour explicit, and cover the case that used to fail with a test.
+
+- key: QG-CS-SML-0575
+  name: URIs should not be hardcoded
+  languages: [cs]
+  category: SML
+  severity: minor
+  effort: 20min
+  status: planned
+  generated: true
+  tags: []
+  summary: The code does not behave the way it reads.
+  why: |
+    Written this way it works by accident or fails on ordinary input, and the mistake survives
+    review because the intent reads correctly.
+  fix: |
+    Make the intended behaviour explicit, and cover the case that used to fail with a test.
+
+- key: QG-CS-SML-0576
+  name: General or reserved exceptions should never be thrown
+  languages: [cs]
+  category: SML
+  severity: major
+  effort: 20min
+  status: planned
+  generated: true
+  tags: [cwe, error-handling]
+  summary: The code does not behave the way it reads.
+  why: |
+    Written this way it works by accident or fails on ordinary input, and the mistake survives
+    review because the intent reads correctly.
+  fix: |
+    Make the intended behaviour explicit, and cover the case that used to fail with a test.
+
+- key: QG-CS-SML-0577
+  name: "Equals" and the comparison operators should be overridden when implementing "IComparable"
+  languages: [cs]
+  category: SML
+  severity: minor
+  effort: 15min
+  status: planned
+  generated: true
+  tags: []
+  summary: The code does not behave the way it reads.
+  why: |
+    Written this way it works by accident or fails on ordinary input, and the mistake survives
+    review because the intent reads correctly.
+  fix: |
+    Make the intended behaviour explicit, and cover the case that used to fail with a test.
+
+- key: QG-CS-SML-0578
+  name: "for" loop stop conditions should be invariant
+  languages: [cs]
+  category: SML
+  severity: major
+  effort: 10min
+  status: planned
+  generated: true
+  tags: [pitfall]
+  summary: The control flow does not do what it reads as doing.
+  why: |
+    A branch that cannot be taken, a loop that cannot end, a condition that is always the same: the
+    code states an intent the machine does not carry out, and review reads the intent.
+  fix: |
+    Make the flow say what it does, and remove what cannot happen.
+
+- key: QG-CS-SML-0579
+  name: An abstract class should have both abstract and concrete methods
+  languages: [cs]
+  category: SML
+  severity: minor
+  effort: 5min
+  status: planned
+  generated: true
+  tags: [convention]
+  summary: A name does not follow the convention the rest of the code uses.
+  why: |
+    Conventions let a reader infer what something is from its shape alone. A deviation costs a
+    lookup every time, and makes searches and automated refactoring less reliable.
+  fix: |
+    Rename it to match the convention used around it.
+
+- key: QG-CS-SML-0580
+  name: Runtime type checking should be simplified
+  languages: [cs]
+  category: SML
+  severity: minor
+  effort: 5min
+  status: planned
+  generated: true
+  tags: [clumsy]
+  summary: The code does not behave the way it reads.
+  why: |
+    Written this way it works by accident or fails on ordinary input, and the mistake survives
+    review because the intent reads correctly.
+  fix: |
+    Make the intended behaviour explicit, and cover the case that used to fail with a test.
+
+- key: QG-CS-SML-0581
+  name: "StringBuilder" data should be used
+  languages: [cs]
+  category: SML
+  severity: major
+  effort: 5min
+  status: planned
+  generated: true
+  tags: [performance]
+  summary: An API is used where a better one exists.
+  why: |
+    The older form usually costs something the newer one does not, and it is on its way out: a
+    conversion, an allocation, a case it handles wrongly.
+  fix: |
+    Use the current API, and keep the old one only behind a documented compatibility layer.
+
+- key: QG-CS-SML-0582
+  name: Duplicate casts should not be made
+  languages: [cs]
+  category: SML
+  severity: minor
+  effort: 10min
+  status: planned
+  generated: true
+  tags: [performance]
+  summary: The code does not behave the way it reads.
+  why: |
+    Written this way it works by accident or fails on ordinary input, and the mistake survives
+    review because the intent reads correctly.
+  fix: |
+    Make the intended behaviour explicit, and cover the case that used to fail with a test.
+
+- key: QG-CS-SML-0583
+  name: Implementations should be provided for "partial" methods
+  languages: [cs]
+  category: SML
+  severity: minor
+  effort: 20min
+  status: planned
+  generated: true
+  tags: [suspicious]
+  summary: The code does not behave the way it reads.
+  why: |
+    Written this way it works by accident or fails on ordinary input, and the mistake survives
+    review because the intent reads correctly.
+  fix: |
+    Make the intended behaviour explicit, and cover the case that used to fail with a test.
+
+- key: QG-CS-SML-0584
+  name: "params" should be used on overrides
+  languages: [cs]
+  category: SML
+  severity: major
+  effort: 2min
+  status: planned
+  generated: true
+  tags: [confusing]
+  summary: An API is used where a better one exists.
+  why: |
+    The older form usually costs something the newer one does not, and it is on its way out: a
+    conversion, an allocation, a case it handles wrongly.
+  fix: |
+    Use the current API, and keep the old one only behind a documented compatibility layer.
+
+- key: QG-CS-SML-0585
+  name: "private" methods called only by inner classes should be moved to those classes
+  languages: [cs]
+  category: SML
+  severity: minor
+  effort: 5min
+  status: planned
+  generated: true
+  tags: [confusing]
+  summary: The code does not behave the way it reads.
+  why: |
+    Written this way it works by accident or fails on ordinary input, and the mistake survives
+    review because the intent reads correctly.
+  fix: |
+    Make the intended behaviour explicit, and cover the case that used to fail with a test.
+
+- key: QG-CS-SML-0586
+  name: "[ExpectedException]" should not be used
+  languages: [cs]
+  category: SML
+  severity: major
+  effort: 5min
+  status: planned
+  generated: true
+  tags: [tests]
+  summary: The code does not behave the way it reads.
+  why: |
+    Written this way it works by accident or fails on ordinary input, and the mistake survives
+    review because the intent reads correctly.
+  fix: |
+    Make the intended behaviour explicit, and cover the case that used to fail with a test.
+
+- key: QG-CS-SML-0587
+  name: Variables should not be checked against the values they're about to be assigned
+  languages: [cs]
+  category: SML
+  severity: minor
+  effort: 2min
+  status: planned
+  generated: true
+  tags: [confusing]
+  summary: The code does not behave the way it reads.
+  why: |
+    Written this way it works by accident or fails on ordinary input, and the mistake survives
+    review because the intent reads correctly.
+  fix: |
+    Make the intended behaviour explicit, and cover the case that used to fail with a test.
+
+- key: QG-CS-SML-0588
+  name: Interfaces should not simply inherit from base interfaces with colliding members
+  languages: [cs]
+  category: SML
+  severity: minor
+  effort: 5min
+  status: planned
+  generated: true
+  tags: [design]
+  summary: The code does not behave the way it reads.
+  why: |
+    Written this way it works by accident or fails on ordinary input, and the mistake survives
+    review because the intent reads correctly.
+  fix: |
+    Make the intended behaviour explicit, and cover the case that used to fail with a test.
+
+- key: QG-CS-SML-0589
+  name: Parameters with "[DefaultParameterValue]" attributes should also be marked "[Optional]"
+  languages: [cs]
+  category: SML
+  severity: minor
+  effort: 2min
+  status: planned
+  generated: true
+  tags: [pitfall]
+  summary: A value that can be absent is used as though it always exists.
+  why: |
+    The path that produces the absence is usually the rare one, so this survives testing and arrives
+    in production as a failure with no obvious cause.
+  fix: |
+    Handle the absent case where it arises, or make the type say the value is always there.
+
+- key: QG-CS-SML-0590
+  name: Composite format strings should be used correctly
+  languages: [cs]
+  category: SML
+  severity: major
+  effort: 1min
+  status: planned
+  generated: true
+  tags: [confusing]
+  summary: An API is used where a better one exists.
+  why: |
+    The older form usually costs something the newer one does not, and it is on its way out: a
+    conversion, an allocation, a case it handles wrongly.
+  fix: |
+    Use the current API, and keep the old one only behind a documented compatibility layer.
+
+- key: QG-CS-SML-0591
+  name: Empty "case" clauses that fall through to the "default" should be omitted
+  languages: [cs]
+  category: SML
+  severity: minor
+  effort: 1min
+  status: planned
+  generated: true
+  tags: [finding, clumsy]
+  summary: The control flow does not do what it reads as doing.
+  why: |
+    A branch that cannot be taken, a loop that cannot end, a condition that is always the same: the
+    code states an intent the machine does not carry out, and review reads the intent.
+  fix: |
+    Make the flow say what it does, and remove what cannot happen.
+
+- key: QG-CS-SML-0592
+  name: Member initializer values should not be redundant
+  languages: [cs]
+  category: SML
+  severity: minor
+  effort: 1min
+  status: planned
+  generated: true
+  tags: []
+  summary: Code that no longer takes part in anything is still here.
+  why: |
+    It has to be read, understood and kept compiling by everyone who passes through, and it gives
+    nothing back. Worse, it suggests a purpose that no longer exists.
+  fix: |
+    Remove it: the history keeps it if it is ever needed again.
+
+- key: QG-CS-SML-0593
+  name: Arrays should not be created for params parameters
+  languages: [cs]
+  category: SML
+  severity: minor
+  effort: 2min
+  status: planned
+  generated: true
+  tags: [clumsy]
+  summary: A piece of code has grown past what can be held in mind at once.
+  why: |
+    The size is the defect: every change to it costs more than it should and carries a risk that has
+    nothing to do with the change itself.
+  fix: |
+    Split it along the responsibilities it has accumulated.
+
+- key: QG-CS-SML-0594
+  name: Classes that provide "Equals(<T>)" should implement "IEquatable<T>"
+  languages: [cs]
+  category: SML
+  severity: minor
+  effort: 2min
+  status: planned
+  generated: true
+  tags: [api-design]
+  summary: The code does not behave the way it reads.
+  why: |
+    Written this way it works by accident or fails on ordinary input, and the mistake survives
+    review because the intent reads correctly.
+  fix: |
+    Make the intended behaviour explicit, and cover the case that used to fail with a test.
+
+- key: QG-CS-SML-0595
+  name: "ISerializable" should be implemented correctly
+  languages: [cs]
+  category: SML
+  severity: major
+  effort: 20min
+  status: planned
+  generated: true
+  tags: [pitfall]
+  summary: The code does not behave the way it reads.
+  why: |
+    Written this way it works by accident or fails on ordinary input, and the mistake survives
+    review because the intent reads correctly.
+  fix: |
+    Make the intended behaviour explicit, and cover the case that used to fail with a test.
+
+- key: QG-CS-SML-0596
+  name: "static" fields should be initialized inline
+  languages: [cs]
+  category: SML
+  severity: minor
+  effort: 5min
+  status: planned
+  generated: true
+  tags: []
+  summary: The code does not behave the way it reads.
+  why: |
+    Written this way it works by accident or fails on ordinary input, and the mistake survives
+    review because the intent reads correctly.
+  fix: |
+    Make the intended behaviour explicit, and cover the case that used to fail with a test.
+
+- key: QG-CS-SML-0597
+  name: Objects should not be disposed more than once
+  languages: [cs]
+  category: SML
+  severity: major
+  effort: 10min
+  status: planned
+  generated: true
+  tags: [confusing, pitfall, symbolic-execution]
+  summary: Something the runtime cannot reclaim on its own is not released.
+  why: |
+    Handles, sockets and connections are finite. The failure appears far from here, under load, as
+    an exhaustion nobody can attribute to a single line.
+  fix: |
+    Release it on every path, including the exceptional one.
+
+- key: QG-CS-SML-0598
+  name: Custom attributes should be marked with "System.AttributeUsageAttribute"
+  languages: [cs]
+  category: SML
+  severity: major
+  effort: 5min
+  status: planned
+  generated: true
+  tags: [api-design]
+  summary: The code does not behave the way it reads.
+  why: |
+    Written this way it works by accident or fails on ordinary input, and the mistake survives
+    review because the intent reads correctly.
+  fix: |
+    Make the intended behaviour explicit, and cover the case that used to fail with a test.
+
+- key: QG-CS-SML-0599
+  name: Classes implementing "IEquatable<T>" should be sealed
+  languages: [cs]
+  category: SML
+  severity: major
+  effort: 2min
+  status: planned
+  generated: true
+  tags: [pitfall]
+  summary: The code does not behave the way it reads.
+  why: |
+    Written this way it works by accident or fails on ordinary input, and the mistake survives
+    review because the intent reads correctly.
+  fix: |
+    Make the intended behaviour explicit, and cover the case that used to fail with a test.
+
+- key: QG-CS-SML-0600
+  name: Types should not extend outdated base types
+  languages: [cs]
+  category: SML
+  severity: minor
+  effort: 10min
+  status: planned
+  generated: true
+  tags: []
+  summary: The code does not behave the way it reads.
+  why: |
+    Written this way it works by accident or fails on ordinary input, and the mistake survives
+    review because the intent reads correctly.
+  fix: |
+    Make the intended behaviour explicit, and cover the case that used to fail with a test.
+
+- key: QG-CS-SML-0601
+  name: Non-flags enums should not be marked with "FlagsAttribute"
+  languages: [cs]
+  category: SML
+  severity: major
+  effort: 2min
+  status: planned
+  generated: true
+  tags: []
+  summary: The code does not behave the way it reads.
+  why: |
+    Written this way it works by accident or fails on ordinary input, and the mistake survives
+    review because the intent reads correctly.
+  fix: |
+    Make the intended behaviour explicit, and cover the case that used to fail with a test.
+
+- key: QG-CS-SML-0602
+  name: Method overloads should be grouped together
+  languages: [cs]
+  category: SML
+  severity: minor
+  effort: 1min
+  status: planned
+  generated: true
+  tags: [convention]
+  summary: A name does not follow the convention the rest of the code uses.
+  why: |
+    Conventions let a reader infer what something is from its shape alone. A deviation costs a
+    lookup every time, and makes searches and automated refactoring less reliable.
+  fix: |
+    Rename it to match the convention used around it.
+
+- key: QG-CS-SML-0603
+  name: Native methods should be wrapped
+  languages: [cs]
+  category: SML
+  severity: major
+  effort: 30min
+  status: planned
+  generated: true
+  tags: [pitfall]
+  summary: The code does not behave the way it reads.
+  why: |
+    Written this way it works by accident or fails on ordinary input, and the mistake survives
+    review because the intent reads correctly.
+  fix: |
+    Make the intended behaviour explicit, and cover the case that used to fail with a test.
+
+- key: QG-CS-SML-0604
+  name: Events should have proper arguments
+  languages: [cs]
+  category: SML
+  severity: major
+  effort: 5min
+  status: planned
+  generated: true
+  tags: [event, pitfall]
+  summary: The code does not behave the way it reads.
+  why: |
+    Written this way it works by accident or fails on ordinary input, and the mistake survives
+    review because the intent reads correctly.
+  fix: |
+    Make the intended behaviour explicit, and cover the case that used to fail with a test.
+
+- key: QG-CS-SML-0605
+  name: Parameter validation in yielding methods should be wrapped
+  languages: [cs]
+  category: SML
+  severity: major
+  effort: 15min
+  status: planned
+  generated: true
+  tags: [yield]
+  summary: The code does not behave the way it reads.
+  why: |
+    Written this way it works by accident or fails on ordinary input, and the mistake survives
+    review because the intent reads correctly.
+  fix: |
+    Make the intended behaviour explicit, and cover the case that used to fail with a test.
+
+- key: QG-CS-SML-0606
+  name: "DebuggerDisplayAttribute" strings should reference existing members
+  languages: [cs]
+  category: SML
+  severity: major
+  effort: 5min
+  status: planned
+  generated: true
+  tags: []
+  summary: The code does not behave the way it reads.
+  why: |
+    Written this way it works by accident or fails on ordinary input, and the mistake survives
+    review because the intent reads correctly.
+  fix: |
+    Make the intended behaviour explicit, and cover the case that used to fail with a test.
+
+- key: QG-CS-SML-0607
+  name: Azure Functions should be stateless
+  languages: [cs]
+  category: SML
+  severity: major
+  effort: 1h
+  status: planned
+  generated: true
+  tags: [azure, bad-practice]
+  summary: The code does not behave the way it reads.
+  why: |
+    Written this way it works by accident or fails on ordinary input, and the mistake survives
+    review because the intent reads correctly.
+  fix: |
+    Make the intended behaviour explicit, and cover the case that used to fail with a test.
+
+- key: QG-CS-SML-0608
+  name: Client instances should not be recreated on each Azure Function invocation
+  languages: [cs]
+  category: SML
+  severity: major
+  effort: 5min
+  status: planned
+  generated: true
+  tags: [azure, bad-practice, design]
+  summary: The code does not behave the way it reads.
+  why: |
+    Written this way it works by accident or fails on ordinary input, and the mistake survives
+    review because the intent reads correctly.
+  fix: |
+    Make the intended behaviour explicit, and cover the case that used to fail with a test.
+
+- key: QG-CS-SML-0609
+  name: Always set the "DateTimeKind" when creating new "DateTime" instances
+  languages: [cs]
+  category: SML
+  severity: major
+  effort: 5min
+  status: planned
+  generated: true
+  tags: [localisation, pitfall]
+  summary: The control flow does not do what it reads as doing.
+  why: |
+    A branch that cannot be taken, a loop that cannot end, a condition that is always the same: the
+    code states an intent the machine does not carry out, and review reads the intent.
+  fix: |
+    Make the flow say what it does, and remove what cannot happen.
+
+- key: QG-CS-SML-0610
+  name: The collection should be filtered before sorting by using "Where" before "OrderBy"
+  languages: [cs]
+  category: SML
+  severity: minor
+  effort: 5min
+  status: planned
+  generated: true
+  tags: [performance]
+  summary: The code does not behave the way it reads.
+  why: |
+    Written this way it works by accident or fails on ordinary input, and the mistake survives
+    review because the intent reads correctly.
+  fix: |
+    Make the intended behaviour explicit, and cover the case that used to fail with a test.
+
+- key: QG-CS-SML-0611
+  name: Generic logger injection should match enclosing type
+  languages: [cs]
+  category: SML
+  severity: minor
+  effort: 5min
+  status: planned
+  generated: true
+  tags: [confusing, logging]
+  summary: Input decides part of something the program then executes.
+  why: |
+    Whatever the caller sends becomes part of the instruction rather than part of the data. The code
+    reads naturally, because the value sits exactly where it belongs in the sentence.
+  fix: |
+    Keep the instruction fixed and pass the values separately, so no input can change its shape.
+
+- key: QG-CS-SML-0612
+  name: Use PascalCase for named placeholders
+  languages: [cs]
+  category: SML
+  severity: minor
+  effort: 1min
+  status: planned
+  generated: true
+  tags: [logging]
+  summary: The control flow does not do what it reads as doing.
+  why: |
+    A branch that cannot be taken, a loop that cannot end, a condition that is always the same: the
+    code states an intent the machine does not carry out, and review reads the intent.
+  fix: |
+    Make the flow say what it does, and remove what cannot happen.
+
+- key: QG-CS-SML-0613
+  name: First/Single should be used instead of FirstOrDefault/SingleOrDefault on collections that are known to be non-empty
+  languages: [cs]
+  category: SML
+  severity: major
+  effort: 1min
+  status: planned
+  generated: true
+  tags: [symbolic-execution]
+  summary: Code that no longer takes part in anything is still here.
+  why: |
+    It has to be read, understood and kept compiling by everyone who passes through, and it gives
+    nothing back. Worse, it suggests a purpose that no longer exists.
+  fix: |
+    Remove it: the history keeps it if it is ever needed again.
+
+- key: QG-CS-SML-0614
+  name: Null-forgiving operators should not be redundant
+  languages: [cs]
+  category: SML
+  severity: minor
+  effort: 1min
+  status: planned
+  generated: true
+  tags: [redundant]
+  summary: A value that can be absent is used as though it always exists.
+  why: |
+    The path that produces the absence is usually the rare one, so this survives testing and arrives
+    in production as a failure with no obvious cause.
+  fix: |
+    Handle the absent case where it arises, or make the type say the value is always there.
+
+- key: QG-CS-SML-0615
+  name: Null-forgiving operators should not be used when nullable warnings are disabled
+  languages: [cs]
+  category: SML
+  severity: minor
+  effort: 1min
+  status: planned
+  generated: true
+  tags: [redundant]
+  summary: A value that can be absent is used as though it always exists.
+  why: |
+    The path that produces the absence is usually the rare one, so this survives testing and arrives
+    in production as a failure with no obvious cause.
+  fix: |
+    Handle the absent case where it arises, or make the type say the value is always there.
+
+- key: QG-CS-SML-0616
+  name: Method calls should not resolve ambiguously to overloads with "params"
+  languages: [cs]
+  category: SML
+  severity: minor
+  effort: 20min
+  status: planned
+  generated: true
+  tags: [pitfall]
+  summary: The code does not behave the way it reads.
+  why: |
+    Written this way it works by accident or fails on ordinary input, and the mistake survives
+    review because the intent reads correctly.
+  fix: |
+    Make the intended behaviour explicit, and cover the case that used to fail with a test.
+
+- key: QG-CS-SML-0617
+  name: Methods should not return values that are never used
+  languages: [cs]
+  category: SML
+  severity: minor
+  effort: 2min
+  status: planned
+  generated: true
+  tags: [design, unused]
+  summary: Code that no longer takes part in anything is still here.
+  why: |
+    It has to be read, understood and kept compiling by everyone who passes through, and it gives
+    nothing back. Worse, it suggests a purpose that no longer exists.
+  fix: |
+    Remove it: the history keeps it if it is ever needed again.
+
+- key: QG-CS-SML-0618
+  name: Namespaces should not be empty
+  languages: [cs]
+  category: SML
+  severity: minor
+  effort: 2min
+  status: planned
+  generated: true
+  tags: [unused]
+  summary: A name does not follow the convention the rest of the code uses.
+  why: |
+    Conventions let a reader infer what something is from its shape alone. A deviation costs a
+    lookup every time, and makes searches and automated refactoring less reliable.
+  fix: |
+    Rename it to match the convention used around it.
+
+- key: QG-CS-SML-0619
+  name: "async" and "await" should not be used as identifiers
+  languages: [cs]
+  category: SML
+  severity: blocker
+  effort: 5min
+  status: planned
+  generated: true
+  tags: [pitfall]
+  summary: A name does not follow the convention the rest of the code uses.
+  why: |
+    Conventions let a reader infer what something is from its shape alone. A deviation costs a
+    lookup every time, and makes searches and automated refactoring less reliable.
+  fix: |
+    Rename it to match the convention used around it.
+
+- key: QG-CS-SML-0620
+  name: Public methods should not have multidimensional array parameters
+  languages: [cs]
+  category: SML
+  severity: blocker
+  effort: 1h
+  status: planned
+  generated: true
+  tags: [pitfall]
+  summary: Something is reachable by callers who should not reach it.
+  why: |
+    Access granted this broadly is never noticed afterwards: nothing fails, and the surface stays
+    open for as long as the resource exists.
+  fix: |
+    Grant the access to the identities that need it and to nothing else.
+
+- key: QG-CS-SML-0621
+  name: "Explicit" conversions of "foreach" loops should not be used
+  languages: [cs]
+  category: SML
+  severity: critical
+  effort: 15min
+  status: planned
+  generated: true
+  tags: [suspicious]
+  summary: The control flow does not do what it reads as doing.
+  why: |
+    A branch that cannot be taken, a loop that cannot end, a condition that is always the same: the
+    code states an intent the machine does not carry out, and review reads the intent.
+  fix: |
+    Make the flow say what it does, and remove what cannot happen.
+
+- key: QG-CS-SML-0622
+  name: Non-flags enums should not be used in bitwise operations
+  languages: [cs]
+  category: SML
+  severity: critical
+  effort: 2min
+  status: planned
+  generated: true
+  tags: [convention]
+  summary: A name does not follow the convention the rest of the code uses.
+  why: |
+    Conventions let a reader infer what something is from its shape alone. A deviation costs a
+    lookup every time, and makes searches and automated refactoring less reliable.
+  fix: |
+    Rename it to match the convention used around it.
+
+- key: QG-CS-SML-0623
+  name: Test method signatures should be correct
+  languages: [cs]
+  category: SML
+  severity: blocker
+  effort: 2min
+  status: planned
+  generated: true
+  tags: [tests]
+  summary: The code does not behave the way it reads.
+  why: |
+    Written this way it works by accident or fails on ordinary input, and the mistake survives
+    review because the intent reads correctly.
+  fix: |
+    Make the intended behaviour explicit, and cover the case that used to fail with a test.
+
+- key: QG-CS-SML-0624
+  name: "[DefaultValue]" should not be used when "[DefaultParameterValue]" is meant
+  languages: [cs]
+  category: SML
+  severity: critical
+  effort: 2min
+  status: planned
+  generated: true
+  tags: [suspicious]
+  summary: The code does not behave the way it reads.
+  why: |
+    Written this way it works by accident or fails on ordinary input, and the mistake survives
+    review because the intent reads correctly.
+  fix: |
+    Make the intended behaviour explicit, and cover the case that used to fail with a test.
+
+- key: QG-CS-SML-0625
+  name: "operator==" should not be overloaded on reference types
+  languages: [cs]
+  category: SML
+  severity: blocker
+  effort: 15min
+  status: planned
+  generated: true
+  tags: [pitfall]
+  summary: The code does not behave the way it reads.
+  why: |
+    Written this way it works by accident or fails on ordinary input, and the mistake survives
+    review because the intent reads correctly.
+  fix: |
+    Make the intended behaviour explicit, and cover the case that used to fail with a test.
+
+- key: QG-CS-SML-0626
+  name: Conditionals should start on new lines
+  languages: [cs]
+  category: SML
+  severity: critical
+  effort: 10min
+  status: planned
+  generated: true
+  tags: [suspicious]
+  summary: The control flow does not do what it reads as doing.
+  why: |
+    A branch that cannot be taken, a loop that cannot end, a condition that is always the same: the
+    code states an intent the machine does not carry out, and review reads the intent.
+  fix: |
+    Make the flow say what it does, and remove what cannot happen.
+
+- key: QG-CS-SML-0627
+  name: A conditionally executed single line should be denoted by indentation
+  languages: [cs]
+  category: SML
+  severity: critical
+  effort: 10min
+  status: planned
+  generated: true
+  tags: [confusing, suspicious]
+  summary: The control flow does not do what it reads as doing.
+  why: |
+    A branch that cannot be taken, a loop that cannot end, a condition that is always the same: the
+    code states an intent the machine does not carry out, and review reads the intent.
+  fix: |
+    Make the flow say what it does, and remove what cannot happen.
+
+- key: QG-CS-SML-0628
+  name: Inherited member visibility should not be decreased
+  languages: [cs]
+  category: SML
+  severity: critical
+  effort: 2min
+  status: planned
+  generated: true
+  tags: [pitfall]
+  summary: The code does not behave the way it reads.
+  why: |
+    Written this way it works by accident or fails on ordinary input, and the mistake survives
+    review because the intent reads correctly.
+  fix: |
+    Make the intended behaviour explicit, and cover the case that used to fail with a test.
+
+- key: QG-CS-SML-0629
+  name: Calls to "async" methods should not be blocking in Azure Functions
+  languages: [cs]
+  category: SML
+  severity: blocker
+  effort: 10min
+  status: planned
+  generated: true
+  tags: [azure, async-await]
+  summary: Shared state is reached without the coordination that makes it safe.
+  why: |
+    It works every time it is tested and fails under load, on a machine with more cores, once. That
+    is the hardest kind of defect to reproduce and the easiest to write.
+  fix: |
+    Guard the shared state, or give each caller its own copy.
+
+- key: QG-CS-SML-0630
+  name: Parameter names should match base declaration and other partial definitions
+  languages: [cs]
+  category: SML
+  severity: critical
+  effort: 10min
+  status: planned
+  generated: true
+  tags: [suspicious]
+  summary: A name does not follow the convention the rest of the code uses.
+  why: |
+    Conventions let a reader infer what something is from its shape alone. A deviation costs a
+    lookup every time, and makes searches and automated refactoring less reliable.
+  fix: |
+    Rename it to match the convention used around it.
+
+- key: QG-CS-SML-0631
+  name: "if ... else if" constructs should end with "else" clauses
+  languages: [cs]
+  category: SML
+  severity: critical
+  effort: 5min
+  status: planned
+  generated: true
+  tags: []
+  summary: The code does not behave the way it reads.
+  why: |
+    Written this way it works by accident or fails on ordinary input, and the mistake survives
+    review because the intent reads correctly.
+  fix: |
+    Make the intended behaviour explicit, and cover the case that used to fail with a test.
+
+- key: QG-CS-SML-0632
+  name: "switch/Select" statements should contain a "default/Case Else" clauses
+  languages: [cs]
+  category: SML
+  severity: critical
+  effort: 5min
+  status: planned
+  generated: true
+  tags: [cwe]
+  summary: The control flow does not do what it reads as doing.
+  why: |
+    A branch that cannot be taken, a loop that cannot end, a condition that is always the same: the
+    code states an intent the machine does not carry out, and review reads the intent.
+  fix: |
+    Make the flow say what it does, and remove what cannot happen.
+
+- key: QG-CS-SML-0633
+  name: Control flow statements "if", "switch", "for", "foreach", "while", "do"  and "try" should not be nested too deeply
+  languages: [cs]
+  category: SML
+  severity: critical
+  effort: 10min
+  status: planned
+  generated: true
+  tags: [brain-overload]
+  summary: The control flow does not do what it reads as doing.
+  why: |
+    A branch that cannot be taken, a loop that cannot end, a condition that is always the same: the
+    code states an intent the machine does not carry out, and review reads the intent.
+  fix: |
+    Make the flow say what it does, and remove what cannot happen.
+
+- key: QG-CS-SML-0634
+  name: Modulus results should not be checked for direct equality
+  languages: [cs]
+  category: SML
+  severity: critical
+  effort: 5min
+  status: planned
+  generated: true
+  tags: [suspicious]
+  summary: The code does not behave the way it reads.
+  why: |
+    Written this way it works by accident or fails on ordinary input, and the mistake survives
+    review because the intent reads correctly.
+  fix: |
+    Make the intended behaviour explicit, and cover the case that used to fail with a test.
+
+- key: QG-CS-SML-0635
+  name: "nameof" should be used
+  languages: [cs]
+  category: SML
+  severity: critical
+  effort: 5min
+  status: planned
+  generated: true
+  tags: [bad-practice]
+  summary: A name does not follow the convention the rest of the code uses.
+  why: |
+    Conventions let a reader infer what something is from its shape alone. A deviation costs a
+    lookup every time, and makes searches and automated refactoring less reliable.
+  fix: |
+    Rename it to match the convention used around it.
+
+- key: QG-CS-SML-0636
+  name: Array covariance should not be used
+  languages: [cs]
+  category: SML
+  severity: critical
+  effort: 15min
+  status: planned
+  generated: true
+  tags: [pitfall]
+  summary: The code does not behave the way it reads.
+  why: |
+    Written this way it works by accident or fails on ordinary input, and the mistake survives
+    review because the intent reads correctly.
+  fix: |
+    Make the intended behaviour explicit, and cover the case that used to fail with a test.
+
+- key: QG-CS-SML-0637
+  name: Public constant members should not be used
+  languages: [cs]
+  category: SML
+  severity: critical
+  effort: 5min
+  status: planned
+  generated: true
+  tags: [pitfall]
+  summary: Something is reachable by callers who should not reach it.
+  why: |
+    Access granted this broadly is never noticed afterwards: nothing fails, and the surface stays
+    open for as long as the resource exists.
+  fix: |
+    Grant the access to the identities that need it and to nothing else.
+
+- key: QG-CS-SML-0638
+  name: Optional parameters should not be used
+  languages: [cs]
+  category: SML
+  severity: critical
+  effort: 5min
+  status: planned
+  generated: true
+  tags: [pitfall]
+  summary: A value that can be absent is used as though it always exists.
+  why: |
+    The path that produces the absence is usually the rare one, so this survives testing and arrives
+    in production as a failure with no obvious cause.
+  fix: |
+    Handle the absent case where it arises, or make the type say the value is always there.
+
+- key: QG-CS-SML-0639
+  name: "ConfigureAwait(false)" should be used
+  languages: [cs]
+  category: SML
+  severity: critical
+  effort: 15min
+  status: planned
+  generated: true
+  tags: [multi-threading, async-await, suspicious, performance]
+  summary: Shared state is reached without the coordination that makes it safe.
+  why: |
+    It works every time it is tested and fails under load, on a machine with more cores, once. That
+    is the hardest kind of defect to reproduce and the easiest to write.
+  fix: |
+    Guard the shared state, or give each caller its own copy.
+
+- key: QG-CS-SML-0640
+  name: Unchanged variables should be marked as "const"
+  languages: [cs]
+  category: SML
+  severity: critical
+  effort: 2min
+  status: planned
+  generated: true
+  tags: [performance]
+  summary: The code does not behave the way it reads.
+  why: |
+    Written this way it works by accident or fails on ordinary input, and the mistake survives
+    review because the intent reads correctly.
+  fix: |
+    Make the intended behaviour explicit, and cover the case that used to fail with a test.
+
+- key: QG-CS-SML-0641
+  name: "out" and "ref" parameters should not be used
+  languages: [cs]
+  category: SML
+  severity: critical
+  effort: 20min
+  status: planned
+  generated: true
+  tags: [suspicious]
+  summary: A piece of code has grown past what can be held in mind at once.
+  why: |
+    The size is the defect: every change to it costs more than it should and carries a risk that has
+    nothing to do with the change itself.
+  fix: |
+    Split it along the responsibilities it has accumulated.
+
+- key: QG-CS-SML-0642
+  name: Number patterns should be regular
+  languages: [cs]
+  category: SML
+  severity: critical
+  effort: 10min
+  status: planned
+  generated: true
+  tags: [suspicious]
+  summary: The code does not behave the way it reads.
+  why: |
+    Written this way it works by accident or fails on ordinary input, and the mistake survives
+    review because the intent reads correctly.
+  fix: |
+    Make the intended behaviour explicit, and cover the case that used to fail with a test.
+
+- key: QG-CS-SML-0643
+  name: Pointers to unmanaged memory should not be visible
+  languages: [cs]
+  category: SML
+  severity: critical
+  effort: 5min
+  status: planned
+  generated: true
+  tags: []
+  summary: The code does not behave the way it reads.
+  why: |
+    Written this way it works by accident or fails on ordinary input, and the mistake survives
+    review because the intent reads correctly.
+  fix: |
+    Make the intended behaviour explicit, and cover the case that used to fail with a test.
+
+- key: QG-CS-SML-0644
+  name: Child class fields should not differ from parent class fields only by capitalization
+  languages: [cs]
+  category: SML
+  severity: critical
+  effort: 5min
+  status: planned
+  generated: true
+  tags: [pitfall]
+  summary: The code does not behave the way it reads.
+  why: |
+    Written this way it works by accident or fails on ordinary input, and the mistake survives
+    review because the intent reads correctly.
+  fix: |
+    Make the intended behaviour explicit, and cover the case that used to fail with a test.
+
+- key: QG-CS-SML-0645
+  name: Interface methods should be callable by derived types
+  languages: [cs]
+  category: SML
+  severity: critical
+  effort: 5min
+  status: planned
+  generated: true
+  tags: [pitfall]
+  summary: The code does not behave the way it reads.
+  why: |
+    Written this way it works by accident or fails on ordinary input, and the mistake survives
+    review because the intent reads correctly.
+  fix: |
+    Make the intended behaviour explicit, and cover the case that used to fail with a test.
+
+- key: QG-CS-SML-0646
+  name: Calls to "async" methods should not be blocking
+  languages: [cs]
+  category: SML
+  severity: blocker
+  effort: 20min
+  status: planned
+  generated: true
+  tags: [async-await, deadlock]
+  summary: Shared state is reached without the coordination that makes it safe.
+  why: |
+    It works every time it is tested and fails under load, on a machine with more cores, once. That
+    is the hardest kind of defect to reproduce and the easiest to write.
+  fix: |
+    Guard the shared state, or give each caller its own copy.
+
+- key: QG-CS-SML-0647
+  name: Types should be named in PascalCase
+  languages: [cs]
+  category: SML
+  severity: minor
+  effort: 5min
+  status: planned
+  generated: true
+  tags: [convention]
+  summary: The control flow does not do what it reads as doing.
+  why: |
+    A branch that cannot be taken, a loop that cannot end, a condition that is always the same: the
+    code states an intent the machine does not carry out, and review reads the intent.
+  fix: |
+    Make the flow say what it does, and remove what cannot happen.
+
+- key: QG-CS-SML-0648
+  name: "GC.SuppressFinalize" should not be called
+  languages: [cs]
+  category: SML
+  severity: major
+  effort: 2min
+  status: planned
+  generated: true
+  tags: []
+  summary: The code does not behave the way it reads.
+  why: |
+    Written this way it works by accident or fails on ordinary input, and the mistake survives
+    review because the intent reads correctly.
+  fix: |
+    Make the intended behaviour explicit, and cover the case that used to fail with a test.
+
+- key: QG-CS-SML-0649
+  name: Exit methods should not be called
+  languages: [cs]
+  category: SML
+  severity: blocker
+  effort: 30min
+  status: planned
+  generated: true
+  tags: [cwe, suspicious]
+  summary: The code does not behave the way it reads.
+  why: |
+    Written this way it works by accident or fails on ordinary input, and the mistake survives
+    review because the intent reads correctly.
+  fix: |
+    Make the intended behaviour explicit, and cover the case that used to fail with a test.
+
+- key: QG-CS-SML-0650
+  name: "interface" instances should not be cast to concrete types
+  languages: [cs]
+  category: SML
+  severity: critical
+  effort: 1h
+  status: planned
+  generated: true
+  tags: [design]
+  summary: The code does not behave the way it reads.
+  why: |
+    Written this way it works by accident or fails on ordinary input, and the mistake survives
+    review because the intent reads correctly.
+  fix: |
+    Make the intended behaviour explicit, and cover the case that used to fail with a test.
+
+- key: QG-CS-SML-0651
+  name: Magic numbers should not be used
+  languages: [cs]
+  category: SML
+  severity: major
+  effort: 5min
+  status: planned
+  generated: true
+  tags: [brain-overload]
+  summary: The code does not behave the way it reads.
+  why: |
+    Written this way it works by accident or fails on ordinary input, and the mistake survives
+    review because the intent reads correctly.
+  fix: |
+    Make the intended behaviour explicit, and cover the case that used to fail with a test.
+
+- key: QG-CS-SML-0652
+  name: Unnecessary "using" should be removed
+  languages: [cs]
+  category: SML
+  severity: minor
+  effort: 1min
+  status: planned
+  generated: true
+  tags: [unused]
+  summary: Code that no longer takes part in anything is still here.
+  why: |
+    It has to be read, understood and kept compiling by everyone who passes through, and it gives
+    nothing back. Worse, it suggests a purpose that no longer exists.
+  fix: |
+    Remove it: the history keeps it if it is ever needed again.
+
+- key: QG-CS-SML-0653
+  name: "switch case" clauses should not have too many lines of code
+  languages: [cs]
+  category: SML
+  severity: major
+  effort: 5min
+  status: planned
+  generated: true
+  tags: [brain-overload]
+  summary: The control flow does not do what it reads as doing.
+  why: |
+    A branch that cannot be taken, a loop that cannot end, a condition that is always the same: the
+    code states an intent the machine does not carry out, and review reads the intent.
+  fix: |
+    Make the flow say what it does, and remove what cannot happen.
+
+- key: QG-CS-SML-0654
+  name: break statements should not be used except for switch cases
+  languages: [cs]
+  category: SML
+  severity: minor
+  effort: 10min
+  status: planned
+  generated: true
+  tags: []
+  summary: The control flow does not do what it reads as doing.
+  why: |
+    A branch that cannot be taken, a loop that cannot end, a condition that is always the same: the
+    code states an intent the machine does not carry out, and review reads the intent.
+  fix: |
+    Make the flow say what it does, and remove what cannot happen.
+
+- key: QG-CS-SML-0655
+  name: "switch" statements should have at least 3 "case" clauses
+  languages: [cs]
+  category: SML
+  severity: minor
+  effort: 5min
+  status: planned
+  generated: true
+  tags: [bad-practice]
+  summary: The control flow does not do what it reads as doing.
+  why: |
+    A branch that cannot be taken, a loop that cannot end, a condition that is always the same: the
+    code states an intent the machine does not carry out, and review reads the intent.
+  fix: |
+    Make the flow say what it does, and remove what cannot happen.
+
+- key: QG-CS-SML-0656
+  name: Logger fields should be "private static readonly"
+  languages: [cs]
+  category: SML
+  severity: minor
+  effort: 5min
+  status: planned
+  generated: true
+  tags: [convention, logging]
+  summary: A name does not follow the convention the rest of the code uses.
+  why: |
+    Conventions let a reader infer what something is from its shape alone. A deviation costs a
+    lookup every time, and makes searches and automated refactoring less reliable.
+  fix: |
+    Rename it to match the convention used around it.
+
+- key: QG-CS-SML-0657
+  name: Culture should be specified for "string" operations
+  languages: [cs]
+  category: SML
+  severity: minor
+  effort: 5min
+  status: planned
+  generated: true
+  tags: [unpredictable]
+  summary: The code does not behave the way it reads.
+  why: |
+    Written this way it works by accident or fails on ordinary input, and the mistake survives
+    review because the intent reads correctly.
+  fix: |
+    Make the intended behaviour explicit, and cover the case that used to fail with a test.
+
+- key: QG-CS-SML-0658
+  name: Multiple variables should not be declared on the same line
+  languages: [cs]
+  category: SML
+  severity: minor
+  effort: 2min
+  status: planned
+  generated: true
+  tags: [convention]
+  summary: A name does not follow the convention the rest of the code uses.
+  why: |
+    Conventions let a reader infer what something is from its shape alone. A deviation costs a
+    lookup every time, and makes searches and automated refactoring less reliable.
+  fix: |
+    Rename it to match the convention used around it.
+
+- key: QG-CS-SML-0659
+  name: "==" should not be used when "Equals" is overridden
+  languages: [cs]
+  category: SML
+  severity: minor
+  effort: 2min
+  status: planned
+  generated: true
+  tags: [cwe, suspicious]
+  summary: The code does not behave the way it reads.
+  why: |
+    Written this way it works by accident or fails on ordinary input, and the mistake survives
+    review because the intent reads correctly.
+  fix: |
+    Make the intended behaviour explicit, and cover the case that used to fail with a test.
+
+- key: QG-CS-SML-0660
+  name: Underscores should be used to make large numbers readable
+  languages: [cs]
+  category: SML
+  severity: minor
+  effort: 5min
+  status: planned
+  generated: true
+  tags: [convention]
+  summary: A name does not follow the convention the rest of the code uses.
+  why: |
+    Conventions let a reader infer what something is from its shape alone. A deviation costs a
+    lookup every time, and makes searches and automated refactoring less reliable.
+  fix: |
+    Rename it to match the convention used around it.
+
+- key: QG-CS-SML-0661
+  name: "sealed" classes should not have "protected" members
+  languages: [cs]
+  category: SML
+  severity: minor
+  effort: 5min
+  status: planned
+  generated: true
+  tags: [confusing]
+  summary: The code does not behave the way it reads.
+  why: |
+    Written this way it works by accident or fails on ordinary input, and the mistake survives
+    review because the intent reads correctly.
+  fix: |
+    Make the intended behaviour explicit, and cover the case that used to fail with a test.
+
+- key: QG-CS-SML-0662
+  name: "Exception" should not be caught
+  languages: [cs]
+  category: SML
+  severity: minor
+  effort: 15min
+  status: planned
+  generated: true
+  tags: [cwe, error-handling]
+  summary: The code does not behave the way it reads.
+  why: |
+    Written this way it works by accident or fails on ordinary input, and the mistake survives
+    review because the intent reads correctly.
+  fix: |
+    Make the intended behaviour explicit, and cover the case that used to fail with a test.
+
+- key: QG-CS-SML-0663
+  name: Redundant modifiers should not be used
+  languages: [cs]
+  category: SML
+  severity: minor
+  effort: 2min
+  status: planned
+  generated: true
+  tags: [unused, finding, clumsy]
+  summary: Code that no longer takes part in anything is still here.
+  why: |
+    It has to be read, understood and kept compiling by everyone who passes through, and it gives
+    nothing back. Worse, it suggests a purpose that no longer exists.
+  fix: |
+    Remove it: the history keeps it if it is ever needed again.
+
+- key: QG-CS-SML-0664
+  name: Fields should be private
+  languages: [cs]
+  category: SML
+  severity: major
+  effort: 30min
+  status: planned
+  generated: true
+  tags: [pitfall]
+  summary: The code does not behave the way it reads.
+  why: |
+    Written this way it works by accident or fails on ordinary input, and the mistake survives
+    review because the intent reads correctly.
+  fix: |
+    Make the intended behaviour explicit, and cover the case that used to fail with a test.
+
+- key: QG-CS-SML-0665
+  name: Members should not be initialized to default values
+  languages: [cs]
+  category: SML
+  severity: minor
+  effort: 2min
+  status: planned
+  generated: true
+  tags: [convention, finding]
+  summary: A name does not follow the convention the rest of the code uses.
+  why: |
+    Conventions let a reader infer what something is from its shape alone. A deviation costs a
+    lookup every time, and makes searches and automated refactoring less reliable.
+  fix: |
+    Rename it to match the convention used around it.
+
+- key: QG-CS-SML-0666
+  name: Types should not have members with visibility set higher than the type's visibility
+  languages: [cs]
+  category: SML
+  severity: major
+  effort: 15min
+  status: planned
+  generated: true
+  tags: [confusing]
+  summary: The code does not behave the way it reads.
+  why: |
+    Written this way it works by accident or fails on ordinary input, and the mistake survives
+    review because the intent reads correctly.
+  fix: |
+    Make the intended behaviour explicit, and cover the case that used to fail with a test.
+
+- key: QG-CS-SML-0667
+  name: "GC.SuppressFinalize" should not be invoked for types without destructors
+  languages: [cs]
+  category: SML
+  severity: minor
+  effort: 2min
+  status: planned
+  generated: true
+  tags: [unused, confusing]
+  summary: Code that no longer takes part in anything is still here.
+  why: |
+    It has to be read, understood and kept compiling by everyone who passes through, and it gives
+    nothing back. Worse, it suggests a purpose that no longer exists.
+  fix: |
+    Remove it: the history keeps it if it is ever needed again.
+
+- key: QG-CS-SML-0668
+  name: Redundant parentheses should not be used
+  languages: [cs]
+  category: SML
+  severity: minor
+  effort: 2min
+  status: planned
+  generated: true
+  tags: [unused, finding]
+  summary: Code that no longer takes part in anything is still here.
+  why: |
+    It has to be read, understood and kept compiling by everyone who passes through, and it gives
+    nothing back. Worse, it suggests a purpose that no longer exists.
+  fix: |
+    Remove it: the history keeps it if it is ever needed again.
+
+- key: QG-CS-SML-0669
+  name: The simplest possible condition syntax should be used
+  languages: [cs]
+  category: SML
+  severity: minor
+  effort: 2min
+  status: planned
+  generated: true
+  tags: [clumsy]
+  summary: The control flow does not do what it reads as doing.
+  why: |
+    A branch that cannot be taken, a loop that cannot end, a condition that is always the same: the
+    code states an intent the machine does not carry out, and review reads the intent.
+  fix: |
+    Make the flow say what it does, and remove what cannot happen.
+
+- key: QG-CS-SML-0670
+  name: Method parameters should be declared with base types
+  languages: [cs]
+  category: SML
+  severity: minor
+  effort: 5min
+  status: planned
+  generated: true
+  tags: [api-design]
+  summary: A piece of code has grown past what can be held in mind at once.
+  why: |
+    The size is the defect: every change to it costs more than it should and carries a risk that has
+    nothing to do with the change itself.
+  fix: |
+    Split it along the responsibilities it has accumulated.
+
+- key: QG-CS-SML-0671
+  name: Constructor and destructor declarations should not be redundant
+  languages: [cs]
+  category: SML
+  severity: minor
+  effort: 2min
+  status: planned
+  generated: true
+  tags: [finding, clumsy]
+  summary: Code that no longer takes part in anything is still here.
+  why: |
+    It has to be read, understood and kept compiling by everyone who passes through, and it gives
+    nothing back. Worse, it suggests a purpose that no longer exists.
+  fix: |
+    Remove it: the history keeps it if it is ever needed again.
+
+- key: QG-CS-SML-0672
+  name: Default parameter values should not be passed as arguments
+  languages: [cs]
+  category: SML
+  severity: minor
+  effort: 2min
+  status: planned
+  generated: true
+  tags: [finding, clumsy]
+  summary: The code does not behave the way it reads.
+  why: |
+    Written this way it works by accident or fails on ordinary input, and the mistake survives
+    review because the intent reads correctly.
+  fix: |
+    Make the intended behaviour explicit, and cover the case that used to fail with a test.
+
+- key: QG-CS-SML-0673
+  name: "string.IsNullOrEmpty" should be used
+  languages: [cs]
+  category: SML
+  severity: minor
+  effort: 5min
+  status: planned
+  generated: true
+  tags: [clumsy]
+  summary: A value that can be absent is used as though it always exists.
+  why: |
+    The path that produces the absence is usually the rare one, so this survives testing and arrives
+    in production as a failure with no obvious cause.
+  fix: |
+    Handle the absent case where it arises, or make the type say the value is always there.
+
+- key: QG-CS-SML-0674
+  name: Declarations and initializations should be as concise as possible
+  languages: [cs]
+  category: SML
+  severity: minor
+  effort: 1min
+  status: planned
+  generated: true
+  tags: [finding, clumsy]
+  summary: The code does not behave the way it reads.
+  why: |
+    Written this way it works by accident or fails on ordinary input, and the mistake survives
+    review because the intent reads correctly.
+  fix: |
+    Make the intended behaviour explicit, and cover the case that used to fail with a test.
+
+- key: QG-CS-SML-0675
+  name: Redundant property names should be omitted in anonymous classes
+  languages: [cs]
+  category: SML
+  severity: minor
+  effort: 2min
+  status: planned
+  generated: true
+  tags: [finding, clumsy]
+  summary: A name does not follow the convention the rest of the code uses.
+  why: |
+    Conventions let a reader infer what something is from its shape alone. A deviation costs a
+    lookup every time, and makes searches and automated refactoring less reliable.
+  fix: |
+    Rename it to match the convention used around it.
+
+- key: QG-CS-SML-0676
+  name: Empty "default" clauses should be removed
+  languages: [cs]
+  category: SML
+  severity: minor
+  effort: 1min
+  status: planned
+  generated: true
+  tags: [unused, finding, clumsy]
+  summary: Code that no longer takes part in anything is still here.
+  why: |
+    It has to be read, understood and kept compiling by everyone who passes through, and it gives
+    nothing back. Worse, it suggests a purpose that no longer exists.
+  fix: |
+    Remove it: the history keeps it if it is ever needed again.
+
+- key: QG-CS-SML-0677
+  name: Parameter names should not duplicate the names of their methods
+  languages: [cs]
+  category: SML
+  severity: minor
+  effort: 5min
+  status: planned
+  generated: true
+  tags: [convention, confusing]
+  summary: A name does not follow the convention the rest of the code uses.
+  why: |
+    Conventions let a reader infer what something is from its shape alone. A deviation costs a
+    lookup every time, and makes searches and automated refactoring less reliable.
+  fix: |
+    Rename it to match the convention used around it.
+
+- key: QG-CS-SML-0678
+  name: Value types should implement "IEquatable<T>"
+  languages: [cs]
+  category: SML
+  severity: major
+  effort: 20min
+  status: planned
+  generated: true
+  tags: [performance]
+  summary: The code does not behave the way it reads.
+  why: |
+    Written this way it works by accident or fails on ordinary input, and the mistake survives
+    review because the intent reads correctly.
+  fix: |
+    Make the intended behaviour explicit, and cover the case that used to fail with a test.
+
+- key: QG-CS-SML-0679
+  name: Arguments of public methods should be validated against null
+  languages: [cs]
+  category: SML
+  severity: major
+  effort: 5min
+  status: planned
+  generated: true
+  tags: [convention, symbolic-execution]
+  summary: Something is reachable by callers who should not reach it.
+  why: |
+    Access granted this broadly is never noticed afterwards: nothing fails, and the surface stays
+    open for as long as the resource exists.
+  fix: |
+    Grant the access to the identities that need it and to nothing else.
+
+- key: QG-CS-SML-0680
+  name: "Assembly.GetExecutingAssembly" should not be called
+  languages: [cs]
+  category: SML
+  severity: major
+  effort: 5min
+  status: planned
+  generated: true
+  tags: [performance]
+  summary: The code does not behave the way it reads.
+  why: |
+    Written this way it works by accident or fails on ordinary input, and the mistake survives
+    review because the intent reads correctly.
+  fix: |
+    Make the intended behaviour explicit, and cover the case that used to fail with a test.
+
+- key: QG-CS-SML-0681
+  name: Event Handlers should have the correct signature
+  languages: [cs]
+  category: SML
+  severity: major
+  effort: 5min
+  status: planned
+  generated: true
+  tags: [convention]
+  summary: A name does not follow the convention the rest of the code uses.
+  why: |
+    Conventions let a reader infer what something is from its shape alone. A deviation costs a
+    lookup every time, and makes searches and automated refactoring less reliable.
+  fix: |
+    Rename it to match the convention used around it.
+
+- key: QG-CS-SML-0682
+  name: Generic event handlers should be used
+  languages: [cs]
+  category: SML
+  severity: major
+  effort: 15min
+  status: planned
+  generated: true
+  tags: []
+  summary: An API is used where a better one exists.
+  why: |
+    The older form usually costs something the newer one does not, and it is on its way out: a
+    conversion, an allocation, a case it handles wrongly.
+  fix: |
+    Use the current API, and keep the old one only behind a documented compatibility layer.
+
+- key: QG-CS-SML-0683
+  name: Collections should implement the generic interface
+  languages: [cs]
+  category: SML
+  severity: major
+  effort: 15min
+  status: planned
+  generated: true
+  tags: []
+  summary: The code does not behave the way it reads.
+  why: |
+    Written this way it works by accident or fails on ordinary input, and the mistake survives
+    review because the intent reads correctly.
+  fix: |
+    Make the intended behaviour explicit, and cover the case that used to fail with a test.
+
+- key: QG-CS-SML-0684
+  name: "Generic.List" instances should not be part of public APIs
+  languages: [cs]
+  category: SML
+  severity: major
+  effort: 10min
+  status: planned
+  generated: true
+  tags: [api-design]
+  summary: Something is reachable by callers who should not reach it.
+  why: |
+    Access granted this broadly is never noticed afterwards: nothing fails, and the surface stays
+    open for as long as the resource exists.
+  fix: |
+    Grant the access to the identities that need it and to nothing else.
+
+- key: QG-CS-SML-0685
+  name: "static readonly" constants should be "const" instead
+  languages: [cs]
+  category: SML
+  severity: minor
+  effort: 2min
+  status: planned
+  generated: true
+  tags: [performance]
+  summary: The code does not behave the way it reads.
+  why: |
+    Written this way it works by accident or fails on ordinary input, and the mistake survives
+    review because the intent reads correctly.
+  fix: |
+    Make the intended behaviour explicit, and cover the case that used to fail with a test.
+
+- key: QG-CS-SML-0686
+  name: Multidimensional arrays should not be used
+  languages: [cs]
+  category: SML
+  severity: minor
+  effort: 5min
+  status: planned
+  generated: true
+  tags: [design]
+  summary: The code does not behave the way it reads.
+  why: |
+    Written this way it works by accident or fails on ordinary input, and the mistake survives
+    review because the intent reads correctly.
+  fix: |
+    Make the intended behaviour explicit, and cover the case that used to fail with a test.
+
+- key: QG-CS-SML-0687
+  name: Assemblies should explicitly specify COM visibility
+  languages: [cs]
+  category: SML
+  severity: major
+  effort: 1min
+  status: planned
+  generated: true
+  tags: [api-design]
+  summary: The code does not behave the way it reads.
+  why: |
+    Written this way it works by accident or fails on ordinary input, and the mistake survives
+    review because the intent reads correctly.
+  fix: |
+    Make the intended behaviour explicit, and cover the case that used to fail with a test.
+
+- key: QG-CS-SML-0688
+  name: URI Parameters should not be strings
+  languages: [cs]
+  category: SML
+  severity: major
+  effort: 10min
+  status: planned
+  generated: true
+  tags: []
+  summary: A piece of code has grown past what can be held in mind at once.
+  why: |
+    The size is the defect: every change to it costs more than it should and carries a risk that has
+    nothing to do with the change itself.
+  fix: |
+    Split it along the responsibilities it has accumulated.
+
+- key: QG-CS-SML-0689
+  name: URI return values should not be strings
+  languages: [cs]
+  category: SML
+  severity: major
+  effort: 10min
+  status: planned
+  generated: true
+  tags: []
+  summary: The code does not behave the way it reads.
+  why: |
+    Written this way it works by accident or fails on ordinary input, and the mistake survives
+    review because the intent reads correctly.
+  fix: |
+    Make the intended behaviour explicit, and cover the case that used to fail with a test.
+
+- key: QG-CS-SML-0690
+  name: URI properties should not be strings
+  languages: [cs]
+  category: SML
+  severity: major
+  effort: 10min
+  status: planned
+  generated: true
+  tags: []
+  summary: The code does not behave the way it reads.
+  why: |
+    Written this way it works by accident or fails on ordinary input, and the mistake survives
+    review because the intent reads correctly.
+  fix: |
+    Make the intended behaviour explicit, and cover the case that used to fail with a test.
+
+- key: QG-CS-SML-0691
+  name: String URI overloads should call "System.Uri" overloads
+  languages: [cs]
+  category: SML
+  severity: major
+  effort: 5min
+  status: planned
+  generated: true
+  tags: []
+  summary: The code does not behave the way it reads.
+  why: |
+    Written this way it works by accident or fails on ordinary input, and the mistake survives
+    review because the intent reads correctly.
+  fix: |
+    Make the intended behaviour explicit, and cover the case that used to fail with a test.
+
+- key: QG-CS-SML-0692
+  name: "System.Uri" arguments should be used instead of strings
+  languages: [cs]
+  category: SML
+  severity: major
+  effort: 2min
+  status: planned
+  generated: true
+  tags: []
+  summary: An API is used where a better one exists.
+  why: |
+    The older form usually costs something the newer one does not, and it is on its way out: a
+    conversion, an allocation, a case it handles wrongly.
+  fix: |
+    Use the current API, and keep the old one only behind a documented compatibility layer.
+
+- key: QG-CS-SML-0693
+  name: All type parameters should be used in the parameter list to enable type inference
+  languages: [cs]
+  category: SML
+  severity: minor
+  effort: 15min
+  status: planned
+  generated: true
+  tags: []
+  summary: An API is used where a better one exists.
+  why: |
+    The older form usually costs something the newer one does not, and it is on its way out: a
+    conversion, an allocation, a case it handles wrongly.
+  fix: |
+    Use the current API, and keep the old one only behind a documented compatibility layer.
+
+- key: QG-CS-SML-0694
+  name: Enumerations should have "Int32" storage
+  languages: [cs]
+  category: SML
+  severity: minor
+  effort: 2min
+  status: planned
+  generated: true
+  tags: []
+  summary: The code does not behave the way it reads.
+  why: |
+    Written this way it works by accident or fails on ordinary input, and the mistake survives
+    review because the intent reads correctly.
+  fix: |
+    Make the intended behaviour explicit, and cover the case that used to fail with a test.
+
+- key: QG-CS-SML-0695
+  name: Assemblies should be marked with "NeutralResourcesLanguageAttribute"
+  languages: [cs]
+  category: SML
+  severity: minor
+  effort: 2min
+  status: planned
+  generated: true
+  tags: [performance]
+  summary: Something the runtime cannot reclaim on its own is not released.
+  why: |
+    Handles, sockets and connections are finite. The failure appears far from here, under load, as
+    an exhaustion nobody can attribute to a single line.
+  fix: |
+    Release it on every path, including the exceptional one.
+
+- key: QG-CS-SML-0696
+  name: Exceptions should provide standard constructors
+  languages: [cs]
+  category: SML
+  severity: minor
+  effort: 10min
+  status: planned
+  generated: true
+  tags: [convention]
+  summary: A name does not follow the convention the rest of the code uses.
+  why: |
+    Conventions let a reader infer what something is from its shape alone. A deviation costs a
+    lookup every time, and makes searches and automated refactoring less reliable.
+  fix: |
+    Rename it to match the convention used around it.
+
+- key: QG-CS-SML-0697
+  name: Strings should be normalized to uppercase
+  languages: [cs]
+  category: SML
+  severity: minor
+  effort: 2min
+  status: planned
+  generated: true
+  tags: [pitfall]
+  summary: The control flow does not do what it reads as doing.
+  why: |
+    A branch that cannot be taken, a loop that cannot end, a condition that is always the same: the
+    code states an intent the machine does not carry out, and review reads the intent.
+  fix: |
+    Make the flow say what it does, and remove what cannot happen.
+
+- key: QG-CS-SML-0698
+  name: Generics should be used when appropriate
+  languages: [cs]
+  category: SML
+  severity: minor
+  effort: 10min
+  status: planned
+  generated: true
+  tags: []
+  summary: An API is used where a better one exists.
+  why: |
+    The older form usually costs something the newer one does not, and it is on its way out: a
+    conversion, an allocation, a case it handles wrongly.
+  fix: |
+    Use the current API, and keep the old one only behind a documented compatibility layer.
+
+- key: QG-CS-SML-0699
+  name: Properties should be preferred
+  languages: [cs]
+  category: SML
+  severity: minor
+  effort: 5min
+  status: planned
+  generated: true
+  tags: [convention]
+  summary: A name does not follow the convention the rest of the code uses.
+  why: |
+    Conventions let a reader infer what something is from its shape alone. A deviation costs a
+    lookup every time, and makes searches and automated refactoring less reliable.
+  fix: |
+    Rename it to match the convention used around it.
+
+- key: QG-CS-SML-0700
+  name: Literals should not be passed as localized parameters
+  languages: [cs]
+  category: SML
+  severity: major
+  effort: 10min
+  status: planned
+  generated: true
+  tags: [localisation, pitfall]
+  summary: A piece of code has grown past what can be held in mind at once.
+  why: |
+    The size is the defect: every change to it costs more than it should and carries a risk that has
+    nothing to do with the change itself.
+  fix: |
+    Split it along the responsibilities it has accumulated.
+
+- key: QG-CS-SML-0701
+  name: Overloads with a "CultureInfo" or an "IFormatProvider" parameter should be used
+  languages: [cs]
+  category: SML
+  severity: minor
+  effort: 5min
+  status: planned
+  generated: true
+  tags: [localisation, pitfall]
+  summary: An API is used where a better one exists.
+  why: |
+    The older form usually costs something the newer one does not, and it is on its way out: a
+    conversion, an allocation, a case it handles wrongly.
+  fix: |
+    Use the current API, and keep the old one only behind a documented compatibility layer.
+
+- key: QG-CS-SML-0702
+  name: Locales should be set for data types
+  languages: [cs]
+  category: SML
+  severity: major
+  effort: 5min
+  status: planned
+  generated: true
+  tags: [localisation]
+  summary: The code does not behave the way it reads.
+  why: |
+    Written this way it works by accident or fails on ordinary input, and the mistake survives
+    review because the intent reads correctly.
+  fix: |
+    Make the intended behaviour explicit, and cover the case that used to fail with a test.
+
+- key: QG-CS-SML-0703
+  name: Overloads with a "StringComparison" parameter should be used
+  languages: [cs]
+  category: SML
+  severity: minor
+  effort: 2min
+  status: planned
+  generated: true
+  tags: []
+  summary: An API is used where a better one exists.
+  why: |
+    The older form usually costs something the newer one does not, and it is on its way out: a
+    conversion, an allocation, a case it handles wrongly.
+  fix: |
+    Use the current API, and keep the old one only behind a documented compatibility layer.
+
+- key: QG-CS-SML-0704
+  name: Property names should not match get methods
+  languages: [cs]
+  category: SML
+  severity: major
+  effort: 2min
+  status: planned
+  generated: true
+  tags: [confusing]
+  summary: A name does not follow the convention the rest of the code uses.
+  why: |
+    Conventions let a reader infer what something is from its shape alone. A deviation costs a
+    lookup every time, and makes searches and automated refactoring less reliable.
+  fix: |
+    Rename it to match the convention used around it.
+
+- key: QG-CS-SML-0705
+  name: Non-abstract attributes should be sealed
+  languages: [cs]
+  category: SML
+  severity: minor
+  effort: 2min
+  status: planned
+  generated: true
+  tags: [performance]
+  summary: The code does not behave the way it reads.
+  why: |
+    Written this way it works by accident or fails on ordinary input, and the mistake survives
+    review because the intent reads correctly.
+  fix: |
+    Make the intended behaviour explicit, and cover the case that used to fail with a test.
+
+- key: QG-CS-SML-0706
+  name: "P/Invoke" methods should not be visible
+  languages: [cs]
+  category: SML
+  severity: major
+  effort: 2min
+  status: planned
+  generated: true
+  tags: []
+  summary: The code does not behave the way it reads.
+  why: |
+    Written this way it works by accident or fails on ordinary input, and the mistake survives
+    review because the intent reads correctly.
+  fix: |
+    Make the intended behaviour explicit, and cover the case that used to fail with a test.
+
+- key: QG-CS-SML-0707
+  name: Extensions should be in separate namespaces
+  languages: [cs]
+  category: SML
+  severity: minor
+  effort: 10min
+  status: planned
+  generated: true
+  tags: [confusing]
+  summary: A name does not follow the convention the rest of the code uses.
+  why: |
+    Conventions let a reader infer what something is from its shape alone. A deviation costs a
+    lookup every time, and makes searches and automated refactoring less reliable.
+  fix: |
+    Rename it to match the convention used around it.
+
+- key: QG-CS-SML-0708
+  name: Methods should be named according to their synchronicities
+  languages: [cs]
+  category: SML
+  severity: minor
+  effort: 5min
+  status: planned
+  generated: true
+  tags: []
+  summary: Shared state is reached without the coordination that makes it safe.
+  why: |
+    It works every time it is tested and fails under load, on a machine with more cores, once. That
+    is the hardest kind of defect to reproduce and the easiest to write.
+  fix: |
+    Guard the shared state, or give each caller its own copy.
+
+- key: QG-CS-SML-0709
+  name: Parameter validation in "async"/"await" methods should be wrapped
+  languages: [cs]
+  category: SML
+  severity: major
+  effort: 15min
+  status: planned
+  generated: true
+  tags: [async-await]
+  summary: The code does not behave the way it reads.
+  why: |
+    Written this way it works by accident or fails on ordinary input, and the mistake survives
+    review because the intent reads correctly.
+  fix: |
+    Make the intended behaviour explicit, and cover the case that used to fail with a test.
+
+- key: QG-CS-SML-0710
+  name: Expanding archive files should not be done without controlling resource consumption
+  languages: [cs]
+  category: SML
+  severity: major
+  effort: 10min
+  status: planned
+  generated: true
+  tags: [cwe, former-hotspot]
+  summary: Something the runtime cannot reclaim on its own is not released.
+  why: |
+    Handles, sockets and connections are finite. The failure appears far from here, under load, as
+    an exhaustion nobody can attribute to a single line.
+  fix: |
+    Release it on every path, including the exceptional one.
+
+- key: QG-CS-SML-0711
+  name: Use a testable date/time provider
+  languages: [cs]
+  category: SML
+  severity: major
+  effort: 20min
+  status: planned
+  generated: true
+  tags: []
+  summary: The code does not behave the way it reads.
+  why: |
+    Written this way it works by accident or fails on ordinary input, and the mistake survives
+    review because the intent reads correctly.
+  fix: |
+    Make the intended behaviour explicit, and cover the case that used to fail with a test.
+
+- key: QG-CS-SML-0712
+  name: Azure Functions should use Structured Error Handling
+  languages: [cs]
+  category: SML
+  severity: major
+  effort: 1min
+  status: planned
+  generated: true
+  tags: [azure, error-handling]
+  summary: The code does not behave the way it reads.
+  why: |
+    Written this way it works by accident or fails on ordinary input, and the mistake survives
+    review because the intent reads correctly.
+  fix: |
+    Make the intended behaviour explicit, and cover the case that used to fail with a test.
+
+- key: QG-CS-SML-0713
+  name: Azure Functions should log all failures
+  languages: [cs]
+  category: SML
+  severity: major
+  effort: 5min
+  status: planned
+  generated: true
+  tags: [azure, error-handling]
+  summary: The code does not behave the way it reads.
+  why: |
+    Written this way it works by accident or fails on ordinary input, and the mistake survives
+    review because the intent reads correctly.
+  fix: |
+    Make the intended behaviour explicit, and cover the case that used to fail with a test.
+
+- key: QG-CS-SML-0714
+  name: "ExcludeFromCodeCoverage" attributes should include a justification
+  languages: [cs]
+  category: SML
+  severity: minor
+  effort: 5min
+  status: planned
+  generated: true
+  tags: [bad-practice]
+  summary: The code does not behave the way it reads.
+  why: |
+    Written this way it works by accident or fails on ordinary input, and the mistake survives
+    review because the intent reads correctly.
+  fix: |
+    Make the intended behaviour explicit, and cover the case that used to fail with a test.
+
+- key: QG-CS-SML-0715
+  name: Use "DateTimeOffset" instead of "DateTime"
+  languages: [cs]
+  category: SML
+  severity: major
+  effort: 10min
+  status: planned
+  generated: true
+  tags: []
+  summary: An API is used where a better one exists.
+  why: |
+    The older form usually costs something the newer one does not, and it is on its way out: a
+    conversion, an allocation, a case it handles wrongly.
+  fix: |
+    Use the current API, and keep the old one only behind a documented compatibility layer.
+
+- key: QG-CS-SML-0716
+  name: Don't hardcode the format when turning dates and times to strings
+  languages: [cs]
+  category: SML
+  severity: minor
+  effort: 5min
+  status: planned
+  generated: true
+  tags: []
+  summary: The code does not behave the way it reads.
+  why: |
+    Written this way it works by accident or fails on ordinary input, and the mistake survives
+    review because the intent reads correctly.
+  fix: |
+    Make the intended behaviour explicit, and cover the case that used to fail with a test.
+
+- key: QG-CS-SML-0717
+  name: "Find" method should be used instead of the "FirstOrDefault" extension
+  languages: [cs]
+  category: SML
+  severity: minor
+  effort: 5min
+  status: planned
+  generated: true
+  tags: [performance]
+  summary: An API is used where a better one exists.
+  why: |
+    The older form usually costs something the newer one does not, and it is on its way out: a
+    conversion, an allocation, a case it handles wrongly.
+  fix: |
+    Use the current API, and keep the old one only behind a documented compatibility layer.
+
+- key: QG-CS-SML-0718
+  name: The collection-specific "TrueForAll" method should be used instead of the "All" extension
+  languages: [cs]
+  category: SML
+  severity: minor
+  effort: 5min
+  status: planned
+  generated: true
+  tags: [performance]
+  summary: An API is used where a better one exists.
+  why: |
+    The older form usually costs something the newer one does not, and it is on its way out: a
+    conversion, an allocation, a case it handles wrongly.
+  fix: |
+    Use the current API, and keep the old one only behind a documented compatibility layer.
+
+- key: QG-CS-SML-0719
+  name: Collection-specific "Exists" method should be used instead of the "Any" extension
+  languages: [cs]
+  category: SML
+  severity: minor
+  effort: 5min
+  status: planned
+  generated: true
+  tags: [performance]
+  summary: An API is used where a better one exists.
+  why: |
+    The older form usually costs something the newer one does not, and it is on its way out: a
+    conversion, an allocation, a case it handles wrongly.
+  fix: |
+    Use the current API, and keep the old one only behind a documented compatibility layer.
+
+- key: QG-CS-SML-0720
+  name: Using lambda expressions in loops should be avoided in Blazor markup section
+  languages: [cs]
+  category: SML
+  severity: major
+  effort: 1h
+  status: planned
+  generated: true
+  tags: [blazor]
+  summary: The control flow does not do what it reads as doing.
+  why: |
+    A branch that cannot be taken, a loop that cannot end, a condition that is always the same: the
+    code states an intent the machine does not carry out, and review reads the intent.
+  fix: |
+    Make the flow say what it does, and remove what cannot happen.
+
+- key: QG-CS-SML-0721
+  name: Parameters with SupplyParameterFromQuery attribute should be used only in routable components
+  languages: [cs]
+  category: SML
+  severity: major
+  effort: 5min
+  status: planned
+  generated: true
+  tags: [blazor]
+  summary: An API is used where a better one exists.
+  why: |
+    The older form usually costs something the newer one does not, and it is on its way out: a
+    conversion, an allocation, a case it handles wrongly.
+  fix: |
+    Use the current API, and keep the old one only behind a documented compatibility layer.
+
+- key: QG-CS-SML-0722
+  name: Increment (++) and decrement (--) operators should not be used in a method call or mixed with other operators in an expression
+  languages: [cs]
+  category: SML
+  severity: major
+  effort: 5min
+  status: planned
+  generated: true
+  tags: []
+  summary: The code does not behave the way it reads.
+  why: |
+    Written this way it works by accident or fails on ordinary input, and the mistake survives
+    review because the intent reads correctly.
+  fix: |
+    Make the intended behaviour explicit, and cover the case that used to fail with a test.
+
+- key: QG-CS-SML-0723
+  name: Track lack of copyright and license headers
+  languages: [cs]
+  category: SML
+  severity: blocker
+  effort: 5min
+  status: planned
+  generated: true
+  tags: [convention]
+  summary: A name does not follow the convention the rest of the code uses.
+  why: |
+    Conventions let a reader infer what something is from its shape alone. A deviation costs a
+    lookup every time, and makes searches and automated refactoring less reliable.
+  fix: |
+    Rename it to match the convention used around it.
+
+- key: QG-CS-SML-0724
+  name: Classes should not be coupled to too many other classes
+  languages: [cs]
+  category: SML
+  severity: major
+  effort: 2h
+  status: planned
+  generated: true
+  tags: [brain-overload]
+  summary: A piece of code has grown past what can be held in mind at once.
+  why: |
+    The size is the defect: every change to it costs more than it should and carries a risk that has
+    nothing to do with the change itself.
+  fix: |
+    Split it along the responsibilities it has accumulated.
+
+- key: QG-CS-SML-0725
+  name: Track uses of in-source issue suppressions
+  languages: [cs]
+  category: SML
+  severity: info
+  effort: 10min
+  status: planned
+  generated: true
+  tags: []
+  summary: The code does not behave the way it reads.
+  why: |
+    Written this way it works by accident or fails on ordinary input, and the mistake survives
+    review because the intent reads correctly.
+  fix: |
+    Make the intended behaviour explicit, and cover the case that used to fail with a test.
+
+- key: QG-CS-SML-0726
+  name: "this" should not be exposed from constructors
+  languages: [cs]
+  category: SML
+  severity: major
+  effort: 30min
+  status: planned
+  generated: true
+  tags: [multi-threading, suspicious]
+  summary: Shared state is reached without the coordination that makes it safe.
+  why: |
+    It works every time it is tested and fails under load, on a machine with more cores, once. That
+    is the hardest kind of defect to reproduce and the easiest to write.
+  fix: |
+    Guard the shared state, or give each caller its own copy.
+
+- key: QG-CS-SML-0727
+  name: Track use of "NotImplementedException"
+  languages: [cs]
+  category: SML
+  severity: minor
+  effort: 1h
+  status: planned
+  generated: true
+  tags: []
+  summary: The code does not behave the way it reads.
+  why: |
+    Written this way it works by accident or fails on ordinary input, and the mistake survives
+    review because the intent reads correctly.
+  fix: |
+    Make the intended behaviour explicit, and cover the case that used to fail with a test.
+
+- key: QG-CS-SML-0728
+  name: Strings or integral types should be used for indexers
+  languages: [cs]
+  category: SML
+  severity: minor
+  effort: 20min
+  status: planned
+  generated: true
+  tags: [design]
+  summary: An API is used where a better one exists.
+  why: |
+    The older form usually costs something the newer one does not, and it is on its way out: a
+    conversion, an allocation, a case it handles wrongly.
+  fix: |
+    Use the current API, and keep the old one only behind a documented compatibility layer.
+
+- key: QG-CS-SML-0729
+  name: Finalizers should not be empty
+  languages: [cs]
+  category: SML
+  severity: major
+  effort: 2min
+  status: planned
+  generated: true
+  tags: [performance]
+  summary: Code that no longer takes part in anything is still here.
+  why: |
+    It has to be read, understood and kept compiling by everyone who passes through, and it gives
+    nothing back. Worse, it suggests a purpose that no longer exists.
+  fix: |
+    Remove it: the history keeps it if it is ever needed again.
+
+- key: QG-CS-SML-0730
+  name: Enumeration members should not be named "Reserved"
+  languages: [cs]
+  category: SML
+  severity: major
+  effort: 2min
+  status: planned
+  generated: true
+  tags: []
+  summary: A name does not follow the convention the rest of the code uses.
+  why: |
+    Conventions let a reader infer what something is from its shape alone. A deviation costs a
+    lookup every time, and makes searches and automated refactoring less reliable.
+  fix: |
+    Rename it to match the convention used around it.
+
+- key: QG-CS-SML-0731
+  name: Method signatures should not contain nested generic types
+  languages: [cs]
+  category: SML
+  severity: major
+  effort: 30min
+  status: planned
+  generated: true
+  tags: [confusing]
+  summary: A piece of code has grown past what can be held in mind at once.
+  why: |
+    The size is the defect: every change to it costs more than it should and carries a risk that has
+    nothing to do with the change itself.
+  fix: |
+    Split it along the responsibilities it has accumulated.
+
+- key: QG-CS-SML-0732
+  name: Extension methods should not extend "object"
+  languages: [cs]
+  category: SML
+  severity: minor
+  effort: 15min
+  status: planned
+  generated: true
+  tags: []
+  summary: The code does not behave the way it reads.
+  why: |
+    Written this way it works by accident or fails on ordinary input, and the mistake survives
+    review because the intent reads correctly.
+  fix: |
+    Make the intended behaviour explicit, and cover the case that used to fail with a test.
+
+- key: QG-CS-SML-0733
+  name: "switch" statements should not be nested
+  languages: [cs]
+  category: SML
+  severity: critical
+  effort: 10min
+  status: planned
+  generated: true
+  tags: [pitfall]
+  summary: The control flow does not do what it reads as doing.
+  why: |
+    A branch that cannot be taken, a loop that cannot end, a condition that is always the same: the
+    code states an intent the machine does not carry out, and review reads the intent.
+  fix: |
+    Make the flow say what it does, and remove what cannot happen.
+
+- key: QG-CS-SML-0734
+  name: Assemblies should be marked as CLS compliant
+  languages: [cs]
+  category: SML
+  severity: major
+  effort: 1min
+  status: planned
+  generated: true
+  tags: [api-design]
+  summary: The code does not behave the way it reads.
+  why: |
+    Written this way it works by accident or fails on ordinary input, and the mistake survives
+    review because the intent reads correctly.
+  fix: |
+    Make the intended behaviour explicit, and cover the case that used to fail with a test.
+
+- key: QG-CS-SML-0735
+  name: Methods and properties should be named in PascalCase
+  languages: [cs]
+  category: SML
+  severity: minor
+  effort: 5min
+  status: planned
+  generated: true
+  tags: [convention]
+  summary: The control flow does not do what it reads as doing.
+  why: |
+    A branch that cannot be taken, a loop that cannot end, a condition that is always the same: the
+    code states an intent the machine does not carry out, and review reads the intent.
+  fix: |
+    Make the flow say what it does, and remove what cannot happen.
+
+- key: QG-CS-SML-0736
+  name: Lines should not be too long
+  languages: [cs]
+  category: SML
+  severity: major
+  effort: 1min
+  status: planned
+  generated: true
+  tags: [convention]
+  summary: A name does not follow the convention the rest of the code uses.
+  why: |
+    Conventions let a reader infer what something is from its shape alone. A deviation costs a
+    lookup every time, and makes searches and automated refactoring less reliable.
+  fix: |
+    Rename it to match the convention used around it.
+
+- key: QG-CS-SML-0737
+  name: Files should not have too many lines of code
+  languages: [cs]
+  category: SML
+  severity: major
+  effort: 1h
+  status: planned
+  generated: true
+  tags: [brain-overload]
+  summary: A piece of code has grown past what can be held in mind at once.
+  why: |
+    The size is the defect: every change to it costs more than it should and carries a risk that has
+    nothing to do with the change itself.
+  fix: |
+    Split it along the responsibilities it has accumulated.
+
+- key: QG-CS-SML-0738
+  name: Tabulation characters should not be used
+  languages: [cs]
+  category: SML
+  severity: minor
+  effort: 2min
+  status: planned
+  generated: true
+  tags: [convention]
+  summary: A name does not follow the convention the rest of the code uses.
+  why: |
+    Conventions let a reader infer what something is from its shape alone. A deviation costs a
+    lookup every time, and makes searches and automated refactoring less reliable.
+  fix: |
+    Rename it to match the convention used around it.
+
+- key: QG-CS-SML-0739
+  name: Standard outputs should not be used directly to log anything
+  languages: [cs]
+  category: SML
+  severity: major
+  effort: 10min
+  status: planned
+  generated: true
+  tags: [bad-practice]
+  summary: The code does not behave the way it reads.
+  why: |
+    Written this way it works by accident or fails on ordinary input, and the mistake survives
+    review because the intent reads correctly.
+  fix: |
+    Make the intended behaviour explicit, and cover the case that used to fail with a test.
+
+- key: QG-CS-SML-0740
+  name: Files should end with a newline
+  languages: [cs]
+  category: SML
+  severity: minor
+  effort: 1min
+  status: planned
+  generated: true
+  tags: [convention]
+  summary: A name does not follow the convention the rest of the code uses.
+  why: |
+    Conventions let a reader infer what something is from its shape alone. A deviation costs a
+    lookup every time, and makes searches and automated refactoring less reliable.
+  fix: |
+    Rename it to match the convention used around it.
+
+- key: QG-CS-SML-0741
+  name: Statements should be on separate lines
+  languages: [cs]
+  category: SML
+  severity: major
+  effort: 1min
+  status: planned
+  generated: true
+  tags: [convention]
+  summary: A name does not follow the convention the rest of the code uses.
+  why: |
+    Conventions let a reader infer what something is from its shape alone. A deviation costs a
+    lookup every time, and makes searches and automated refactoring less reliable.
+  fix: |
+    Rename it to match the convention used around it.
+
+- key: QG-CS-SML-0742
+  name: Loggers should be named for their enclosing types
+  languages: [cs]
+  category: SML
+  severity: minor
+  effort: 5min
+  status: planned
+  generated: true
+  tags: [confusing, logging]
+  summary: A name does not follow the convention the rest of the code uses.
+  why: |
+    Conventions let a reader infer what something is from its shape alone. A deviation costs a
+    lookup every time, and makes searches and automated refactoring less reliable.
+  fix: |
+    Rename it to match the convention used around it.
+
+- key: QG-CS-SML-0743
+  name: Operator overloads should have named alternatives
+  languages: [cs]
+  category: SML
+  severity: minor
+  effort: 5min
+  status: planned
+  generated: true
+  tags: [convention]
+  summary: A name does not follow the convention the rest of the code uses.
+  why: |
+    Conventions let a reader infer what something is from its shape alone. A deviation costs a
+    lookup every time, and makes searches and automated refactoring less reliable.
+  fix: |
+    Rename it to match the convention used around it.
+
+- key: QG-CS-BUG-0199
+  name: Composite format strings should not lead to unexpected behavior at runtime
+  languages: [cs]
+  category: BUG
+  severity: blocker
+  effort: 10min
+  status: planned
+  generated: true
+  tags: []
+  summary: The code does not behave the way it reads.
+  why: |
+    Written this way it works by accident or fails on ordinary input, and the mistake survives
+    review because the intent reads correctly.
+  fix: |
+    Make the intended behaviour explicit, and cover the case that used to fail with a test.
+
+- key: QG-CS-BUG-0200
+  name: "Shared" parts should not be created with "new"
+  languages: [cs]
+  category: BUG
+  severity: critical
+  effort: 5min
+  status: planned
+  generated: true
+  tags: [mef, pitfall]
+  summary: The code does not behave the way it reads.
+  why: |
+    Written this way it works by accident or fails on ordinary input, and the mistake survives
+    review because the intent reads correctly.
+  fix: |
+    Make the intended behaviour explicit, and cover the case that used to fail with a test.
+
+- key: QG-CS-BUG-0201
+  name: Non-async "Task/Task<T>" methods should not return null
+  languages: [cs]
+  category: BUG
+  severity: critical
+  effort: 5 min
+  status: planned
+  generated: true
+  tags: [async-await]
+  summary: A value that can be absent is used as though it always exists.
+  why: |
+    The path that produces the absence is usually the rare one, so this survives testing and arrives
+    in production as a failure with no obvious cause.
+  fix: |
+    Handle the absent case where it arises, or make the type say the value is always there.
+
+- key: QG-CS-BUG-0202
+  name: A write lock should not be released when a read lock has been acquired and vice versa
+  languages: [cs]
+  category: BUG
+  severity: critical
+  effort: 30min
+  status: planned
+  generated: true
+  tags: [symbolic-execution]
+  summary: Something the runtime cannot reclaim on its own is not released.
+  why: |
+    Handles, sockets and connections are finite. The failure appears far from here, under load, as
+    an exhaustion nobody can attribute to a single line.
+  fix: |
+    Release it on every path, including the exceptional one.
+
+- key: QG-CS-BUG-0203
+  name: Multiple "[Key]" attributes should not be used to define a composite key
+  languages: [cs]
+  category: BUG
+  severity: blocker
+  effort: 5min
+  status: planned
+  generated: true
+  tags: [entity-framework-core, entity-framework, orm, database]
+  summary: The code does not behave the way it reads.
+  why: |
+    Written this way it works by accident or fails on ordinary input, and the mistake survives
+    review because the intent reads correctly.
+  fix: |
+    Make the intended behaviour explicit, and cover the case that used to fail with a test.
+
+- key: QG-CS-BUG-0204
+  name: Client-evaluated default values should use database functions
+  languages: [cs]
+  category: BUG
+  severity: blocker
+  effort: 5 min
+  status: planned
+  generated: true
+  tags: [entity-framework-core, entity-framework, database, orm]
+  summary: The code does not behave the way it reads.
+  why: |
+    Written this way it works by accident or fails on ordinary input, and the mistake survives
+    review because the intent reads correctly.
+  fix: |
+    Make the intended behaviour explicit, and cover the case that used to fail with a test.
+
+- key: QG-CS-BUG-0205
+  name: Null pointers should not be dereferenced
+  languages: [cs]
+  category: BUG
+  severity: major
+  effort: 10min
+  status: planned
+  generated: true
+  tags: [cwe, symbolic-execution]
+  summary: A value that can be absent is used as though it always exists.
+  why: |
+    The path that produces the absence is usually the rare one, so this survives testing and arrives
+    in production as a failure with no obvious cause.
+  fix: |
+    Handle the absent case where it arises, or make the type say the value is always there.
+
+- key: QG-CS-BUG-0206
+  name: Flags enumerations should explicitly initialize all their members
+  languages: [cs]
+  category: BUG
+  severity: minor
+  effort: 5min
+  status: planned
+  generated: true
+  tags: []
+  summary: The code does not behave the way it reads.
+  why: |
+    Written this way it works by accident or fails on ordinary input, and the mistake survives
+    review because the intent reads correctly.
+  fix: |
+    Make the intended behaviour explicit, and cover the case that used to fail with a test.
+
+- key: QG-CS-BUG-0207
+  name: Property assignments should not be made for "readonly" fields not constrained to reference types
+  languages: [cs]
+  category: BUG
+  severity: minor
+  effort: 20min
+  status: planned
+  generated: true
+  tags: []
+  summary: The code does not behave the way it reads.
+  why: |
+    Written this way it works by accident or fails on ordinary input, and the mistake survives
+    review because the intent reads correctly.
+  fix: |
+    Make the intended behaviour explicit, and cover the case that used to fail with a test.
+
+- key: QG-CS-BUG-0208
+  name: Delegates should not be subtracted
+  languages: [cs]
+  category: BUG
+  severity: major
+  effort: 30min
+  status: planned
+  generated: true
+  tags: []
+  summary: The code does not behave the way it reads.
+  why: |
+    Written this way it works by accident or fails on ordinary input, and the mistake survives
+    review because the intent reads correctly.
+  fix: |
+    Make the intended behaviour explicit, and cover the case that used to fail with a test.
+
+- key: QG-CS-BUG-0209
+  name: Anonymous delegates should not be used to unsubscribe from Events
+  languages: [cs]
+  category: BUG
+  severity: major
+  effort: 15min
+  status: planned
+  generated: true
+  tags: []
+  summary: The code does not behave the way it reads.
+  why: |
+    Written this way it works by accident or fails on ordinary input, and the mistake survives
+    review because the intent reads correctly.
+  fix: |
+    Make the intended behaviour explicit, and cover the case that used to fail with a test.
+
+- key: QG-CS-BUG-0210
+  name: Static fields should appear in the order they must be initialized
+  languages: [cs]
+  category: BUG
+  severity: major
+  effort: 5min
+  status: planned
+  generated: true
+  tags: []
+  summary: The code does not behave the way it reads.
+  why: |
+    Written this way it works by accident or fails on ordinary input, and the mistake survives
+    review because the intent reads correctly.
+  fix: |
+    Make the intended behaviour explicit, and cover the case that used to fail with a test.
+
+- key: QG-CS-BUG-0211
+  name: Caller information parameters should come at the end of the parameter list
+  languages: [cs]
+  category: BUG
+  severity: major
+  effort: 5min
+  status: planned
+  generated: true
+  tags: [api-design]
+  summary: A piece of code has grown past what can be held in mind at once.
+  why: |
+    The size is the defect: every change to it costs more than it should and carries a risk that has
+    nothing to do with the change itself.
+  fix: |
+    Split it along the responsibilities it has accumulated.
+
+- key: QG-CS-BUG-0212
+  name: Classes should not have only "private" constructors
+  languages: [cs]
+  category: BUG
+  severity: major
+  effort: 5min
+  status: planned
+  generated: true
+  tags: [design]
+  summary: The code does not behave the way it reads.
+  why: |
+    Written this way it works by accident or fails on ordinary input, and the mistake survives
+    review because the intent reads correctly.
+  fix: |
+    Make the intended behaviour explicit, and cover the case that used to fail with a test.
+
+- key: QG-CS-BUG-0213
+  name: Optional parameters should be passed to "base" calls
+  languages: [cs]
+  category: BUG
+  severity: major
+  effort: 5min
+  status: planned
+  generated: true
+  tags: []
+  summary: A value that can be absent is used as though it always exists.
+  why: |
+    The path that produces the absence is usually the rare one, so this survives testing and arrives
+    in production as a failure with no obvious cause.
+  fix: |
+    Handle the absent case where it arises, or make the type say the value is always there.
+
+- key: QG-CS-BUG-0214
+  name: Methods with "Pure" attribute should return a value
+  languages: [cs]
+  category: BUG
+  severity: major
+  effort: 5min
+  status: planned
+  generated: true
+  tags: []
+  summary: The code does not behave the way it reads.
+  why: |
+    Written this way it works by accident or fails on ordinary input, and the mistake survives
+    review because the intent reads correctly.
+  fix: |
+    Make the intended behaviour explicit, and cover the case that used to fail with a test.
+
+- key: QG-CS-BUG-0215
+  name: Nullable type comparison should not be redundant
+  languages: [cs]
+  category: BUG
+  severity: major
+  effort: 5min
+  status: planned
+  generated: true
+  tags: [redundant]
+  summary: A value that can be absent is used as though it always exists.
+  why: |
+    The path that produces the absence is usually the rare one, so this survives testing and arrives
+    in production as a failure with no obvious cause.
+  fix: |
+    Handle the absent case where it arises, or make the type say the value is always there.
+
+- key: QG-CS-BUG-0216
+  name: Empty nullable value should not be accessed
+  languages: [cs]
+  category: BUG
+  severity: major
+  effort: 10min
+  status: planned
+  generated: true
+  tags: [cwe, symbolic-execution]
+  summary: Something is reachable by callers who should not reach it.
+  why: |
+    Access granted this broadly is never noticed afterwards: nothing fails, and the surface stays
+    open for as long as the resource exists.
+  fix: |
+    Grant the access to the identities that need it and to nothing else.
+
+- key: QG-CS-BUG-0217
+  name: Serialization event handlers should be implemented correctly
+  languages: [cs]
+  category: BUG
+  severity: major
+  effort: 15min
+  status: planned
+  generated: true
+  tags: []
+  summary: The code does not behave the way it reads.
+  why: |
+    Written this way it works by accident or fails on ordinary input, and the mistake survives
+    review because the intent reads correctly.
+  fix: |
+    Make the intended behaviour explicit, and cover the case that used to fail with a test.
+
+- key: QG-CS-BUG-0218
+  name: Calculations should not overflow
+  languages: [cs]
+  category: BUG
+  severity: major
+  effort: 5min
+  status: planned
+  generated: true
+  tags: [overflow, symbolic-execution]
+  summary: The code does not behave the way it reads.
+  why: |
+    Written this way it works by accident or fails on ordinary input, and the mistake survives
+    review because the intent reads correctly.
+  fix: |
+    Make the intended behaviour explicit, and cover the case that used to fail with a test.
+
+- key: QG-CS-BUG-0219
+  name: Empty collections should not be accessed or iterated
+  languages: [cs]
+  category: BUG
+  severity: minor
+  effort: 15min
+  status: planned
+  generated: true
+  tags: [symbolic-execution]
+  summary: Something is reachable by callers who should not reach it.
+  why: |
+    Access granted this broadly is never noticed afterwards: nothing fails, and the surface stays
+    open for as long as the resource exists.
+  fix: |
+    Grant the access to the identities that need it and to nothing else.
+
+- key: QG-CS-BUG-0220
+  name: "ConstructorArgument" parameters should exist in constructors
+  languages: [cs]
+  category: BUG
+  severity: major
+  effort: 2min
+  status: planned
+  generated: true
+  tags: [xaml, wpf]
+  summary: A piece of code has grown past what can be held in mind at once.
+  why: |
+    The size is the defect: every change to it costs more than it should and carries a risk that has
+    nothing to do with the change itself.
+  fix: |
+    Split it along the responsibilities it has accumulated.
+
+- key: QG-CS-BUG-0221
+  name: Message template placeholders should be unique
+  languages: [cs]
+  category: BUG
+  severity: major
+  effort: 5min
+  status: planned
+  generated: true
+  tags: [logging]
+  summary: The code does not behave the way it reads.
+  why: |
+    Written this way it works by accident or fails on ordinary input, and the mistake survives
+    review because the intent reads correctly.
+  fix: |
+    Make the intended behaviour explicit, and cover the case that used to fail with a test.
+
+- key: QG-CS-BUG-0222
+  name: Potential Cartesian Explosion
+  languages: [cs]
+  category: BUG
+  severity: major
+  effort: 5min
+  status: planned
+  generated: true
+  tags: [entity-framework-core, entity-framework, database, orm]
+  summary: The code does not behave the way it reads.
+  why: |
+    Written this way it works by accident or fails on ordinary input, and the mistake survives
+    review because the intent reads correctly.
+  fix: |
+    Make the intended behaviour explicit, and cover the case that used to fail with a test.
+
+- key: QG-CS-BUG-0223
+  name: Migrations should not narrow column types without converting existing data
+  languages: [cs]
+  category: BUG
+  severity: major
+  effort: 10min
+  status: planned
+  generated: true
+  tags: [entity-framework-core, entity-framework, orm, database]
+  summary: The code does not behave the way it reads.
+  why: |
+    Written this way it works by accident or fails on ordinary input, and the mistake survives
+    review because the intent reads correctly.
+  fix: |
+    Make the intended behaviour explicit, and cover the case that used to fail with a test.
+
+- key: QG-CS-BUG-0224
+  name: Default values should be compatible with their entity property type
+  languages: [cs]
+  category: BUG
+  severity: major
+  effort: 5 min
+  status: planned
+  generated: true
+  tags: [entity-framework-core, entity-framework, database, orm]
+  summary: The code does not behave the way it reads.
+  why: |
+    Written this way it works by accident or fails on ordinary input, and the mistake survives
+    review because the intent reads correctly.
+  fix: |
+    Make the intended behaviour explicit, and cover the case that used to fail with a test.
+
+- key: QG-CS-BUG-0225
+  name: SQL keywords should be delimited by whitespace
+  languages: [cs]
+  category: BUG
+  severity: blocker
+  effort: 2min
+  status: planned
+  generated: true
+  tags: [sql]
+  summary: Input decides part of something the program then executes.
+  why: |
+    Whatever the caller sends becomes part of the instruction rather than part of the data. The code
+    reads naturally, because the value sits exactly where it belongs in the sentence.
+  fix: |
+    Keep the instruction fixed and pass the values separately, so no input can change its shape.
+
+- key: QG-CS-BUG-0226
+  name: Right operands of shift operators should be integers
+  languages: [cs]
+  category: BUG
+  severity: critical
+  effort: 10min
+  status: planned
+  generated: true
+  tags: []
+  summary: The code does not behave the way it reads.
+  why: |
+    Written this way it works by accident or fails on ordinary input, and the mistake survives
+    review because the intent reads correctly.
+  fix: |
+    Make the intended behaviour explicit, and cover the case that used to fail with a test.
+
+- key: QG-CS-BUG-0227
+  name: Type inheritance should not be recursive
+  languages: [cs]
+  category: BUG
+  severity: blocker
+  effort: 1h
+  status: planned
+  generated: true
+  tags: []
+  summary: The code does not behave the way it reads.
+  why: |
+    Written this way it works by accident or fails on ordinary input, and the mistake survives
+    review because the intent reads correctly.
+  fix: |
+    Make the intended behaviour explicit, and cover the case that used to fail with a test.
+
+- key: QG-CS-BUG-0228
+  name: Classes should "Dispose" of members from the classes' own "Dispose" methods
+  languages: [cs]
+  category: BUG
+  severity: critical
+  effort: 20min
+  status: planned
+  generated: true
+  tags: [cwe, denial-of-service]
+  summary: Something the runtime cannot reclaim on its own is not released.
+  why: |
+    Handles, sockets and connections are finite. The failure appears far from here, under load, as
+    an exhaustion nobody can attribute to a single line.
+  fix: |
+    Release it on every path, including the exceptional one.

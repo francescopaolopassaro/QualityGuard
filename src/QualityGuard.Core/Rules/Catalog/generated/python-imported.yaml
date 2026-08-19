@@ -1,0 +1,1812 @@
+# Catalogue entries written in one pass, one per defect this language still lacks a check for.
+# Every entry is documentation and carries no detection, so none of them reports anything: a
+# detection is written by hand, against the shape the defect actually has, and measured before
+# the entry stops being planned.
+
+- key: QG-PY-SEC-0120
+  name: Policies should not grant all privileges
+  languages: [py]
+  category: SEC
+  severity: blocker
+  effort: 5min
+  status: planned
+  generated: true
+  tags: [cwe, aws, gcp, former-hotspot]
+  summary: Something is reachable by callers who should not reach it.
+  why: |
+    Access granted this broadly is never noticed afterwards: nothing fails, and the surface stays
+    open for as long as the resource exists.
+  fix: |
+    Grant the access to the identities that need it and to nothing else.
+
+- key: QG-PY-SEC-0121
+  name: IAM policies should not grant access to all account resources
+  languages: [py]
+  category: SEC
+  severity: blocker
+  effort: 5min
+  status: planned
+  generated: true
+  tags: [aws, cwe, former-hotspot]
+  summary: Something is reachable by callers who should not reach it.
+  why: |
+    Access granted this broadly is never noticed afterwards: nothing fails, and the surface stays
+    open for as long as the resource exists.
+  fix: |
+    Grant the access to the identities that need it and to nothing else.
+
+- key: QG-PY-SEC-0122
+  name: AWS IAM policies should limit the scope of permissions given
+  languages: [py]
+  category: SEC
+  severity: critical
+  effort: 60min
+  status: planned
+  generated: true
+  tags: [cwe, aws]
+  summary: Something is reachable by callers who should not reach it.
+  why: |
+    Access granted this broadly is never noticed afterwards: nothing fails, and the surface stays
+    open for as long as the resource exists.
+  fix: |
+    Grant the access to the identities that need it and to nothing else.
+
+- key: QG-PY-SEC-0123
+  name: Web servers should not bind to all network interfaces
+  languages: [py]
+  category: SEC
+  severity: blocker
+  effort: 5min
+  status: planned
+  generated: true
+  tags: [fastapi, flask, uvicorn, network]
+  summary: Something is reachable by callers who should not reach it.
+  why: |
+    Access granted this broadly is never noticed afterwards: nothing fails, and the surface stays
+    open for as long as the resource exists.
+  fix: |
+    Grant the access to the identities that need it and to nothing else.
+
+- key: QG-PY-SEC-0124
+  name: Administration services access should be restricted to specific IP addresses
+  languages: [py]
+  category: SEC
+  severity: minor
+  effort: 5min
+  status: planned
+  generated: true
+  tags: [cwe, aws]
+  summary: Something is reachable by callers who should not reach it.
+  why: |
+    Access granted this broadly is never noticed afterwards: nothing fails, and the surface stays
+    open for as long as the resource exists.
+  fix: |
+    Grant the access to the identities that need it and to nothing else.
+
+- key: QG-PY-SEC-0125
+  name: OS commands should not be executed using a shell interpreter
+  languages: [py]
+  category: SEC
+  severity: major
+  effort: 30min
+  status: planned
+  generated: true
+  tags: [cwe, former-hotspot]
+  summary: Input decides part of something the program then executes.
+  why: |
+    Whatever the caller sends becomes part of the instruction rather than part of the data. The code
+    reads naturally, because the value sits exactly where it belongs in the sentence.
+  fix: |
+    Keep the instruction fixed and pass the values separately, so no input can change its shape.
+
+- key: QG-PY-SML-0416
+  name: Methods and field names should not differ only by capitalization
+  languages: [py]
+  category: SML
+  severity: blocker
+  effort: 10min
+  status: planned
+  generated: true
+  tags: [confusing, convention]
+  summary: A name does not follow the convention the rest of the code uses.
+  why: |
+    Conventions let a reader infer what something is from its shape alone. A deviation costs a
+    lookup every time, and makes searches and automated refactoring less reliable.
+  fix: |
+    Rename it to match the convention used around it.
+
+- key: QG-PY-SML-0417
+  name: `str.replace` should be preferred to `re.sub`
+  languages: [py]
+  category: SML
+  severity: critical
+  effort: 2min
+  status: planned
+  generated: true
+  tags: [regex, performance]
+  summary: An API is used where a better one exists.
+  why: |
+    The older form usually costs something the newer one does not, and it is on its way out: a
+    conversion, an allocation, a case it handles wrongly.
+  fix: |
+    Use the current API, and keep the old one only behind a documented compatibility layer.
+
+- key: QG-PY-SML-0418
+  name: Arguments given to functions should be of an expected type
+  languages: [py]
+  category: SML
+  severity: critical
+  effort: 20min
+  status: planned
+  generated: true
+  tags: [suspicious, typing]
+  summary: The code does not behave the way it reads.
+  why: |
+    Written this way it works by accident or fails on ordinary input, and the mistake survives
+    review because the intent reads correctly.
+  fix: |
+    Make the intended behaviour explicit, and cover the case that used to fail with a test.
+
+- key: QG-PY-SML-0419
+  name: Comparison to None should not be constant
+  languages: [py]
+  category: SML
+  severity: critical
+  effort: 10min
+  status: planned
+  generated: true
+  tags: [suspicious]
+  summary: A value that can be absent is used as though it always exists.
+  why: |
+    The path that produces the absence is usually the rare one, so this survives testing and arrives
+    in production as a failure with no obvious cause.
+  fix: |
+    Handle the absent case where it arises, or make the type say the value is always there.
+
+- key: QG-PY-SML-0420
+  name: "SystemExit" should be re-raised
+  languages: [py]
+  category: SML
+  severity: critical
+  effort: 5min
+  status: planned
+  generated: true
+  tags: [error-handling, bad-practice, suspicious]
+  summary: The code does not behave the way it reads.
+  why: |
+    Written this way it works by accident or fails on ordinary input, and the mistake survives
+    review because the intent reads correctly.
+  fix: |
+    Make the intended behaviour explicit, and cover the case that used to fail with a test.
+
+- key: QG-PY-SML-0421
+  name: Loop variables should not be reused in nested loops
+  languages: [py]
+  category: SML
+  severity: critical
+  effort: 2min
+  status: planned
+  generated: true
+  tags: [confusing, pitfall]
+  summary: The control flow does not do what it reads as doing.
+  why: |
+    A branch that cannot be taken, a loop that cannot end, a condition that is always the same: the
+    code states an intent the machine does not carry out, and review reads the intent.
+  fix: |
+    Make the flow say what it does, and remove what cannot happen.
+
+- key: QG-PY-SML-0422
+  name: Functions and lambdas should not reference variables defined in enclosing loops
+  languages: [py]
+  category: SML
+  severity: major
+  effort: 30min
+  status: planned
+  generated: true
+  tags: [suspicious]
+  summary: The control flow does not do what it reads as doing.
+  why: |
+    A branch that cannot be taken, a loop that cannot end, a condition that is always the same: the
+    code states an intent the machine does not carry out, and review reads the intent.
+  fix: |
+    Make the flow say what it does, and remove what cannot happen.
+
+- key: QG-PY-SML-0423
+  name: Assertion argument order should be consistent within a file
+  languages: [py]
+  category: SML
+  severity: major
+  effort: 2min
+  status: planned
+  generated: true
+  tags: [tests, suspicious]
+  summary: The code does not behave the way it reads.
+  why: |
+    Written this way it works by accident or fails on ordinary input, and the mistake survives
+    review because the intent reads correctly.
+  fix: |
+    Make the intended behaviour explicit, and cover the case that used to fail with a test.
+
+- key: QG-PY-SML-0424
+  name: String formatting should be used correctly
+  languages: [py]
+  category: SML
+  severity: major
+  effort: 1min
+  status: planned
+  generated: true
+  tags: [confusing]
+  summary: An API is used where a better one exists.
+  why: |
+    The older form usually costs something the newer one does not, and it is on its way out: a
+    conversion, an allocation, a case it handles wrongly.
+  fix: |
+    Use the current API, and keep the old one only behind a documented compatibility layer.
+
+- key: QG-PY-SML-0425
+  name: Walrus operator should not make code confusing
+  languages: [py]
+  category: SML
+  severity: minor
+  effort: 10min
+  status: planned
+  generated: true
+  tags: [pep, confusing, bad-practice]
+  summary: The code does not behave the way it reads.
+  why: |
+    Written this way it works by accident or fails on ordinary input, and the mistake survives
+    review because the intent reads correctly.
+  fix: |
+    Make the intended behaviour explicit, and cover the case that used to fail with a test.
+
+- key: QG-PY-SML-0426
+  name: Only one method invocation is expected when testing runtime exceptions
+  languages: [py]
+  category: SML
+  severity: major
+  effort: 5min
+  status: planned
+  generated: true
+  tags: [pytest, unittest, tests]
+  summary: The code does not behave the way it reads.
+  why: |
+    Written this way it works by accident or fails on ordinary input, and the mistake survives
+    review because the intent reads correctly.
+  fix: |
+    Make the intended behaviour explicit, and cover the case that used to fail with a test.
+
+- key: QG-PY-SML-0427
+  name: Implicit string and byte concatenations should not be confusing
+  languages: [py]
+  category: SML
+  severity: major
+  effort: 1min
+  status: planned
+  generated: true
+  tags: [confusing, suspicious]
+  summary: The code does not behave the way it reads.
+  why: |
+    Written this way it works by accident or fails on ordinary input, and the mistake survives
+    review because the intent reads correctly.
+  fix: |
+    Make the intended behaviour explicit, and cover the case that used to fail with a test.
+
+- key: QG-PY-SML-0428
+  name: Names of regular expressions named groups should be used
+  languages: [py]
+  category: SML
+  severity: major
+  effort: 10min
+  status: planned
+  generated: true
+  tags: [regex]
+  summary: A name does not follow the convention the rest of the code uses.
+  why: |
+    Conventions let a reader infer what something is from its shape alone. A deviation costs a
+    lookup every time, and makes searches and automated refactoring less reliable.
+  fix: |
+    Rename it to match the convention used around it.
+
+- key: QG-PY-SML-0429
+  name: Tests should check which exception is thrown
+  languages: [py]
+  category: SML
+  severity: major
+  effort: 5min
+  status: planned
+  generated: true
+  tags: [tests]
+  summary: The code does not behave the way it reads.
+  why: |
+    Written this way it works by accident or fails on ordinary input, and the mistake survives
+    review because the intent reads correctly.
+  fix: |
+    Make the intended behaviour explicit, and cover the case that used to fail with a test.
+
+- key: QG-PY-SML-0430
+  name: Regular expressions should not contain empty groups
+  languages: [py]
+  category: SML
+  severity: major
+  effort: 5min
+  status: planned
+  generated: true
+  tags: [regex]
+  summary: Code that no longer takes part in anything is still here.
+  why: |
+    It has to be read, understood and kept compiling by everyone who passes through, and it gives
+    nothing back. Worse, it suggests a purpose that no longer exists.
+  fix: |
+    Remove it: the history keeps it if it is ever needed again.
+
+- key: QG-PY-SML-0431
+  name: Non-capturing groups without quantifier should not be used
+  languages: [py]
+  category: SML
+  severity: major
+  effort: 5min
+  status: planned
+  generated: true
+  tags: [regex]
+  summary: The code does not behave the way it reads.
+  why: |
+    Written this way it works by accident or fails on ordinary input, and the mistake survives
+    review because the intent reads correctly.
+  fix: |
+    Make the intended behaviour explicit, and cover the case that used to fail with a test.
+
+- key: QG-PY-SML-0432
+  name: Octal escape sequences should not be used in regular expressions
+  languages: [py]
+  category: SML
+  severity: major
+  effort: 5min
+  status: planned
+  generated: true
+  tags: [regex, confusing]
+  summary: The code does not behave the way it reads.
+  why: |
+    Written this way it works by accident or fails on ordinary input, and the mistake survives
+    review because the intent reads correctly.
+  fix: |
+    Make the intended behaviour explicit, and cover the case that used to fail with a test.
+
+- key: QG-PY-SML-0433
+  name: Generic type statements should not use "TypeVars"
+  languages: [py]
+  category: SML
+  severity: major
+  effort: 5min
+  status: planned
+  generated: true
+  tags: [typing]
+  summary: The code does not behave the way it reads.
+  why: |
+    Written this way it works by accident or fails on ordinary input, and the mistake survives
+    review because the intent reads correctly.
+  fix: |
+    Make the intended behaviour explicit, and cover the case that used to fail with a test.
+
+- key: QG-PY-SML-0434
+  name: Generic functions should be defined using the type parameter syntax
+  languages: [py]
+  category: SML
+  severity: major
+  effort: 5min
+  status: planned
+  generated: true
+  tags: [typing]
+  summary: The code does not behave the way it reads.
+  why: |
+    Written this way it works by accident or fails on ordinary input, and the mistake survives
+    review because the intent reads correctly.
+  fix: |
+    Make the intended behaviour explicit, and cover the case that used to fail with a test.
+
+- key: QG-PY-SML-0435
+  name: Events should be used instead of `sleep` in asynchronous loops
+  languages: [py]
+  category: SML
+  severity: major
+  effort: 10min
+  status: planned
+  generated: true
+  tags: [async, asyncio, anyio, trio]
+  summary: Shared state is reached without the coordination that makes it safe.
+  why: |
+    It works every time it is tested and fails under load, on a machine with more cores, once. That
+    is the hardest kind of defect to reproduce and the easiest to write.
+  fix: |
+    Guard the shared state, or give each caller its own copy.
+
+- key: QG-PY-SML-0436
+  name: List comprehensions should not be used with "any()" or "all()"
+  languages: [py]
+  category: SML
+  severity: minor
+  effort: 5min
+  status: planned
+  generated: true
+  tags: []
+  summary: The code does not behave the way it reads.
+  why: |
+    Written this way it works by accident or fails on ordinary input, and the mistake survives
+    review because the intent reads correctly.
+  fix: |
+    Make the intended behaviour explicit, and cover the case that used to fail with a test.
+
+- key: QG-PY-SML-0437
+  name: Comprehensions should be used instead of constructors around generator expressions
+  languages: [py]
+  category: SML
+  severity: minor
+  effort: 5min
+  status: planned
+  generated: true
+  tags: []
+  summary: An API is used where a better one exists.
+  why: |
+    The older form usually costs something the newer one does not, and it is on its way out: a
+    conversion, an allocation, a case it handles wrongly.
+  fix: |
+    Use the current API, and keep the old one only behind a documented compatibility layer.
+
+- key: QG-PY-SML-0438
+  name: Comprehensions only used to copy should be replaced with the respective constructor calls
+  languages: [py]
+  category: SML
+  severity: minor
+  effort: 5min
+  status: planned
+  generated: true
+  tags: []
+  summary: An API is used where a better one exists.
+  why: |
+    The older form usually costs something the newer one does not, and it is on its way out: a
+    conversion, an allocation, a case it handles wrongly.
+  fix: |
+    Use the current API, and keep the old one only behind a documented compatibility layer.
+
+- key: QG-PY-SML-0439
+  name: Redundant collection functions should be avoided
+  languages: [py]
+  category: SML
+  severity: minor
+  effort: 5min
+  status: planned
+  generated: true
+  tags: []
+  summary: Code that no longer takes part in anything is still here.
+  why: |
+    It has to be read, understood and kept compiling by everyone who passes through, and it gives
+    nothing back. Worse, it suggests a purpose that no longer exists.
+  fix: |
+    Remove it: the history keeps it if it is ever needed again.
+
+- key: QG-PY-SML-0440
+  name: The "sorted" function call should not be passed to the "reversed" function as an argument
+  languages: [py]
+  category: SML
+  severity: major
+  effort: 1min
+  status: planned
+  generated: true
+  tags: []
+  summary: The code does not behave the way it reads.
+  why: |
+    Written this way it works by accident or fails on ordinary input, and the mistake survives
+    review because the intent reads correctly.
+  fix: |
+    Make the intended behaviour explicit, and cover the case that used to fail with a test.
+
+- key: QG-PY-SML-0441
+  name: Passing a reversed iterable to "set()", "sorted()", or "reversed()" should be avoided
+  languages: [py]
+  category: SML
+  severity: major
+  effort: 1min
+  status: planned
+  generated: true
+  tags: []
+  summary: The code does not behave the way it reads.
+  why: |
+    Written this way it works by accident or fails on ordinary input, and the mistake survives
+    review because the intent reads correctly.
+  fix: |
+    Make the intended behaviour explicit, and cover the case that used to fail with a test.
+
+- key: QG-PY-SML-0442
+  name: "sorted" should not be wrapped directly inside "set"
+  languages: [py]
+  category: SML
+  severity: minor
+  effort: 5min
+  status: planned
+  generated: true
+  tags: []
+  summary: The code does not behave the way it reads.
+  why: |
+    Written this way it works by accident or fails on ordinary input, and the mistake survives
+    review because the intent reads correctly.
+  fix: |
+    Make the intended behaviour explicit, and cover the case that used to fail with a test.
+
+- key: QG-PY-SML-0443
+  name: Iteration over a dictionary key value pairs should be done with the items() method call
+  languages: [py]
+  category: SML
+  severity: major
+  effort: 1min
+  status: planned
+  generated: true
+  tags: []
+  summary: The code does not behave the way it reads.
+  why: |
+    Written this way it works by accident or fails on ordinary input, and the mistake survives
+    review because the intent reads correctly.
+  fix: |
+    Make the intended behaviour explicit, and cover the case that used to fail with a test.
+
+- key: QG-PY-SML-0444
+  name: Populating a dictionary with a constant value should be done with dict.fromkeys() method call
+  languages: [py]
+  category: SML
+  severity: minor
+  effort: 1min
+  status: planned
+  generated: true
+  tags: []
+  summary: The code does not behave the way it reads.
+  why: |
+    Written this way it works by accident or fails on ordinary input, and the mistake survives
+    review because the intent reads correctly.
+  fix: |
+    Make the intended behaviour explicit, and cover the case that used to fail with a test.
+
+- key: QG-PY-SML-0445
+  name: AWS Lambda handlers must not be an async function
+  languages: [py]
+  category: SML
+  severity: minor
+  effort: 5min
+  status: planned
+  generated: true
+  tags: []
+  summary: The code does not behave the way it reads.
+  why: |
+    Written this way it works by accident or fails on ordinary input, and the mistake survives
+    review because the intent reads correctly.
+  fix: |
+    Make the intended behaviour explicit, and cover the case that used to fail with a test.
+
+- key: QG-PY-SML-0446
+  name: Issue suppression comment should have the correct format
+  languages: [py]
+  category: SML
+  severity: major
+  effort: 1min
+  status: planned
+  generated: true
+  tags: []
+  summary: The code does not behave the way it reads.
+  why: |
+    Written this way it works by accident or fails on ordinary input, and the mistake survives
+    review because the intent reads correctly.
+  fix: |
+    Make the intended behaviour explicit, and cover the case that used to fail with a test.
+
+- key: QG-PY-SML-0447
+  name: Functions should return tuples of consistent length
+  languages: [py]
+  category: SML
+  severity: major
+  effort: 10 min
+  status: planned
+  generated: true
+  tags: [pitfall, api-design, type-system]
+  summary: The code does not behave the way it reads.
+  why: |
+    Written this way it works by accident or fails on ordinary input, and the mistake survives
+    review because the intent reads correctly.
+  fix: |
+    Make the intended behaviour explicit, and cover the case that used to fail with a test.
+
+- key: QG-PY-SML-0448
+  name: "sorted()" should not be used with indexing to find minimum or maximum values
+  languages: [py]
+  category: SML
+  severity: major
+  effort: 5 min
+  status: planned
+  generated: true
+  tags: [performance, pythonic]
+  summary: The code does not behave the way it reads.
+  why: |
+    Written this way it works by accident or fails on ordinary input, and the mistake survives
+    review because the intent reads correctly.
+  fix: |
+    Make the intended behaviour explicit, and cover the case that used to fail with a test.
+
+- key: QG-PY-SML-0449
+  name: "enumerate()" values should be unpacked instead of using index lookups
+  languages: [py]
+  category: SML
+  severity: major
+  effort: 2min
+  status: planned
+  generated: true
+  tags: [pythonic, readability, performance]
+  summary: An API is used where a better one exists.
+  why: |
+    The older form usually costs something the newer one does not, and it is on its way out: a
+    conversion, an allocation, a case it handles wrongly.
+  fix: |
+    Use the current API, and keep the old one only behind a documented compatibility layer.
+
+- key: QG-PY-SML-0450
+  name: "list(...)[0]" should not be used to get the first element
+  languages: [py]
+  category: SML
+  severity: major
+  effort: 5min
+  status: planned
+  generated: true
+  tags: [performance, pythonic]
+  summary: The code does not behave the way it reads.
+  why: |
+    Written this way it works by accident or fails on ordinary input, and the mistake survives
+    review because the intent reads correctly.
+  fix: |
+    Make the intended behaviour explicit, and cover the case that used to fail with a test.
+
+- key: QG-PY-SML-0451
+  name: "sum()" should not be used with an empty list to concatenate lists
+  languages: [py]
+  category: SML
+  severity: major
+  effort: 5min
+  status: planned
+  generated: true
+  tags: [performance, pitfall]
+  summary: Code that no longer takes part in anything is still here.
+  why: |
+    It has to be read, understood and kept compiling by everyone who passes through, and it gives
+    nothing back. Worse, it suggests a purpose that no longer exists.
+  fix: |
+    Remove it: the history keeps it if it is ever needed again.
+
+- key: QG-PY-SML-0452
+  name: Dedicated exception assertions should be used instead of "try-except" with "fail()"
+  languages: [py]
+  category: SML
+  severity: minor
+  effort: 5min
+  status: planned
+  generated: true
+  tags: [tests]
+  summary: An API is used where a better one exists.
+  why: |
+    The older form usually costs something the newer one does not, and it is on its way out: a
+    conversion, an allocation, a case it handles wrongly.
+  fix: |
+    Use the current API, and keep the old one only behind a documented compatibility layer.
+
+- key: QG-PY-SML-0453
+  name: Pytest marks and usefixtures should not be applied uselessly
+  languages: [py]
+  category: SML
+  severity: major
+  effort: 5min
+  status: planned
+  generated: true
+  tags: [pytest, tests]
+  summary: Cryptography is used in a way that does not give the protection it appears to.
+  why: |
+    The code still runs and the data still looks protected, which is what makes this expensive to
+    find: nothing fails until somebody who should not be able to read the data reads it.
+  fix: |
+    Use the current recommended algorithm and parameters, and let the platform choose what it can.
+
+- key: QG-PY-SML-0454
+  name: Tests should check which warning is expected
+  languages: [py]
+  category: SML
+  severity: major
+  effort: 5min
+  status: planned
+  generated: true
+  tags: [pytest, tests]
+  summary: The code does not behave the way it reads.
+  why: |
+    Written this way it works by accident or fails on ordinary input, and the mistake survives
+    review because the intent reads correctly.
+  fix: |
+    Make the intended behaviour explicit, and cover the case that used to fail with a test.
+
+- key: QG-PY-SML-0455
+  name: Intentional test failures should use pytest.fail with a message
+  languages: [py]
+  category: SML
+  severity: major
+  effort: 5min
+  status: planned
+  generated: true
+  tags: [pytest, tests]
+  summary: The code does not behave the way it reads.
+  why: |
+    Written this way it works by accident or fails on ordinary input, and the mistake survives
+    review because the intent reads correctly.
+  fix: |
+    Make the intended behaviour explicit, and cover the case that used to fail with a test.
+
+- key: QG-PY-SML-0456
+  name: Parametrize decorators should not contain duplicate test cases
+  languages: [py]
+  category: SML
+  severity: major
+  effort: 5min
+  status: planned
+  generated: true
+  tags: [pytest, tests]
+  summary: The control flow does not do what it reads as doing.
+  why: |
+    A branch that cannot be taken, a loop that cannot end, a condition that is always the same: the
+    code states an intent the machine does not carry out, and review reads the intent.
+  fix: |
+    Make the flow say what it does, and remove what cannot happen.
+
+- key: QG-PY-SML-0457
+  name: Pytest fixtures should use yield for teardown
+  languages: [py]
+  category: SML
+  severity: major
+  effort: 5min
+  status: planned
+  generated: true
+  tags: [pytest, tests]
+  summary: The code does not behave the way it reads.
+  why: |
+    Written this way it works by accident or fails on ordinary input, and the mistake survives
+    review because the intent reads correctly.
+  fix: |
+    Make the intended behaviour explicit, and cover the case that used to fail with a test.
+
+- key: QG-PY-SML-0458
+  name: Mocks should use return_value instead of patching with a lambda that only returns a value
+  languages: [py]
+  category: SML
+  severity: major
+  effort: 5min
+  status: planned
+  generated: true
+  tags: [pytest, tests]
+  summary: An API is used where a better one exists.
+  why: |
+    The older form usually costs something the newer one does not, and it is on its way out: a
+    conversion, an allocation, a case it handles wrongly.
+  fix: |
+    Use the current API, and keep the old one only behind a documented compatibility layer.
+
+- key: QG-PY-SML-0459
+  name: Pytest fixture and mark decorators should use consistent parentheses style
+  languages: [py]
+  category: SML
+  severity: minor
+  effort: 1min
+  status: planned
+  generated: true
+  tags: [pytest, tests]
+  summary: The code does not behave the way it reads.
+  why: |
+    Written this way it works by accident or fails on ordinary input, and the mistake survives
+    review because the intent reads correctly.
+  fix: |
+    Make the intended behaviour explicit, and cover the case that used to fail with a test.
+
+- key: QG-PY-SML-0460
+  name: pytest should be imported as a module
+  languages: [py]
+  category: SML
+  severity: minor
+  effort: 5min
+  status: planned
+  generated: true
+  tags: [pytest, tests]
+  summary: The code does not behave the way it reads.
+  why: |
+    Written this way it works by accident or fails on ordinary input, and the mistake survives
+    review because the intent reads correctly.
+  fix: |
+    Make the intended behaviour explicit, and cover the case that used to fail with a test.
+
+- key: QG-PY-SML-0461
+  name: Only one method invocation is expected when testing warnings
+  languages: [py]
+  category: SML
+  severity: major
+  effort: 5min
+  status: planned
+  generated: true
+  tags: [pytest, tests]
+  summary: The code does not behave the way it reads.
+  why: |
+    Written this way it works by accident or fails on ordinary input, and the mistake survives
+    review because the intent reads correctly.
+  fix: |
+    Make the intended behaviour explicit, and cover the case that used to fail with a test.
+
+- key: QG-PY-SML-0462
+  name: Pytest fixtures without teardown should use return instead of yield
+  languages: [py]
+  category: SML
+  severity: major
+  effort: 5min
+  status: planned
+  generated: true
+  tags: [pytest, tests]
+  summary: An API is used where a better one exists.
+  why: |
+    The older form usually costs something the newer one does not, and it is on its way out: a
+    conversion, an allocation, a case it handles wrongly.
+  fix: |
+    Use the current API, and keep the old one only behind a documented compatibility layer.
+
+- key: QG-PY-SML-0463
+  name: Pytest test and fixture parameters should not declare default values
+  languages: [py]
+  category: SML
+  severity: major
+  effort: 5min
+  status: planned
+  generated: true
+  tags: [pytest, tests]
+  summary: A piece of code has grown past what can be held in mind at once.
+  why: |
+    The size is the defect: every change to it costs more than it should and carries a risk that has
+    nothing to do with the change itself.
+  fix: |
+    Split it along the responsibilities it has accumulated.
+
+- key: QG-PY-SML-0464
+  name: TestCases should contain tests
+  languages: [py]
+  category: SML
+  severity: blocker
+  effort: 5min
+  status: planned
+  generated: true
+  tags: [tests, pytest, unittest]
+  summary: The control flow does not do what it reads as doing.
+  why: |
+    A branch that cannot be taken, a loop that cannot end, a condition that is always the same: the
+    code states an intent the machine does not carry out, and review reads the intent.
+  fix: |
+    Make the flow say what it does, and remove what cannot happen.
+
+- key: QG-PY-SML-0465
+  name: OS process signal parameters should be validated
+  languages: [py]
+  category: SML
+  severity: critical
+  effort: 30min
+  status: planned
+  generated: true
+  tags: [cwe, former-hotspot]
+  summary: A piece of code has grown past what can be held in mind at once.
+  why: |
+    The size is the defect: every change to it costs more than it should and carries a risk that has
+    nothing to do with the change itself.
+  fix: |
+    Split it along the responsibilities it has accumulated.
+
+- key: QG-PY-SML-0466
+  name: Regular expression quantifiers and character classes should be used concisely
+  languages: [py]
+  category: SML
+  severity: minor
+  effort: 5min
+  status: planned
+  generated: true
+  tags: [regex]
+  summary: An API is used where a better one exists.
+  why: |
+    The older form usually costs something the newer one does not, and it is on its way out: a
+    conversion, an allocation, a case it handles wrongly.
+  fix: |
+    Use the current API, and keep the old one only behind a documented compatibility layer.
+
+- key: QG-PY-SML-0467
+  name: Creation of collections with literals or comprehensions should not be wrapped in type constructors
+  languages: [py]
+  category: SML
+  severity: minor
+  effort: 5min
+  status: planned
+  generated: true
+  tags: []
+  summary: The code does not behave the way it reads.
+  why: |
+    Written this way it works by accident or fails on ordinary input, and the mistake survives
+    review because the intent reads correctly.
+  fix: |
+    Make the intended behaviour explicit, and cover the case that used to fail with a test.
+
+- key: QG-PY-SML-0468
+  name: Literal syntax should be preferred when creating empty collections or dictionaries with keyword arguments
+  languages: [py]
+  category: SML
+  severity: minor
+  effort: 5min
+  status: planned
+  generated: true
+  tags: []
+  summary: Code that no longer takes part in anything is still here.
+  why: |
+    It has to be read, understood and kept compiling by everyone who passes through, and it gives
+    nothing back. Worse, it suggests a purpose that no longer exists.
+  fix: |
+    Remove it: the history keeps it if it is ever needed again.
+
+- key: QG-PY-SML-0469
+  name: Generators and comprehensions should be preferred over the usage of "map" and "lambda" when creating collection
+  languages: [py]
+  category: SML
+  severity: major
+  effort: 5min
+  status: planned
+  generated: true
+  tags: []
+  summary: An API is used where a better one exists.
+  why: |
+    The older form usually costs something the newer one does not, and it is on its way out: a
+    conversion, an allocation, a case it handles wrongly.
+  fix: |
+    Use the current API, and keep the old one only behind a documented compatibility layer.
+
+- key: QG-PY-SML-0470
+  name: Comments should not be located at the end of lines of code
+  languages: [py]
+  category: SML
+  severity: minor
+  effort: 1min
+  status: planned
+  generated: true
+  tags: [convention]
+  summary: A name does not follow the convention the rest of the code uses.
+  why: |
+    Conventions let a reader infer what something is from its shape alone. A deviation costs a
+    lookup every time, and makes searches and automated refactoring less reliable.
+  fix: |
+    Rename it to match the convention used around it.
+
+- key: QG-PY-SML-0471
+  name: Track "TODO" and "FIXME" comments that do not contain a reference to a person
+  languages: [py]
+  category: SML
+  severity: minor
+  effort: 2min
+  status: planned
+  generated: true
+  tags: [convention]
+  summary: A name does not follow the convention the rest of the code uses.
+  why: |
+    Conventions let a reader infer what something is from its shape alone. A deviation costs a
+    lookup every time, and makes searches and automated refactoring less reliable.
+  fix: |
+    Rename it to match the convention used around it.
+
+- key: QG-PY-SML-0472
+  name: Docstrings should be defined
+  languages: [py]
+  category: SML
+  severity: major
+  effort: 5min
+  status: planned
+  generated: true
+  tags: [convention]
+  summary: A name does not follow the convention the rest of the code uses.
+  why: |
+    Conventions let a reader infer what something is from its shape alone. A deviation costs a
+    lookup every time, and makes searches and automated refactoring less reliable.
+  fix: |
+    Rename it to match the convention used around it.
+
+- key: QG-PY-SML-0473
+  name: Parentheses should not be used after certain keywords
+  languages: [py]
+  category: SML
+  severity: minor
+  effort: 1 min
+  status: planned
+  generated: true
+  tags: [deprecated]
+  summary: An API is used where a better one exists.
+  why: |
+    The older form usually costs something the newer one does not, and it is on its way out: a
+    conversion, an allocation, a case it handles wrongly.
+  fix: |
+    Use the current API, and keep the old one only behind a documented compatibility layer.
+
+- key: QG-PY-SML-0474
+  name: New-style classes should be used
+  languages: [py]
+  category: SML
+  severity: minor
+  effort: 2min
+  status: planned
+  generated: true
+  tags: [python3]
+  summary: An API is used where a better one exists.
+  why: |
+    The older form usually costs something the newer one does not, and it is on its way out: a
+    conversion, an allocation, a case it handles wrongly.
+  fix: |
+    Use the current API, and keep the old one only behind a documented compatibility layer.
+
+- key: QG-PY-SML-0475
+  name: Methods and properties that don't access instance data should be static
+  languages: [py]
+  category: SML
+  severity: minor
+  effort: 5min
+  status: planned
+  generated: true
+  tags: [pitfall]
+  summary: Something is reachable by callers who should not reach it.
+  why: |
+    Access granted this broadly is never noticed afterwards: nothing fails, and the surface stays
+    open for as long as the resource exists.
+  fix: |
+    Grant the access to the identities that need it and to nothing else.
+
+- key: QG-PY-SML-0476
+  name: Functions should use "return" consistently
+  languages: [py]
+  category: SML
+  severity: major
+  effort: 20min
+  status: planned
+  generated: true
+  tags: [design, confusing]
+  summary: The code does not behave the way it reads.
+  why: |
+    Written this way it works by accident or fails on ordinary input, and the mistake survives
+    review because the intent reads correctly.
+  fix: |
+    Make the intended behaviour explicit, and cover the case that used to fail with a test.
+
+- key: QG-PY-SML-0477
+  name: Expanding archive files should not be done without controlling resource consumption
+  languages: [py]
+  category: SML
+  severity: major
+  effort: 10min
+  status: planned
+  generated: true
+  tags: [cwe, former-hotspot]
+  summary: Something the runtime cannot reclaim on its own is not released.
+  why: |
+    Handles, sockets and connections are finite. The failure appears far from here, under load, as
+    an exhaustion nobody can attribute to a single line.
+  fix: |
+    Release it on every path, including the exceptional one.
+
+- key: QG-PY-SML-0478
+  name: Function returns should have type hints
+  languages: [py]
+  category: SML
+  severity: major
+  effort: 5min
+  status: planned
+  generated: true
+  tags: [convention, typing]
+  summary: A name does not follow the convention the rest of the code uses.
+  why: |
+    Conventions let a reader infer what something is from its shape alone. A deviation costs a
+    lookup every time, and makes searches and automated refactoring less reliable.
+  fix: |
+    Rename it to match the convention used around it.
+
+- key: QG-PY-SML-0479
+  name: Function parameters should have type hints
+  languages: [py]
+  category: SML
+  severity: major
+  effort: 5min
+  status: planned
+  generated: true
+  tags: [convention, typing]
+  summary: A name does not follow the convention the rest of the code uses.
+  why: |
+    Conventions let a reader infer what something is from its shape alone. A deviation costs a
+    lookup every time, and makes searches and automated refactoring less reliable.
+  fix: |
+    Rename it to match the convention used around it.
+
+- key: QG-PY-SML-0480
+  name: Any should not be used as a type hint
+  languages: [py]
+  category: SML
+  severity: major
+  effort: 5min
+  status: planned
+  generated: true
+  tags: [convention, typing, bad-practice]
+  summary: A name does not follow the convention the rest of the code uses.
+  why: |
+    Conventions let a reader infer what something is from its shape alone. A deviation costs a
+    lookup every time, and makes searches and automated refactoring less reliable.
+  fix: |
+    Rename it to match the convention used around it.
+
+- key: QG-PY-SML-0481
+  name: Type hints of generic types should specify their type parameters
+  languages: [py]
+  category: SML
+  severity: major
+  effort: 5min
+  status: planned
+  generated: true
+  tags: [convention, typing]
+  summary: A name does not follow the convention the rest of the code uses.
+  why: |
+    Conventions let a reader infer what something is from its shape alone. A deviation costs a
+    lookup every time, and makes searches and automated refactoring less reliable.
+  fix: |
+    Rename it to match the convention used around it.
+
+- key: QG-PY-SML-0482
+  name: Built-in generic types should be preferred over the typing module in type hints
+  languages: [py]
+  category: SML
+  severity: minor
+  effort: 2min
+  status: planned
+  generated: true
+  tags: [convention, typing]
+  summary: A name does not follow the convention the rest of the code uses.
+  why: |
+    Conventions let a reader infer what something is from its shape alone. A deviation costs a
+    lookup every time, and makes searches and automated refactoring less reliable.
+  fix: |
+    Rename it to match the convention used around it.
+
+- key: QG-PY-SML-0483
+  name: Django models should define a "__str__" method
+  languages: [py]
+  category: SML
+  severity: major
+  effort: 10min
+  status: planned
+  generated: true
+  tags: [django]
+  summary: The code does not behave the way it reads.
+  why: |
+    Written this way it works by accident or fails on ordinary input, and the mistake survives
+    review because the intent reads correctly.
+  fix: |
+    Make the intended behaviour explicit, and cover the case that used to fail with a test.
+
+- key: QG-PY-SML-0484
+  name: Assignments of lambdas to variables should be replaced by function definitions
+  languages: [py]
+  category: SML
+  severity: minor
+  effort: 5min
+  status: planned
+  generated: true
+  tags: []
+  summary: An API is used where a better one exists.
+  why: |
+    The older form usually costs something the newer one does not, and it is on its way out: a
+    conversion, an allocation, a case it handles wrongly.
+  fix: |
+    Use the current API, and keep the old one only behind a documented compatibility layer.
+
+- key: QG-PY-SML-0485
+  name: 'dtype' parameter should be provided when using 'pandas.read_csv' or 'pandas.read_table'
+  languages: [py]
+  category: SML
+  severity: major
+  effort: 5min
+  status: planned
+  generated: true
+  tags: [data-science, pandas]
+  summary: The code does not behave the way it reads.
+  why: |
+    Written this way it works by accident or fails on ordinary input, and the mistake survives
+    review because the intent reads correctly.
+  fix: |
+    Make the intended behaviour explicit, and cover the case that used to fail with a test.
+
+- key: QG-PY-SML-0486
+  name: Compression modules should be imported from the compression namespace
+  languages: [py]
+  category: SML
+  severity: minor
+  effort: 2 min
+  status: planned
+  generated: true
+  tags: [python3.14]
+  summary: A name does not follow the convention the rest of the code uses.
+  why: |
+    Conventions let a reader infer what something is from its shape alone. A deviation costs a
+    lookup every time, and makes searches and automated refactoring less reliable.
+  fix: |
+    Rename it to match the convention used around it.
+
+- key: QG-PY-SML-0487
+  name: Logging statements should follow Python best practices
+  languages: [py]
+  category: SML
+  severity: major
+  effort: 5min
+  status: planned
+  generated: true
+  tags: [convention, performance, pitfall]
+  summary: A name does not follow the convention the rest of the code uses.
+  why: |
+    Conventions let a reader infer what something is from its shape alone. A deviation costs a
+    lookup every time, and makes searches and automated refactoring less reliable.
+  fix: |
+    Rename it to match the convention used around it.
+
+- key: QG-PY-SML-0488
+  name: Mocks should be created with autospec
+  languages: [py]
+  category: SML
+  severity: major
+  effort: 10min
+  status: planned
+  generated: true
+  tags: [tests, pitfall]
+  summary: The code does not behave the way it reads.
+  why: |
+    Written this way it works by accident or fails on ordinary input, and the mistake survives
+    review because the intent reads correctly.
+  fix: |
+    Make the intended behaviour explicit, and cover the case that used to fail with a test.
+
+- key: QG-PY-SML-0489
+  name: Track lack of copyright and license headers
+  languages: [py]
+  category: SML
+  severity: blocker
+  effort: 5min
+  status: planned
+  generated: true
+  tags: [convention]
+  summary: A name does not follow the convention the rest of the code uses.
+  why: |
+    Conventions let a reader infer what something is from its shape alone. A deviation costs a
+    lookup every time, and makes searches and automated refactoring less reliable.
+  fix: |
+    Rename it to match the convention used around it.
+
+- key: QG-PY-SML-0490
+  name: Track uses of noqa comments
+  languages: [py]
+  category: SML
+  severity: info
+  effort: 10min
+  status: planned
+  generated: true
+  tags: []
+  summary: The code does not behave the way it reads.
+  why: |
+    Written this way it works by accident or fails on ordinary input, and the mistake survives
+    review because the intent reads correctly.
+  fix: |
+    Make the intended behaviour explicit, and cover the case that used to fail with a test.
+
+- key: QG-PY-SML-0491
+  name: Files should not have too many lines of code
+  languages: [py]
+  category: SML
+  severity: major
+  effort: 1h
+  status: planned
+  generated: true
+  tags: [brain-overload]
+  summary: A piece of code has grown past what can be held in mind at once.
+  why: |
+    The size is the defect: every change to it costs more than it should and carries a risk that has
+    nothing to do with the change itself.
+  fix: |
+    Split it along the responsibilities it has accumulated.
+
+- key: QG-PY-SML-0492
+  name: Files should end with a newline
+  languages: [py]
+  category: SML
+  severity: minor
+  effort: 1min
+  status: planned
+  generated: true
+  tags: [convention]
+  summary: A name does not follow the convention the rest of the code uses.
+  why: |
+    Conventions let a reader infer what something is from its shape alone. A deviation costs a
+    lookup every time, and makes searches and automated refactoring less reliable.
+  fix: |
+    Rename it to match the convention used around it.
+
+- key: QG-PY-SML-0493
+  name: Lines should not end with trailing whitespaces
+  languages: [py]
+  category: SML
+  severity: minor
+  effort: 1min
+  status: planned
+  generated: true
+  tags: [convention]
+  summary: A name does not follow the convention the rest of the code uses.
+  why: |
+    Conventions let a reader infer what something is from its shape alone. A deviation costs a
+    lookup every time, and makes searches and automated refactoring less reliable.
+  fix: |
+    Rename it to match the convention used around it.
+
+- key: QG-PY-BUG-0253
+  name: String formatting should not lead to runtime errors
+  languages: [py]
+  category: BUG
+  severity: blocker
+  effort: 10min
+  status: planned
+  generated: true
+  tags: [pitfall]
+  summary: The code does not behave the way it reads.
+  why: |
+    Written this way it works by accident or fails on ordinary input, and the mistake survives
+    review because the intent reads correctly.
+  fix: |
+    Make the intended behaviour explicit, and cover the case that used to fail with a test.
+
+- key: QG-PY-BUG-0254
+  name: "yield" and "return" should not be used outside functions
+  languages: [py]
+  category: BUG
+  severity: blocker
+  effort: 15min
+  status: planned
+  generated: true
+  tags: [pitfall, syntax]
+  summary: The code does not behave the way it reads.
+  why: |
+    Written this way it works by accident or fails on ordinary input, and the mistake survives
+    review because the intent reads correctly.
+  fix: |
+    Make the intended behaviour explicit, and cover the case that used to fail with a test.
+
+- key: QG-PY-BUG-0255
+  name: "__iter__" should return an iterator
+  languages: [py]
+  category: BUG
+  severity: blocker
+  effort: 10min
+  status: planned
+  generated: true
+  tags: [python3, pep]
+  summary: The code does not behave the way it reads.
+  why: |
+    Written this way it works by accident or fails on ordinary input, and the mistake survives
+    review because the intent reads correctly.
+  fix: |
+    Make the intended behaviour explicit, and cover the case that used to fail with a test.
+
+- key: QG-PY-BUG-0256
+  name: Variables, classes and functions should be defined before being used
+  languages: [py]
+  category: BUG
+  severity: blocker
+  effort: 10min
+  status: planned
+  generated: true
+  tags: [python3, pitfall]
+  summary: The code does not behave the way it reads.
+  why: |
+    Written this way it works by accident or fails on ordinary input, and the mistake survives
+    review because the intent reads correctly.
+  fix: |
+    Make the intended behaviour explicit, and cover the case that used to fail with a test.
+
+- key: QG-PY-BUG-0257
+  name: Operators should be used on compatible types
+  languages: [py]
+  category: BUG
+  severity: blocker
+  effort: 20min
+  status: planned
+  generated: true
+  tags: [typing]
+  summary: An API is used where a better one exists.
+  why: |
+    The older form usually costs something the newer one does not, and it is on its way out: a
+    conversion, an allocation, a case it handles wrongly.
+  fix: |
+    Use the current API, and keep the old one only behind a documented compatibility layer.
+
+- key: QG-PY-BUG-0258
+  name: "in" and "not in" operators should be used on objects supporting them
+  languages: [py]
+  category: BUG
+  severity: blocker
+  effort: 20min
+  status: planned
+  generated: true
+  tags: [python3, design]
+  summary: An API is used where a better one exists.
+  why: |
+    The older form usually costs something the newer one does not, and it is on its way out: a
+    conversion, an allocation, a case it handles wrongly.
+  fix: |
+    Use the current API, and keep the old one only behind a documented compatibility layer.
+
+- key: QG-PY-BUG-0259
+  name: Calls should not be made to non-callable values
+  languages: [py]
+  category: BUG
+  severity: blocker
+  effort: 20min
+  status: planned
+  generated: true
+  tags: [typing]
+  summary: The code does not behave the way it reads.
+  why: |
+    Written this way it works by accident or fails on ordinary input, and the mistake survives
+    review because the intent reads correctly.
+  fix: |
+    Make the intended behaviour explicit, and cover the case that used to fail with a test.
+
+- key: QG-PY-BUG-0260
+  name: Assertions should not be made at the end of blocks expecting an exception
+  languages: [py]
+  category: BUG
+  severity: critical
+  effort: 5min
+  status: planned
+  generated: true
+  tags: [tests, unused, pitfall]
+  summary: Shared state is reached without the coordination that makes it safe.
+  why: |
+    It works every time it is tested and fails under load, on a machine with more cores, once. That
+    is the hardest kind of defect to reproduce and the easiest to write.
+  fix: |
+    Guard the shared state, or give each caller its own copy.
+
+- key: QG-PY-BUG-0261
+  name: Regex patterns following a possessive quantifier should not always fail
+  languages: [py]
+  category: BUG
+  severity: critical
+  effort: 15min
+  status: planned
+  generated: true
+  tags: [regex]
+  summary: The control flow does not do what it reads as doing.
+  why: |
+    A branch that cannot be taken, a loop that cannot end, a condition that is always the same: the
+    code states an intent the machine does not carry out, and review reads the intent.
+  fix: |
+    Make the flow say what it does, and remove what cannot happen.
+
+- key: QG-PY-BUG-0262
+  name: Regex lookahead assertions should not be contradictory
+  languages: [py]
+  category: BUG
+  severity: critical
+  effort: 20min
+  status: planned
+  generated: true
+  tags: [regex]
+  summary: The code does not behave the way it reads.
+  why: |
+    Written this way it works by accident or fails on ordinary input, and the mistake survives
+    review because the intent reads correctly.
+  fix: |
+    Make the intended behaviour explicit, and cover the case that used to fail with a test.
+
+- key: QG-PY-BUG-0263
+  name: Template and str should not be concatenated directly
+  languages: [py]
+  category: BUG
+  severity: blocker
+  effort: 5 min
+  status: planned
+  generated: true
+  tags: [python3.14]
+  summary: The code does not behave the way it reads.
+  why: |
+    Written this way it works by accident or fails on ordinary input, and the mistake survives
+    review because the intent reads correctly.
+  fix: |
+    Make the intended behaviour explicit, and cover the case that used to fail with a test.
+
+- key: QG-PY-BUG-0264
+  name: "send_file" should specify "mimetype" or "download_name" when used with file-like objects
+  languages: [py]
+  category: BUG
+  severity: blocker
+  effort: 5 min
+  status: planned
+  generated: true
+  tags: [flask, web]
+  summary: A name does not follow the convention the rest of the code uses.
+  why: |
+    Conventions let a reader infer what something is from its shape alone. A deviation costs a
+    lookup every time, and makes searches and automated refactoring less reliable.
+  fix: |
+    Rename it to match the convention used around it.
+
+- key: QG-PY-BUG-0265
+  name: Attributes should only be assigned if they are declared in "__slots__"
+  languages: [py]
+  category: BUG
+  severity: blocker
+  effort: 5 min
+  status: planned
+  generated: true
+  tags: [pitfall, slots]
+  summary: The code does not behave the way it reads.
+  why: |
+    Written this way it works by accident or fails on ordinary input, and the mistake survives
+    review because the intent reads correctly.
+  fix: |
+    Make the intended behaviour explicit, and cover the case that used to fail with a test.
+
+- key: QG-PY-BUG-0266
+  name: Multiple inheritance should not create Method Resolution Order (MRO) conflicts
+  languages: [py]
+  category: BUG
+  severity: blocker
+  effort: 30min
+  status: planned
+  generated: true
+  tags: [design, inheritance, pitfall]
+  summary: The code does not behave the way it reads.
+  why: |
+    Written this way it works by accident or fails on ordinary input, and the mistake survives
+    review because the intent reads correctly.
+  fix: |
+    Make the intended behaviour explicit, and cover the case that used to fail with a test.
+
+- key: QG-PY-BUG-0267
+  name: Repeated patterns in regular expressions should not match the empty string
+  languages: [py]
+  category: BUG
+  severity: minor
+  effort: 5min
+  status: planned
+  generated: true
+  tags: [regex]
+  summary: Code that no longer takes part in anything is still here.
+  why: |
+    It has to be read, understood and kept compiling by everyone who passes through, and it gives
+    nothing back. Worse, it suggests a purpose that no longer exists.
+  fix: |
+    Remove it: the history keeps it if it is ever needed again.
+
+- key: QG-PY-BUG-0268
+  name: Alternatives in regular expressions should be grouped when used with anchors
+  languages: [py]
+  category: BUG
+  severity: major
+  effort: 10min
+  status: planned
+  generated: true
+  tags: [regex]
+  summary: The code does not behave the way it reads.
+  why: |
+    Written this way it works by accident or fails on ordinary input, and the mistake survives
+    review because the intent reads correctly.
+  fix: |
+    Make the intended behaviour explicit, and cover the case that used to fail with a test.
+
+- key: QG-PY-BUG-0269
+  name: Unicode Grapheme Clusters should be avoided inside regex character classes
+  languages: [py]
+  category: BUG
+  severity: major
+  effort: 5min
+  status: planned
+  generated: true
+  tags: [regex]
+  summary: The code does not behave the way it reads.
+  why: |
+    Written this way it works by accident or fails on ordinary input, and the mistake survives
+    review because the intent reads correctly.
+  fix: |
+    Make the intended behaviour explicit, and cover the case that used to fail with a test.
+
+- key: QG-PY-BUG-0270
+  name: Flask error handlers should set HTTP status code
+  languages: [py]
+  category: BUG
+  severity: major
+  effort: 5min
+  status: planned
+  generated: true
+  tags: [flask, best-practice]
+  summary: The code does not behave the way it reads.
+  why: |
+    Written this way it works by accident or fails on ordinary input, and the mistake survives
+    review because the intent reads correctly.
+  fix: |
+    Make the intended behaviour explicit, and cover the case that used to fail with a test.
+
+- key: QG-PY-BUG-0271
+  name: Use non-blocking sleep functions in asynchronous code
+  languages: [py]
+  category: BUG
+  severity: major
+  effort: 5min
+  status: planned
+  generated: true
+  tags: [async, asyncio, trio, anyio]
+  summary: Shared state is reached without the coordination that makes it safe.
+  why: |
+    It works every time it is tested and fails under load, on a machine with more cores, once. That
+    is the hardest kind of defect to reproduce and the easiest to write.
+  fix: |
+    Guard the shared state, or give each caller its own copy.
+
+- key: QG-PY-BUG-0272
+  name: Cancellation scopes should contain checkpoints
+  languages: [py]
+  category: BUG
+  severity: major
+  effort: 5min
+  status: planned
+  generated: true
+  tags: [async, asyncio, trio, anyio]
+  summary: The code does not behave the way it reads.
+  why: |
+    Written this way it works by accident or fails on ordinary input, and the mistake survives
+    review because the intent reads correctly.
+  fix: |
+    Make the intended behaviour explicit, and cover the case that used to fail with a test.
+
+- key: QG-PY-BUG-0273
+  name: Mutable or stateful values should not be used as default values in dataclass attributes
+  languages: [py]
+  category: BUG
+  severity: major
+  effort: 5min
+  status: planned
+  generated: true
+  tags: [dataclass, pitfall]
+  summary: The code does not behave the way it reads.
+  why: |
+    Written this way it works by accident or fails on ordinary input, and the mistake survives
+    review because the intent reads correctly.
+  fix: |
+    Make the intended behaviour explicit, and cover the case that used to fail with a test.
+
+- key: QG-PY-BUG-0274
+  name: Parametrize decorators should not have empty parameter lists
+  languages: [py]
+  category: BUG
+  severity: major
+  effort: 5 min
+  status: planned
+  generated: true
+  tags: [pytest, tests, pitfall]
+  summary: Code that no longer takes part in anything is still here.
+  why: |
+    It has to be read, understood and kept compiling by everyone who passes through, and it gives
+    nothing back. Worse, it suggests a purpose that no longer exists.
+  fix: |
+    Remove it: the history keeps it if it is ever needed again.
+
+- key: QG-PY-BUG-0275
+  name: "pytest.raises" should be used as a context manager
+  languages: [py]
+  category: BUG
+  severity: major
+  effort: 5min
+  status: planned
+  generated: true
+  tags: [pytest, tests]
+  summary: An API is used where a better one exists.
+  why: |
+    The older form usually costs something the newer one does not, and it is on its way out: a
+    conversion, an allocation, a case it handles wrongly.
+  fix: |
+    Use the current API, and keep the old one only behind a documented compatibility layer.
+
+- key: QG-PY-BUG-0276
+  name: "return" with a value should not be used in a generator function
+  languages: [py]
+  category: BUG
+  severity: blocker
+  effort: 15min
+  status: planned
+  generated: true
+  tags: [pitfall, python3, syntax]
+  summary: The code does not behave the way it reads.
+  why: |
+    Written this way it works by accident or fails on ordinary input, and the mistake survives
+    review because the intent reads correctly.
+  fix: |
+    Make the intended behaviour explicit, and cover the case that used to fail with a test.
+
+- key: QG-PY-BUG-0277
+  name: Regular expressions should be syntactically valid
+  languages: [py]
+  category: BUG
+  severity: critical
+  effort: 15min
+  status: planned
+  generated: true
+  tags: [regex]
+  summary: The code does not behave the way it reads.
+  why: |
+    Written this way it works by accident or fails on ordinary input, and the mistake survives
+    review because the intent reads correctly.
+  fix: |
+    Make the intended behaviour explicit, and cover the case that used to fail with a test.
+
+- key: QG-PY-BUG-0278
+  name: Variables, classes and functions should be either defined or imported
+  languages: [py]
+  category: BUG
+  severity: blocker
+  effort: 5min
+  status: planned
+  generated: true
+  tags: [suspicious]
+  summary: The code does not behave the way it reads.
+  why: |
+    Written this way it works by accident or fails on ordinary input, and the mistake survives
+    review because the intent reads correctly.
+  fix: |
+    Make the intended behaviour explicit, and cover the case that used to fail with a test.
+
+- key: QG-PY-BUG-0279
+  name: Return, break, or continue statements should not exit finally blocks
+  languages: [py]
+  category: BUG
+  severity: critical
+  effort: 10 min
+  status: planned
+  generated: true
+  tags: [python3.14]
+  summary: Shared state is reached without the coordination that makes it safe.
+  why: |
+    It works every time it is tested and fails under load, on a machine with more cores, once. That
+    is the hardest kind of defect to reproduce and the easiest to write.
+  fix: |
+    Guard the shared state, or give each caller its own copy.
+
+- key: QG-PY-BUG-0280
+  name: "__exit__" should accept type, value, and traceback arguments
+  languages: [py]
+  category: BUG
+  severity: blocker
+  effort: 5min
+  status: planned
+  generated: true
+  tags: [pitfall]
+  summary: Shared state is reached without the coordination that makes it safe.
+  why: |
+    It works every time it is tested and fails under load, on a machine with more cores, once. That
+    is the hardest kind of defect to reproduce and the easiest to write.
+  fix: |
+    Guard the shared state, or give each caller its own copy.
+
+- key: QG-PY-BUG-0281
+  name: "\" should only be used as an escape character outside of raw strings
+  languages: [py]
+  category: BUG
+  severity: major
+  effort: 2min
+  status: planned
+  generated: true
+  tags: [deprecated]
+  summary: An API is used where a better one exists.
+  why: |
+    The older form usually costs something the newer one does not, and it is on its way out: a
+    conversion, an allocation, a case it handles wrongly.
+  fix: |
+    Use the current API, and keep the old one only behind a documented compatibility layer.

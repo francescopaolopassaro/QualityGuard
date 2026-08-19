@@ -1,0 +1,228 @@
+# Catalogue entries written in one pass, one per defect this language still lacks a check for.
+# Every entry is documentation and carries no detection, so none of them reports anything: a
+# detection is written by hand, against the shape the defect actually has, and measured before
+# the entry stops being planned.
+
+- key: QG-K8-SEC-0026
+  name: Secrets should not be hard-coded
+  languages: [k8]
+  category: SEC
+  severity: blocker
+  effort: 30min
+  status: planned
+  generated: true
+  tags: [cwe, former-hotspot, secret]
+  summary: A value that has to stay private is written where the code is kept.
+  why: |
+    Anyone with a copy of the repository has the value, and that includes every clone, every fork
+    and every build artefact. Changing it means shipping, so in practice it is never changed.
+  fix: |
+    Read the value from configuration the deployment supplies, and rotate the one already committed.
+
+- key: QG-K8-SEC-0027
+  name: Administration services should not run in containers
+  languages: [k8]
+  category: SEC
+  severity: critical
+  effort: 30min
+  status: planned
+  generated: true
+  tags: [dockerfile, cwe, former-hotspot]
+  summary: The code does not behave the way it reads.
+  why: |
+    Written this way it works by accident or fails on ordinary input, and the mistake survives
+    review because the intent reads correctly.
+  fix: |
+    Make the intended behaviour explicit, and cover the case that used to fail with a test.
+
+- key: QG-K8-SEC-0028
+  name: Clear-text protocols should not be used
+  languages: [k8]
+  category: SEC
+  severity: minor
+  effort: 30min
+  status: planned
+  generated: true
+  tags: [cwe, former-hotspot]
+  summary: The code does not behave the way it reads.
+  why: |
+    Written this way it works by accident or fails on ordinary input, and the mistake survives
+    review because the intent reads correctly.
+  fix: |
+    Make the intended behaviour explicit, and cover the case that used to fail with a test.
+
+- key: QG-K8-SEC-0029
+  name: Excessive Linux capabilities should not be granted
+  languages: [k8]
+  category: SEC
+  severity: major
+  effort: 30min
+  status: planned
+  generated: true
+  tags: [cwe, former-hotspot]
+  summary: The code does not behave the way it reads.
+  why: |
+    Written this way it works by accident or fails on ordinary input, and the mistake survives
+    review because the intent reads correctly.
+  fix: |
+    Make the intended behaviour explicit, and cover the case that used to fail with a test.
+
+- key: QG-K8-SEC-0030
+  name: Containers should not share the host operating system namespaces
+  languages: [k8]
+  category: SEC
+  severity: major
+  effort: 60min
+  status: planned
+  generated: true
+  tags: [docker, cwe, former-hotspot]
+  summary: A name does not follow the convention the rest of the code uses.
+  why: |
+    Conventions let a reader infer what something is from its shape alone. A deviation costs a
+    lookup every time, and makes searches and automated refactoring less reliable.
+  fix: |
+    Rename it to match the convention used around it.
+
+- key: QG-K8-SEC-0031
+  name: Service account permissions should be restricted
+  languages: [k8]
+  category: SEC
+  severity: major
+  effort: 1h
+  status: planned
+  generated: true
+  tags: []
+  summary: Something is reachable by callers who should not reach it.
+  why: |
+    Access granted this broadly is never noticed afterwards: nothing fails, and the surface stays
+    open for as long as the resource exists.
+  fix: |
+    Grant the access to the identities that need it and to nothing else.
+
+- key: QG-K8-SEC-0032
+  name: Kubernetes roles should not allow command execution in pods
+  languages: [k8]
+  category: SEC
+  severity: minor
+  effort: 5min
+  status: planned
+  generated: true
+  tags: [former-hotspot]
+  summary: Input decides part of something the program then executes.
+  why: |
+    Whatever the caller sends becomes part of the instruction rather than part of the data. The code
+    reads naturally, because the value sits exactly where it belongs in the sentence.
+  fix: |
+    Keep the instruction fixed and pass the values separately, so no input can change its shape.
+
+- key: QG-K8-SEC-0033
+  name: Storage limits should be enforced
+  languages: [k8]
+  category: SEC
+  severity: major
+  effort: 5min
+  status: planned
+  generated: true
+  tags: []
+  summary: The code does not behave the way it reads.
+  why: |
+    Written this way it works by accident or fails on ordinary input, and the mistake survives
+    review because the intent reads correctly.
+  fix: |
+    Make the intended behaviour explicit, and cover the case that used to fail with a test.
+
+- key: QG-K8-SEC-0034
+  name: Sensitive file system paths should not be mounted in containers
+  languages: [k8]
+  category: SEC
+  severity: major
+  effort: 60min
+  status: planned
+  generated: true
+  tags: [cwe, former-hotspot]
+  summary: The code does not behave the way it reads.
+  why: |
+    Written this way it works by accident or fails on ordinary input, and the mistake survives
+    review because the intent reads correctly.
+  fix: |
+    Make the intended behaviour explicit, and cover the case that used to fail with a test.
+
+- key: QG-K8-SEC-0035
+  name: CPU limits should be enforced
+  languages: [k8]
+  category: SEC
+  severity: major
+  effort: 5min
+  status: planned
+  generated: true
+  tags: []
+  summary: The code does not behave the way it reads.
+  why: |
+    Written this way it works by accident or fails on ordinary input, and the mistake survives
+    review because the intent reads correctly.
+  fix: |
+    Make the intended behaviour explicit, and cover the case that used to fail with a test.
+
+- key: QG-K8-SML-0067
+  name: Specific version tag for image should be used
+  languages: [k8]
+  category: SML
+  severity: major
+  effort: 5min
+  status: planned
+  generated: true
+  tags: []
+  summary: An API is used where a better one exists.
+  why: |
+    The older form usually costs something the newer one does not, and it is on its way out: a
+    conversion, an allocation, a case it handles wrongly.
+  fix: |
+    Use the current API, and keep the old one only behind a documented compatibility layer.
+
+- key: QG-K8-SML-0068
+  name: Ensure whitespace in-between braces in template directives
+  languages: [k8]
+  category: SML
+  severity: major
+  effort: 1min
+  status: planned
+  generated: true
+  tags: []
+  summary: Shared state is reached without the coordination that makes it safe.
+  why: |
+    It works every time it is tested and fails under load, on a machine with more cores, once. That
+    is the hardest kind of defect to reproduce and the easiest to write.
+  fix: |
+    Guard the shared state, or give each caller its own copy.
+
+- key: QG-K8-SML-0069
+  name: Deprecated code should not be used
+  languages: [k8]
+  category: SML
+  severity: minor
+  effort: 15min
+  status: planned
+  generated: true
+  tags: [cwe, obsolete]
+  summary: An API is used where a better one exists.
+  why: |
+    The older form usually costs something the newer one does not, and it is on its way out: a
+    conversion, an allocation, a case it handles wrongly.
+  fix: |
+    Use the current API, and keep the old one only behind a documented compatibility layer.
+
+- key: QG-K8-SML-0070
+  name: Kubernetes parsing failure
+  languages: [k8]
+  category: SML
+  severity: major
+  effort: 30min
+  status: planned
+  generated: true
+  tags: [suspicious]
+  summary: The code does not behave the way it reads.
+  why: |
+    Written this way it works by accident or fails on ordinary input, and the mistake survives
+    review because the intent reads correctly.
+  fix: |
+    Make the intended behaviour explicit, and cover the case that used to fail with a test.
