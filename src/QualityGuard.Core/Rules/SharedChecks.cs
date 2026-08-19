@@ -34,7 +34,10 @@ public static class SharedCheckSet
         new ParameterOverwrittenRulePhp(), new ParameterOverwrittenRulePython(),
         new CollectionOverwrittenRuleCs(), new CollectionOverwrittenRuleJava(),
         new CollectionOverwrittenRulePhp(), new CollectionOverwrittenRulePython(),
-        new InvariantReturnRulePython()
+        new InvariantReturnRulePython(),
+        new EmptyNestedBlockRule(),
+        new InvertedBooleanCheckRuleRuby(),
+        new TodosAndFixmesRuleRuby()
     ];
 }
 
@@ -1221,4 +1224,58 @@ public sealed class InvariantReturnRulePython : InvariantReturnRule
 {
     public override string Key => "QG-PY-SML-0062";
     public override string[] Languages => ["py"];
+}
+
+/// <summary>
+/// A block with nothing in it, in a place where something was expected: the body of a branch, of a
+/// loop that is not a wait, of a try. It is either a decision nobody wrote down or a piece of code
+/// somebody deleted and left the shape of.
+/// </summary>
+public sealed class EmptyNestedBlockRule : StructuralRuleBase
+{
+    public override string Key => "QG-ALL-SML-0002";
+    public override string Name => "A nested block should not be left empty";
+    public override Severity Severity => Severity.Major;
+    public override IssueKind Kind => IssueKind.CodeSmell;
+    public override string RemediationEffort => "5min";
+    // the identifier is shared, so the rule states the languages it is measured on rather than all
+    public override string[] Languages => ["rb", "go", "swift", "rs", "dart"];
+
+    public override void Execute(IRuleContext context)
+    {
+        if (!HasPreciseTree(context))
+            return;
+
+        foreach (var block in Blocks(context))
+        {
+            if (block.Children.Count > 0)
+                continue;
+            var parent = block.Parent;
+            if (parent == null)
+                continue;
+            // The body of a function is a different rule, and a 'while' with an empty body is a wait
+            // written as a spin — also its own rule. Reporting either here says the same thing twice.
+            if (parent.Kind is NodeKind.FunctionDeclaration or NodeKind.ConstructorDeclaration
+                or NodeKind.Lambda or NodeKind.ClassDeclaration or NodeKind.TopLevel)
+                continue;
+            if (parent.Kind == NodeKind.Loop && parent.Text == "while")
+                continue;
+            // a comment inside is the author saying the emptiness is deliberate, which is what the
+            // rule asks for
+            if (context.Tokens.Any(t => t.Kind == Tokenization.TokenKind.Comment
+                                        && t.Line >= block.Range.StartLine
+                                        && t.Line <= block.Range.EndLine))
+                continue;
+
+            context.Report(block, "This block is empty. Either the case it belongs to needs handling, "
+                                  + "or the branch around it can go — as written it reads as something "
+                                  + "half-finished, and the next reader has to work out which.");
+        }
+    }
+}
+
+public sealed class InvertedBooleanCheckRuleRuby : InvertedBooleanCheckRule
+{
+    public override string Key => "QG-RB-SML-0019";
+    public override string[] Languages => ["rb"];
 }

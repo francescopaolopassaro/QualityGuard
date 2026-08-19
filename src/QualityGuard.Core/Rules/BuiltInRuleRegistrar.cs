@@ -73,6 +73,7 @@ public static class BuiltInRuleRegistrar
         ..Languages.ClusterRuleSet.All,
         ..Languages.CloudRuleSet.All,
         ..Languages.CloudStorageRuleSet.All,
+        ..Languages.JsTsPackRuleSet.All,
         ..Languages.BlazorRuleSet.All,
         ..Languages.AspNetRuleSet.All,
         ..Languages.XamlRuleSet.All,
@@ -139,6 +140,12 @@ public abstract class TodosAndFixmesRule : TextualRuleBase
             context.Report("Take the required action to fix the issue indicated by this comment.", token.Line);
         }
     }
+}
+
+public sealed class TodosAndFixmesRuleRuby : TodosAndFixmesRule
+{
+    public override string Key => "QG-ALL-SML-0001";
+    public override string[] Languages => ["rb"];
 }
 
 public sealed class TodosAndFixmesRuleCs : TodosAndFixmesRule
