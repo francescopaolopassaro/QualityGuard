@@ -58,10 +58,12 @@ public sealed class SourceTokenizer
                 i = ReadString(i + delim.Start.Length, delim, ref line, ref column, out var value,
                     delim.IsInterpolated);
                 // the parser knows an interpolated literal by the '$' in front of it, so the prefix
-                // stays a token of its own even though the delimiter now carries it
-                if (delim.IsInterpolated)
+                // stays a token of its own even though the delimiter now carries it. A Python 'f'
+                // prefix is not that marker: emitting one moved the string one token further away
+                // and every token-based rule stopped finding it.
+                if (delim.Start.Contains('$'))
                     _tokens.Add(DirectToken(TokenKind.Symbol, "$", startLine, startColumn));
-                _tokens.Add(DirectToken(TokenKind.String, value, startLine, startColumn));
+                _tokens.Add(DirectToken(TokenKind.String, value, startLine, startColumn, delim.Prefix));
                 continue;
             }
 
@@ -150,8 +152,8 @@ public sealed class SourceTokenizer
         return i;
     }
 
-    private static Token DirectToken(TokenKind kind, string text, int line, int column)
-        => new(kind, text, line, column);
+    private static Token DirectToken(TokenKind kind, string text, int line, int column, string prefix = "")
+        => new(kind, text, line, column, prefix);
 
     private bool IsLineCommentStart(string src, int i)
     {
@@ -393,6 +395,14 @@ public sealed class SourceTokenizer
                 column += delim.End.Length;
                 value = sb.ToString();
                 return i;
+            }
+            if (delim.IsRaw && _source[i] == '\\' && i + 1 < _source.Length)
+            {
+                // a raw literal keeps its backslash; it still stops the quote from ending the string
+                sb.Append(_source[i]).Append(_source[i + 1]);
+                i += 2;
+                column += 2;
+                continue;
             }
             if (!delim.IsVerbatim && _source[i] == '\\' && i + 1 < _source.Length)
             {

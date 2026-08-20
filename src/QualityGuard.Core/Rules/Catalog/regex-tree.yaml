@@ -1,0 +1,710 @@
+# Descriptions for the regular-expression rules that read the pattern as a tree, implemented in
+# Rules/RegexTreeRules.cs on top of Analysis/RegexSyntax.cs.
+
+- key: QG-JV-BUG-0123
+  name: Alternatives should be grouped when the pattern is anchored
+  languages: [java]
+  category: BUG
+  scope: main
+  severity: major
+  effort: 10min
+  tags: [regex, suspicious]
+  summary: An anchor sits next to a bar, so it binds to one alternative instead of all of them.
+  why: |
+    An anchor binds tighter than a bar, so '^a|b|c$' means "starts with a", "contains b" or
+    "ends with c" — three different questions, only one of them anchored at each end. The pattern
+    then accepts input the author meant to reject, and the mistake never shows in a test that only
+    feeds it the strings it should match.
+  fix: |
+    Put the alternatives in a non-capturing group so the anchors apply to the whole pattern:
+    '^(?:a|b|c)$'. When the anchors really belong to one branch each, group that branch instead so
+    the intent is on the page.
+
+- key: QG-KT-BUG-0025
+  name: Alternatives should be grouped when the pattern is anchored
+  languages: [kt]
+  category: BUG
+  scope: main
+  severity: major
+  effort: 10min
+  tags: [regex, suspicious]
+  summary: An anchor sits next to a bar, so it binds to one alternative instead of all of them.
+  why: |
+    An anchor binds tighter than a bar, so '^a|b|c$' means "starts with a", "contains b" or
+    "ends with c" — three different questions, only one of them anchored at each end. The pattern
+    then accepts input the author meant to reject, and the mistake never shows in a test that only
+    feeds it the strings it should match.
+  fix: |
+    Put the alternatives in a non-capturing group so the anchors apply to the whole pattern:
+    '^(?:a|b|c)$'. When the anchors really belong to one branch each, group that branch instead so
+    the intent is on the page.
+
+- key: QG-PY-BUG-0059
+  name: Alternatives should be grouped when the pattern is anchored
+  languages: [py]
+  category: BUG
+  scope: main
+  severity: major
+  effort: 10min
+  tags: [regex, suspicious]
+  summary: An anchor sits next to a bar, so it binds to one alternative instead of all of them.
+  why: |
+    An anchor binds tighter than a bar, so '^a|b|c$' means "starts with a", "contains b" or
+    "ends with c" — three different questions, only one of them anchored at each end. The pattern
+    then accepts input the author meant to reject, and the mistake never shows in a test that only
+    feeds it the strings it should match.
+  fix: |
+    Put the alternatives in a non-capturing group so the anchors apply to the whole pattern:
+    '^(?:a|b|c)$'. When the anchors really belong to one branch each, group that branch instead so
+    the intent is on the page.
+
+- key: QG-PP-BUG-0026
+  name: Alternatives should be grouped when the pattern is anchored
+  languages: [php]
+  category: BUG
+  scope: main
+  severity: major
+  effort: 10min
+  tags: [regex, suspicious]
+  summary: An anchor sits next to a bar, so it binds to one alternative instead of all of them.
+  why: |
+    An anchor binds tighter than a bar, so '^a|b|c$' means "starts with a", "contains b" or
+    "ends with c" — three different questions, only one of them anchored at each end. The pattern
+    then accepts input the author meant to reject, and the mistake never shows in a test that only
+    feeds it the strings it should match.
+  fix: |
+    Put the alternatives in a non-capturing group so the anchors apply to the whole pattern:
+    '^(?:a|b|c)$'. When the anchors really belong to one branch each, group that branch instead so
+    the intent is on the page.
+
+- key: QG-JV-BUG-0127
+  name: A character class should not list a combined character
+  languages: [java]
+  category: BUG
+  scope: main
+  severity: major
+  effort: 10min
+  tags: [regex, unicode]
+  summary: A character written with a separate combining mark appears inside a character class.
+  why: |
+    A class lists code points, not the characters a reader sees. A letter carrying its accent as a
+    separate mark therefore enters the class as two independent members, and the class starts
+    matching the bare letter and the bare accent — never the accented letter as a whole. The text
+    looks right in the editor, which is what makes this one expensive to find.
+  fix: |
+    Write the combined characters as alternatives, as in 'c̈|d̈', or normalise the input and the
+    pattern to the single-code-point form before matching.
+
+- key: QG-KT-BUG-0026
+  name: A character class should not list a combined character
+  languages: [kt]
+  category: BUG
+  scope: main
+  severity: major
+  effort: 10min
+  tags: [regex, unicode]
+  summary: A character written with a separate combining mark appears inside a character class.
+  why: |
+    A class lists code points, not the characters a reader sees. A letter carrying its accent as a
+    separate mark therefore enters the class as two independent members, and the class starts
+    matching the bare letter and the bare accent — never the accented letter as a whole. The text
+    looks right in the editor, which is what makes this one expensive to find.
+  fix: |
+    Write the combined characters as alternatives, as in 'c̈|d̈', or normalise the input and the
+    pattern to the single-code-point form before matching.
+
+- key: QG-JS-BUG-0064
+  name: A character class should not list a combined character
+  languages: [js, ts]
+  category: BUG
+  scope: main
+  severity: major
+  effort: 10min
+  tags: [regex, unicode]
+  summary: A character written with a separate combining mark appears inside a character class.
+  why: |
+    A class lists code points, not the characters a reader sees. A letter carrying its accent as a
+    separate mark therefore enters the class as two independent members, and the class starts
+    matching the bare letter and the bare accent — never the accented letter as a whole. The text
+    looks right in the editor, which is what makes this one expensive to find.
+  fix: |
+    Write the combined characters as alternatives, as in 'c̈|d̈', or normalise the input and the
+    pattern to the single-code-point form before matching.
+
+- key: QG-PY-BUG-0062
+  name: A character class should not list a combined character
+  languages: [py]
+  category: BUG
+  scope: main
+  severity: major
+  effort: 10min
+  tags: [regex, unicode]
+  summary: A character written with a separate combining mark appears inside a character class.
+  why: |
+    A class lists code points, not the characters a reader sees. A letter carrying its accent as a
+    separate mark therefore enters the class as two independent members, and the class starts
+    matching the bare letter and the bare accent — never the accented letter as a whole. The text
+    looks right in the editor, which is what makes this one expensive to find.
+  fix: |
+    Write the combined characters as alternatives, as in 'c̈|d̈', or normalise the input and the
+    pattern to the single-code-point form before matching.
+
+- key: QG-PP-BUG-0029
+  name: A character class should not list a combined character
+  languages: [php]
+  category: BUG
+  scope: main
+  severity: major
+  effort: 10min
+  tags: [regex, unicode]
+  summary: A character written with a separate combining mark appears inside a character class.
+  why: |
+    A class lists code points, not the characters a reader sees. A letter carrying its accent as a
+    separate mark therefore enters the class as two independent members, and the class starts
+    matching the bare letter and the bare accent — never the accented letter as a whole. The text
+    looks right in the editor, which is what makes this one expensive to find.
+  fix: |
+    Write the combined characters as alternatives, as in 'c̈|d̈', or normalise the input and the
+    pattern to the single-code-point form before matching.
+
+- key: QG-JV-BUG-0132
+  name: A possessive quantifier should leave something for what follows
+  languages: [java]
+  category: BUG
+  scope: main
+  severity: critical
+  effort: 10min
+  tags: [regex, suspicious]
+  summary: What follows a possessive quantifier can only match characters the quantifier already took.
+  why: |
+    A possessive quantifier never backtracks: once it has read as much as it can, it gives nothing
+    back. When the element after it accepts only characters the quantifier accepts too, there is
+    never anything left for it and the pattern fails on every input. The call still compiles and
+    still runs, so the failure looks like data that does not match.
+  fix: |
+    Move the element in front of the possessive quantifier ('aa++bc' instead of 'a++abc'), or make
+    the quantifier greedy so it can give characters back, or assert the tail with a look-behind.
+
+- key: QG-PY-BUG-0066
+  name: A possessive quantifier should leave something for what follows
+  languages: [py]
+  category: BUG
+  scope: main
+  severity: critical
+  effort: 10min
+  tags: [regex, suspicious]
+  summary: What follows a possessive quantifier can only match characters the quantifier already took.
+  why: |
+    A possessive quantifier never backtracks: once it has read as much as it can, it gives nothing
+    back. When the element after it accepts only characters the quantifier accepts too, there is
+    never anything left for it and the pattern fails on every input. The call still compiles and
+    still runs, so the failure looks like data that does not match.
+  fix: |
+    Move the element in front of the possessive quantifier ('aa++bc' instead of 'a++abc'), or make
+    the quantifier greedy so it can give characters back, or assert the tail with a look-behind.
+
+- key: QG-PP-BUG-0032
+  name: A possessive quantifier should leave something for what follows
+  languages: [php]
+  category: BUG
+  scope: main
+  severity: critical
+  effort: 10min
+  tags: [regex, suspicious]
+  summary: What follows a possessive quantifier can only match characters the quantifier already took.
+  why: |
+    A possessive quantifier never backtracks: once it has read as much as it can, it gives nothing
+    back. When the element after it accepts only characters the quantifier accepts too, there is
+    never anything left for it and the pattern fails on every input. The call still compiles and
+    still runs, so the failure looks like data that does not match.
+  fix: |
+    Move the element in front of the possessive quantifier ('aa++bc' instead of 'a++abc'), or make
+    the quantifier greedy so it can give characters back, or assert the tail with a look-behind.
+
+- key: QG-JV-BUG-0136
+  name: A look-ahead should not contradict what follows it
+  languages: [java]
+  category: BUG
+  scope: main
+  severity: critical
+  effort: 10min
+  tags: [regex, suspicious]
+  summary: A look-ahead asserts one character while the element after it requires a different one.
+  why: |
+    A look-ahead reads without consuming, so whatever follows has to satisfy the assertion and
+    itself at the same position. '(?=a)b' asks for a position that is both an 'a' and a 'b', which
+    no input can be. The pattern compiles, runs and never matches.
+  fix: |
+    Decide which of the two the position should hold. Usually the assertion belongs after the
+    element it describes ('a(?=b)'), or it should be a look-behind ('(?<=a)b').
+
+- key: QG-PY-BUG-0069
+  name: A look-ahead should not contradict what follows it
+  languages: [py]
+  category: BUG
+  scope: main
+  severity: critical
+  effort: 10min
+  tags: [regex, suspicious]
+  summary: A look-ahead asserts one character while the element after it requires a different one.
+  why: |
+    A look-ahead reads without consuming, so whatever follows has to satisfy the assertion and
+    itself at the same position. '(?=a)b' asks for a position that is both an 'a' and a 'b', which
+    no input can be. The pattern compiles, runs and never matches.
+  fix: |
+    Decide which of the two the position should hold. Usually the assertion belongs after the
+    element it describes ('a(?=b)'), or it should be a look-behind ('(?<=a)b').
+
+- key: QG-PP-BUG-0035
+  name: A look-ahead should not contradict what follows it
+  languages: [php]
+  category: BUG
+  scope: main
+  severity: critical
+  effort: 10min
+  tags: [regex, suspicious]
+  summary: A look-ahead asserts one character while the element after it requires a different one.
+  why: |
+    A look-ahead reads without consuming, so whatever follows has to satisfy the assertion and
+    itself at the same position. '(?=a)b' asks for a position that is both an 'a' and a 'b', which
+    no input can be. The pattern compiles, runs and never matches.
+  fix: |
+    Decide which of the two the position should hold. Usually the assertion belongs after the
+    element it describes ('a(?=b)'), or it should be a look-behind ('(?<=a)b').
+
+- key: QG-JV-SML-0350
+  name: A pattern should not contain an empty group
+  languages: [java]
+  category: SML
+  scope: main
+  severity: major
+  effort: 10min
+  tags: [regex, suspicious]
+  summary: A pair of parentheses in the pattern encloses nothing.
+  why: |
+    An empty group matches the empty string and changes nothing about what the pattern accepts. It
+    is either what a refactoring left behind, or a pair of parentheses that was meant to be matched
+    literally and was never escaped. In the second case the pattern silently accepts text without
+    the parentheses it was supposed to require.
+  fix: |
+    Remove the group, or escape the parentheses when the text really contains them. When the group
+    was supposed to capture something, put back what it lost.
+
+- key: QG-JS-SML-0162
+  name: A pattern should not contain an empty group
+  languages: [js, ts]
+  category: SML
+  scope: main
+  severity: major
+  effort: 10min
+  tags: [regex, suspicious]
+  summary: A pair of parentheses in the pattern encloses nothing.
+  why: |
+    An empty group matches the empty string and changes nothing about what the pattern accepts. It
+    is either what a refactoring left behind, or a pair of parentheses that was meant to be matched
+    literally and was never escaped. In the second case the pattern silently accepts text without
+    the parentheses it was supposed to require.
+  fix: |
+    Remove the group, or escape the parentheses when the text really contains them. When the group
+    was supposed to capture something, put back what it lost.
+
+- key: QG-PY-SML-0108
+  name: A pattern should not contain an empty group
+  languages: [py]
+  category: SML
+  scope: main
+  severity: major
+  effort: 10min
+  tags: [regex, suspicious]
+  summary: A pair of parentheses in the pattern encloses nothing.
+  why: |
+    An empty group matches the empty string and changes nothing about what the pattern accepts. It
+    is either what a refactoring left behind, or a pair of parentheses that was meant to be matched
+    literally and was never escaped. In the second case the pattern silently accepts text without
+    the parentheses it was supposed to require.
+  fix: |
+    Remove the group, or escape the parentheses when the text really contains them. When the group
+    was supposed to capture something, put back what it lost.
+
+- key: QG-PP-SML-0101
+  name: A pattern should not contain an empty group
+  languages: [php]
+  category: SML
+  scope: main
+  severity: major
+  effort: 10min
+  tags: [regex, suspicious]
+  summary: A pair of parentheses in the pattern encloses nothing.
+  why: |
+    An empty group matches the empty string and changes nothing about what the pattern accepts. It
+    is either what a refactoring left behind, or a pair of parentheses that was meant to be matched
+    literally and was never escaped. In the second case the pattern silently accepts text without
+    the parentheses it was supposed to require.
+  fix: |
+    Remove the group, or escape the parentheses when the text really contains them. When the group
+    was supposed to capture something, put back what it lost.
+
+- key: QG-JV-SML-0351
+  name: A pattern should use the shorthand for what it spells out
+  languages: [java]
+  category: SML
+  scope: main
+  severity: minor
+  effort: 5min
+  tags: [regex, readability]
+  summary: A class or a quantifier is written the long way when a shorthand says the same thing.
+  why: |
+    Every flavour understands '\d' for '[0-9]', '\w' for '[A-Za-z0-9_]', '?' for '{0,1}' and '{2}' for
+    '{2,2}'. The long form gives the reader more to verify for the same behaviour, and a range
+    written out by hand is where a missing character hides.
+  fix: |
+    Use the shorthand. Keep the long form only when the class deliberately differs from it, and then
+    it is worth a comment saying how.
+
+- key: QG-JS-SML-0163
+  name: A pattern should use the shorthand for what it spells out
+  languages: [js, ts]
+  category: SML
+  scope: main
+  severity: minor
+  effort: 5min
+  tags: [regex, readability]
+  summary: A class or a quantifier is written the long way when a shorthand says the same thing.
+  why: |
+    Every flavour understands '\d' for '[0-9]', '\w' for '[A-Za-z0-9_]', '?' for '{0,1}' and '{2}' for
+    '{2,2}'. The long form gives the reader more to verify for the same behaviour, and a range
+    written out by hand is where a missing character hides.
+  fix: |
+    Use the shorthand. Keep the long form only when the class deliberately differs from it, and then
+    it is worth a comment saying how.
+
+- key: QG-PY-SML-0109
+  name: A pattern should use the shorthand for what it spells out
+  languages: [py]
+  category: SML
+  scope: main
+  severity: minor
+  effort: 5min
+  tags: [regex, readability]
+  summary: A class or a quantifier is written the long way when a shorthand says the same thing.
+  why: |
+    Every flavour understands '\d' for '[0-9]', '\w' for '[A-Za-z0-9_]', '?' for '{0,1}' and '{2}' for
+    '{2,2}'. The long form gives the reader more to verify for the same behaviour, and a range
+    written out by hand is where a missing character hides.
+  fix: |
+    Use the shorthand. Keep the long form only when the class deliberately differs from it, and then
+    it is worth a comment saying how.
+
+- key: QG-PP-SML-0105
+  name: A pattern should use the shorthand for what it spells out
+  languages: [php]
+  category: SML
+  scope: main
+  severity: minor
+  effort: 5min
+  tags: [regex, readability]
+  summary: A class or a quantifier is written the long way when a shorthand says the same thing.
+  why: |
+    Every flavour understands '\d' for '[0-9]', '\w' for '[A-Za-z0-9_]', '?' for '{0,1}' and '{2}' for
+    '{2,2}'. The long form gives the reader more to verify for the same behaviour, and a range
+    written out by hand is where a missing character hides.
+  fix: |
+    Use the shorthand. Keep the long form only when the class deliberately differs from it, and then
+    it is worth a comment saying how.
+
+- key: QG-JV-SML-0353
+  name: A non-capturing group should group something
+  languages: [java]
+  category: SML
+  scope: main
+  severity: minor
+  effort: 5min
+  tags: [regex, readability]
+  summary: A non-capturing group holds no alternatives and carries no quantifier.
+  why: |
+    Parentheses in a pattern are there to hold alternatives together, to give a quantifier something
+    to repeat, or to capture. A non-capturing group that does none of the three costs the reader a
+    moment to check and gives nothing back.
+  fix: |
+    Drop the parentheses and leave their content in place. Keep them when a quantifier is about to be
+    added, and add it in the same change.
+
+- key: QG-PY-SML-0110
+  name: A non-capturing group should group something
+  languages: [py]
+  category: SML
+  scope: main
+  severity: minor
+  effort: 5min
+  tags: [regex, readability]
+  summary: A non-capturing group holds no alternatives and carries no quantifier.
+  why: |
+    Parentheses in a pattern are there to hold alternatives together, to give a quantifier something
+    to repeat, or to capture. A non-capturing group that does none of the three costs the reader a
+    moment to check and gives nothing back.
+  fix: |
+    Drop the parentheses and leave their content in place. Keep them when a quantifier is about to be
+    added, and add it in the same change.
+
+- key: QG-PP-SML-0106
+  name: A non-capturing group should group something
+  languages: [php]
+  category: SML
+  scope: main
+  severity: minor
+  effort: 5min
+  tags: [regex, readability]
+  summary: A non-capturing group holds no alternatives and carries no quantifier.
+  why: |
+    Parentheses in a pattern are there to hold alternatives together, to give a quantifier something
+    to repeat, or to capture. A non-capturing group that does none of the three costs the reader a
+    moment to check and gives nothing back.
+  fix: |
+    Drop the parentheses and leave their content in place. Keep them when a quantifier is about to be
+    added, and add it in the same change.
+
+- key: QG-JV-BUG-0137
+  name: A control-character escape should name a character in range
+  languages: [java]
+  category: BUG
+  scope: main
+  severity: major
+  effort: 10min
+  tags: [regex, suspicious]
+  summary: A '\cX' escape names a character outside the range the escape is defined for.
+  why: |
+    The escape takes the character 64 positions below the one that follows it. That only lands on a
+    control character for '@', an upper-case letter, '[', '\', ']', '^' or '_'. For anything else the
+    engine performs the subtraction anyway and matches a character nobody intended, without a
+    warning at compile time or at run time.
+  fix: |
+    Write the escape with the upper-case letter of the control character you mean, as in '\cA' for the
+    start-of-heading character, or write the character with a hexadecimal escape.
+
+- key: QG-PY-SML-0112
+  name: A pattern should not use an octal escape
+  languages: [py]
+  category: SML
+  scope: main
+  severity: minor
+  effort: 5min
+  tags: [regex, readability]
+  summary: A backslash followed by digits stands for a character code rather than a group.
+  why: |
+    A backslash and digits is how a reference to a captured group is written. When no such group
+    exists the engine reads the digits as an octal character code instead, so the same text means
+    two different things depending on how many groups the pattern happens to declare. A group
+    added later changes what the escape matches.
+  fix: |
+    Write the character as a hexadecimal escape ('\x41') or put it in the pattern directly, so it
+    cannot be confused with a reference.
+
+- key: QG-JV-BUG-0126
+  name: Case-insensitive matching of non-ASCII letters should say so
+  languages: [java]
+  category: BUG
+  scope: main
+  severity: major
+  effort: 10min
+  tags: [regex, unicode]
+  summary: A pattern with non-ASCII letters asks for case insensitivity without asking for Unicode folding.
+  why: |
+    By default, ignoring case only folds letters in the ASCII range. A pattern that contains accented
+    or non-Latin letters therefore keeps comparing exactly those letters case sensitively — the very
+    ones the flag was turned on for. The pattern matches the lower-case input it was tested with and
+    misses the upper-case one in production.
+  fix: |
+    Add the Unicode case option next to the case-insensitive one, or write the 'u' flag inside the
+    pattern. The Unicode character-class option implies it as well.
+
+- key: QG-JV-SML-0310
+  name: A regular expression should not be too complicated
+  languages: [java]
+  category: SML
+  scope: main
+  severity: major
+  effort: 30min
+  tags: [regex, brain-overload]
+  summary: The pattern nests alternatives, quantifiers and assertions past what a reader can follow.
+  why: |
+    Complexity in a pattern is nesting: every alternative, quantifier, assertion and flag group costs
+    as much as the depth it sits at. Past a point nobody can say what the pattern accepts without
+    running it, which is how a pattern keeps a bug through several reviews — and how a change made
+    for one input quietly breaks another.
+  fix: |
+    Split the pattern into named parts and match them in turn, or do part of the work in code. When
+    the pattern has to stay whole, write it in the extended form with comments on each part.
+
+- key: QG-KT-SML-0039
+  name: A regular expression should not be too complicated
+  languages: [kt]
+  category: SML
+  scope: main
+  severity: major
+  effort: 30min
+  tags: [regex, brain-overload]
+  summary: The pattern nests alternatives, quantifiers and assertions past what a reader can follow.
+  why: |
+    Complexity in a pattern is nesting: every alternative, quantifier, assertion and flag group costs
+    as much as the depth it sits at. Past a point nobody can say what the pattern accepts without
+    running it, which is how a pattern keeps a bug through several reviews — and how a change made
+    for one input quietly breaks another.
+  fix: |
+    Split the pattern into named parts and match them in turn, or do part of the work in code. When
+    the pattern has to stay whole, write it in the extended form with comments on each part.
+
+- key: QG-JS-SML-0148
+  name: A regular expression should not be too complicated
+  languages: [js, ts]
+  category: SML
+  scope: main
+  severity: major
+  effort: 30min
+  tags: [regex, brain-overload]
+  summary: The pattern nests alternatives, quantifiers and assertions past what a reader can follow.
+  why: |
+    Complexity in a pattern is nesting: every alternative, quantifier, assertion and flag group costs
+    as much as the depth it sits at. Past a point nobody can say what the pattern accepts without
+    running it, which is how a pattern keeps a bug through several reviews — and how a change made
+    for one input quietly breaks another.
+  fix: |
+    Split the pattern into named parts and match them in turn, or do part of the work in code. When
+    the pattern has to stay whole, write it in the extended form with comments on each part.
+
+- key: QG-PY-SML-0089
+  name: A regular expression should not be too complicated
+  languages: [py]
+  category: SML
+  scope: main
+  severity: major
+  effort: 30min
+  tags: [regex, brain-overload]
+  summary: The pattern nests alternatives, quantifiers and assertions past what a reader can follow.
+  why: |
+    Complexity in a pattern is nesting: every alternative, quantifier, assertion and flag group costs
+    as much as the depth it sits at. Past a point nobody can say what the pattern accepts without
+    running it, which is how a pattern keeps a bug through several reviews — and how a change made
+    for one input quietly breaks another.
+  fix: |
+    Split the pattern into named parts and match them in turn, or do part of the work in code. When
+    the pattern has to stay whole, write it in the extended form with comments on each part.
+
+- key: QG-PP-SML-0092
+  name: A regular expression should not be too complicated
+  languages: [php]
+  category: SML
+  scope: main
+  severity: major
+  effort: 30min
+  tags: [regex, brain-overload]
+  summary: The pattern nests alternatives, quantifiers and assertions past what a reader can follow.
+  why: |
+    Complexity in a pattern is nesting: every alternative, quantifier, assertion and flag group costs
+    as much as the depth it sits at. Past a point nobody can say what the pattern accepts without
+    running it, which is how a pattern keeps a bug through several reviews — and how a change made
+    for one input quietly breaks another.
+  fix: |
+    Split the pattern into named parts and match them in turn, or do part of the work in code. When
+    the pattern has to stay whole, write it in the extended form with comments on each part.
+
+- key: QG-JV-SML-0315
+  name: A named group reference should point at a group that exists
+  languages: [java]
+  category: SML
+  scope: main
+  severity: major
+  effort: 10min
+  tags: [regex, suspicious]
+  summary: The pattern refers to a group by a name it never declares.
+  why: |
+    A reference to a name no group carries either stops the pattern from compiling or is read as
+    plain text, depending on the engine. Both outcomes surface far from the pattern: one as an
+    exception on the path that uses it, the other as a match that quietly never happens.
+  fix: |
+    Name the group the reference is meant to point at, or correct the spelling in the reference. When
+    the group is gone for good, remove the reference with it.
+
+- key: QG-JS-SML-0149
+  name: A named group reference should point at a group that exists
+  languages: [js, ts]
+  category: SML
+  scope: main
+  severity: major
+  effort: 10min
+  tags: [regex, suspicious]
+  summary: The pattern refers to a group by a name it never declares.
+  why: |
+    A reference to a name no group carries either stops the pattern from compiling or is read as
+    plain text, depending on the engine. Both outcomes surface far from the pattern: one as an
+    exception on the path that uses it, the other as a match that quietly never happens.
+  fix: |
+    Name the group the reference is meant to point at, or correct the spelling in the reference. When
+    the group is gone for good, remove the reference with it.
+
+- key: QG-PY-SML-0091
+  name: A named group reference should point at a group that exists
+  languages: [py]
+  category: SML
+  scope: main
+  severity: major
+  effort: 10min
+  tags: [regex, suspicious]
+  summary: The pattern refers to a group by a name it never declares.
+  why: |
+    A reference to a name no group carries either stops the pattern from compiling or is read as
+    plain text, depending on the engine. Both outcomes surface far from the pattern: one as an
+    exception on the path that uses it, the other as a match that quietly never happens.
+  fix: |
+    Name the group the reference is meant to point at, or correct the spelling in the reference. When
+    the group is gone for good, remove the reference with it.
+
+- key: QG-JV-SML-0291
+  name: Plain text should be replaced without the regex engine
+  languages: [java]
+  category: SML
+  scope: main
+  severity: major
+  effort: 5min
+  tags: [regex, performance]
+  summary: A replacement goes through the regex engine although the pattern holds no regex feature.
+  why: |
+    The call compiles a pattern every time it runs, and a pattern that is only literal characters
+    buys nothing for that cost. It also invites a defect later: the day someone puts a dot or a
+    plus in the text, it stops being literal and starts matching more than it should.
+  fix: |
+    Call the plain text replacement instead. Keep the regex form only when the argument really is a
+    pattern, and then make that visible — a character class or a quantifier in it says so.
+
+- key: QG-PY-SML-0069
+  name: Plain text should be replaced without the regex engine
+  languages: [py]
+  category: SML
+  scope: main
+  severity: major
+  effort: 5min
+  tags: [regex, performance]
+  summary: A replacement goes through the regex engine although the pattern holds no regex feature.
+  why: |
+    The call compiles a pattern every time it runs, and a pattern that is only literal characters
+    buys nothing for that cost. It also invites a defect later: the day someone puts a dot or a
+    plus in the text, it stops being literal and starts matching more than it should.
+  fix: |
+    Call the plain text replacement instead. Keep the regex form only when the argument really is a
+    pattern, and then make that visible — a character class or a quantifier in it says so.
+
+- key: QG-PP-SML-0088
+  name: Plain text should be replaced without the regex engine
+  languages: [php]
+  category: SML
+  scope: main
+  severity: major
+  effort: 5min
+  tags: [regex, performance]
+  summary: A replacement goes through the regex engine although the pattern holds no regex feature.
+  why: |
+    The call compiles a pattern every time it runs, and a pattern that is only literal characters
+    buys nothing for that cost. It also invites a defect later: the day someone puts a dot or a
+    plus in the text, it stops being literal and starts matching more than it should.
+  fix: |
+    Call the plain text replacement instead. Keep the regex form only when the argument really is a
+    pattern, and then make that visible — a character class or a quantifier in it says so.

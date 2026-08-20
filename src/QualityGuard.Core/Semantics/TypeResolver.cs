@@ -30,7 +30,11 @@ public sealed class TypeResolver
 
         switch (expression.Kind)
         {
+            // a literal of one character is a char in the languages that have the type and a string
+            // in the ones that do not, and the tree does not record which quote wrote it. Answering
+            // "string" made every 'c == 'Z'' a comparison between unrelated types.
             case NodeKind.StringLiteral:
+                return expression.Text.Length == 1 ? null : "string";
             case NodeKind.InterpolatedString:
                 return "string";
             case NodeKind.NumberLiteral:

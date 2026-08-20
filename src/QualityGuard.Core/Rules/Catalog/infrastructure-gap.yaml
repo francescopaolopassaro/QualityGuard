@@ -1,0 +1,441 @@
+# Descriptions for the infrastructure, manifest and descriptor rules implemented in
+# Rules/Languages/InfrastructureGapRules.cs and Rules/Languages/XmlDescriptorRules.cs.
+
+- key: QG-CF-SEC-0013
+  name: A bucket should refuse requests that are not encrypted
+  languages: [cf]
+  category: SEC
+  scope: main
+  severity: minor
+  effort: 10min
+  tags: [aws, storage, encryption]
+  summary: A bucket has no policy refusing requests made over plain HTTP.
+  why: |
+    A bucket accepts plain HTTP until a policy says otherwise, so the objects and the credentials used to
+    reach them can travel where anyone on the path reads and changes them.
+  fix: |
+    Attach a bucket policy that denies every request where 'aws:SecureTransport' is false.
+
+- key: QG-TF-SEC-0016
+  name: A bucket should refuse requests that are not encrypted
+  languages: [tf]
+  category: SEC
+  scope: main
+  severity: minor
+  effort: 10min
+  tags: [aws, storage, encryption]
+  summary: A bucket has no policy refusing requests made over plain HTTP.
+  why: |
+    A bucket accepts plain HTTP until a policy says otherwise, so the objects and the credentials used to
+    reach them can travel where anyone on the path reads and changes them.
+  fix: |
+    Attach a bucket policy that denies every request where 'aws:SecureTransport' is false.
+
+- key: QG-CF-SEC-0014
+  name: A bucket should keep earlier versions of its objects
+  languages: [cf]
+  category: SEC
+  scope: main
+  severity: minor
+  effort: 10min
+  tags: [aws, storage, recovery]
+  summary: A bucket is declared without versioning.
+  why: |
+    Without versioning an overwrite or a delete is final: there is no earlier copy to go back to, and a
+    mistaken deployment and an attack look the same to the bucket.
+  fix: |
+    Set 'VersioningConfiguration' to 'Enabled', and add a lifecycle rule if old versions should expire.
+
+- key: QG-CF-SEC-0015
+  name: A cloud resource should keep its access log
+  languages: [cf]
+  category: SEC
+  scope: main
+  severity: major
+  effort: 15min
+  tags: [aws, logging, audit]
+  summary: A resource that can be reached from outside keeps no access log.
+  why: |
+    Without the log there is no record of who reached the resource, and the record cannot be produced
+    after the incident that makes someone ask for it.
+  fix: |
+    Turn the logging setting on and send the entries to a bucket or a log group that keeps them long
+    enough for an audit.
+
+- key: QG-TF-SEC-0019
+  name: A cloud resource should keep its access log
+  languages: [tf]
+  category: SEC
+  scope: main
+  severity: major
+  effort: 15min
+  tags: [aws, logging, audit]
+  summary: A resource that can be reached from outside keeps no access log.
+  why: |
+    Without the log there is no record of who reached the resource, and the record cannot be produced
+    after the incident that makes someone ask for it.
+  fix: |
+    Turn the logging setting on and send the entries where they are kept long enough for an audit.
+
+- key: QG-CF-SEC-0016
+  name: A bucket should not grant access to everyone
+  languages: [cf]
+  category: SEC
+  scope: main
+  severity: blocker
+  effort: 15min
+  tags: [aws, storage, access-control]
+  summary: A bucket grants read or write to every user, or to every authenticated user.
+  why: |
+    Both groups are the internet: 'AuthenticatedRead' means every account on the provider, not every
+    account in this organisation. Anyone can list the bucket and read what it holds.
+  fix: |
+    Grant access to the principals that need it and block public access at the account level.
+
+- key: QG-CF-SML-0003
+  name: A function should declare the log group it writes to
+  languages: [cf]
+  category: SML
+  scope: main
+  severity: major
+  effort: 10min
+  tags: [aws, logging]
+  summary: A function writes to a log group the template does not declare.
+  why: |
+    The group is created on first use, outside the stack, with no retention: nothing in the
+    infrastructure describes it, nothing removes it when the stack goes, and the bill grows on its own.
+  fix: |
+    Declare an 'AWS::Logs::LogGroup' named after the function, with a retention.
+
+- key: QG-CF-SML-0004
+  name: A log group should say how long it keeps its content
+  languages: [cf]
+  category: SML
+  scope: main
+  severity: critical
+  effort: 5min
+  tags: [aws, logging, cost]
+  summary: A log group is declared without a retention period.
+  why: |
+    Entries are kept for ever: the storage bill grows without a ceiling, and personal data in the logs
+    stays far past any retention policy the organisation has written down.
+  fix: |
+    Set 'RetentionInDays' to the period the audit actually needs.
+
+- key: QG-CF-SML-0005
+  name: A resource tag should use the characters the provider accepts
+  languages: [cf]
+  category: SML
+  scope: main
+  severity: minor
+  effort: 5min
+  tags: [aws, tags]
+  summary: A tag key or value holds a character the provider refuses.
+  why: |
+    The deployment is refused when the stack reaches that resource, so the mistake surfaces at deployment
+    time — usually in the environment where a failed deployment costs the most.
+  fix: |
+    Keep tag keys and values to letters, digits and ' _ . : / = + - @'.
+
+- key: QG-TF-SML-0004
+  name: A resource tag should use the characters the provider accepts
+  languages: [tf]
+  category: SML
+  scope: main
+  severity: minor
+  effort: 5min
+  tags: [aws, tags]
+  summary: A tag key or value holds a character the provider refuses.
+  why: |
+    The apply is refused when it reaches that resource, so the mistake surfaces at deployment time —
+    usually in the environment where a failed deployment costs the most.
+  fix: |
+    Keep tag keys and values to letters, digits and ' _ . : / = + - @'.
+
+- key: QG-CF-SEC-0012
+  name: Traffic should not travel over a protocol without encryption
+  languages: [cf]
+  category: SEC
+  scope: main
+  severity: minor
+  effort: 10min
+  tags: [network, encryption]
+  summary: A setting or a URL names a protocol that carries its traffic in clear text.
+  why: |
+    Anyone on the path reads the traffic and can change it. The encrypted form of the same protocol
+    costs nothing to choose and is the reason the plain one still exists only for local use.
+  fix: |
+    Use the encrypted form of the protocol, and keep the plain one for loopback addresses only.
+
+- key: QG-K8-SEC-0010
+  name: Traffic should not travel over a protocol without encryption
+  languages: [k8]
+  category: SEC
+  scope: main
+  severity: minor
+  effort: 10min
+  tags: [network, encryption]
+  summary: A setting or a URL names a protocol that carries its traffic in clear text.
+  why: |
+    Anyone on the path reads the traffic and can change it, and inside a cluster that path includes every
+    workload that shares the network.
+  fix: |
+    Use the encrypted form of the protocol, and keep the plain one for loopback addresses only.
+
+- key: QG-TF-SEC-0015
+  name: Traffic should not travel over a protocol without encryption
+  languages: [tf]
+  category: SEC
+  scope: main
+  severity: minor
+  effort: 10min
+  tags: [network, encryption]
+  summary: A setting turns encryption off, or a URL names a protocol without it.
+  why: |
+    Anyone on the path reads the traffic and can change it. A setting such as 'encryption_type = NONE'
+    says so explicitly, which makes it easy to miss in review.
+  fix: |
+    Choose the encrypted setting, and the encrypted form of any protocol written as a URL.
+
+- key: QG-TF-SEC-0037
+  name: A directory role that can grant roles should not be assigned
+  languages: [tf]
+  category: SEC
+  scope: main
+  severity: major
+  effort: 20min
+  tags: [azure, iam, least-privilege]
+  summary: A high-privilege built-in directory role is assigned.
+  why: |
+    A role that can grant roles can grant its own, so whoever holds it reaches everything in the
+    directory. The grant is invisible in the resources it does not name, which is most of them.
+  fix: |
+    Assign the narrowest built-in role that covers the task, or a custom role scoped to it.
+
+- key: QG-TF-SEC-0042
+  name: A service-to-service endpoint should require a client certificate
+  languages: [tf]
+  category: SEC
+  scope: main
+  severity: major
+  effort: 15min
+  tags: [azure, authentication]
+  summary: An endpoint closed to the network does not require a client certificate.
+  why: |
+    With the certificate optional a caller without one is served anyway, which is the same as not
+    requiring it. The endpoint is closed to the internet, so the certificate is the only thing left that
+    says who the caller is.
+  fix: |
+    Enable client certificates and set the mode to 'Required'.
+
+- key: QG-K8-SEC-0012
+  name: A manifest should not carry a secret in clear
+  languages: [k8]
+  category: SEC
+  scope: main
+  severity: blocker
+  effort: 30min
+  tags: [kubernetes, secret]
+  summary: An environment variable holding a credential carries its value in the manifest.
+  why: |
+    The value is in version control, in every backup of it and in the output of anyone allowed to read
+    the manifest. Rotating it means finding every copy, which is why it never gets rotated.
+  fix: |
+    Reference a Secret through 'valueFrom.secretKeyRef', and keep the value in the secret store.
+
+- key: QG-K8-SML-0005
+  name: A manifest should not use a retired API version
+  languages: [k8]
+  category: SML
+  scope: main
+  severity: minor
+  effort: 10min
+  tags: [kubernetes, deprecated]
+  summary: An object is declared against an API version the platform has removed.
+  why: |
+    The object stops being applied the day the cluster is upgraded, and the deployment fails on something
+    nobody changed — usually during the upgrade window, when attention is elsewhere.
+  fix: |
+    Move the object to the current version of its API group.
+
+- key: QG-K8-SML-0007
+  name: A container image should name the version it runs
+  languages: [k8]
+  category: SML
+  scope: main
+  severity: major
+  effort: 10min
+  tags: [kubernetes, reproducibility]
+  summary: An image reference has no tag, or uses the moving one.
+  why: |
+    The cluster runs whatever the registry serves at pull time, so two pods of the same deployment can
+    run different builds and a rollback has nothing to go back to.
+  fix: |
+    Name the version in the tag, or pin the digest.
+
+- key: QG-K8-SEC-0018
+  name: A pod should say which service account it runs as
+  languages: [k8]
+  category: SEC
+  scope: main
+  severity: major
+  effort: 15min
+  tags: [kubernetes, least-privilege]
+  summary: A pod does not name a service account, so it runs as the default one with its token mounted.
+  why: |
+    Any code in the container can call the API server as that account, and the default account of a
+    namespace tends to accumulate permissions nobody reviews.
+  fix: |
+    Name an account with the permissions the workload needs, or set 'automountServiceAccountToken' to
+    false when it needs none.
+
+- key: QG-K8-SML-0010
+  name: A template directive should keep the spaces around its braces
+  languages: [k8]
+  category: SML
+  scope: main
+  severity: major
+  effort: 5min
+  tags: [kubernetes, template]
+  summary: A template directive is written without the spaces the engine expects inside its braces.
+  why: |
+    The directive is copied into the output as text instead of being substituted, so the manifest is
+    applied with the placeholder still in it.
+  fix: |
+    Write the directive with a space after '{{' and before '}}'.
+
+- key: QG-DK-BUG-0002
+  name: A build argument should be declared inside the stage that reads it
+  languages: [dk]
+  category: BUG
+  scope: main
+  severity: major
+  effort: 5min
+  tags: [docker, build]
+  summary: An argument declared before the first stage is read inside a stage.
+  why: |
+    An argument declared before the first stage belongs to the file, not to the stage: inside the stage it
+    expands to nothing and the command runs with an empty value, which usually succeeds and produces the
+    wrong image.
+  fix: |
+    Repeat the declaration after the stage begins, so the value is in scope where it is used.
+
+- key: QG-DK-SML-0010
+  name: A long build command should be split across lines
+  languages: [dk]
+  category: SML
+  scope: main
+  severity: minor
+  effort: 5min
+  tags: [docker, readability]
+  summary: A build command runs past the width anyone reads in a review.
+  why: |
+    The whole command is one line in the diff, so a package added or removed in the middle of it does not
+    show up in the review that was supposed to catch it.
+  fix: |
+    Break the command with a backslash and put one argument per line.
+
+- key: QG-DK-BUG-0004
+  name: The bracket form of an instruction should be valid JSON
+  languages: [dk]
+  category: BUG
+  scope: main
+  severity: critical
+  effort: 5min
+  tags: [docker, build]
+  summary: An instruction written in bracket form has text after the closing bracket, or never closes it.
+  why: |
+    The bracket form is read as JSON and ends at the bracket: anything after it is dropped, so the
+    container starts without the argument the author added and the failure looks like a bug in the image.
+  fix: |
+    Put every argument inside the brackets as its own element, or write the instruction in shell form.
+
+- key: QG-XML-BUG-0001
+  name: The XML declaration should open the file
+  languages: [xml]
+  category: BUG
+  scope: main
+  severity: critical
+  effort: 5min
+  tags: [xml, parsing]
+  summary: Something is written before the XML declaration.
+  why: |
+    The declaration has to be the first thing in the file. With a comment or a byte order mark in front of
+    it a parser refuses the whole document, and the failure lands on whoever reads the file.
+  fix: |
+    Move the declaration to the top, above any comment.
+
+- key: QG-XML-SML-0010
+  name: A build property should use the current prefix
+  languages: [xml]
+  category: SML
+  scope: main
+  severity: minor
+  effort: 5min
+  tags: [maven, deprecated]
+  summary: A build file uses the retired '${pom.*}' property prefix.
+  why: |
+    The old prefix resolves in some builds and to nothing in others, which produces artifacts named after
+    an empty value — and that only shows up when someone looks for the artifact.
+  fix: |
+    Use the 'project' prefix instead.
+
+- key: QG-XML-BUG-0002
+  name: A dependency should not be taken from a local path
+  languages: [xml]
+  category: BUG
+  scope: main
+  severity: critical
+  effort: 20min
+  tags: [maven, build]
+  summary: A dependency is declared with system scope, pointing at a path on the build machine.
+  why: |
+    The artifact is in no repository, so the build works on the machine that has that file and nowhere
+    else — and what it produces cannot be rebuilt later, not even here.
+  fix: |
+    Publish the artifact to a repository and depend on it by coordinates.
+
+- key: QG-XML-BUG-0003
+  name: A shared connection should reconnect when it drops
+  languages: [xml]
+  category: BUG
+  scope: main
+  severity: major
+  effort: 10min
+  tags: [spring, messaging]
+  summary: A single-connection factory is declared without reconnection on exception.
+  why: |
+    The factory keeps one connection and hands it to every consumer. When the broker drops it nothing
+    reopens it, so the application stops receiving messages and keeps running as if nothing happened.
+  fix: |
+    Set 'reconnectOnException' to true on the factory.
+
+- key: QG-XML-BUG-0004
+  name: A message container should not drop messages while restarting
+  languages: [xml]
+  category: BUG
+  scope: main
+  severity: major
+  effort: 15min
+  tags: [spring, messaging]
+  summary: A listener container acknowledges messages as it takes them.
+  why: |
+    A message picked up while the container is shutting down is neither processed nor returned to the
+    broker: it is simply gone, and nothing records that it existed.
+  fix: |
+    Set 'sessionTransacted' to true, or acknowledge only after the listener has done the work.
+
+- key: QG-XML-BUG-0005
+  name: The mapping tool should not change the database schema
+  languages: [xml]
+  category: BUG
+  scope: main
+  severity: critical
+  effort: 30min
+  tags: [hibernate, database]
+  summary: The mapping tool is configured to create or update the schema at startup.
+  why: |
+    The shape of the database follows whichever version of the code started last, and 'create' drops what
+    was there. A rollback of the application then meets a schema that has already moved on.
+  fix: |
+    Use 'validate' and put schema changes in a migration that is reviewed and versioned.

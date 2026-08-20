@@ -455,6 +455,13 @@ public sealed class JavaStaticOnlyClassRule : JavaContractRuleBase
             if (modifiers.Contains("abstract") || modifiers.Contains("interface"))
                 continue;
 
+            // a type that extends or implements something is not a bag of helpers. An exception
+            // declares a serialVersionUID and a few constructors, and those constructors are the
+            // whole reason it exists — telling the author to hide them breaks the type.
+            if (context.Project.FindTypes(type.Text).FirstOrDefault(t => t.Node == type)
+                    is { BaseNames.Count: > 0 })
+                continue;
+
             var members = Members(type)
                 .Where(m => m.Kind is NodeKind.FunctionDeclaration or NodeKind.FieldDeclaration)
                 .ToList();

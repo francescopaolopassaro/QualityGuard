@@ -8,7 +8,7 @@ a configurable Quality Gate and exits with `PASSED` or `FAILED` — no server, n
 dotnet run --project src/QualityGuard.Cli -- --path ./src --by-folder
 ```
 
-**3723 rules across 26 languages**, of which **618 are security rules**, on a real syntax tree with a
+**3795 rules across 26 languages**, of which **631 are security rules**, on a real syntax tree with a
 semantic model, a project index and interprocedural taint analysis. The coverage goes past the
 languages themselves: AWS, Azure and Google Cloud infrastructure (Terraform, CloudFormation),
 Kubernetes manifests, Dockerfiles, Android manifests and Gradle build scripts, Java EE and ASP.NET
@@ -150,7 +150,7 @@ Severity and issue kind follow the category: `SEC` → vulnerability (major or a
 
 ## 5. Rules
 
-**3723 rules are loaded**, backed by **5861 catalog entries** (an entry either carries its own
+**3795 rules are loaded**, backed by **5861 catalog entries** (an entry either carries its own
 detection or documents a rule implemented in code). Every rule ships an English name, message,
 summary, *why is this an issue* and *how to fix*.
 
@@ -163,23 +163,23 @@ read as a tree of keys and blocks.
 
 | Language | Code | Rules | Tree |
 | --- | --- | --- | --- |
-| Java | `JV` | 560 | dedicated parser |
+| Java | `JV` | 583 | dedicated parser |
 | JavaScript | `JS` | 470 | dedicated parser |
-| Python | `PY` | 433 | dedicated parser |
+| Python | `PY` | 443 | dedicated parser |
 | C# / VB.NET | `CS` | 408 | dedicated parser |
-| Kotlin | `KT` | 194 | dedicated parser (C-family dialect) |
-| PHP | `PP` | 183 | dedicated parser |
-| Terraform | `TF` | 142 | configuration tree |
+| Kotlin | `KT` | 197 | dedicated parser (C-family dialect) |
+| PHP | `PP` | 190 | dedicated parser |
+| Terraform | `TF` | 148 | configuration tree |
 | HTML | `HTML` | 132 | markup reader |
 | Go | `GO` | 120 | dedicated parser |
-| Dockerfile | `DK` | 117 | instruction list |
+| Dockerfile | `DK` | 120 | instruction list |
 | Ruby | `RB` | 117 | structural parser |
-| Kubernetes | `K8` | 111 | configuration tree |
+| Kubernetes | `K8` | 117 | configuration tree |
 | CSS / SCSS / Sass / Less | `CSS` | 109 | stylesheet reader |
-| XML and descriptors | `XML` | 109 | markup reader |
+| XML and descriptors | `XML` | 115 | markup reader |
 | Swift | `SW` | 107 | structural parser |
 | Dart / Flutter | `DART` | 100 | dedicated parser (C-family dialect) |
-| CloudFormation | `CF` | 96 | configuration tree |
+| CloudFormation | `CF` | 104 | configuration tree |
 | JSON | `JSON` | 96 | configuration tree |
 | Rust | `RS` | 35 | structural parser |
 | Secrets (any language) | `SEC` | 24 | token scan over every file |
@@ -443,7 +443,7 @@ container's security context, a setting missing from the resource that needs it.
 covered by one reader — braces with labels (Terraform, JSON) and indentation with list items
 (Kubernetes, CloudFormation) — and Dockerfiles are read as their instruction list.
 
-**Terraform — 142 rules, across the three major providers.**
+**Terraform — 148 rules, across the three major providers.**
 
 * **Shared** — storage without encryption at rest, resources reachable from the whole internet,
   outdated TLS versions, logging switched off, policies granting every action to everyone, keys that
@@ -464,19 +464,19 @@ covered by one reader — braces with labels (Terraform, JSON) and indentation w
   than two weeks, audit configurations that exempt individual members, and legacy attribute-based
   access control on clusters.
 
-**CloudFormation — 96 rules.** Templates are recognised by their content, not their extension, so a
+**CloudFormation — 104 rules.** Templates are recognised by their content, not their extension, so a
 `.yaml` template is read as a template and not as a Kubernetes manifest. Public access blocks with a
 guard missing or switched off, API Gateway methods that change data and accept unauthenticated calls
 (with sign-in, health and token endpoints deliberately left alone), backup retention shorter than a
 week — read per resource type, so a read replica and an engine with continuous backup are not
 reported.
 
-**Kubernetes — 111 rules.** Privileged containers, privilege escalation, host namespaces, running as
+**Kubernetes — 117 rules.** Privileged containers, privilege escalation, host namespaces, running as
 root, missing resource requests and limits, writable root filesystem, unpinned images, wildcard RBAC,
 added kernel capabilities, remote administration ports published by a container or a service, and
 roles that allow creating an exec session inside somebody else's pod.
 
-**Dockerfile — 117 rules.** Lower-case instructions, relative WORKDIR, duplicated CMD/ENTRYPOINT, ADD
+**Dockerfile — 120 rules.** Lower-case instructions, relative WORKDIR, duplicated CMD/ENTRYPOINT, ADD
 for local files, the whole build context copied into the image, spaces around `=` in ENV/ARG, runs of
 consecutive RUN instructions, unpinned base images, secrets in ENV — plus the security set: a debug
 variable left on in the image that ships (read on the final stage only, because a builder stage is
@@ -517,7 +517,7 @@ the whole internet, and a server bound to every network interface of its machine
 
 ### Security coverage
 
-**618 security rules.** Command injection, SQL injection, path traversal, open redirect, server-side
+**631 security rules.** Command injection, SQL injection, path traversal, open redirect, server-side
 request forgery, unsafe deserialization, XML external entities, dynamic code execution, weak
 cryptography (broken hashes, obsolete ciphers, ECB, reused initialisation vectors, predictable
 randomness, weak key sizes), disabled certificate validation, cleartext transport, hardcoded
@@ -723,7 +723,7 @@ rule that produces noise is rewritten on the syntax tree or removed, and every f
 was fixed is pinned by a regression test — written next to the shape the rule must still report — so
 the precision cannot be lost again silently.
 
-**633 tests** cover the parsers, the semantic model, taint, the scanner and rule precision. Every
+**645 tests** cover the parsers, the semantic model, taint, the scanner and rule precision. Every
 false positive that was ever fixed has one of them, written next to the shape the rule must still
 report, so precision cannot be lost again in silence.
 
@@ -740,20 +740,26 @@ because they are real legacy rather than a curated library.
 | an AWS Terraform module library | Terraform | 5 475 | 22 | **4.0** |
 | two public Terraform module libraries | Terraform | 55 560 | 112 | **2.0** |
 | an Azure Terraform example library | Terraform | 22 146 | 193 | **8.7** |
-| the public Kubernetes example manifests | Kubernetes | 5 743 | 113 | **19.7** |
-| express | JavaScript | 14 730 | 52 | **3.5** |
-| rails | Ruby | 281 755 | 1 339 | **4.8** |
-| guzzle | PHP | 48 147 | 380 | **7.9** |
-| okio | Kotlin | 44 514 | 582 | **13.1** |
-| ripgrep | Rust | 42 211 | 573 | **13.6** |
-| Alamofire | Swift | 26 592 | 372 | **14.0** |
-| gson | Java | 47 559 | 685 | **14.4** |
+| the public Kubernetes example manifests | Kubernetes | 5 743 | 142 | **24.7** |
+| express | JavaScript | 14 707 | 56 | **3.8** |
+| rails | Ruby | 281 755 | 1 343 | **4.8** |
+| guzzle | PHP | 48 147 | 378 | **7.9** |
+| gson | Java | 47 559 | 376 | **7.9** |
+| okio | Kotlin | 44 514 | 568 | **12.8** |
+| ripgrep | Rust | 42 211 | 574 | **13.6** |
+| Alamofire | Swift | 26 592 | 369 | **13.9** |
+| cobra, gin | Go | 30 723 | 488 | **15.9** |
 | a Blazor application | C# | 58 468 | 876 | **15.0** |
-| Newtonsoft.Json | C# | 160 646 | 2 409 | **15.0** |
-| cobra, gin | Go | 30 723 | 490 | **15.9** |
-| axios, nest | TypeScript | 36 073 | 644 | **17.9** |
-| requests, flask, a private application | Python | 42 955 | 868 | **20.2** |
-| a WebForms application from 2010 | C# | 214 434 | 9 808 | **45.7** |
+| axios, nest | TypeScript | 36 073 | 648 | **18.0** |
+| Newtonsoft.Json | C# | 126 652 | 2 330 | **18.4** |
+| requests, flask, a private application | Python | 42 955 | 859 | **20.0** |
+| a WebForms application from 2010 | C# | 152 633 | 8 522 | **55.8** |
+| scalaz | Scala | 48 717 | 0 | **0.0** |
+
+Every row is one scan per language, narrowed to that language's extension. The Scala row is a gap, not
+a triumph: there is no dedicated parser for it yet, so no rule reaches those 48 717 lines. Rust is in
+the table because the generic parser carries the shared rules there, not because the language has its
+own.
 
 **A repository of examples is not a repository.** The two highest infrastructure rows above are
 collections of small samples: every example declares one virtual machine, one pod, one bucket, so
@@ -770,6 +776,41 @@ the engine**. That application really does carry a thousand trivial properties w
 hundred blocks of commented-out code and hundreds of dead stores — a sample read by hand puts the
 false positives there at roughly one in ten. What the engine is judged on is that ratio, not the size
 of the number.
+
+### What a judged sample says today
+
+Density is not precision, so precision is read rather than counted. On the Java library above, a sample
+drawn per rule and read line by line held **12 false positives out of 24**. None of them came from the
+newest rules: they came from old families with high volume, and each one turned into an engine fix —
+a parser that lost the rest of the file on `f(in)` because `in` is a C# argument modifier and not a
+Java one, another that read `return ArrayList::new;` as a return followed by two statements, catalogue
+rules matching their pattern inside comments, a one-character literal typed as a string so `c != 'Z'`
+became a comparison between unrelated types.
+
+After those fixes the same sample holds **2 false positives out of 18**, and the library went from 685
+findings to 376 without losing a true one. That ratio — not the size of the density column — is what
+the engine is judged on.
+
+### Measured against an annotated corpus
+
+Coverage is the other half, and it is measured against corpora somebody else annotated for their own
+engine, where every defective line carries a marker:
+
+| corpus | annotated files | marked lines | lines reported |
+| --- | ---: | ---: | ---: |
+| Java | 1 022 | 10 320 | **46.3%** |
+| Python | 590 | 6 427 | **41.1%** |
+
+`tools/compare_expectations.py` produces both numbers, and the findings that land on unmarked lines are
+listed to be read rather than counted: the two catalogues do not carry the same rules, and a file
+written to exercise one check contains other real defects nobody annotated.
+
+### Coverage is read, not computed
+
+The engine does not measure code coverage: it reads the report the test runner already writes — lcov,
+Cobertura or opencover — applies the exclusions and aggregates. That path is verified end to end: an
+lcov written by hand with 13 covered lines out of 20 and 2 conditions out of 6 comes back as 57.7%
+overall, 65.0% line and 33.3% branch, which is the arithmetic on paper.
 
 ### How the false-positive rate is measured
 

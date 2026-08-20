@@ -581,6 +581,12 @@ public abstract class LocalReturnedImmediatelyRule : ExceptionRuleBase
                                && id.Text == name;
                 if (!returned)
                     continue;
+                // an annotation has to sit on a declaration: '@SuppressWarnings("unchecked") T x = ...;'
+                // keeps the variable for the compiler, and inlining it brings the warning back. The
+                // annotation does not reach the tree on a local, so the tokens of the line answer it
+                if (context.Tokens.Any(t => t.Text == "@" && t.Line >= children[i].Range.StartLine
+                                            && t.Line <= children[i].Range.EndLine))
+                    continue;
 
                 context.Report(children[i], $"'{name}' exists only to be handed straight back. Return the "
                                             + "expression, unless the name is what explains it — in which "

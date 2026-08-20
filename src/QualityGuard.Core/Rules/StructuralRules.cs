@@ -1677,6 +1677,11 @@ public abstract class IdenticalOperandsRule : StructuralRuleBase
                 continue;
             if (leftText.Contains('(')) // a repeated call may legitimately return different values
                 continue;
+            // a generic signature reaches the tree as '<' and '>' around a type parameter when the
+            // parser cannot tell them from comparisons. 'T' on both sides of '>' is that, not a
+            // constant expression, and the reader is right to distrust a report that says otherwise.
+            if (binary.Text is "<" or ">" && leftText.Length <= 2 && leftText.All(char.IsAsciiLetterUpper))
+                continue;
             context.Report(binary, $"'{leftText}' appears on both sides of '{binary.Text}', "
                                    + "which makes the result constant.");
         }
@@ -6185,6 +6190,17 @@ public abstract class TestWithoutAssertionRule : StructuralRuleBase
             .Any(a => Scaffolding.Any(s => a.Text.Contains(s, StringComparison.OrdinalIgnoreCase))))
             return false;
 
+        // a private method is never the test the runner calls, so a helper named 'runTest' is a
+        // helper: reporting on it said a test asserted nothing when no test was involved
+        if (function.ChildrenOf(NodeKind.Modifier).Any(m => m.Text.Contains("private", StringComparison.Ordinal)))
+            return false;
+
+        // a method that returns something is a source of data for the tests, not a test: the runner
+        // skips it, and '@Parameters static List<Path> jarsToTest()' is what that looks like
+        if (function.FirstChild(NodeKind.TypeReference) is { } returned
+            && returned.Text is not ("void" or "Unit" or ""))
+            return false;
+
         var name = function.Text.ToLowerInvariant();
         if (name.StartsWith("test", StringComparison.Ordinal) || name.EndsWith("test", StringComparison.Ordinal))
             return true;
@@ -7009,8 +7025,10 @@ public abstract class IgnoredTestRule : StructuralRuleBase
 
         foreach (var function in SyntaxQuery.Functions(context.Root))
         {
+            // the annotation has to be the marker itself: '@CanIgnoreReturnValue' contains 'Ignore'
+            // and turned every builder method that carries it into a disabled test
             var marker = function.ChildrenOf(NodeKind.Attribute)
-                .FirstOrDefault(a => Markers.Any(m => a.Text.Contains(m, StringComparison.OrdinalIgnoreCase)));
+                .FirstOrDefault(a => Markers.Contains(a.Text, StringComparer.OrdinalIgnoreCase));
             if (marker == null)
                 continue;
             context.Report(function, $"'{function.Text}' is disabled, so the behaviour it covers is "
@@ -7473,6 +7491,12 @@ public abstract class CommentedOutCodeRule : StructuralRuleBase
         if (dataLines * 2 >= lines.Count)
             return false;
 
+        // a documentation tag is prose about code, not code: '@deprecated Use {@link X#y(Z)}' has
+        // parentheses and a name and is exactly what the documentation is supposed to say
+        lines = lines.Where(l => !l.StartsWith('@') && !l.Contains("{@", StringComparison.Ordinal)).ToList();
+        if (lines.Count == 0)
+            return false;
+
         return lines.Any(Statement);
     }
 
@@ -7771,6 +7795,10 @@ public abstract class HiddenBaseMemberRule : StructuralRuleBase
                     continue;
                 var modifiers = member.ChildrenOf(NodeKind.Modifier).Select(m => m.Text).ToArray();
                 if (modifiers.Any(m => IntentionalMarkers.Contains(m, StringComparer.Ordinal)))
+                    continue;
+                // a private member hides nothing: it is invisible to the base type and to every
+                // caller outside the class, so the name it shares with a base method is its own
+                if (modifiers.Any(m => m.Contains("private", StringComparison.Ordinal)))
                     continue;
                 if (member.ChildrenOf(NodeKind.Attribute).Any(a => a.Text.Contains("Override", StringComparison.OrdinalIgnoreCase)))
                     continue;
@@ -8832,6 +8860,10 @@ public abstract class MethodCouldBeStaticRule : StructuralRuleBase
     public override IssueKind Kind => IssueKind.CodeSmell;
     public override string RemediationEffort => "10min";
 
+    /// <summary>Methods the serialization runtime looks up by name and shape.</summary>
+    private static readonly string[] SerializationHooks =
+        ["readObject", "writeObject", "readResolve", "writeReplace", "readObjectNoData"];
+
     public override void Execute(IRuleContext context)
     {
         if (!HasPreciseTree(context) || context.Language.LanguageKey is not ("cs" or "java"))
@@ -8863,6 +8895,10 @@ public abstract class MethodCouldBeStaticRule : StructuralRuleBase
                     continue;
                 if (method.ChildrenOf(NodeKind.Attribute).Any() || method.ChildrenOf(NodeKind.Annotation).Any())
                     continue; // a framework may require the instance form
+                // the runtime finds these by their exact shape — private, instance, one argument —
+                // so making them static removes the hook instead of tidying it
+                if (SerializationHooks.Contains(method.Text, StringComparer.Ordinal))
+                    continue;
                 var body = SyntaxQuery.Body(method);
                 if (body is null or { Children.Count: 0 })
                     continue;

@@ -19,43 +19,6 @@
     Remove what is not used, name what is unclear, and keep one piece of behaviour in one place so the
     next change touches a single spot.
 
-- key: QG-DK-BUG-0002
-  name: Access variable which should match the behaviour the code describes
-  languages: [dk]
-  category: BUG
-  severity: major
-  effort: 15min
-  tags: [bug, generated]
-  generated: true
-  status: planned
-  message: This code does not behave the way it reads.
-  summary: The code does not do what its shape suggests, or fails on ordinary input.
-  why: |
-    Written this way the code works by accident or breaks on values that are perfectly normal, and the
-    mistake is easy to miss in review because the intent reads correctly.
-  fix: |
-    Make the intended behaviour explicit — fix the condition, the operator or the order of operations —
-    and cover the case that used to fail with a test.
-
-- key: QG-DK-SML-0010
-  name: Too long RUN instruction should stay within a size that can be reviewed
-  languages: [dk]
-  category: SML
-  severity: minor
-  effort: 15min
-  tags: [threshold, generated]
-  generated: true
-  status: planned
-  message: This construct is larger or more complex than the limit allows.
-  summary: A construct exceeds the size or complexity a reader can follow at once.
-  why: |
-    Past a certain size, understanding one line means reconstructing everything around it, and testing
-    the interesting case means going through the whole entry point. Growth is gradual, so the limit is
-    the only thing that keeps the cost visible.
-  fix: |
-    Split along the responsibilities the code has accumulated: extract the sections that already have a
-    name, and keep the original as the sequence of those steps.
-
 - key: QG-DK-SML-0013
   name: Hard-to-read code should be simplified
   languages: [dk]
@@ -73,21 +36,3 @@
   fix: |
     Remove what is not used, name what is unclear, and keep one piece of behaviour in one place so the
     next change touches a single spot.
-
-- key: QG-DK-BUG-0004
-  name: Suspicious code should match the behaviour the code describes
-  languages: [dk]
-  category: BUG
-  severity: major
-  effort: 15min
-  tags: [bug, generated]
-  generated: true
-  status: planned
-  message: This code does not behave the way it reads.
-  summary: The code does not do what its shape suggests, or fails on ordinary input.
-  why: |
-    Written this way the code works by accident or breaks on values that are perfectly normal, and the
-    mistake is easy to miss in review because the intent reads correctly.
-  fix: |
-    Make the intended behaviour explicit — fix the condition, the operator or the order of operations —
-    and cover the case that used to fail with a test.

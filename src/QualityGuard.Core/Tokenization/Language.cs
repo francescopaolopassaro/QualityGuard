@@ -12,7 +12,17 @@ public sealed record StringDelimiter(string Start, string End)
     /// An interpolated literal carries expressions between braces, and those expressions can contain
     /// quotes of their own. The reader has to follow the braces to know where the literal ends.
     /// </summary>
-    public bool IsInterpolated => Start.Contains('$');
+    public bool IsInterpolated => Start.Contains('$') || Prefix.Contains('f') || Prefix.Contains('F');
+
+    /// <summary>The letters in front of the quote, empty when the literal has none.</summary>
+    public string Prefix => new(Start.TakeWhile(char.IsLetter).ToArray());
+
+    /// <summary>
+    /// A raw literal keeps its backslashes: 'r"\d"' is a backslash and a 'd', not an escape. Reading it
+    /// as an escape dropped the backslash, which left every regular expression written the raw way —
+    /// which is how patterns are written — as a different pattern than the one in the file.
+    /// </summary>
+    public bool IsRaw => Prefix.Contains('r') || Prefix.Contains('R');
 }
 
 public static class LanguageKeys

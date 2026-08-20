@@ -200,8 +200,11 @@ public sealed class SpecRule(CatalogEntry entry) : IRule
             return;
 
         var lines = context.File.Content.Split('\n');
+        var commentOnly = CommentOnlyLines(context);
         for (var i = 0; i < lines.Length; i++)
         {
+            if (commentOnly.Contains(i + 1))
+                continue;
             var found = regex.Match(lines[i]);
             if (!found.Success)
                 continue;
@@ -209,6 +212,32 @@ public sealed class SpecRule(CatalogEntry entry) : IRule
                 continue;
             context.Report(spec.Message ?? Entry.Message, i + 1);
         }
+    }
+
+    /// <summary>
+    /// The lines that hold nothing but a comment. A pattern written for code matches the same words
+    /// in prose — '@throws IllegalStateException' in a doc comment, 'name.equals("id")' in an example —
+    /// and reporting there says the defect is in documentation, where there is no defect at all.
+    /// </summary>
+    private static HashSet<int> CommentOnlyLines(IRuleContext context)
+    {
+        var comments = new HashSet<int>();
+        var code = new HashSet<int>();
+        foreach (var token in context.Tokens)
+        {
+            if (token.Kind == Tokenization.TokenKind.Comment)
+            {
+                var span = token.Text.Count(c => c == '\n');
+                for (var line = token.Line; line <= token.Line + span; line++)
+                    comments.Add(line);
+            }
+            else
+            {
+                code.Add(token.Line);
+            }
+        }
+        comments.ExceptWith(code);
+        return comments;
     }
 
     private bool ArgumentsMatch(IRuleContext context, SyntaxNode call, MatchSpec spec)

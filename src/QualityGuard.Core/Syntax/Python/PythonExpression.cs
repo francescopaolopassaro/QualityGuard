@@ -407,6 +407,11 @@ internal sealed class PythonExpression
     /// <summary>Formatted strings expose the expressions inside their holes to the data-flow pass.</summary>
     private SyntaxNode BuildString(int start, Token token)
     {
+        // only a formatted literal has holes: '"{2,2}"' is a quantifier, and reading it as an
+        // expression put every pattern with a count out of reach of the rules
+        if (!token.Prefix.Contains('f') && !token.Prefix.Contains('F'))
+            return Node(NodeKind.StringLiteral, start, token.Text);
+
         var holes = ExtractHoles(token.Text).ToArray();
         if (holes.Length == 0)
             return Node(NodeKind.StringLiteral, start, token.Text);

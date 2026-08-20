@@ -482,8 +482,17 @@ public sealed class JavaLocaleIndependentCaseRule : PatternRuleBase
 
     public override void Execute(IRuleContext context)
     {
-        foreach (var token in RuleMatchers.Names(context.Tokens, ["toLowerCase", "toUpperCase"]))
-            context.Report("Use Locale when calling toLowerCase() or toUpperCase().", token.Line);
+        foreach (var call in SyntaxQuery.Invocations(context.Root))
+        {
+            // the defect is the missing locale, not the call: reading the tokens alone reported on
+            // 'toLowerCase(Locale.ENGLISH)' too, which is the fixed form
+            if (SyntaxQuery.InvokedName(call) is not ("toLowerCase" or "toUpperCase")
+                || SyntaxQuery.Arguments(call).Count > 0)
+                continue;
+            context.Report(call, "This call folds case with whatever locale the machine happens to "
+                                 + "have, so the same input gives different results in Turkish. Pass "
+                                 + "the locale the text belongs to, or Locale.ROOT.");
+        }
     }
 }
 

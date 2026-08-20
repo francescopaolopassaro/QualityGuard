@@ -207,7 +207,7 @@ public static class RegexLiterals
     /// requiring a Pattern receiver skipped every one of them.
     /// </summary>
     private static readonly string[] StringRegexMethods =
-        ["matches", "replaceAll", "replaceFirst", "split"];
+        ["matches", "replaceAll", "replaceFirst", "split", "toRegex", "toPattern"];
 
     /// <summary>
     /// PHP writes every pattern as a plain function call, and wraps it in a delimiter of its own
@@ -218,6 +218,19 @@ public static class RegexLiterals
         "preg_match", "preg_match_all", "preg_replace", "preg_replace_callback",
         "preg_replace_callback_array", "preg_split", "preg_grep"
     ];
+
+    /// <summary>Calls whose pattern is the value they are called on.</summary>
+    private static readonly string[] ReceiverCarriesPattern = ["toRegex", "toPattern"];
+
+    /// <summary>The string literal a call sits on, when it is written directly in front of the dot.</summary>
+    private static SyntaxNode? ReceiverLiteral(SyntaxNode call)
+    {
+        var target = call.ChildAt(0);
+        if (target is not { Kind: NodeKind.MemberSelect })
+            return null;
+        var value = target.ChildAt(0);
+        return SyntaxQuery.IsStringLiteral(value) ? value : null;
+    }
 
     public static IEnumerable<RegexLiteral> In(IRuleContext context)
     {
@@ -244,6 +257,15 @@ public static class RegexLiterals
             if (!certain && !(OnlyWithRegexReceiver.Contains(name, StringComparer.Ordinal)
                               && RegexReceivers.Contains(SyntaxQuery.Receiver(call), StringComparer.Ordinal)))
                 continue;
+
+            // 'toRegex' and 'toPattern' turn the receiver into the pattern, so the literal to read is
+            // in front of the dot rather than between the parentheses
+            if (ReceiverCarriesPattern.Contains(name, StringComparer.Ordinal))
+            {
+                if (ReceiverLiteral(call) is { } receiverLiteral && receiverLiteral.Text.Length > 1)
+                    yield return new RegexLiteral(receiverLiteral, receiverLiteral.Text);
+                continue;
+            }
 
             foreach (var argument in SyntaxQuery.Arguments(call).Where(SyntaxQuery.IsStringLiteral))
             {
@@ -343,8 +365,28 @@ public sealed class RegexPattern
             {
                 case '\\' when i + 1 < pattern.Length:
                     var escaped = pattern[i + 1];
+                    // a braced escape carries its argument: '\\p{L}' and '\\p{N}' are two
+                    // different members of a class, and reading only '\\p' made them one
+                    if (escaped is 'p' or 'P' or 'x' or 'u' or 'N' && i + 2 < pattern.Length
+                        && pattern[i + 2] == '{' && pattern.IndexOf('}', i + 2) is var brace && brace > 0)
+                    {
+                        current.Append(pattern[i..(brace + 1)]);
+                        i = brace;
+                        continue;
+                    }
                     if (char.IsDigit(escaped) && escaped != '0')
-                        result.BackReferences.Add(escaped - '0');
+                    {
+                        // the reference takes every digit that follows it: reading only the first
+                        // turned the character code '\\101' into a reference to group one
+                        var end = i + 1;
+                        while (end + 1 < pattern.Length && char.IsDigit(pattern[end + 1]))
+                            end++;
+                        result.BackReferences.Add(int.Parse(pattern[(i + 1)..(end + 1)],
+                            System.Globalization.CultureInfo.InvariantCulture));
+                        current.Append(pattern[i..(end + 1)]);
+                        i = end;
+                        continue;
+                    }
                     current.Append(c).Append(escaped);
                     i++;
                     continue;
@@ -1452,13 +1494,31 @@ public abstract class UnresolvedBackReferenceRule : RegexRuleBase
     {
         foreach (var (literal, parsed) in Patterns(context))
         {
-            var dangling = parsed.BackReferences.FirstOrDefault(r => r > parsed.CapturingGroups);
+            var dangling = parsed.BackReferences
+                .FirstOrDefault(r => r > parsed.CapturingGroups && !ReadsAsOctal(r));
             if (dangling == 0)
                 continue;
             context.Report(literal.Node, $"\\{dangling} refers to capturing group {dangling}, but the "
                                          + $"pattern declares {parsed.CapturingGroups}. The reference either "
                                          + "never matches or is read as an escape, depending on the engine.");
         }
+    }
+
+    /// <summary>
+    /// Two or more digits that are all below eight are read as a character code, not as a reference to
+    /// a group. Reporting those as dangling references said the wrong thing about a pattern that is
+    /// merely written in an old-fashioned way.
+    /// </summary>
+    private static bool ReadsAsOctal(int reference)
+    {
+        if (reference < 8)
+            return false;
+        for (var value = reference; value > 0; value /= 10)
+        {
+            if (value % 10 > 7)
+                return false;
+        }
+        return true;
     }
 }
 

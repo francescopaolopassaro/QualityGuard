@@ -84,9 +84,13 @@
     and reject anything else.
   detect:
     # the receiver matters: Charset.forName is an ordinary lookup, Class.forName is not
+    # a class named by a literal is fixed at compile time: the defect is a name that comes
+    # from outside, so a constant argument is not one
     - invocation: [forName]
       receiver: [Class]
+      argNotLiteral: true
     - invocation: [loadClass]
+      argNotLiteral: true
     - invocation: [newInstance]
       receiver: [Class]
 

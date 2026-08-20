@@ -1,0 +1,234 @@
+# Descriptions for the rules about Java test code, implemented in
+# Rules/Languages/JavaTestRules.cs. They read the annotations, because the annotation is what
+# the runner itself looks at.
+
+- key: QG-JV-SML-0305
+  name: A test class or method should keep package visibility
+  languages: [java]
+  category: SML
+  scope: test
+  severity: info
+  effort: 5min
+  tags: [tests, convention]
+  summary: A test class or method is public where the runner does not need it to be.
+  why: |
+    The modern runner accepts any visibility except private, and package visibility is the
+    convention. A public test says that something outside the package calls it, which for a
+    test is almost never true, and it makes the test part of an API nobody meant to publish.
+  fix: |
+    Remove the modifier. Keep it only for the technical reasons that require it — a test class
+    extended from another package, or a suite run on the module path.
+
+- key: QG-JV-BUG-0117
+  name: A test should not be silently ignored by the runner
+  languages: [java]
+  category: BUG
+  scope: test
+  severity: blocker
+  effort: 10min
+  tags: [tests, suspicious]
+  summary: A test is private, static, or returns a value, so the runner skips it without a word.
+  why: |
+    The runner does not report these as skipped; it simply never runs them. The test stays in
+    the file, reads as covered, and the suite goes green on behaviour nobody checked. It is the
+    worst kind of missing test, because everything looks like it is there.
+  fix: |
+    Give the method package visibility, make it an instance method, and let it return nothing.
+    A method that returns a value is only a test when it is declared as a test factory.
+
+- key: QG-JV-BUG-0116
+  name: An inner class holding tests should be annotated as nested
+  languages: [java]
+  category: BUG
+  scope: test
+  severity: blocker
+  effort: 5min
+  tags: [tests, suspicious]
+  summary: An inner class holds tests without the nested annotation, or a static one carries it.
+  why: |
+    Without the annotation the build never runs those tests — only an IDE can, started by hand,
+    which is exactly how they keep passing on a laptop and never in the pipeline. The mirror
+    mistake is as bad: a static class annotated as nested does not share the setup and the state
+    of the class around it, so it runs against a fixture nobody prepared.
+  fix: |
+    Annotate the inner class, or drop 'static' from the one that carries the annotation already.
+
+- key: QG-JV-BUG-0130
+  name: A test should carry one test annotation
+  languages: [java]
+  category: BUG
+  scope: test
+  severity: major
+  effort: 5min
+  tags: [tests, suspicious]
+  summary: A method carries two annotations that each start a test in a different way.
+  why: |
+    The two do not add up. Depending on the pair, the test is repeated an unexpected number of
+    times, or the runner cannot resolve its parameters and the test fails for a reason that has
+    nothing to do with the code under test.
+  fix: |
+    Keep the annotation that matches what the test needs and remove the other.
+
+- key: QG-JV-SML-0319
+  name: A test should not pile up assertions
+  languages: [java]
+  category: SML
+  scope: test
+  severity: major
+  effort: 20min
+  tags: [tests, brain-overload]
+  summary: A single test makes far more assertions than one concept needs.
+  why: |
+    A test that checks many things fails for many reasons, and the failure no longer says which
+    one. The first assertion to fail also hides every one after it, so a single run tells you
+    about one problem at a time out of a method that was meant to cover several.
+  fix: |
+    Split the test by the concept each group of assertions is about, and name each part after
+    the behaviour it pins down.
+
+- key: QG-JV-BUG-0119
+  name: The context of an assertion should be set before it runs
+  languages: [java]
+  category: BUG
+  scope: test
+  severity: major
+  effort: 5min
+  tags: [tests, suspicious]
+  summary: A description, failure message or comparator is attached after the assertion it belongs to.
+  why: |
+    These calls configure the assertion that comes after them. Written behind it they have
+    nothing left to change: the assertion has already run, and the failure comes out with the
+    default message — precisely when the custom one would have been useful.
+  fix: |
+    Move the call in front of the check, between the value under test and the assertion.
+
+- key: QG-JV-SML-0328
+  name: An argument matcher should not wrap every argument
+  languages: [java]
+  category: SML
+  scope: test
+  severity: minor
+  effort: 5min
+  tags: [tests, readability]
+  summary: Every argument of a mocked call is wrapped in the equality matcher.
+  why: |
+    The wrapper exists so that real matchers and plain values can be mixed, which the framework
+    otherwise refuses. With every argument wrapped it says nothing the values do not say
+    themselves, and it hides which arguments are actually being matched loosely.
+  fix: |
+    Pass the values directly. Keep the wrapper only next to a real matcher in the same call.
+
+- key: QG-JV-BUG-0166
+  name: A test class should declare one lifecycle method of each kind
+  languages: [java]
+  category: BUG
+  scope: test
+  severity: major
+  effort: 10min
+  tags: [tests, suspicious]
+  summary: Two setup or teardown methods of the same kind are declared in one class.
+  why: |
+    The runner gives no promise about the order between them. The suite passes while the order
+    happens to be the one the author assumed, and fails the day it flips — in a test that has
+    nothing to do with the change that flipped it.
+  fix: |
+    Put the setup in one method, or make the dependency explicit by calling one from the other.
+
+- key: QG-JV-SML-0302
+  name: A test expecting an exception should not assert after it
+  languages: [java]
+  category: SML
+  scope: test
+  severity: major
+  effort: 10min
+  tags: [tests, suspicious]
+  summary: The expected exception is declared on the annotation and the body asserts after the throw.
+  why: |
+    Nothing after the throwing call runs, so the assertions below it are dead code that reads
+    as if it checks something. Worse, the test passes when the exception is thrown anywhere in
+    the body — including before the call that was supposed to throw.
+  fix: |
+    Assert the throw itself, around the single call under test, and keep the other checks in
+    their own test.
+
+- key: QG-JV-SML-0303
+  name: A throw should be asserted on one call only
+  languages: [java]
+  category: SML
+  scope: test
+  severity: major
+  effort: 10min
+  tags: [tests, suspicious]
+  summary: The code under an exception assertion makes more than one call.
+  why: |
+    The assertion passes whichever of the calls throws, so it also passes when the wrong one
+    does — including when the setup call fails and the behaviour under test never runs.
+  fix: |
+    Prepare the values on their own lines and leave only the call being tested under the
+    assertion.
+
+- key: QG-JV-BUG-0115
+  name: A try-and-fail test should hold one call only
+  languages: [java]
+  category: BUG
+  scope: test
+  severity: major
+  effort: 10min
+  tags: [tests, suspicious]
+  summary: A block that tests a throw the older way holds more than the call under test.
+  why: |
+    The test passes whichever call throws, so it also passes when the setup fails and the
+    behaviour under test never runs. The idiom hides it well: the block reads as one action.
+  fix: |
+    Keep only the call under test inside the block, or assert the throw directly.
+
+- key: QG-JV-BUG-0114
+  name: An assertion should not be caught by its own test
+  languages: [java]
+  category: BUG
+  scope: test
+  severity: critical
+  effort: 10min
+  tags: [tests, suspicious]
+  summary: An assertion runs inside a block whose catch swallows assertion failures.
+  why: |
+    A failing assertion throws, and the catch takes it. The call that was supposed to make the
+    test fail lands in the same catch. The test then reports green whatever the code does,
+    which is worse than having no test: it occupies the place where the real one would go.
+  fix: |
+    Assert the throw directly instead of catching it, or catch the exception the code under
+    test raises rather than the assertion failure.
+
+- key: QG-JV-SML-0163
+  name: An assertion should not run on another thread
+  languages: [java]
+  category: SML
+  scope: test
+  severity: critical
+  effort: 15min
+  tags: [tests, suspicious]
+  summary: An assertion sits in a method that another thread executes.
+  why: |
+    The failure is raised on the thread that runs the method, not on the one running the test.
+    The test never sees it, finishes, and reports green — while the failure is printed on a
+    console nobody reads.
+  fix: |
+    Collect the result or the error from the other thread, join it, and assert in the test
+    itself.
+
+- key: QG-JV-SML-0308
+  name: A fixture method should carry its lifecycle annotation
+  languages: [java]
+  category: SML
+  scope: test
+  severity: major
+  effort: 5min
+  tags: [tests, suspicious]
+  summary: A method named for a fixture carries no lifecycle annotation.
+  why: |
+    Without the annotation the runner never calls it, so every test in the class starts from
+    state nobody prepared. The name says the opposite, which is why the failures land far from
+    the method that caused them.
+  fix: |
+    Annotate the method with the lifecycle it belongs to, or rename it if it is an ordinary
+    helper the tests call themselves.

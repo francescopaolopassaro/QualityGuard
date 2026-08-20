@@ -2501,25 +2501,6 @@
     - invocation: [atan2, double, expm1, float, floor]
       receiver: [lang]
 
-- key: QG-JV-SML-0163
-  name: JUnit assertions should not be used
-  languages: [java]
-  category: SML
-  severity: minor
-  effort: 15min
-  tags: [avoid_api, generated]
-  generated: true
-  status: planned
-  message: This API should be replaced by the current alternative.
-  summary: Code calls an API that is unsafe, obsolete or superseded by a better alternative.
-  why: |
-    The API stays available for compatibility, so nothing fails at build time, but it carries behaviour
-    the platform now considers a defect — unchecked input, a weak guarantee, or a cost the replacement
-    avoids. Its presence also spreads: new code copies what it finds nearby.
-  fix: |
-    Replace the call with the current API, and keep the old one only behind a compatibility layer that is
-    documented and dated.
-
 - key: QG-JV-SML-0165
   name: Tests should assert something
   languages: [java]
@@ -5442,29 +5423,6 @@
     - invocation: [ArrayList, Function, HashMap, HashSet, Hashtable, IdentityHashMap, LinkedHashMap, LinkedHashSet]
       receiver: [function, util]
 
-- key: QG-JV-SML-0291
-  name: String#replace should be replaced by the recommended alternative
-  languages: [java]
-  category: SML
-  scope: main
-  severity: minor
-  effort: 15min
-  tags: [prefer_api, generated]
-  generated: true
-
-  message: The platform offers a clearer or safer construct for this.
-  summary: A construct is used where the platform offers one that is clearer or safer.
-  why: |
-    The alternative exists because it removes a class of mistake — a conversion, an allocation, an edge
-    case — that the current form leaves to the caller. Using the older form means every reader has to
-    check that the edge case was handled.
-  fix: |
-    Switch to the recommended construct; the behaviour is the same in the normal case and defined in the
-    cases the old form got wrong.
-  detect:
-    - invocation: [String, replaceAll]
-      receiver: [lang]
-
 - key: QG-JV-SML-0292
   name: Hard-to-read code should be simplified
   languages: [java]
@@ -5744,115 +5702,6 @@
     Assert the behaviour the test exists for, re-enable it, and make sure it fails when the behaviour is
     broken before trusting it again.
 
-- key: QG-JV-SML-0302
-  name: Tests should assert something
-  languages: [java]
-  category: SML
-  severity: minor
-  effort: 15min
-  tags: [tests, generated]
-  generated: true
-  status: planned
-  message: This test cannot fail, so it verifies nothing.
-  summary: A test does not assert, is disabled, or cannot fail.
-  why: |
-    A test that cannot fail reports success forever while covering nothing, and the suite keeps its green
-    status. That is worse than having no test at all, because it removes the incentive to write one.
-  fix: |
-    Assert the behaviour the test exists for, re-enable it, and make sure it fails when the behaviour is
-    broken before trusting it again.
-
-- key: QG-JV-SML-0303
-  name: Tests should assert something
-  languages: [java]
-  category: SML
-  severity: minor
-  effort: 15min
-  tags: [tests, generated]
-  generated: true
-  status: planned
-  message: This test cannot fail, so it verifies nothing.
-  summary: A test does not assert, is disabled, or cannot fail.
-  why: |
-    A test that cannot fail reports success forever while covering nothing, and the suite keeps its green
-    status. That is worse than having no test at all, because it removes the incentive to write one.
-  fix: |
-    Assert the behaviour the test exists for, re-enable it, and make sure it fails when the behaviour is
-    broken before trusting it again.
-
-- key: QG-JV-BUG-0114
-  name: Assertion methods should not be used
-  languages: [java]
-  category: BUG
-  severity: major
-  effort: 15min
-  tags: [avoid_api, generated]
-  generated: true
-  status: planned
-  message: This API should be replaced by the current alternative.
-  summary: Code calls an API that is unsafe, obsolete or superseded by a better alternative.
-  why: |
-    The API stays available for compatibility, so nothing fails at build time, but it carries behaviour
-    the platform now considers a defect — unchecked input, a weak guarantee, or a cost the replacement
-    avoids. Its presence also spreads: new code copies what it finds nearby.
-  fix: |
-    Replace the call with the current API, and keep the old one only behind a compatibility layer that is
-    documented and dated.
-
-- key: QG-JV-BUG-0115
-  name: Tests should assert something
-  languages: [java]
-  category: BUG
-  severity: major
-  effort: 15min
-  tags: [tests, generated]
-  generated: true
-  status: planned
-  message: This test cannot fail, so it verifies nothing.
-  summary: A test does not assert, is disabled, or cannot fail.
-  why: |
-    A test that cannot fail reports success forever while covering nothing, and the suite keeps its green
-    status. That is worse than having no test at all, because it removes the incentive to write one.
-  fix: |
-    Assert the behaviour the test exists for, re-enable it, and make sure it fails when the behaviour is
-    broken before trusting it again.
-
-- key: QG-JV-SML-0305
-  name: Tests should assert something
-  languages: [java]
-  category: SML
-  severity: minor
-  effort: 15min
-  tags: [tests, generated]
-  generated: true
-  status: planned
-  message: This test cannot fail, so it verifies nothing.
-  summary: A test does not assert, is disabled, or cannot fail.
-  why: |
-    A test that cannot fail reports success forever while covering nothing, and the suite keeps its green
-    status. That is worse than having no test at all, because it removes the incentive to write one.
-  fix: |
-    Assert the behaviour the test exists for, re-enable it, and make sure it fails when the behaviour is
-    broken before trusting it again.
-
-- key: QG-JV-BUG-0116
-  name: Tests should assert something
-  languages: [java]
-  category: BUG
-  severity: major
-  effort: 15min
-  tags: [tests, generated]
-  generated: true
-  status: planned
-  message: This test cannot fail, so it verifies nothing.
-  summary: A test does not assert, is disabled, or cannot fail.
-  why: |
-    A test that cannot fail reports success forever while covering nothing, and the suite keeps its green
-    status. That is worse than having no test at all, because it removes the incentive to write one.
-  fix: |
-    Assert the behaviour the test exists for, re-enable it, and make sure it fails when the behaviour is
-    broken before trusting it again.
-
 - key: QG-JV-SML-0306
   name: Tests should assert something
   languages: [java]
@@ -5931,61 +5780,7 @@
     Validate the incoming value against an allowed set, pass it as data rather than as code or command,
     and replace weakened mechanisms with the current recommended one.
 
-- key: QG-JV-BUG-0117
-  name: Tests should assert something
-  languages: [java]
-  category: BUG
-  severity: major
-  effort: 15min
-  tags: [tests, generated]
-  generated: true
-  status: planned
-  message: This test cannot fail, so it verifies nothing.
-  summary: A test does not assert, is disabled, or cannot fail.
-  why: |
-    A test that cannot fail reports success forever while covering nothing, and the suite keeps its green
-    status. That is worse than having no test at all, because it removes the incentive to write one.
-  fix: |
-    Assert the behaviour the test exists for, re-enable it, and make sure it fails when the behaviour is
-    broken before trusting it again.
-
-- key: QG-JV-SML-0308
-  name: Methods setUp() and tearDown() should be simplified
-  languages: [java]
-  category: SML
-  severity: minor
-  effort: 15min
-  tags: [sml, generated]
-  generated: true
-  status: planned
-  message: This code is harder to read or change than the behaviour requires.
-  summary: The code works but is harder to read or change than the behaviour requires.
-  why: |
-    The intent is buried, duplicated, or spread across places that must stay in sync, so every future
-    change costs more than it should and carries a risk that has nothing to do with the change itself.
-  fix: |
-    Remove what is not used, name what is unclear, and keep one piece of behaviour in one place so the
-    next change touches a single spot.
-
 - key: QG-JV-BUG-0118
-  name: Tests should assert something
-  languages: [java]
-  category: BUG
-  severity: major
-  effort: 15min
-  tags: [tests, generated]
-  generated: true
-  status: planned
-  message: This test cannot fail, so it verifies nothing.
-  summary: A test does not assert, is disabled, or cannot fail.
-  why: |
-    A test that cannot fail reports success forever while covering nothing, and the suite keeps its green
-    status. That is worse than having no test at all, because it removes the incentive to write one.
-  fix: |
-    Assert the behaviour the test exists for, re-enable it, and make sure it fails when the behaviour is
-    broken before trusting it again.
-
-- key: QG-JV-BUG-0119
   name: Tests should assert something
   languages: [java]
   category: BUG
@@ -6057,28 +5852,6 @@
     Implement the behaviour, or remove the construct. When doing nothing is deliberate, say so in a
     comment so the next reader does not treat it as a gap.
 
-- key: QG-JV-SML-0310
-  name: Regular expressions should be safe and correct
-  languages: [java]
-  category: SML
-  scope: main
-  severity: minor
-  effort: 15min
-  tags: [regex, generated]
-  generated: true
-
-  message: This pattern is unsafe or incorrect as written.
-  summary: A regular expression is malformed, ambiguous, or able to backtrack catastrophically.
-  why: |
-    A pattern is only validated when it first runs, so a mistake surfaces on the path that uses it —
-    often an error path. Patterns with nested quantifiers can also take exponential time on crafted
-    input, which turns one request into a stalled CPU core.
-  fix: |
-    Simplify the pattern so no quantifier can match the same text in several ways, add a matching timeout
-    for input that comes from outside, and cover the pattern with a test.
-  detect:
-    - invocation: [checkRegex, maxComplexity]
-
 - key: QG-JV-SML-0311
   name: Empty lines should not be left empty
   languages: [java]
@@ -6097,25 +5870,6 @@
   fix: |
     Implement the behaviour, or remove the construct. When doing nothing is deliberate, say so in a
     comment so the next reader does not treat it as a gap.
-
-- key: QG-JV-BUG-0123
-  name: Regular expressions should be safe and correct
-  languages: [java]
-  category: BUG
-  severity: major
-  effort: 15min
-  tags: [regex, generated]
-  generated: true
-  status: planned
-  message: This pattern is unsafe or incorrect as written.
-  summary: A regular expression is malformed, ambiguous, or able to backtrack catastrophically.
-  why: |
-    A pattern is only validated when it first runs, so a mistake surfaces on the path that uses it —
-    often an error path. Patterns with nested quantifiers can also take exponential time on crafted
-    input, which turns one request into a stalled CPU core.
-  fix: |
-    Simplify the pattern so no quantifier can match the same text in several ways, add a matching timeout
-    for input that comes from outside, and cover the pattern with a test.
 
 - key: QG-JV-SML-0312
   name: Tests should assert something
@@ -6153,48 +5907,6 @@
     Simplify the pattern so no quantifier can match the same text in several ways, add a matching timeout
     for input that comes from outside, and cover the pattern with a test.
 
-- key: QG-JV-SML-0315
-  name: Names of regular expressions named groups should be replaced by the recommended alternative
-  languages: [java]
-  category: SML
-  scope: main
-  severity: minor
-  effort: 15min
-  tags: [prefer_api, generated]
-  generated: true
-
-  message: The platform offers a clearer or safer construct for this.
-  summary: A construct is used where the platform offers one that is clearer or safer.
-  why: |
-    The alternative exists because it removes a class of mistake — a conversion, an allocation, an edge
-    case — that the current form leaves to the caller. Using the older form means every reader has to
-    check that the edge case was handled.
-  fix: |
-    Switch to the recommended construct; the behaviour is the same in the normal case and defined in the
-    cases the old form got wrong.
-  detect:
-    - invocation: [Matcher, appendReplacement, group, replaceAll, replaceFirst, start]
-      receiver: [regex]
-
-- key: QG-JV-BUG-0126
-  name: Regular expressions should be safe and correct
-  languages: [java]
-  category: BUG
-  severity: major
-  effort: 15min
-  tags: [regex, generated]
-  generated: true
-  status: planned
-  message: This pattern is unsafe or incorrect as written.
-  summary: A regular expression is malformed, ambiguous, or able to backtrack catastrophically.
-  why: |
-    A pattern is only validated when it first runs, so a mistake surfaces on the path that uses it —
-    often an error path. Patterns with nested quantifiers can also take exponential time on crafted
-    input, which turns one request into a stalled CPU core.
-  fix: |
-    Simplify the pattern so no quantifier can match the same text in several ways, add a matching timeout
-    for input that comes from outside, and cover the pattern with a test.
-
 - key: QG-JV-SML-0316
   name: Unicode-aware versions of character classes should be replaced by the recommended alternative
   languages: [java]
@@ -6213,25 +5925,6 @@
   fix: |
     Switch to the recommended construct; the behaviour is the same in the normal case and defined in the
     cases the old form got wrong.
-
-- key: QG-JV-BUG-0127
-  name: Unicode Grapheme Clusters should be safe and correct
-  languages: [java]
-  category: BUG
-  severity: major
-  effort: 15min
-  tags: [regex, generated]
-  generated: true
-  status: planned
-  message: This pattern is unsafe or incorrect as written.
-  summary: A regular expression is malformed, ambiguous, or able to backtrack catastrophically.
-  why: |
-    A pattern is only validated when it first runs, so a mistake surfaces on the path that uses it —
-    often an error path. Patterns with nested quantifiers can also take exponential time on crafted
-    input, which turns one request into a stalled CPU core.
-  fix: |
-    Simplify the pattern so no quantifier can match the same text in several ways, add a matching timeout
-    for input that comes from outside, and cover the pattern with a test.
 
 - key: QG-JV-SEC-0059
   name: New session should not weaken the security of the application
@@ -6309,43 +6002,6 @@
     documented and dated.
   detect:
     - invocation: [Assertion]
-
-- key: QG-JV-SML-0319
-  name: Test methods should stay within a size that can be reviewed
-  languages: [java]
-  category: SML
-  severity: minor
-  effort: 15min
-  tags: [threshold, generated]
-  generated: true
-  status: planned
-  message: This construct is larger or more complex than the limit allows.
-  summary: A construct exceeds the size or complexity a reader can follow at once.
-  why: |
-    Past a certain size, understanding one line means reconstructing everything around it, and testing
-    the interesting case means going through the whole entry point. Growth is gradual, so the limit is
-    the only thing that keeps the cost visible.
-  fix: |
-    Split along the responsibilities the code has accumulated: extract the sections that already have a
-    name, and keep the original as the sequence of those steps.
-
-- key: QG-JV-BUG-0130
-  name: Tests should assert something
-  languages: [java]
-  category: BUG
-  severity: major
-  effort: 15min
-  tags: [tests, generated]
-  generated: true
-  status: planned
-  message: This test cannot fail, so it verifies nothing.
-  summary: A test does not assert, is disabled, or cannot fail.
-  why: |
-    A test that cannot fail reports success forever while covering nothing, and the suite keeps its green
-    status. That is worse than having no test at all, because it removes the incentive to write one.
-  fix: |
-    Assert the behaviour the test exists for, re-enable it, and make sure it fails when the behaviour is
-    broken before trusting it again.
 
 - key: QG-JV-SML-0320
   name: Hard-to-read code should be simplified
@@ -6475,25 +6131,6 @@
     Remove what is not used, name what is unclear, and keep one piece of behaviour in one place so the
     next change touches a single spot.
 
-- key: QG-JV-BUG-0132
-  name: Regular expressions should be safe and correct
-  languages: [java]
-  category: BUG
-  severity: major
-  effort: 15min
-  tags: [regex, generated]
-  generated: true
-  status: planned
-  message: This pattern is unsafe or incorrect as written.
-  summary: A regular expression is malformed, ambiguous, or able to backtrack catastrophically.
-  why: |
-    A pattern is only validated when it first runs, so a mistake surfaces on the path that uses it —
-    often an error path. Patterns with nested quantifiers can also take exponential time on crafted
-    input, which turns one request into a stalled CPU core.
-  fix: |
-    Simplify the pattern so no quantifier can match the same text in several ways, add a matching timeout
-    for input that comes from outside, and cover the pattern with a test.
-
 - key: QG-JV-BUG-0134
   name: Regular expressions should be safe and correct
   languages: [java]
@@ -6515,62 +6152,6 @@
     for input that comes from outside, and cover the pattern with a test.
   detect:
     - invocation: [maxStackConsumptionFactor]
-
-- key: QG-JV-BUG-0136
-  name: Regular expressions should be safe and correct
-  languages: [java]
-  category: BUG
-  severity: major
-  effort: 15min
-  tags: [regex, generated]
-  generated: true
-  status: planned
-  message: This pattern is unsafe or incorrect as written.
-  summary: A regular expression is malformed, ambiguous, or able to backtrack catastrophically.
-  why: |
-    A pattern is only validated when it first runs, so a mistake surfaces on the path that uses it —
-    often an error path. Patterns with nested quantifiers can also take exponential time on crafted
-    input, which turns one request into a stalled CPU core.
-  fix: |
-    Simplify the pattern so no quantifier can match the same text in several ways, add a matching timeout
-    for input that comes from outside, and cover the pattern with a test.
-
-- key: QG-JV-SML-0328
-  name: Hard-to-read code should be simplified
-  languages: [java]
-  category: SML
-  severity: minor
-  effort: 15min
-  tags: [sml, generated]
-  generated: true
-  status: planned
-  message: This code is harder to read or change than the behaviour requires.
-  summary: The code works but is harder to read or change than the behaviour requires.
-  why: |
-    The intent is buried, duplicated, or spread across places that must stay in sync, so every future
-    change costs more than it should and carries a risk that has nothing to do with the change itself.
-  fix: |
-    Remove what is not used, name what is unclear, and keep one piece of behaviour in one place so the
-    next change touches a single spot.
-
-- key: QG-JV-BUG-0137
-  name: Regular expressions should be safe and correct
-  languages: [java]
-  category: BUG
-  severity: major
-  effort: 15min
-  tags: [regex, generated]
-  generated: true
-  status: planned
-  message: This pattern is unsafe or incorrect as written.
-  summary: A regular expression is malformed, ambiguous, or able to backtrack catastrophically.
-  why: |
-    A pattern is only validated when it first runs, so a mistake surfaces on the path that uses it —
-    often an error path. Patterns with nested quantifiers can also take exponential time on crafted
-    input, which turns one request into a stalled CPU core.
-  fix: |
-    Simplify the pattern so no quantifier can match the same text in several ways, add a matching timeout
-    for input that comes from outside, and cover the pattern with a test.
 
 - key: QG-JV-BUG-0138
   name: Mockito argument matchers should be replaced by the recommended alternative
@@ -7138,44 +6719,6 @@
     Read the value at run time from the platform secret store or the environment, fail fast when it is
     missing, and treat the committed value as compromised: rotate it before removing it.
 
-- key: QG-JV-SML-0350
-  name: Regular expressions should not be left empty
-  languages: [java]
-  category: SML
-  severity: minor
-  effort: 15min
-  tags: [empty, generated]
-  generated: true
-  status: planned
-  message: This construct is empty, so it does nothing.
-  summary: A construct is declared with no content.
-  why: |
-    An empty body reads as if the case is handled while nothing happens, which is exactly how ignored
-    errors and unimplemented branches survive review. It is also indistinguishable from an accidental
-    deletion.
-  fix: |
-    Implement the behaviour, or remove the construct. When doing nothing is deliberate, say so in a
-    comment so the next reader does not treat it as a gap.
-
-- key: QG-JV-SML-0351
-  name: Regular expression quantifiers and character classes should be replaced by the recommended alternative
-  languages: [java]
-  category: SML
-  severity: minor
-  effort: 15min
-  tags: [prefer_api, generated]
-  generated: true
-  status: planned
-  message: The platform offers a clearer or safer construct for this.
-  summary: A construct is used where the platform offers one that is clearer or safer.
-  why: |
-    The alternative exists because it removes a class of mistake — a conversion, an allocation, an edge
-    case — that the current form leaves to the caller. Using the older form means every reader has to
-    check that the edge case was handled.
-  fix: |
-    Switch to the recommended construct; the behaviour is the same in the normal case and defined in the
-    cases the old form got wrong.
-
 - key: QG-JV-SEC-0063
   name: JavaScript support should not weaken the security of the application
   languages: [java]
@@ -7217,25 +6760,6 @@
   fix: |
     Grant the narrowest right that works, to the specific identity that needs it, and rely on inherited
     permissions from a properly secured parent instead of widening the resource itself.
-
-- key: QG-JV-SML-0353
-  name: Non-capturing groups without quantifier should not be used
-  languages: [java]
-  category: SML
-  severity: minor
-  effort: 15min
-  tags: [avoid_api, generated]
-  generated: true
-  status: planned
-  message: This API should be replaced by the current alternative.
-  summary: Code calls an API that is unsafe, obsolete or superseded by a better alternative.
-  why: |
-    The API stays available for compatibility, so nothing fails at build time, but it carries behaviour
-    the platform now considers a defect — unchecked input, a weak guarantee, or a cost the replacement
-    avoids. Its presence also spreads: new code copies what it finds nearby.
-  fix: |
-    Replace the call with the current API, and keep the old one only behind a compatibility layer that is
-    documented and dated.
 
 - key: QG-JV-SML-0355
   name: Types used as keys in Maps should be simplified
@@ -8944,24 +8468,6 @@
   languages: [java]
   category: SML
   severity: minor
-  effort: 15min
-  tags: [tests, generated]
-  generated: true
-  status: planned
-  message: This test cannot fail, so it verifies nothing.
-  summary: A test does not assert, is disabled, or cannot fail.
-  why: |
-    A test that cannot fail reports success forever while covering nothing, and the suite keeps its green
-    status. That is worse than having no test at all, because it removes the incentive to write one.
-  fix: |
-    Assert the behaviour the test exists for, re-enable it, and make sure it fails when the behaviour is
-    broken before trusting it again.
-
-- key: QG-JV-BUG-0166
-  name: Tests should assert something
-  languages: [java]
-  category: BUG
-  severity: major
   effort: 15min
   tags: [tests, generated]
   generated: true

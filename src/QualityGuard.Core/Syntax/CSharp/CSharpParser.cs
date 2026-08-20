@@ -3225,7 +3225,11 @@ public sealed class CSharpParser
         while (!AtEnd && !Is(")"))
         {
             var before = _index;
-            while (!IsJs && !IsGo && IsAny("ref", "out", "in"))
+            // 'ref', 'out' and 'in' mark an argument only in C#. Everywhere else they are ordinary
+            // names — 'in' and 'out' are what every Java stream parameter is called — and eating them
+            // here left the closing parenthesis out of reach, so the argument list swallowed the rest
+            // of the file and every rule below that line read a tree that was not the code.
+            while (_dialect == CFamilyDialect.CSharp && IsAny("ref", "out", "in"))
                 _index++;
             // named argument
             if (IsIdentifier && PeekText() == ":" && PeekText(2) != ":")
@@ -3276,7 +3280,12 @@ public sealed class CSharpParser
             // the parts of a qualified name with a backslash: one name, several separators. Leaving
             // those in the stream ended the expression at each of them, so a single statement was
             // counted as four and reported as a line holding several.
+            // Java and Kotlin reach a method without calling it through '::'. Leaving the operator in
+            // the stream ended the expression at it, so 'return ArrayList::new;' became a return
+            // followed by two statements — and every rule about code after a jump reported the rest
+            // of the method as unreachable.
             if (Is(".") || Is("?.") || (Is("->") && !IsKotlin)
+                || ((IsJava || IsKotlin) && Is("::"))
                 || (IsPhp && (Is("::") || (Is("\\") && Peek() is { Kind: TokenKind.Identifier }))))
             {
                 // the operator itself is kept in the node's tokens: without it a null-conditional
@@ -3284,6 +3293,20 @@ public sealed class CSharpParser
                 var accessOperator = Current;
                 _index++;
                 var privateMember = IsJs && Accept("#");
+                if (accessOperator?.Text == "::" && Is("new"))
+                {
+                    // 'Type::new' names the constructor; taking it as an ordinary member keeps the
+                    // expression whole, which is all a rule needs from it
+                    var constructorStart = Mark();
+                    var constructorReference = Take().Text;
+                    var constructorNode = Node(NodeKind.Identifier, constructorStart, constructorReference);
+                    var reference = new SyntaxNode(NodeKind.MemberSelect,
+                        node.Text + "::" + constructorReference, node.Range, node.Tokens);
+                    reference.Add(node);
+                    reference.Add(constructorNode);
+                    node = reference;
+                    continue;
+                }
                 if (!IsName)
                 {
                     if (privateMember)

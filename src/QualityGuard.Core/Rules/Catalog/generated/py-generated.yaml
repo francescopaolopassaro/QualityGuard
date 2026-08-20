@@ -926,25 +926,6 @@
     Perform the check with the platform API — signature, certificate chain, hostname or token validation
     — and reject the value when it fails, instead of logging and continuing.
 
-- key: QG-PY-SML-0069
-  name: `str.replace` should be replaced by the recommended alternative
-  languages: [py]
-  category: SML
-  severity: minor
-  effort: 15min
-  tags: [prefer_api, generated]
-  generated: true
-  status: planned
-  message: The platform offers a clearer or safer construct for this.
-  summary: A construct is used where the platform offers one that is clearer or safer.
-  why: |
-    The alternative exists because it removes a class of mistake — a conversion, an allocation, an edge
-    case — that the current form leaves to the caller. Using the older form means every reader has to
-    check that the edge case was handled.
-  fix: |
-    Switch to the recommended construct; the behaviour is the same in the normal case and defined in the
-    cases the old form got wrong.
-
 - key: QG-PY-SEC-0055
   name: Encryption algorithms should use current cryptographic parameters
   languages: [py]
@@ -1312,66 +1293,6 @@
     Implement the behaviour, or remove the construct. When doing nothing is deliberate, say so in a
     comment so the next reader does not treat it as a gap.
 
-- key: QG-PY-SML-0089
-  name: Regular expressions should be safe and correct
-  languages: [py]
-  category: SML
-  scope: main
-  severity: minor
-  effort: 15min
-  tags: [regex, generated]
-  generated: true
-
-  message: This pattern is unsafe or incorrect as written.
-  summary: A regular expression is malformed, ambiguous, or able to backtrack catastrophically.
-  why: |
-    A pattern is only validated when it first runs, so a mistake surfaces on the path that uses it —
-    often an error path. Patterns with nested quantifiers can also take exponential time on crafted
-    input, which turns one request into a stalled CPU core.
-  fix: |
-    Simplify the pattern so no quantifier can match the same text in several ways, add a matching timeout
-    for input that comes from outside, and cover the pattern with a test.
-  detect:
-    - invocation: [maxComplexity]
-
-- key: QG-PY-BUG-0059
-  name: Regular expressions should be safe and correct
-  languages: [py]
-  category: BUG
-  severity: major
-  effort: 15min
-  tags: [regex, generated]
-  generated: true
-  status: planned
-  message: This pattern is unsafe or incorrect as written.
-  summary: A regular expression is malformed, ambiguous, or able to backtrack catastrophically.
-  why: |
-    A pattern is only validated when it first runs, so a mistake surfaces on the path that uses it —
-    often an error path. Patterns with nested quantifiers can also take exponential time on crafted
-    input, which turns one request into a stalled CPU core.
-  fix: |
-    Simplify the pattern so no quantifier can match the same text in several ways, add a matching timeout
-    for input that comes from outside, and cover the pattern with a test.
-
-- key: QG-PY-SML-0091
-  name: Names of regular expressions named groups should be replaced by the recommended alternative
-  languages: [py]
-  category: SML
-  status: planned
-  severity: minor
-  effort: 15min
-  tags: [prefer_api, generated]
-  generated: true
-
-  message: The platform offers a clearer or safer construct for this.
-  summary: A construct is used where the platform offers one that is clearer or safer.
-  why: |
-    The alternative exists because it removes a class of mistake — a conversion, an allocation, an edge
-    case — that the current form leaves to the caller. Using the older form means every reader has to
-    check that the edge case was handled.
-  fix: |
-    Switch to the recommended construct; the behaviour is the same in the normal case and defined in the
-    cases the old form got wrong.
 - key: QG-PY-SML-0092
   name: Type checks shouldnt be confusing should be simplified
   languages: [py]
@@ -1389,25 +1310,6 @@
   fix: |
     Remove what is not used, name what is unclear, and keep one piece of behaviour in one place so the
     next change touches a single spot.
-
-- key: QG-PY-BUG-0062
-  name: Unicode Grapheme Clusters should be safe and correct
-  languages: [py]
-  category: BUG
-  severity: major
-  effort: 15min
-  tags: [regex, generated]
-  generated: true
-  status: planned
-  message: This pattern is unsafe or incorrect as written.
-  summary: A regular expression is malformed, ambiguous, or able to backtrack catastrophically.
-  why: |
-    A pattern is only validated when it first runs, so a mistake surfaces on the path that uses it —
-    often an error path. Patterns with nested quantifiers can also take exponential time on crafted
-    input, which turns one request into a stalled CPU core.
-  fix: |
-    Simplify the pattern so no quantifier can match the same text in several ways, add a matching timeout
-    for input that comes from outside, and cover the pattern with a test.
 
 - key: QG-PY-SML-0094
   name: Function return types should be simplified
@@ -1573,44 +1475,6 @@
   fix: |
     Assert the behaviour the test exists for, re-enable it, and make sure it fails when the behaviour is
     broken before trusting it again.
-
-- key: QG-PY-BUG-0066
-  name: Regular expressions should be safe and correct
-  languages: [py]
-  category: BUG
-  severity: major
-  effort: 15min
-  tags: [regex, generated]
-  generated: true
-  status: planned
-  message: This pattern is unsafe or incorrect as written.
-  summary: A regular expression is malformed, ambiguous, or able to backtrack catastrophically.
-  why: |
-    A pattern is only validated when it first runs, so a mistake surfaces on the path that uses it —
-    often an error path. Patterns with nested quantifiers can also take exponential time on crafted
-    input, which turns one request into a stalled CPU core.
-  fix: |
-    Simplify the pattern so no quantifier can match the same text in several ways, add a matching timeout
-    for input that comes from outside, and cover the pattern with a test.
-
-- key: QG-PY-BUG-0069
-  name: Regular expressions should be safe and correct
-  languages: [py]
-  category: BUG
-  severity: major
-  effort: 15min
-  tags: [regex, generated]
-  generated: true
-  status: planned
-  message: This pattern is unsafe or incorrect as written.
-  summary: A regular expression is malformed, ambiguous, or able to backtrack catastrophically.
-  why: |
-    A pattern is only validated when it first runs, so a mistake surfaces on the path that uses it —
-    often an error path. Patterns with nested quantifiers can also take exponential time on crafted
-    input, which turns one request into a stalled CPU core.
-  fix: |
-    Simplify the pattern so no quantifier can match the same text in several ways, add a matching timeout
-    for input that comes from outside, and cover the pattern with a test.
 
 - key: QG-PY-SML-0104
   name: Reusable resources should be simplified
@@ -1939,25 +1803,6 @@
     Use the algorithms the platform recommends today — authenticated encryption, a modern hash, a key
     size at or above the current guidance — and keep the choice in one place so it can be raised.
 
-- key: QG-PY-SML-0108
-  name: Regular expressions should not be left empty
-  languages: [py]
-  category: SML
-  severity: minor
-  effort: 15min
-  tags: [empty, generated]
-  generated: true
-  status: planned
-  message: This construct is empty, so it does nothing.
-  summary: A construct is declared with no content.
-  why: |
-    An empty body reads as if the case is handled while nothing happens, which is exactly how ignored
-    errors and unimplemented branches survive review. It is also indistinguishable from an accidental
-    deletion.
-  fix: |
-    Implement the behaviour, or remove the construct. When doing nothing is deliberate, say so in a
-    comment so the next reader does not treat it as a gap.
-
 - key: QG-PY-SEC-0073
   name: Amazon EFS file systems should use current cryptographic parameters
   languages: [py]
@@ -1996,25 +1841,6 @@
     Validate the incoming value against an allowed set, pass it as data rather than as code or command,
     and replace weakened mechanisms with the current recommended one.
 
-- key: QG-PY-SML-0109
-  name: Regular expression quantifiers and character classes should be replaced by the recommended alternative
-  languages: [py]
-  category: SML
-  severity: minor
-  effort: 15min
-  tags: [prefer_api, generated]
-  generated: true
-  status: planned
-  message: The platform offers a clearer or safer construct for this.
-  summary: A construct is used where the platform offers one that is clearer or safer.
-  why: |
-    The alternative exists because it removes a class of mistake — a conversion, an allocation, an edge
-    case — that the current form leaves to the caller. Using the older form means every reader has to
-    check that the edge case was handled.
-  fix: |
-    Switch to the recommended construct; the behaviour is the same in the normal case and defined in the
-    cases the old form got wrong.
-
 - key: QG-PY-SEC-0075
   name: XML signatures should be verified before use
   languages: [py]
@@ -2034,25 +1860,6 @@
     Perform the check with the platform API — signature, certificate chain, hostname or token validation
     — and reject the value when it fails, instead of logging and continuing.
 
-- key: QG-PY-SML-0110
-  name: Non-capturing groups without quantifier should not be used
-  languages: [py]
-  category: SML
-  severity: minor
-  effort: 15min
-  tags: [avoid_api, generated]
-  generated: true
-  status: planned
-  message: This API should be replaced by the current alternative.
-  summary: Code calls an API that is unsafe, obsolete or superseded by a better alternative.
-  why: |
-    The API stays available for compatibility, so nothing fails at build time, but it carries behaviour
-    the platform now considers a defect — unchecked input, a weak guarantee, or a cost the replacement
-    avoids. Its presence also spreads: new code copies what it finds nearby.
-  fix: |
-    Replace the call with the current API, and keep the old one only behind a compatibility layer that is
-    documented and dated.
-
 - key: QG-PY-SEC-0076
   name: Security groups should not weaken the security of the application
   languages: [py]
@@ -2071,25 +1878,6 @@
   fix: |
     Validate the incoming value against an allowed set, pass it as data rather than as code or command,
     and replace weakened mechanisms with the current recommended one.
-
-- key: QG-PY-SML-0112
-  name: Octal escape sequences should not be used
-  languages: [py]
-  category: SML
-  severity: minor
-  effort: 15min
-  tags: [avoid_api, generated]
-  generated: true
-  status: planned
-  message: This API should be replaced by the current alternative.
-  summary: Code calls an API that is unsafe, obsolete or superseded by a better alternative.
-  why: |
-    The API stays available for compatibility, so nothing fails at build time, but it carries behaviour
-    the platform now considers a defect — unchecked input, a weak guarantee, or a cost the replacement
-    avoids. Its presence also spreads: new code copies what it finds nearby.
-  fix: |
-    Replace the call with the current API, and keep the old one only behind a compatibility layer that is
-    documented and dated.
 
 - key: QG-PY-SML-0113
   name: Function returns should be simplified
