@@ -1,0 +1,37 @@
+> **⚠️ IMPORTANT NOTICE: PROPRIETARY SOFTWARE & LIMITED LICENSE**
+> 
+> Copyright (c) 2026 Passaro Francesco Paolo. All Rights Reserved.
+> 
+> This repository contains proprietary source code, architecture, and intellectual property. It is **NOT** an open-source project. Usage, access, and distribution are strictly governed by the conditions outlined below and in the **[`TERMS_OF_USE.md`](./TERMS_OF_USE.md)** file.
+
+---
+
+## 📌 Overview
+Provide a brief description of your project or software here.
+
+---
+
+## 🔒 License & Usage Terms
+
+This project is released under a **Custom Proprietary License** authored by **Passaro Francesco Paolo**.
+
+### Summary of Key Terms:
+* **👨‍💻 Free for Individual Developers:** Free of charge for independent developers for non-commercial personal projects, educational purposes, and testing.
+* **🏢 Free for Companies (Upon Formal Written Permission Only):** For commercial entities, companies, or corporate use, the software is free **ONLY upon formal request and written approval** via email from Passaro Francesco Paolo. Unapproved corporate or commercial use is strictly prohibited.
+* **🚫 No Unsanctioned Code Copying or Redistribution:** Copying, duplicating, modifying, sublicensing, or redistributing the source code without permission is strictly forbidden.
+* **🚫 Protection of Ideas, Architecture & Concept:** Copying or reproducing the core functional concept, system architecture, business logic, or reverse-engineering the software is strictly prohibited.
+* **🚫 Strict No-AI / No-ML Training Clause:** It is strictly forbidden to use, scan, ingest, or scrape this repository or its source code for training, fine-tuning, testing, or building Artificial Intelligence (AI), Machine Learning (ML), or Large Language Models (LLMs) (e.g., GitHub Copilot, ChatGPT, Claude, Cursor, etc.).
+* **✉️ Formal Approval Required:** Any commercial or company usage requires an explicit, written permission signed or confirmed by Passaro Francesco Paolo.
+
+---
+
+## ✉️ Requesting Permission for Corporate / Company Use
+
+If you represent a company, business, or organization wishing to use this software, please submit a formal request via email containing:
+1. Full Name / Company Name & Contact Details.
+2. Intended use-case and project scope.
+3. Estimated timeline and deployment details.
+
+**Email for formal requests:** `francesco.paolo.passaro@outlook.com`
+
+*Note: Absence of an explicit written reply from Passaro Francesco Paolo constitutes a formal denial of authorization.*

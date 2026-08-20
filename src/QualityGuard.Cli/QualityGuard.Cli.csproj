@@ -10,6 +10,8 @@
     <TargetFramework>net9.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
+    <Description>Executable entry point of QualityGuard for pipeline jobs: scan, evaluate the Quality Gate and exit with 0 PASSED / 1 FAILED / 2 error.</Description>
+    <PackAsTool>false</PackAsTool>
   </PropertyGroup>
 
 </Project>

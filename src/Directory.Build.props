@@ -1,0 +1,31 @@
+<Project>
+
+  <!--
+    Shared NuGet packaging metadata for the four QualityGuard projects. The license is the
+    proprietary one in the repository root: these packages are NOT open source.
+  -->
+  <PropertyGroup>
+    <Version>1.0.0</Version>
+    <Authors>Francesco Paolo Passaro</Authors>
+    <Company>Francesco Paolo Passaro - Digitalsolutions.it</Company>
+    <Copyright>Copyright (c) 2026 Passaro Francesco Paolo</Copyright>
+    <RepositoryUrl>https://github.com/francescopaolopassaro/QualityGuard</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+    <PackageProjectUrl>https://github.com/francescopaolopassaro/QualityGuard</PackageProjectUrl>
+    <PackageLicenseFile>LICENSE.md</PackageLicenseFile>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+    <PackageIcon>icon.png</PackageIcon>
+    <PackageTags>quality;code-analysis;static-analysis;quality-gate;ci;mcp</PackageTags>
+    <PackageReleaseNotes>1.0.0: stable release. The engine, the SARIF source, the pipeline CLI and the MCP server ship as NuGet packages; the MCP server consumes the other packages from NuGet and is fully standalone.</PackageReleaseNotes>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <NoWarn>$(NoWarn);CS1591</NoWarn>
+    <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Include="$(MSBuildProjectDirectory)\LICENSE.md" Pack="true" PackagePath="LICENSE.md" Visible="false" />
+    <None Include="$(MSBuildProjectDirectory)\README.md" Pack="true" PackagePath="README.md" Visible="false" />
+    <None Include="$(MSBuildProjectDirectory)\icon.png" Pack="true" PackagePath="icon.png" Visible="false" />
+  </ItemGroup>
+
+</Project>

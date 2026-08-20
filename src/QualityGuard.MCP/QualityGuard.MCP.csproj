@@ -1,0 +1,29 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net10.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <AssemblyName>QualityGuard.Mcp</AssemblyName>
+    <RootNamespace>QualityGuard.Mcp</RootNamespace>
+    <Description>Model Context Protocol server for QualityGuard: exposes code scans, Quality Gate evaluation and AI-oriented Markdown reports as MCP tools over stdio or HTTP.</Description>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="ModelContextProtocol.AspNetCore" Version="2.2.0" />
+    <PackageReference Include="ModelContextProtocol.Extensions.Tasks" Version="2.2.0" />
+    <PackageReference Include="Microsoft.Extensions.Hosting" Version="10.0.0" />
+  </ItemGroup>
+
+  <!--
+    QualityGuard packages come from NuGet, so this server is standalone. The version
+    is bumped to 1.0.0 in the same release that carries the libraries to 1.0.0.
+  -->
+  <ItemGroup>
+    <PackageReference Include="QualityGuard.Core" Version="1.0.0" />
+    <PackageReference Include="QualityGuard.Sources.Sarif" Version="1.0.0" />
+    <PackageReference Include="QualityGuard.Cli" Version="1.0.0" />
+  </ItemGroup>
+
+</Project>

@@ -31,11 +31,6 @@ removed, and every false positive that was fixed is pinned by a regression test 
 | `QualityGuard.Core` | Domain models, tokenizers, parsers, semantic model, taint analysis, duplication detection, rule framework and gate evaluator. |
 | `QualityGuard.Sources.Sarif` | Reader and writer for **SARIF 2.1.0**: imports metrics from an existing report, exports findings and gate state. |
 | `QualityGuard.Cli` | Executable entry point for pipeline jobs; explicit exit codes. |
-| `QualityGuard.Mcp` | **Model Context Protocol server** (`net10.0`): exposes scans, the gate verdict and AI-oriented Markdown reports as MCP tools over stdio or Streamable HTTP for local agents (Claude Code, OpenCode, Codex, Copilot). |
-
-The four projects ship as NuGet packages — `1.0.0` today —
-via `scripts/publish-nuget.ps1`, which packs them in dependency order and pushes on demand.
-The MCP server consumes the other three packages from NuGet and is fully standalone.
 
 ---
 

@@ -8,6 +8,7 @@
     <TargetFramework>net9.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
+    <Description>SARIF 2.1.0 reader and writer for QualityGuard: imports metrics from existing reports and exports findings and Quality Gate state.</Description>
   </PropertyGroup>
 
 </Project>

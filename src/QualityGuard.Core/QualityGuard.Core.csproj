@@ -4,6 +4,7 @@
     <TargetFramework>net9.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
+    <Description>Stateless, in-memory code quality engine: parsers, semantic model, static analysis rules, metrics and Quality Gate evaluation for 26 languages.</Description>
   </PropertyGroup>
 
   <ItemGroup>
