@@ -43,6 +43,12 @@ public sealed class TypeResolver
                 return "bool";
             case NodeKind.NullLiteral:
                 return null;
+            case NodeKind.ListLiteral:
+                return "collection";
+            case NodeKind.Tuple:
+                return "tuple";
+            case NodeKind.Lambda:
+                return "lambda";
             case NodeKind.ObjectCreation:
             case NodeKind.ArrayCreation:
                 return Normalize(expression.Text);
@@ -56,8 +62,17 @@ public sealed class TypeResolver
                 return TypeOfMember(expression, depth);
             case NodeKind.Invocation:
                 return TypeOfInvocation(expression, depth);
-            case NodeKind.Binary when expression.Text is "+" :
+            case NodeKind.Binary when expression.Text is "+":
                 return TypeOf(expression.ChildAt(0), depth + 1) ?? TypeOf(expression.ChildAt(1), depth + 1);
+            case NodeKind.Binary when expression.Text is "+" or "-" or "*" or "/" or "%":
+                {
+                    // arithmetic on two known numeric types produces the wider of the two
+                    var leftType = TypeOf(expression.ChildAt(0), depth + 1);
+                    var rightType = TypeOf(expression.ChildAt(1), depth + 1);
+                    if (leftType != null && rightType != null)
+                        return Wider(leftType, rightType) ?? leftType;
+                    return leftType ?? rightType;
+                }
             case NodeKind.Binary:
                 return expression.Text is "==" or "!=" or "<" or ">" or "<=" or ">=" or "&&" or "||"
                     ? "bool"
@@ -115,6 +130,18 @@ public sealed class TypeResolver
         text = text.TrimEnd('?', '*', '[', ']', ' ');
         var dot = text.LastIndexOf('.');
         return dot >= 0 && dot < text.Length - 1 ? text[(dot + 1)..] : text;
+    }
+
+    private static readonly string[] Width =
+        ["sbyte", "byte", "short", "ushort", "int", "uint", "long", "ulong", "float", "double", "decimal"];
+
+    /// <summary>The wider of two numeric types, or null when either is not numeric.</summary>
+    private static string? Wider(string a, string b)
+    {
+        var ia = Array.IndexOf(Width, Normalize(a));
+        var ib = Array.IndexOf(Width, Normalize(b));
+        if (ia < 0 || ib < 0) return null;
+        return Width[Math.Max(ia, ib)];
     }
 
     private static readonly string[] Primitives =

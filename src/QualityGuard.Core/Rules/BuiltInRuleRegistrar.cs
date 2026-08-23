@@ -106,6 +106,7 @@ public static class BuiltInRuleRegistrar
         ..Languages.CssGapRuleSet.All,
         ..Languages.VbNetGapRuleSet.All,
         ..Languages.HtmlAriaRuleSet.All,
+        ..Languages.PythonTypeGapRuleSet.All,
         ..Languages.ScalaRuleSet.All,
         ..Languages.DartRuleSet.All,
         ..Languages.JsonRuleSet.All,
