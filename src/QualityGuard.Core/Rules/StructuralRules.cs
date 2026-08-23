@@ -6179,6 +6179,13 @@ public abstract class TestWithoutAssertionRule : StructuralRuleBase
                 continue;
             if (!IsTestName(function))
                 continue;
+            // A web-framework endpoint named 'test' or 'test_something' is a route handler,
+            // not a pytest test: the decorator says which framework owns the name.
+            if (function.ChildrenOf(NodeKind.Attribute).Any(a =>
+                    a.Text.Contains("route", StringComparison.OrdinalIgnoreCase)
+                    || a.Text.Contains("get", StringComparison.OrdinalIgnoreCase)
+                    || a.Text.Contains("post", StringComparison.OrdinalIgnoreCase)))
+                continue;
             // The assertion is often the receiver, not the method: NUnit writes 'Assert.That',
             // xUnit 'Assert.Equal', FluentAssertions 'value.Should().Be'. Reading only the method
             // name saw 'That' and 'Be' and reported tests that assert on every line.
