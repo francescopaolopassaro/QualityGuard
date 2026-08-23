@@ -8,7 +8,7 @@ a configurable Quality Gate and exits with `PASSED` or `FAILED` — no server, n
 dotnet run --project src/QualityGuard.Cli -- --path ./src --by-folder
 ```
 
-**3969 rules across 27 languages**, of which **638 are security rules**, on a real syntax tree with a
+**3977 rules across 27 languages**, of which **639 are security rules**, on a real syntax tree with a
 semantic model, a project index and interprocedural taint analysis. The coverage goes past the
 languages themselves: AWS, Azure and Google Cloud infrastructure (Terraform, CloudFormation),
 Kubernetes manifests, Dockerfiles, Android manifests and Gradle build scripts, Java EE and ASP.NET
@@ -168,32 +168,32 @@ read as a tree of keys and blocks.
 
 | Language | Code | Rules | Tree |
 | --- | --- | --- | --- |
-| Java | `JV` | 621 | dedicated parser |
+| Java | `JV` | 617 | dedicated parser |
 | JavaScript | `JS` | 470 | dedicated parser |
-| Python | `PY` | 474 | dedicated parser |
-| C# / VB.NET | `CS` | 440 | dedicated parser |
+| Python | `PY` | 475 | dedicated parser |
+| C# / VB.NET | `CS` | 445 | dedicated parser |
 | Kotlin | `KT` | 197 | dedicated parser (C-family dialect) |
 | PHP | `PP` | 206 | dedicated parser |
-| Terraform | `TF` | 148 | configuration tree |
-| HTML | `HTML` | 132 | markup reader |
+| Terraform | `TF` | 148148 configuration tree |
+| HTML | `HTML` | 139132 markup reader |
 | Go | `GO` | 120 | dedicated parser |
-| Dockerfile | `DK` | 120 | instruction list |
-| Ruby | `RB` | 117 | structural parser |
-| Kubernetes | `K8` | 117 | configuration tree |
-| CSS / SCSS / Sass / Less | `CSS` | 109 | stylesheet reader |
-| XML and descriptors | `XML` | 115 | markup reader |
-| Swift | `SW` | 107 | structural parser |
+| Dockerfile | `DK` | 120120 instruction list |
+| Ruby | `RB` | 117117 structural parser |
+| Kubernetes | `K8` | 117117 configuration tree |
+| CSS / SCSS / Sass / Less | `CSS` | 120 | stylesheet reader |
+| XML and descriptors | `XML` | 115115 markup reader |
+| Swift | `SW` | 107107 structural parser |
 | Dart / Flutter | `DART` | 100 | dedicated parser (C-family dialect) |
 | CloudFormation | `CF` | 104 | configuration tree |
-| JSON | `JSON` | 96 | configuration tree |
+| JSON | `JSON` | 9696 configuration tree |
 | Rust | `RS` | 58 | dedicated parser (C-family dialect) |
-| Secrets (any language) | `SEC` | 24 | token scan over every file |
-| C / C++ | `CC` | 16 | structural parser |
-| Shell | `SH` | 12 | structural parser |
-| SQL | `SQL` | 9 | structural parser |
+| Secrets (any language) | `SEC` | 31 | token scan over every file |
+| C / C++ | `CC` | 1616 structural parser |
+| Shell | `SH` | 1212 structural parser |
+| SQL | `SQL` | 99 structural parser |
 | TypeScript-specific | `TS` | 9 | dedicated parser |
-| XAML / WPF / WinUI / Avalonia | `XAML` | 8 | markup reader, joined to the class behind it |
-| Razor / Blazor | `RAZ` | 4 | C# parser over the `@code` block, markup reader over the rest |
+| XAML / WPF / WinUI / Avalonia | `XAML` | 88 markup reader, joined to the class behind it |
+| Razor / Blazor | `RAZ` | 44 C# parser over the `@code` block, markup reader over the rest |
 | Multi-language | `ALL` | 2 | whichever tree the file has |
 | Scala | `SC` | 16 | dedicated parser (C-family dialect) |
 
