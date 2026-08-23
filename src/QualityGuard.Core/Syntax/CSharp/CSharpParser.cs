@@ -2178,10 +2178,11 @@ public sealed class CSharpParser
         if (!IsName)
             return null;
         var name = Take().Text;
-        if (Accept("="))
-            ParseExpression();
+        var member = Node(NodeKind.EnumMember, start, name);
+        if (Accept("=") && ParseExpression() is { } value)
+            member.Add(value);
         Accept(",");
-        return Node(NodeKind.EnumMember, start, name);
+        return member;
     }
 
     // -------------------------------------------------------------- members
@@ -2575,8 +2576,15 @@ public sealed class CSharpParser
             }
             if (Is("[") && (PeekText() == "]" || PeekText() == "," || IsScala))
             {
+                // the commas between the brackets carry the rank: 'int[,]' and 'int[]' are
+                // different types, and collapsing them hid every multidimensional signature
+                var open = Mark();
                 SkipBalanced("[", "]");
-                name += "[]";
+                var dims = 0;
+                for (var t = open; t < Math.Min(_index, _tokens.Count); t++)
+                    if (_tokens[t].Text == ",")
+                        dims++;
+                name += "[" + new string(',', dims) + "]";
                 continue;
             }
             break;

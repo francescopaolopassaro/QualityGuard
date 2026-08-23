@@ -1,4 +1,4 @@
-using QualityGuard.Core.Models;
+﻿using QualityGuard.Core.Models;
 using QualityGuard.Core.Tokenization;
 
 namespace QualityGuard.Core.Rules;
@@ -98,6 +98,7 @@ public static class BuiltInRuleRegistrar
         ..Languages.MarkupAccessibilityRuleSet.All,
         ..Languages.RustRuleSet.All,
         ..Languages.RustTreeRuleSet.All,
+        ..Languages.CSharpVbGapRuleSet.All,
         ..Languages.ScalaRuleSet.All,
         ..Languages.DartRuleSet.All,
         ..Languages.JsonRuleSet.All,
@@ -337,7 +338,7 @@ public abstract class EmptyBlockRule : TextualRuleBase
                 continue;
             // The rule is about a block nested inside a body, and only a control keyword opens one.
             // The body of a method or a constructor is a different question, answered on the tree by
-            // the empty-body rule — and 'ReportingContext(...) : this(...) { }' is how C# forwards a
+            // the empty-body rule â€” and 'ReportingContext(...) : this(...) { }' is how C# forwards a
             // constructor, which is neither.
             if (!OpensNestedBlock(tokens, i))
                 continue;
