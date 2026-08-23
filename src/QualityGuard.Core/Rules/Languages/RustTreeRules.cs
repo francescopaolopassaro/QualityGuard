@@ -150,6 +150,10 @@ public sealed class RustWildcardImportRule : StructuralRuleBase
         {
             if (!import.Text.EndsWith("::*", StringComparison.Ordinal))
                 continue;
+            // 'use self::Enum::*' and 'use crate::Module::*' are idiomatic for enum variants:
+            // they bring names from the same crate, not from an external dependency
+            if (import.Text.StartsWith("self::") || import.Text.StartsWith("crate::"))
+                continue;
             context.Report(import, $"'{import.Text}' brings every name of the module into scope, so a "
                                    + "reader cannot tell where a name comes from and an added export "
                                    + "can silently change which one a call resolves to. Name the "

@@ -1605,13 +1605,12 @@ public sealed class PythonConstantNamingRule : PatternRuleBase
     {
         if (value.Length == 0)
             return false;
-        if (value[0] is '"' or '\'' or '[' or '{' or '(')
-            return true;
+        // only numbers and booleans read as constants: strings, lists and dicts at module
+        // level are configuration variables that no convention asks to shout
         if (char.IsDigit(value[0]) || value[0] == '-')
             return true;
         return value.StartsWith("True", StringComparison.Ordinal)
-            || value.StartsWith("False", StringComparison.Ordinal)
-            || value.StartsWith("None", StringComparison.Ordinal);
+            || value.StartsWith("False", StringComparison.Ordinal);
     }
 }
 

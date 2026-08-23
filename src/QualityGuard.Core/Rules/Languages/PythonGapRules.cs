@@ -1,6 +1,7 @@
 using QualityGuard.Core.Models;
 using QualityGuard.Core.Rules;
 using QualityGuard.Core.Syntax;
+using QualityGuard.Core.Tokenization;
 
 namespace QualityGuard.Core.Rules.Languages;
 
@@ -517,6 +518,9 @@ public sealed class PyFlaskHandlerStatusCodeRule : PyGap2Base
 
     public override void Execute(IRuleContext context)
     {
+        // this rule is for applications using Flask, not the framework itself
+        if (context.File.Path.Contains("flask", StringComparison.OrdinalIgnoreCase))
+            return;
         foreach (var function in context.Root.OfKind(NodeKind.FunctionDeclaration))
         {
             if (!HasErrorhandler(function))
@@ -709,6 +713,9 @@ public sealed class PyRaisesAsStatementRule : PyGap2Base
 
     public override void Execute(IRuleContext context)
     {
+        if (!context.Tokens.Any(t =>
+                t.Kind == TokenKind.Identifier && t.Text == "pytest"))
+            return;
         foreach (var statement in context.Root.OfKind(NodeKind.ExpressionStatement))
         {
             var head = statement.ChildAt(0);
