@@ -99,6 +99,7 @@ public static class BuiltInRuleRegistrar
         ..Languages.RustRuleSet.All,
         ..Languages.RustTreeRuleSet.All,
         ..Languages.CSharpVbGapRuleSet.All,
+        ..Languages.JavaGapRuleSet.All,
         ..Languages.ScalaRuleSet.All,
         ..Languages.DartRuleSet.All,
         ..Languages.JsonRuleSet.All,

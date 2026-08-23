@@ -8,7 +8,7 @@ a configurable Quality Gate and exits with `PASSED` or `FAILED` — no server, n
 dotnet run --project src/QualityGuard.Cli -- --path ./src --by-folder
 ```
 
-**3865 rules across 27 languages**, of which **631 are security rules**, on a real syntax tree with a
+**3903 rules across 27 languages**, of which **631 are security rules**, on a real syntax tree with a
 semantic model, a project index and interprocedural taint analysis. The coverage goes past the
 languages themselves: AWS, Azure and Google Cloud infrastructure (Terraform, CloudFormation),
 Kubernetes manifests, Dockerfiles, Android manifests and Gradle build scripts, Java EE and ASP.NET
@@ -168,7 +168,7 @@ read as a tree of keys and blocks.
 
 | Language | Code | Rules | Tree |
 | --- | --- | --- | --- |
-| Java | `JV` | 583 | dedicated parser |
+| Java | `JV` | 621 | dedicated parser |
 | JavaScript | `JS` | 470 | dedicated parser |
 | Python | `PY` | 443 | dedicated parser |
 | C# / VB.NET | `CS` | 440 | dedicated parser |
@@ -752,7 +752,7 @@ because they are real legacy rather than a curated library.
 | express | JavaScript | 14 707 | 56 | **3.8** |
 | rails | Ruby | 281 755 | 1 343 | **4.8** |
 | guzzle | PHP | 48 147 | 378 | **7.9** |
-| gson | Java | 47 559 | 376 | **7.9** |
+| gson | Java | 47 559 | 462 | **9.7** |
 | okio | Kotlin | 44 514 | 568 | **12.8** |
 | ripgrep | Rust | 42 211 | 663 | **15.7** |
 | Alamofire | Swift | 26 592 | 369 | **13.9** |
