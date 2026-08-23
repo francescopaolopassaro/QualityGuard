@@ -8,7 +8,7 @@ a configurable Quality Gate and exits with `PASSED` or `FAILED` — no server, n
 dotnet run --project src/QualityGuard.Cli -- --path ./src --by-folder
 ```
 
-**3977 rules across 27 languages**, of which **639 are security rules**, on a real syntax tree with a
+**3980 rules across 27 languages**, of which **639 are security rules**, on a real syntax tree with a
 semantic model, a project index and interprocedural taint analysis. The coverage goes past the
 languages themselves: AWS, Azure and Google Cloud infrastructure (Terraform, CloudFormation),
 Kubernetes manifests, Dockerfiles, Android manifests and Gradle build scripts, Java EE and ASP.NET
@@ -165,7 +165,7 @@ read as a tree of keys and blocks.
 | --- | --- | --- | --- |
 | Java | `JV` | 617 | dedicated parser |
 | JavaScript | `JS` | 470 | dedicated parser |
-| Python | `PY` | 475 | dedicated parser |
+| Python | `PY` | 479 | dedicated parser |
 | C# / VB.NET | `CS` | 445 | dedicated parser |
 | Kotlin | `KT` | 197 | dedicated parser (C-family dialect) |
 | PHP | `PP` | 206 | dedicated parser |
