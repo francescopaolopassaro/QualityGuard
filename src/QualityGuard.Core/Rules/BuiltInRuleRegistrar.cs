@@ -100,6 +100,8 @@ public static class BuiltInRuleRegistrar
         ..Languages.RustTreeRuleSet.All,
         ..Languages.CSharpVbGapRuleSet.All,
         ..Languages.JavaGapRuleSet.All,
+        ..Languages.PhpGapRuleSet.All,
+        ..Languages.PythonGapRuleSet.All,
         ..Languages.ScalaRuleSet.All,
         ..Languages.DartRuleSet.All,
         ..Languages.JsonRuleSet.All,
