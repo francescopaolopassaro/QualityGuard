@@ -794,6 +794,10 @@ public sealed class PythonOpenRedirectRule : PatternRuleBase
         {
             if (!RuleMatchers.IsName(tokens[i], "redirect"))
                 continue;
+            // url_for() generates internal URLs from registered routes: always safe
+            var windowEnd = Math.Min(i + 10, tokens.Count);
+            if (tokens.Skip(i + 1).Take(9).Any(t => t.Text == "url_for"))
+                continue;
             if (RuleMatchers.NextNonParenIsString(tokens, i) && !context.IsTaintedLine(tokens[i].Line))
                 continue;
             context.Report("Do not redirect to URLs derived from untrusted input.", tokens[i].Line);
@@ -1693,4 +1697,32 @@ public sealed class PythonCookieWithoutHttpOnlyRule : PythonCookieFlagRule
         "This cookie is set without asking for the flag that hides it from script, and the framework "
         + "leaves that off by default. Anything running on the page can then read it, so one "
         + "scripting flaw anywhere on the site takes the session with it.";
+
+public sealed class PythonFinallyJumpRule : RuleBase
+{
+    public override string Key => "QG-PY-BUG-0013";
+    public override string Name => "Jump statements should not leave a finally block";
+    public override Severity Severity => Severity.Blocker;
+    public override IssueKind Kind => IssueKind.Bug;
+    public override string RemediationEffort => "20min";
+    public override string[] Languages => ["py"];
+
+    public override void Execute(IRuleContext context)
+    {
+        foreach (var finallyBlock in context.Root.OfKind(NodeKind.Finally))
+        {
+            foreach (var jump in finallyBlock.OfKind(NodeKind.Jump)
+                         .Where(j => j.Text is "return" or "break" or "continue"))
+            {
+                // only flag jumps whose nearest Finally is this one (not nested try/finally)
+                if (jump.Ancestor(NodeKind.Finally) != finallyBlock)
+                    continue;
+                context.Report(jump, "A return, break or continue inside finally discards whatever "
+                                     + "was in flight — including an exception on its way to the "
+                                     + "caller. Keep finally for cleanup only.");
+            }
+        }
+    }
+}
+
 }

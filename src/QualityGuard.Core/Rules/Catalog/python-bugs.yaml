@@ -2,6 +2,7 @@
 
 - key: QG-PY-BUG-0013
   name: Jump statements should not leave a finally block
+  status: planned
   languages: [py]
   category: BUG
   severity: blocker
@@ -16,8 +17,6 @@
   fix: |
     Keep finally for cleanup only. Move the value or the decision into the try block, or re-raise after
     the cleanup is done.
-  detect:
-    - line: "finally\\s*:\\s*$"
       requires: ["return", "break", "continue"]
 
 - key: QG-PY-BUG-0014
