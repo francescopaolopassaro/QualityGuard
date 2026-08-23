@@ -8,7 +8,7 @@ a configurable Quality Gate and exits with `PASSED` or `FAILED` — no server, n
 dotnet run --project src/QualityGuard.Cli -- --path ./src --by-folder
 ```
 
-**3833 rules across 27 languages**, of which **631 are security rules**, on a real syntax tree with a
+**3865 rules across 27 languages**, of which **631 are security rules**, on a real syntax tree with a
 semantic model, a project index and interprocedural taint analysis. The coverage goes past the
 languages themselves: AWS, Azure and Google Cloud infrastructure (Terraform, CloudFormation),
 Kubernetes manifests, Dockerfiles, Android manifests and Gradle build scripts, Java EE and ASP.NET
@@ -166,7 +166,7 @@ read as a tree of keys and blocks.
 | Java | `JV` | 583 | dedicated parser |
 | JavaScript | `JS` | 470 | dedicated parser |
 | Python | `PY` | 443 | dedicated parser |
-| C# / VB.NET | `CS` | 408 | dedicated parser |
+| C# / VB.NET | `CS` | 440 | dedicated parser |
 | Kotlin | `KT` | 197 | dedicated parser (C-family dialect) |
 | PHP | `PP` | 190 | dedicated parser |
 | Terraform | `TF` | 148 | configuration tree |
@@ -226,6 +226,9 @@ the declaration is in the scan:
   a subscription the component never releases, a handler rebuilt for every row of a loop.
 * **ASP.NET** — an API controller carrying the machinery for views it never renders, actions whose
   routes are all absolute, a route with no controller route to be relative to, a template written with
+  a leading slash. And the checks every profile turns on: a `[Pure]` method that returns
+  nothing, `[Flags]` members that overlap, an exception type left public, a lock taken on
+  a string or on `this`, `new DateTime` without its kind, a `ToString` returning null.
   a backslash.
 * **WPF, WinUI and Avalonia** — the same reading serves all three: a name that identifies two
   elements, a static resource key that resolves nowhere, an event bound to a handler no class
