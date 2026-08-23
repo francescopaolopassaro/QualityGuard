@@ -1,4 +1,4 @@
-using QualityGuard.Core.Tokenization;
+﻿using QualityGuard.Core.Tokenization;
 
 namespace QualityGuard.Core.Syntax.CSharp;
 
@@ -11,7 +11,9 @@ public enum CFamilyDialect
     JavaScript,
     TypeScript,
     Php,
-    Kotlin
+    Kotlin,
+    Scala,
+    Rust
 }
 
 /// <summary>
@@ -115,11 +117,31 @@ public sealed class CSharpParser
         "external", "vararg", "expect", "actual", "value", "fun"
     ];
 
-    /// <summary>
-    /// The words that open a type. 'fun' is not among them: a Kotlin function is parsed on its own
-    /// path because the name comes before the type, not after it.
-    /// </summary>
+    /// <summary>The words that open a type. 'fun' is not among them: a Kotlin function is parsed on its own
+    /// path because the name comes before the type, not after it.</summary>
     private static readonly string[] KotlinTypeKeywords = ["class", "interface", "object"];
+
+    /// <summary>
+    /// Scala spells its declarations the Kotlin way — modifiers in front, the name before the
+    /// parameter list — with 'case' marking the special shapes ('case class', 'case object') that
+    /// carry structure the rules reason about.
+    /// </summary>
+    private static readonly string[] ScalaModifiers =
+    [
+        "private", "protected", "final", "sealed", "abstract", "implicit", "lazy", "case",
+        "override", "transient", "volatile", "open"
+    ];
+
+    private static readonly string[] ScalaTypeKeywords = ["class", "trait", "object", "enum"];
+
+    private static readonly string[] RustModifiers =
+        ["pub", "default"];
+
+    private static readonly string[] RustFunctionPrefixes =
+        ["const", "async", "unsafe", "extern", "move"];
+
+    private static readonly string[] RustTypeKeywords =
+        ["struct", "enum", "union", "trait", "impl", "mod", "type"];
 
     private bool IsJava => _dialect == CFamilyDialect.Java;
 
@@ -133,9 +155,19 @@ public sealed class CSharpParser
 
     private bool IsKotlin => _dialect == CFamilyDialect.Kotlin;
 
+    private bool IsScala => _dialect == CFamilyDialect.Scala;
+
+    private bool IsRust => _dialect == CFamilyDialect.Rust;
+
+    /// <summary>
+    /// Languages whose parameter names come before their types: Kotlin writes
+    /// <c>name: Type</c> and so does Scala.
+    /// </summary>
+    private bool NameBeforeTypeInParameters => IsKotlin || IsScala || IsRust;
+
     /// <summary>Dialects where a newline ends a statement, so a jump takes nothing from the next line.</summary>
     private bool HasOptionalSemicolons => _dialect is CFamilyDialect.Kotlin or CFamilyDialect.Go
-        or CFamilyDialect.JavaScript or CFamilyDialect.TypeScript;
+        or CFamilyDialect.JavaScript or CFamilyDialect.TypeScript or CFamilyDialect.Scala;
 
     private string[] ModifierWords => _dialect switch
     {
@@ -143,6 +175,8 @@ public sealed class CSharpParser
         CFamilyDialect.Go => [],
         CFamilyDialect.JavaScript or CFamilyDialect.TypeScript => JsModifiers,
         CFamilyDialect.Kotlin => KotlinModifiers,
+        CFamilyDialect.Scala => ScalaModifiers,
+        CFamilyDialect.Rust => RustModifiers,
         _ => Modifiers
     };
 
@@ -152,6 +186,9 @@ public sealed class CSharpParser
         CFamilyDialect.Go => GoTypeKeywords,
         CFamilyDialect.JavaScript or CFamilyDialect.TypeScript => JsTypeKeywords,
         CFamilyDialect.Kotlin => KotlinTypeKeywords,
+        CFamilyDialect.Scala => ScalaTypeKeywords,
+        // Rust items are dispatched on their own path: each keyword has its own shape
+        CFamilyDialect.Rust => [],
         _ => TypeKeywords
     };
 
@@ -170,8 +207,37 @@ public sealed class CSharpParser
             code = JsSemicolons.Insert(code);
         else if (dialect == CFamilyDialect.Kotlin)
             code = KotlinSemicolons.Insert(code);
+        else if (dialect == CFamilyDialect.Scala)
+        {
+            code = MergeScalaQuotedNames(code);
+            code = ScalaSemicolons.Insert(code);
+        }
         new CSharpParser(code, language, dialect).FillCompilationUnit(root);
         return root;
+    }
+
+    /// <summary>
+    /// A Scala quoted name — <c>`enum`</c>, <c>`type`</c> — is one identifier written between
+    /// backticks because it collides with a keyword. Left as three tokens it read as an expression,
+    /// and the block that followed attached to nothing, so every declaration inside that object was
+    /// parsed outside the scope that owned it.
+    /// </summary>
+    private static IReadOnlyList<Token> MergeScalaQuotedNames(IReadOnlyList<Token> tokens)
+    {
+        for (var i = 0; i < tokens.Count - 2; i++)
+        {
+            if (tokens[i].Text != "`" || tokens[i + 2].Text != "`"
+                || tokens[i + 1].Kind != TokenKind.Identifier)
+                continue;
+            var merged = new Token(TokenKind.Identifier, tokens[i + 1].Text,
+                tokens[i].Line, tokens[i].Column);
+            var result = new List<Token>(tokens.Count - 2);
+            result.AddRange(tokens.Take(i));
+            result.Add(merged);
+            result.AddRange(tokens.Skip(i + 3));
+            return MergeScalaQuotedNames(result);
+        }
+        return tokens;
     }
 
     // ---------------------------------------------------------------- tokens
@@ -262,7 +328,7 @@ public sealed class CSharpParser
         if (!IsJava && Is("using") && PeekText() != "(" && !IsUsingDeclaration())
             return ParseUsingDirective(start);
 
-        if ((IsJava || IsGo || IsKotlin) && (Is("import") || Is("package")))
+        if ((IsJava || IsGo || IsKotlin || IsScala) && (Is("import") || Is("package")))
         {
             var isPackage = Is("package");
             _index++;
@@ -315,6 +381,30 @@ public sealed class CSharpParser
             return ParseKotlinFunction(start, attributes, modifiers);
         if (IsKotlin && (Is("val") || Is("var")))
             return ParseKotlinProperty(start, attributes, modifiers);
+        if (IsScala && Is("def"))
+            return ParseScalaFunction(start, attributes, modifiers);
+        if (IsScala && (Is("val") || Is("var")))
+            return ParseScalaProperty(start, attributes, modifiers);
+        if (IsScala && Is("type") && Peek() is { Kind: TokenKind.Identifier })
+            return ParseScalaTypeAlias(start);
+        if (IsRust)
+        {
+            // 'pub(crate)' and 'pub(super)': the visibility carries its scope in parentheses, and
+            // leaving them in the stream hid every declaration that used the qualified form
+            if (Is("(") && modifiers.Count > 0 && modifiers[^1] == "pub")
+                SkipBalanced("(", ")");
+            if (Is("use"))
+                return ParseRustUse(start);
+            if (Is("static") || (Is("const") && PeekText() != "fn"))
+                return ParseRustStaticOrConst(start, attributes, modifiers);
+            if (IsAny(RustFunctionPrefixes) || Is("fn"))
+                return ParseRustFunction(start, attributes, modifiers);
+            if (IsAny(RustTypeKeywords))
+                return ParseRustItem(start);
+            if ((Is("#") || Is("!")) && modifiers.Count == 0 && attributes.Count == 0
+                && PeekText() is "[" or "[" )
+                return ParseRustMacroRules(start);
+        }
         if (IsGo && Is("func"))
             return ParseGoFunction(start);
         if (IsGo && Is("type"))
@@ -377,7 +467,7 @@ public sealed class CSharpParser
         // TypeScript and JavaScript spell a decorator the same way Java spells an annotation, and
         // reading '@Field(type => Int)' as a declaration made every repeated decorator in a file
         // look like a member declared twice — reported as a defect, at critical severity.
-        while ((IsJava || IsKotlin || IsJs) && Is("@") && Peek() is { Kind: TokenKind.Identifier })
+        while ((IsJava || IsKotlin || IsJs || IsScala) && Is("@") && Peek() is { Kind: TokenKind.Identifier })
         {
             var annotationStart = Mark();
             _index++;
@@ -386,6 +476,18 @@ public sealed class CSharpParser
             if (Is("("))
                 node.Add(ParseArgumentList());
             attributes.Add(node);
+        }
+
+        // Rust writes an attribute as '#[name]' or '#![name]', and a macro definition as
+        // 'macro_rules! name { ... }'. Both are decoration as far as the rules are concerned; what
+        // matters is that they do not read as expressions.
+        while (IsRust && Is("#") && PeekText() is "[" or "!")
+        {
+            var attributeStart = Mark();
+            _index++;
+            Accept("!");
+            SkipBalanced("[", "]");
+            attributes.Add(Node(NodeKind.Attribute, attributeStart, "#"));
         }
 
         while (Is("[") && LooksLikeAttribute())
@@ -482,6 +584,8 @@ public sealed class CSharpParser
         var name = IsName ? Take().Text : string.Empty;
         if (Is("<"))
             SkipGenericParameters();
+        if (IsScala && Is("["))
+            SkipBalanced("[", "]");
         SyntaxNode? primaryConstructor = null;
         // Kotlin may spell the primary constructor out — 'class E actual constructor(...)',
         // 'class S private constructor(...)', '@Inject constructor(...)'. Stopping at the keyword
@@ -501,15 +605,15 @@ public sealed class CSharpParser
         }
         if (Is("("))
         {
-            // the primary constructor of a Kotlin class declares the properties of the type, so it is
-            // parsed rather than skipped; a record does the same and loses nothing by it
-            if (IsKotlin)
+            // the primary constructor of a Kotlin or Scala class declares the properties of the
+            // type, so it is parsed rather than skipped; a record does the same and loses nothing by it
+            if (IsKotlin || IsScala)
                 primaryConstructor = ParseParameterList();
             else
                 SkipBalanced("(", ")");
         }
 
-        if (Accept(":") || IsAny("extends", "implements", "permits"))
+        if (Accept(":") || IsAny("extends", "implements", "permits", "with"))
         {
             while (!AtEnd && !Is("{") && !Is(";") && !Is("where"))
                 _index++;
@@ -1302,6 +1406,739 @@ public sealed class CSharpParser
         return node;
     }
 
+    // -------------------------------------------------------------- Scala
+
+    /// <summary>
+    /// A Scala function: <c>def name[A](a: A)(b: B): C = body</c>. The name comes first, the type
+    /// parameters live in square brackets, there can be several parameter lists one after another,
+    /// and the body is either a block or a single expression introduced by '='.
+    /// </summary>
+    private SyntaxNode ParseScalaFunction(int start, List<SyntaxNode> attributes, List<string> modifiers)
+    {
+        Expect("def");
+        var node = Node(NodeKind.FunctionDeclaration, start, string.Empty);
+        AddDecorations(node, attributes, modifiers);
+
+        if (IsName)
+            node.Text = Take().Text;
+        else if (Current is { Kind: TokenKind.Symbol } && PeekText() is "(" or "[" or ":" or "=")
+            node.Text = Take().Text; // an operator definition: def +, def ::, def ++
+        while (Is(".") && Peek() is { Kind: TokenKind.Identifier })
+        {
+            _index++;
+            node.Text = Take().Text;
+        }
+        if (Is("["))
+            SkipBalanced("[", "]");
+
+        if (Is("("))
+        {
+            node.Add(ParseParameterList());
+            // several parameter lists in a row are ordinary Scala; the extra ones ride along so
+            // their names stay visible to the rules that count parameters
+            while (Is("("))
+                node.Add(ParseParameterList());
+        }
+        if (Accept(":"))
+            node.Add(ParseType());
+
+        if (Accept("="))
+        {
+            if (Is("{"))
+            {
+                node.Add(ParseBlock());
+            }
+            else
+            {
+                var bodyStart = Mark();
+                var body = new SyntaxNode(NodeKind.Block, "", node.Range);
+                var statement = Node(NodeKind.ExpressionStatement, bodyStart);
+                if (ParseExpression() is { } value)
+                    statement.Add(value);
+                statement.Tokens = SliceFrom(bodyStart);
+                statement.Range = TextRange.Of(statement.Tokens);
+                body.Add(statement);
+                body.Range = statement.Range;
+                node.Add(body);
+                Accept(";");
+            }
+        }
+        else if (Is("{"))
+        {
+            node.Add(ParseBlock()); // procedure syntax, kept for older sources
+        }
+        else
+        {
+            Accept(";"); // an abstract member has no body at all
+        }
+
+        node.Tokens = SliceFrom(start);
+        node.Range = TextRange.Of(node.Tokens);
+        return node;
+    }
+
+    private SyntaxNode? ParseScalaMember(int start, List<SyntaxNode> attributes, List<string> modifiers)
+    {
+        if (Is("def"))
+            return ParseScalaFunction(start, attributes, modifiers);
+        if (Is("val") || Is("var"))
+            return ParseScalaProperty(start, attributes, modifiers, asField: true);
+        if (Is("type") && Peek() is { Kind: TokenKind.Identifier })
+            return ParseScalaTypeAlias(start);
+        return null;
+    }
+
+    /// <summary>A val or var: the Kotlin shape with a different keyword set around it.</summary>
+    private SyntaxNode ParseScalaProperty(int start, List<SyntaxNode> attributes, List<string> modifiers,
+        bool asField = false)
+    {
+        var property = ParseKotlinProperty(start, attributes, modifiers, asField);
+        _ = property;
+        return property;
+    }
+
+    /// <summary><c>type Alias[A] = Definition</c>, read as a named type and no more.</summary>
+    private SyntaxNode ParseScalaTypeAlias(int start)
+    {
+        Expect("type");
+        var name = IsName ? Take().Text : string.Empty;
+        if (Is("["))
+            SkipBalanced("[", "]");
+        Accept("=");
+
+        var node = new SyntaxNode(NodeKind.ClassDeclaration, name,
+            TextRange.Of([_tokens[Math.Min(start, _tokens.Count - 1)]]));
+        var depth = 0;
+        while (!AtEnd)
+        {
+            var current = Text;
+            if (current is "(" or "[" or "{")
+                depth++;
+            else if (current is ")" or "]" or "}")
+            {
+                if (depth == 0)
+                    break;
+                depth--;
+            }
+            else if (depth == 0 && current is ";" or ",")
+                break;
+            _index++;
+        }
+        Accept(";");
+        node.Tokens = SliceFrom(start);
+        node.Range = TextRange.Of(node.Tokens);
+        return node;
+    }
+
+    /// <summary>The comprehension loop: <c>for (x &lt;- xs) { … }</c> or <c>for { … } yield e</c>.</summary>
+    private SyntaxNode ParseScalaFor(int start)
+    {
+        Expect("for");
+        var node = Node(NodeKind.Loop, start, "for");
+        if (Is("("))
+        {
+            SkipBalanced("(", ")");
+        }
+        else if (Is("{"))
+        {
+            SkipBalanced("{", "}");
+        }
+        if (Accept("yield"))
+        {
+            if (ParseExpression() is { } produced)
+            {
+                var wrapper = new SyntaxNode(NodeKind.Block, "implicit", produced.Range, produced.Tokens);
+                wrapper.Add(produced);
+                node.Add(wrapper);
+            }
+            return node;
+        }
+        AddEmbeddedStatement(node);
+        return node;
+    }
+
+    // --------------------------------------------------------------- Rust
+
+    private SyntaxNode ParseRustUse(int start)
+    {
+        Expect("use");
+        var name = new System.Text.StringBuilder();
+        while (!AtEnd && !Is(";"))
+            name.Append(Take().Text);
+        Accept(";");
+        return Node(NodeKind.ImportDeclaration, start, name.ToString());
+    }
+
+    /// <summary>
+    /// A Rust function: <c>fn name&lt;T&gt;(args) -&gt; Ret</c> with an optional <c>where</c> clause
+    /// and a block body. The prefixes in front — const, async, unsafe, extern — say how it runs.
+    /// </summary>
+    private SyntaxNode ParseRustFunction(int start, List<SyntaxNode> attributes, List<string> modifiers,
+        NodeKind kind = NodeKind.FunctionDeclaration)
+    {
+        while (IsAny(RustFunctionPrefixes))
+        {
+            var prefix = Take().Text;
+            modifiers.Add(prefix);
+            Accept("*"); // extern "C" or extern block forms
+            if (Current is { Kind: TokenKind.String })
+                _index++;
+        }
+        if (!Accept("fn"))
+        {
+            _index = start;
+            return ParseStatement();
+        }
+
+        var name = IsName ? Take().Text : string.Empty;
+        if (Is("<"))
+            SkipGenericParameters();
+
+        var node = Node(kind, start, name);
+        AddDecorations(node, attributes, modifiers);
+        if (Is("("))
+            node.Add(ParseParameterList());
+        if (Accept("->"))
+            node.Add(ParseType());
+        while (Is("where"))
+        {
+            while (!AtEnd && !Is("{") && !Is(";"))
+                _index++;
+        }
+
+        if (Is("{"))
+            node.Add(ParseBlock());
+        else
+            Accept(";");
+
+        node.Tokens = SliceFrom(start);
+        node.Range = TextRange.Of(node.Tokens);
+        return node;
+    }
+
+    /// <summary>A static or const item: <c>static NAME: Type = value;</c>.</summary>
+    private SyntaxNode ParseRustStaticOrConst(int start, List<SyntaxNode> attributes, List<string> modifiers)
+    {
+        _index++; // static | const
+        var name = IsIdentifier ? Take().Text : string.Empty;
+        var field = Node(NodeKind.FieldDeclaration, start, name);
+        AddDecorations(field, attributes, modifiers);
+        if (IsAny("mut"))
+            _index++;
+        if (Accept(":"))
+            field.Add(ParseType());
+        if (Accept("=") && ParseExpression() is { } value)
+            field.Add(value);
+        Accept(";");
+        field.Tokens = SliceFrom(start);
+        field.Range = TextRange.Of(field.Tokens);
+        return field;
+    }
+
+    /// <summary><c>let pattern[: Type] = value;</c>, the one binding form inside a function.</summary>
+    private SyntaxNode ParseRustLet(int start)
+    {
+        Expect("let");
+        var declaration = new SyntaxNode(NodeKind.VariableDeclaration, "",
+            TextRange.Of([_tokens[Math.Min(start, _tokens.Count - 1)]]));
+        var names = new List<string>();
+        ReadRustPatternNames(names);
+        declaration.Text = names.FirstOrDefault() ?? string.Empty;
+
+        if (Accept(":"))
+            declaration.Add(ParseType());
+        if (Accept("=") && ParseExpression() is { } value)
+        {
+            var assignment = new SyntaxNode(NodeKind.Assignment, "=", declaration.Range, declaration.Tokens);
+            assignment.Add(new SyntaxNode(NodeKind.Identifier, declaration.Text, declaration.Range));
+            assignment.Add(value);
+            declaration.Add(assignment);
+        }
+        foreach (var extra in names.Skip(1))
+            declaration.Add(new SyntaxNode(NodeKind.Identifier, extra, declaration.Range));
+
+        // 'let Some(x) = y else { return; }' — the let-else fallback is part of the statement
+        if (Accept("else"))
+        {
+            if (Is("{"))
+                declaration.Add(ParseBlock());
+            else
+                ParseStatement();
+        }
+        Accept(";");
+        declaration.Tokens = SliceFrom(start);
+        declaration.Range = TextRange.Of(declaration.Tokens);
+        return declaration;
+    }
+
+    /// <summary>Collects the identifiers a let pattern binds, through tuples and struct patterns.</summary>
+    private void ReadRustPatternNames(List<string> names)
+    {
+        var depth = 0;
+        while (!AtEnd)
+        {
+            var current = Text;
+            if (current is "(" or "[" or "{" or "<")
+            {
+                depth++;
+            }
+            else if (current is ")" or "]" or "}" or ">")
+            {
+                if (depth == 0)
+                    break;
+                depth--;
+            }
+            else if (depth == 0 && current is "=" or ":" or ";" or "else")
+                break;
+            else if (IsIdentifier && !IsAny("mut", "ref", "in", "if", "move"))
+                names.Add(Text);
+            _index++;
+        }
+    }
+
+    /// <summary>The items a file, module, trait or impl is made of.</summary>
+    private SyntaxNode ParseRustItem(int start)
+    {
+        var keyword = Take().Text;
+        switch (keyword)
+        {
+            case "type":
+            {
+                var name = IsName ? Take().Text : string.Empty;
+                if (Is("<"))
+                    SkipGenericParameters();
+                Accept("=");
+                while (!AtEnd && !Is(";"))
+                    _index++;
+                Accept(";");
+                return Node(NodeKind.ClassDeclaration, start, name);
+            }
+            case "mod":
+            {
+                var name = IsName ? Take().Text : string.Empty;
+                var node = Node(NodeKind.ClassDeclaration, start, name);
+                if (Is("{"))
+                {
+                    var body = ParseRustItemBody();
+                    node.Add(body);
+                    node.Range = node.Range with { EndLine = body.Range.EndLine };
+                }
+                else
+                {
+                    Accept(";");
+                }
+                return node;
+            }
+            case "struct" or "union":
+            {
+                var name = IsName ? Take().Text : string.Empty;
+                var node = Node(NodeKind.ClassDeclaration, start, name);
+                if (Is("<"))
+                    SkipGenericParameters();
+                SkipRustWhereClauses();
+                if (Is("("))
+                {
+                    // tuple struct: positional fields carry no names worth keeping
+                    SkipBalanced("(", ")");
+                    Accept(";");
+                    Accept("where");
+                }
+                else if (Is("{"))
+                {
+                    var body = ParseRustStructBody();
+                    node.Add(body);
+                    node.Range = node.Range with { EndLine = body.Range.EndLine };
+                }
+                else
+                {
+                    Accept(";");
+                }
+                return node;
+            }
+            case "enum":
+            {
+                var name = IsName ? Take().Text : string.Empty;
+                var node = Node(NodeKind.ClassDeclaration, start, name);
+                if (Is("<"))
+                    SkipGenericParameters();
+                SkipRustWhereClauses();
+                var body = ParseRustEnumBody();
+                node.Add(body);
+                node.Range = node.Range with { EndLine = body.Range.EndLine };
+                return node;
+            }
+            case "trait":
+            {
+                var name = IsName ? Take().Text : string.Empty;
+                var node = Node(NodeKind.ClassDeclaration, start, name);
+                if (Is("<"))
+                    SkipGenericParameters();
+                if (Accept(":"))
+                {
+                    while (!AtEnd && !Is("{") && !Is("where"))
+                        _index++;
+                }
+                SkipRustWhereClauses();
+                var body = ParseRustItemBody();
+                node.Add(body);
+                node.Range = node.Range with { EndLine = body.Range.EndLine };
+                return node;
+            }
+            case "impl":
+            {
+                var node = Node(NodeKind.ClassDeclaration, start, "impl");
+                if (Is("<"))
+                    SkipGenericParameters();
+
+                // 'impl Display for Point' versus 'impl Point': what sits before 'for' is the
+                // trait being implemented, and a rule about overrides needs both halves
+                var traitName = new System.Text.StringBuilder();
+                var typeName = new System.Text.StringBuilder();
+                var target = typeName;
+                var depth = 0;
+                while (!AtEnd)
+                {
+                    var current = Text;
+                    if (current is "(" or "[" or "<")
+                        depth++;
+                    else if (current is ")" or "]" or ">")
+                        depth--;
+                    else if (current is "{" or ";")
+                        break;
+                    else if (depth <= 0 && current == "for")
+                    {
+                        _index++;
+                        (target, var done) = (typeName, true);
+                        _ = done;
+                        traitName.Append(' ');
+                        continue;
+                    }
+                    target.Append(Take().Text).Append(' ');
+                }
+                node.Text = ("impl " + traitName + typeName).Trim();
+
+                SkipRustWhereClauses();
+                var body = ParseRustItemBody();
+                node.Add(body);
+                node.Range = node.Range with { EndLine = body.Range.EndLine };
+                return node;
+            }
+            default:
+                return Node(NodeKind.Unknown, start, keyword);
+        }
+    }
+
+    private void SkipRustWhereClauses()
+    {
+        while (Is("where"))
+        {
+            while (!AtEnd && !Is("{") && !Is(";"))
+                _index++;
+        }
+    }
+
+    /// <summary>Named fields: <c>{ pub width: u32, }</c>.</summary>
+    private SyntaxNode ParseRustStructBody()
+    {
+        var start = Mark();
+        var block = new SyntaxNode(NodeKind.Block, "",
+            TextRange.Of([_tokens[Math.Min(start, _tokens.Count - 1)]]));
+        if (!Accept("{"))
+            return block;
+
+        while (!AtEnd && !Is("}"))
+        {
+            var before = _index;
+            if (Accept(","))
+                continue;
+            var attributes = ParseAttributes();
+            var modifiers = ParseModifiers();
+            while (IsAny("pub", "readonly"))
+                _index++;
+            if (IsIdentifier)
+            {
+                var fieldStart = Mark();
+                var name = Take().Text;
+                var field = Node(NodeKind.FieldDeclaration, fieldStart, name);
+                AddDecorations(field, attributes, modifiers);
+                foreach (var modifier in modifiers)
+                    field.Add(new SyntaxNode(NodeKind.Modifier, modifier, field.Range));
+                if (Accept(":"))
+                    field.Add(ParseType());
+                block.Add(field);
+            }
+            if (_index == before)
+                _index++;
+        }
+        Accept("}");
+        block.Tokens = SliceFrom(start);
+        block.Range = TextRange.Of(block.Tokens);
+        return block;
+    }
+
+    /// <summary>Variants: <c>{ Add(u32, u32), Move { x: i32 }, Quit }</c>.</summary>
+    private SyntaxNode ParseRustEnumBody()
+    {
+        var start = Mark();
+        var block = new SyntaxNode(NodeKind.Block, "",
+            TextRange.Of([_tokens[Math.Min(start, _tokens.Count - 1)]]));
+        if (!Accept("{"))
+            return block;
+
+        while (!AtEnd && !Is("}"))
+        {
+            var before = _index;
+            if (Accept(",") || Is("#"))
+            {
+                if (Is("#"))
+                {
+                    _index++;
+                    Accept("!");
+                    SkipBalanced("[", "]");
+                }
+                if (_index != before)
+                    continue;
+            }
+            if (IsIdentifier)
+            {
+                var memberStart = Mark();
+                var name = Take().Text;
+                var member = Node(NodeKind.EnumMember, memberStart, name);
+                if (Is("("))
+                    SkipBalanced("(", ")");
+                else if (Is("{"))
+                    SkipBalanced("{", "}");
+                if (Accept("=") && ParseExpression() is { } discriminant)
+                    member.Add(discriminant);
+                block.Add(member);
+            }
+            if (_index == before)
+                _index++;
+            Accept(",");
+        }
+        Accept("}");
+        block.Tokens = SliceFrom(start);
+        block.Range = TextRange.Of(block.Tokens);
+        return block;
+    }
+
+    /// <summary>The inside of a mod, trait or impl: functions, constants, types, inner attributes.</summary>
+    private SyntaxNode ParseRustItemBody()
+    {
+        var start = Mark();
+        var block = new SyntaxNode(NodeKind.Block, "",
+            TextRange.Of([_tokens[Math.Min(start, _tokens.Count - 1)]]));
+        if (!Accept("{"))
+            return block;
+
+        while (!AtEnd && !Is("}"))
+        {
+            var before = _index;
+            if (Accept(";"))
+                continue;
+            var attributes = ParseAttributes();
+            var modifiers = ParseModifiers();
+            // 'pub(crate) fn …' inside a trait or an impl
+            if (Is("(") && modifiers.Count > 0 && modifiers[^1] == "pub")
+                SkipBalanced("(", ")");
+
+            SyntaxNode? item = null;
+            if (Is("fn"))
+                item = ParseRustFunction(Mark(), attributes, modifiers);
+            else if (Is("static") || Is("const"))
+                item = ParseRustStaticOrConst(Mark(), attributes, modifiers);
+            else if (Is("use"))
+                item = ParseRustUse(Mark());
+            else if (IsAny(RustTypeKeywords))
+                item = ParseRustItem(Mark());
+            else if (IsAny(RustFunctionPrefixes))
+                item = ParseRustFunction(Mark(), attributes, modifiers);
+            else if (Is("#"))
+            {
+                _index++;
+                Accept("!");
+                SkipBalanced("[", "]");
+            }
+            else
+            {
+                var statement = ParseStatement();
+                if (statement != null)
+                    block.Add(statement);
+            }
+
+            if (item != null)
+                block.Add(item);
+            if (_index == before)
+                _index++;
+        }
+        var closing = Current;
+        Accept("}");
+        block.Tokens = SliceFrom(start);
+        block.Range = TextRange.Of(block.Tokens);
+        if (closing != null)
+            block.Range = block.Range with { EndLine = closing.Line };
+        return block;
+    }
+
+    /// <summary><c>macro_rules! name { ... }</c> — consumed whole, it defines rather than executes.</summary>
+    private SyntaxNode ParseRustMacroRules(int start)
+    {
+        while (!AtEnd && !Is("{"))
+            _index++;
+        SkipBalanced("{", "}");
+        Accept(";");
+        return Node(NodeKind.Unknown, start, "macro_rules");
+    }
+
+    /// <summary>
+    /// The arms of a match, from the brace to its closing twin. Scala arms open with 'case', Rust
+    /// ones do not; both end each arm at the fat arrow and take a block or a single expression.
+    /// </summary>
+    private SyntaxNode ParseMatchBody(bool caseKeyword)
+    {
+        var start = Mark();
+        var body = new SyntaxNode(NodeKind.Block, "", TextRange.Of([_tokens[Math.Min(start, _tokens.Count - 1)]]));
+        if (!Accept("{"))
+            return body;
+
+        while (!AtEnd && !Is("}"))
+        {
+            var before = _index;
+            var armStart = Mark();
+            if (caseKeyword)
+                Accept("case");
+            if (caseKeyword && IsIdentifier && PeekText() == "=>" && !Is("_"))
+            {
+                // a variable pattern binds the whole subject: 'case x =>'
+            }
+
+            // the pattern runs up to the arrow that introduces the arm
+            var guard = 0;
+            while (!AtEnd && !Is("}") && !Is("=>") && guard++ < 200)
+            {
+                if (Is("(") || Is("[") || Is("{"))
+                {
+                    var open = Text;
+                    SkipBalanced(open, open == "(" ? ")" : open == "[" ? "]" : "}");
+                    continue;
+                }
+                if (Is("|"))
+                {
+                    _index++; // pattern alternatives bind tighter than the arrow
+                    continue;
+                }
+                _index++;
+            }
+
+            if (Accept("=>"))
+            {
+                var section = Node(caseKeyword ? NodeKind.SwitchSection : NodeKind.MatchCase, armStart, "case");
+                if (Is("{"))
+                    section.Add(ParseBlock());
+                else if (ParseStatement() is { } branch)
+                    section.Add(branch);
+                body.Add(section);
+                Accept(",");
+            }
+
+            if (_index == before)
+                _index++;
+        }
+        var closing = Current;
+        Accept("}");
+        body.Tokens = SliceFrom(start);
+        body.Range = TextRange.Of(body.Tokens);
+        if (closing != null)
+            body.Range = body.Range with { EndLine = closing.Line };
+        return body;
+    }
+
+    /// <summary><c>match expr { … }</c> in statement position: same shape, result discarded.</summary>
+    private SyntaxNode ParseRustMatch(int start)
+    {
+        Expect("match");
+        var node = Node(NodeKind.Match, start, "match");
+        _compositeLiteralBan++;
+        if (!Is("{") && ParseExpression() is { } subject)
+            node.Add(subject);
+        _compositeLiteralBan--;
+        node.Add(ParseMatchBody(caseKeyword: false));
+        node.Tokens = SliceFrom(start);
+        node.Range = TextRange.Of(node.Tokens);
+        Accept(";");
+        return node;
+    }
+
+    /// <summary><c>for pattern in sequence { … }</c> — the only loop form with a header like this.</summary>
+    private SyntaxNode ParseRustFor(int start)
+    {
+        Expect("for");
+        var node = Node(NodeKind.Loop, start, "for");
+        var names = new List<string>();
+        ReadRustPatternNames(names);
+        var name = names.FirstOrDefault() ?? string.Empty;
+        var variable = new SyntaxNode(NodeKind.VariableDeclaration, name,
+            TextRange.Of([_tokens[Math.Min(start, _tokens.Count - 1)]]));
+        foreach (var extra in names)
+            variable.Add(new SyntaxNode(NodeKind.Identifier, extra, variable.Range));
+        node.Add(variable);
+        Accept("in");
+        _compositeLiteralBan++;
+        if (ParseExpression() is { } sequence)
+        {
+            node.Add(sequence);
+            var assignment = new SyntaxNode(NodeKind.Assignment, "=", sequence.Range, sequence.Tokens);
+            assignment.Add(new SyntaxNode(NodeKind.Identifier, name, variable.Range));
+            assignment.Add(sequence);
+            variable.Add(assignment);
+        }
+        _compositeLiteralBan--;
+        AddEmbeddedStatement(node);
+        return node;
+    }
+
+    /// <summary>
+    /// A Rust closure: pipes around an optional parameter list, then the body. '||' with nothing
+    /// between the pipes is the zero-parameter form, and it must not be read as logical-or.
+    /// </summary>
+    private SyntaxNode ParseRustClosure(int start)
+    {
+        var lambda = Node(NodeKind.Lambda, start, "|");
+        var parameters = new SyntaxNode(NodeKind.ParameterList, "",
+            TextRange.Of([_tokens[Math.Min(start, _tokens.Count - 1)]]));
+        if (Is("||"))
+        {
+            _index++;
+        }
+        else if (Accept("|"))
+        {
+            while (!AtEnd && !Is("|"))
+            {
+                var before = _index;
+                while (IsAny("mut", "ref", "move"))
+                    _index++;
+                if ((IsIdentifier || Is("_")) && PeekText() is ":" or "," or "|" or ")")
+                {
+                    var parameterStart = Mark();
+                    var name = Take().Text;
+                    var parameter = Node(NodeKind.Parameter, parameterStart, name);
+                    if (Accept(":"))
+                        parameter.Add(ParseType());
+                    parameters.Add(parameter);
+                    Accept(",");
+                }
+                if (_index == before)
+                    _index++;
+            }
+            Accept("|");
+        }
+        lambda.Add(parameters);
+        AddLambdaBody(lambda);
+        lambda.Tokens = SliceFrom(start);
+        lambda.Range = TextRange.Of(lambda.Tokens);
+        return lambda;
+    }
+
     private SyntaxNode ParseTypeBody(bool isEnum)
     {
         var start = Mark();
@@ -1309,9 +2146,18 @@ public sealed class CSharpParser
         if (!Accept("{"))
             return block;
 
+        // a Scala type body may open with its self type: 'trait F { self => … }'
+        if (IsScala && IsName && PeekText() == "=>")
+            _index += 2;
+
         while (!AtEnd && !Is("}"))
         {
             var before = _index;
+            if (IsScala && ParseScalaMember(Mark(), [], []) is { } scalaMember)
+            {
+                block.Add(scalaMember);
+                continue;
+            }
             var member = isEnum ? ParseEnumMember() : IsJs ? ParseJsMember() : ParseMember();
             if (member != null)
                 block.Add(member);
@@ -1704,6 +2550,8 @@ public sealed class CSharpParser
 
         if (IsGo)
             return ParseGoType(start);
+        if (IsRust)
+            return ParseRustType(start);
         if (IsJs)
             return ParseJsType(start);
         // PHP writes the nullable marker in front of the type
@@ -1725,7 +2573,7 @@ public sealed class CSharpParser
                 name += "*";
                 continue;
             }
-            if (Is("[") && (PeekText() == "]" || PeekText() == ","))
+            if (Is("[") && (PeekText() == "]" || PeekText() == "," || IsScala))
             {
                 SkipBalanced("[", "]");
                 name += "[]";
@@ -1734,6 +2582,47 @@ public sealed class CSharpParser
             break;
         }
         return Node(NodeKind.TypeReference, start, name);
+    }
+
+    private SyntaxNode ParseRustType() => ParseRustType(Mark());
+
+    /// <summary>
+    /// A Rust type: references and raw pointers in front, arrays with their length, generic
+    /// arguments in angle brackets, function-pointer types, and the lifetime that borrows them.
+    /// Read loosely — everything up to the token that cannot be part of a type becomes its text.
+    /// </summary>
+    private SyntaxNode ParseRustType(int start)
+    {
+        var text = new System.Text.StringBuilder();
+        var depth = 0;
+        while (!AtEnd)
+        {
+            var current = Text;
+            if (current is "(" or "[" or "<")
+            {
+                depth++;
+            }
+            else if (current is ")" or "]")
+            {
+                if (depth == 0)
+                    break;
+                depth--;
+            }
+            else if (current is ">" or ">>")
+            {
+                if (depth <= 0)
+                    break;
+                depth -= current.Length;
+            }
+            else if (depth == 0
+                     && current is "," or ";" or "=" or "{" or "}" or "where" or "->" or ":"
+                         or "as" or "in")
+            {
+                break;
+            }
+            text.Append(Take().Text).Append(' ');
+        }
+        return Node(NodeKind.TypeReference, start, text.ToString().TrimEnd());
     }
 
     /// <summary>TypeScript annotations: unions, arrays, generics and object literals.</summary>
@@ -1898,6 +2787,9 @@ public sealed class CSharpParser
         if (!Accept("("))
             return list;
 
+        // 'implicit' marks every parameter that follows it until the list ends, so the flag lives
+        // across iterations: resetting it per parameter left all but the first unmarked
+        var pendingImplicit = false;
         while (!AtEnd && !Is(")"))
         {
             var before = _index;
@@ -1907,23 +2799,94 @@ public sealed class CSharpParser
                 _index++;
 
             var parameterStart = Mark();
-            if (IsKotlin)
+            if (IsKotlin || IsScala)
             {
                 // 'vararg out: String' and 'val name: String' — the modifiers come first, the name
                 // second, and the type after the colon
                 while (IsAny("vararg", "val", "var", "noinline", "crossinline", "private", "public",
-                           "protected", "internal", "override"))
+                           "protected", "internal", "override", "implicit", "using"))
+                {
+                    pendingImplicit |= Is("implicit");
                     _index++;
-                if (IsName)
+                }
+                if (IsName || Is("_") && PeekText() == ":")
                 {
                     var kotlinName = Take().Text;
                     var kotlinParameter = Node(NodeKind.Parameter, parameterStart, kotlinName);
+                    if (pendingImplicit)
+                        kotlinParameter.Add(new SyntaxNode(NodeKind.Modifier, "implicit", kotlinParameter.Range));
                     if (Accept(":"))
+                    {
+                        Accept("=>"); // a by-name parameter passes a thunk: ': => T'
                         kotlinParameter.Add(ParseType());
+                        // Scala writes type arguments in square brackets, not angle brackets:
+                        // 'fa: F[A]' — leaving them detached broke the list at the first bracket
+                        while (IsScala && Is("["))
+                            SkipBalanced("[", "]");
+                        if (IsScala)
+                        {
+                            // a Scala type can carry what the shared reader cannot follow — function
+                            // arrows, union pipes, refined types — and every token left over would be
+                            // read as another parameter of its own
+                            var depth = 0;
+                            while (!AtEnd && (depth > 0 || !(Is(",") || Is(")") || Is("="))))
+                            {
+                                if (Is("(") || Is("[") || Is("{"))
+                                    depth++;
+                                else if (Is(")") || Is("]") || Is("}"))
+                                {
+                                    if (depth == 0)
+                                        break;
+                                    depth--;
+                                }
+                                _index++;
+                            }
+                        }
+                    }
                     if (Accept("=") && ParseAssignment() is { } kotlinDefault)
                         kotlinParameter.Add(kotlinDefault);
                     list.Add(kotlinParameter);
                 }
+                if (!Accept(",") && !Is(")") && _index == before)
+                    _index++;
+                continue;
+            }
+
+            if (IsRust)
+            {
+                // '&mut self', 'mut count: usize', '_: f64' — the receiver borrows like the type
+                // does, and an unnamed parameter keeps its position
+                while (IsAny("mut", "ref", "move", "const"))
+                    _index++;
+                if (Is("&"))
+                {
+                    _index++;
+                    Accept("mut");
+                }
+                string? rustName = null;
+                if ((IsIdentifier || Is("_")) && PeekText() == ":")
+                {
+                    rustName = Take().Text;
+                }
+                else if (Is("self"))
+                {
+                    Take();
+                    rustName = "self";
+                }
+                else
+                {
+                    // a parameter the reader cannot name keeps its place in the list: everything up
+                    // to the comma belongs to it, and stopping short would read one parameter as two
+                    while (!AtEnd && !Is(",") && !Is(")"))
+                        _index++;
+                }
+                var rustParameter = Node(NodeKind.Parameter, parameterStart, rustName ?? "");
+                if (rustName != null && Is(":"))
+                {
+                    _index++;
+                    rustParameter.Add(ParseRustType());
+                }
+                list.Add(rustParameter);
                 if (!Accept(",") && !Is(")") && _index == before)
                     _index++;
                 continue;
@@ -2146,13 +3109,16 @@ public sealed class CSharpParser
             case ";":
                 _index++;
                 // generated terminators are not empty statements
-                return IsGo || IsJs || IsKotlin ? null : Node(NodeKind.ExpressionStatement, start, ";");
+                return IsGo || IsJs || IsKotlin || IsScala ? null : Node(NodeKind.ExpressionStatement, start, ";");
             case "if":
                 return ParseIf(start);
+            case "match" when IsRust:
+                return ParseRustMatch(start);
             case "switch":
                 return ParseSwitchStatement(start);
             case "for":
-                return IsGo ? ParseGoFor(start) : ParseFor(start);
+                return IsGo ? ParseGoFor(start) : IsScala ? ParseScalaFor(start)
+                    : IsRust ? ParseRustFor(start) : ParseFor(start);
             case "var" when IsGo:
             case "const" when IsGo:
                 return ParseGoVariableBlock(start);
@@ -2167,6 +3133,20 @@ public sealed class CSharpParser
                 return ParseKotlinFunction(start, [], []);
             case "when" when IsKotlin:
                 return ParseKotlinWhen(start);
+            case "def" when IsScala:
+                return ParseScalaFunction(start, [], []);
+            case "val" when IsScala:
+            case "var" when IsScala:
+                return ParseScalaProperty(start, [], []);
+            case "let" when IsRust:
+                return ParseRustLet(start);
+            case "loop" when IsRust:
+            {
+                Expect("loop");
+                var loopNode = Node(NodeKind.Loop, start, "loop");
+                AddEmbeddedStatement(loopNode);
+                return loopNode;
+            }
             case "function" when IsJs:
                 return ParseJsFunction(start, []);
             case "import" when IsJs:
@@ -2188,6 +3168,13 @@ public sealed class CSharpParser
                 return ParseForEach(start);
             case "while":
                 return ParseWhile(start);
+            case "use" when IsRust:
+                return ParseRustUse(start);
+            case "move" when IsRust && PeekText() == "|":
+                _index++;
+                return ParseRustClosure(start);
+            case "fn" when IsRust:
+                return ParseRustFunction(start, [], [], NodeKind.LocalFunction);
             case "do":
                 return ParseDoWhile(start);
             case "try":
@@ -2358,10 +3345,11 @@ public sealed class CSharpParser
                 node.Add(condition);
             Accept(")");
         }
-        else if (IsGo)
+        else if (IsGo || IsRust)
         {
+            // no parentheses around the condition: Go and Rust both write 'if x > 5 { … }'
             _compositeLiteralBan++;
-            if (TryParseGoShortDeclaration(Mark()) is { } init)
+            if (IsGo && TryParseGoShortDeclaration(Mark()) is { } init)
                 node.Add(init);
             if (!Is("{") && ParseExpression() is { } goCondition)
                 node.Add(goCondition);
@@ -2612,6 +3600,14 @@ public sealed class CSharpParser
                 node.Add(condition);
             Accept(")");
         }
+        else if (IsRust)
+        {
+            // 'while let Some(x) = it.next() { … }' and the plain form both go bare
+            _compositeLiteralBan++;
+            if (!Is("{") && ParseExpression() is { } condition)
+                node.Add(condition);
+            _compositeLiteralBan--;
+        }
         AddEmbeddedStatement(node);
         return node;
     }
@@ -2644,6 +3640,13 @@ public sealed class CSharpParser
             var catchStart = Mark();
             _index++;
             var catchNode = Node(NodeKind.Catch, catchStart, "catch");
+            if (IsScala && Is("{"))
+            {
+                // 'case e: IOException => …' arms are how Scala spells its handlers
+                catchNode.Add(ParseMatchBody(caseKeyword: true));
+                node.Add(catchNode);
+                continue;
+            }
             if (Is("("))
             {
                 Accept("(");
@@ -2887,6 +3890,7 @@ public sealed class CSharpParser
     private static int Precedence(string op) => op switch
     {
         "??" => 1,
+        ".." or "..=" => 1, // a range binds loosest: '0..n' is one value, not two operands
         "||" => 2,
         "&&" => 3,
         "|" => 4,
@@ -2915,8 +3919,24 @@ public sealed class CSharpParser
         {
             var op = Text;
             var precedence = Precedence(op);
-            if (precedence < 0 || precedence < minimum)
+            if (precedence < 0)
+            {
+                // Scala lets any word or run of punctuation be an infix operator — 'f1 compose f2',
+                // 'o1 >>= s'. With an operand on each side it is one expression; ending the chain
+                // turned every read on the right into an orphaned statement, and variables read
+                // that way looked unused. Reserved words keep their meaning: 'x match { … }' is a
+                // branch, not a binary.
+                var startsOperand = Peek() is { Kind: TokenKind.Identifier or TokenKind.Number
+                        or TokenKind.String } || Is("(");
+                if (!IsScala || Current is { Kind: TokenKind.Keyword }
+                    || op.Length == 0 || !startsOperand)
+                    break;
+                precedence = 10;
+            }
+            else if (precedence < minimum)
+            {
                 break;
+            }
 
             _index++;
             SyntaxNode? right;
@@ -3038,9 +4058,12 @@ public sealed class CSharpParser
         }
 
         if (IsAny("!", "-", "+", "~", "++", "--", "await", "&", "*", "^")
-            || (IsJs && IsAny("typeof", "void", "delete", "yield", "new")))
+            || (IsJs && IsAny("typeof", "void", "delete", "yield", "new"))
+            || (IsRust && IsAny("move")))
         {
             var op = Take().Text;
+            if (op == "move")
+                return ParseUnary(); // 'move |x| …': ownership is a property of the closure
             var operand = ParseUnary();
             var node = Node(NodeKind.Unary, start, op);
             if (operand != null)
@@ -3108,6 +4131,18 @@ public sealed class CSharpParser
         var node = Node(NodeKind.ObjectCreation, start, typeName);
         if (Is("("))
             node.Add(ParseArgumentList());
+        // Scala mixes traits into an instance with 'with', and the braces that follow belong to the
+        // anonymous class they build: leaving the mixins unread detached the whole body from the
+        // expression that owns it.
+        if (IsScala)
+        {
+            while (Is("with"))
+            {
+                _index++;
+                if (ParseType() is { } mixedIn && Is("["))
+                    SkipBalanced("[", "]");
+            }
+        }
         if (Is("["))
         {
             Accept("[");
@@ -3284,8 +4319,37 @@ public sealed class CSharpParser
             // the stream ended the expression at it, so 'return ArrayList::new;' became a return
             // followed by two statements — and every rule about code after a jump reported the rest
             // of the method as unreachable.
+            // Rust writes generic arguments at the call itself — 'size_of::<u8>()': the brackets
+            // follow the path separator, and reading them as a comparison split every such call
+            // into two expressions.
+            if (IsRust && Is("::") && PeekText() == "<"
+                && node.Kind is NodeKind.Identifier or NodeKind.MemberSelect)
+            {
+                var beforeGenerics = _index;
+                _index += 2;
+                var depth = 1;
+                var valid = true;
+                while (!AtEnd && depth > 0)
+                {
+                    var current = Text;
+                    if (current is "(" or ";" or "{")
+                    {
+                        valid = false;
+                        break;
+                    }
+                    if (current == "<")
+                        depth++;
+                    else if (current is ">" or ">>")
+                        depth -= current.Length;
+                    _index++;
+                }
+                if (valid && depth <= 0 && Is("("))
+                    continue;
+                _index = beforeGenerics;
+            }
+
             if (Is(".") || Is("?.") || (Is("->") && !IsKotlin)
-                || ((IsJava || IsKotlin) && Is("::"))
+                || ((IsJava || IsKotlin || IsRust) && Is("::"))
                 || (IsPhp && (Is("::") || (Is("\\") && Peek() is { Kind: TokenKind.Identifier }))))
             {
                 // the operator itself is kept in the node's tokens: without it a null-conditional
@@ -3369,11 +4433,58 @@ public sealed class CSharpParser
 
             if (Is("++") || Is("--") || Is("!"))
             {
+                // a Rust macro is the name, the bang and its brackets — one call
+                if (Is("!") && IsRust && PeekText() is "(" or "[" or "{")
+                {
+                    var bangStart = Mark();
+                    _index++;
+                    var open = Text;
+                    SkipBalanced(open, open == "(" ? ")" : open == "[" ? "]" : "}");
+                    var macro = new SyntaxNode(NodeKind.Invocation,
+                        node.Kind == NodeKind.Identifier ? node.Text : SyntaxQuery.DottedName(node),
+                        node.Range, SliceFrom(bangStart));
+                    macro.Add(node);
+                    var arguments = new SyntaxNode(NodeKind.ArgumentList, "",
+                        TextRange.Of(SliceFrom(bangStart + 1)));
+                    macro.Add(arguments);
+                    macro.Tokens = SliceFrom(bangStart);
+                    macro.Range = TextRange.Of(macro.Tokens);
+                    node = macro;
+                    continue;
+                }
                 var start = Mark();
                 var op = Take().Text;
                 var unary = Node(NodeKind.Unary, start, op);
                 unary.Add(node);
                 node = unary;
+                continue;
+            }
+
+            // Rust propagates errors with a bare '?': 'value?' either unwraps or returns. Leaving it
+            // in the stream ended every expression at it.
+            if (IsRust && Is("?"))
+            {
+                var questionStart = Mark();
+                _index++;
+                var tryOperator = Node(NodeKind.Unary, questionStart, "?");
+                tryOperator.Add(node);
+                node = tryOperator;
+                continue;
+            }
+
+            // Scala and Rust put the subject of a match in front of the keyword: 'x match { … }'
+            // and 'x match { … }' are how both languages write their multi-way branch.
+            if ((IsScala || IsRust) && Is("match") && PeekText() == "{")
+            {
+                var matchStart = Mark();
+                _index++;
+                var matchNode = Node(NodeKind.Match, matchStart, "match");
+                matchNode.Add(node);
+                matchNode.Add(ParseMatchBody(caseKeyword: IsScala));
+                matchNode.Tokens = SliceFrom(matchStart);
+                matchNode.Range = TextRange.Of(matchNode.Tokens);
+                Accept(";");
+                node = matchNode;
                 continue;
             }
 
@@ -3383,10 +4494,10 @@ public sealed class CSharpParser
                 continue;
             }
 
-            // Kotlin writes the last argument outside the parentheses when it is a lambda, and
-            // 'items.filter { it > 0 }' is how most of the language is written. Read as a block it
-            // detached the body from the call, which left every rule about the call blind.
-            if (IsKotlin && Is("{")
+            // Kotlin and Scala write the last argument outside the parentheses when it is a lambda,
+            // and 'items.filter { it > 0 }' is how most of both languages is written. Read as a
+            // block it detached the body from the call, which left every rule about the call blind.
+            if ((IsKotlin || IsScala) && Is("{")
                 && node.Kind is NodeKind.Invocation or NodeKind.Identifier or NodeKind.MemberSelect)
             {
                 var lambda = ParseKotlinLambda();
@@ -3408,7 +4519,7 @@ public sealed class CSharpParser
                 continue;
             }
 
-            if (IsGo && Is("{") && _compositeLiteralBan == 0
+            if ((IsGo || IsRust) && Is("{") && _compositeLiteralBan == 0
                 && node.Kind is NodeKind.Identifier or NodeKind.MemberSelect or NodeKind.Index)
             {
                 var literal = new SyntaxNode(NodeKind.ObjectCreation, SyntaxQuery.DottedName(node),
@@ -3487,11 +4598,48 @@ public sealed class CSharpParser
         if (IsKotlin && token.Text == "try")
             return ParseTry(start);
 
+        // Rust branches and matches are expressions too: 'let parity = if n % 2 == 0 { 0 } else { 1 };'
+        // is how half of the language decides between two values.
+        if (IsRust && token.Text == "if")
+            return ParseIf(start);
+        if (IsRust && token.Text == "match")
+            return ParseRustMatch(start);
+        if (IsRust && token.Text == "loop")
+        {
+            _index++;
+            var loopExpression = Node(NodeKind.Loop, start, "loop");
+            if (Is("{"))
+                loopExpression.Add(ParseBlock());
+            return loopExpression;
+        }
+        if (IsRust && token.Text == "unsafe" && PeekText() == "{")
+        {
+            _index++;
+            return ParseBlock();
+        }
+        if (IsRust && token.Text == "async")
+        {
+            _index++;
+            Accept("move");
+            return Is("{") ? ParseBlock() : ParseUnary() ?? Node(NodeKind.Unknown, start, "async");
+        }
+        if (IsRust && (token.Text == "|" || token.Text == "||"))
+            return ParseRustClosure(start);
+
         switch (token.Kind)
         {
             case TokenKind.Number:
                 _index++;
                 return Node(NodeKind.NumberLiteral, start, token.Text);
+            case TokenKind.String when IsScala && _index > 0
+                                       && _tokens[_index - 1].Kind == TokenKind.Identifier:
+            {
+                // an interpolator precedes its literal — s"…", f"…", any processor the library has
+                // named — and the names it carries between dollars are ordinary reads of locals.
+                // Reading the literal alone made every value formatted into a string look unused.
+                _index++;
+                return BuildScalaInterpolatedString(start, token);
+            }
             case TokenKind.String:
                 _index++;
                 return Node(NodeKind.StringLiteral, start, token.Text);
@@ -3764,4 +4912,65 @@ public sealed class CSharpParser
             i = j - 1;
         }
     }
+
+    /// <summary>
+    /// A Scala interpolated literal carries its reads as '$name' and '${expression}'. The names are
+    /// ordinary uses of the locals they cite, and leaving them inside one string token hid every
+    /// read from the rules that count them.
+    /// </summary>
+    private SyntaxNode BuildScalaInterpolatedString(int start, Token literal)
+    {
+        var node = Node(NodeKind.InterpolatedString, start, literal.Text);
+        var text = literal.Text;
+        for (var i = 0; i < text.Length; i++)
+        {
+            if (text[i] != '$' || i + 1 >= text.Length)
+                continue;
+
+            if (text[i + 1] == '{')
+            {
+                var depth = 1;
+                var j = i + 2;
+                while (j < text.Length && depth > 0)
+                {
+                    if (text[j] == '{')
+                        depth++;
+                    else if (text[j] == '}')
+                        depth--;
+                    j++;
+                }
+                if (depth != 0)
+                    continue;
+                AddInterpolationHole(node, text[(i + 2)..(j - 1)], literal);
+                i = j - 1;
+            }
+            else if (char.IsLetterOrDigit(text[i + 1]) || text[i + 1] == '_')
+            {
+                var j = i + 1;
+                while (j < text.Length && (char.IsLetterOrDigit(text[j]) || text[j] == '_'))
+                    j++;
+                AddInterpolationHole(node, text[i..j].TrimStart('$'), literal);
+                i = j - 1;
+            }
+        }
+        return node;
+    }
+
+    private void AddInterpolationHole(SyntaxNode node, string expression, Token literal)
+    {
+        var tokens = new SourceTokenizer(expression, _language).Tokenize()
+            .Where(t => t.Kind != TokenKind.Comment)
+            .Select(t => new Token(t.Kind, t.Text, literal.Line, literal.Column))
+            .ToArray();
+        if (tokens.Length == 0)
+            return;
+        var inner = new CSharpParser(tokens, _language, _dialect).ParseExpression();
+        var interpolation = new SyntaxNode(NodeKind.Interpolation, expression, node.Range, node.Tokens);
+        if (inner != null)
+            interpolation.Add(inner);
+        node.Add(interpolation);
+    }
 }
+
+
+

@@ -67,6 +67,18 @@ public sealed class SourceTokenizer
                 continue;
             }
 
+            if (ReadsLifetime(_source, i))
+            {
+                var j = i + 1;
+                while (j < _source.Length && (char.IsLetterOrDigit(_source[j]) || _source[j] == '_'))
+                    j++;
+                var text = _source[i..j];
+                _tokens.Add(DirectToken(TokenKind.Identifier, text, line, column));
+                column += text.Length;
+                i = j;
+                continue;
+            }
+
             if (char.IsWhiteSpace(c))
             {
                 if (c == '\n')
@@ -268,6 +280,26 @@ public sealed class SourceTokenizer
     /// <summary>Languages that write a prefix in front of a string literal.</summary>
     private bool AllowsStringPrefix
         => _language.LanguageKey is LanguageKeys.Python or LanguageKeys.Rust;
+
+    /// <summary>
+    /// Whether the apostrophe at this position opens a Rust lifetime rather than a character
+    /// literal. A lifetime is a quote, an identifier run, and then anything but another quote —
+    /// 'a, 'static, '_. The same shape closed by a quote ('x') is a character literal and goes to
+    /// the normal reader. Deciding from the quote alone swallowed everything up to the next
+    /// apostrophe in the file into one literal.
+    /// </summary>
+    private bool ReadsLifetime(string src, int i)
+    {
+        if (!_language.HasLifetimes || i + 1 >= src.Length || src[i] != '\'')
+            return false;
+        var c = src[i + 1];
+        if (!char.IsLetter(c) && c != '_')
+            return false;
+        var j = i + 2;
+        while (j < src.Length && (char.IsLetterOrDigit(src[j]) || src[j] == '_'))
+            j++;
+        return j >= src.Length || src[j] != '\'';
+    }
 
     /// <summary>
     /// Whether the slash at this position opens a regular expression rather than a division. Only

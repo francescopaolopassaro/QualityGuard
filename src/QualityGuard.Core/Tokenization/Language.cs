@@ -53,6 +53,7 @@ public static class LanguageKeys
     public const string CloudFormation = "cf";
     public const string Arm = "ar";
     public const string Rust = "rs";
+    public const string Scala = "scala";
     public const string Razor = "raz";
     public const string Xaml = "xaml";
 }
@@ -69,7 +70,8 @@ public sealed record LanguageInfo(
     bool HashComments,
     bool NestingBlockComments,
     bool CaseInsensitiveKeywords = false,
-    bool LineDirectives = false)
+    bool LineDirectives = false,
+    bool HasLifetimes = false)
 {
     public bool MatchesExtension(string path)
     {

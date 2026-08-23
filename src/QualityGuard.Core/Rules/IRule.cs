@@ -1,4 +1,4 @@
-using QualityGuard.Core.Analysis;
+﻿using QualityGuard.Core.Analysis;
 using QualityGuard.Core.Models;
 using QualityGuard.Core.Semantics;
 using QualityGuard.Core.Syntax;
@@ -215,6 +215,7 @@ public static class RuleScope
 {
     private static readonly HashSet<string> MainOnly = new(StringComparer.Ordinal)
     {
+        "QG-RS-BUG-0007",
         "QG-CS-SML-0469",
         "QG-KT-SML-0113",
         "QG-JV-SML-0455",
@@ -2141,3 +2142,5 @@ public static class RuleScope
 
     public static bool IsMainOnly(string key) => MainOnly.Contains(key);
 }
+
+

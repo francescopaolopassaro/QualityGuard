@@ -869,6 +869,11 @@ public abstract class EmptyCommentRule : ExceptionRuleBase
         {
             if (HasContent(comment.Text))
                 continue;
+            // a run of one repeated punctuation character is a section separator, not an empty
+            // remark: '////' and '------' divide the file the way a blank line would, and asking
+            // them to say something misreads house style as neglect
+            if (IsSeparator(comment.Text))
+                continue;
             // a blank line inside a documentation block is spacing, not an empty comment: only a
             // comment that stands alone with nothing in it is worth a line in the report
             if (withContent.Contains(comment.Line - 1) || withContent.Contains(comment.Line + 1))
@@ -880,6 +885,13 @@ public abstract class EmptyCommentRule : ExceptionRuleBase
 
         static bool HasContent(string text)
             => text.Trim().Trim('/', '*', '#', '-', '<', '>', '!', '=').Trim().Length > 0;
+
+        static bool IsSeparator(string text)
+        {
+            var chars = text.Where(c => !char.IsWhiteSpace(c)).ToArray();
+            return chars.Length >= 3 && chars.Distinct().Count() == 1
+                   && !char.IsLetterOrDigit(chars[0]);
+        }
     }
 }
 

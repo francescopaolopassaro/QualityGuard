@@ -97,6 +97,8 @@ public static class BuiltInRuleRegistrar
         ..Languages.MarkupDocumentRuleSet.All,
         ..Languages.MarkupAccessibilityRuleSet.All,
         ..Languages.RustRuleSet.All,
+        ..Languages.RustTreeRuleSet.All,
+        ..Languages.ScalaRuleSet.All,
         ..Languages.DartRuleSet.All,
         ..Languages.JsonRuleSet.All,
         ..Languages.InfrastructureRuleSet.All,

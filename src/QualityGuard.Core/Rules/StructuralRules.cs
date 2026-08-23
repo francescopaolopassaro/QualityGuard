@@ -3184,6 +3184,29 @@ public abstract class UnusedLocalVariableRule : StructuralRuleBase
             if (context.Language.LanguageKey is "go" && char.IsUpper(symbol.Name[0])
                 && symbol.Scope.Kind != ScopeKind.Function)
                 continue;
+            // A Rust pattern names its enum variants in UpperCamelCase — 'let Ok(x) = res' binds
+            // nothing called Ok; the identifier is the constructor the match dispatches on.
+            if (context.Language.LanguageKey == "rs" && char.IsUpper(symbol.Name[0]))
+                continue;
+            // A Rust for-loop binding reads as a declaration the body never touches: the loop feeds
+            // it, and every read sits under the Loop node the binder links to the iteration itself.
+            if (context.Language.LanguageKey == "rs"
+                && declaration.Identifier.Ancestor(NodeKind.Loop) != null)
+                continue;
+            // Shadowing a name with a transformed copy of itself — 'let p = p.as_ref()' — is how
+            // Rust refines values in place; the write is the use.
+            if (context.Language.LanguageKey == "rs"
+                && context.Tokens.Count(t => t.Kind == Tokenization.TokenKind.Identifier
+                                             && t.Text == symbol.Name) > 1)
+                continue;
+            // Scala reads a local in shapes this tree does not bind — infix applications written
+            // with symbolic operators, word operators such as 'assert_===', tuple patterns — and a
+            // wrong "never read" costs more than the finding it adds. When the name is written
+            // again anywhere in the file, the honest answer is that the scan cannot tell.
+            if (context.Language.LanguageKey == "scala"
+                && context.Tokens.Count(t => t.Kind == Tokenization.TokenKind.Identifier
+                                             && t.Text == symbol.Name) > 1)
+                continue;
             context.Report(declaration.Identifier, $"'{symbol.Name}' is assigned but never read; "
                                                    + "remove it or use the value it holds.");
         }
@@ -4303,6 +4326,28 @@ public abstract class UnusedParameterRule : StructuralRuleBase
                                             or Tokenization.TokenKind.Comment
                                         && t.Text.Contains(symbol.Name, StringComparison.Ordinal)))
                 continue;
+            if (context.Language.LanguageKey == "scala")
+            {
+                // An implicit parameter arrives by compiler resolution, not by a written argument:
+                // leaving it unread is how the instance stays swappable, and asking for it to go
+                // asks for the opposite of what the word promises.
+                var hasImplicitParameter = context.Root.OfKind(NodeKind.Parameter)
+                    .Any(p => p.Text == symbol.Name
+                              && p.ChildrenOf(NodeKind.Modifier).Any(m => m.Text == "implicit"));
+                if (hasImplicitParameter)
+                    continue;
+                // A Scala expression body routinely opens an anonymous class or a callback whose
+                // methods read the enclosing parameters; the tree links those reads to the inner
+                // scope, but the parameter serves them all the same.
+                if (owner != null && owner.OfKind(NodeKind.Identifier).Any(i => i.Text == symbol.Name))
+                    continue;
+                // Word operators and by-name thunks read a parameter in shapes the binder does not
+                // always reach. When the name is written again anywhere in the file, the honest
+                // answer is that the scan cannot tell whether it serves them.
+                if (context.Tokens.Count(t => t.Kind == Tokenization.TokenKind.Identifier
+                                              && t.Text == symbol.Name) > 1)
+                    continue;
+            }
 
             context.Report(declaration.Identifier, $"'{symbol.Name}' is never used in the body; "
                                                    + "remove it or use the value the caller passes.");

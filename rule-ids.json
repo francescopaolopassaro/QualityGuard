@@ -88,10 +88,10 @@
     "RB-PRF": 2,
     "RB-SEC": 17,
     "RB-SML": 90,
-    "RS-BUG": 120,
-    "RS-CNV": 5,
+    "RS-BUG": 130,
+    "RS-CNV": 8,
     "RS-SEC": 17,
-    "RS-SML": 49,
+    "RS-SML": 67,
     "SEC-SEC": 64,
     "SH-BUG": 2,
     "SH-SEC": 8,
@@ -121,7 +121,7 @@
     "XML-SEC": 45,
     "XML-SML": 85,
     "XAML-BUG": 4,
-    "SC-SML": 47,
-    "SC-BUG": 11
+    "SC-SML": 59,
+    "SC-BUG": 19
   }
 }

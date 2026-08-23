@@ -335,7 +335,7 @@ public static class BuiltInLanguages
         ["if", "else", "for", "while", "loop", "match", "&&", "||"],
         "//", "/*", "*/",
         [new("\"\"\"", "\"\"\""), new("\"", "\""), new("'", "'"), new("r#\"", "\"#"), new("r\"", "\"")],
-        HashComments: false, NestingBlockComments: true);
+        HashComments: false, NestingBlockComments: true, HasLifetimes: true);
 
     /// <summary>Razor views and Blazor components: HTML markup interleaved with C# code blocks.</summary>
     public static readonly LanguageInfo Razor = new(

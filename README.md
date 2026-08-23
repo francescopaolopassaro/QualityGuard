@@ -8,7 +8,7 @@ a configurable Quality Gate and exits with `PASSED` or `FAILED` — no server, n
 dotnet run --project src/QualityGuard.Cli -- --path ./src --by-folder
 ```
 
-**3795 rules across 26 languages**, of which **631 are security rules**, on a real syntax tree with a
+**3833 rules across 27 languages**, of which **631 are security rules**, on a real syntax tree with a
 semantic model, a project index and interprocedural taint analysis. The coverage goes past the
 languages themselves: AWS, Azure and Google Cloud infrastructure (Terraform, CloudFormation),
 Kubernetes manifests, Dockerfiles, Android manifests and Gradle build scripts, Java EE and ASP.NET
@@ -186,7 +186,7 @@ read as a tree of keys and blocks.
 | Dart / Flutter | `DART` | 100 | dedicated parser (C-family dialect) |
 | CloudFormation | `CF` | 104 | configuration tree |
 | JSON | `JSON` | 96 | configuration tree |
-| Rust | `RS` | 35 | structural parser |
+| Rust | `RS` | 58 | dedicated parser (C-family dialect) |
 | Secrets (any language) | `SEC` | 24 | token scan over every file |
 | C / C++ | `CC` | 16 | structural parser |
 | Shell | `SH` | 12 | structural parser |
@@ -195,7 +195,7 @@ read as a tree of keys and blocks.
 | XAML / WPF / WinUI / Avalonia | `XAML` | 8 | markup reader, joined to the class behind it |
 | Razor / Blazor | `RAZ` | 4 | C# parser over the `@code` block, markup reader over the rest |
 | Multi-language | `ALL` | 2 | whichever tree the file has |
-| Scala | — | — | catalogue mapped, rules not written yet |
+| Scala | `SC` | 16 | dedicated parser (C-family dialect) |
 
 TypeScript, Sass, SCSS, Less, JSX/TSX and VB.NET are analysed by the rules of the language they
 extend, so their own row only counts what is specific to them.
@@ -751,7 +751,7 @@ because they are real legacy rather than a curated library.
 | guzzle | PHP | 48 147 | 378 | **7.9** |
 | gson | Java | 47 559 | 376 | **7.9** |
 | okio | Kotlin | 44 514 | 568 | **12.8** |
-| ripgrep | Rust | 42 211 | 574 | **13.6** |
+| ripgrep | Rust | 42 211 | 663 | **15.7** |
 | Alamofire | Swift | 26 592 | 369 | **13.9** |
 | cobra, gin | Go | 30 723 | 488 | **15.9** |
 | a Blazor application | C# | 58 468 | 876 | **15.0** |
@@ -759,7 +759,7 @@ because they are real legacy rather than a curated library.
 | Newtonsoft.Json | C# | 126 652 | 2 330 | **18.4** |
 | requests, flask, a private application | Python | 42 955 | 859 | **20.0** |
 | a WebForms application from 2010 | C# | 152 633 | 8 522 | **55.8** |
-| scalaz | Scala | 48 717 | 0 | **0.0** |
+| scalaz | Scala | 48 758 | 136 | **2.8** |
 
 Every row is one scan per language, narrowed to that language's extension. The Scala row is a gap, not
 a triumph: there is no dedicated parser for it yet, so no rule reaches those 48 717 lines. Rust is in
@@ -1288,3 +1288,4 @@ limited to the one honest form available without flow analysis — a value that 
 * No server or background orchestration — it is an ephemeral CLI runner.
 * No user management, RBAC or SSO.
 * No mandatory coupling to a hosting platform or cloud service.
+
