@@ -103,6 +103,7 @@ public static class BuiltInRuleRegistrar
         ..Languages.PhpGapRuleSet.All,
         ..Languages.PythonGapRuleSet.All,
         ..Languages.CssGapRuleSet.All,
+        ..Languages.VbNetGapRuleSet.All,
         ..Languages.ScalaRuleSet.All,
         ..Languages.DartRuleSet.All,
         ..Languages.JsonRuleSet.All,
