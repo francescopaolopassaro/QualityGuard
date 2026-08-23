@@ -173,7 +173,7 @@
   status: superseded
   superseded_by: QG-ALL-SML-0046
   languages: [java, kt]
-  category: SML
+  category: BUG
   severity: minor
   effort: 10min
   tags: [logging]
@@ -652,7 +652,7 @@
   name: Fallible results should not be unwrapped
   languages: [rs]
   category: BUG
-  severity: major
+  severity: minor
   effort: 15min
   tags: [error-handling, panic]
   message: This unwrap panics when the value is absent or the operation failed.
@@ -718,7 +718,7 @@
   status: superseded
   superseded_by: QG-CSS-SML-0001
   languages: [css]
-  category: SML
+  category: BUG
   severity: minor
   effort: 10min
   tags: [maintainability]
@@ -755,7 +755,7 @@
 - key: QG-HTML-SML-0002
   name: Documents should declare their language
   languages: [html]
-  category: SML
+  category: BUG
   severity: minor
   effort: 5min
   tags: [accessibility]
@@ -780,7 +780,7 @@
   status: superseded
   superseded_by: QG-JS-SML-0008
   languages: [cs, vb, js, ts, java, kt, go]
-  category: SML
+  category: BUG
   severity: minor
   effort: 10min
   tags: [logging]
@@ -798,7 +798,7 @@
   status: superseded
   superseded_by: QG-JS-SML-0008
   languages: [js, ts]
-  category: SML
+  category: BUG
   severity: minor
   effort: 10min
   tags: [logging]
@@ -815,7 +815,7 @@
   status: superseded
   superseded_by: QG-SH-SEC-0006
   languages: [sh]
-  category: SML
+  category: BUG
   severity: minor
   effort: 5min
   tags: [shell]

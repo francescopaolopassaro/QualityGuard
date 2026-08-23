@@ -406,7 +406,7 @@ public sealed class PySystemExitReraisedRule : PyGap2Base
     public override string Key => "QG-PY-SML-0082";
     public override string Name => "SystemExit caught without re-raising swallows the exit";
     public override Severity Severity => Severity.Major;
-    public override IssueKind Kind => IssueKind.Bug;
+    public override IssueKind Kind => IssueKind.CodeSmell;
     public override string RemediationEffort => "5min";
     public override string[] Languages => ["py"];
 
@@ -542,7 +542,7 @@ public sealed class PyAsyncBlockingSleepRule : PyGap2Base
     public override string Key => "QG-PY-SML-0161";
     public override string Name => "time.sleep blocks the event loop inside async code";
     public override Severity Severity => Severity.Major;
-    public override IssueKind Kind => IssueKind.Bug;
+    public override IssueKind Kind => IssueKind.CodeSmell;
     public override string RemediationEffort => "10min";
     public override string[] Languages => ["py"];
 
@@ -571,7 +571,7 @@ public sealed class PyAsyncLambdaHandlerRule : PyGap2Base
     public override string Key => "QG-PY-SML-0183";
     public override string Name => "An AWS Lambda handler cannot be async";
     public override Severity Severity => Severity.Major;
-    public override IssueKind Kind => IssueKind.Bug;
+    public override IssueKind Kind => IssueKind.CodeSmell;
     public override string RemediationEffort => "10min";
     public override string[] Languages => ["py"];
 
@@ -595,7 +595,7 @@ public sealed class PySendFileMimetypeRule : PyGap2Base
     public override string Key => "QG-PY-BUG-0079";
     public override string Name => "send_file should say what the bytes are";
     public override Severity Severity => Severity.Minor;
-    public override IssueKind Kind => IssueKind.CodeSmell;
+    public override IssueKind Kind => IssueKind.Bug;
     public override string RemediationEffort => "5min";
     public override string[] Languages => ["py"];
 
@@ -864,7 +864,7 @@ public sealed class PyNoneComparedToNoneRule : PyGap2Base
     public override string Key => "QG-PY-SML-0080";
     public override string Name => "Comparing two constants tells nothing";
     public override Severity Severity => Severity.Major;
-    public override IssueKind Kind => IssueKind.Bug;
+    public override IssueKind Kind => IssueKind.CodeSmell;
     public override string RemediationEffort => "5min";
     public override string[] Languages => ["py"];
 
