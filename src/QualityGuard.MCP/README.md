@@ -1,4 +1,4 @@
-# QualityGuard
+# QualityGuard MCP
 
 **QualityGuard** is a stateless, in-memory code quality engine written in C# for continuous
 integration pipelines. It parses source code, computes metrics, runs static analysis rules, evaluates
