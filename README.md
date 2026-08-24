@@ -168,7 +168,7 @@ read as a tree of keys and blocks.
 
 | Language | Code | Rules | Tree |
 | --- | --- | --- | --- |
-| Java | `JV` | 617 | dedicated parser |
+| Java | `JV` | 629 | dedicated parser |
 | JavaScript | `JS` | 470 | dedicated parser |
 | Python | `PY` | 478 | dedicated parser |
 | C# / VB.NET | `CS` | 464 | dedicated parser |
@@ -773,7 +773,7 @@ because they are real legacy rather than a curated library.
 | a Blazor application | C# | 58 468 | 876 | **15.0** |
 | axios, nest | TypeScript | 36 073 | 648 | **18.0** |
 | Newtonsoft.Json | C# | 126 652 | 2 647 | **20.9** |
-| requests, flask, a private application | Python | 42 955 | 859 | **20.0** |
+| flask | Python | 13 303 | 200 | **15.0** |
 | a WebForms application from 2010 | C# | 152 633 | 8 522 | **55.8** |
 | scalaz | Scala | 48 758 | 103 | **2.1** |
 

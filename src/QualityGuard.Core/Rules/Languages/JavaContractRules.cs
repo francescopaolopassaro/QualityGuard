@@ -4,14 +4,27 @@ using QualityGuard.Core.Syntax;
 namespace QualityGuard.Core.Rules.Languages;
 
 /// <summary>
-/// Java rules about the contracts the platform expects a type to honour — what an iterator promises,
-/// what a comparison promises, what a lock protects — and the declarations that say one thing and do
+/// Java rules about the contracts the platform expects a type to honour ÔÇö what an iterator promises,
+/// what a comparison promises, what a lock protects ÔÇö and the declarations that say one thing and do
 /// another.
 /// </summary>
 public static class JavaContractRuleSet
 {
-    public static IReadOnlyList<IRule> All { get; } =
+    public static IReadOnlyList<IRule> All =
     [
+        new FutureKeywordNameRule(),
+        new LambdaAsMethodReferenceRule(),
+        new TernaryDissimilarWrappersRule(),
+        new AccessorSyncPairsRule(),
+        new PrivateMethodOnlyInnerCallsRule(),
+        new AssertOnPublicParameterRule(),
+        new InstanceofPatternOpportunityRule(),
+        new MathClampOpportunityRule(),
+        new AwsClientRegionMissingRule(),
+        new AwsClientCredentialsMissingRule(),
+        new AwsRegionHardcodedRule(),
+        new KeyStoreUserAuthenticationRule(),
+
         new JavaIteratorWithoutNoSuchElementRule(),
         new JavaWaitOutsideLoopRule(),
         new JavaNullFromBooleanMethodRule(),
@@ -112,7 +125,7 @@ public sealed class JavaIteratorWithoutNoSuchElementRule : JavaContractRuleBase
                 continue;
 
             context.Report("Every caller is entitled to assume that next throws NoSuchElementException "
-                           + "once the elements run out — that is what the interface promises. This one "
+                           + "once the elements run out ÔÇö that is what the interface promises. This one "
                            + "does something else instead, so a loop that reads one element too many "
                            + "gets a null, an index error, or silence.", method.Range.StartLine);
         }
@@ -143,7 +156,7 @@ public sealed class JavaWaitOutsideLoopRule : JavaContractRuleBase
             if (enclosing != null && enclosing.OfKind(NodeKind.Loop).Any(l => l.OfKind(NodeKind.Invocation).Contains(call)))
                 continue;
 
-            context.Report("A thread can come back from wait without anyone having signalled it — the "
+            context.Report("A thread can come back from wait without anyone having signalled it ÔÇö the "
                            + "specification allows it, and it happens. Without a loop around the call "
                            + "the code carries on as if the condition held, on a state that has not "
                            + "changed. Wrap it in while (!condition).", call.Range.StartLine);
@@ -291,7 +304,7 @@ public sealed class JavaIteratorReturningThisRule : JavaContractRuleBase
                 continue;
 
             context.Report("Returning the object itself gives every caller the same iterator, so the "
-                           + "second loop over this collection starts where the first one stopped — and "
+                           + "second loop over this collection starts where the first one stopped ÔÇö and "
                            + "two nested loops interfere with each other. Return a new iterator each "
                            + "time.", jump.Range.StartLine);
         }
@@ -339,7 +352,7 @@ public sealed class JavaJdbcIndexRule : JavaContractRuleBase
                 continue;
 
             context.Report($"'{name}' counts its columns from one, not from zero, so index 0 throws "
-                           + "SQLException at run time — on the first query that reaches this line, "
+                           + "SQLException at run time ÔÇö on the first query that reaches this line, "
                            + "which may well be in production.", call.Range.StartLine);
         }
     }
@@ -432,7 +445,7 @@ public sealed class JavaComparableOverloadRule : JavaContractRuleBase
 
             context.Report($"'{type.Text}' declares compareTo more than once, so which one runs depends "
                            + "on the static type at the call site. A sorted collection holds its "
-                           + "elements as Comparable and calls the general one — not the specific one "
+                           + "elements as Comparable and calls the general one ÔÇö not the specific one "
                            + "this class was written around.", overloads[1].Range.StartLine);
         }
     }
@@ -457,7 +470,7 @@ public sealed class JavaStaticOnlyClassRule : JavaContractRuleBase
 
             // a type that extends or implements something is not a bag of helpers. An exception
             // declares a serialVersionUID and a few constructors, and those constructors are the
-            // whole reason it exists — telling the author to hide them breaks the type.
+            // whole reason it exists ÔÇö telling the author to hide them breaks the type.
             if (context.Project.FindTypes(type.Text).FirstOrDefault(t => t.Node == type)
                     is { BaseNames.Count: > 0 })
                 continue;
@@ -480,7 +493,7 @@ public sealed class JavaStaticOnlyClassRule : JavaContractRuleBase
             foreach (var constructor in constructors.Where(c => !Modifiers(c).Contains("private")))
             {
                 context.Report($"Every member of '{type.Text}' is static, so an instance of it can do "
-                               + "nothing at all — and this constructor invites one.",
+                               + "nothing at all ÔÇö and this constructor invites one.",
                     constructor.Range.StartLine);
             }
         }
@@ -532,7 +545,7 @@ public sealed class JavaDefaultInitializationRule : JavaContractRuleBase
 
             context.Report($"A field of this type already holds {(value.Kind == NodeKind.NullLiteral ? "null" : value.Text)} "
                            + "before any code runs, so the initializer repeats what the language "
-                           + "guarantees — and adds a write the constructor has to perform.",
+                           + "guarantees ÔÇö and adds a write the constructor has to perform.",
                 field.Range.StartLine);
         }
     }
@@ -563,7 +576,7 @@ public sealed class JavaRedundantModifierRule : JavaContractRuleBase
 
             foreach (var member in Members(type))
             {
-                // A type nested in the interface — an enum, a static class — has its own rules, and
+                // A type nested in the interface ÔÇö an enum, a static class ÔÇö has its own rules, and
                 // the parser can leave its members among the children of the interface body. The
                 // line range of the nested type is what settles who the member belongs to.
                 if (nested.Any(n => member.Range.StartLine >= n.Range.StartLine
@@ -614,13 +627,13 @@ public sealed class JavaDoubleBraceInitializationRule : JavaContractRuleBase
             if (inner == null || inner.Children.Count == 0)
                 continue;
             // An anonymous class that declares or overrides something is a different thing
-            // entirely, and its members sit inside the same braces — so the whole initializer has to
+            // entirely, and its members sit inside the same braces ÔÇö so the whole initializer has to
             // be free of them, not just its first level.
             if (body.OfKind(NodeKind.FunctionDeclaration, NodeKind.FieldDeclaration, NodeKind.Attribute).Any())
                 continue;
             // What is left has to be nothing but calls. An anonymous class that overrides a method
             // opens the same braces, and inside a brace-delimited initializer the parser does not
-            // always mark its members as declarations — so the shape decides: fill calls, and
+            // always mark its members as declarations ÔÇö so the shape decides: fill calls, and
             // nothing else.
             if (inner.Children.Count == 0
                 || inner.Children.Any(c => c.Kind is not (NodeKind.Invocation or NodeKind.Unknown)))
@@ -631,7 +644,7 @@ public sealed class JavaDoubleBraceInitializationRule : JavaContractRuleBase
             context.Report("The braces create an anonymous subclass whose initializer runs the "
                            + "statements inside. That subclass keeps a reference to the object that "
                            + "built it, so the enclosing instance stays alive as long as the collection "
-                           + "does — and the collection can no longer be serialized. Use List.of, or "
+                           + "does ÔÇö and the collection can no longer be serialized. Use List.of, or "
                            + "fill it after construction.", creation.Range.StartLine);
         }
     }
@@ -654,7 +667,7 @@ public sealed class JavaCloneOverrideRule : JavaContractRuleBase
                 continue;
 
             context.Report("Cloneable does not declare clone, the copy it produces is shallow, and the "
-                           + "constructor of the class never runs — so a final field cannot be set "
+                           + "constructor of the class never runs ÔÇö so a final field cannot be set "
                            + "correctly in the copy. A copy constructor or a static factory says what "
                            + "it copies and can be tested.", method.Range.StartLine);
         }
@@ -824,5 +837,502 @@ public sealed class JavaStraySemicolonRule : JavaContractRuleBase
             }
         }
         return false;
+    }
+}
+
+public abstract class JavaContractRule : RuleBase
+{
+    public override string[] Languages => ["java"];
+
+    protected static bool HasTree(IRuleContext context) => context.Tree.HasDedicatedParser;
+
+    protected static string Called(SyntaxNode call) => SyntaxQuery.InvokedName(call);
+
+    protected static IReadOnlyList<SyntaxNode> Args(SyntaxNode call) => SyntaxQuery.Arguments(call);
+
+    protected static HashSet<string> ModifiersOf(SyntaxNode declaration)
+        => declaration.Children.Where(c => c.Kind == NodeKind.Modifier)
+            .Select(c => c.Text).ToHashSet(StringComparer.Ordinal);
+
+    /// <summary>The calls of a fluent chain, from the outermost inwards.</summary>
+    protected static IEnumerable<SyntaxNode> Chain(SyntaxNode call)
+    {
+        var node = call;
+        while (node != null)
+        {
+            if (node.Kind == NodeKind.Invocation)
+                yield return node;
+            var head = node.ChildAt(0);
+            node = head?.Kind switch
+            {
+                NodeKind.Invocation => head,
+                NodeKind.MemberSelect => head.ChildAt(0),
+                _ => null
+            };
+        }
+    }
+
+    /// <summary>Whether the file is written against the AWS SDK v2, where the builder rules live.</summary>
+    protected static bool IsAwsSdkFile(IRuleContext context)
+        => context.Root.OfKind(NodeKind.ImportDeclaration)
+            .Any(i => i.Text.StartsWith("software.amazon.awssdk", StringComparison.Ordinal));
+}
+
+/// <summary>A name tomorrow's keyword takes today breaks the file on the upgrade.</summary>
+public sealed class FutureKeywordNameRule : JavaContractRule
+{
+    private static readonly string[] Reserved =
+    ["var", "record", "yield", "sealed", "permits"];
+
+    public override string Key => "QG-JV-SML-0070";
+    public override string Name => "Future keywords should not be used as names";
+    public override Severity Severity => Severity.Minor;
+    public override IssueKind Kind => IssueKind.CodeSmell;
+    public override string RemediationEffort => "10min";
+
+    public override void Execute(IRuleContext context)
+    {
+        if (!HasTree(context))
+            return;
+        foreach (var declaration in context.Root.OfKind(
+                     NodeKind.ClassDeclaration, NodeKind.FunctionDeclaration,
+                     NodeKind.LocalFunction, NodeKind.FieldDeclaration,
+                     NodeKind.VariableDeclaration))
+        {
+            if (!Reserved.Contains(declaration.Text, StringComparer.Ordinal))
+                continue;
+            context.Report(declaration,
+                $"`{declaration.Text}` becomes a keyword in newer Java: the day this file moves to "
+                + "a modern compiler it stops parsing, and the fix has to happen under time "
+                + "pressure. Rename it now - `value`, `entry`, `isSealed` - while nothing depends on "
+                + "the migration.");
+        }
+    }
+}
+
+/// <summary>A lambda that forwards one argument is the method reference the language spells shorter.</summary>
+public sealed class LambdaAsMethodReferenceRule : JavaContractRule
+{
+    public override string Key => "QG-JV-SML-0113";
+    public override string Name => "Lambdas should be replaced with method references";
+    public override Severity Severity => Severity.Minor;
+    public override IssueKind Kind => IssueKind.CodeSmell;
+    public override string RemediationEffort => "2min";
+
+    public override void Execute(IRuleContext context)
+    {
+        if (!HasTree(context))
+            return;
+        foreach (var lambda in context.Root.OfKind(NodeKind.Lambda))
+        {
+            var parameters = lambda.FirstChild(NodeKind.ParameterList);
+            if (parameters?.Children.Count != 1)
+                continue;
+            var parameter = parameters.ChildAt(0).Text;
+            // Java writes the body as a bare expression; the block form appears when braces are used
+            var expression = lambda.ChildAt(1) switch
+            {
+                { Kind: NodeKind.Invocation } call => call,
+                { Kind: NodeKind.Block } block
+                    when block.Children.Count == 1
+                         && block.Children[0] is { Kind: NodeKind.ExpressionStatement } statement
+                         && statement.ChildAt(0)?.Kind == NodeKind.Invocation
+                    => statement.ChildAt(0),
+                _ => null
+            };
+            if (expression == null)
+                continue;
+            var reference = ForwardedCall(expression, parameter);
+            if (reference == null)
+                continue;
+            context.Report(lambda,
+                $"`{parameter} -> ...` repeats the parameter only to hand it on: `{reference}` says "
+                + "the same thing without the ceremony, reads as a noun in pipelines, and survives "
+                + "refactorings of the surrounding code unchanged.");
+        }
+    }
+
+    /// <summary>
+    /// The method-reference form of a call that does nothing but forward the parameter - either as
+    /// its only argument (`x -> Foo.parse(x)`) or as its receiver with no arguments (`x -> x.trim()`).
+    /// </summary>
+    private static string? ForwardedCall(SyntaxNode invocation, string parameter)
+    {
+        var arguments = SyntaxQuery.Arguments(invocation);
+        if (arguments.Count == 1 && arguments[0] is { Kind: NodeKind.Identifier, Text: var arg }
+            && arg == parameter)
+            return $"{SyntaxQuery.Receiver(invocation)}::{Called(invocation)}";
+        if (arguments.Count == 0
+            && invocation.ChildAt(0)?.Kind == NodeKind.MemberSelect
+            && invocation.ChildAt(0).ChildAt(0) is { Kind: NodeKind.Identifier, Text: var receiver }
+            && receiver == parameter)
+            return $"{receiver}::{Called(invocation)}";
+        return null;
+    }
+}
+
+/// <summary>A ternary over two wrapper types unboxes whichever loses - sometimes to a NullPointerException.</summary>
+public sealed class TernaryDissimilarWrappersRule : JavaContractRule
+{
+    private static readonly string[] Wrappers =
+    [
+        "Integer", "Long", "Double", "Float", "Short", "Byte", "Boolean", "Character"
+    ];
+
+    public override string Key => "QG-JV-BUG-0053";
+    public override string Name => "Dissimilar primitive wrappers should not be mixed in a ternary";
+    public override Severity Severity => Severity.Major;
+    public override IssueKind Kind => IssueKind.Bug;
+    public override string RemediationEffort => "10min";
+
+    public override void Execute(IRuleContext context)
+    {
+        if (!HasTree(context))
+            return;
+        foreach (var conditional in context.Root.OfKind(NodeKind.Conditional))
+        {
+            if (conditional.Children.Count < 3)
+                continue;
+            var left = WrapperOf(conditional.ChildAt(1));
+            var right = WrapperOf(conditional.ChildAt(2));
+            if (left == null || right == null || left == right)
+                continue;
+            context.Report(conditional,
+                $"The two branches build different wrappers ({left} and {right}), so the "
+                + "compiler unboxes both to the wider numeric type and reboxes the result. When "
+                + "the losing branch holds null - a cache miss, an optional field - the unboxing "
+                + "throws NullPointerException instead of yielding null. Build the two branches "
+                + "as the same type explicitly.");
+        }
+    }
+
+    private static string? WrapperOf(SyntaxNode expression)
+    {
+        if (expression is not { Kind: NodeKind.Invocation } call
+            || Called(call) is not ("valueOf" or "parseInt" or "parseLong"))
+            return null;
+        var receiver = SyntaxQuery.Receiver(call);
+        return Wrappers.Contains(receiver, StringComparer.Ordinal) ? receiver : null;
+    }
+}
+
+/// <summary>A setter left unsynchronised beside a synchronised getter answers with torn state.</summary>
+public sealed class AccessorSyncPairsRule : JavaContractRule
+{
+    public override string Key => "QG-JV-BUG-0088";
+    public override string Name => "Getters and setters should be synchronized in pairs";
+    public override Severity Severity => Severity.Major;
+    public override IssueKind Kind => IssueKind.Bug;
+    public override string RemediationEffort => "15min";
+
+    public override void Execute(IRuleContext context)
+    {
+        if (!HasTree(context))
+            return;
+        foreach (var type in context.Root.OfKind(NodeKind.ClassDeclaration))
+        {
+            foreach (var getter in SyntaxQuery.Functions(type)
+                         .Where(f => ModifiersOf(f).Contains("synchronized")
+                                     && f.Text.StartsWith("get", StringComparison.Ordinal)))
+            {
+                var setter = "set" + getter.Text[3..];
+                var plainSetter = SyntaxQuery.Functions(type).FirstOrDefault(f =>
+                    f.Text == setter && !ModifiersOf(f).Contains("synchronized"));
+                if (plainSetter != null)
+                    context.Report(plainSetter,
+                        $"{getter.Text}() synchronises its read, but {setter}() writes the same "
+                        + "state unlocked: a reader can observe a half-written value no matter how "
+                        + "carefully the getter locks. Synchronize the setter too, or drop both in "
+                        + "favour of a volatile field or an atomic holder - pairs, never halves.");
+            }
+        }
+    }
+}
+
+/// <summary>A private method whose every caller sits in an inner class lives in the wrong class.</summary>
+public sealed class PrivateMethodOnlyInnerCallsRule : JavaContractRule
+{
+    public override string Key => "QG-JV-SML-0233";
+    public override string Name => "A private method called only by inner classes should move there";
+    public override Severity Severity => Severity.Minor;
+    public override IssueKind Kind => IssueKind.CodeSmell;
+    public override string RemediationEffort => "10min";
+
+    public override void Execute(IRuleContext context)
+    {
+        if (!HasTree(context))
+            return;
+        foreach (var type in context.Root.OfKind(NodeKind.ClassDeclaration)
+                     .Where(t => t.Ancestor(NodeKind.ClassDeclaration) == null))
+        {
+            var innerRanges = type.Descendants()
+                .Where(n => n.Kind == NodeKind.ClassDeclaration
+                            && n != type && n.Ancestor(NodeKind.ClassDeclaration) != null)
+                .Select(n => n.Range)
+                .ToList();
+            if (innerRanges.Count == 0)
+                continue;
+            foreach (var method in SyntaxQuery.Functions(type))
+            {
+                if (!ModifiersOf(method).Contains("private"))
+                    continue;
+                var callers = SyntaxQuery.Invocations(type)
+                    .Where(c => Called(c) == method.Text)
+                    .ToList();
+                if (callers.Count == 0
+                    || callers.Any(c => !innerRanges.Any(r => r.ContainsLine(c.Range.StartLine))))
+                    continue;
+                context.Report(method,
+                    $"Every call to {method.Text}() comes from an inner class, so the outer one "
+                    + "carries a member it never uses - and grants the inner classes a way into "
+                    + "its internals they would not otherwise have. Move the method into the class "
+                    + "that calls it, or widen it deliberately if both really need it.");
+            }
+        }
+    }
+}
+
+/// <summary>An assert validating what callers pass disappears the day assertions stay off.</summary>
+public sealed class AssertOnPublicParameterRule : JavaContractRule
+{
+    public override string Key => "QG-JV-SML-0267";
+    public override string Name => "Asserts should not check the parameters of a public method";
+    public override Severity Severity => Severity.Minor;
+    public override IssueKind Kind => IssueKind.CodeSmell;
+    public override string RemediationEffort => "5min";
+
+    public override void Execute(IRuleContext context)
+    {
+        if (!HasTree(context))
+            return;
+        foreach (var function in SyntaxQuery.Functions(context.Root))
+        {
+            if (!ModifiersOf(function).Contains("public"))
+                continue;
+            var parameterNames = SyntaxQuery.Parameters(function)
+                .Select(p => p.Text).ToHashSet(StringComparer.Ordinal);
+            var body = SyntaxQuery.Body(function);
+            if (body == null || parameterNames.Count == 0)
+                continue;
+            foreach (var assertion in body.Children.TakeWhile(c =>
+                         c is { Kind: NodeKind.Jump, Text: "assert" }))
+            {
+                var condition = assertion.ChildAt(0);
+                if (condition == null
+                    || !condition.DescendantsAndSelf()
+                        .Any(n => n.Kind == NodeKind.Identifier && parameterNames.Contains(n.Text)))
+                    continue;
+                context.Report(assertion,
+                    "This assert validates what outside code passes in, but assertions run only "
+                    + "when the JVM is started with -ea: in production the invalid value walks "
+                    + "straight through. Throw IllegalArgumentException for caller mistakes and "
+                    + "keep asserts for internal invariants nobody else can violate.");
+            }
+        }
+    }
+}
+
+/// <summary>Casting after instanceof repeats the test the language can now do in one clause.</summary>
+public sealed class InstanceofPatternOpportunityRule : JavaContractRule
+{
+    public override string Key => "QG-JV-SML-0330";
+    public override string Name => "Pattern Matching for instanceof should replace the cast that follows";
+    public override Severity Severity => Severity.Minor;
+    public override IssueKind Kind => IssueKind.CodeSmell;
+    public override string RemediationEffort => "2min";
+
+    public override void Execute(IRuleContext context)
+    {
+        if (!HasTree(context))
+            return;
+        foreach (var branch in context.Root.OfKind(NodeKind.If))
+        {
+            if (branch.ChildAt(0) is not { Kind: NodeKind.Binary, Text: "instanceof" } test
+                || test.ChildAt(0) is not { Kind: NodeKind.Identifier } tested
+                || test.ChildAt(1) is not { Kind: NodeKind.Pattern } pattern)
+                continue;
+            var thenBlock = branch.Children.FirstOrDefault(c => c.Kind == NodeKind.Block);
+            if (thenBlock == null)
+                continue;
+            var castDeclaration = thenBlock.Children.FirstOrDefault(c =>
+                c.Kind == NodeKind.VariableDeclaration
+                && c.OfKind(NodeKind.Cast).Any(cast =>
+                    cast.Text == pattern.Text
+                    && cast.ChildAt(1) is { Kind: NodeKind.Identifier, Text: var operand }
+                    && operand == tested.Text));
+            if (castDeclaration == null)
+                continue;
+            context.Report(branch,
+                $"The instanceof already proved `{tested.Text}` is a {pattern.Text}; the line below "
+                + "repeats the proof with a cast. Pattern matching folds both into one clause - "
+                + $"`if ({tested.Text} instanceof {pattern.Text} s)` - which cannot fall out of "
+                + "sync when the type changes.");
+        }
+    }
+}
+
+/// <summary>Nested min-in-max clamps by hand what Math.clamp states directly.</summary>
+public sealed class MathClampOpportunityRule : JavaContractRule
+{
+    public override string Key => "QG-JV-SML-0374";
+    public override string Name => "Built-in Math.clamp should bound the value";
+    public override Severity Severity => Severity.Minor;
+    public override IssueKind Kind => IssueKind.CodeSmell;
+    public override string RemediationEffort => "2min";
+
+    public override void Execute(IRuleContext context)
+    {
+        if (!HasTree(context))
+            return;
+        foreach (var outer in SyntaxQuery.Invocations(context.Root))
+        {
+            var name = Called(outer);
+            if (name is not ("max" or "min")
+                || SyntaxQuery.Receiver(outer) != "Math")
+                continue;
+            var nested = Args(outer).Any(a =>
+                a.Kind == NodeKind.Invocation
+                && Called(a) is "max" or "min"
+                && SyntaxQuery.Receiver(a) == "Math");
+            if (!nested)
+                continue;
+            context.Report(outer,
+                "This max/min nesting bounds a value by hand, and every reader re-derives which "
+                + "argument is the floor and which the ceiling. Java 21 ships Math.clamp(value, low, "
+                + "high): the intent is named, the argument order stops being a puzzle, and the "
+                + "overload table covers the numeric types.");
+        }
+    }
+}
+
+/// <summary>An AWS client built without a region asks the environment, and fails elsewhere.</summary>
+public abstract class AwsClientBuilderRule : JavaContractRule
+{
+    public override Severity Severity => Severity.Major;
+    public override IssueKind Kind => IssueKind.Bug;
+    public override string RemediationEffort => "15min";
+
+    protected abstract string MissingSetting { get; }
+
+    protected abstract string Consequence(string client);
+
+    public override void Execute(IRuleContext context)
+    {
+        if (!IsAwsSdkFile(context))
+            return;
+        foreach (var call in SyntaxQuery.Invocations(context.Root))
+        {
+            if (Called(call) != "build")
+                continue;
+            var chain = Chain(call).ToList();
+            if (chain.Count < 2 || Called(chain[^2]) != "builder")
+                continue;
+            var client = ClientName(chain[^2]);
+            if (client == null || !client.EndsWith("Client", StringComparison.Ordinal))
+                continue;
+            if (chain.Any(step => Called(step) == MissingSetting))
+                continue;
+            context.Report(call, Consequence(client));
+        }
+    }
+
+    private static string? ClientName(SyntaxNode builderCall)
+    {
+        var receiver = SyntaxQuery.Receiver(builderCall);
+        return receiver?.Length > 0 ? receiver.Split('.')[^1].Replace("Builder", "") : null;
+    }
+}
+
+public sealed class AwsClientRegionMissingRule : AwsClientBuilderRule
+{
+    public override string Key => "QG-JV-SML-0343";
+    public override string Name => "A region should be set when creating an AWS client";
+    public override Severity Severity => Severity.Minor;
+    public override IssueKind Kind => IssueKind.CodeSmell;
+    protected override string MissingSetting => "region";
+
+    protected override string Consequence(string client)
+        => $"{client}.builder() ends without .region(...): the SDK falls back to environment "
+           + "resolution - profile files, EC2 metadata - which exists on your machine and may not "
+           + "exist where this runs. Name the region in code, or read it once from configuration "
+           + "and pass it here.";
+}
+
+public sealed class AwsClientCredentialsMissingRule : AwsClientBuilderRule
+{
+    public override string Key => "QG-JV-SML-0344";
+    public override string Name => "A credentials provider should be set when creating an AWS client";
+    public override Severity Severity => Severity.Minor;
+    public override IssueKind Kind => IssueKind.CodeSmell;
+    protected override string MissingSetting => "credentialsProvider";
+
+    protected override string Consequence(string client)
+        => $"{client}.builder() ends without .credentialsProvider(...): authentication is left to "
+           + "whatever the default chain finds at run time, and the failure arrives as an "
+           + "UnrecognizedPropertyException-shaped surprise on the first request. Pass the provider "
+           + "explicitly - a container-managed profile, or DefaultCredentialsProvider named for "
+           + "what it is.";
+}
+
+/// <summary>A region written as a literal pins every deployment to wherever the code was written.</summary>
+public sealed class AwsRegionHardcodedRule : JavaContractRule
+{
+    public override string Key => "QG-JV-SML-0348";
+    public override string Name => "An AWS region should not be set with a hardcoded String";
+    public override Severity Severity => Severity.Minor;
+    public override IssueKind Kind => IssueKind.CodeSmell;
+    public override string RemediationEffort => "5min";
+
+    public override void Execute(IRuleContext context)
+    {
+        if (!IsAwsSdkFile(context))
+            return;
+        foreach (var call in SyntaxQuery.Invocations(context.Root))
+        {
+            if (Called(call) != "region")
+                continue;
+            var literal = Args(call).FirstOrDefault(a => a.Kind == NodeKind.StringLiteral);
+            if (literal == null)
+                continue;
+            context.Report(call,
+                "The region is written as a string constant here, so moving this service means "
+                + "editing code and redeploying. Take Region from configuration, or use the typed "
+                + "constants the SDK ships - the compiler then catches a typo before any request "
+                + "leaves.");
+        }
+    }
+}
+
+/// <summary>A key that unlocks without the user present protects nothing the user owns.</summary>
+public sealed class KeyStoreUserAuthenticationRule : JavaContractRule
+{
+    public override string Key => "QG-JV-SEC-0060";
+    public override string Name => "Android KeyStore keys should require user authentication";
+    public override Severity Severity => Severity.Critical;
+    public override IssueKind Kind => IssueKind.Vulnerability;
+    public override string RemediationEffort => "20min";
+
+    public override void Execute(IRuleContext context)
+    {
+        if (!HasTree(context))
+            return;
+        var mentionsKeyStore = context.Root.OfKind(NodeKind.Identifier)
+            .Any(n => n.Text.Contains("KeyGenParameterSpec", StringComparison.Ordinal));
+        if (!mentionsKeyStore)
+            return;
+        foreach (var call in SyntaxQuery.Invocations(context.Root))
+        {
+            if (Called(call) != "build"
+                || SyntaxQuery.Receiver(call)?.EndsWith("Builder", StringComparison.Ordinal) != true)
+                continue;
+            var chain = Chain(call).ToList();
+            if (chain.Any(step => Called(step) == "setUserAuthenticationRequired"))
+                continue;
+            context.Report(call,
+                "This key is generated without setUserAuthenticationRequired(true): whatever it "
+                + "protects is available to anyone holding the unlocked device, and to code that "
+                + "runs there. Require the user - fingerprint, biometrics, or the lock screen "
+                + "credential - before the key performs its first cryptographic operation.");
+        }
     }
 }

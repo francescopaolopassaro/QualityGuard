@@ -3304,6 +3304,21 @@ public sealed class CSharpParser
             case "goto":
             case "yield":
                 return ParseJump(start);
+            case "assert" when IsJava || IsKotlin:
+            {
+                // an assertion is a guarded jump, not an identifier followed by stray statements:
+                // leaving the pieces apart fed every expression rule on the line after it
+                _index++;
+                var assertion = Node(NodeKind.Jump, start, "assert");
+                if (ParseExpression() is { } condition)
+                    assertion.Add(condition);
+                if (Accept(":") && ParseExpression() is { } message)
+                    assertion.Add(message);
+                Accept(";");
+                assertion.Tokens = SliceFrom(start);
+                assertion.Range = TextRange.Of(assertion.Tokens);
+                return assertion;
+            }
         }
 
         var modifiers = ParseModifiers();

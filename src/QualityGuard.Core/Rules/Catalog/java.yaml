@@ -408,3 +408,178 @@
     printed together.
   detect:
     - line: "catch\\s*\\([^)]*\\)\\s*\\{[^}]*throw\\s+new\\s+\\w+\\s*\\(\\s*\"[^\"]*\"\\s*\\)"
+
+- key: QG-JV-SML-0070
+  name: Future keywords should not be used as names
+  languages: [java]
+  category: SML
+  severity: minor
+  effort: 10min
+  message: A declaration takes the name of a keyword that is arriving.
+  summary: An identifier collides with an upcoming Java keyword.
+  why: |
+    `var`, `record`, `yield`, `sealed` and `permits` are or will be keywords: the day this file
+    moves to a newer compiler it stops parsing, and the rename happens under migration pressure.
+  fix: |
+    Rename the declaration now - `value`, `entry`, `isSealed` - while nothing depends on it.
+
+- key: QG-JV-SML-0113
+  name: Lambdas should be replaced with method references
+  languages: [java]
+  category: SML
+  severity: minor
+  effort: 2min
+  message: A lambda only forwards its argument to one call.
+  summary: A forwarding lambda hides a method reference.
+  why: |
+    `x -> Foo.parse(x)` repeats the parameter to hand it on. The method reference says the same
+    thing without the ceremony, reads as a noun inside pipelines, and survives refactors of the
+    surrounding code unchanged.
+  fix: |
+    Write Foo::parse - or x::trim when the parameter is the receiver.
+
+- key: QG-JV-BUG-0053
+  name: Dissimilar primitive wrappers should not be mixed in a ternary
+  languages: [java]
+  category: BUG
+  severity: major
+  effort: 10min
+  message: The two branches of a conditional build different wrapper types.
+  summary: Mixed wrappers in a ternary unbox at the worst moment.
+  why: |
+    Different numeric wrappers force the compiler to unbox both branches to the wider type and rebox
+    the result. When the losing branch is null - a cache miss, an optional field - the unboxing
+    throws NullPointerException instead of yielding null.
+  fix: |
+    Build both branches as the same type explicitly, or return Optional of the wider type.
+
+- key: QG-JV-BUG-0088
+  name: Getters and setters should be synchronized in pairs
+  languages: [java]
+  category: BUG
+  severity: major
+  effort: 15min
+  message: A setter skips the synchronization its getter applies.
+  summary: Half-synchronized accessors expose torn state.
+  why: |
+    A reader holding the lock can still observe a value half-written by an unlocked setter: the pair
+    is the unit of thread safety, not each method alone.
+  fix: |
+    Synchronize both, or replace the pair with a volatile field or an atomic holder.
+
+- key: QG-JV-SML-0233
+  name: A private method called only by inner classes should move there
+  languages: [java]
+  category: SML
+  severity: minor
+  effort: 10min
+  message: Every caller of a private method sits in an inner class.
+  summary: A private member serves only the nested classes.
+  why: |
+    The outer class carries a member it never uses itself, and grants the inner classes a path into
+    its internals they would not otherwise have - synthetic accessors included.
+  fix: |
+    Move the method into the class that calls it, or widen it deliberately if both really need it.
+
+- key: QG-JV-SML-0267
+  name: Asserts should not check the parameters of a public method
+  languages: [java]
+  category: SML
+  severity: minor
+  effort: 5min
+  message: An assert validates what outside callers pass.
+  summary: Caller validation rides on assertions.
+  why: |
+    Assertions execute only when the JVM runs with -ea: in production the invalid argument walks
+    straight through and fails later, further from its cause.
+  fix: |
+    Throw IllegalArgumentException for caller mistakes; keep asserts for internal invariants.
+
+- key: QG-JV-SML-0330
+  name: Pattern Matching for instanceof should replace the cast that follows
+  languages: [java]
+  category: SML
+  severity: minor
+  effort: 2min
+  message: A variable is tested with instanceof then cast from the same expression.
+  summary: The cast repeats the proof instanceof already made.
+  why: |
+    The test proved the type; the cast proves it again and binds it to a second name. Pattern
+    matching folds both into one clause that cannot fall out of sync when the type changes.
+  fix: |
+    Write if (obj instanceof String s) and drop the declaration with the cast.
+
+- key: QG-JV-SML-0343
+  name: A region should be set when creating an AWS client
+  languages: [java]
+  category: SML
+  severity: minor
+  effort: 15min
+  message: An SDK v2 client builder ends without .region(...).
+  summary: Region resolution is left to the environment.
+  why: |
+    Without an explicit region the SDK consults profile files and instance metadata - sources that
+    exist on the developer machine and may not where this deploys, turning startup into a runtime
+    surprise.
+  fix: |
+    Name the region in code, or read it once from configuration and pass it to the builder.
+
+- key: QG-JV-SML-0344
+  name: A credentials provider should be set when creating an AWS client
+  languages: [java]
+  category: SML
+  severity: minor
+  effort: 15min
+  message: An SDK v2 client builder ends without .credentialsProvider(...).
+  summary: Authentication is left to the default chain.
+  why: |
+    Whatever the chain finds at run time decides how this client authenticates; the failure mode is
+    a first request that cannot authenticate, far from any code that could explain why.
+  fix: |
+    Pass the provider explicitly and say which one - container-managed profile or
+    DefaultCredentialsProvider named for what it is.
+
+- key: QG-JV-SML-0348
+  name: An AWS region should not be set with a hardcoded String
+  languages: [java]
+  category: SML
+  severity: minor
+  effort: 5min
+  message: .region() receives a string literal.
+  summary: A region literal pins deployments to source code.
+  why: |
+    Moving the service means editing code and redeploying, and a typo in the constant surfaces as a
+    runtime failure instead of a compile error.
+  fix: |
+    Read the region from configuration, or use the typed Region constants the SDK ships.
+
+- key: QG-JV-SEC-0060
+  name: Android KeyStore keys should require user authentication
+  languages: [java]
+  category: SEC
+  severity: critical
+  effort: 20min
+  message: A key is generated without setUserAuthenticationRequired(true).
+  summary: A hardware key usable without its owner.
+  why: |
+    Anyone holding the unlocked device - and any code running on it - can perform every
+    cryptographic operation the key allows. Requiring authentication ties each use to the user being
+    present and verified.
+  fix: |
+    Set setUserAuthenticationRequired(true) on the builder, and choose the timeout that matches how
+    often the user should re-prove themselves.
+
+- key: QG-JV-SML-0374
+  name: Built-in Math.clamp should bound the value
+  languages: [java]
+  category: SML
+  severity: minor
+  effort: 2min
+  message: Math.max wraps Math.min to bound a value by hand.
+  summary: Clamping is spelled as nested min and max.
+  why: |
+    Every reader re-derives which argument is the floor and which the ceiling, and one swapped
+    argument turns the clamp inside out silently.
+  fix: |
+    Use Math.clamp(value, low, high) - the intent is named and the overloads cover the numeric
+    types.

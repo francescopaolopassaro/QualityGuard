@@ -52,21 +52,52 @@ public sealed class PyImplicitStringConcatenationRule : RuleBase
 
     public override void Execute(IRuleContext context)
     {
-        var strings = context.Tokens.Where(t =>
-            t.Kind == TokenKind.String && t.Text.Length > 1).ToList();
-        for (var i = 0; i + 1 < strings.Count; i++)
+        // implicit concatenation lives INSIDE one expression: two string-literal siblings with no
+        // other element between them, written on different lines. Two strings on adjacent lines of
+        // different expressions - separate calls, dictionary entries, asserts - are ordinary code,
+        // and reading the file as a token stream reported hundreds of those.
+        foreach (var node in context.Root.OfKind(
+                     NodeKind.Parenthesized, NodeKind.ListLiteral, NodeKind.ObjectInitializer,
+                     NodeKind.Assignment))
         {
-            if (strings[i + 1].Line == strings[i].Line) continue;
-            if (strings[i + 1].Line - strings[i].Line > 1) continue;
-            // two string literals on adjacent lines with no code between them = implicit concat
-            var between = context.Tokens.Where(t =>
-                t.Line > strings[i].Line && t.Line < strings[i + 1].Line).ToList();
-            if (between.Count > 0) continue;
-            context.Report("These two string literals are implicitly concatenated because they sit "
-                                  + "on adjacent lines with nothing between them. If the join was not "
-                                  + "intentional, add an explicit operator or a comma.",
-                strings[i + 1].Line);
+            var children = node.Children;
+            for (var i = 0; i + 1 < children.Count; i++)
+            {
+                if (children[i].Kind != NodeKind.StringLiteral
+                    || children[i + 1].Kind != NodeKind.StringLiteral)
+                    continue;
+                if (children[i + 1].Line == children[i].Line)
+                    continue;
+                // a comma, colon or operator between the siblings means separate elements -
+                // dictionary entries, list items - and only bare adjacency glues the strings
+                var separators = TokensBetween(node, children[i], children[i + 1]);
+                if (separators.Any(t => t.Text is "," or ":" or "+" or ")" or "]" or "}"))
+                    continue;
+                context.Report(children[i + 1],
+                    "These two literals sit side by side inside one expression on different "
+                    + "lines, so Python glues them into a single string silently. If that is the "
+                    + "intent it reads better on one line or joined with +; if it is not, a "
+                    + "missing comma just merged two values.");
+            }
         }
+    }
+
+    /// <summary>
+    /// The punctuation that lives between two sibling nodes - separators are tokens of the parent,
+    /// not nodes, so the tree alone cannot tell a glued pair from two list items.
+    /// </summary>
+    private static IReadOnlyList<Token> TokensBetween(SyntaxNode parent, SyntaxNode first, SyntaxNode second)
+    {
+        var start = first.Tokens.Count > 0 ? first.Tokens[^1] : null;
+        var end = second.Tokens.Count > 0 ? second.Tokens[0] : null;
+        if (start == null || end == null)
+            return [];
+        return parent.Tokens
+            .SkipWhile(t => !ReferenceEquals(t, start))
+            .Skip(1)
+            .TakeWhile(t => !ReferenceEquals(t, end))
+            .Where(t => t.Kind != TokenKind.Comment)
+            .ToList();
     }
 }
 
