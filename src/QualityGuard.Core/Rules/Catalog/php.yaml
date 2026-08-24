@@ -275,3 +275,61 @@
     with their session.
   fix: |
     Set DISALLOW_UNFILTERED_HTML to true and let the platform sanitise what is posted.
+
+- key: QG-PP-BUG-0134
+  name: A catch should not duplicate a type already caught
+  languages: [php]
+  category: BUG
+  severity: major
+  effort: 5min
+  message: A second catch repeats a type the same try already handles.
+  summary: An unreachable catch clause repeats an earlier one.
+  why: |
+    The first matching catch takes the exception; control never reaches its duplicate, and whoever
+    reads it assumes a distinction that does not exist.
+  fix: |
+    Delete the duplicate, or catch a genuinely different type.
+
+- key: QG-PP-SML-0301
+  name: Generic exceptions should not be thrown
+  languages: [php]
+  category: SML
+  severity: minor
+  effort: 10min
+  message: Exception, RuntimeException or ErrorException is thrown directly.
+  summary: A bare exception type says nothing about what failed.
+  why: |
+    Callers cannot catch for a reason: handling a bare Exception means handling everything, so real
+    failures and expected ones become indistinguishable at every boundary.
+  fix: |
+    Throw a named domain exception - ConfigurationMissing, PaymentRejected - so recovery can be
+    specific.
+
+- key: QG-PP-SML-0303
+  name: Reflection should not increase accessibility
+  languages: [php]
+  category: SML
+  severity: minor
+  effort: 15min
+  message: setAccessible(true) opens a member past its visibility.
+  summary: Accessibility is forced open with reflection.
+  why: |
+    Whatever invariant private and protected guard can now be broken from outside, and the next
+    refactor of the owning class cannot see this call exists.
+  fix: |
+    Use the public API, or widen the member deliberately where it is declared.
+
+- key: QG-PP-SML-0304
+  name: for loop stop conditions should be invariant
+  languages: [php]
+  category: SML
+  severity: minor
+  effort: 10min
+  message: No line of the loop ever changes what the stop condition reads.
+  summary: A stop condition reads values nothing updates.
+  why: |
+    With the watched value fixed, the loop either runs once against a condition that was already
+    false or spins forever - both are decided before the first iteration ends.
+  fix: |
+    Advance inside the body the value the condition compares, or compare against something the loop
+    actually moves.

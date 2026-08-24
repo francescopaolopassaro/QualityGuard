@@ -43,6 +43,16 @@ public static class KotlinIdiomRuleSet
         new KotlinDeprecatedUsageRule(),
         new KotlinGuavaImportRule(),
         new KotlinAbstractClassWithoutStateRule(),
+        new KotlinInappropriateCollectionCallRule(),
+        new KotlinSuspendingMainSafeRule(),
+        new KotlinDispatchersInjectableRule(),
+        new KotlinCrossDispatcherCallRule(),
+        new KotlinDelegationByRule(),
+        new KotlinPreferImmutableCollectionRule(),
+        new KotlinFilterChainSimplifyRule(),
+        new KotlinGradleSettingsNameRule(),
+        new KotlinGradleTaskMetadataRule(),
+        new KotlinGradleDependencyGroupsRule(),
     ];
 }
 
@@ -1375,6 +1385,438 @@ public sealed class KotlinAbstractClassWithoutStateRule : KotlinTreeRule
         }
     }
 }
+
+/// <summary>An immutable factory cannot be mutated; chaining a mutator on one fails at run time.</summary>
+public sealed class KotlinInappropriateCollectionCallRule : KotlinTreeRule
+{
+    private static readonly string[] ImmutableFactories =
+    [
+        "listOf", "setOf", "mapOf", "emptyList", "emptySet", "emptyMap", "arrayOf",
+        "sortedMapOf", "sortedSetOf"
+    ];
+
+    private static readonly string[] Mutators =
+    [
+        "add", "addAll", "remove", "removeAt", "removeAll", "retainAll", "clear", "set",
+        "put", "putAll", "replace", "compute", "merge"
+    ];
+
+    public override string Key => "QG-KT-BUG-0020";
+    public override string Name => "Inappropriate collection calls should not be made";
+    public override Severity Severity => Severity.Major;
+    public override IssueKind Kind => IssueKind.Bug;
+    public override string RemediationEffort => "10min";
+
+    public override void Execute(IRuleContext context)
+    {
+        if (!HasTree(context))
+            return;
+        foreach (var call in SyntaxQuery.Invocations(context.Root))
+        {
+            if (!Mutators.Contains(Called(call)))
+                continue;
+            var receiver = call.ChildAt(0)?.Kind == NodeKind.MemberSelect
+                ? call.ChildAt(0).ChildAt(0)
+                : null;
+            // only the direct form is certain: listOf(...)  .add(...) - reaching through a
+            // variable would need to know nobody reassigns it with a mutable builder
+            if (receiver?.Kind != NodeKind.Invocation
+                || !ImmutableFactories.Contains(Called(receiver)))
+                continue;
+            context.Report(call,
+                $"{Called(receiver)}() builds an immutable collection, and {Called(call)}() on it "
+                + "throws UnsupportedOperationException the first time this line runs. Build a "
+                + "mutable one - mutableListOf(), mutableMapOf() - or keep immutability and derive "
+                + "a new collection instead of mutating.");
+        }
+    }
+}
+
+/// <summary>A suspending function that blocks parks the thread it was given.</summary>
+public sealed class KotlinSuspendingMainSafeRule : KotlinTreeRule
+{
+    private static readonly string[] Blocking =
+    [
+        "readText", "readLines", "readBytes", "writeText", "appendText", "forEachLine",
+        "sleep", "execute"
+    ];
+
+    public override string Key => "QG-KT-SML-0048";
+    public override string Name => "Suspending functions should be main-safe";
+    public override Severity Severity => Severity.Minor;
+    public override IssueKind Kind => IssueKind.CodeSmell;
+    public override string RemediationEffort => "30min";
+
+    public override void Execute(IRuleContext context)
+    {
+        if (!HasTree(context))
+            return;
+        foreach (var function in SyntaxQuery.Functions(context.Root))
+        {
+            if (!ModifiersOf(function).Contains("suspend"))
+                continue;
+            var body = SyntaxQuery.Body(function);
+            if (body == null)
+                continue;
+            var blocking = SyntaxQuery.Invocations(body)
+                .Where(c => Blocking.Contains(Called(c)))
+                .Select(c => Called(c))
+                .Distinct()
+                .ToList();
+            if (blocking.Count == 0)
+                continue;
+            context.Report(function,
+                $"{function.Text}() is suspending but calls {string.Join(", ", blocking.Select(b => b + "()"))}, "
+                + "which blocks its thread until the work finishes. On the main dispatcher that "
+                + "freezes the interface; anywhere it starves the pool. Wrap the blocking call in "
+                + "withContext(Dispatchers.IO), or use the suspend counterparts these libraries "
+                + "usually also ship.");
+        }
+    }
+}
+
+/// <summary>A dispatcher written into the call site cannot be swapped out in tests.</summary>
+public sealed class KotlinDispatchersInjectableRule : KotlinTreeRule
+{
+    public override string Key => "QG-KT-SML-0050";
+    public override string Name => "Dispatchers should be injectable";
+    public override Severity Severity => Severity.Minor;
+    public override IssueKind Kind => IssueKind.CodeSmell;
+    public override string RemediationEffort => "15min";
+
+    public override void Execute(IRuleContext context)
+    {
+        if (!HasTree(context))
+            return;
+        foreach (var call in SyntaxQuery.Invocations(context.Root))
+        {
+            if (!Called(call).IsOneOf("withContext", "launch", "async", "flowOn"))
+                continue;
+            var arguments = Args(call);
+            var dispatcher = arguments.Count > 0 ? arguments[0] : null;
+            if (dispatcher?.Kind != NodeKind.MemberSelect
+                || dispatcher.ChildAt(0)?.Text != "Dispatchers")
+                continue;
+            context.Report(call,
+                $"Dispatchers.{dispatcher.ChildAt(1)?.Text} is hard-coded here, so a test has to "
+                + "run on the real dispatcher and wait for real queues. Take the CoroutineDispatcher "
+                + "as a constructor parameter (tests pass a test dispatcher), or inject a scope that "
+                + "already carries it.");
+        }
+    }
+}
+
+/// <summary>Calling another suspend function inside withContext hides which dispatcher serves it.</summary>
+public sealed class KotlinCrossDispatcherCallRule : KotlinTreeRule
+{
+    public override string Key => "QG-KT-SML-0051";
+    public override string Name => "Suspending functions should not be called on a different dispatcher";
+    public override Severity Severity => Severity.Minor;
+    public override IssueKind Kind => IssueKind.CodeSmell;
+    public override string RemediationEffort => "15min";
+
+    public override void Execute(IRuleContext context)
+    {
+        if (!HasTree(context))
+            return;
+        // same-file knowledge only: which local functions are suspending decides what counts as a
+        // suspending call here
+        var suspendNames = SyntaxQuery.Functions(context.Root)
+            .Where(f => ModifiersOf(f).Contains("suspend"))
+            .Select(f => f.Text).ToHashSet(StringComparer.Ordinal);
+        if (suspendNames.Count == 0)
+            return;
+        foreach (var call in SyntaxQuery.Invocations(context.Root))
+        {
+            if (Called(call) != "withContext" || Args(call).Count == 0)
+                continue;
+            var dispatcher = Args(call)[0];
+            if (dispatcher?.Kind != NodeKind.MemberSelect
+                || dispatcher.ChildAt(0)?.Text != "Dispatchers")
+                continue;
+            var block = call.OfKind(NodeKind.Lambda).FirstOrDefault();
+            if (block == null)
+                continue;
+            foreach (var inner in SyntaxQuery.Invocations(block))
+            {
+                if (!suspendNames.Contains(Called(inner)))
+                    continue;
+                context.Report(inner,
+                    $"{Called(inner)}() runs inside withContext(Dispatchers."
+                    + $"{dispatcher.ChildAt(1)?.Text}) although it is itself suspending: every "
+                    + "caller now pays for this dispatcher whether it fits or not. Let the callee "
+                    + "choose its own context, and keep withContext around plain blocking work.");
+            }
+        }
+    }
+}
+
+/// <summary>Every method forwarding verbatim to one field is the delegation keyword's job.</summary>
+public sealed class KotlinDelegationByRule : KotlinTreeRule
+{
+    public override string Key => "QG-KT-SML-0061";
+    public override string Name => "A delegating class should use the by clause";
+    public override Severity Severity => Severity.Minor;
+    public override IssueKind Kind => IssueKind.CodeSmell;
+    public override string RemediationEffort => "30min";
+
+    public override void Execute(IRuleContext context)
+    {
+        if (!HasTree(context))
+            return;
+        foreach (var type in context.Root.OfKind(NodeKind.ClassDeclaration))
+        {
+            var body = type.LastChild(NodeKind.Block);
+            if (body == null)
+                continue;
+            var functions = SyntaxQuery.Functions(type).ToList();
+            if (functions.Count < 2)
+                continue;
+            foreach (var field in body.Children.Where(c =>
+                         c.Kind == NodeKind.FieldDeclaration))
+            {
+                var fieldName = field.Text;
+                var forwarders = functions.Count(f => IsPureForwarder(f, fieldName));
+                if (forwarders == functions.Count && forwarders >= 2)
+                {
+                    context.Report(type,
+                        $"Every member of {type.Text} forwards verbatim to `{fieldName}`: this is "
+                        + "delegation spelled the long way, one wrapper per method. Kotlin binds an "
+                        + $"interface implementation to a value with `by` - `class {type.Text} by "
+                        + $"{fieldName}` - and all of this plumbing disappears.");
+                    break;
+                }
+            }
+        }
+    }
+
+    private static bool IsPureForwarder(SyntaxNode function, string fieldName)
+    {
+        var parameters = SyntaxQuery.Parameters(function).ToList();
+        var body = SyntaxQuery.Body(function);
+        if (body == null || body.Children.Count != 1)
+            return false;
+        var statement = body.Children[0];
+        var expression = statement.Kind == NodeKind.ExpressionStatement ? statement.ChildAt(0) : statement;
+        if (expression is not { Kind: NodeKind.Jump } && expression?.Kind != NodeKind.Invocation)
+            return false;
+        var call = expression.Kind == NodeKind.Jump ? expression.ChildAt(0) : expression;
+        if (call?.Kind != NodeKind.Invocation
+            || Called(call) != function.Text
+            || call.ChildAt(0)?.Kind != NodeKind.MemberSelect
+            || call.ChildAt(0).ChildAt(0)?.Text != fieldName)
+            return false;
+        var forwarded = Args(call);
+        return forwarded.Count == parameters.Count
+               && !forwarded.Where((arg, i) =>
+                   arg.Kind != NodeKind.Identifier || arg.Text != parameters[i].Text).Any();
+    }
+}
+
+/// <summary>A mutable collection nothing ever mutates should have been immutable.</summary>
+public sealed class KotlinPreferImmutableCollectionRule : KotlinTreeRule
+{
+    private static readonly string[] MutableFactories =
+    [
+        "mutableListOf", "mutableSetOf", "mutableMapOf", "arrayListOf", "hashMapOf",
+        "hashSetOf", "linkedMapOf", "linkedSetOf"
+    ];
+
+    public override string Key => "QG-KT-SML-0067";
+    public override string Name => "A collection should be immutable if its contents never change";
+    public override Severity Severity => Severity.Minor;
+    public override IssueKind Kind => IssueKind.CodeSmell;
+    public override string RemediationEffort => "10min";
+
+    public override void Execute(IRuleContext context)
+    {
+        if (!HasTree(context))
+            return;
+        foreach (var declaration in context.Root.OfKind(NodeKind.FieldDeclaration,
+                     NodeKind.VariableDeclaration))
+        {
+            var name = declaration.Text;
+            if (name.Length == 0)
+                continue;
+            var initializer = declaration.OfKind(NodeKind.ObjectCreation)
+                .Concat(declaration.OfKind(NodeKind.Invocation)).FirstOrDefault();
+            var factory = initializer == null ? null : Called(initializer);
+            var mutableByFactory = factory != null && MutableFactories.Contains(factory);
+            var mutableByVar = ModifiersOf(declaration).Contains("var");
+            if (!mutableByFactory && !(mutableByVar && initializer != null))
+                continue;
+            // only the shape where the name appears exactly once - its own declaration - is safe
+            // to judge; anything else may be mutated behind a call we cannot see from this file
+            if (context.Root.DescendantsAndSelf()
+                    .Count(n => n.Kind == NodeKind.Identifier && n.Text == name) > 1)
+                continue;
+            context.Report(declaration,
+                $"{name} is declared mutable but this file never changes its contents: the mutable "
+                + "type promises change that does not happen, and callers who read the type assume "
+                + "they must defend against it. Declare it with listOf/setOf/mapOf and val - the "
+                + "intent becomes part of the signature.");
+        }
+    }
+}
+
+/// <summary>filter followed by a question about the result asks the predicate twice.</summary>
+public sealed class KotlinFilterChainSimplifyRule : KotlinTreeRule
+{
+    public override string Key => "QG-KT-SML-0069";
+    public override string Name => "A filter chain should be simplified";
+    public override Severity Severity => Severity.Minor;
+    public override IssueKind Kind => IssueKind.CodeSmell;
+    public override string RemediationEffort => "5min";
+
+    public override void Execute(IRuleContext context)
+    {
+        if (!HasTree(context))
+            return;
+        foreach (var tail in SyntaxQuery.Invocations(context.Root))
+        {
+            var name = Called(tail);
+            if (name is not ("count" or "isEmpty" or "isNotEmpty" or "any" or "none"))
+                continue;
+            var receiver = tail.ChildAt(0)?.Kind == NodeKind.MemberSelect
+                ? tail.ChildAt(0).ChildAt(0)
+                : null;
+            if (receiver?.Kind != NodeKind.Invocation || Called(receiver) != "filter")
+                continue;
+            var suggestion = name switch
+            {
+                "count" => "count { predicate }",
+                "isEmpty" => "none { predicate }",
+                "isNotEmpty" or "any" => "any { predicate }",
+                _ => "none { predicate }"
+            };
+            context.Report(tail,
+                $"filter {{ ... }}.{name} materialises the matching elements just to ask a yes/no "
+                + $"or count question about them. {suggestion} walks the source once, keeps no "
+                + "intermediate list, and says in its name what is being asked.");
+        }
+    }
+}
+
+/// <summary>A settings file without rootProject.name breaks every included build that refers to it.</summary>
+public sealed class KotlinGradleSettingsNameRule : KotlinTreeRule
+{
+    public override string Key => "QG-KT-SML-0080";
+    public override string Name => "rootProject.name should always be present in Gradle settings";
+    public override Severity Severity => Severity.Minor;
+    public override IssueKind Kind => IssueKind.CodeSmell;
+    public override string RemediationEffort => "2min";
+
+    public override void Execute(IRuleContext context)
+    {
+        var file = System.IO.Path.GetFileName(context.File.Path);
+        if (!file.StartsWith("settings.", StringComparison.OrdinalIgnoreCase)
+            || !(file.EndsWith(".gradle.kts", StringComparison.OrdinalIgnoreCase)
+                 || file.EndsWith(".gradle", StringComparison.OrdinalIgnoreCase)))
+            return;
+        if (context.Tokens.Any(t => t.Text == "rootProject"))
+            return;
+        context.Report(context.Root,
+            "This settings file never sets rootProject.name, so the project takes the directory's "
+            + "name - which changes when the checkout folder does, and every artifact and "
+            + "dependency reference moves with it. Set it once here, explicitly.");
+    }
+}
+
+/// <summary>A task nobody can find or categorise is invisible in `gradle tasks`.</summary>
+public sealed class KotlinGradleTaskMetadataRule : KotlinTreeRule
+{
+    public override string Key => "QG-KT-SML-0081";
+    public override string Name => "Tasks should define description and group";
+    public override Severity Severity => Severity.Minor;
+    public override IssueKind Kind => IssueKind.CodeSmell;
+    public override string RemediationEffort => "2min";
+
+    public override void Execute(IRuleContext context)
+    {
+        if (!IsGradleScript(context))
+            return;
+        foreach (var call in SyntaxQuery.Invocations(context.Root))
+        {
+            var name = Called(call);
+            var receiver = SyntaxQuery.Receiver(call);
+            if (!(name.IsOneOf("register", "create", "registering", "creating")
+                  && (receiver == "tasks" || receiver.EndsWith(".tasks"))))
+                continue;
+            var block = call.Descendants().FirstOrDefault(n => n.Kind == NodeKind.Lambda);
+            if (block == null)
+                continue;
+            var assigned = block.OfKind(NodeKind.Assignment)
+                .Select(a => a.ChildAt(0)?.Text).ToHashSet(StringComparer.Ordinal);
+            var missing = new List<string>();
+            if (!assigned.Contains("description"))
+                missing.Add("description");
+            if (!assigned.Contains("group"))
+                missing.Add("group");
+            if (missing.Count == 0)
+                continue;
+            context.Report(call,
+                $"This task declares neither {string.Join(" nor ", missing)}: it disappears from "
+                + "`gradle tasks` grouping and readers of the output cannot tell what it is for. "
+                + "Two lines inside the configuration fix both.");
+        }
+    }
+}
+
+/// <summary>Dependencies scattered across configurations read as noise instead of layers.</summary>
+public sealed class KotlinGradleDependencyGroupsRule : KotlinTreeRule
+{
+    private static readonly string[] Order =
+    [
+        "implementation", "api", "compileOnly", "runtimeOnly", "testImplementation",
+        "testCompileOnly", "testRuntimeOnly", "kapt", "ksp", "debugImplementation",
+        "releaseImplementation", "coreLibraryDesugaring"
+    ];
+
+    public override string Key => "QG-KT-SML-0082";
+    public override string Name => "Dependencies should be grouped by destination";
+    public override Severity Severity => Severity.Minor;
+    public override IssueKind Kind => IssueKind.CodeSmell;
+    public override string RemediationEffort => "5min";
+
+    public override void Execute(IRuleContext context)
+    {
+        if (!IsGradleScript(context))
+            return;
+        var highestSeen = -1;
+        foreach (var call in SyntaxQuery.Invocations(context.Root))
+        {
+            var config = ConfigurationRank(SyntaxQuery.Receiver(call));
+            if (config < 0)
+                continue;
+            if (config < highestSeen)
+            {
+                context.Report(call,
+                    $"`{SyntaxQuery.Receiver(call)}` appears after a higher-priority configuration "
+                    + "already listed above: the block reads as one undifferentiated wall instead "
+                    + "of compile-time, runtime and test layers. Group declarations by "
+                    + "configuration - each layer together tells the reader where a dependency "
+                    + "actually reaches.");
+                break;
+            }
+            highestSeen = Math.Max(highestSeen, config);
+        }
+    }
+
+    private static int ConfigurationRank(string? configuration)
+    {
+        if (configuration == null)
+            return -1;
+        var index = Array.FindIndex(Order, c => configuration == c || configuration.EndsWith("." + c, StringComparison.Ordinal));
+        return index;
+    }
+}
+
+internal static class KotlinStringExtensions
+{
+    public static bool IsOneOf(this string value, params string[] candidates)
+        => candidates.Contains(value, StringComparer.Ordinal);
+}
+
 
 
 

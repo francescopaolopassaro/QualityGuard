@@ -103,6 +103,7 @@ public static class BuiltInRuleRegistrar
         ..Languages.CSharpVbGapRuleSet.All,
         ..Languages.JavaGapRuleSet.All,
         ..Languages.PhpGapRuleSet.All,
+        ..Languages.PhpGapRuleSet2.All,
         ..Languages.PythonGapRuleSet.All,
         ..Languages.PythonGapRuleSet2.All,
         ..Languages.CssGapRuleSet.All,

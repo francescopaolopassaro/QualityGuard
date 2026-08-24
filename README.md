@@ -172,8 +172,8 @@ read as a tree of keys and blocks.
 | JavaScript | `JS` | 470 | dedicated parser |
 | Python | `PY` | 478 | dedicated parser |
 | C# / VB.NET | `CS` | 464 | dedicated parser |
-| Kotlin | `KT` | 224 | dedicated parser (C-family dialect) |
-| PHP | `PP` | 206 | dedicated parser |
+| Kotlin | `KT` | 234 | dedicated parser (C-family dialect) |
+| PHP | `PP` | 210 | dedicated parser |
 | Terraform | `TF` | 148 | configuration tree |
 | HTML | `HTML` | 139 | markup reader |
 | Go | `GO` | 120 | dedicated parser |

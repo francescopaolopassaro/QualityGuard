@@ -226,23 +226,19 @@
     - invocation: [runFinalizersOnExit]
 
 - key: QG-KT-BUG-0020
-  name: Inappropriate collection calls should match the behaviour the code describes
+  name: Inappropriate collection calls should not be made
   languages: [kt]
   category: BUG
   severity: major
-  effort: 15min
-  tags: [bug, generated]
-  generated: true
-  status: planned
-  message: This code does not behave the way it reads.
-  summary: The code does not do what its shape suggests, or fails on ordinary input.
+  effort: 10min
+  message: A mutator runs on a collection built immutable.
+  summary: An immutable factory is asked to mutate.
   why: |
-    Written this way the code works by accident or breaks on values that are perfectly normal, and the
-    mistake is easy to miss in review because the intent reads correctly.
+    listOf/setOf/mapOf build read-only collections: add(), put() and friends throw
+    UnsupportedOperationException the first time the line executes.
   fix: |
-    Make the intended behaviour explicit — fix the condition, the operator or the order of operations —
-    and cover the case that used to fail with a test.
-
+    Build mutable when mutation is real - mutableListOf() - or derive new collections instead of
+    mutating.
 - key: QG-KT-BUG-0021
   name: PreparedStatement and ResultSet methods should get valid indices
   languages: [kt]
@@ -522,23 +518,18 @@
     Keep the MutableStateFlow/MutableSharedFlow private and expose it as StateFlow/SharedFlow; only
     the owning class emits.
 - key: QG-KT-SML-0048
-  name: Suspending functions should be simplified
+  name: Suspending functions should be main-safe
   languages: [kt]
   category: SML
   severity: minor
-  effort: 15min
-  tags: [sml, generated]
-  generated: true
-  status: planned
-  message: This code is harder to read or change than the behaviour requires.
-  summary: The code works but is harder to read or change than the behaviour requires.
+  effort: 30min
+  message: A suspend function calls blocking APIs directly.
+  summary: Suspending code blocks its thread.
   why: |
-    The intent is buried, duplicated, or spread across places that must stay in sync, so every future
-    change costs more than it should and carries a risk that has nothing to do with the change itself.
+    The suspend modifier promises cooperative waiting; a blocking call inside parks the thread -
+    freezing the interface on Main or starving the pool elsewhere.
   fix: |
-    Remove what is not used, name what is unclear, and keep one piece of behaviour in one place so the
-    next change touches a single spot.
-
+    Wrap the blocking work in withContext(Dispatchers.IO) or use the library's suspend API.
 - key: QG-KT-SML-0049
   name: A function returning Flow or Channel should not be suspending
   languages: [kt]
@@ -555,42 +546,31 @@
     Drop suspend and return the flow directly; move the suspending work inside flow { } so it runs
     per collector.
 - key: QG-KT-SML-0050
-  name: Dispatchers should be simplified
+  name: Dispatchers should be injectable
   languages: [kt]
   category: SML
   severity: minor
   effort: 15min
-  tags: [sml, generated]
-  generated: true
-  status: planned
-  message: This code is harder to read or change than the behaviour requires.
-  summary: The code works but is harder to read or change than the behaviour requires.
+  message: A dispatcher constant is written into the call site.
+  summary: A hard-coded dispatcher cannot be swapped in tests.
   why: |
-    The intent is buried, duplicated, or spread across places that must stay in sync, so every future
-    change costs more than it should and carries a risk that has nothing to do with the change itself.
+    Tests must then run on the real dispatcher and wait for real queues, which makes timing flaky
+    and slow.
   fix: |
-    Remove what is not used, name what is unclear, and keep one piece of behaviour in one place so the
-    next change touches a single spot.
-
+    Take CoroutineDispatcher as a constructor parameter, or inject a scope that carries it.
 - key: QG-KT-SML-0051
-  name: Suspending functions should not be used
+  name: Suspending functions should not be called on a different dispatcher
   languages: [kt]
   category: SML
   severity: minor
   effort: 15min
-  tags: [avoid_api, generated]
-  generated: true
-  status: planned
-  message: This API should be replaced by the current alternative.
-  summary: Code calls an API that is unsafe, obsolete or superseded by a better alternative.
+  message: withContext wraps a call to another suspend function.
+  summary: One function dictates another's dispatcher.
   why: |
-    The API stays available for compatibility, so nothing fails at build time, but it carries behaviour
-    the platform now considers a defect — unchecked input, a weak guarantee, or a cost the replacement
-    avoids. Its presence also spreads: new code copies what it finds nearby.
+    Every caller pays for this dispatcher whether it fits their work or not, and reasoning about
+    where code runs needs both files open.
   fix: |
-    Replace the call with the current API, and keep the old one only behind a compatibility layer that is
-    documented and dated.
-
+    Keep withContext around plain blocking work; let suspend callees choose their own context.
 - key: QG-KT-SML-0052
   name: An extension on CoroutineScope should not be suspending
   languages: [kt]
@@ -787,23 +767,18 @@
     Declare `var index: Int` with custom get() and set(value) beside it; callers then write the name
     without parens.
 - key: QG-KT-SML-0061
-  name: Delegator pattern should be simplified
+  name: A delegating class should use the by clause
   languages: [kt]
   category: SML
   severity: minor
-  effort: 15min
-  tags: [sml, generated]
-  generated: true
-  status: planned
-  message: This code is harder to read or change than the behaviour requires.
-  summary: The code works but is harder to read or change than the behaviour requires.
+  effort: 30min
+  message: Every member forwards verbatim to one field.
+  summary: Delegation is spelled as one wrapper per method.
   why: |
-    The intent is buried, duplicated, or spread across places that must stay in sync, so every future
-    change costs more than it should and carries a risk that has nothing to do with the change itself.
+    Each wrapper is plumbing a reader has to step over, and a new interface method silently misses
+    its forwarder until something breaks.
   fix: |
-    Remove what is not used, name what is unclear, and keep one piece of behaviour in one place so the
-    next change touches a single spot.
-
+    Bind the implementation with `class X by field` - one line replaces them all.
 - key: QG-KT-SML-0062
   name: The singleton pattern should use an object declaration
   languages: [kt]
@@ -865,23 +840,18 @@
   fix: |
     Replace a.equals(b) with a == b and !a.equals(b) with a != b.
 - key: QG-KT-SML-0067
-  name: Collection should be simplified
+  name: A collection should be immutable if its contents never change
   languages: [kt]
   category: SML
   severity: minor
-  effort: 15min
-  tags: [sml, generated]
-  generated: true
-  status: planned
-  message: This code is harder to read or change than the behaviour requires.
-  summary: The code works but is harder to read or change than the behaviour requires.
+  effort: 10min
+  message: A collection is declared mutable but nothing mutates it here.
+  summary: Mutable types promise change that never happens.
   why: |
-    The intent is buried, duplicated, or spread across places that must stay in sync, so every future
-    change costs more than it should and carries a risk that has nothing to do with the change itself.
+    Readers of a MutableList assume they must defend against concurrent change; an immutable type
+    removes that doubt at the signature.
   fix: |
-    Remove what is not used, name what is unclear, and keep one piece of behaviour in one place so the
-    next change touches a single spot.
-
+    Declare listOf/setOf/mapOf with val when the contents are fixed.
 - key: QG-KT-SML-0068
   name: An abstract class without state should be an interface
   languages: [kt]
@@ -897,23 +867,18 @@
   fix: |
     Convert the abstract class to an interface and update implementers.
 - key: QG-KT-SML-0069
-  name: Function chain using filter should be simplified
+  name: A filter chain should be simplified
   languages: [kt]
   category: SML
   severity: minor
-  effort: 15min
-  tags: [sml, generated]
-  generated: true
-  status: planned
-  message: This code is harder to read or change than the behaviour requires.
-  summary: The code works but is harder to read or change than the behaviour requires.
+  effort: 5min
+  message: filter { } feeds count, isEmpty, any or none.
+  summary: filter materialises elements just to answer a question about them.
   why: |
-    The intent is buried, duplicated, or spread across places that must stay in sync, so every future
-    change costs more than it should and carries a risk that has nothing to do with the change itself.
+    filter builds the matching list before the terminal counts it: one pass becomes two, with an
+    intermediate allocation in between.
   fix: |
-    Remove what is not used, name what is unclear, and keep one piece of behaviour in one place so the
-    next change touches a single spot.
-
+    count { predicate }, none { predicate } or any { predicate } walk once and name the question.
 - key: QG-KT-SML-0070
   name: A find result compared to null should be any, none or contains
   languages: [kt]
@@ -1069,59 +1034,44 @@
     Move coordinates into a version catalog, gradle.properties key, or platform BOM and reference
     the alias here.
 - key: QG-KT-SML-0080
-  name: RootProject.name should be simplified
+  name: rootProject.name should always be present in Gradle settings
   languages: [kt]
   category: SML
   severity: minor
-  effort: 15min
-  tags: [sml, generated]
-  generated: true
-  status: planned
-  message: This code is harder to read or change than the behaviour requires.
-  summary: The code works but is harder to read or change than the behaviour requires.
+  effort: 2min
+  message: settings.gradle sets no rootProject.name.
+  summary: The project inherits the checkout directory's name.
   why: |
-    The intent is buried, duplicated, or spread across places that must stay in sync, so every future
-    change costs more than it should and carries a risk that has nothing to do with the change itself.
+    That name changes with the folder someone clones into, and artifacts and references move with it
+    - a rename nobody intended.
   fix: |
-    Remove what is not used, name what is unclear, and keep one piece of behaviour in one place so the
-    next change touches a single spot.
-
+    Set rootProject.name = "..." explicitly in the settings file.
 - key: QG-KT-SML-0081
-  name: Tasks should be simplified
+  name: Tasks should define description and group
   languages: [kt]
   category: SML
   severity: minor
-  effort: 15min
-  tags: [sml, generated]
-  generated: true
-  status: planned
-  message: This code is harder to read or change than the behaviour requires.
-  summary: The code works but is harder to read or change than the behaviour requires.
+  effort: 2min
+  message: A registered task declares neither description nor group.
+  summary: A task is invisible in gradle tasks output.
   why: |
-    The intent is buried, duplicated, or spread across places that must stay in sync, so every future
-    change costs more than it should and carries a risk that has nothing to do with the change itself.
+    Without metadata the task lands under 'other tasks' and readers cannot tell what running it will
+    do.
   fix: |
-    Remove what is not used, name what is unclear, and keep one piece of behaviour in one place so the
-    next change touches a single spot.
-
+    Two lines in the configuration set description and group.
 - key: QG-KT-SML-0082
-  name: Dependencies should be simplified
+  name: Dependencies should be grouped by destination
   languages: [kt]
   category: SML
   severity: minor
-  effort: 15min
-  tags: [sml, generated]
-  generated: true
-  status: planned
-  message: This code is harder to read or change than the behaviour requires.
-  summary: The code works but is harder to read or change than the behaviour requires.
+  effort: 5min
+  message: Configurations appear out of order in the dependencies block.
+  summary: Dependency declarations are scattered across configurations.
   why: |
-    The intent is buried, duplicated, or spread across places that must stay in sync, so every future
-    change costs more than it should and carries a risk that has nothing to do with the change itself.
+    The block reads as one wall instead of compile-time, runtime and test layers, so where a
+    dependency reaches has to be checked line by line.
   fix: |
-    Remove what is not used, name what is unclear, and keep one piece of behaviour in one place so the
-    next change touches a single spot.
-
+    Group declarations by configuration - implementation together, testImplementation together.
 - key: QG-KT-SML-0083
   name: Gradle settings file should be simplified
   languages: [kt]

@@ -3189,6 +3189,27 @@ public sealed class CSharpParser
         // `use` also introduces a trait inside a class and a closure binding: both end at ; or {
         _index++;
 
+        // what echo and print carry is ordinary code - reads, calls, concatenations - and rules
+        // need to see it; swallowing it into a label left every output line invisible
+        if (keyword is "echo" or "print")
+        {
+            var output = Node(NodeKind.ExpressionStatement, start, keyword);
+            while (!AtEnd && !Is(";"))
+            {
+                var before = _index;
+                if (ParseAssignment() is { } part)
+                    output.Add(part);
+                if (_index == before)
+                    _index++;
+                if (!Accept(","))
+                    break;
+            }
+            Accept(";");
+            output.Tokens = SliceFrom(start);
+            output.Range = TextRange.Of(output.Tokens);
+            return output;
+        }
+
         var target = new System.Text.StringBuilder();
         while (!AtEnd && !Is(";") && !Is("{"))
             target.Append(Take().Text);
