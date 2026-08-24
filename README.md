@@ -171,7 +171,7 @@ read as a tree of keys and blocks.
 | Java | `JV` | 617 | dedicated parser |
 | JavaScript | `JS` | 470 | dedicated parser |
 | Python | `PY` | 478 | dedicated parser |
-| C# / VB.NET | `CS` | 445 | dedicated parser |
+| C# / VB.NET | `CS` | 464 | dedicated parser |
 | Kotlin | `KT` | 224 | dedicated parser (C-family dialect) |
 | PHP | `PP` | 206 | dedicated parser |
 | Terraform | `TF` | 148 | configuration tree |

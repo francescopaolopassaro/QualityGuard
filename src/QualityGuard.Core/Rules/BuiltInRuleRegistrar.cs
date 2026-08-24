@@ -78,6 +78,7 @@ public static class BuiltInRuleRegistrar
         ..Languages.XmlPlatformRuleSet.All,
         ..Languages.KotlinAndroidRuleSet.All,
         ..Languages.KotlinIdiomRuleSet.All,
+        ..Languages.CSharpContractRuleSet.All,
         ..Languages.PythonCloudRuleSet.All,
         ..Languages.ClusterSecurityRuleSet.All,
         ..Languages.CloudFormationSecurityRuleSet.All,

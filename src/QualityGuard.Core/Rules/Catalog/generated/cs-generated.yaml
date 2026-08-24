@@ -160,23 +160,19 @@
     name, and keep the original as the sequence of those steps.
 
 - key: QG-CS-SML-0098
-  name: Equals and the comparison operators should be simplified
-  languages: [cs]
+  name: Equals and operators should agree with IComparable
+  languages: [cs, vb]
   category: SML
   severity: minor
   effort: 15min
-  tags: [sml, generated]
-  generated: true
-  status: planned
-  message: This code is harder to read or change than the behaviour requires.
-  summary: The code works but is harder to read or change than the behaviour requires.
+  message: A class implements IComparable without overriding Equals.
+  summary: Ordering and equality answer different questions.
   why: |
-    The intent is buried, duplicated, or spread across places that must stay in sync, so every future
-    change costs more than it should and carries a risk that has nothing to do with the change itself.
+    Sorted collections treat two equal-valued objects as equal while Contains and dictionary lookups
+    treat them as different - the same pair both belongs and does not belong, depending on which
+    container holds it.
   fix: |
-    Remove what is not used, name what is unclear, and keep one piece of behaviour in one place so the
-    next change touches a single spot.
-
+    Override Equals and GetHashCode, then align == and != with CompareTo's notion of sameness.
 - key: QG-CS-SML-0099
   name: GC.Collect should not be used
   languages: [cs]
@@ -998,23 +994,18 @@
     - invocation: [IsReportingOnLeft]
 
 - key: QG-CS-SML-0156
-  name: Hard-to-read code should be simplified
-  languages: [cs]
+  name: Whitespace characters in literals should be escaped
+  languages: [cs, vb]
   category: SML
   severity: minor
-  effort: 15min
-  tags: [sml, generated]
-  generated: true
-  status: planned
-  message: This code is harder to read or change than the behaviour requires.
-  summary: The code works but is harder to read or change than the behaviour requires.
+  effort: 2min
+  message: A raw tab or control character sits inside an ordinary string literal.
+  summary: Invisible characters hide inside literals.
   why: |
-    The intent is buried, duplicated, or spread across places that must stay in sync, so every future
-    change costs more than it should and carries a risk that has nothing to do with the change itself.
+    A raw tab renders as ordinary whitespace in the editor and travels into comparisons and output
+    unchanged - the reader cannot see what the program actually holds.
   fix: |
-    Remove what is not used, name what is unclear, and keep one piece of behaviour in one place so the
-    next change touches a single spot.
-
+    Replace the raw character with its escape sequence (\t, \r, \n) so source and meaning agree.
 - key: QG-CS-BUG-0051
   name: NaN should not be used
   languages: [cs]
@@ -1038,23 +1029,18 @@
     - creation: [NaN]
 
 - key: QG-CS-SML-0158
-  name: Instance members should be simplified
-  languages: [cs]
+  name: Instance members should not write to static fields
+  languages: [cs, vb]
   category: SML
-  status: planned
   severity: minor
-  effort: 15min
-  tags: [sml, generated]
-  generated: true
-
-  message: This code is harder to read or change than the behaviour requires.
-  summary: The code works but is harder to read or change than the behaviour requires.
+  effort: 10min
+  message: An instance method writes a static field by bare name.
+  summary: Per-object code mutates shared storage.
   why: |
-    The intent is buried, duplicated, or spread across places that must stay in sync, so every future
-    change costs more than it should and carries a risk that has nothing to do with the change itself.
+    Two instances calling the method race on the same storage: the last writer wins for everyone,
+    and tests pass while production interleaves differently.
   fix: |
-    Remove what is not used, name what is unclear, and keep one piece of behaviour in one place so the
-    next change touches a single spot.
+    Make the field instance state, make the method static, or guard the field explicitly.
 - key: QG-CS-BUG-0052
   name: SQL keywords should match the behaviour the code describes
   languages: [cs]
@@ -1281,24 +1267,19 @@
     next change touches a single spot.
 
 - key: QG-CS-SML-0169
-  name: Unsafe APIs should not be used
-  languages: [cs]
+  name: is should not be used with this
+  languages: [cs, vb]
   category: SML
   severity: minor
-  effort: 15min
-  tags: [avoid_api, generated]
-  generated: true
-  status: planned
-  message: This API should be replaced by the current alternative.
-  summary: Code calls an API that is unsafe, obsolete or superseded by a better alternative.
+  effort: 2min
+  message: `this` is tested with the is operator.
+  summary: An is test on this answers a settled question.
   why: |
-    The API stays available for compatibility, so nothing fails at build time, but it carries behaviour
-    the platform now considers a defect — unchecked input, a weak guarantee, or a cost the replacement
-    avoids. Its presence also spreads: new code copies what it finds nearby.
+    `this` is never null and its type is fixed where it is written, so `this is X` either always
+    succeeds or is decided by the compiler. The check suggests the type could vary when it cannot.
   fix: |
-    Replace the call with the current API, and keep the old one only behind a compatibility layer that is
-    documented and dated.
-
+    Drop the check when the type is guaranteed, or move the test to the value that actually arrives
+    from outside.
 - key: QG-CS-SML-0170
   name: StringBuilder data should be replaced by the recommended alternative
   languages: [cs]
@@ -1528,24 +1509,18 @@
     next change touches a single spot.
 
 - key: QG-CS-BUG-0063
-  name: Anonymous delegates should not be used
-  languages: [cs]
+  name: Anonymous delegates should not be used to unsubscribe
+  languages: [cs, vb]
   category: BUG
   severity: major
-  effort: 15min
-  tags: [avoid_api, generated]
-  generated: true
-  status: planned
-  message: This API should be replaced by the current alternative.
-  summary: Code calls an API that is unsafe, obsolete or superseded by a better alternative.
+  effort: 10min
+  message: A handler is removed with -= over a lambda written inline.
+  summary: Unsubscribing through a fresh lambda removes nothing.
   why: |
-    The API stays available for compatibility, so nothing fails at build time, but it carries behaviour
-    the platform now considers a defect — unchecked input, a weak guarantee, or a cost the replacement
-    avoids. Its presence also spreads: new code copies what it finds nearby.
+    -= matches handlers by identity. A lambda written at the unsubscribe site is a new object every
+    time, so the original subscription survives - with everything it captures.
   fix: |
-    Replace the call with the current API, and keep the old one only behind a compatibility layer that is
-    documented and dated.
-
+    Keep the delegate in a field or long-lived local and pass that same reference to both += and -=.
 - key: QG-CS-SML-0183
   name: Generic type parameters should be simplified
   languages: [cs]
@@ -1665,24 +1640,18 @@
     - invocation: [Private, assembly, classes]
 
 - key: QG-CS-SML-0191
-  name: Namespaces should not be left empty
-  languages: [cs]
+  name: Namespaces should not be empty
+  languages: [cs, vb]
   category: SML
   severity: minor
-  effort: 15min
-  tags: [empty, generated]
-  generated: true
-  status: planned
-  message: This construct is empty, so it does nothing.
-  summary: A construct is declared with no content.
+  effort: 5min
+  message: A namespace block declares no types.
+  summary: A namespace exists without content.
   why: |
-    An empty body reads as if the case is handled while nothing happens, which is exactly how ignored
-    errors and unimplemented branches survive review. It is also indistinguishable from an accidental
-    deletion.
+    The shell stayed behind after its content moved, or a template file was never filled. It shows
+    up in browsing and documentation as a place that promises something and holds nothing.
   fix: |
-    Implement the behaviour, or remove the construct. When doing nothing is deliberate, say so in a
-    comment so the next reader does not treat it as a gap.
-
+    Delete the namespace together with the file that carries it.
 - key: QG-CS-SML-0192
   name: Params should be replaced by the recommended alternative
   languages: [cs]
@@ -2124,23 +2093,19 @@
     - invocation: [protected]
 
 - key: QG-CS-SML-0209
-  name: Type should be simplified
-  languages: [cs]
+  name: Type should not be examined on System.Type instances
+  languages: [cs, vb]
   category: SML
   severity: minor
-  effort: 15min
-  tags: [sml, generated]
-  generated: true
-  status: planned
-  message: This code is harder to read or change than the behaviour requires.
-  summary: The code works but is harder to read or change than the behaviour requires.
+  effort: 5min
+  message: GetType() is called on a value already known to be a Type.
+  summary: GetType() runs on a Type instance.
   why: |
-    The intent is buried, duplicated, or spread across places that must stay in sync, so every future
-    change costs more than it should and carries a risk that has nothing to do with the change itself.
+    It returns typeof(Type), which says nothing about the type the value describes - the comparison
+    or lookup built on it silently answers the wrong question.
   fix: |
-    Remove what is not used, name what is unclear, and keep one piece of behaviour in one place so the
-    next change touches a single spot.
-
+    Compare against another Type directly (`someType == typeof(string)`), or read the properties
+    such as Name and IsClass.
 - key: QG-CS-SML-0210
   name: Interfaces should be simplified
   languages: [cs]
@@ -2275,24 +2240,18 @@
       receiver: [string]
 
 - key: QG-CS-SML-0215
-  name: Composite format strings should be replaced by the recommended alternative
-  languages: [cs]
+  name: Composite format strings should match their arguments
+  languages: [cs, vb]
   category: SML
   severity: minor
-  effort: 15min
-  tags: [prefer_api, generated]
-  generated: true
-  status: planned
-  message: The platform offers a clearer or safer construct for this.
-  summary: A construct is used where the platform offers one that is clearer or safer.
+  effort: 5min
+  message: A format hole indexes past the arguments that follow.
+  summary: Format placeholders outnumber the arguments.
   why: |
-    The alternative exists because it removes a class of mistake — a conversion, an allocation, an edge
-    case — that the current form leaves to the caller. Using the older form means every reader has to
-    check that the edge case was handled.
+    At run time the extra hole stays unfilled - or the call throws FormatException, depending on the
+    API. Both surface only when the line actually executes with those arguments.
   fix: |
-    Switch to the recommended construct; the behaviour is the same in the normal case and defined in the
-    cases the old form got wrong.
-
+    Renumber placeholders from zero without gaps and pass exactly one argument per hole.
 - key: QG-CS-SML-0216
   name: Empty constructs should not be left empty
   languages: [cs]
@@ -2937,23 +2896,19 @@
       receiver: [XmlElementAttribute]
 
 - key: QG-CS-SML-0245
-  name: Static fields should be simplified
-  languages: [cs]
+  name: static fields should be initialized inline
+  languages: [cs, vb]
   category: SML
   severity: minor
-  effort: 15min
-  tags: [sml, generated]
-  generated: true
-  status: planned
-  message: This code is harder to read or change than the behaviour requires.
-  summary: The code works but is harder to read or change than the behaviour requires.
+  effort: 5min
+  message: A static constructor copies a constant into a field.
+  summary: A constant reaches a static field through the constructor.
   why: |
-    The intent is buried, duplicated, or spread across places that must stay in sync, so every future
-    change costs more than it should and carries a risk that has nothing to do with the change itself.
+    Moving the literal onto the declaration removes the constructor entirely, and with it the hidden
+    ordering between static initialisation and first use.
   fix: |
-    Remove what is not used, name what is unclear, and keep one piece of behaviour in one place so the
-    next change touches a single spot.
-
+    Write the value on the field declaration; keep the static constructor only when it does real
+    work.
 - key: QG-CS-SML-0246
   name: Objects should be simplified
   languages: [cs]
@@ -3084,23 +3039,20 @@
     next change touches a single spot.
 
 - key: QG-CS-SML-0253
-  name: Custom attributes should be simplified
-  languages: [cs]
+  name: Custom attributes should be marked with AttributeUsage
+  languages: [cs, vb]
   category: SML
   severity: minor
-  effort: 15min
-  tags: [sml, generated]
-  generated: true
-  status: planned
-  message: This code is harder to read or change than the behaviour requires.
-  summary: The code works but is harder to read or change than the behaviour requires.
+  effort: 10min
+  message: An attribute class declares no AttributeUsage.
+  summary: An attribute applies everywhere by default.
   why: |
-    The intent is buried, duplicated, or spread across places that must stay in sync, so every future
-    change costs more than it should and carries a risk that has nothing to do with the change itself.
+    Without AttributeUsage the compiler allows it on every target - classes, parameters, return
+    values - whether that makes sense or not, and misuse surfaces nowhere until the attribute is
+    read.
   fix: |
-    Remove what is not used, name what is unclear, and keep one piece of behaviour in one place so the
-    next change touches a single spot.
-
+    Add [AttributeUsage(AttributeTargets.X)] naming where it legitimately applies, and decide
+    AllowMultiple while you are there.
 - key: QG-CS-SML-0254
   name: URI Parameters should be simplified
   languages: [cs]
@@ -3501,23 +3453,18 @@
       receiver: [Object]
 
 - key: QG-CS-SML-0280
-  name: Types should be simplified
-  languages: [cs]
+  name: Types should not extend outdated base types
+  languages: [cs, vb]
   category: SML
   severity: minor
-  effort: 15min
-  tags: [sml, generated]
-  generated: true
-  status: planned
-  message: This code is harder to read or change than the behaviour requires.
-  summary: The code works but is harder to read or change than the behaviour requires.
+  effort: 30min
+  message: A public type inherits a concrete collection directly.
+  summary: Storage decisions freeze into the public contract.
   why: |
-    The intent is buried, duplicated, or spread across places that must stay in sync, so every future
-    change costs more than it should and carries a risk that has nothing to do with the change itself.
+    Every mutator the collection carries becomes part of the type forever: callers can mutate
+    internals, and swapping the implementation later is a breaking change.
   fix: |
-    Remove what is not used, name what is unclear, and keep one piece of behaviour in one place so the
-    next change touches a single spot.
-
+    Compose instead - hold the collection privately and expose the operations callers actually need.
 - key: QG-CS-SML-0281
   name: Literals should be simplified
   languages: [cs]
@@ -3746,24 +3693,18 @@
     function or constant.
 
 - key: QG-CS-BUG-0085
-  name: Empty collections should not be left empty
-  languages: [cs]
+  name: Empty collections should not be accessed or iterated
+  languages: [cs, vb]
   category: BUG
   severity: major
-  effort: 15min
-  tags: [empty, generated]
-  generated: true
-  status: planned
-  message: This construct is empty, so it does nothing.
-  summary: A construct is declared with no content.
+  effort: 5min
+  message: A collection created empty on the spot is read or iterated.
+  summary: Operations run against a freshly created empty collection.
   why: |
-    An empty body reads as if the case is handled while nothing happens, which is exactly how ignored
-    errors and unimplemented branches survive review. It is also indistinguishable from an accidental
-    deletion.
+    The result is decided before the line executes: First throws, Any returns false, Count returns
+    zero, a loop body never runs. Either scaffolding survived or real data was meant to arrive here.
   fix: |
-    Implement the behaviour, or remove the construct. When doing nothing is deliberate, say so in a
-    comment so the next reader does not treat it as a gap.
-
+    Iterate or query the actual source of data, or delete the dead operation.
 - key: QG-CS-BUG-0086
   name: Classes should match the behaviour the code describes
   languages: [cs]
@@ -3786,23 +3727,19 @@
       receiver: [ExportAttribute, InheritedExportAttribute]
 
 - key: QG-CS-SML-0292
-  name: Native methods should be simplified
-  languages: [cs]
+  name: Native methods should not be exposed publicly
+  languages: [cs, vb]
   category: SML
   severity: minor
   effort: 15min
-  tags: [sml, generated]
-  generated: true
-  status: planned
-  message: This code is harder to read or change than the behaviour requires.
-  summary: The code works but is harder to read or change than the behaviour requires.
+  message: A P/Invoke entry point carries the public modifier.
+  summary: A DllImport method is part of the public surface.
   why: |
-    The intent is buried, duplicated, or spread across places that must stay in sync, so every future
-    change costs more than it should and carries a risk that has nothing to do with the change itself.
+    Callers now depend on a raw platform signature - pointers, calling conventions, error codes -
+    which the managed side can neither validate nor translate.
   fix: |
-    Remove what is not used, name what is unclear, and keep one piece of behaviour in one place so the
-    next change touches a single spot.
-
+    Keep the import internal and wrap it in a managed method that marshals arguments and turns
+    failures into exceptions.
 - key: QG-CS-BUG-0087
   name: Windows Forms entry points should be accessed in a thread-safe way
   languages: [cs]
@@ -4345,23 +4282,18 @@
       receiver: [SignedXml]
 
 - key: QG-CS-SML-0308
-  name: Azure Functions should be simplified
-  languages: [cs]
+  name: Azure Functions should be stateless
+  languages: [cs, vb]
   category: SML
   severity: minor
-  effort: 15min
-  tags: [sml, generated]
-  generated: true
-  status: planned
-  message: This code is harder to read or change than the behaviour requires.
-  summary: The code works but is harder to read or change than the behaviour requires.
+  effort: 30min
+  message: A mutable instance field lives in a functions class.
+  summary: Instance state persists across invocations you cannot order.
   why: |
-    The intent is buried, duplicated, or spread across places that must stay in sync, so every future
-    change costs more than it should and carries a risk that has nothing to do with the change itself.
+    The host reuses and recycles instances as it likes: the value may carry over between calls - or
+    vanish - and nothing in the contract tells you which.
   fix: |
-    Remove what is not used, name what is unclear, and keep one piece of behaviour in one place so the
-    next change touches a single spot.
-
+    Use static readonly for shared resources, or locals inside the invocation.
 - key: QG-CS-SML-0309
   name: Client instances should be simplified
   languages: [cs]
@@ -4399,23 +4331,18 @@
     next change touches a single spot.
 
 - key: QG-CS-SML-0311
-  name: Calls to async methods should be accessed in a thread-safe way
-  languages: [cs]
+  name: Calls to async methods should not block in Azure Functions
+  languages: [cs, vb]
   category: SML
-  severity: minor
-  effort: 15min
-  tags: [concurrency, generated]
-  generated: true
-  status: planned
-  message: Shared state is accessed without correct coordination.
-  summary: Shared state is accessed with locking that is missing, too wide, or on the wrong object.
+  severity: major
+  effort: 30min
+  message: .Result or Wait() blocks inside an async function.
+  summary: Async Azure Functions block on awaited work.
   why: |
-    Concurrency defects depend on timing, so they pass every test and appear under load in production.
-    Locking on a shared or public object also lets unrelated code block or deadlock this one.
+    Blocking holds a hosting thread hostage while I/O completes: under load the thread pool starves
+    and requests queue behind waits that own no CPU work.
   fix: |
-    Lock a private object dedicated to the state it protects, keep the critical section short, and prefer
-    the concurrent collections and higher-level primitives the platform provides.
-
+    Await the task instead and let the thread return to the pool.
 - key: QG-CS-SML-0312
   name: Azure Functions should be simplified
   languages: [cs]
@@ -4669,23 +4596,18 @@
     - creation: [Exists]
 
 - key: QG-CS-SML-0326
-  name: Collection should be simplified
-  languages: [cs]
+  name: The collection should be filtered before sorting
+  languages: [cs, vb]
   category: SML
-  status: planned
   severity: minor
-  effort: 15min
-  tags: [sml, generated]
-  generated: true
-
-  message: This code is harder to read or change than the behaviour requires.
-  summary: The code works but is harder to read or change than the behaviour requires.
+  effort: 5min
+  message: OrderBy runs before Where in the same chain.
+  summary: Sorting happens before filtering.
   why: |
-    The intent is buried, duplicated, or spread across places that must stay in sync, so every future
-    change costs more than it should and carries a risk that has nothing to do with the change itself.
+    Elements that fail the predicate were compared anyway: the ordering work on discarded rows was
+    pure cost, and it grows with the unfiltered size.
   fix: |
-    Remove what is not used, name what is unclear, and keep one piece of behaviour in one place so the
-    next change touches a single spot.
+    Swap the order to .Where(...).OrderBy(...) - same result, less work when most rows fail.
 - key: QG-CS-SML-0327
   name: Outdated constructs should be replaced by the recommended alternative
   languages: [cs]
@@ -4890,23 +4812,18 @@
       receiver: [Trace]
 
 - key: QG-CS-SML-0336
-  name: Generic logger injection should be simplified
-  languages: [cs]
+  name: Generic logger injection should match enclosing type
+  languages: [cs, vb]
   category: SML
   severity: minor
-  effort: 15min
-  tags: [sml, generated]
-  generated: true
-  status: planned
-  message: This code is harder to read or change than the behaviour requires.
-  summary: The code works but is harder to read or change than the behaviour requires.
+  effort: 5min
+  message: ILogger<Other> is injected into a different class.
+  summary: The logger category names another type.
   why: |
-    The intent is buried, duplicated, or spread across places that must stay in sync, so every future
-    change costs more than it should and carries a risk that has nothing to do with the change itself.
+    Log lines carry the wrong source name, so filtering by namespace routes them away from where
+    readers expect them.
   fix: |
-    Remove what is not used, name what is unclear, and keep one piece of behaviour in one place so the
-    next change touches a single spot.
-
+    Ask for ILogger<EnclosingType>; the DI container supplies it automatically.
 - key: QG-CS-SML-0337
   name: Trace.WriteLineIf should not be used
   languages: [cs]
@@ -4932,41 +4849,31 @@
       receiver: [Trace]
 
 - key: QG-CS-BUG-0095
-  name: Message template placeholders should match the behaviour the code describes
-  languages: [cs]
+  name: Message template placeholders should be unique
+  languages: [cs, vb]
   category: BUG
   severity: major
-  effort: 15min
-  tags: [bug, generated]
-  generated: true
-  status: planned
-  message: This code does not behave the way it reads.
-  summary: The code does not do what its shape suggests, or fails on ordinary input.
+  effort: 5min
+  message: A log template repeats a placeholder name.
+  summary: Duplicate placeholders in a structured log template.
   why: |
-    Written this way the code works by accident or breaks on values that are perfectly normal, and the
-    mistake is easy to miss in review because the intent reads correctly.
+    Structured logging binds placeholders positionally: the duplicate reads the first argument twice
+    and the second argument never reaches the sink.
   fix: |
-    Make the intended behaviour explicit — fix the condition, the operator or the order of operations —
-    and cover the case that used to fail with a test.
-
+    Rename the second occurrence and pass both values.
 - key: QG-CS-SML-0338
-  name: Use PascalCase for named placeholders should be simplified
-  languages: [cs]
+  name: Use PascalCase for named placeholders
+  languages: [cs, vb]
   category: SML
   severity: minor
-  effort: 15min
-  tags: [sml, generated]
-  generated: true
-  status: planned
-  message: This code is harder to read or change than the behaviour requires.
-  summary: The code works but is harder to read or change than the behaviour requires.
+  effort: 2min
+  message: A log placeholder starts lowercase.
+  summary: Placeholder casing splits one field into two.
   why: |
-    The intent is buried, duplicated, or spread across places that must stay in sync, so every future
-    change costs more than it should and carries a risk that has nothing to do with the change itself.
+    Template names become property names on the structured event; mixed casing makes `{user}` and
+    `{User}` two different fields downstream, splitting dashboards and alerts.
   fix: |
-    Remove what is not used, name what is unclear, and keep one piece of behaviour in one place so the
-    next change touches a single spot.
-
+    Write placeholders in PascalCase, matching the convention sinks and dashboards expect.
 - key: QG-CS-SEC-0082
   name: The key that signs a token should not be in the source
   languages: [cs]
