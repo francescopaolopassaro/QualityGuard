@@ -8,7 +8,7 @@ a configurable Quality Gate and exits with `PASSED` or `FAILED` — no server, n
 dotnet run --project src/QualityGuard.Cli -- --path ./src --by-folder
 ```
 
-**3980 rules across 27 languages**, of which **639 are security rules**, on a real syntax tree with a
+**4026 rules across 27 languages**, of which **639 are security rules**, on a real syntax tree with a
 semantic model, a project index and interprocedural taint analysis. The coverage goes past the
 languages themselves: AWS, Azure and Google Cloud infrastructure (Terraform, CloudFormation),
 Kubernetes manifests, Dockerfiles, Android manifests and Gradle build scripts, Java EE and ASP.NET
@@ -352,8 +352,16 @@ about a constant that is *missing* and would otherwise fire on every PHP file in
   that compile cleanly and mean something else: `x % 2 == 1` (false for every negative number),
   `IndexOf(...) > 0` (which excludes the first element), `new Guid()` (always the empty one), a
   getter that throws, a `protected` member in a sealed class, and `ToString`, `Equals`, `GetHashCode`
-  or `Dispose` throwing — all four are called by the runtime, and `Dispose` throwing during
-  unwinding replaces the original failure.
+  or `Dispose` throwing - all four are called by the runtime, and `Dispose` throwing during
+  unwinding replaces the original failure. And the contract a member signs versus what it does:
+  `this is T` (the answer is settled where it is written), an instance method writing a static field
+  by bare name, unsubscribing through an inline lambda (which removes nothing), a format hole past
+  the arguments that follow, `GetType()` on something already known to be `Type`, a constant copied
+  into a field by the static constructor, an attribute without `AttributeUsage`, a public P/Invoke,
+  `OrderBy` before `Where`, a logger categorised as another type, structured-log templates with
+  duplicate or lowercase placeholders, and - gated on the `[FunctionName]` attribute so hosting code
+  never hears of it - mutable instance state and blocking `.Result`/`.Wait()` inside async Azure
+  Functions.
 * **JavaScript and TypeScript** — what the code does with the values it has: a string method whose
   result is thrown away (strings do not change), a `typeof` compared to a word it never returns, a
   `for-in` over an array, a hole left by a double comma, a self-assignment, a name declared twice in
@@ -413,9 +421,14 @@ so each one is pinned by a test that also states the shape it must stay silent o
 ### Mobile: Kotlin and Android
 
 Kotlin has a dedicated parser — a dialect of the C-family one, on the TypeScript branch rather than
-the Java one, because `fun f(a: Int): String` puts the type after the name — and carries **194
+the Java one, because `fun f(a: Int): String` puts the type after the name — and carries **224
 rules**: coroutines and dispatchers, the not-null assertion operator, `SharedPreferences` holding a
-secret, and a full Android security set read on the tree.
+secret, a full Android security set read on the tree, and the idioms the language writes shorter than
+the Java habits carried into it — `equals()` where `==` is already structural equality, a `find`
+compared against null where `any` answers, branches that all return, an anonymous object overriding
+one function of an interface, `map[key]!!`, a data class holding arrays without an `equals` override,
+a mutable flow published as public state, and the Gradle script read for pinned dependency versions
+and long plugin ids.
 
 * **Intents and receivers** — a broadcast sent without naming the permission its receivers must hold,
   a sticky broadcast (which the platform cannot protect at all), a receiver registered at run time
@@ -525,7 +538,7 @@ the whole internet, and a server bound to every network interface of its machine
 
 ### Security coverage
 
-**631 security rules.** Command injection, SQL injection, path traversal, open redirect, server-side
+**639 security rules.** Command injection, SQL injection, path traversal, open redirect, server-side
 request forgery, unsafe deserialization, XML external entities, dynamic code execution, weak
 cryptography (broken hashes, obsolete ciphers, ECB, reused initialisation vectors, predictable
 randomness, weak key sizes), disabled certificate validation, cleartext transport, hardcoded
@@ -731,7 +744,7 @@ rule that produces noise is rewritten on the syntax tree or removed, and every f
 was fixed is pinned by a regression test — written next to the shape the rule must still report — so
 the precision cannot be lost again silently.
 
-**645 tests** cover the parsers, the semantic model, taint, the scanner and rule precision. Every
+**721 tests** cover the parsers, the semantic model, taint, the scanner and rule precision. Every
 false positive that was ever fixed has one of them, written next to the shape the rule must still
 report, so precision cannot be lost again in silence.
 
@@ -753,13 +766,13 @@ because they are real legacy rather than a curated library.
 | rails | Ruby | 281 755 | 1 343 | **4.8** |
 | guzzle | PHP | 48 147 | 378 | **7.9** |
 | gson | Java | 47 559 | 462 | **9.7** |
-| okio | Kotlin | 44 514 | 569 | **12.8** |
-| ripgrep | Rust | 42 211 | 663 | **15.7** |
+| okio | Kotlin | 44 514 | 601 | **13.5** |
+| ripgrep | Rust | 42 211 | 633 | **15.0** |
 | Alamofire | Swift | 26 592 | 369 | **13.9** |
 | cobra, gin | Go | 30 723 | 488 | **15.9** |
 | a Blazor application | C# | 58 468 | 876 | **15.0** |
 | axios, nest | TypeScript | 36 073 | 648 | **18.0** |
-| Newtonsoft.Json | C# | 126 652 | 2 330 | **18.4** |
+| Newtonsoft.Json | C# | 126 652 | 2 647 | **20.9** |
 | requests, flask, a private application | Python | 42 955 | 859 | **20.0** |
 | a WebForms application from 2010 | C# | 152 633 | 8 522 | **55.8** |
 | scalaz | Scala | 48 758 | 103 | **2.1** |

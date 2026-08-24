@@ -100,6 +100,13 @@ public abstract class CSharpContractRule : RuleBase
     private static readonly System.Text.RegularExpressions.Regex NumericPlaceholder =
         new("^\\{\\s*(\\d+)\\s*(,|:|})");
 
+    /// <summary>The simple name of a (possibly dotted, possibly generic) type reference.</summary>
+    protected static string SimpleName(string type)
+    {
+        var genericless = type.Split('<')[0];
+        return genericless.Split('.')[^1];
+    }
+
     /// <summary>The highest {N} index inside a composite format string, or -1.</summary>
     protected static int HighestIndex(string literal)
     {
@@ -260,7 +267,10 @@ public sealed class EmptyCollectionAccessRule : CSharpContractRule
             var receiver = call.ChildAt(0) is { Kind: NodeKind.MemberSelect } select
                 ? select.ChildAt(0)
                 : null;
-            if (IsFreshlyCreatedAndStillEmpty(receiver))
+            if (receiver is { Kind: NodeKind.ObjectCreation } creation
+                && Creators.Contains(SimpleName(creation.Text))
+                && (creation.FirstChild(NodeKind.ArgumentList)?.Children.Count ?? 0) == 0
+                && !creation.OfKind(NodeKind.ObjectInitializer).Any())
                 context.Report(call,
                     $"This {Called(call)}() runs against a collection created empty right here, so "
                     + "the result is decided before the line executes - an exception for First, "
@@ -284,7 +294,7 @@ public sealed class EmptyCollectionAccessRule : CSharpContractRule
     private static bool IsFreshlyCreatedAndStillEmpty(SyntaxNode? expression)
     {
         if (expression is { Kind: NodeKind.ObjectCreation } creation
-            && Creators.Contains(creation.Text.Split('<')[0])
+            && Creators.Contains(SimpleName(creation.Text))
             && (creation.FirstChild(NodeKind.ArgumentList)?.Children.Count ?? 0) == 0
             && !creation.OfKind(NodeKind.ObjectInitializer).Any())
             return true;
@@ -337,8 +347,13 @@ public sealed class EmptyNamespaceRule : CSharpContractRule
             return;
         foreach (var space in context.Root.OfKind(NodeKind.PackageDeclaration))
         {
-            var body = space.LastChild(NodeKind.Block);
-            if (body != null && body.Children.Count == 0)
+            // members hang straight from the namespace - there is no body wrapper - so the only
+            // honest question is whether anything was declared inside it or after it in the file
+            var declaredInside = space.Children.Any(c =>
+                c.Kind is not NodeKind.Block || c.Children.Count > 0);
+            var followsAtTopLevel = context.Root.Children.Any(c => c != space
+                && c.Kind is not (NodeKind.ImportDeclaration or NodeKind.PackageDeclaration));
+            if (!declaredInside && !followsAtTopLevel)
                 context.Report(space,
                     $"The namespace {space.Text} declares no types. Either its content moved and "
                     + "this shell stayed behind, or the file was created from a template and "
@@ -561,7 +576,7 @@ public sealed class OutdatedBaseTypeRule : CSharpContractRule
                 continue;
             var baseType = type.Children.FirstOrDefault(c =>
                 c.Kind == NodeKind.TypeReference
-                && Bases.Contains(c.Text.Split('<', ',')[0].Trim()));
+                && Bases.Contains(SimpleName(c.Text.Split(',')[0].Trim())));
             if (baseType == null)
                 continue;
             context.Report(type,
@@ -631,7 +646,10 @@ public sealed class LoggerTypeMismatchRule : CSharpContractRule
                     .FirstOrDefault(c => c.Kind == NodeKind.TypeReference)?.Text;
                 if (declared == null)
                     continue;
-                var match = GenericLogger.Match(declared);
+                // the interface may be written fully qualified; only its own name matters
+                var lastDot = declared.LastIndexOf('.');
+                var shortName = lastDot >= 0 ? declared[(lastDot + 1)..] : declared;
+                var match = GenericLogger.Match(shortName);
                 if (!match.Success || match.Groups[1].Value == owner.Text)
                     continue;
                 context.Report(parameter,
@@ -809,7 +827,8 @@ public sealed class ComparableWithoutEqualsRule : CSharpContractRule
         foreach (var type in context.Root.OfKind(NodeKind.ClassDeclaration))
         {
             if (!type.Children.Where(c => c.Kind == NodeKind.TypeReference)
-                    .Any(baseType => baseType.Text.StartsWith("IComparable", StringComparison.Ordinal)))
+                    .Any(baseType => SimpleName(baseType.Text)
+                        .StartsWith("IComparable", StringComparison.Ordinal)))
                 continue;
             var overridesEquals = type.Descendants().Any(n =>
                 n.Kind == NodeKind.FunctionDeclaration
