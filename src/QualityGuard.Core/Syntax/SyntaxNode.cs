@@ -185,6 +185,9 @@ public sealed class SyntaxNode
     public SyntaxNode? FirstChild(NodeKind kind)
         => _children.FirstOrDefault(c => c.Kind == kind);
 
+    public SyntaxNode? LastChild(NodeKind kind)
+        => _children.LastOrDefault(c => c.Kind == kind);
+
     public SyntaxNode? ChildAt(int index)
         => index >= 0 && index < _children.Count ? _children[index] : null;
 

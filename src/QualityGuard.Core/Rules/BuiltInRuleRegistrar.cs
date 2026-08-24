@@ -77,6 +77,7 @@ public static class BuiltInRuleRegistrar
         ..Languages.PhpPlatformRuleSet.All,
         ..Languages.XmlPlatformRuleSet.All,
         ..Languages.KotlinAndroidRuleSet.All,
+        ..Languages.KotlinIdiomRuleSet.All,
         ..Languages.PythonCloudRuleSet.All,
         ..Languages.ClusterSecurityRuleSet.All,
         ..Languages.CloudFormationSecurityRuleSet.All,

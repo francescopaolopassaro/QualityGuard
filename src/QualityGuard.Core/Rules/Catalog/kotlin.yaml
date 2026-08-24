@@ -136,8 +136,8 @@
   fix: |
     Use a list, or override the equality and hash functions with the content-based helpers for that
     property.
-  detect:
-    - line: "data\\s+class\\s+\\w+\\s*\\([^)]*:\\s*(ByteArray|IntArray|Array<)"
+  status: superseded
+  superseded_by: QG-KT-BUG-0027
 
 - key: QG-KT-BUG-0011
   name: Ranges should not be built backwards

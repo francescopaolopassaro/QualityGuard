@@ -478,6 +478,12 @@ public sealed class CSharpParser
             attributes.Add(node);
         }
 
+        // the ASI reconstruction closes an annotation written on its own line with a semicolon: the
+        // punctuation belongs to the rebuild, not to the source, and leaving it in detached the
+        // annotation from the declaration it decorates
+        if (attributes.Count > 0 && IsKotlin)
+            Accept(";");
+
         // Rust writes an attribute as '#[name]' or '#![name]', and a macro definition as
         // 'macro_rules! name { ... }'. Both are decoration as far as the rules are concerned; what
         // matters is that they do not read as expressions.
@@ -587,6 +593,7 @@ public sealed class CSharpParser
         if (IsScala && Is("["))
             SkipBalanced("[", "]");
         SyntaxNode? primaryConstructor = null;
+        List<string>? primaryCtorModifiers = null;
         // Kotlin may spell the primary constructor out — 'class E actual constructor(...)',
         // 'class S private constructor(...)', '@Inject constructor(...)'. Stopping at the keyword
         // left the parameter list outside the type, so the class looked empty and everything written
@@ -597,7 +604,13 @@ public sealed class CSharpParser
             while (probe < _tokens.Count
                    && (ModifierWords.Contains(_tokens[probe].Text) || _tokens[probe].Text == "@"
                        || (probe > _index && _tokens[probe - 1].Text == "@")))
+            {
+                // the visibility written on the constructor belongs to the type: dropping it made
+                // a singleton-by-private-constructor look like any other class
+                if (_tokens[probe].Text != "@")
+                    (primaryCtorModifiers ??= []).Add(_tokens[probe].Text);
                 probe++;
+            }
             if (probe < _tokens.Count && _tokens[probe].Text == "constructor")
             {
                 _index = probe + 1;
@@ -613,10 +626,12 @@ public sealed class CSharpParser
                 SkipBalanced("(", ")");
         }
 
+        List<SyntaxNode>? supertypes = null;
         if (Accept(":") || IsAny("extends", "implements", "permits", "with"))
         {
-            while (!AtEnd && !Is("{") && !Is(";") && !Is("where"))
-                _index++;
+            // the supertypes say what the type is - a ViewModel, a Comparable, an interface - and
+            // rules ask about them by name, so the list is read instead of skipped
+            supertypes = ParseSupertypeList();
         }
         while (Is("where"))
         {
@@ -628,8 +643,19 @@ public sealed class CSharpParser
         _currentType = name;
         var node = Node(NodeKind.ClassDeclaration, start, name);
         AddDecorations(node, attributes, modifiers);
+        if (primaryCtorModifiers != null)
+            foreach (var modifier in primaryCtorModifiers)
+                node.Add(new SyntaxNode(NodeKind.Modifier, modifier, node.Range, []));
+        // the keyword that opened the declaration is the only place the tree records what kind of
+        // type this is: an interface cannot hold state, an object is a singleton, and several rules
+        // ask exactly that question
+        if (keyword is "interface" or "trait" or "object")
+            node.Add(new SyntaxNode(NodeKind.Modifier, keyword, node.Range, []));
         if (primaryConstructor != null)
             node.Add(primaryConstructor);
+        if (supertypes != null)
+            foreach (var baseType in supertypes)
+                node.Add(baseType);
 
         if (Accept(";"))
         {
@@ -642,6 +668,33 @@ public sealed class CSharpParser
         node.Range = node.Range with { EndLine = body.Range.EndLine };
         _currentType = previousType;
         return node;
+    }
+
+    /// <summary>
+    /// The supertypes after <c>:</c> or <c>extends</c>, as dotted or generic types. Kotlin calls the
+    /// primary constructor of a base — <c>Base("init")</c> — and Scala joins traits with
+    /// <c>with</c>; both spellings are consumed here so the list stays one loop.
+    /// </summary>
+    private List<SyntaxNode> ParseSupertypeList()
+    {
+        var bases = new List<SyntaxNode>();
+        while (!AtEnd && !Is("{") && !Is(";") && !Is("}") && !Is("where")
+               && !IsAny("fun", "val", "var", "class", "object", "interface"))
+        {
+            var before = _index;
+            var type = ParseType();
+            if (_index == before)
+                _index++;
+            else
+            {
+                bases.Add(type);
+                if (Is("(")) // the base is constructed: its arguments carry nothing rules need
+                    SkipBalanced("(", ")");
+            }
+            while (IsAny(",", "&", "extends", "implements", "permits", "with"))
+                _index++;
+        }
+        return bases;
     }
 
     /// <summary>True when export is followed by a declaration rather than by a list or a binding.</summary>
@@ -1082,11 +1135,23 @@ public sealed class CSharpParser
         if (Is("<"))
             SkipGenericParameters();
 
-        // an extension function names the type it extends before its own name
+        // an extension function names the type it extends before its own name: every part before
+        // the last is the receiver, and rules on CoroutineScope helpers have to read it
+        var headStart = Mark();
         var name = IsName ? Take().Text : string.Empty;
-        while (Is(".") && Peek() is { Kind: TokenKind.Identifier })
+        var receiverParts = new List<string>();
+        var receiverEnd = -1;
+        while (true)
         {
+            if (Is("<"))
+                SkipGenericParameters(); // generics of the part just read, as in List<Int>.head()
+            while (Is("?"))              // a nullable receiver, as in String?.isBlank()
+                _index++;
+            if (!(Is(".") && Peek() is { Kind: TokenKind.Identifier }))
+                break;
+            receiverEnd = _index;        // the dot closes the receiver segment
             _index++;
+            receiverParts.Add(name);
             name = Take().Text;
         }
         if (Is("<"))
@@ -1094,6 +1159,12 @@ public sealed class CSharpParser
 
         var node = Node(NodeKind.FunctionDeclaration, start, name);
         AddDecorations(node, attributes, modifiers);
+        if (receiverParts.Count > 0)
+        {
+            var last = Math.Max(Math.Min(receiverEnd - 1, _tokens.Count - 1), headStart);
+            node.Add(new SyntaxNode(NodeKind.TypeReference, string.Join('.', receiverParts),
+                TextRange.Of(_tokens[headStart], _tokens[last])));
+        }
         if (Is("("))
             node.Add(ParseParameterList());
         if (Accept(":"))
@@ -1129,6 +1200,32 @@ public sealed class CSharpParser
             Accept(";"); // a declaration in an interface has no body at all
         }
 
+        node.Tokens = SliceFrom(start);
+        node.Range = TextRange.Of(node.Tokens);
+        return node;
+    }
+
+    /// <summary>
+    /// A Kotlin object expression: <c>object : Super { members }</c> is an anonymous instance, the
+    /// Kotlin spelling of what Java writes as <c>new Super() { members }</c>. It is kept as an
+    /// object creation with a class body so the shared structural rules see inside it.
+    /// </summary>
+    private SyntaxNode ParseKotlinObjectExpression(int start)
+    {
+        Expect("object");
+        var node = Node(NodeKind.ObjectCreation, start, string.Empty);
+        if (Accept(":"))
+        {
+            if (ParseType() is { } superType)
+            {
+                node.Text = superType.Text;
+                node.Add(superType);
+            }
+            while (Is("("))
+                node.Add(ParseArgumentList()); // the supertype may be constructed with arguments
+        }
+        if (Is("{"))
+            node.Add(ParseTypeBody(false));
         node.Tokens = SliceFrom(start);
         node.Range = TextRange.Of(node.Tokens);
         return node;
@@ -1211,7 +1308,9 @@ public sealed class CSharpParser
     private SyntaxNode ParseKotlinProperty(int start, List<SyntaxNode> attributes, List<string> modifiers,
         bool asField = false)
     {
-        Take();
+        // whether the value can be reassigned is written on the declaration itself, and rules on
+        // nullability and dead stores ask exactly that
+        var mutability = Take().Text;
         if (Is("<"))
             SkipGenericParameters();
 
@@ -1244,6 +1343,7 @@ public sealed class CSharpParser
         var node = Node(asField ? NodeKind.FieldDeclaration : NodeKind.VariableDeclaration, start,
             names.FirstOrDefault() ?? string.Empty);
         AddDecorations(node, attributes, modifiers);
+        node.Add(new SyntaxNode(NodeKind.Modifier, mutability, node.Range, []));
         if (Accept(":"))
             node.Add(ParseType());
         if (Accept("by") && ParseExpression() is { } delegated)
@@ -4605,6 +4705,12 @@ public sealed class CSharpParser
             return ParseIf(start);
         if (IsKotlin && token.Text == "try")
             return ParseTry(start);
+
+        // an object expression — 'val counter = object : Runnable { ... }' — builds an anonymous
+        // instance: read as a plain identifier it left the ':' orphan and the body detached from
+        // the value that owned it
+        if (IsKotlin && token.Text == "object" && (PeekText() == ":" || PeekText() == "{"))
+            return ParseKotlinObjectExpression(start);
 
         // Rust branches and matches are expressions too: 'let parity = if n % 2 == 0 { 0 } else { 1 };'
         // is how half of the language decides between two values.

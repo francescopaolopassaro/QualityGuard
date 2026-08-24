@@ -170,32 +170,32 @@ read as a tree of keys and blocks.
 | --- | --- | --- | --- |
 | Java | `JV` | 617 | dedicated parser |
 | JavaScript | `JS` | 470 | dedicated parser |
-| Python | `PY` | 479 | dedicated parser |
+| Python | `PY` | 478 | dedicated parser |
 | C# / VB.NET | `CS` | 445 | dedicated parser |
-| Kotlin | `KT` | 197 | dedicated parser (C-family dialect) |
+| Kotlin | `KT` | 224 | dedicated parser (C-family dialect) |
 | PHP | `PP` | 206 | dedicated parser |
-| Terraform | `TF` | 148148 configuration tree |
-| HTML | `HTML` | 139132 markup reader |
+| Terraform | `TF` | 148 | configuration tree |
+| HTML | `HTML` | 139 | markup reader |
 | Go | `GO` | 120 | dedicated parser |
-| Dockerfile | `DK` | 120120 instruction list |
-| Ruby | `RB` | 117117 structural parser |
-| Kubernetes | `K8` | 117117 configuration tree |
+| Dockerfile | `DK` | 120 | instruction list |
+| Ruby | `RB` | 117 | structural parser |
+| Kubernetes | `K8` | 117 | configuration tree |
 | CSS / SCSS / Sass / Less | `CSS` | 120 | stylesheet reader |
-| XML and descriptors | `XML` | 115115 markup reader |
-| Swift | `SW` | 107107 structural parser |
+| XML and descriptors | `XML` | 115 | markup reader |
+| Swift | `SW` | 107 | structural parser |
 | Dart / Flutter | `DART` | 100 | dedicated parser (C-family dialect) |
 | CloudFormation | `CF` | 104 | configuration tree |
-| JSON | `JSON` | 9696 configuration tree |
-| Rust | `RS` | 58 | dedicated parser (C-family dialect) |
+| JSON | `JSON` | 96 | configuration tree |
+| Rust | `RS` | 57 | dedicated parser (C-family dialect) |
 | Secrets (any language) | `SEC` | 31 | token scan over every file |
-| C / C++ | `CC` | 1616 structural parser |
-| Shell | `SH` | 1212 structural parser |
-| SQL | `SQL` | 99 structural parser |
+| C / C++ | `CC` | 16 | structural parser |
+| Shell | `SH` | 12 | structural parser |
+| SQL | `SQL` | 9 | structural parser |
 | TypeScript-specific | `TS` | 9 | dedicated parser |
-| XAML / WPF / WinUI / Avalonia | `XAML` | 88 markup reader, joined to the class behind it |
-| Razor / Blazor | `RAZ` | 44 C# parser over the `@code` block, markup reader over the rest |
-| Multi-language | `ALL` | 2 | whichever tree the file has |
+| XAML / WPF / WinUI / Avalonia | `XAML` | 8 | markup reader, joined to the class behind it |
 | Scala | `SC` | 16 | dedicated parser (C-family dialect) |
+| Razor / Blazor | `RAZ` | 4 | C# parser over the `@code` block, markup reader over the rest |
+| Multi-language | `ALL` | 2 | whichever tree the file has |
 
 TypeScript, Sass, SCSS, Less, JSX/TSX and VB.NET are analysed by the rules of the language they
 extend, so their own row only counts what is specific to them.
