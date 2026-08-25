@@ -263,3 +263,128 @@
     - invocation: [log, info, debug, warn, error, LogInformation, LogWarning, LogError, NLog]
       argIndex: 0
       argTainted: true
+
+- key: QG-ALL-SEC-0012
+  name: XPath expressions should not be assembled from untrusted values
+  languages: [cs, java, py]
+  category: SEC
+  severity: critical
+  effort: 30min
+  cwe: [643]
+  owasp: [A03]
+  tags: [owasp, injection, xpath]
+  message: A crafted value rewrites the query tree and reads nodes you did not intend.
+  summary: XPath evaluation receives an expression built at run time.
+  why: |
+    Quotes and brackets inside the value close your predicate early; what follows selects sibling
+    or ancestor nodes - other users entries, configuration secrets - as if the caller had written
+    the query.
+  fix: |
+    Bind the variable part with an XPathVariable and pass its value separately, exactly like a
+    parameterized database statement.
+  detect:
+    - invocation: [selectNodes, selectSingleNode, XPathSelectElement, XPathSelectElements,
+                   xpath, evaluate]
+      argTainted: true
+
+- key: QG-ALL-SEC-0013
+  name: Format strings should use their arguments correctly
+  languages: []
+  category: SEC
+  severity: major
+  cwe: [134]
+  owasp: [A03]
+  tags: [owasp]
+  status: planned
+  message: Placeholder count and argument order disagree.
+  summary: printf-style calls across languages share the same failure mode.
+  why: |
+    printf-style calls across languages share the same failure mode.
+  fix: |
+    To be designed against this engine's data-flow layer before activation; kept out of reports
+    until then.
+
+- key: QG-ALL-SEC-0014
+  name: Code generation from untrusted expressions should be avoided
+  languages: []
+  category: SEC
+  severity: major
+  cwe: [094]
+  owasp: [A03]
+  tags: [owasp]
+  status: planned
+  message: Template or expression engines evaluate caller-supplied text.
+  summary: EL, OGNL and template injections execute with the application's identity.
+  why: |
+    EL, OGNL and template injections execute with the application's identity.
+  fix: |
+    To be designed against this engine's data-flow layer before activation; kept out of reports
+    until then.
+
+- key: QG-ALL-SEC-0015
+  name: Cryptographic signatures should be fully verified
+  languages: []
+  category: SEC
+  severity: major
+  cwe: [347]
+  owasp: [A02]
+  tags: [owasp]
+  status: planned
+  message: Signature checks that skip algorithm or chain verification pass fakes.
+  summary: Accepting any algorithm lets an attacker downgrade to none.
+  why: |
+    Accepting any algorithm lets an attacker downgrade to none.
+  fix: |
+    To be designed against this engine's data-flow layer before activation; kept out of reports
+    until then.
+
+- key: QG-ALL-SEC-0016
+  name: Error responses should not expose internal details
+  languages: []
+  category: SEC
+  severity: major
+  cwe: [209]
+  owasp: [A09]
+  tags: [owasp]
+  status: planned
+  message: Raw exception text reaches users or clients.
+  summary: Stack traces name classes, drivers and paths attackers map before striking.
+  why: |
+    Stack traces name classes, drivers and paths attackers map before striking.
+  fix: |
+    To be designed against this engine's data-flow layer before activation; kept out of reports
+    until then.
+
+- key: QG-ALL-SEC-0017
+  name: Time-of-check to time-of-use windows should be closed
+  languages: []
+  category: SEC
+  severity: major
+  cwe: [367]
+  owasp: [A01]
+  tags: [owasp]
+  status: planned
+  message: A file or resource is validated then re-opened by path.
+  summary: Between the two calls the target can be swapped; open by handle instead.
+  why: |
+    Between the two calls the target can be swapped; open by handle instead.
+  fix: |
+    To be designed against this engine's data-flow layer before activation; kept out of reports
+    until then.
+
+- key: QG-ALL-SEC-0018
+  name: Input should be canonicalized before validation
+  languages: []
+  category: SEC
+  severity: major
+  cwe: [020]
+  owasp: [A03]
+  tags: [owasp]
+  status: planned
+  message: Encodings and alternate separators bypass prefix and suffix checks.
+  summary: Validate after normalizing to one canonical form, not before.
+  why: |
+    Validate after normalizing to one canonical form, not before.
+  fix: |
+    To be designed against this engine's data-flow layer before activation; kept out of reports
+    until then.
