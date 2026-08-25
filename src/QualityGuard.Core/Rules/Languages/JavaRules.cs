@@ -226,6 +226,24 @@ public sealed class JavaUnsafeCommandExecutionRule : PatternRuleBase
 
     public override void Execute(IRuleContext context)
     {
+        // argument-level flow gate when the engine has evidence: the sink fires only if one of its
+        // arguments actually carries untrusted input - the exact distinction the OWASP Benchmark
+        // clean variants encode (same API, safe values)
+        if (context.Taint is { } taint && taint.Sources.Count > 0)
+        {
+            foreach (var call in SyntaxQuery.Invocations(context.Root))
+            {
+                var name = SyntaxQuery.InvokedName(call);
+                if (name is not ("exec" or "ProcessBuilder"))
+                    continue;
+                var arguments = SyntaxQuery.Arguments(call);
+                if (arguments.Count == 0 || arguments.All(a => !taint.IsTainted(a)))
+                    continue;
+                context.Report("Make sure the arguments passed to this OS command are not user-controlled.", call.Line);
+            }
+            return;
+        }
+
         var tokens = context.Tokens;
         for (var i = 0; i < tokens.Count; i++)
         {
