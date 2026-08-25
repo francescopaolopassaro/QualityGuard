@@ -20,6 +20,7 @@ public static class HtmlAriaRuleSet
         new HtmlAnchorAsButtonGapRule(),
         new HtmlAbstractAriaRoleRule(),
         new HtmlNonInteractiveEventHandlerGapRule(),
+        new HtmlRequiredAriaPropertiesGapRule(),
     ];
 }
 
@@ -213,6 +214,35 @@ public sealed class HtmlNonInteractiveEventHandlerGapRule : MarkupRuleBase
                     element.Line);
                 break;
             }
+        }
+    }
+}
+
+/// <summary>A concrete role signs for the properties it cannot work without.</summary>
+public sealed class HtmlRequiredAriaPropertiesGapRule : MarkupRuleBase
+{
+    public override string Key => "QG-HTML-SML-0046";
+    public override string Name => "ARIA roles should carry their required properties";
+    public override Severity Severity => Severity.Minor;
+    public override IssueKind Kind => IssueKind.CodeSmell;
+    public override string RemediationEffort => "5min";
+
+    public override void Execute(IRuleContext context)
+    {
+        foreach (var element in Document(context).Descendants())
+        {
+            var role = element.Attribute("role");
+            if (role == null
+                || !AriaDictionary.ConcreteRoles.Contains(role)
+                || !AriaDictionary.RequiredProperties.TryGetValue(role, out var required))
+                continue;
+            var missing = required.Where(p => element.Attribute(p) == null).ToList();
+            if (missing.Count == 0)
+                continue;
+            context.Report($"The role `{role}` is only meaningful with {string.Join(" and ", missing)} set: "
+                + "assistive technology reads a bare role as an incomplete widget and falls back to "
+                + "guessing. Add the missing properties, or drop the role when the native element "
+                + "already carries it.", element.Line);
         }
     }
 }

@@ -506,3 +506,107 @@
   fix: |
     Bind to the address the server is meant to serve — the loopback one during development — and let
     a proxy publish it where it has to be public.
+
+- key: QG-PY-SML-0180
+  name: Iterate key-value pairs with items()
+  category: SML
+  severity: minor
+  effort: 5min
+  message: for k in d: ... d[k] indexes what items() would hand over.
+  summary: Dictionary iteration indexes each key again.
+  why: |
+    The second lookup must stay in sync with the loop variable by hand, and readers translate the
+    pair back into key/value before understanding anything.
+  fix: |
+    Write for key, value in d.items().
+
+- key: QG-PY-SML-0181
+  name: Populate constant-valued dictionaries with fromkeys
+  category: SML
+  severity: minor
+  effort: 5min
+  message: A loop writes the same constant under every key.
+  summary: Constant-valued dictionaries are built key by key.
+  why: |
+    The loop hides that values do not vary; dict.fromkeys states it in one call and skips the
+    iteration entirely.
+  fix: |
+    Build with dict.fromkeys(keys, constant).
+
+- key: QG-PY-SML-0206
+  name: Loop variables should not be reused in nested loops
+  category: SML
+  severity: minor
+  effort: 5min
+  message: An inner loop binds the outer loop's variable name.
+  summary: Nested loops share one variable name.
+  why: |
+    When the inner loop ends, the outer resumes with the inner's last binding - iteration silently
+    skips or repeats elements.
+  fix: |
+    Give the loops distinct variable names.
+
+- key: QG-PY-SML-0211
+  name: Unpack enumerate() instead of indexing by range(len)
+  category: SML
+  severity: minor
+  effort: 5min
+  message: range(len(x)) drives index lookups on x.
+  summary: Index counting stands in for direct iteration.
+  why: |
+    enumerate yields position and value together, works on any iterable (not only sized ones), and
+    removes the off-by-one surface indexing carries.
+  fix: |
+    Write for i, item in enumerate(x).
+
+- key: QG-PY-BUG-0048
+  name: in and not in should be used on objects supporting them
+  category: BUG
+  severity: major
+  effort: 5min
+  message: A membership test runs against a number or boolean.
+  summary: Membership is tested on something that holds no members.
+  why: |
+    Numbers and booleans have no members: the test answers False forever, usually because the
+    intended container sits one expression level away.
+  fix: |
+    Test membership on the list, tuple or set that actually holds the values.
+
+- key: QG-PY-BUG-0084
+  name: Use non-blocking sleep functions in asynchronous code
+  category: BUG
+  severity: major
+  effort: 10min
+  message: time.sleep runs inside an async function.
+  summary: Async code blocks the event loop.
+  why: |
+    time.sleep freezes every task, timer and connection sharing the loop for the whole nap; only
+    this coroutine should pause.
+  fix: |
+    Await asyncio.sleep() instead.
+
+- key: QG-PY-SML-0201
+  name: Functions should return tuples of consistent length
+  category: SML
+  severity: minor
+  effort: 10min
+  message: Different return paths yield tuples of different sizes.
+  summary: Tuple returns disagree between branches.
+  why: |
+    Whichever caller unpacks the result breaks on one branch - the shape is part of the function's
+    contract even though no annotation says so.
+  fix: |
+    Pad or trim so every exit returns the same shape.
+
+- key: QG-PY-BUG-0103
+  name: send_file should specify mimetype or download_name
+  category: BUG
+  severity: major
+  effort: 5min
+  message: flask send_file omits mimetype and download_name.
+  summary: File responses guess type and filename.
+  why: |
+    The mimetype is guessed from the extension and the client's filename defaults to your server's
+    path - wrong previews and leaked structure in one response.
+  fix: |
+    Pass mimetype and download_name explicitly.

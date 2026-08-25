@@ -373,3 +373,68 @@
     path can do with it, so this one stands down.
   fix: |
     Use the encrypted form of the protocol.
+
+- key: QG-JS-BUG-0084
+  name: Array.reduce should include an initial value
+  category: BUG
+  severity: major
+  effort: 5min
+  message: reduce runs without an initial accumulator.
+  summary: A reduce call omits the initial value.
+  why: |
+    Without a seed, reduce throws TypeError on an empty array - the input nobody tests - and uses
+    the first element as seed otherwise, silently changing the result's type.
+  fix: |
+    Pass the identity element explicitly: 0 for sums, [] for accumulation.
+
+- key: QG-JS-SML-0293
+  name: indexOf and lastIndexOf should replace equality findIndex
+  category: SML
+  severity: minor
+  effort: 2min
+  message: findIndex compares for equality only.
+  summary: An equality findIndex re-implements indexOf.
+  why: |
+    A callback that only compares element === value is indexOf written the slow way: longer, slower,
+    and one more lambda to read.
+  fix: |
+    Replace with indexOf(value) or lastIndexOf(value).
+
+- key: QG-JS-SML-0295
+  name: Complex index access patterns should use .at()
+  category: SML
+  severity: minor
+  effort: 2min
+  message: array[array.length - N] counts positions to reach the tail.
+  summary: Length arithmetic stands in for from-the-end access.
+  why: |
+    The subtraction repeats the receiver twice and says in arithmetic what at(-N) says in words;
+    three spellings drift apart under rename.
+  fix: |
+    Use arr.at(-N).
+
+- key: QG-JS-SML-0299
+  name: Use Date.now() instead of building a Date object
+  category: SML
+  severity: minor
+  effort: 2min
+  message: new Date().getTime() builds an object for one number.
+  summary: A Date object is created only to read its timestamp.
+  why: |
+    The allocation carries calendar state nobody uses; Date.now() returns the same milliseconds
+    without it.
+  fix: |
+    Call Date.now() directly.
+
+- key: QG-JS-SML-0302
+  name: DOM nodes should be removed using remove()
+  category: SML
+  severity: minor
+  effort: 2min
+  message: node.parentNode.removeChild(node) walks up and back down.
+  summary: Removal goes through the parent unnecessarily.
+  why: |
+    The two spellings of the node can drift apart under edit; remove() takes the node itself and
+    cannot desynchronise.
+  fix: |
+    Call node.remove() instead.

@@ -395,3 +395,17 @@
     for an afternoon — runs code inside your page, with your origin and your cookies.
   fix: |
     Add an integrity hash and crossorigin to the tag, or serve the file from your own site.
+
+- key: QG-HTML-SML-0046
+  name: ARIA roles should carry their required properties
+  languages: [html]
+  category: SML
+  severity: minor
+  effort: 5min
+  message: A role without its required properties is an incomplete widget.
+  summary: An explicit ARIA role misses a property that role requires.
+  why: |
+    Assistive technology reads a bare role as an unfinished widget and falls back to guessing, so
+    the announcement users hear does not match what the interface actually does.
+  fix: |
+    Add the required properties, or drop the role when the native element already carries it.

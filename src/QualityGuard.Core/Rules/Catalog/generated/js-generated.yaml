@@ -4971,24 +4971,6 @@
   detect:
     - invocation: [ArrayExpression, ClassExpression, Literal, ObjectExpression, TemplateLiteral, asFunction, asTagFunction, eslint]
 
-- key: QG-JS-BUG-0084
-  name: Array.reduce() calls should match the behaviour the code describes
-  languages: [js, ts]
-  category: BUG
-  status: planned
-  severity: major
-  effort: 15min
-  tags: [bug, generated]
-  generated: true
-
-  message: This code does not behave the way it reads.
-  summary: The code does not do what its shape suggests, or fails on ordinary input.
-  why: |
-    Written this way the code works by accident or breaks on values that are perfectly normal, and the
-    mistake is easy to miss in review because the intent reads correctly.
-  fix: |
-    Make the intended behaviour explicit — fix the condition, the operator or the order of operations —
-    and cover the case that used to fail with a test.
 - key: QG-JS-SML-0251
   name: Constructors should be accessed in a thread-safe way
   languages: [js, ts]
@@ -5933,24 +5915,6 @@
   detect:
     - invocation: [external, unicorn]
 
-- key: QG-JS-SML-0293
-  name: IndexOf() and lastIndexOf() should be replaced by the recommended alternative
-  languages: [js, ts]
-  category: SML
-  status: planned
-  severity: minor
-  effort: 15min
-  tags: [prefer_api, generated]
-  generated: true
-  message: The platform offers a clearer or safer construct for this.
-  summary: A construct is used where the platform offers one that is clearer or safer.
-  why: |
-    The alternative exists because it removes a class of mistake — a conversion, an allocation, an edge
-    case — that the current form leaves to the caller. Using the older form means every reader has to
-    check that the edge case was handled.
-  fix: |
-    Switch to the recommended construct; the behaviour is the same in the normal case and defined in the
-    cases the old form got wrong.
 - key: QG-JS-SML-0294
   name: Outdated constructs should be replaced by the recommended alternative
   languages: [js, ts]
@@ -5973,24 +5937,6 @@
   detect:
     - invocation: [external, unicorn]
 
-- key: QG-JS-SML-0295
-  name: Complex index access patterns should be simplified
-  languages: [js, ts]
-  category: SML
-  status: planned
-  severity: minor
-  effort: 15min
-  tags: [sml, generated]
-  generated: true
-
-  message: This code is harder to read or change than the behaviour requires.
-  summary: The code works but is harder to read or change than the behaviour requires.
-  why: |
-    The intent is buried, duplicated, or spread across places that must stay in sync, so every future
-    change costs more than it should and carries a risk that has nothing to do with the change itself.
-  fix: |
-    Remove what is not used, name what is unclear, and keep one piece of behaviour in one place so the
-    next change touches a single spot.
 - key: QG-JS-SML-0296
   name: Modern Blob methods should be replaced by the recommended alternative
   languages: [js, ts]
@@ -6057,25 +6003,6 @@
   detect:
     - invocation: [external, unicorn]
 
-- key: QG-JS-SML-0299
-  name: Outdated constructs should be replaced by the recommended alternative
-  languages: [js, ts]
-  category: SML
-  scope: main
-  severity: minor
-  effort: 15min
-  tags: [prefer_api, generated]
-  generated: true
-  status: planned
-  message: The platform offers a clearer or safer construct for this.
-  summary: A construct is used where the platform offers one that is clearer or safer.
-  why: |
-    The alternative exists because it removes a class of mistake — a conversion, an allocation, an edge
-    case — that the current form leaves to the caller. Using the older form means every reader has to
-    check that the edge case was handled.
-  fix: |
-    Switch to the recommended construct; the behaviour is the same in the normal case and defined in the
-    cases the old form got wrong.
 - key: QG-JS-SML-0300
   name: Default parameters should be replaced by the recommended alternative
   languages: [js, ts]
@@ -6119,24 +6046,6 @@
   detect:
     - invocation: [external, unicorn]
 
-- key: QG-JS-SML-0302
-  name: DOM nodes should be replaced by the recommended alternative
-  languages: [js, ts]
-  category: SML
-  status: planned
-  severity: minor
-  effort: 15min
-  tags: [prefer_api, generated]
-  generated: true
-  message: The platform offers a clearer or safer construct for this.
-  summary: A construct is used where the platform offers one that is clearer or safer.
-  why: |
-    The alternative exists because it removes a class of mistake — a conversion, an allocation, an edge
-    case — that the current form leaves to the caller. Using the older form means every reader has to
-    check that the edge case was handled.
-  fix: |
-    Switch to the recommended construct; the behaviour is the same in the normal case and defined in the
-    cases the old form got wrong.
 - key: QG-JS-SML-0303
   name: Re-exports should be simplified
   languages: [js, ts]

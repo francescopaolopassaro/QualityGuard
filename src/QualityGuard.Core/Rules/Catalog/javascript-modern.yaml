@@ -136,3 +136,18 @@
     on Number ask the question about the value they were handed.
   fix: |
     Reach the function through Number.
+
+- key: QG-JS-SEC-0118
+  name: webSecurity should stay enabled
+  languages: [js, ts]
+  category: SEC
+  severity: critical
+  effort: 30min
+  cwe: [693]
+  message: Disabling webSecurity removes the sandbox for everything the window renders.
+  summary: Electron BrowserWindow is created with webSecurity disabled.
+  why: |
+    Without same-origin policy any remote content rendered there - ads, frames, a compromised
+    dependency - can read local files and reach shell APIs.
+  fix: |
+    Keep webSecurity enabled; solve cross-origin needs with an explicit bridge or a proxy you control.
