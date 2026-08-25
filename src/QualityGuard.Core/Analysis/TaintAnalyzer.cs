@@ -151,6 +151,37 @@ public static class TaintEngine
                 break;
         }
 
+        // flow sensitivity, straight-line form: a variable ends up as clean as its LAST assignment.
+        // Without this step a value sanitized between source and sink stayed flagged forever - the
+        // exact shape the OWASP Benchmark uses for most of its safe variants. Scoping is per
+        // function: two locals sharing a name in different functions must not clean each other
+        foreach (var group in tree.Root.OfKind(NodeKind.Assignment)
+                     .Where(a => a.ChildAt(0)?.Kind == NodeKind.Identifier)
+                     .GroupBy(a => new
+                     {
+                         Name = a.ChildAt(0)!.Text,
+                         Owner = a.Ancestor(NodeKind.FunctionDeclaration)
+                                  ?? a.Ancestor(NodeKind.LocalFunction)
+                     }))
+        {
+            var finalValue = group.Last().ChildAt(1);
+            var cleaned = finalValue == null
+                          || finalValue.Kind is NodeKind.StringLiteral or NodeKind.NumberLiteral
+                          || IsSanitized(finalValue)
+                          || (finalValue.Kind == NodeKind.Invocation
+                              && SanitizerNames.Contains(SyntaxQuery.InvokedName(finalValue),
+                                  StringComparer.Ordinal));
+            if (!cleaned || group.Key.Owner == null)
+                continue;
+            foreach (var symbol in model.AllSymbols()
+                         .Where(s => s.IsTainted
+                                     && s.Name == group.Key.Name
+                                     && s.Usages.Count > 0
+                                     && s.Usages.All(u =>
+                                         group.Key.Owner.Range.ContainsLine(u.Line))))
+                symbol.IsTainted = false;
+        }
+
         var tainted = model.AllSymbols().Where(s => s.IsTainted).ToList();
         var names = new HashSet<string>(tainted.Select(s => s.Name), StringComparer.Ordinal);
         var lines = new HashSet<int>();

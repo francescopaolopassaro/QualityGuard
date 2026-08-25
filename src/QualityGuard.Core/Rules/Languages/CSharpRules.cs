@@ -149,7 +149,11 @@ public sealed class CsProcessExecutionRule : PatternRuleBase
         {
             if (tokens[i + 1].Text != "(") continue;
             if (CSharpRuleSet.IsMemberAccess(tokens, i, "Process", "Start")
-                && !RuleMatchers.NextNonParenIsString(tokens, i))
+                && !RuleMatchers.NextNonParenIsString(tokens, i)
+                // flow-aware: flag only when external input reaches this line, or when the file
+                // carries no taint evidence at all (single-file scan of a vulnerable sample)
+                && (context.Taint == null
+                    || context.IsTaintedLine(tokens[i].Line)))
                 context.Report("Sanitize arguments passed to Process.Start.", tokens[i].Line);
             if (CSharpRuleSet.IsWord(tokens[i], "ProcessStartInfo")
                 && !RuleMatchers.NextNonParenIsString(tokens, i))
