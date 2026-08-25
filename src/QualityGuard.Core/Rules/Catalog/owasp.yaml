@@ -466,3 +466,68 @@
   detect:
     - line: "(?i)(password|passwd|secret)\s*==\s*\S+"
       absent: [hash, Hash, digest, verify, Compare]
+
+- key: QG-ALL-SEC-0022
+  name: Cross-site cookies need SameSite together with Secure
+  languages: [cs, java, js, ts]
+  category: SEC
+  severity: major
+  cwe: [1275]
+  owasp: [A05]
+  asvs: [V14]
+  tags: [owasp, cookies, misconfiguration]
+  message: SameSite=None without Secure sends the cookie over plain HTTP and reopens CSRF.
+  summary: A cookie is marked SameSite=None but not Secure.
+  why: |
+    None disables the browser's cross-site protection; without Secure the same cookie also travels
+    on cleartext connections, so one network hop hands the session away and CSRF filters lose
+    their last passive layer.
+  fix: |
+    Set SameSite=Lax unless a third-party embed truly requires None - and then always together
+    with Secure and HttpOnly.
+  detect:
+    - line: "(?i)samesite\s*[:=]\s*['\"]?none"
+      absent: ["secure", "Secure"]
+
+- key: QG-ALL-SEC-0023
+  name: Credentialed responses must not use a wildcard origin
+  languages: [cs, java, js, ts]
+  category: SEC
+  severity: critical
+  cwe: [942]
+  owasp: [A05]
+  asvs: [V14]
+  tags: [owasp, cors, misconfiguration]
+  message: Allow-Origin * together with credentials lets any site read authenticated data.
+  summary: CORS wildcard origin is paired with credential support.
+  why: |
+    Browsers refuse this combination for fetches, but servers that still send it invite
+    misconfigured proxies to relax the check client-side; meanwhile any deployed variant that does
+    accept it exposes every logged-in visitor's data to third-party origins.
+  fix: |
+    Drop the wildcard whenever credentials are involved and echo a trusted origin from an
+    allow-list instead.
+  detect:
+    - line: "(?i)allow-credentials\s*[:=]\s*true"
+      requires: ["*"]
+
+- key: QG-ALL-SEC-0024
+  name: Redirect targets should not come straight from query parameters
+  languages: [js, ts]
+  category: SEC
+  severity: major
+  cwe: [601]
+  owasp: [A10]
+  asvs: [V10]
+  tags: [owasp, redirect, ssrf]
+  message: Assigning a query parameter to location.href sends users wherever the link says.
+  summary: Client-side navigation takes its destination from request parameters.
+  why: |
+    Phished links carry their payload in the query string; the page looks legitimate because it is
+    yours, while the browser lands on the attacker's site with referrer and fragments intact.
+  fix: |
+    Map allowed destinations through an indirect key or verify the target against your own origins
+    before navigating.
+  detect:
+    - line: "location\.href\s*=\s*(location\.search|new URLSearchParams|params)"
+      argTainted: false
