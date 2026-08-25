@@ -65,6 +65,7 @@
 - key: QG-DK-SEC-0019
   name: The whole build context should not be copied into the image
   languages: [dk]
+  asvs: [V8]
   category: SEC
   severity: major
   effort: 15min
@@ -153,6 +154,7 @@
 - key: QG-DK-SEC-0009
   name: A shipped image should not switch on debugging features
   languages: [dk]
+  asvs: [V7]
   category: SEC
   severity: critical
   effort: 10min
@@ -170,6 +172,7 @@
 - key: QG-DK-SEC-0011
   name: A build step should not run in the network of its host
   languages: [dk]
+  asvs: [V8]
   category: SEC
   severity: major
   effort: 10min
@@ -221,6 +224,7 @@
 - key: QG-DK-SEC-0018
   name: An executable copied into an image should stay owned by root
   languages: [dk]
+  asvs: [V4]
   category: SEC
   severity: critical
   effort: 10min

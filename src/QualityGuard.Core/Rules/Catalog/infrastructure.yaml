@@ -23,6 +23,7 @@
 - key: QG-TF-SEC-0064
   name: A resource should not be reachable from the whole internet
   languages: [tf]
+  asvs: [V2]
   category: SEC
   severity: critical
   effort: 20min
@@ -40,6 +41,7 @@
 - key: QG-TF-SEC-0065
   name: Transport security should require a current TLS version
   languages: [tf]
+  asvs: [V9]
   category: SEC
   severity: major
   effort: 10min
@@ -167,6 +169,7 @@
 - key: QG-CF-SEC-0019
   name: An object store should block public access on every path
   languages: [cf]
+  asvs: [V4]
   category: SEC
   severity: blocker
   effort: 15min
@@ -219,6 +222,7 @@
   status: superseded
   superseded_by: QG-K8-SEC-0015
   languages: [k8]
+  asvs: [V14]
   category: SEC
   severity: critical
   effort: 15min

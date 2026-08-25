@@ -1745,6 +1745,7 @@
 - key: QG-JV-SEC-0037
   name: Cookies should not weaken the security of the application
   languages: [java]
+  asvs: [V3]
   category: SEC
   severity: critical
   effort: 15min
@@ -1845,6 +1846,7 @@
 - key: QG-JV-SEC-0038
   name: Secure password should be replaced by the recommended alternative
   languages: [java]
+  asvs: [V2]
   category: SEC
   severity: critical
   effort: 15min
@@ -2834,6 +2836,7 @@
 - key: QG-JV-SEC-0040
   name: Custom cryptographic algorithms should use current cryptographic parameters
   languages: [java]
+  asvs: [V6]
   category: SEC
   scope: main
   severity: critical
@@ -3222,6 +3225,7 @@
 - key: QG-JV-SEC-0042
   name: Classes should not weaken the security of the application
   languages: [java]
+  asvs: [V9]
   category: SEC
   scope: main
   severity: critical
@@ -3943,6 +3947,7 @@
 - key: QG-JV-SEC-0043
   name: Cipher Block Chaining IVs should use current cryptographic parameters
   languages: [java]
+  asvs: [V6]
   category: SEC
   severity: critical
   effort: 15min
@@ -3962,6 +3967,7 @@
 - key: QG-JV-SEC-0044
   name: Cookies should not weaken the security of the application
   languages: [java]
+  asvs: [V3]
   category: SEC
   scope: main
   severity: critical
@@ -4848,6 +4854,7 @@
 - key: QG-JV-SEC-0047
   name: HttpSecurity URL patterns should not weaken the security of the application
   languages: [java]
+  asvs: [V9]
   category: SEC
   severity: critical
   effort: 15min
@@ -5251,6 +5258,7 @@
 - key: QG-JV-SEC-0050
   name: Intents should not grant more access than needed
   languages: [java]
+  asvs: [V4]
   category: SEC
   scope: main
   severity: critical
@@ -5274,6 +5282,7 @@
 - key: QG-JV-SEC-0051
   name: Android broadcast receivers should not grant more access than needed
   languages: [java]
+  asvs: [V4]
   category: SEC
   severity: critical
   effort: 15min
@@ -5357,6 +5366,7 @@
 - key: QG-JV-SEC-0052
   name: Encryption algorithms should use current cryptographic parameters
   languages: [java]
+  asvs: [V6]
   category: SEC
   severity: critical
   effort: 15min
@@ -5399,6 +5409,7 @@
 - key: QG-JV-SEC-0053
   name: JWT should use current cryptographic parameters
   languages: [java]
+  asvs: [V6]
   category: SEC
   severity: critical
   effort: 15min
@@ -5535,6 +5546,7 @@
 - key: QG-JV-SEC-0055
   name: Web application technologies should not weaken the security of the application
   languages: [java]
+  asvs: [V7]
   category: SEC
   severity: critical
   effort: 15min
@@ -5631,6 +5643,7 @@
 - key: QG-JV-SEC-0057
   name: Authentication mechanisms should not weaken the security of the application
   languages: [java]
+  asvs: [V2]
   category: SEC
   scope: main
   severity: critical
@@ -5654,6 +5667,7 @@
 - key: QG-JV-SEC-0058
   name: Authorizations should not weaken the security of the application
   languages: [java]
+  asvs: [V4]
   category: SEC
   severity: critical
   effort: 15min
@@ -5819,6 +5833,7 @@
 - key: QG-JV-SEC-0059
   name: New session should not weaken the security of the application
   languages: [java]
+  asvs: [V3]
   category: SEC
   severity: critical
   effort: 15min
@@ -6542,6 +6557,7 @@
 - key: QG-JV-SEC-0064
   name: WebViews should not grant more access than needed
   languages: [java]
+  asvs: [V4]
   category: SEC
   severity: critical
   effort: 15min

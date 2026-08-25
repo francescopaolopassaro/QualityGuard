@@ -24,6 +24,7 @@
 - key: QG-KT-SEC-0034
   name: Android components should not export themselves implicitly
   languages: [kt, java]
+  asvs: [V4]
   category: SEC
   severity: critical
   effort: 20min
@@ -242,6 +243,7 @@
 - key: QG-KT-SEC-0041
   name: A broadcast should name the permission its receivers need
   languages: [kt]
+  asvs: [V4]
   category: SEC
   severity: critical
   effort: 15min
@@ -326,6 +328,7 @@
 - key: QG-KT-SEC-0048
   name: A web view should not be allowed to reach local files
   languages: [kt]
+  asvs: [V10]
   category: SEC
   severity: critical
   effort: 15min

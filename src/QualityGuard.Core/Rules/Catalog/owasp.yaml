@@ -43,6 +43,7 @@
 - key: QG-ALL-SEC-0002
   name: OS commands should not be built from untrusted text
   languages: [cs, java, py, rb, php, go]
+  asvs: [V5]
   category: SEC
   severity: critical
   effort: 30min
@@ -65,6 +66,7 @@
 - key: QG-ALL-SEC-0003
   name: Queries should not be concatenated with untrusted values
   languages: [py, rb, php, java]
+  asvs: [V5]
   category: SEC
   severity: critical
   effort: 30min
@@ -94,6 +96,7 @@
 - key: QG-ALL-SEC-0004
   name: Deserialization of untrusted formats should be avoided
   languages: [py, rb, php, java]
+  asvs: [V6]
   category: SEC
   severity: critical
   effort: 30min
@@ -116,6 +119,7 @@
 - key: QG-ALL-SEC-0005
   name: File paths should not be assembled from request values
   languages: [py, php, cs, java]
+  asvs: [V5]
   category: SEC
   severity: critical
   effort: 30min
@@ -202,6 +206,7 @@
 - key: QG-ALL-SEC-0009
   name: TLS certificate validation should stay on
   languages: [cs, java, py, js]
+  asvs: [V9]
   category: SEC
   severity: critical
   effort: 15min
@@ -324,6 +329,7 @@
 - key: QG-ALL-SEC-0015
   name: Cryptographic signatures should be fully verified
   languages: []
+  asvs: [V6]
   category: SEC
   severity: major
   cwe: [347]
@@ -358,6 +364,7 @@
 - key: QG-ALL-SEC-0017
   name: Time-of-check to time-of-use windows should be closed
   languages: []
+  asvs: [V6]
   category: SEC
   severity: major
   cwe: [367]
@@ -375,6 +382,7 @@
 - key: QG-ALL-SEC-0018
   name: Input should be canonicalized before validation
   languages: []
+  asvs: [V6]
   category: SEC
   severity: major
   cwe: [020]
@@ -388,3 +396,67 @@
   fix: |
     To be designed against this engine's data-flow layer before activation; kept out of reports
     until then.
+
+- key: QG-ALL-SEC-0019
+  name: Debug mode should be off in production servers
+  languages: [py]
+  category: SEC
+  severity: major
+  cwe: [489]
+  owasp: [A04]
+  tags: [owasp, debug, misconfiguration]
+  message: Debug mode exposes source, configuration and an interactive console to anyone who can reach the error page.
+  summary: A development server starts with debug mode enabled.
+  why: |
+    The debugger console executes arbitrary Python from the browser, and tracebacks print settings,
+    paths and installed packages. One reachable error page turns the deployment into a shell.
+  fix: |
+    Start production behind a real WSGI server with debug off, and gate the development entry point
+    behind an environment check.
+  detect:
+    - invocation: [run]
+      argLiterals: ["True"]
+      requires: [app, flask]
+      absent: [test]
+
+- key: QG-ALL-SEC-0020
+  name: Cross-origin policies should not allow every origin
+  languages: [cs, java, js, ts, py]
+  category: SEC
+  severity: major
+  cwe: [942]
+  owasp: [A05]
+  tags: [owasp, cors, misconfiguration]
+  message: Access-Control-Allow-Origin * lets any site read responses authenticated by the browser.
+  summary: A CORS header is set to the wildcard origin.
+  why: |
+    With credentials in play, the wildcard hands every other website the ability to read your
+    authenticated endpoints from the visitor's browser - data leaves without any exploit page
+    looking unusual.
+  fix: |
+    Echo back the exact origins you trust from a configured list, and combine with Vary: Origin so
+    caches do not mix answers.
+  detect:
+    - string: "Access-Control-Allow-Origin"
+      literalValue: "*"
+
+- key: QG-ALL-SEC-0021
+  name: Passwords should not be compared as plain strings
+  languages: [cs, java, py, php, rb]
+  category: SEC
+  severity: critical
+  effort: 15min
+  cwe: [208]
+  owasp: [A07]
+  tags: [owasp, authentication, timing]
+  message: Comparing passwords character by character leaks how much of the guess was right.
+  summary: A secret is compared with a non-constant-time equality.
+  why: |
+    Ordinary equality returns at the first differing character; measured response times reveal the
+    match length character by character until the value is reconstructed.
+  fix: |
+    Verify through the framework's hash-check API, or compare fixed-size digests with a
+    constant-time primitive before releasing any decision based on it.
+  detect:
+    - line: "(?i)(password|passwd|secret)\s*==\s*\S+"
+      absent: [hash, Hash, digest, verify, Compare]

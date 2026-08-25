@@ -2,6 +2,7 @@
 - key: QG-CS-SEC-0095
   name: A retired cipher protects nothing
   languages: [cs]
+  asvs: [V6]
   category: SEC
   severity: critical
   effort: 30min
@@ -24,6 +25,7 @@
 - key: QG-CS-SEC-0096
   name: A retired cipher protects nothing
   languages: [vb]
+  asvs: [V6]
   category: SEC
   severity: critical
   effort: 30min
@@ -45,6 +47,7 @@
 - key: QG-PY-SEC-0090
   name: A retired cipher protects nothing
   languages: [py]
+  asvs: [V6]
   category: SEC
   severity: critical
   effort: 30min
@@ -66,6 +69,7 @@
 - key: QG-JS-SEC-0086
   name: A retired cipher protects nothing
   languages: [js, ts]
+  asvs: [V6]
   category: SEC
   severity: critical
   effort: 30min
@@ -88,6 +92,7 @@
 - key: QG-GO-SEC-0016
   name: A retired cipher protects nothing
   languages: [go]
+  asvs: [V6]
   category: SEC
   severity: critical
   effort: 30min
@@ -237,6 +242,7 @@
 - key: QG-JS-SEC-0087
   name: A certificate nobody checks proves nothing
   languages: [js, ts]
+  asvs: [V9]
   category: SEC
   severity: blocker
   effort: 30min
@@ -259,6 +265,7 @@
 - key: QG-GO-SEC-0017
   name: A certificate nobody checks proves nothing
   languages: [go]
+  asvs: [V9]
   category: SEC
   severity: blocker
   effort: 30min

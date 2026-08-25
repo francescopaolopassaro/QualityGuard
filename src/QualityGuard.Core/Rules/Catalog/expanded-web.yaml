@@ -2,6 +2,7 @@
 - key: QG-KT-SEC-0059
   name: A session cookie should be out of reach of script and of the network
   languages: [kt]
+  asvs: [V3]
   category: SEC
   severity: major
   effort: 10min
@@ -24,6 +25,7 @@
 - key: QG-PP-SEC-0068
   name: A session cookie should be out of reach of script and of the network
   languages: [php]
+  asvs: [V3]
   category: SEC
   severity: major
   effort: 10min

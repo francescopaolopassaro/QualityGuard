@@ -6,6 +6,7 @@
 - key: QG-TF-SEC-0071
   name: Stored data should be encrypted
   languages: [tf]
+  asvs: [V4]
   category: SEC
   severity: critical
   effort: 20min
@@ -75,6 +76,7 @@
 - key: QG-TF-SEC-0075
   name: A machine should not accept project-wide keys
   languages: [tf]
+  asvs: [V7]
   category: SEC
   severity: critical
   effort: 20min
@@ -92,6 +94,7 @@
 - key: QG-TF-SEC-0076
   name: A role should not be granted over an entire subscription
   languages: [tf]
+  asvs: [V4]
   category: SEC
   severity: critical
   effort: 20min
@@ -147,6 +150,7 @@
 - key: QG-TF-SEC-0041
   name: An assignment should not hand out a full-control built-in role
   languages: [tf]
+  asvs: [V4]
   category: SEC
   severity: critical
   effort: 15min
@@ -164,6 +168,7 @@
 - key: QG-TF-SEC-0043
   name: Role-based access control should not be switched off
   languages: [tf]
+  asvs: [V4]
   category: SEC
   severity: critical
   effort: 15min
@@ -181,6 +186,7 @@
 - key: QG-TF-SEC-0044
   name: A custom role should not amount to ownership of the subscription
   languages: [tf]
+  asvs: [V4]
   category: SEC
   severity: critical
   effort: 30min
@@ -282,6 +288,7 @@
 - key: QG-TF-SEC-0056
   name: A cluster should not enable legacy attribute-based access control
   languages: [tf]
+  asvs: [V4]
   category: SEC
   severity: critical
   effort: 1h
@@ -315,6 +322,7 @@
 - key: QG-TF-SEC-0058
   name: An object store should keep previous versions of its objects
   languages: [tf]
+  asvs: [V2]
   category: SEC
   severity: major
   effort: 15min
@@ -332,6 +340,7 @@
 - key: QG-TF-SEC-0059
   name: Logs should be kept long enough to investigate an incident
   languages: [tf]
+  asvs: [V7]
   category: SEC
   severity: major
   effort: 20min
@@ -348,6 +357,7 @@
 - key: QG-TF-SEC-0060
   name: Audit logging should not exempt individual members
   languages: [tf]
+  asvs: [V7]
   category: SEC
   severity: critical
   effort: 15min
@@ -364,6 +374,7 @@
 - key: QG-TF-SEC-0061
   name: A key vault should be protected against permanent deletion
   languages: [tf]
+  asvs: [V6]
   category: SEC
   severity: major
   effort: 15min
@@ -380,6 +391,7 @@
 - key: QG-TF-SEC-0062
   name: An object store should enforce a single access model
   languages: [tf]
+  asvs: [V4]
   category: SEC
   severity: major
   effort: 15min

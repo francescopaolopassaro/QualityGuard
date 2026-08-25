@@ -6,6 +6,7 @@
 - key: QG-CS-SEC-0111
   name: Custom cryptographic algorithms should not be used
   languages: [cs]
+  asvs: [V6]
   category: SEC
   severity: critical
   effort: 1d

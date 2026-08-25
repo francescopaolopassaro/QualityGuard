@@ -88,6 +88,7 @@
 - key: QG-K8-SEC-0011
   name: A container should not be granted extra kernel capabilities
   languages: [k8]
+  asvs: [V4]
   category: SEC
   severity: critical
   effort: 15min

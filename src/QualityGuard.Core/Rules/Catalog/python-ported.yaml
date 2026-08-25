@@ -406,6 +406,7 @@
 - key: QG-PY-SEC-0096
   name: Cipher Block Chaining IVs should use current cryptographic parameters
   languages: [py]
+  asvs: [V6]
   category: SEC
   scope: main
   severity: critical
@@ -1018,6 +1019,7 @@
 - key: QG-PY-SEC-0100
   name: GraphQL queries should not weaken the security of the application
   languages: [py]
+  asvs: [V5]
   category: SEC
   severity: critical
   effort: 1d
@@ -1733,6 +1735,7 @@
 - key: QG-PY-SEC-0101
   name: Encryption algorithms should use current cryptographic parameters
   languages: [py]
+  asvs: [V6]
   category: SEC
   scope: main
   severity: critical
@@ -2383,6 +2386,7 @@
 - key: QG-PY-SEC-0103
   name: Amazon EFS file systems should use current cryptographic parameters
   languages: [py]
+  asvs: [V6]
   category: SEC
   scope: main
   severity: critical
@@ -2405,6 +2409,7 @@
 - key: QG-PY-SEC-0104
   name: OpenSearch domains should use current cryptographic parameters
   languages: [py]
+  asvs: [V6]
   category: SEC
   scope: main
   severity: critical
@@ -2427,6 +2432,7 @@
 - key: QG-PY-SEC-0105
   name: Amazon RDS resources should use current cryptographic parameters
   languages: [py]
+  asvs: [V6]
   category: SEC
   scope: main
   severity: critical
@@ -2449,6 +2455,7 @@
 - key: QG-PY-SEC-0106
   name: Amazon SNS topics should use current cryptographic parameters
   languages: [py]
+  asvs: [V6]
   category: SEC
   scope: main
   severity: critical
@@ -2471,6 +2478,7 @@
 - key: QG-PY-SEC-0107
   name: AWS resource-based policies should not grant more access than needed
   languages: [py]
+  asvs: [V4]
   category: SEC
   scope: main
   severity: critical
@@ -2512,6 +2520,7 @@
 - key: QG-PY-SEC-0108
   name: AWS API Gateway should not weaken the security of the application
   languages: [py]
+  asvs: [V4]
   category: SEC
   scope: main
   severity: critical
@@ -2534,6 +2543,7 @@
 - key: QG-PY-SEC-0109
   name: Public network access to cloud resources should not grant more access than needed
   languages: [py]
+  asvs: [V4]
   category: SEC
   scope: main
   severity: critical
@@ -2556,6 +2566,7 @@
 - key: QG-PY-SEC-0110
   name: Amazon S3 bucket public access should not grant more access than needed
   languages: [py]
+  asvs: [V4]
   category: SEC
   scope: main
   severity: critical
@@ -2578,6 +2589,7 @@
 - key: QG-PY-SEC-0111
   name: S3 buckets should not grant more access than needed
   languages: [py]
+  asvs: [V4]
   category: SEC
   scope: main
   severity: critical
@@ -2600,6 +2612,7 @@
 - key: QG-PY-SEC-0112
   name: S3 buckets should use current cryptographic parameters
   languages: [py]
+  asvs: [V6]
   category: SEC
   scope: main
   severity: critical
@@ -2622,6 +2635,7 @@
 - key: QG-PY-SEC-0113
   name: EBS volumes should use current cryptographic parameters
   languages: [py]
+  asvs: [V6]
   category: SEC
   scope: main
   severity: critical
@@ -2644,6 +2658,7 @@
 - key: QG-PY-SEC-0114
   name: SageMaker notebook instances should use current cryptographic parameters
   languages: [py]
+  asvs: [V6]
   category: SEC
   scope: main
   severity: critical
@@ -2666,6 +2681,7 @@
 - key: QG-PY-SEC-0115
   name: SQS queues should use current cryptographic parameters
   languages: [py]
+  asvs: [V6]
   category: SEC
   scope: main
   severity: critical

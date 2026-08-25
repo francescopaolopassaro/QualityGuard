@@ -119,6 +119,7 @@
 - key: QG-JS-SEC-0116
   name: Confidential information should not be logged
   languages: [js]
+  asvs: [V7]
   category: SEC
   severity: minor
   effort: 60min

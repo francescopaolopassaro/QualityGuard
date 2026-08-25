@@ -677,6 +677,7 @@
 - key: QG-JS-SEC-0036
   name: Cookies should not weaken the security of the application
   languages: [js, ts]
+  asvs: [V3]
   category: SEC
   severity: critical
   effort: 15min
@@ -860,6 +861,7 @@
 - key: QG-JS-SEC-0037
   name: File uploads should not weaken the security of the application
   languages: [js, ts]
+  asvs: [V6]
   category: SEC
   scope: main
   severity: critical
@@ -1120,6 +1122,7 @@
 - key: QG-JS-SEC-0039
   name: Cookies should not weaken the security of the application
   languages: [js, ts]
+  asvs: [V3]
   category: SEC
   severity: critical
   effort: 15min
@@ -2081,6 +2084,7 @@
 - key: QG-JS-SEC-0040
   name: Cryptographic keys should use current cryptographic parameters
   languages: [js, ts]
+  asvs: [V6]
   category: SEC
   scope: main
   severity: critical
@@ -2354,6 +2358,7 @@
 - key: QG-JS-SEC-0044
   name: Encryption algorithms should use current cryptographic parameters
   languages: [js, ts]
+  asvs: [V6]
   category: SEC
   scope: main
   severity: critical
@@ -2421,6 +2426,7 @@
 - key: QG-JS-SEC-0047
   name: Web application technologies should not weaken the security of the application
   languages: [js, ts]
+  asvs: [V7]
   category: SEC
   severity: critical
   effort: 15min
@@ -2576,6 +2582,7 @@
 - key: QG-JS-SEC-0055
   name: Client IP address should not weaken the security of the application
   languages: [js, ts]
+  asvs: [V14]
   category: SEC
   scope: main
   severity: critical
@@ -2835,6 +2842,7 @@
 - key: QG-JS-SEC-0058
   name: Amazon S3 buckets should not weaken the security of the application
   languages: [js, ts]
+  asvs: [V14]
   category: SEC
   scope: main
   severity: critical
@@ -2879,6 +2887,7 @@
 - key: QG-JS-SEC-0063
   name: Amazon S3 bucket public access should not grant more access than needed
   languages: [js, ts]
+  asvs: [V4]
   category: SEC
   scope: main
   severity: critical
@@ -3011,6 +3020,7 @@
 - key: QG-JS-SEC-0075
   name: AWS API Gateway should not weaken the security of the application
   languages: [js, ts]
+  asvs: [V4]
   category: SEC
   scope: main
   severity: critical

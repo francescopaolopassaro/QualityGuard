@@ -22,6 +22,7 @@
 - key: QG-TF-SEC-0107
   name: S3 buckets should enforce HTTPS-only access
   languages: [tf]
+  asvs: [V9]
   category: SEC
   severity: minor
   effort: 10min
@@ -38,6 +39,7 @@
 - key: QG-TF-SEC-0108
   name: Cloud resources logging should not be disabled
   languages: [tf]
+  asvs: [V7]
   category: SEC
   severity: major
   effort: 30min
@@ -54,6 +56,7 @@
 - key: QG-TF-SEC-0109
   name: High-privilege Microsoft Entra ID built-in roles should not be assigned
   languages: [tf]
+  asvs: [V4]
   category: SEC
   severity: major
   effort: 30min
@@ -102,6 +105,7 @@
 - key: QG-TF-SEC-0112
   name: High-privilege Azure built-in roles should not be assigned
   languages: [tf]
+  asvs: [V4]
   category: SEC
   severity: major
   effort: 30min
@@ -134,6 +138,7 @@
 - key: QG-TF-SEC-0114
   name: Azure Role-Based Access Control should not be disabled
   languages: [tf]
+  asvs: [V4]
   category: SEC
   severity: major
   effort: 1h
@@ -150,6 +155,7 @@
 - key: QG-TF-SEC-0115
   name: Azure custom roles should not grant subscription Owner capabilities
   languages: [tf]
+  asvs: [V4]
   category: SEC
   severity: major
   effort: 30min
@@ -166,6 +172,7 @@
 - key: QG-TF-SEC-0116
   name: GCP IAM policies should not grant highly privileged roles
   languages: [tf]
+  asvs: [V4]
   category: SEC
   severity: major
   effort: 5min
@@ -230,6 +237,7 @@
 - key: QG-TF-SEC-0120
   name: GCP IAM custom roles should not allow privilege escalation
   languages: [tf]
+  asvs: [V4]
   category: SEC
   severity: major
   effort: 15min
@@ -246,6 +254,7 @@
 - key: QG-TF-SEC-0121
   name: Legacy Attribute-Based Access Control should not be enabled for GKE clusters
   languages: [tf]
+  asvs: [V4]
   category: SEC
   severity: major
   effort: 1h
@@ -294,6 +303,7 @@
 - key: QG-TF-SEC-0124
   name: Log retention period should be long enough to support security investigations
   languages: [tf]
+  asvs: [V7]
   category: SEC
   severity: major
   effort: 5min
@@ -310,6 +320,7 @@
 - key: QG-TF-SEC-0125
   name: GCP Cloud Audit Logs exemptions should not be configured for project members
   languages: [tf]
+  asvs: [V7]
   category: SEC
   severity: major
   effort: 30min

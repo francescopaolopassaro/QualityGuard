@@ -97,6 +97,7 @@
 - key: QG-JV-SEC-0028
   name: Endpoints should restrict the HTTP methods they accept
   languages: [java, kt]
+  asvs: [V5]
   category: SEC
   scope: main
   severity: major
@@ -119,6 +120,7 @@
 - key: QG-JV-SEC-0029
   name: Deserialization from directory servers should stay disabled
   languages: [java]
+  asvs: [V6]
   category: SEC
   scope: main
   severity: blocker
@@ -141,6 +143,7 @@
 - key: QG-JV-SEC-0030
   name: Template auto-escaping should stay enabled
   languages: [java, kt]
+  asvs: [V5]
   category: SEC
   severity: critical
   effort: 20min
@@ -162,6 +165,7 @@
 - key: QG-JV-SEC-0031
   name: Android web views should keep scripting and file access off
   languages: [java, kt]
+  asvs: [V10]
   category: SEC
   severity: critical
   effort: 25min
@@ -204,6 +208,7 @@
 - key: QG-JV-SEC-0033
   name: Broadcasts should be sent with a receiver permission
   languages: [java, kt]
+  asvs: [V4]
   category: SEC
   severity: major
   effort: 20min

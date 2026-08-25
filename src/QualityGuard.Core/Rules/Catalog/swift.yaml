@@ -135,6 +135,7 @@
 - key: QG-SW-SEC-0001
   name: Traffic should not travel in cleartext
   languages: [swift]
+  asvs: [V9]
   category: SEC
   severity: major
   cwe: [319]
@@ -179,6 +180,7 @@
 - key: QG-SW-SEC-0004
   name: A query should not be built by interpolation
   languages: [swift]
+  asvs: [V5]
   category: SEC
   severity: critical
   cwe: [89]

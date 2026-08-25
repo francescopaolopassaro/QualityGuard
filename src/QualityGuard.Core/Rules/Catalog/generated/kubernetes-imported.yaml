@@ -22,6 +22,7 @@
 - key: QG-K8-SEC-0037
   name: Administration services should not run in containers
   languages: [k8]
+  asvs: [V14]
   category: SEC
   severity: critical
   effort: 30min
@@ -86,6 +87,7 @@
 - key: QG-K8-SEC-0041
   name: Service account permissions should be restricted
   languages: [k8]
+  asvs: [V4]
   category: SEC
   severity: major
   effort: 1h
@@ -135,6 +137,7 @@
 - key: QG-K8-SEC-0044
   name: Sensitive file system paths should not be mounted in containers
   languages: [k8]
+  asvs: [V8]
   category: SEC
   severity: major
   effort: 60min

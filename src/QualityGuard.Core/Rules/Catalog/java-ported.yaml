@@ -1534,6 +1534,7 @@
 - key: QG-JV-SEC-0078
   name: Cipher Block Chaining IVs should use current cryptographic parameters
   languages: [java]
+  asvs: [V6]
   category: SEC
   scope: main
   severity: critical
@@ -1600,6 +1601,7 @@
 - key: QG-JV-SEC-0081
   name: Secure password should be replaced by the recommended alternative
   languages: [java]
+  asvs: [V2]
   category: SEC
   scope: main
   severity: critical
@@ -1622,6 +1624,7 @@
 - key: QG-JV-SEC-0082
   name: Encryption algorithms should use current cryptographic parameters
   languages: [java]
+  asvs: [V6]
   category: SEC
   scope: main
   severity: critical
@@ -1666,6 +1669,7 @@
 - key: QG-JV-SEC-0083
   name: JWT should use current cryptographic parameters
   languages: [java]
+  asvs: [V6]
   category: SEC
   scope: main
   severity: critical
@@ -1710,6 +1714,7 @@
 - key: QG-JV-SEC-0085
   name: Android broadcast receivers should not grant more access than needed
   languages: [java]
+  asvs: [V4]
   category: SEC
   scope: main
   severity: critical
@@ -1732,6 +1737,7 @@
 - key: QG-JV-SEC-0086
   name: Cookies should not weaken the security of the application
   languages: [java]
+  asvs: [V3]
   category: SEC
   scope: main
   severity: critical
@@ -1797,6 +1803,7 @@
 - key: QG-JV-SEC-0089
   name: WebViews should not grant more access than needed
   languages: [java]
+  asvs: [V4]
   category: SEC
   scope: main
   severity: critical
@@ -1921,6 +1928,7 @@
 - key: QG-JV-SEC-0091
   name: HttpSecurity URL patterns should not weaken the security of the application
   languages: [java]
+  asvs: [V9]
   category: SEC
   scope: main
   severity: critical

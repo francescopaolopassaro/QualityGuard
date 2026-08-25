@@ -2,6 +2,7 @@
 - key: QG-JV-SEC-0071
   name: Deserializing what a caller sent hands them the process
   languages: [java]
+  asvs: [V6]
   category: SEC
   severity: blocker
   effort: 30min
@@ -25,6 +26,7 @@
 - key: QG-JS-SEC-0088
   name: Deserializing what a caller sent hands them the process
   languages: [js, ts]
+  asvs: [V6]
   category: SEC
   severity: blocker
   effort: 30min
@@ -115,6 +117,7 @@
 - key: QG-JV-SEC-0072
   name: A file everyone can write is a file anyone can replace
   languages: [java]
+  asvs: [V4]
   category: SEC
   severity: critical
   effort: 15min
@@ -137,6 +140,7 @@
 - key: QG-PP-SEC-0069
   name: A file everyone can write is a file anyone can replace
   languages: [php]
+  asvs: [V4]
   category: SEC
   severity: critical
   effort: 15min

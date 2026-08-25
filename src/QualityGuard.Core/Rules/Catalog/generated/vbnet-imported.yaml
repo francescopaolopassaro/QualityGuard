@@ -22,6 +22,7 @@
 - key: QG-CS-SEC-0116
   name: Custom cryptographic algorithms should not be used
   languages: [vbnet]
+  asvs: [V6]
   category: SEC
   severity: critical
   effort: 1d
@@ -38,6 +39,7 @@
 - key: QG-CS-SEC-0117
   name: Cipher Block Chaining IVs should be unpredictable
   languages: [vbnet]
+  asvs: [V6]
   category: SEC
   severity: critical
   effort: 15min

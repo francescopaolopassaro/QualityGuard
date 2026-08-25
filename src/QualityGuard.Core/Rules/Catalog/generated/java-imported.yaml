@@ -38,6 +38,7 @@
 - key: QG-JV-SEC-0094
   name: Android KeyStore keys should require user authentication
   languages: [java]
+  asvs: [V2]
   category: SEC
   severity: major
   effort: 5min

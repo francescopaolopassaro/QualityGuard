@@ -5,6 +5,7 @@
 - key: QG-TF-SEC-0077
   name: Storage should not be readable by everyone
   languages: [tf]
+  asvs: [V4]
   category: SEC
   severity: critical
   effort: 20min
@@ -22,6 +23,7 @@
 - key: QG-TF-SEC-0078
   name: A bucket should keep the block on public access
   languages: [tf]
+  asvs: [V4]
   category: SEC
   severity: critical
   effort: 20min
@@ -69,6 +71,7 @@
 - key: QG-TF-SEC-0081
   name: A managed service should not answer anonymous callers
   languages: [tf]
+  asvs: [V2]
   category: SEC
   severity: critical
   effort: 20min
@@ -85,6 +88,7 @@
 - key: QG-TF-SEC-0082
   name: An API endpoint should say who may call it
   languages: [tf]
+  asvs: [V4]
   category: SEC
   severity: critical
   effort: 20min

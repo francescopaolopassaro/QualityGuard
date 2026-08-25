@@ -64,6 +64,7 @@
 - key: QG-JV-SEC-0069
   name: A cryptographic key should be long enough
   languages: [java]
+  asvs: [V6]
   category: SEC
   severity: critical
   effort: 30min

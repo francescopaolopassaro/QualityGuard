@@ -31,6 +31,7 @@
 - key: QG-JS-SEC-0026
   name: Shell interpreters should not be used to run commands
   languages: [js, ts]
+  asvs: [V5]
   category: SEC
   severity: blocker
   effort: 25min
@@ -58,6 +59,7 @@
 - key: QG-JS-SEC-0027
   name: Framework sanitization should not be bypassed
   languages: [js, ts]
+  asvs: [V5]
   category: SEC
   severity: critical
   effort: 25min
@@ -361,6 +363,7 @@
   status: superseded
   superseded_by: QG-JS-SEC-0080
   languages: [js, ts]
+  asvs: [V9]
   category: SEC
   severity: major
   cwe: [319]

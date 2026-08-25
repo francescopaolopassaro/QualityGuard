@@ -256,6 +256,7 @@
 - key: QG-KT-SEC-0038
   name: An initialisation vector has to be unpredictable
   languages: [kt]
+  asvs: [V6]
   category: SEC
   severity: critical
   effort: 15min
@@ -308,6 +309,7 @@
 - key: QG-KT-SEC-0039
   name: A generated key should be long enough to be worth generating
   languages: [kt]
+  asvs: [V6]
   category: SEC
   severity: critical
   effort: 15min
@@ -361,6 +363,7 @@
 - key: QG-KT-SEC-0043
   name: A cipher should be used with a mode that hides the shape of the data
   languages: [kt]
+  asvs: [V6]
   category: SEC
   severity: critical
   effort: 15min

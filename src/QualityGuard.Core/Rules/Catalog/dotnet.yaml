@@ -106,6 +106,7 @@
 - key: QG-CS-SEC-0027
   name: Certificate validation should not be bypassed
   languages: [cs]
+  asvs: [V9]
   category: SEC
   severity: blocker
   effort: 20min
@@ -160,6 +161,7 @@
 - key: QG-CS-SEC-0038
   name: Entity Framework raw SQL should not be assembled from values
   languages: [cs]
+  asvs: [V5]
   category: SEC
   severity: blocker
   effort: 20min
@@ -188,6 +190,7 @@
 - key: QG-CS-SEC-0011
   name: Deserialization should not resolve types named in the payload
   languages: [cs]
+  asvs: [V6]
   category: SEC
   severity: blocker
   effort: 30min
@@ -283,6 +286,7 @@
 - key: QG-CS-SEC-0006
   name: Types and assemblies should not be loaded from untrusted names
   languages: [cs]
+  asvs: [V14]
   category: SEC
   severity: critical
   effort: 25min
@@ -530,6 +534,7 @@
 - key: QG-RAZ-SEC-0001
   name: Views should not disable the antiforgery token on forms
   languages: [raz]
+  asvs: [V3]
   category: SEC
   severity: critical
   effort: 10min
@@ -577,6 +582,7 @@
 - key: QG-RAZ-SEC-0003
   name: Views should not contain inline scripts driven by model data
   languages: [raz]
+  asvs: [V5]
   category: SEC
   severity: major
   effort: 20min
@@ -619,6 +625,7 @@
 - key: QG-XAML-SEC-0001
   name: Markup should not reference resources over plain HTTP
   languages: [xaml]
+  asvs: [V9]
   category: SEC
   severity: major
   effort: 10min

@@ -213,6 +213,7 @@
 - key: QG-PP-SEC-0062
   name: Automatic updates should not be switched off
   languages: [php]
+  asvs: [V6]
   category: SEC
   severity: major
   effort: 10min

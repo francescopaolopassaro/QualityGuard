@@ -32,6 +32,7 @@
 - key: QG-JV-SEC-0019
   name: Trust managers should verify the certificate chain
   languages: [java, kt]
+  asvs: [V9]
   category: SEC
   scope: main
   severity: blocker
@@ -57,6 +58,7 @@
 - key: QG-JV-SEC-0020
   name: Deserialization should not accept types chosen by the payload
   languages: [java, kt]
+  asvs: [V6]
   category: SEC
   severity: blocker
   effort: 30min
@@ -105,6 +107,7 @@
 - key: QG-JV-SEC-0022
   name: Reflection should not be used to bypass access control
   languages: [java, kt]
+  asvs: [V4]
   category: SEC
   scope: main
   severity: major
@@ -190,6 +193,7 @@
 - key: QG-KT-SEC-0031
   name: Web views should not enable JavaScript by default
   languages: [kt, java]
+  asvs: [V10]
   category: SEC
   severity: critical
   effort: 20min
@@ -276,6 +280,7 @@
 - key: QG-PY-SEC-0033
   name: YAML should be parsed with the safe loader
   languages: [py]
+  asvs: [V6]
   category: SEC
   severity: blocker
   effort: 10min
@@ -303,6 +308,7 @@
 - key: QG-PY-SEC-0034
   name: TLS verification should not be disabled
   languages: [py]
+  asvs: [V9]
   category: SEC
   severity: blocker
   effort: 15min
@@ -329,6 +335,7 @@
 - key: QG-PY-SEC-0035
   name: Debug mode should not be enabled in application code
   languages: [py]
+  asvs: [V7]
   category: SEC
   scope: main
   severity: critical
@@ -352,6 +359,7 @@
 - key: QG-PY-SEC-0036
   name: Temporary files should be created atomically
   languages: [py]
+  asvs: [V4]
   category: SEC
   scope: main
   severity: major
@@ -836,6 +844,7 @@
 - key: QG-XML-SEC-0005
   name: A default interceptor should be declared where it applies
   languages: [xml]
+  asvs: [V6]
   category: SEC
   severity: major
   effort: 15min
@@ -869,6 +878,7 @@
 - key: QG-XML-SEC-0008
   name: Two validation forms should not share a name
   languages: [xml]
+  asvs: [V6]
   category: SEC
   severity: critical
   effort: 10min
@@ -884,6 +894,7 @@
 - key: QG-XML-SEC-0009
   name: A shipped application should not enable its debugging features
   languages: [xml]
+  asvs: [V7]
   category: SEC
   severity: critical
   effort: 10min
@@ -902,6 +913,7 @@
 - key: QG-XML-SEC-0010
   name: A broadcast receiver should require a permission
   languages: [xml]
+  asvs: [V4]
   category: SEC
   severity: critical
   effort: 10min
@@ -919,6 +931,7 @@
 - key: QG-XML-SEC-0011
   name: An application should not allow traffic in clear text
   languages: [xml]
+  asvs: [V9]
   category: SEC
   severity: critical
   effort: 15min
@@ -969,6 +982,7 @@
 - key: QG-XML-SEC-0017
   name: A content provider should separate its read and write permissions
   languages: [xml]
+  asvs: [V4]
   category: SEC
   severity: major
   effort: 10min
@@ -985,6 +999,7 @@
 - key: QG-XML-SEC-0018
   name: A component with an intent filter should say whether it is exported
   languages: [xml]
+  asvs: [V4]
   category: SEC
   severity: major
   effort: 10min

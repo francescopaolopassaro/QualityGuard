@@ -546,6 +546,7 @@
 - key: QG-CS-SEC-0068
   name: Cookies should not weaken the security of the application
   languages: [cs]
+  asvs: [V3]
   category: SEC
   scope: main
   severity: critical
@@ -665,6 +666,7 @@
 - key: QG-CS-SEC-0070
   name: Custom cryptographic algorithms should use current cryptographic parameters
   languages: [cs]
+  asvs: [V6]
   category: SEC
   severity: critical
   effort: 15min
@@ -1755,6 +1757,7 @@
 - key: QG-CS-SEC-0071
   name: An initialisation vector has to be unpredictable
   languages: [cs]
+  asvs: [V6]
   category: SEC
   severity: critical
   effort: 15min
@@ -1774,6 +1777,7 @@
 - key: QG-CS-SEC-0072
   name: Cookies should not weaken the security of the application
   languages: [cs]
+  asvs: [V3]
   category: SEC
   scope: main
   severity: critical
@@ -3953,6 +3957,7 @@
 - key: QG-CS-SEC-0076
   name: Cryptographic keys should use current cryptographic parameters
   languages: [cs]
+  asvs: [V6]
   category: SEC
   scope: main
   severity: critical
@@ -4152,6 +4157,7 @@
 - key: QG-CS-SEC-0077
   name: Encryption algorithms should use current cryptographic parameters
   languages: [cs]
+  asvs: [V6]
   category: SEC
   scope: main
   severity: critical
@@ -4175,6 +4181,7 @@
 - key: QG-CS-SEC-0078
   name: JWT should use current cryptographic parameters
   languages: [cs]
+  asvs: [V6]
   category: SEC
   scope: main
   severity: critical

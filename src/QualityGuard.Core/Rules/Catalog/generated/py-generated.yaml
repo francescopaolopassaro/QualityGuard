@@ -529,6 +529,7 @@
 - key: QG-PY-SEC-0050
   name: Cookies should not weaken the security of the application
   languages: [py]
+  asvs: [V3]
   category: SEC
   severity: critical
   effort: 15min
@@ -550,6 +551,7 @@
 - key: QG-PY-SEC-0051
   name: Secure password should be replaced by the recommended alternative
   languages: [py]
+  asvs: [V2]
   category: SEC
   severity: critical
   effort: 15min
@@ -608,6 +610,7 @@
 - key: QG-PY-SEC-0052
   name: Custom cryptographic algorithms should use current cryptographic parameters
   languages: [py]
+  asvs: [V6]
   category: SEC
   severity: critical
   effort: 15min
@@ -722,6 +725,7 @@
 - key: QG-PY-SEC-0053
   name: Cipher Block Chaining IVs should use current cryptographic parameters
   languages: [py]
+  asvs: [V6]
   category: SEC
   severity: critical
   effort: 15min
@@ -741,6 +745,7 @@
 - key: QG-PY-SEC-0054
   name: Cookies should not weaken the security of the application
   languages: [py]
+  asvs: [V3]
   category: SEC
   severity: critical
   effort: 15min
@@ -929,6 +934,7 @@
 - key: QG-PY-SEC-0055
   name: Encryption algorithms should use current cryptographic parameters
   languages: [py]
+  asvs: [V6]
   category: SEC
   severity: critical
   effort: 15min
@@ -1496,6 +1502,7 @@
 - key: QG-PY-SEC-0057
   name: S3 buckets should use current cryptographic parameters
   languages: [py]
+  asvs: [V6]
   category: SEC
   severity: critical
   effort: 15min
@@ -1556,6 +1563,7 @@
 - key: QG-PY-SEC-0059
   name: S3 buckets should not grant more access than needed
   languages: [py]
+  asvs: [V4]
   category: SEC
   severity: critical
   effort: 15min
@@ -1575,6 +1583,7 @@
 - key: QG-PY-SEC-0060
   name: AWS resource-based policies should not grant more access than needed
   languages: [py]
+  asvs: [V4]
   category: SEC
   severity: critical
   effort: 15min
@@ -1594,6 +1603,7 @@
 - key: QG-PY-SEC-0061
   name: EBS volumes should use current cryptographic parameters
   languages: [py]
+  asvs: [V6]
   category: SEC
   severity: critical
   effort: 15min
@@ -1613,6 +1623,7 @@
 - key: QG-PY-SEC-0062
   name: Amazon S3 bucket public access should not grant more access than needed
   languages: [py]
+  asvs: [V4]
   category: SEC
   severity: critical
   effort: 15min
@@ -1632,6 +1643,7 @@
 - key: QG-PY-SEC-0064
   name: Amazon RDS resources should use current cryptographic parameters
   languages: [py]
+  asvs: [V6]
   category: SEC
   severity: critical
   effort: 15min
@@ -1651,6 +1663,7 @@
 - key: QG-PY-SEC-0065
   name: IAM policies should not grant more access than needed
   languages: [py]
+  asvs: [V4]
   category: SEC
   severity: critical
   effort: 15min
@@ -1670,6 +1683,7 @@
 - key: QG-PY-SEC-0066
   name: OpenSearch domains should use current cryptographic parameters
   languages: [py]
+  asvs: [V6]
   category: SEC
   severity: critical
   effort: 15min
@@ -1689,6 +1703,7 @@
 - key: QG-PY-SEC-0068
   name: SageMaker notebook instances should use current cryptographic parameters
   languages: [py]
+  asvs: [V6]
   category: SEC
   severity: critical
   effort: 15min
@@ -1708,6 +1723,7 @@
 - key: QG-PY-SEC-0070
   name: Amazon SNS topics should use current cryptographic parameters
   languages: [py]
+  asvs: [V6]
   category: SEC
   severity: critical
   effort: 15min
@@ -1749,6 +1765,7 @@
 - key: QG-PY-SEC-0071
   name: Public network access to cloud resources should not grant more access than needed
   languages: [py]
+  asvs: [V4]
   category: SEC
   severity: critical
   effort: 15min
@@ -1768,6 +1785,7 @@
 - key: QG-PY-SEC-0072
   name: SQS queues should use current cryptographic parameters
   languages: [py]
+  asvs: [V6]
   category: SEC
   severity: critical
   effort: 15min
@@ -1787,6 +1805,7 @@
 - key: QG-PY-SEC-0073
   name: Amazon EFS file systems should use current cryptographic parameters
   languages: [py]
+  asvs: [V6]
   category: SEC
   severity: critical
   effort: 15min

@@ -31,6 +31,7 @@
 - key: QG-PY-SEC-0038
   name: Template engines should keep auto-escaping on
   languages: [py]
+  asvs: [V5]
   category: SEC
   scope: main
   severity: critical
@@ -77,6 +78,7 @@
   name: Validation should not rely on assertions
   languages: [py]
   scope: main
+  asvs: [V4]
   category: SEC
   severity: critical
   effort: 20min
@@ -104,6 +106,7 @@
   name: Outgoing requests should have a timeout
   languages: [py]
   scope: main
+  asvs: [V3]
   category: SEC
   severity: major
   effort: 10min
@@ -379,6 +382,7 @@
   name: A cookie should not travel in the clear
   languages: [py]
   scope: main
+  asvs: [V3]
   category: SEC
   severity: major
   effort: 10min
@@ -441,6 +445,7 @@
 - key: QG-PY-SEC-0063
   name: A permission statement should not allow every action
   languages: [py]
+  asvs: [V4]
   category: SEC
   severity: critical
   effort: 15min

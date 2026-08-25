@@ -141,6 +141,7 @@
 - key: QG-PY-SEC-0044
   name: Shell interpreters should not run assembled commands
   languages: [py]
+  asvs: [V5]
   category: SEC
   severity: blocker
   effort: 25min
@@ -186,6 +187,7 @@
 - key: QG-PY-SEC-0046
   name: Key generation should use strong parameters
   languages: [py]
+  asvs: [V6]
   category: SEC
   scope: main
   severity: critical

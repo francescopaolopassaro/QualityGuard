@@ -3,6 +3,7 @@
 - key: QG-GO-SEC-0014
   name: File permissions should not be world-writable
   languages: [go]
+  asvs: [V4]
   category: SEC
   scope: main
   severity: critical

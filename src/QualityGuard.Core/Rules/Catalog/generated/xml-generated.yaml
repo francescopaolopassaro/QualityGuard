@@ -95,6 +95,7 @@
 - key: QG-XML-SEC-0004
   name: Basic authentication should not be used
   languages: [xml]
+  asvs: [V2]
   category: SEC
   severity: critical
   effort: 15min
@@ -133,6 +134,7 @@
 - key: QG-XML-SEC-0006
   name: Cookies should not weaken the security of the application
   languages: [xml]
+  asvs: [V3]
   category: SEC
   scope: main
   severity: critical
@@ -210,6 +212,7 @@
 - key: QG-XML-SEC-0012
   name: Exported component access should not grant more access than needed
   languages: [xml]
+  asvs: [V4]
   category: SEC
   severity: critical
   effort: 15min
@@ -248,6 +251,7 @@
 - key: QG-XML-SEC-0016
   name: Custom permissions should not grant more access than needed
   languages: [xml]
+  asvs: [V4]
   category: SEC
   scope: main
   severity: critical

@@ -4,6 +4,7 @@
 - key: QG-CF-SEC-0013
   name: A bucket should refuse requests that are not encrypted
   languages: [cf]
+  asvs: [V2]
   category: SEC
   scope: main
   severity: minor
@@ -19,6 +20,7 @@
 - key: QG-TF-SEC-0016
   name: A bucket should refuse requests that are not encrypted
   languages: [tf]
+  asvs: [V2]
   category: SEC
   scope: main
   severity: minor
@@ -49,6 +51,7 @@
 - key: QG-CF-SEC-0015
   name: A cloud resource should keep its access log
   languages: [cf]
+  asvs: [V7]
   category: SEC
   scope: main
   severity: major
@@ -65,6 +68,7 @@
 - key: QG-TF-SEC-0019
   name: A cloud resource should keep its access log
   languages: [tf]
+  asvs: [V7]
   category: SEC
   scope: main
   severity: major
@@ -155,6 +159,7 @@
 - key: QG-CF-SEC-0012
   name: Traffic should not travel over a protocol without encryption
   languages: [cf]
+  asvs: [V9]
   category: SEC
   scope: main
   severity: minor
@@ -202,6 +207,7 @@
 - key: QG-TF-SEC-0037
   name: A directory role that can grant roles should not be assigned
   languages: [tf]
+  asvs: [V4]
   category: SEC
   scope: main
   severity: major

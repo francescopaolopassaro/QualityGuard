@@ -6,6 +6,7 @@
 - key: QG-PY-SEC-0126
   name: Policies should not grant all privileges
   languages: [py]
+  asvs: [V4]
   category: SEC
   severity: blocker
   effort: 5min
@@ -38,6 +39,7 @@
 - key: QG-PY-SEC-0128
   name: AWS IAM policies should limit the scope of permissions given
   languages: [py]
+  asvs: [V4]
   category: SEC
   severity: critical
   effort: 60min
@@ -86,6 +88,7 @@
 - key: QG-PY-SEC-0131
   name: OS commands should not be executed using a shell interpreter
   languages: [py]
+  asvs: [V6]
   category: SEC
   severity: major
   cwe: [78]

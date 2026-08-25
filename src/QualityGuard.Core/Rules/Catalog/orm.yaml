@@ -117,6 +117,7 @@
 - key: QG-CS-SEC-0094
   name: A cryptographic key should be long enough
   languages: [cs, vb]
+  asvs: [V6]
   category: SEC
   severity: critical
   effort: 30min

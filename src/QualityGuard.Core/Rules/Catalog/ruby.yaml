@@ -24,6 +24,7 @@
 - key: QG-RB-SEC-0014
   name: Rendered templates should not come from parameters
   languages: [rb]
+  asvs: [V10]
   category: SEC
   severity: critical
   effort: 25min
@@ -84,6 +85,7 @@
 - key: QG-RB-SEC-0016
   name: Commands should not be built from interpolated strings
   languages: [rb]
+  asvs: [V5]
   category: SEC
   severity: blocker
   effort: 25min

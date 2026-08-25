@@ -61,6 +61,7 @@
 - key: QG-TF-SEC-0020
   name: S3 buckets should not grant more access than needed
   languages: [tf]
+  asvs: [V4]
   category: SEC
   severity: critical
   effort: 15min
@@ -81,6 +82,7 @@
 - key: QG-TF-SEC-0023
   name: Amazon S3 bucket public access should not grant more access than needed
   languages: [tf]
+  asvs: [V4]
   category: SEC
   severity: critical
   effort: 15min
@@ -141,6 +143,7 @@
 - key: QG-TF-SEC-0040
   name: Azure resources should not grant more access than needed
   languages: [tf]
+  asvs: [V4]
   category: SEC
   severity: critical
   effort: 15min
@@ -161,6 +164,7 @@
 - key: QG-TF-SEC-0045
   name: Azure role assignments should not weaken the security of the application
   languages: [tf]
+  asvs: [V4]
   category: SEC
   severity: critical
   effort: 15min
@@ -262,6 +266,7 @@
 - key: QG-TF-SEC-0052
   name: Project-wide SSH keys should not grant more access than needed
   languages: [tf]
+  asvs: [V4]
   category: SEC
   severity: critical
   effort: 15min

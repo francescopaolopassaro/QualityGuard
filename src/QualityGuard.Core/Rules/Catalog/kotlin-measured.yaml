@@ -4,6 +4,7 @@
 - key: QG-KT-SEC-0056
   name: A device identifier should not be used to recognise a user
   languages: [kt]
+  asvs: [V6]
   category: SEC
   severity: critical
   effort: 30min

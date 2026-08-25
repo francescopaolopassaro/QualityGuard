@@ -277,6 +277,7 @@
 - key: QG-CS-SEC-0084
   name: Custom cryptographic algorithms should use current cryptographic parameters
   languages: [vb]
+  asvs: [V6]
   category: SEC
   severity: critical
   effort: 15min
@@ -796,6 +797,7 @@
 - key: QG-CS-SEC-0085
   name: Cipher Block Chaining IVs should use current cryptographic parameters
   languages: [vb]
+  asvs: [V6]
   category: SEC
   severity: critical
   effort: 15min
@@ -1660,6 +1662,7 @@
 - key: QG-CS-SEC-0089
   name: Encryption algorithms should use current cryptographic parameters
   languages: [vb]
+  asvs: [V6]
   category: SEC
   scope: main
   severity: critical
@@ -1683,6 +1686,7 @@
 - key: QG-CS-SEC-0090
   name: JWT should use current cryptographic parameters
   languages: [vb]
+  asvs: [V6]
   category: SEC
   scope: main
   severity: critical

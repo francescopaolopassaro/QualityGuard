@@ -6,6 +6,7 @@
 - key: QG-KT-SEC-0084
   name: Android broadcast receivers should not be registered without a permission
   languages: [kt]
+  asvs: [V4]
   category: SEC
   severity: critical
   effort: 15min
@@ -38,6 +39,7 @@
 - key: QG-KT-SEC-0086
   name: Intents should not be broadcast without receiver permissions
   languages: [kt]
+  asvs: [V4]
   category: SEC
   severity: major
   effort: 10min
@@ -54,6 +56,7 @@
 - key: QG-KT-SEC-0087
   name: Android KeyStore keys should require user authentication
   languages: [kt]
+  asvs: [V2]
   category: SEC
   severity: major
   effort: 5min
@@ -86,6 +89,7 @@
 - key: QG-KT-SEC-0089
   name: Mobile database encryption keys should not be disclosed
   languages: [kt]
+  asvs: [V6]
   category: SEC
   severity: major
   effort: 10min
@@ -118,6 +122,7 @@
 - key: QG-KT-SEC-0091
   name: Remote artifacts should be verified for authenticity and integrity
   languages: [kt]
+  asvs: [V14]
   category: SEC
   severity: minor
   effort: 15min

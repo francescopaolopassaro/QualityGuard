@@ -6,6 +6,7 @@
 - key: QG-PP-SEC-0087
   name: Authorizations should be based on strong decisions
   languages: [php]
+  asvs: [V4]
   category: SEC
   severity: major
   effort: 30min
@@ -103,6 +104,7 @@
 - key: QG-PP-SEC-0093
   name: Cryptographic RSA algorithms should always incorporate OAEP (Optimal Asymmetric Encryption Padding)
   languages: [php]
+  asvs: [V6]
   category: SEC
   severity: critical
   effort: 20min
@@ -119,6 +121,7 @@
 - key: QG-PP-SEC-0094
   name: Neither DES (Data Encryption Standard) nor DESede (3DES) should be used
   languages: [php]
+  asvs: [V6]
   category: SEC
   severity: blocker
   effort: 20min
@@ -167,6 +170,7 @@
 - key: QG-PP-SEC-0097
   name: "session.use_trans_sid" should not be enabled
   languages: [php]
+  asvs: [V3]
   category: SEC
   severity: blocker
   effort: 5min
@@ -215,6 +219,7 @@
 - key: QG-PP-SEC-0100
   name: "cgi.force_redirect" should be enabled
   languages: [php]
+  asvs: [V10]
   category: SEC
   severity: major
   effort: 2min
@@ -263,6 +268,7 @@
 - key: QG-PP-SEC-0103
   name: Session-management cookies should not be persistent
   languages: [php]
+  asvs: [V3]
   category: SEC
   severity: critical
   effort: 5min

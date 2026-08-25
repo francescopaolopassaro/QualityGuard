@@ -38,6 +38,7 @@
 - key: QG-CF-SEC-0043
   name: AWS API Gateway should require authentication
   languages: [cf]
+  asvs: [V2]
   category: SEC
   severity: blocker
   effort: 15min
@@ -70,6 +71,7 @@
 - key: QG-CF-SEC-0045
   name: S3 buckets should enforce HTTPS-only access
   languages: [cf]
+  asvs: [V9]
   category: SEC
   severity: minor
   effort: 10min
@@ -102,6 +104,7 @@
 - key: QG-CF-SEC-0047
   name: Cloud resources logging should not be disabled
   languages: [cf]
+  asvs: [V7]
   category: SEC
   severity: major
   effort: 30min

@@ -104,6 +104,7 @@
 - key: QG-PY-SEC-0085
   name: An obsolete TLS version should not be selected
   languages: [py]
+  asvs: [V9]
   category: SEC
   severity: critical
   effort: 20min
@@ -132,6 +133,7 @@
 - key: QG-PY-SEC-0087
   name: A token should be verified before it is trusted
   languages: [py]
+  asvs: [V2]
   category: SEC
   severity: critical
   effort: 20min
@@ -146,6 +148,7 @@
 - key: QG-PY-SEC-0088
   name: Cross-origin access should name the origins it allows
   languages: [py]
+  asvs: [V14]
   category: SEC
   severity: critical
   effort: 30min

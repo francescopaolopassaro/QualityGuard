@@ -15,6 +15,14 @@ Rules ship in a **default profile** — convention and stylistic checks stay dis
 
 Engine engineering prioritizes precision: rules are vetted on third-party production codebases before inclusion, noisy checks are rewritten on the syntax tree or dropped, and fixed false positives are locked in place with regression tests (§8).
 
+### Security is organized around the OWASP
+
+Every security rule carries its OWASP category, so CLI reports and SARIF exports group findings
+by the standard your auditors speak. Injection-style rules run through the data-flow engine: they
+fire only when untrusted input actually reaches the sink, which keeps framework code quiet.
+Detection is scored continuously against the intentionally vulnerable OWASP Benchmark corpus -
+the numbers that guide each release are recall and false-positive rate on those 2,740 cases.
+
 ---
 
 ## 1. Packages

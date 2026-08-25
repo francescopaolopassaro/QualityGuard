@@ -88,6 +88,7 @@
 - key: QG-JS-SEC-0083
   name: A resource should not be reachable from the whole internet
   languages: [js, ts]
+  asvs: [V2]
   category: SEC
   severity: critical
   effort: 30min

@@ -140,6 +140,7 @@
 - key: QG-JS-SEC-0118
   name: webSecurity should stay enabled
   languages: [js, ts]
+  asvs: [V14]
   category: SEC
   severity: critical
   effort: 30min

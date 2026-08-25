@@ -20,6 +20,7 @@
 - key: QG-JS-SEC-0092
   name: The browser should be held to the declared content type
   languages: [js, ts]
+  asvs: [V14]
   category: SEC
   severity: major
   effort: 10min
@@ -133,6 +134,7 @@
 - key: QG-JS-SEC-0098
   name: Request forgery protection should cover what changes state
   languages: [js, ts]
+  asvs: [V3]
   category: SEC
   severity: critical
   effort: 20min
@@ -153,6 +155,7 @@
 - key: QG-JS-SEC-0099
   name: An upload should have a size it cannot exceed
   languages: [js, ts]
+  asvs: [V6]
   category: SEC
   severity: major
   effort: 15min

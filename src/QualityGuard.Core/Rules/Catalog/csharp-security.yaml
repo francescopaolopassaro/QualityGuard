@@ -72,6 +72,7 @@
 - key: QG-CS-SEC-0050
   name: File permissions should not grant access to everyone
   languages: [cs, vb]
+  asvs: [V4]
   category: SEC
   severity: critical
   effort: 20min
@@ -215,6 +216,7 @@
 - key: QG-CS-SEC-0056
   name: Temporary data should not be written to a shared directory
   languages: [cs, vb]
+  asvs: [V4]
   category: SEC
   severity: major
   effort: 20min
@@ -235,6 +237,7 @@
 - key: QG-CS-SEC-0057
   name: Block ciphers should use an authenticated mode
   languages: [cs, vb]
+  asvs: [V6]
   category: SEC
   severity: critical
   effort: 30min
@@ -256,6 +259,7 @@
 - key: QG-CS-SEC-0058
   name: Framework input validation should not be turned off
   languages: [cs, vb]
+  asvs: [V5]
   category: SEC
   severity: critical
   effort: 20min
