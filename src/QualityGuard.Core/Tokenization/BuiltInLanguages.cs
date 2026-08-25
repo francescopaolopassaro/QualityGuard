@@ -6,6 +6,13 @@ public static class BuiltInLanguages
     private static readonly StringDelimiter[] SingleDouble = [new("\"", "\""), new("'", "'")];
     private static readonly StringDelimiter[] JsStrings = [new("\"", "\""), new("'", "'"), new("`", "`")];
 
+    /// <summary>
+    /// Java text blocks open with three quotes; the longer form must be tried first, or every
+    /// text block would read as an empty string followed by stray source.
+    /// </summary>
+    private static readonly StringDelimiter[] JavaStrings =
+        [new("\"\"\"", "\"\"\""), new("\"", "\""), new("'", "'")];
+
     public static readonly LanguageInfo CSharp = new(
         "cs", [".cs"],
         ["abstract", "as", "base", "bool", "break", "byte", "case", "catch", "char", "checked", "class", "const",
@@ -30,7 +37,7 @@ public static class BuiltInLanguages
             "throw", "throws", "transient", "try", "void", "volatile", "while", "record", "sealed", "permits"],
         ["if", "else", "for", "while", "do", "case", "switch", "catch", "&&", "||", "?"],
         "//", "/*", "*/",
-        SingleDouble,
+        JavaStrings,
         HashComments: false, NestingBlockComments: false);
 
     public static readonly LanguageInfo JavaScript = new(

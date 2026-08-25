@@ -126,9 +126,11 @@ public sealed class PythonParser
         if (keyword == "async" && tokens.Count > 1)
             keyword = tokens[1].Text;
 
+
         if (keyword == "def")
             return ParseFunction(line, tokens);
-        if (keyword == "class")
+
+                if (keyword == "class")
             return ParseClass(line, tokens);
         if (CompoundKeywords.Contains(keyword, StringComparer.Ordinal))
             return ParseCompound(line, tokens, keyword);
@@ -199,6 +201,10 @@ public sealed class PythonParser
         var nameIndex = IndexOf(tokens, "def") + 1;
         var name = nameIndex < tokens.Count ? tokens[nameIndex].Text : string.Empty;
         var node = new SyntaxNode(NodeKind.FunctionDeclaration, name, TextRange.Of(tokens), tokens);
+        // every call path funnels here, so the marker is recorded where the whole signature is
+        // visible: rules on blocking work inside async code ask exactly this
+        if (IndexOf(tokens, "def") == 1 && tokens[0].Text == "async")
+            node.Add(new SyntaxNode(NodeKind.Modifier, "async", node.Range, []));
         node.Add(ParseParameters(tokens));
         _line++;
         var body = new SyntaxNode(NodeKind.Block, "", TextRange.Of(tokens), tokens);

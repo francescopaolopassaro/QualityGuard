@@ -248,8 +248,9 @@ public sealed class PyBlockingSleepInAsyncRule : PyStyleGapRule
         foreach (var function in context.Root.OfKind(
                      NodeKind.FunctionDeclaration, NodeKind.LocalFunction))
         {
-            if (!function.Children.Where(c => c.Kind == NodeKind.Modifier)
-                    .Any(m => m.Text == "async"))
+            // the parser does not always keep the async marker as a modifier node; the function's
+            // own tokens are the honest source
+            if (!function.Tokens.Any(t => t.Text == "async"))
                 continue;
             var body = function.LastChild(NodeKind.Block);
             if (body == null)
@@ -287,10 +288,11 @@ public sealed class PyTupleLengthConsistencyRule : PyStyleGapRule
             var body = function.LastChild(NodeKind.Block);
             if (body == null)
                 continue;
-            var returned = body.Children
+            var returned = body.DescendantsAndSelf()
                 .Where(c => c is { Kind: NodeKind.Jump, Text: "return" })
                 .Select(r => r.ChildAt(0))
-                .Where(v => v?.Kind == NodeKind.Tuple)
+                .Where(v => v is ({ Kind: NodeKind.ListLiteral, Text: "tuple" })
+                            or { Kind: NodeKind.Tuple })
                 .Select(v => v!.Children.Count)
                 .Distinct()
                 .ToList();

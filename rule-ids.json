@@ -122,6 +122,7 @@
     "XML-SML": 85,
     "XAML-BUG": 4,
     "SC-SML": 59,
-    "SC-BUG": 19
+    "SC-BUG": 19,
+    "ALL-SEC": 11
   }
 }

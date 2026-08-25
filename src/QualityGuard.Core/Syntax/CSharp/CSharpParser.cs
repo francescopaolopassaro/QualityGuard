@@ -1,4 +1,4 @@
-﻿using QualityGuard.Core.Tokenization;
+using QualityGuard.Core.Tokenization;
 
 namespace QualityGuard.Core.Syntax.CSharp;
 
@@ -619,8 +619,9 @@ public sealed class CSharpParser
         if (Is("("))
         {
             // the primary constructor of a Kotlin or Scala class declares the properties of the
-            // type, so it is parsed rather than skipped; a record does the same and loses nothing by it
-            if (IsKotlin || IsScala)
+            // type, so it is parsed rather than skipped; a Java record does the same - its
+            // components are the state every rule about the type asks for
+            if (IsKotlin || IsScala || (IsJava && keyword == "record"))
                 primaryConstructor = ParseParameterList();
             else
                 SkipBalanced("(", ")");
@@ -651,6 +652,8 @@ public sealed class CSharpParser
         // ask exactly that question
         if (keyword is "interface" or "trait" or "object")
             node.Add(new SyntaxNode(NodeKind.Modifier, keyword, node.Range, []));
+        else if (IsJava && keyword == "record")
+            node.Add(new SyntaxNode(NodeKind.Modifier, "record", node.Range, []));
         if (primaryConstructor != null)
             node.Add(primaryConstructor);
         if (supertypes != null)
@@ -677,6 +680,8 @@ public sealed class CSharpParser
     /// </summary>
     private List<SyntaxNode> ParseSupertypeList()
     {
+        // the connector words reach here when a dialect writes several of them in sequence
+        // (`extends A implements B`) or when Java's `permits` opens the list
         var bases = new List<SyntaxNode>();
         while (!AtEnd && !Is("{") && !Is(";") && !Is("}") && !Is("where")
                && !IsAny("fun", "val", "var", "class", "object", "interface"))
@@ -685,7 +690,7 @@ public sealed class CSharpParser
             var type = ParseType();
             if (_index == before)
                 _index++;
-            else
+            else if (!(type.Text is "permits" or "extends" or "implements" or "with"))
             {
                 bases.Add(type);
                 if (Is("(")) // the base is constructed: its arguments carry nothing rules need
@@ -4894,10 +4899,45 @@ public sealed class CSharpParser
     {
         Expect("switch");
         var node = Node(NodeKind.SwitchExpression, start, "switch");
+        // C# writes `switch { arms }`, Java writes `switch (subject) { arms }`: leaving the
+        // parentheses unread made the selector look like a call and detached every arm
+        if (Is("("))
+        {
+            SkipOpenParen();
+            if (ParseExpression() is { } subject)
+                node.Add(subject);
+            Accept(")");
+        }
         if (Accept("{"))
         {
             while (!AtEnd && !Is("}"))
             {
+                // Java's arrow form: `case A, B -> result;` - labels run to the arrow, one body
+                // follows, and reading them as C# pattern arms scattered everything
+                if (IsJava && (Is("case") || (Is("default") && PeekText() == "->")))
+                {
+                    var caseStart = Mark();
+                    var label = new SyntaxNode(NodeKind.SwitchSection, Is("case") ? "case" : "default",
+                        TextRange.Of([_tokens[caseStart]]), []);
+                    var arrow = IndexOfArrow();
+                    while (!AtEnd && !Is("->") && _index != arrow)
+                        _index++;
+                    Accept("->");
+                    if (Is("{"))
+                        label.Add(ParseBlock());
+                    else
+                    {
+                        if (ParseAssignment() is { } result)
+                            label.Add(result);
+                        while (!AtEnd && !Is(";") && !Is("}"))
+                            _index++;
+                        Accept(";");
+                    }
+                    label.Tokens = SliceFrom(caseStart);
+                    label.Range = TextRange.Of(label.Tokens);
+                    node.Add(label);
+                    continue;
+                }
                 var before = _index;
                 var arm = ParsePattern();
                 if (Is("when"))
@@ -4919,6 +4959,27 @@ public sealed class CSharpParser
         node.Tokens = SliceFrom(start);
         node.Range = TextRange.Of(node.Tokens);
         return node;
+    }
+
+    /// <summary>The `->` that closes a Java arrow label, at nesting depth zero.</summary>
+    private int IndexOfArrow()
+    {
+        var depth = 0;
+        for (var i = _index; i < _tokens.Count && i < _index + 60; i++)
+        {
+            var text = _tokens[i].Text;
+            if (text is "(" or "[" or "{")
+                depth++;
+            else if (text is ")" or "]" or "}")
+            {
+                if (depth == 0)
+                    return -1;
+                depth--;
+            }
+            else if (text == "->" && depth == 0)
+                return i;
+        }
+        return -1;
     }
 
     private SyntaxNode ParseParenthesizedOrLambda(int start)

@@ -1,0 +1,243 @@
+# OWASP Top 10 (2021) security rules.
+#
+# Every entry tags its Top-10 category so reports and SARIF exports group by standard. Where a
+# category is already owned by per-language families, the representative executable keys are listed
+# here instead of duplicated:
+#   A01 access control   - QG-CS-SML-0345, QG-KT-SEC-0042, QG-JV-SML-0233, QG-PY-SEC-0063
+#   A02 crypto failures  - QG-CS-SEC-0067/0071, QG-KT-SEC-0037/0038/0039, QG-CS-SEC-0007
+#   A03 injection        - per-language command/SQL/XSS families + tainted-sink rules below
+#   A04 insecure design  - QG-CS-BUG-0099, QG-CS-SML-0555, QG-XAML-SEC-0003
+#   A05 misconfiguration - QG-TF/K8/DK/CF families, QG-PP-SEC-0061..0065,
+#                          QG-XML-SEC-0005..0018, QG-JS-SEC-0118
+#   A06 vulnerable deps  - QG-JS-SML-* open ranges, QG-KT-SML-0079 pinned versions
+#   A07 auth failures    - QG-PY-SEC-0069/0084, QG-KT-SEC-0054, session/login families
+#   A08 integrity        - secrets family; dependency lockfiles excluded from scans by default
+#   A09 logging failures - QG-CS-BUG-0095/0096, sensitive-logging families
+#   A10 SSRF             - outbound-request rule below
+#
+# Sink notes: SQL execution follows the java.sql Statement contract (JSR-221 public specification);
+# the tainted-sink rules fire only when data-flow analysis marks the reaching value as external.
+
+- key: QG-ALL-SEC-0001
+  name: Code built from strings should not be evaluated
+  languages: [cs, java, js, ts, py, php, rb, kt]
+  category: SEC
+  severity: critical
+  effort: 30min
+  cwe: [95]
+  owasp: [A03]
+  tags: [owasp, injection, eval]
+  message: Text that reaches this call becomes instructions, not data.
+  summary: An eval-style sink executes a string assembled while the program runs.
+  why: |
+    Nothing downstream can contain the damage: by the time the call raises or returns, whatever
+    the string contained has already executed with this process's permissions. Parse errors, try/catch
+    blocks and input length limits give no protection, because well-formed hostile input works fine.
+  fix: |
+    Delete the evaluation step. Map allowed inputs through a dictionary to pre-written actions,
+    parse the narrow grammar you actually support, or branch explicitly over known cases.
+  detect:
+    - invocation: [eval, exec, Function, create_function]
+      argTainted: true
+
+- key: QG-ALL-SEC-0002
+  name: OS commands should not be built from untrusted text
+  languages: [cs, java, py, rb, php, go]
+  category: SEC
+  severity: critical
+  effort: 30min
+  cwe: [78]
+  owasp: [A03]
+  tags: [owasp, injection, command]
+  message: Shell metacharacters in interpolated values split one argument into several commands.
+  summary: A process sink receives command text glued together at run time.
+  why: |
+    The shell tokenises the finished string: a semicolon or backtick inside a value starts a new
+    command under your process's account. Adding quotes afterwards loses to encoding tricks; only
+    never letting the shell re-tokenise wins.
+  fix: |
+    Hand the executor an argument array, keep the verb fixed in your code, and allow-list the few
+    values that are allowed to vary.
+  detect:
+    - invocation: [system, shell_exec, passthru, popen]
+      argTainted: true
+
+- key: QG-ALL-SEC-0003
+  name: Queries should not be concatenated with untrusted values
+  languages: [py, rb, php, java]
+  category: SEC
+  severity: critical
+  effort: 30min
+  cwe: [89]
+  owasp: [A03]
+  tags: [owasp, injection, sql]
+  message: Whoever shapes the string shapes the statement.
+  summary: SQL text reaches an execution call as a value built while running.
+  why: |
+    One quote inside a value closes your literal and opens theirs: ORDER BY turns into DELETE, and
+    the database sees two perfectly legal statements. Escaping routines lose whenever a new context
+    appears; placeholders cannot lose, because the driver sends data separately from the plan.
+  fix: |
+    Bind values as parameters on every path. Concatenate nothing but identifiers taken from a
+    fixed list you own.
+  detect:
+    - invocation: [executeQuery, executeUpdate, executeLargeUpdate, executeBatch, addBatch,
+                   prepareStatement, prepareCall]
+      argIndex: 0
+      argNotLiteral: true
+      argTainted: true
+    - invocation: [execute, executemany]
+      argIndex: 0
+      argNotLiteral: true
+      argTainted: true
+
+- key: QG-ALL-SEC-0004
+  name: Deserialization of untrusted formats should be avoided
+  languages: [py, rb, php, java]
+  category: SEC
+  severity: critical
+  effort: 30min
+  cwe: [502]
+  owasp: [A08]
+  tags: [owasp, deserialization]
+  message: Reading these streams instantiates classes the payload chooses.
+  summary: Object deserialization runs over data that came from outside.
+  why: |
+    The read itself constructs objects and fires their code before any field check you wrote gets
+    a turn. Chains of such constructors are published and weaponised, so "we only deserialize
+    internal traffic" fails as soon as one endpoint forwards attacker bytes.
+  fix: |
+    Move to JSON or another data-only format validated against an explicit schema; if binary is
+    mandatory, authenticate then verify the signature before the first byte is read.
+  detect:
+    - invocation: [loads, unserialize, readObject]
+      argTainted: true
+
+- key: QG-ALL-SEC-0005
+  name: File paths should not be assembled from request values
+  languages: [py, php, cs, java]
+  category: SEC
+  severity: critical
+  effort: 30min
+  cwe: [22]
+  owasp: [A01]
+  tags: [owasp, traversal, path]
+  message: Climb sequences in request data walk out of the folder you meant.
+  summary: File APIs receive paths containing caller-controlled segments.
+  why: |
+    ../ climbs, encoded variants survive naive filters, and absolute paths ignore your prefix
+    altogether. Checking the raw string loses; checking the resolved path against a root wins.
+  fix: |
+    Canonicalise to an absolute path, require it to start with the intended base directory, then
+    open and pass handles - never reconstructed strings.
+  detect:
+    - invocation: [open, file_get_contents, include]
+      argTainted: true
+
+- key: QG-ALL-SEC-0006
+  name: Outbound URLs should not come verbatim from requests
+  languages: [py, cs, java, js]
+  category: SEC
+  severity: major
+  effort: 30min
+  cwe: [918]
+  owasp: [A10]
+  tags: [owasp, ssrf]
+  message: A caller-chosen URL aims your server's trust wherever the caller likes.
+  summary: HTTP client receives a URL assembled from unvalidated input.
+  why: |
+    From your network position the request reaches addresses the internet must not see - instance
+    metadata endpoints, admin ports, peer services - and your logs record it as ordinary traffic.
+  fix: |
+    Keep destinations in configuration, resolve hostnames yourself and reject private ranges, pin
+    the scheme to https.
+  detect:
+    - invocation: [get, urlopen, requests_get]
+      argTainted: true
+
+- key: QG-ALL-SEC-0007
+  name: Tokens should not come from predictable random sources
+  languages: [java, cs, py, php, rb]
+  category: SEC
+  severity: critical
+  effort: 15min
+  cwe: [330]
+  owasp: [A02]
+  tags: [owasp, random, tokens]
+  message: Guessable generators make session tokens guessable too.
+  summary: Security material comes from a generator designed for statistics, not secrecy.
+  why: |
+    These generators expose state through their outputs: a handful of observed tokens narrows the
+    space enough to predict the next one, and a session identifier that can be predicted is a
+    session that can be stolen without stealing anything else.
+  fix: |
+    Generate anything secret-bearing with the platform's cryptographic generator and leave the
+    statistical one for simulations.
+  detect:
+    - invocation: [setSeed]
+      requires: [token, session, password, secret, nonce]
+
+- key: QG-ALL-SEC-0008
+  name: Password hashing should not use broken fast hashes
+  languages: [cs, java, py, php]
+  category: SEC
+  severity: critical
+  effort: 30min
+  cwe: [916]
+  owasp: [A02]
+  tags: [owasp, crypto, passwords]
+  message: Fast digests hand password guessing to commodity hardware.
+  summary: A password passes through MD5 or SHA-1.
+  why: |
+    These functions were built to be quick, which is exactly the property that makes stored hashes
+    cheap to attack offline: billions of candidates per second per card. Salting stops rainbow
+    tables, not speed.
+  fix: |
+    Store Argon2id, bcrypt or scrypt with a per-user salt and a work factor tuned so verification
+    takes tens of milliseconds on your production hardware.
+  detect:
+    - invocation: [md5, sha1, MD5Transform, DigestUtilsmd5Hex]
+      requires: [password, passwd, credential]
+
+- key: QG-ALL-SEC-0009
+  name: TLS certificate validation should stay on
+  languages: [cs, java, py, js]
+  category: SEC
+  severity: critical
+  effort: 15min
+  cwe: [295]
+  owasp: [A02]
+  tags: [owasp, tls, certificates]
+  message: With validation off, TLS proves nothing about who answered.
+  summary: A client accepts any certificate presented.
+  why: |
+    Any interceptor with a self-signed key completes the handshake, decrypts everything, and
+    forwards on - the padlock icon survives end to end while the channel belongs to someone else.
+  fix: |
+    Leave the default trust store active; where a private CA is genuinely required, pin those keys
+    explicitly instead of disabling verification.
+  detect:
+    - identifier: [verify, CheckCertificateRevocationList]
+      literalValue: false
+      requires: [ssl, tls, https, cert, request]
+
+- key: QG-ALL-SEC-0010
+  name: Redirect targets should not be taken raw from requests
+  languages: [cs, java, py, php]
+  category: SEC
+  severity: major
+  effort: 15min
+  cwe: [601]
+  owasp: [A01]
+  tags: [owasp, redirect]
+  message: An unchecked redirect borrows your domain for someone else's landing page.
+  summary: The redirect location comes straight from a request parameter.
+  why: |
+    Victims arrive believing they are still on your site - the address bar showed it - carrying
+    cookies and referrers to wherever the parameter pointed.
+  fix: |
+    Resolve destinations through an indirect key issued by your server, or refuse targets outside
+    the origins you own.
+  detect:
+    - invocation: [Redirect, sendRedirect, redirect]
+      argTainted: true

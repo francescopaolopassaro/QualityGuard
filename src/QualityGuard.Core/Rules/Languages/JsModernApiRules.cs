@@ -156,7 +156,13 @@ public sealed class JsDateObjectForTimestampRule : JsModernApiRule
             var receiver = call.ChildAt(0)?.Kind == NodeKind.MemberSelect
                 ? call.ChildAt(0).ChildAt(0)
                 : null;
-            if (receiver?.Kind != NodeKind.ObjectCreation || receiver.Text != "Date")
+            // JavaScript reads `new Date()` as a unary 'new' over a plain invocation
+            if (receiver?.Kind == NodeKind.Unary && receiver.Text == "new")
+                receiver = receiver.ChildAt(0);
+            var isFreshDate = receiver?.Kind == NodeKind.Invocation && Called(receiver) == "Date"
+                              && Args(receiver).Count == 0
+                || receiver is { Kind: NodeKind.ObjectCreation, Text: "Date" };
+            if (!isFreshDate)
                 continue;
             context.Report(call,
                 "This builds a full Date object only to read the millisecond timestamp off it. "
@@ -184,9 +190,14 @@ public sealed class JsRemoveChildToRemoveRule : JsModernApiRule
             if (Called(call) != "removeChild"
                 || call.ChildAt(0)?.Kind != NodeKind.MemberSelect)
                 continue;
-            var receiver = call.ChildAt(0);
-            if (receiver.ChildAt(1)?.Text != "parentNode"
-                || receiver.ChildAt(0)?.SourceText() != Args(call)[0]?.SourceText())
+            // the receiver must itself be a `<node>.parentNode` select, and the argument must be
+            // that same node: `parent.removeChild(other)` is ordinary and stays silent
+            var parentNode = call.ChildAt(0).ChildAt(0);
+            if (parentNode?.Kind != NodeKind.MemberSelect
+                || parentNode.ChildAt(1)?.Text != "parentNode")
+                continue;
+            if (Args(call).Count != 1
+                || Args(call)[0]?.SourceText() != parentNode.ChildAt(0)?.SourceText())
                 continue;
             context.Report(call,
                 "`node.parentNode.removeChild(node)` walks up to the parent only to come back down "
