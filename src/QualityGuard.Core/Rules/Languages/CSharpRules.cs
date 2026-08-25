@@ -156,7 +156,8 @@ public sealed class CsProcessExecutionRule : PatternRuleBase
                     || context.IsTaintedLine(tokens[i].Line)))
                 context.Report("Sanitize arguments passed to Process.Start.", tokens[i].Line);
             if (CSharpRuleSet.IsWord(tokens[i], "ProcessStartInfo")
-                && !RuleMatchers.NextNonParenIsString(tokens, i))
+                && !RuleMatchers.NextNonParenIsString(tokens, i)
+                && (context.Taint == null || context.IsTaintedLine(tokens[i].Line)))
                 context.Report("Validate the file name used to build the process.", tokens[i].Line);
         }
     }
@@ -183,6 +184,10 @@ public sealed class CsSqlInjectionRule : PatternRuleBase
             if (!CSharpRuleSet.HasAny(line, ["select", "insert", "update", "delete", "drop"]))
                 continue;
             if (!(line.Contains('+') || line.Contains("$\"") || CSharpRuleSet.HasAny(line, ["string.Format", "String.Format"])))
+                continue;
+            // flow-aware: the concatenated value must actually be external input, or the file must
+            // carry no taint evidence at all
+            if (context.Taint != null && !context.IsTaintedLine(i + 1))
                 continue;
             context.Report("Use parameterized queries to prevent SQL injection.", i + 1);
         }
