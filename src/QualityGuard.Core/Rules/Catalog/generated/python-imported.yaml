@@ -88,6 +88,7 @@
   languages: [py]
   category: SEC
   severity: major
+  cwe: [78]
   effort: 30min
   status: planned
   generated: true

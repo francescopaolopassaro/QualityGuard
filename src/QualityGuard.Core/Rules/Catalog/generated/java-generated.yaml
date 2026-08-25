@@ -1908,6 +1908,7 @@
   category: BUG
   scope: main
   severity: major
+  cwe: [330]
   effort: 15min
   tags: [bug, generated]
   generated: true

@@ -158,6 +158,7 @@
   category: SEC
   scope: main
   severity: minor
+  cwe: [319]
   effort: 10min
   tags: [network, encryption]
   summary: A setting or a URL names a protocol that carries its traffic in clear text.
@@ -173,6 +174,7 @@
   category: SEC
   scope: main
   severity: minor
+  cwe: [319]
   effort: 10min
   tags: [network, encryption]
   summary: A setting or a URL names a protocol that carries its traffic in clear text.
@@ -326,6 +328,7 @@
   category: SML
   scope: main
   severity: minor
+  cwe: [78]
   effort: 5min
   tags: [docker, readability]
   summary: A build command runs past the width anyone reads in a review.

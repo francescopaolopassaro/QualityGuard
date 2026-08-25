@@ -149,6 +149,7 @@
   languages: [java]
   category: BUG
   severity: major
+  cwe: [330]
   effort: 15min
   tags: [random, performance]
   message: Creating a generator per call produces correlated values.

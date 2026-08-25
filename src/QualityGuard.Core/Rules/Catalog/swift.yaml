@@ -137,6 +137,7 @@
   languages: [swift]
   category: SEC
   severity: major
+  cwe: [319]
   effort: 20min
   tags: [transport]
   summary: A plain http:// address is used outside the loopback.
@@ -180,6 +181,7 @@
   languages: [swift]
   category: SEC
   severity: critical
+  cwe: [89]
   effort: 30min
   tags: [injection]
   summary: A SQL statement is assembled with string interpolation.

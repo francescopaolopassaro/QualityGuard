@@ -104,6 +104,7 @@
   languages: [k8]
   category: SEC
   severity: minor
+  cwe: [78]
   effort: 5min
   status: planned
   generated: true

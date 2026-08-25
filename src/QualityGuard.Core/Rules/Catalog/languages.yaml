@@ -817,6 +817,7 @@
   languages: [sh]
   category: BUG
   severity: minor
+  cwe: [78]
   effort: 5min
   tags: [shell]
   message: Add 'set -euo pipefail' to exit early on errors.

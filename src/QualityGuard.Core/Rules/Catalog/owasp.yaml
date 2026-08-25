@@ -241,3 +241,25 @@
   detect:
     - invocation: [Redirect, sendRedirect, redirect]
       argTainted: true
+
+- key: QG-ALL-SEC-0011
+  name: Log entries should not be forged through injected newlines
+  languages: [cs, java, js, ts, py]
+  category: SEC
+  severity: major
+  effort: 15min
+  cwe: [117]
+  owasp: [A09]
+  tags: [owasp, logging, injection]
+  message: A newline inside logged input starts a fake log line.
+  summary: Untrusted text reaches a logging call unescaped.
+  why: |
+    Whoever controls the payload writes lines that look like real entries from other users - audit
+    trails stop being evidence, and alerts built on log patterns fire on fiction.
+  fix: |
+    Replace line breaks with their escaped form before logging, or switch to structured events
+    where the message is one field and never parsed back.
+  detect:
+    - invocation: [log, info, debug, warn, error, LogInformation, LogWarning, LogError, NLog]
+      argIndex: 0
+      argTainted: true

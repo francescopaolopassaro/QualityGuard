@@ -46,6 +46,7 @@
   languages: [js, ts]
   category: SEC
   severity: major
+  cwe: [319]
   effort: 20min
   tags: [network, privacy]
   summary: A cleartext protocol is used, or transit encryption is switched off.

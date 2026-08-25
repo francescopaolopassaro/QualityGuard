@@ -978,6 +978,7 @@
   category: SEC
   scope: main
   severity: critical
+  cwe: [89]
   effort: 15min
   tags: [avoid_api, generated]
   generated: true
@@ -4176,6 +4177,7 @@
   category: BUG
   scope: main
   severity: major
+  cwe: [79]
   effort: 15min
   tags: [avoid_api, generated]
   generated: true

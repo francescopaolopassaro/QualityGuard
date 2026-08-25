@@ -56,6 +56,7 @@
   languages: [php]
   category: SEC
   severity: major
+  cwe: [918]
   effort: 5min
   status: planned
   generated: true

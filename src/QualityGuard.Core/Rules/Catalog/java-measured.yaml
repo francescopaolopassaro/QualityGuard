@@ -136,6 +136,7 @@
   languages: [java]
   category: SML
   severity: major
+  cwe: [78]
   effort: 20min
   tags: [portability]
   summary: A command is launched by its absolute path.

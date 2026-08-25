@@ -243,6 +243,7 @@
   languages: [tf]
   category: SEC
   severity: critical
+  cwe: [89]
   effort: 15min
   tags: [crypto, generated]
   generated: true

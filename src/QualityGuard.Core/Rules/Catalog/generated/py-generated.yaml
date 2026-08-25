@@ -2128,6 +2128,7 @@
   languages: [py]
   category: SML
   severity: minor
+  cwe: [330]
   effort: 15min
   tags: [prefer_api, generated]
   generated: true

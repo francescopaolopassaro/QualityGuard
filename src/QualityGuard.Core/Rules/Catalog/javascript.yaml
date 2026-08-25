@@ -363,6 +363,7 @@
   languages: [js, ts]
   category: SEC
   severity: major
+  cwe: [319]
   effort: 20min
   tags: [transport]
   message: Communicating over cleartext HTTP may expose data.

@@ -1047,6 +1047,7 @@
   category: BUG
   status: planned
   severity: major
+  cwe: [89]
   effort: 15min
   tags: [bug, generated]
   generated: true

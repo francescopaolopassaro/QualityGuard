@@ -24,6 +24,7 @@
   languages: [js]
   category: SEC
   severity: blocker
+  cwe: [89]
   effort: 2h
   status: planned
   generated: true
