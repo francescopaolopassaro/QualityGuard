@@ -15,6 +15,19 @@ public sealed class AnalysisEngine
 
     public IReadOnlyList<FileAnalysis> Run(AnalysisContext context)
     {
+        // third-party code is marked before anything runs: the files keep their metrics and stay
+        // in the project index, but rules will not speak about code nobody here can change
+        if (context.Options.VendorPaths.Count > 0)
+        {
+            var vendorPatterns = SourceScanner.Compile(
+                context.Options.VendorPaths.Where(g => !string.IsNullOrWhiteSpace(g)).ToList());
+            foreach (var file in context.Files)
+            {
+                var normalized = file.Path.Replace('\\', '/');
+                file.IsVendor = vendorPatterns.Any(p => p.IsMatch(normalized));
+            }
+        }
+
         foreach (var file in context.Files)
         {
             if (file.Language == null)

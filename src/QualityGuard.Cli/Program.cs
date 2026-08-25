@@ -82,7 +82,8 @@ try
         return 2;
     }
 
-    var analyses = AnalyzeAndScan(scanOptions, verbose, everyRule);
+    var vendorPaths = ExtractAll(args, "--vendor", "--third-party");
+    var analyses = AnalyzeAndScan(scanOptions, verbose, everyRule, vendorPaths);
     var metrics = AggregateMetrics(analyses);
 
     // new_lines is a real count whenever a base is given: git is asked which lines the branch added
@@ -148,8 +149,9 @@ catch (Exception ex)
     return 2;
 }
 
-static List<FileAnalysis> AnalyzeAndScan(ScanOptions options, bool verbose, bool everyRule)
-{
+    static List<FileAnalysis> AnalyzeAndScan(ScanOptions options, bool verbose, bool everyRule,
+        IReadOnlyList<string> vendorPaths)
+    {
     var scan = SourceScanner.Scan(options);
     foreach (var missing in scan.MissingPaths)
         Console.Error.WriteLine($"WARNING: {missing} does not exist");
@@ -178,7 +180,8 @@ static List<FileAnalysis> AnalyzeAndScan(ScanOptions options, bool verbose, bool
         }
     }
 
-    var context = new AnalysisContext(files, new AnalysisOptions());
+    var analysisOptions = new AnalysisOptions { VendorPaths = vendorPaths };
+    var context = new AnalysisContext(files, analysisOptions);
     var engine = new AnalysisEngine();
     var all = engine.Run(context).ToList();
 
@@ -187,8 +190,13 @@ static List<FileAnalysis> AnalyzeAndScan(ScanOptions options, bool verbose, bool
     foreach (var (path, reason) in engine.Unreadable)
         Console.WriteLine($"  SKIPPED {path}: {reason}");
 
+    var vendorFiles = all.Where(a => a.File.IsVendor).ToList();
+    if (vendorFiles.Count > 0)
+        Console.WriteLine(
+            $"  VENDOR {vendorFiles.Count} files marked as third-party; rules stay silent on them");
+
     var rules = RuleRepository.GetBuiltInRules(everyRule);
-    foreach (var analysis in all)
+    foreach (var analysis in all.Where(a => !a.File.IsVendor))
         RuleEngine.Run(analysis, rules);
 
     return all;

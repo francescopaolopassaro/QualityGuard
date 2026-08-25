@@ -13,6 +13,9 @@ public sealed class SourceFile
     }
 
     public string Path { get; }
+
+    /// <summary>Set when the path matches a vendor pattern: rules stay silent on this file.</summary>
+    public bool IsVendor { get; set; }
     public string Content { get; }
     public LanguageInfo? Language { get; }
     public string FileName => System.IO.Path.GetFileName(Path);
@@ -44,6 +47,13 @@ public sealed class AnalysisOptions
 {
     public IReadOnlyList<string> IncludedExtensions { get; init; } = [];
     public IReadOnlyList<string> ExcludedPaths { get; init; } = [];
+
+    /// <summary>
+    /// Glob patterns marking third-party code copied into the repository: the files stay in the
+    /// scan for metrics and cross-file resolution, but rules do not speak about them - findings on
+    /// code nobody here can change are noise by definition.
+    /// </summary>
+    public IReadOnlyList<string> VendorPaths { get; init; } = [];
 }
 
 public sealed class AnalysisContext

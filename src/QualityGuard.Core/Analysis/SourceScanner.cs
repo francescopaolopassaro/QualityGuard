@@ -342,7 +342,7 @@ public static class SourceScanner
 
     private static string Normalize(string path) => path.Replace('\\', '/');
 
-    private static List<Regex> Compile(IReadOnlyList<string> globs)
+    public static List<Regex> Compile(IReadOnlyList<string> globs)
     {
         var patterns = new List<Regex>(globs.Count);
         foreach (var glob in globs)
