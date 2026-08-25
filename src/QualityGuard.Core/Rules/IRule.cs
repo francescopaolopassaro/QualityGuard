@@ -204,6 +204,27 @@ public static class RuleEngine
                 // a single failing rule must never abort the analysis of a file
             }
         }
+
+        // flow-gated security: when the taint engine has evidence for this file, an injection
+        // finding must be backed by untrusted input reaching its line. Name-only matches on safe
+        // wrappers were most of the false positives on the OWASP Benchmark; crypto/config rules
+        // are exempt on purpose - those defects exist regardless of what data flows through
+        var taint = analysis.Taint;
+        if (taint != null && taint.Sources.Count > 0)
+        {
+            var flowCwes = new HashSet<int> { 22, 78, 79, 89, 94, 95, 643, 918 };
+            var flowHints = new[] { "command", "sql", "xss", "cross-site", "eval", "traversal",
+                                    "xpath", "redirect", "random", "deserial", "injection" };
+            var flowRules = new HashSet<string>(rules
+                .Where(r => r.Kind == IssueKind.Vulnerability
+                            && (r.Cwe.Any(flowCwes.Contains)
+                                || flowHints.Any(h => r.Name.Contains(h, StringComparison.OrdinalIgnoreCase))))
+                .Select(r => r.Key));
+            analysis.Issues.RemoveAll(i =>
+                i.Kind == IssueKind.Vulnerability
+                && flowRules.Contains(i.RuleKey)
+                && !taint.IsTaintedLine(i.Line ?? 0));
+        }
     }
 }
 
