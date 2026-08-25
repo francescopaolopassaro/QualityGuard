@@ -201,8 +201,16 @@ public static class TaintEngine
         var names = new HashSet<string>(tainted.Select(s => s.Name), StringComparer.Ordinal);
         var lines = new HashSet<int>();
         foreach (var symbol in tainted)
+        {
             foreach (var usage in symbol.Usages)
+            {
+                // only mark lines where the value STILL carries taint: if it passed through a
+                // sanitizer between source and here, the chain is broken and the line is clean
+                if (usage.Value != null && !CarriesTaint(usage.Value, context))
+                    continue;
                 lines.Add(usage.Line);
+            }
+        }
         foreach (var source in sources)
             lines.Add(source.Line);
 
