@@ -303,6 +303,10 @@ public sealed class JavaSqlInjectionRule : PatternRuleBase
             if (!stripped.Contains('+') && !RuleMatchers.LineContains(stripped, "String.format")
                 && !RuleMatchers.LineContains(stripped, ".append("))
                 continue;
+            // flow-aware: with taint data the concatenated value must actually come from outside -
+            // constants glued together are exactly what most of the benchmark safe variants do
+            if (context.Taint != null && !context.IsTaintedLine(i + 1))
+                continue;
             if (context.Tokens.Any(t => t.Line == i + 1 && RuleMatchers.IsString(t)
                 && LanguageRuleSupport.ContainsSqlKeyword(t.Text)))
                 context.Report("Make sure this SQL query is not vulnerable to SQL injection.", i + 1);
@@ -757,7 +761,9 @@ public sealed class JavaPathTraversalRule : PatternRuleBase
                 continue;
             if (sink + 1 >= tokens.Count || tokens[sink + 1].Text != "(")
                 continue;
-            if (RuleMatchers.NextNonParenIsString(tokens, sink) && !context.IsTaintedLine(tokens[i].Line))
+            if (context.Taint != null && !context.IsTaintedLine(tokens[i].Line))
+                continue;
+            if (RuleMatchers.NextNonParenIsString(tokens, sink))
                 continue;
             context.Report("Make sure the file path used here is not user-controlled.", tokens[i].Line);
         }
@@ -821,6 +827,8 @@ public sealed class JavaHeaderInjectionRule : PatternRuleBase
                 value++;
             if (value < tokens.Count && RuleMatchers.IsString(tokens[value])
                 && !context.IsTaintedLine(tokens[i].Line))
+                continue;
+            if (context.Taint != null && !context.IsTaintedLine(tokens[i].Line))
                 continue;
             context.Report("Make sure this response header value is not user-controlled.", tokens[i].Line);
         }
