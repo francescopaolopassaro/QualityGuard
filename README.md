@@ -1,4 +1,6 @@
-# QualityGuard
+# ⚖️ QualityGuard
+
+<img width="1197" height="766" alt="qualityguard_splash" src="https://github.com/francescopaolopassaro/QualityGuard/blob/main/imgs/qualityguard.svg" />
 
 **QualityGuard** is a stateless, in-memory code quality engine written in C# for continuous integration pipelines. It parses source code, computes metrics, runs static analysis rules, evaluates a configurable Quality Gate, and exits with `PASSED` or `FAILED` — no background service, database, or UI required.
 
