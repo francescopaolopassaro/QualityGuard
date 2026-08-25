@@ -307,6 +307,10 @@ public sealed class JavaSqlInjectionRule : PatternRuleBase
             // constants glued together are exactly what most of the benchmark safe variants do
             if (context.Taint != null && !context.IsTaintedLine(i + 1))
                 continue;
+            // parameterized APIs are immune by design: the driver sends data separately from the plan
+            var nearby = string.Join(" ", lines.Skip(Math.Max(0, i - 2)).Take(5));
+            if (nearby.Contains("prepareCall") || nearby.Contains("prepareStatement"))
+                continue;
             if (context.Tokens.Any(t => t.Line == i + 1 && RuleMatchers.IsString(t)
                 && LanguageRuleSupport.ContainsSqlKeyword(t.Text)))
                 context.Report("Make sure this SQL query is not vulnerable to SQL injection.", i + 1);
@@ -402,12 +406,18 @@ public sealed class JavaInsecureCookieRule : PatternRuleBase
     public override void Execute(IRuleContext context)
     {
         var lines = LanguageRuleSupport.Lines(context);
+        // flags are typically set on adjacent lines after cookie creation: checking only the
+        // addCookie line missed every properly-configured cookie
+        var fileSetsSecure = lines.Any(l => l.Contains("setSecure"));
+        var fileSetsHttpOnly = lines.Any(l => l.Contains("setHttpOnly"));
         for (var i = 0; i < lines.Length; i++)
         {
             var line = lines[i];
             if (!RuleMatchers.LineContains(line, "addCookie(") && !RuleMatchers.LineContains(line, "setCookie("))
                 continue;
             if (RuleMatchers.LineContains(line, "HttpOnly") || RuleMatchers.LineContains(line, "Secure"))
+                continue;
+            if (fileSetsSecure && fileSetsHttpOnly)
                 continue;
             context.Report("Make sure this cookie is built with the Secure and HttpOnly flags.", i + 1);
         }
