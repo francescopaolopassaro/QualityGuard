@@ -95,7 +95,10 @@ public static class TaintEngine
         "req.query", "req.params", "req.body", "req.headers", "ctx.query", "ctx.params", "ctx.request.body",
         "event.queryStringParameters", "location.search", "location.hash", "document.location",
         "window.name", "navigationManager.Uri", "NavigationManager.Uri", "r.URL", "r.Form", "r.Body",
-        "params.Get", "c.Query", "c.Param", "c.PostForm"
+        "params.Get", "c.Query", "c.Param", "c.PostForm",
+        "Request.Url", "Request.Path", "Request.PathAndQuery", "Request.RawUrl",
+        "request.url", "request.path", "request.uri", "request.queryString",
+        "ctx.request.url", "ctx.request.path"
     ];
 
     private static readonly string[] Superglobals =
