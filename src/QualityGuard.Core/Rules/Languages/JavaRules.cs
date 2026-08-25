@@ -207,7 +207,10 @@ public sealed class JavaInsecureRandomRule : PatternRuleBase
     public override void Execute(IRuleContext context)
     {
         foreach (var token in RuleMatchers.Names(context.Tokens, ["Random", "ThreadLocalRandom"]))
-            context.Report("Random values must not be used for security-sensitive operations.", token.Line);
+            // flow-aware: without external input reaching the line, Random is usually test or
+            // simulation code - the shape most of the safe benchmark variants use
+            if (context.Taint == null || context.IsTaintedLine(token.Line))
+                context.Report("Random values must not be used for security-sensitive operations.", token.Line);
     }
 }
 

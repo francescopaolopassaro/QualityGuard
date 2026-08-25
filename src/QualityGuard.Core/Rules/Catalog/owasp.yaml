@@ -357,7 +357,9 @@
   cwe: [209]
   owasp: [A09]
   tags: [owasp]
-  status: planned
+  detect:
+    - line: "(res|response)\\s*\\.\\s*send\\s*\\(\\s*(err|error|e)\\b"
+      languages: [js, ts]
   message: Raw exception text reaches users or clients.
   summary: Stack traces name classes, drivers and paths attackers map before striking.
   why: |
