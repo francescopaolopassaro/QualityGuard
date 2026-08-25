@@ -25,6 +25,7 @@
 - key: QG-TF-SEC-0072
   name: A managed database should require an encrypted connection
   languages: [tf]
+  asvs: [V9]
   category: SEC
   severity: critical
   effort: 20min
@@ -59,6 +60,7 @@
 - key: QG-TF-SEC-0074
   name: A DNS zone should sign its answers
   languages: [tf]
+  asvs: [V9]
   category: SEC
   severity: major
   effort: 20min
@@ -116,6 +118,7 @@
 - key: QG-TF-SEC-0038
   name: A service should authenticate with a platform-managed identity
   languages: [tf]
+  asvs: [V8]
   category: SEC
   severity: major
   effort: 30min
@@ -133,6 +136,7 @@
 - key: QG-TF-SEC-0039
   name: A resource should not enable its own administrative account
   languages: [tf]
+  asvs: [V2]
   category: SEC
   severity: critical
   effort: 15min
@@ -255,6 +259,7 @@
 - key: QG-TF-SEC-0054
   name: An application handler should require an encrypted connection
   languages: [tf]
+  asvs: [V3]
   category: SEC
   severity: critical
   effort: 30min
@@ -305,6 +310,7 @@
 - key: QG-TF-SEC-0057
   name: A load balancer should not accept obsolete cipher suites
   languages: [tf]
+  asvs: [V9]
   category: SEC
   severity: critical
   effort: 15min

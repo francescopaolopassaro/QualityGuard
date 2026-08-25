@@ -152,6 +152,7 @@
 - key: QG-PY-SEC-0043
   name: Framework secrets should not be hardcoded
   languages: [py]
+  asvs: [V8]
   category: SEC
   severity: blocker
   effort: 20min
@@ -403,6 +404,7 @@
   name: A cookie should be out of reach of script
   languages: [py]
   scope: main
+  asvs: [V3]
   category: SEC
   severity: major
   effort: 10min
@@ -481,6 +483,7 @@
 - key: QG-PY-SEC-0069
   name: Remote administration should not be open to every address
   languages: [py]
+  asvs: [V3]
   category: SEC
   severity: critical
   effort: 15min

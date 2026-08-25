@@ -21,6 +21,7 @@
 - key: QG-KT-SEC-0057
   name: A password field should tell the keyboard not to remember it
   languages: [kt]
+  asvs: [V2]
   category: SEC
   severity: major
   effort: 20min

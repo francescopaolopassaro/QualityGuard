@@ -60,6 +60,7 @@
 - key: QG-JS-SEC-0081
   name: An obsolete TLS version should not be selected
   languages: [js, ts]
+  asvs: [V9]
   category: SEC
   severity: critical
   effort: 20min

@@ -166,6 +166,7 @@
 - key: QG-PY-SEC-0045
   name: Cookies should carry the security flags
   languages: [py]
+  asvs: [V3]
   category: SEC
   severity: critical
   effort: 10min
@@ -211,6 +212,7 @@
 - key: QG-PY-SEC-0047
   name: Certificate verification should stay on
   languages: [py]
+  asvs: [V9]
   category: SEC
   scope: main
   severity: blocker
@@ -235,6 +237,7 @@
 - key: QG-PY-SEC-0048
   name: Cross-site request forgery protection should stay enabled
   languages: [py]
+  asvs: [V3]
   category: SEC
   scope: main
   severity: critical

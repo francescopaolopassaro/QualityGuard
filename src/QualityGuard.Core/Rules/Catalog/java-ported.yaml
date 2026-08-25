@@ -573,6 +573,7 @@
 - key: QG-JV-SEC-0073
   name: HttpServletRequest.getRequestedSessionId() should not be used
   languages: [java]
+  asvs: [V3]
   category: SEC
   scope: main
   severity: critical
@@ -1469,6 +1470,7 @@
 - key: QG-JV-SEC-0075
   name: Mobile database encryption keys should not be committed with the source
   languages: [java]
+  asvs: [V8]
   category: SEC
   scope: main
   severity: critical
@@ -1760,6 +1762,7 @@
 - key: QG-JV-SEC-0087
   name: Password hashing functions should use current cryptographic parameters
   languages: [java]
+  asvs: [V2]
   category: SEC
   scope: main
   severity: critical

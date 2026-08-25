@@ -527,6 +527,7 @@
 - key: QG-CS-SEC-0067
   name: The salt of a password hash has to be unpredictable
   languages: [cs]
+  asvs: [V2]
   category: SEC
   severity: critical
   effort: 15min
@@ -569,6 +570,7 @@
 - key: QG-CS-SEC-0069
   name: Secure password should be replaced by the recommended alternative
   languages: [cs]
+  asvs: [V2]
   category: SEC
   scope: main
   severity: critical
@@ -4269,6 +4271,7 @@
 - key: QG-CS-SEC-0081
   name: XML signatures should be verified before use
   languages: [cs]
+  asvs: [V9]
   category: SEC
   scope: main
   severity: critical
@@ -4885,6 +4888,7 @@
 - key: QG-CS-SEC-0082
   name: The key that signs a token should not be in the source
   languages: [cs]
+  asvs: [V8]
   category: SEC
   severity: critical
   effort: 15min

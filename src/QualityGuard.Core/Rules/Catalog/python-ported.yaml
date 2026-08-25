@@ -506,6 +506,7 @@
 - key: QG-PY-SEC-0097
   name: Secure password should be replaced by the recommended alternative
   languages: [py]
+  asvs: [V2]
   category: SEC
   scope: main
   severity: critical
@@ -823,6 +824,7 @@
 - key: QG-PY-SEC-0099
   name: Flask secret keys should not be committed with the source
   languages: [py]
+  asvs: [V8]
   category: SEC
   severity: critical
   effort: 30min
@@ -2806,6 +2808,7 @@
 - key: QG-PY-SEC-0118
   name: Custom cryptographic algorithms should use current cryptographic parameters
   languages: [py]
+  asvs: [V2]
   category: SEC
   scope: main
   severity: critical
@@ -2828,6 +2831,7 @@
 - key: QG-PY-SEC-0119
   name: XML signatures should be verified before use
   languages: [py]
+  asvs: [V9]
   category: SEC
   scope: main
   severity: critical

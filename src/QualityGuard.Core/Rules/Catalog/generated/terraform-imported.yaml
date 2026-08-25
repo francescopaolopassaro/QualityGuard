@@ -122,6 +122,7 @@
 - key: QG-TF-SEC-0113
   name: Client certificate authentication should be enabled on Azure service-to-service endpoints
   languages: [tf]
+  asvs: [V9]
   category: SEC
   severity: major
   effort: 1h
@@ -221,6 +222,7 @@
 - key: QG-TF-SEC-0119
   name: GCP App Engine handlers should require TLS
   languages: [tf]
+  asvs: [V9]
   category: SEC
   severity: major
   effort: 30min
@@ -271,6 +273,7 @@
 - key: QG-TF-SEC-0122
   name: Google Cloud load balancers SSL policies should not offer weak cipher suites
   languages: [tf]
+  asvs: [V9]
   category: SEC
   severity: major
   effort: 5min

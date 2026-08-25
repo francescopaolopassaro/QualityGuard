@@ -104,6 +104,7 @@
 - key: QG-KT-SEC-0036
   name: Cryptographic keys should not live in the source
   languages: [kt]
+  asvs: [V8]
   category: SEC
   severity: blocker
   effort: 30min
@@ -311,6 +312,7 @@
 - key: QG-KT-SEC-0046
   name: A database encryption key should not be written in the source
   languages: [kt]
+  asvs: [V8]
   category: SEC
   severity: critical
   effort: 15min
@@ -345,6 +347,7 @@
 - key: QG-KT-SEC-0049
   name: An authenticated cipher should not reuse its initialisation vector
   languages: [kt]
+  asvs: [V8]
   category: SEC
   severity: critical
   effort: 20min

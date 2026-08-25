@@ -129,6 +129,7 @@
 - key: QG-KT-SEC-0037
   name: The salt of a password hash has to be unpredictable
   languages: [kt]
+  asvs: [V2]
   category: SEC
   severity: critical
   effort: 15min

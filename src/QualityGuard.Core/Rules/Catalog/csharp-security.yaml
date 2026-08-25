@@ -3,6 +3,7 @@
 - key: QG-CS-SEC-0047
   name: Password derivation should use a random salt and enough iterations
   languages: [cs]
+  asvs: [V2]
   category: SEC
   severity: critical
   effort: 25min
@@ -30,6 +31,7 @@
 - key: QG-CS-SEC-0048
   name: Database connections should not use an empty password
   languages: [cs, vb]
+  asvs: [V8]
   category: SEC
   severity: blocker
   effort: 20min
@@ -96,6 +98,7 @@
 - key: QG-CS-SEC-0051
   name: Initialisation vectors should be random for every message
   languages: [cs, vb]
+  asvs: [V8]
   category: SEC
   severity: critical
   effort: 20min
@@ -143,6 +146,7 @@
 - key: QG-CS-SEC-0053
   name: Obsolete TLS versions should not be selected
   languages: [cs, vb]
+  asvs: [V9]
   category: SEC
   severity: critical
   effort: 15min
@@ -164,6 +168,7 @@
 - key: QG-CS-SEC-0054
   name: Directory connections should be authenticated
   languages: [cs, vb]
+  asvs: [V8]
   category: SEC
   severity: critical
   effort: 20min
@@ -186,6 +191,7 @@
 - key: QG-CS-SEC-0055
   name: Developer diagnostics should not be enabled unconditionally
   languages: [cs]
+  asvs: [V8]
   category: SEC
   scope: main
   severity: critical
@@ -305,6 +311,7 @@
 - key: QG-CS-SEC-0060
   name: XML signatures should be verified against a known key
   languages: [cs, vb]
+  asvs: [V9]
   category: SEC
   severity: critical
   effort: 30min
@@ -328,6 +335,7 @@
 - key: QG-CS-SEC-0061
   name: Token signing keys should not be embedded in the code
   languages: [cs, vb]
+  asvs: [V8]
   category: SEC
   severity: blocker
   effort: 30min
@@ -370,6 +378,7 @@
 - key: QG-CS-SEC-0063
   name: Passwords should not be stored with a fast hash
   languages: [cs, vb]
+  asvs: [V2]
   category: SEC
   scope: main
   severity: blocker
@@ -393,6 +402,7 @@
 - key: QG-CS-SEC-0064
   name: Random generators used for security should not be seeded
   languages: [cs, vb]
+  asvs: [V2]
   category: SEC
   severity: critical
   effort: 15min
@@ -419,6 +429,7 @@
 - key: QG-CS-SEC-0065
   name: Cookies should restrict cross-site sending
   languages: [cs]
+  asvs: [V3]
   category: SEC
   severity: major
   effort: 10min

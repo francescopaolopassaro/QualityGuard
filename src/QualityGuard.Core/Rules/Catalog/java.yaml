@@ -3,6 +3,7 @@
 - key: QG-JV-SEC-0024
   name: Servlet methods should not let exceptions escape
   languages: [java]
+  asvs: [V7]
   category: SEC
   scope: main
   severity: major
@@ -25,6 +26,7 @@
 - key: QG-JV-SEC-0025
   name: Session identifiers should not be taken from the request
   languages: [java]
+  asvs: [V3]
   category: SEC
   severity: critical
   effort: 25min
@@ -45,6 +47,7 @@
 - key: QG-JV-SEC-0026
   name: Basic authentication should not be used
   languages: [java, kt]
+  asvs: [V8]
   category: SEC
   severity: critical
   effort: 30min
@@ -230,6 +233,7 @@
 - key: QG-JV-SEC-0034
   name: Long-term cloud access keys should not be embedded
   languages: [java, kt, py, js, ts, cs]
+  asvs: [V8]
   category: SEC
   severity: blocker
   effort: 30min

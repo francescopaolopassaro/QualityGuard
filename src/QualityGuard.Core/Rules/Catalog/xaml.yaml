@@ -65,6 +65,7 @@
 - key: QG-XAML-SEC-0003
   name: Markup should not carry a credential
   languages: [xaml]
+  asvs: [V8]
   category: SEC
   severity: critical
   effort: 30min

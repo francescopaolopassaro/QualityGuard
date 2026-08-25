@@ -222,6 +222,7 @@
 - key: QG-CS-SEC-0083
   name: Password hashing functions should use current cryptographic parameters
   languages: [vb]
+  asvs: [V2]
   category: SEC
   severity: critical
   effort: 15min
@@ -1643,6 +1644,7 @@
 - key: QG-CS-SEC-0088
   name: Server certificates should be verified before use
   languages: [vb]
+  asvs: [V9]
   category: SEC
   severity: critical
   effort: 15min

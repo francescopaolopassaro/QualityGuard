@@ -1575,6 +1575,7 @@
 - key: QG-JV-SEC-0036
   name: Password hashing functions should use current cryptographic parameters
   languages: [java]
+  asvs: [V2]
   category: SEC
   severity: critical
   effort: 15min
@@ -2813,6 +2814,7 @@
 - key: QG-JV-SEC-0039
   name: HttpServletRequest.getRequestedSessionId() should not be used
   languages: [java]
+  asvs: [V3]
   category: SEC
   severity: critical
   effort: 15min
@@ -6515,6 +6517,7 @@
 - key: QG-JV-SEC-0062
   name: Mobile database encryption keys should not be committed with the source
   languages: [java]
+  asvs: [V8]
   category: SEC
   severity: critical
   effort: 15min

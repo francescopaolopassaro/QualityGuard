@@ -3,6 +3,7 @@
 - key: QG-PP-SEC-0029
   name: Sessions should be regenerated at login
   languages: [php]
+  asvs: [V3]
   category: SEC
   severity: critical
   effort: 20min
@@ -24,6 +25,7 @@
 - key: QG-PP-SEC-0030
   name: Includes should not be built from request data
   languages: [php]
+  asvs: [V3]
   category: SEC
   severity: blocker
   effort: 25min
@@ -86,6 +88,7 @@
 - key: QG-PP-SEC-0032
   name: Output should be escaped for the context it lands in
   languages: [php]
+  asvs: [V3]
   category: SEC
   severity: critical
   effort: 20min
@@ -107,6 +110,7 @@
 - key: QG-PP-SEC-0033
   name: Passwords should be hashed with the password API
   languages: [php]
+  asvs: [V2]
   category: SEC
   severity: blocker
   effort: 25min
@@ -196,6 +200,7 @@
 - key: QG-PP-SEC-0061
   name: Editing code from the administration interface should be disabled
   languages: [php]
+  asvs: [V3]
   category: SEC
   severity: critical
   effort: 10min
@@ -264,6 +269,7 @@
 - key: QG-PP-SEC-0065
   name: Unfiltered HTML in content should be disallowed
   languages: [php]
+  asvs: [V3]
   category: SEC
   severity: major
   effort: 10min

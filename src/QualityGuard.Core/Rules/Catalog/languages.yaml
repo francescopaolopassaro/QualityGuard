@@ -129,6 +129,7 @@
 - key: QG-JV-SEC-0023
   name: Session cookies should not be readable by scripts
   languages: [java, kt]
+  asvs: [V3]
   category: SEC
   severity: critical
   effort: 10min
@@ -448,6 +449,7 @@
 - key: QG-JS-SEC-0020
   name: React should not be given raw HTML from data
   languages: [js, ts]
+  asvs: [V3]
   category: SEC
   severity: critical
   effort: 20min
@@ -469,6 +471,7 @@
 - key: QG-JS-SEC-0021
   name: Cross-window messages should target a specific origin
   languages: [js, ts]
+  asvs: [V9]
   category: SEC
   severity: major
   effort: 15min
@@ -609,6 +612,7 @@
 - key: QG-GO-SEC-0012
   name: TLS verification should not be skipped
   languages: [go]
+  asvs: [V9]
   category: SEC
   severity: blocker
   effort: 15min
@@ -682,6 +686,7 @@
 - key: QG-RS-SEC-0016
   name: Destructors should not be skipped for resources
   languages: [rs]
+  asvs: [V8]
   category: SEC
   severity: major
   effort: 20min
@@ -703,6 +708,7 @@
 - key: QG-CSS-SEC-0001
   name: Stylesheets should not load resources over plain HTTP
   languages: [css]
+  asvs: [V9]
   category: SEC
   severity: major
   effort: 10min
@@ -743,6 +749,7 @@
 - key: QG-HTML-SEC-0006
   name: Forms should not submit over plain HTTP
   languages: [html]
+  asvs: [V9]
   category: SEC
   severity: critical
   effort: 10min
@@ -950,6 +957,7 @@
 - key: QG-XML-SEC-0014
   name: A site should tell browsers not to guess content types
   languages: [xml]
+  asvs: [V3]
   category: SEC
   severity: minor
   effort: 10min

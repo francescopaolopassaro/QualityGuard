@@ -4,6 +4,7 @@
 - key: QG-CS-SEC-0032
   name: Antiforgery validation should not be switched off
   languages: [cs]
+  asvs: [V8]
   category: SEC
   scope: main
   severity: critical
@@ -59,6 +60,7 @@
 - key: QG-CS-SEC-0010
   name: Authentication cookies should be marked Secure and HttpOnly
   languages: [cs]
+  asvs: [V3]
   category: SEC
   severity: critical
   effort: 10min
@@ -132,6 +134,7 @@
 - key: QG-CS-SEC-0037
   name: Raw HTML should not be produced from values that are not constants
   languages: [cs, raz]
+  asvs: [V3]
   category: SEC
   severity: critical
   effort: 20min
@@ -305,6 +308,7 @@
 - key: QG-CS-SEC-0044
   name: Secrets should not be written to logs
   languages: [cs]
+  asvs: [V8]
   category: SEC
   scope: main
   severity: major
@@ -647,6 +651,7 @@
 - key: QG-XAML-SEC-0002
   name: Credentials should not be stored in markup
   languages: [xaml]
+  asvs: [V8]
   category: SEC
   severity: blocker
   effort: 20min

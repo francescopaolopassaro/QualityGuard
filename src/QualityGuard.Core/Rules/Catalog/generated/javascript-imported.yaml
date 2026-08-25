@@ -22,6 +22,7 @@
 - key: QG-JS-SEC-0110
   name: Web SQL databases should not be used
   languages: [js]
+  asvs: [V5]
   category: SEC
   severity: blocker
   cwe: [89]

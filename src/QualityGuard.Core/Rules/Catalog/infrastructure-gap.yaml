@@ -223,6 +223,7 @@
 - key: QG-TF-SEC-0042
   name: A service-to-service endpoint should require a client certificate
   languages: [tf]
+  asvs: [V9]
   category: SEC
   scope: main
   severity: major
@@ -239,6 +240,7 @@
 - key: QG-K8-SEC-0012
   name: A manifest should not carry a secret in clear
   languages: [k8]
+  asvs: [V8]
   category: SEC
   scope: main
   severity: blocker

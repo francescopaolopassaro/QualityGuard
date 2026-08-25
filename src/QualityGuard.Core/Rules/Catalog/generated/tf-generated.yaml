@@ -245,6 +245,7 @@
 - key: QG-TF-SEC-0050
   name: GCP SQL instances should use current cryptographic parameters
   languages: [tf]
+  asvs: [V5]
   category: SEC
   severity: critical
   cwe: [89]

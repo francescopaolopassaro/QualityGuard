@@ -152,6 +152,7 @@
 - key: QG-SW-SEC-0002
   name: A broken hash should not protect anything
   languages: [swift]
+  asvs: [V2]
   category: SEC
   severity: critical
   effort: 30min
@@ -166,6 +167,7 @@
 - key: QG-SW-SEC-0003
   name: A secret should be kept in the keychain
   languages: [swift]
+  asvs: [V8]
   category: SEC
   severity: critical
   effort: 45min

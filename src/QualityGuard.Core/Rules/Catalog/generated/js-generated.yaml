@@ -977,6 +977,7 @@
 - key: QG-JS-SEC-0038
   name: Web SQL databases should not be used
   languages: [js, ts]
+  asvs: [V5]
   category: SEC
   scope: main
   severity: critical
@@ -2205,6 +2206,7 @@
 - key: QG-JS-SEC-0042
   name: Server certificates should be verified before use
   languages: [js, ts]
+  asvs: [V9]
   category: SEC
   scope: main
   severity: critical
@@ -2336,6 +2338,7 @@
 - key: QG-JS-SEC-0043
   name: Server hostnames should be verified before use
   languages: [js, ts]
+  asvs: [V9]
   category: SEC
   scope: main
   severity: critical
@@ -2665,6 +2668,7 @@
 - key: QG-JS-SEC-0056
   name: New session should not weaken the security of the application
   languages: [js, ts]
+  asvs: [V3]
   category: SEC
   scope: main
   severity: critical
@@ -2820,6 +2824,7 @@
 - key: QG-JS-SEC-0057
   name: S3 buckets should use current cryptographic parameters
   languages: [js, ts]
+  asvs: [V9]
   category: SEC
   scope: main
   severity: critical
@@ -5025,6 +5030,7 @@
 - key: QG-JS-SEC-0076
   name: Wallet phrases should not be committed with the source
   languages: [js, ts]
+  asvs: [V8]
   category: SEC
   scope: main
   severity: critical

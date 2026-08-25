@@ -236,6 +236,7 @@
 - key: QG-PP-SEC-0101
   name: Secret keys and salt values should be robust
   languages: [php]
+  asvs: [V8]
   category: SEC
   severity: major
   effort: 5min

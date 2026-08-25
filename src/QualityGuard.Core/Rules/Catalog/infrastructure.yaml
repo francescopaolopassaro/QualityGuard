@@ -92,6 +92,7 @@
 - key: QG-K8-SEC-0023
   name: A role should not grant every permission
   languages: [k8]
+  asvs: [V8]
   category: SEC
   severity: critical
   effort: 30min

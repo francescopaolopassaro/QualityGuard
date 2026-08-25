@@ -1,6 +1,7 @@
 - key: QG-JS-SEC-0091
   name: The content security policy should stay on
   languages: [js, ts]
+  asvs: [V3]
   category: SEC
   severity: critical
   effort: 15min
@@ -40,6 +41,7 @@
 - key: QG-JS-SEC-0093
   name: The referrer should not be sent to other sites
   languages: [js, ts]
+  asvs: [V8]
   category: SEC
   severity: minor
   effort: 10min
@@ -59,6 +61,7 @@
 - key: QG-JS-SEC-0094
   name: The browser should be told to stay on HTTPS
   languages: [js, ts]
+  asvs: [V3]
   category: SEC
   severity: major
   effort: 15min
@@ -96,6 +99,7 @@
 - key: QG-JS-SEC-0096
   name: A session cookie should not travel in the clear
   languages: [js, ts]
+  asvs: [V3]
   category: SEC
   severity: major
   effort: 10min
@@ -115,6 +119,7 @@
 - key: QG-JS-SEC-0097
   name: A session cookie should be out of reach of script
   languages: [js, ts]
+  asvs: [V3]
   category: SEC
   severity: major
   effort: 10min

@@ -27,6 +27,7 @@
 - key: QG-GO-SEC-0015
   name: Servers should set timeouts
   languages: [go]
+  asvs: [V9]
   category: SEC
   severity: major
   effort: 15min

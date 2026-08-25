@@ -167,6 +167,7 @@
 - key: QG-JS-SEC-0032
   name: Confidential values should not be logged
   languages: [js, ts]
+  asvs: [V8]
   category: SEC
   scope: main
   severity: major
@@ -189,6 +190,7 @@
 - key: QG-JS-SEC-0033
   name: Session cookies should not be attached to static responses
   languages: [js, ts]
+  asvs: [V3]
   category: SEC
   scope: main
   severity: major

@@ -190,6 +190,7 @@
 - key: QG-DK-SEC-0012
   name: A mounted secret should not be readable by every user
   languages: [dk]
+  asvs: [V8]
   category: SEC
   severity: critical
   effort: 10min

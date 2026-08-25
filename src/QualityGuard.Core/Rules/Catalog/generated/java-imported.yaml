@@ -22,6 +22,7 @@
 - key: QG-JV-SEC-0093
   name: A new session should be created during user authentication
   languages: [java]
+  asvs: [V3]
   category: SEC
   severity: critical
   effort: 5min

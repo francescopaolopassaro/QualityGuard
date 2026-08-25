@@ -162,6 +162,7 @@
 - key: QG-ALL-SEC-0007
   name: Tokens should not come from predictable random sources
   languages: [java, cs, py, php, rb]
+  asvs: [V8]
   category: SEC
   severity: critical
   effort: 15min
@@ -184,6 +185,7 @@
 - key: QG-ALL-SEC-0008
   name: Password hashing should not use broken fast hashes
   languages: [cs, java, py, php]
+  asvs: [V2]
   category: SEC
   severity: critical
   effort: 30min
@@ -272,6 +274,7 @@
 - key: QG-ALL-SEC-0012
   name: XPath expressions should not be assembled from untrusted values
   languages: [cs, java, py]
+  asvs: [V8]
   category: SEC
   severity: critical
   effort: 30min
@@ -295,6 +298,7 @@
 - key: QG-ALL-SEC-0013
   name: Format strings should use their arguments correctly
   languages: []
+  asvs: [V5]
   category: SEC
   severity: major
   cwe: [134]
@@ -347,6 +351,7 @@
 - key: QG-ALL-SEC-0016
   name: Error responses should not expose internal details
   languages: []
+  asvs: [V7]
   category: SEC
   severity: major
   cwe: [209]
@@ -443,6 +448,7 @@
 - key: QG-ALL-SEC-0021
   name: Passwords should not be compared as plain strings
   languages: [cs, java, py, php, rb]
+  asvs: [V8]
   category: SEC
   severity: critical
   effort: 15min

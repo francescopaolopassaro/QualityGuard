@@ -119,6 +119,7 @@
 - key: QG-PY-SEC-0086
   name: A salt should be unpredictable
   languages: [py]
+  asvs: [V2]
   category: SEC
   severity: critical
   effort: 20min
@@ -163,6 +164,7 @@
 - key: QG-PY-SEC-0089
   name: A password needs a slow hash
   languages: [py]
+  asvs: [V2]
   category: SEC
   severity: critical
   effort: 45min

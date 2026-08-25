@@ -65,6 +65,7 @@
 - key: QG-CS-SEC-0101
   name: A query passed to the data layer should carry parameters, not concatenated values
   languages: [cs, raz]
+  asvs: [V5]
   category: SEC
   severity: critical
   effort: 30min

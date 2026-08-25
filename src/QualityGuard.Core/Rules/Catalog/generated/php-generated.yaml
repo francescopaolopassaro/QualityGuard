@@ -872,6 +872,7 @@
 - key: QG-PP-SEC-0034
   name: Password hashing functions should use current cryptographic parameters
   languages: [php]
+  asvs: [V2]
   category: SEC
   scope: main
   severity: critical
@@ -993,6 +994,7 @@
 - key: QG-PP-SEC-0038
   name: Cryptographic operations should use current cryptographic parameters
   languages: [php]
+  asvs: [V9]
   category: SEC
   scope: main
   severity: critical
@@ -1444,6 +1446,7 @@
 - key: QG-PP-SEC-0049
   name: LDAP connections should be verified before use
   languages: [php]
+  asvs: [V2]
   category: SEC
   scope: main
   severity: critical
@@ -1529,6 +1532,7 @@
 - key: QG-PP-SEC-0052
   name: Server certificates should be verified before use
   languages: [php]
+  asvs: [V9]
   category: SEC
   scope: main
   severity: critical
@@ -1619,6 +1623,7 @@
 - key: QG-PP-SEC-0054
   name: Security-sensitive code should not weaken the security of the application
   languages: [php]
+  asvs: [V3]
   category: SEC
   severity: critical
   effort: 15min
@@ -1640,6 +1645,7 @@
 - key: QG-PP-SEC-0055
   name: The certificate of the other side has to be checked
   languages: [php]
+  asvs: [V9]
   category: SEC
   status: ready
   severity: critical
@@ -1658,6 +1664,7 @@
 - key: QG-PP-SEC-0056
   name: Encryption algorithms should use current cryptographic parameters
   languages: [php]
+  asvs: [V9]
   category: SEC
   scope: main
   severity: critical

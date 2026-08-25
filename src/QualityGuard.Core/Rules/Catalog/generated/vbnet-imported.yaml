@@ -6,6 +6,7 @@
 - key: QG-CS-SEC-0115
   name: Password hashing functions should use an unpredictable salt
   languages: [vbnet]
+  asvs: [V2]
   category: SEC
   severity: critical
   effort: 30min
@@ -56,6 +57,7 @@
 - key: QG-CS-SEC-0118
   name: Server certificates should be verified during SSL/TLS connections
   languages: [vbnet]
+  asvs: [V9]
   category: SEC
   severity: critical
   effort: 5min

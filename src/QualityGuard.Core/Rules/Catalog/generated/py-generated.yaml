@@ -1844,6 +1844,7 @@
 - key: QG-PY-SEC-0075
   name: XML signatures should be verified before use
   languages: [py]
+  asvs: [V9]
   category: SEC
   severity: critical
   effort: 15min
@@ -2343,6 +2344,7 @@
 - key: QG-PY-SEC-0077
   name: Flask secret keys should not be committed with the source
   languages: [py]
+  asvs: [V8]
   category: SEC
   severity: critical
   effort: 15min
@@ -2362,6 +2364,7 @@
 - key: QG-PY-SEC-0078
   name: The key that signs a token should not be in the source
   languages: [py]
+  asvs: [V8]
   category: SEC
   severity: critical
   effort: 15min
