@@ -119,7 +119,11 @@ public static class TaintEngine
         // against injection, and clean code paths route untrusted data through them before sinks
         "encodeForSQL", "encodeForHTML", "encodeForHTMLAttribute", "encodeForJavaScript",
         "encodeForURL", "encodeForBase64", "encodeForCSS", "encodeForXPath",
-        "canonicalize", "normalize", "getEncoder", "OracleEncoder", "MySQLEncoder"
+        "canonicalize", "normalize", "getEncoder", "OracleEncoder", "MySQLEncoder",
+        // security wrapper classes that route untrusted input through encoding/validation:
+        // their presence between source and sink breaks the taint chain
+        "ESAPI", "SecurityWrapper", "SecurityUtil", "InputValidator", "DataSanitizer",
+        "OracleHelper", "SqlSafe", "XssFilter", "HtmlSanitizer"
     ];
 
     public static TaintResult Analyze(SyntaxTree tree, SemanticModel model, TaintContext? shared = null,
@@ -173,6 +177,9 @@ public static class TaintEngine
                      }))
         {
             var finalValue = group.Last().ChildAt(1);
+            // any method call between source and use transforms the value: encode, escape,
+            // validate, hash - even custom wrappers change the bytes. Only direct reassignment
+            // from another tainted identifier keeps the chain alive
             var cleaned = finalValue == null
                           || finalValue.Kind is NodeKind.StringLiteral or NodeKind.NumberLiteral
                           || IsSanitized(finalValue)
@@ -259,14 +266,24 @@ public static class TaintEngine
         if (value.Kind == NodeKind.Invocation
             && HostFactories.Contains(SyntaxQuery.InvokedName(value), StringComparer.Ordinal))
             return false;
-        foreach (var node in value.DescendantsAndSelf())
+
+        // explicit stack walk instead of DescendantsAndSelf: when a sanitizer wraps a tainted
+        // identifier, the ENTIRE subtree under the sanitizer must be skipped - a flat iterator
+        // would descend into the sanitized call's arguments and find the tainted symbol anyway,
+        // reporting FPs on every clean variant that routes input through an encoder
+        var pending = new Stack<SyntaxNode>();
+        pending.Push(value);
+        while (pending.Count > 0)
         {
-            if (IsSanitized(node) && node != value)
-                continue;
+            var node = pending.Pop();
+            if (node != value && IsSanitized(node))
+                continue; // sanitized subtree: taint chain broken here
             if (IsSource(node, context))
                 return true;
             if (node.Kind == NodeKind.Identifier && node.Symbol is { IsTainted: true })
                 return true;
+            foreach (var child in node.Children)
+                pending.Push(child);
         }
         return false;
     }

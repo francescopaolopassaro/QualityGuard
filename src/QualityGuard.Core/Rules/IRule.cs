@@ -206,8 +206,7 @@ public static class RuleEngine
         }
 
         // flow-gated security: when the taint engine has evidence for this file, every security
-        // finding must be backed by untrusted input reaching its line. No exemptions: a finding
-        // that cannot show external input reaching its location is noise on this codebase.
+        // finding must be backed by untrusted input reaching its line.
         var taint = analysis.Taint;
         if (taint != null && taint.Sources.Count > 0)
         {
