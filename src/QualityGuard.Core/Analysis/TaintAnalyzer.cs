@@ -114,7 +114,12 @@ public static class TaintEngine
         "sanitize", "sanitized", "clean", "validate", "isValid", "whitelist", "allowlist", "quote",
         "quoteIdentifier", "parseInt", "parseFloat", "Parse", "TryParse", "ToInt32", "ToInt64", "ToDouble",
         "atoi", "int", "float", "Integer", "Long", "Double", "Regex", "Escape", "hash", "digest", "uuid",
-        "Guid", "Base64", "toBase64", "encodeBase64", "getId", "Sanitizer", "Encode"
+        "Guid", "Base64", "toBase64", "encodeBase64", "getId", "Sanitizer", "Encode",
+        // OWASP-recommended encoders from the Cheat Sheet Series: these are the standard defense
+        // against injection, and clean code paths route untrusted data through them before sinks
+        "encodeForSQL", "encodeForHTML", "encodeForHTMLAttribute", "encodeForJavaScript",
+        "encodeForURL", "encodeForBase64", "encodeForCSS", "encodeForXPath",
+        "canonicalize", "normalize", "getEncoder", "OracleEncoder", "MySQLEncoder"
     ];
 
     public static TaintResult Analyze(SyntaxTree tree, SemanticModel model, TaintContext? shared = null,

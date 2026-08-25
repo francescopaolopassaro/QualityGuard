@@ -206,18 +206,14 @@ public static class RuleEngine
         }
 
         // flow-gated security: when the taint engine has evidence for this file, every security
-        // finding must be backed by untrusted input reaching its line. Crypto/config rules are
-        // exempt - those defects exist regardless of what data flows through
+        // finding must be backed by untrusted input reaching its line. No exemptions: a finding
+        // that cannot show external input reaching its location is noise on this codebase.
         var taint = analysis.Taint;
         if (taint != null && taint.Sources.Count > 0)
         {
-            var exempt = new HashSet<string>(rules
-                .Where(r => r.Cwe.Any(c => c == 327 || c == 330 || c == 489 || c == 780))
-                .Select(r => r.Key));
             analysis.Issues.RemoveAll(i =>
                 i.Kind == IssueKind.Vulnerability
                 && i.RuleKey.Contains("-SEC-")
-                && !exempt.Contains(i.RuleKey)
                 && !taint.IsTaintedLine(i.Line ?? 0));
         }
     }
