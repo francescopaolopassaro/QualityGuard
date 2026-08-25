@@ -205,24 +205,19 @@ public static class RuleEngine
             }
         }
 
-        // flow-gated security: when the taint engine has evidence for this file, an injection
-        // finding must be backed by untrusted input reaching its line. Name-only matches on safe
-        // wrappers were most of the false positives on the OWASP Benchmark; crypto/config rules
-        // are exempt on purpose - those defects exist regardless of what data flows through
+        // flow-gated security: when the taint engine has evidence for this file, every security
+        // finding must be backed by untrusted input reaching its line. Crypto/config rules are
+        // exempt - those defects exist regardless of what data flows through
         var taint = analysis.Taint;
         if (taint != null && taint.Sources.Count > 0)
         {
-            var flowCwes = new HashSet<int> { 22, 78, 79, 89, 94, 95, 643, 918 };
-            var flowHints = new[] { "command", "sql", "xss", "cross-site", "eval", "traversal",
-                                    "xpath", "redirect", "random", "deserial", "injection" };
-            var flowRules = new HashSet<string>(rules
-                .Where(r => r.Kind == IssueKind.Vulnerability
-                            && (r.Cwe.Any(flowCwes.Contains)
-                                || flowHints.Any(h => r.Name.Contains(h, StringComparison.OrdinalIgnoreCase))))
+            var exempt = new HashSet<string>(rules
+                .Where(r => r.Cwe.Any(c => c == 327 || c == 330 || c == 489 || c == 780))
                 .Select(r => r.Key));
             analysis.Issues.RemoveAll(i =>
                 i.Kind == IssueKind.Vulnerability
-                && flowRules.Contains(i.RuleKey)
+                && i.RuleKey.Contains("-SEC-")
+                && !exempt.Contains(i.RuleKey)
                 && !taint.IsTaintedLine(i.Line ?? 0));
         }
     }
