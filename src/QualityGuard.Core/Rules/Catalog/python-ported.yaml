@@ -689,6 +689,7 @@
   severity: critical
   effort: 10min
   tags: [prefer_api, ported]
+  cwe: [477]
   message: The platform offers a clearer or safer construct for this.
   summary: A construct is used where the platform offers one that is clearer or safer.
   why: |

@@ -463,8 +463,18 @@ public sealed class RegexPattern
         {
             if (pattern[i] == '\\' && i + 1 < pattern.Length)
             {
-                items.Add(pattern.Substring(i, 2));
-                i += 2;
+                var escapeLen = 2;
+                var escaped = pattern[i + 1];
+                // \xNN and \uNNNN are hex/unicode escapes that represent a single character;
+                // consuming only \x leaves the digits as separate items, causing false duplicates.
+                if (escaped is 'x' or 'u' or 'U' && i + 3 < pattern.Length
+                    && IsHexDigit(pattern[i + 2]) && IsHexDigit(pattern[i + 3]))
+                    escapeLen = escaped == 'u' || escaped == 'U' ? 6 : 4;
+                else if (escaped is 'x' && i + 2 < pattern.Length && pattern[i + 2] == '{'
+                         && pattern.IndexOf('}', i + 2) is var close && close > 0)
+                    escapeLen = close - i + 1;
+                items.Add(pattern.Substring(i, escapeLen));
+                i += escapeLen;
                 continue;
             }
             if (i + 2 < pattern.Length && pattern[i + 1] == '-' && pattern[i + 2] != ']')
@@ -480,6 +490,8 @@ public sealed class RegexPattern
         Classes.Add(new CharacterClass(start, items, negated));
         return i;
     }
+
+    private static bool IsHexDigit(char c) => c is >= '0' and <= '9' or >= 'a' and <= 'f' or >= 'A' and <= 'F';
 
     /// <summary>`(?:`, lookarounds and flags do not capture; `(?&lt;name&gt;` and `(?'name'` do.</summary>
     private static bool IsNonCapturing(string pattern, int open)

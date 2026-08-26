@@ -519,6 +519,8 @@ public sealed class RustDebugPrintRule : PatternRuleBase
     public override void Execute(IRuleContext context)
     {
         var tokens = context.Tokens;
+        if (context.File.Path?.EndsWith("build.rs", StringComparison.OrdinalIgnoreCase) == true)
+            return;
         for (var i = 0; i + 1 < tokens.Count; i++)
         {
             if (!RuleMatchers.Contains(tokens[i].Text, ["println", "print", "eprintln", "eprint", "dbg"]))

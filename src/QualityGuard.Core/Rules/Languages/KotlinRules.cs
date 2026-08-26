@@ -587,6 +587,12 @@ public sealed class KotlinServerSideRequestForgeryRule : PatternRuleBase
                 sink = i + 2;
             if (sink < 0)
                 continue;
+            // 'class File(...)' or 'object File(...)' is a type definition, not a file operation.
+            if (sink > 0 && (RuleMatchers.IsName(tokens[sink - 1], "class")
+                || RuleMatchers.IsName(tokens[sink - 1], "object")
+                || RuleMatchers.IsName(tokens[sink - 1], "data")
+                || RuleMatchers.IsName(tokens[sink - 1], "sealed")))
+                continue;
             if (sink + 1 >= tokens.Count || tokens[sink + 1].Text != "(")
                 continue;
             if (RuleMatchers.NextNonParenIsString(tokens, sink) && !context.IsTaintedLine(tokens[i].Line))

@@ -365,6 +365,7 @@
   severity: major
   effort: 10min
   tags: [vbnet, type-safety]
+  cwe: [710]
   message: Turning this option off disables compiler checks that catch real defects.
   summary: A VB.NET file disables Option Strict or Option Explicit.
   why: |

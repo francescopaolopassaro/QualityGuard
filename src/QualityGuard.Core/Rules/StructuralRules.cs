@@ -1511,8 +1511,16 @@ public abstract class SelfAssignmentRule : StructuralRuleBase
             // it is one only when no other token belongs to it.
             var rightIsBare = assignment.ChildAt(1) is { } value && value.Tokens.Count <= 1;
             if (left.Length > 0 && left == right && rightIsBare)
+            {
+                // In Ruby, Perl and similar languages, '@var = var' assigns a local to an instance
+                // variable — the sigil makes them different names even when the base matches.
+                var leftTokens = assignment.ChildAt(0)?.Tokens;
+                if (leftTokens is { Count: > 0 } && leftTokens[0].Text.Length > 1
+                    && leftTokens[0].Text[0] is '@' or '$')
+                    continue;
                 context.Report(assignment, $"Assigning '{left}' to itself has no effect; "
                                            + "the intended target or source is probably a different name.");
+            }
         }
     }
 
