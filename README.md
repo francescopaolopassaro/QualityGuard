@@ -15,7 +15,7 @@ Rules ship in a **default profile** — convention and stylistic checks stay dis
 
 Engine engineering prioritizes precision: rules are vetted on third-party production codebases before inclusion, noisy checks are rewritten on the syntax tree or dropped, and fixed false positives are locked in place with regression tests (§8).
 
-### Security is organized around the OWASP Top 10 (2021)
+### Security is organized around the OWASP
 
 Every security rule carries its OWASP category and CWE identifier, so CLI reports and SARIF exports
 group findings by the standard your auditors speak. Injection-style rules run through the data-flow
