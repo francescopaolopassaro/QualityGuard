@@ -1645,6 +1645,7 @@
   detect:
     - invocation: [getInstance]
       receiver: [Cipher]
+      argLiterals: [DES, DESede, RC4, AES/ECB, blowfish, ARC4, BLOWFISH]
 
 - key: QG-JV-SML-0558
   name: Integer.toHexString should not be used
@@ -2298,3 +2299,248 @@
   detect:
     - invocation: [read, readLine]
       receiver: [BufferedReader, Reader]
+
+# ── CWE metadata for C# rules (JavaRules.cs) ──────────────────────────────────
+# Documentation-only entries: no detect block, so they are not executed as SpecRule.
+# They exist solely to supply CWE tags for SARIF output and the rule catalog.
+
+- key: QG-JV-SEC-0001
+  name: Use cryptographically strong random numbers
+  languages: [java]
+  category: SEC
+  severity: critical
+  cwe: [330]
+  message: Cryptographically weak PRNG must not be used for security-sensitive values.
+  summary: A predictable pseudo-random generator is used where unpredictability is required.
+  why: |
+    Weak generators produce output that an attacker can predict once a few values are known. Session
+    tokens, nonces, key material and one-time passwords lose their protection the moment the
+    generator state is recovered.
+  fix: |
+    Replace java.util.Random with java.security.SecureRandom or a provider-backed DRBG.
+
+- key: QG-JV-SEC-0002
+  name: Make sure no OS command is executed with untrusted input
+  languages: [java]
+  category: SEC
+  severity: critical
+  cwe: [78]
+  message: Untrusted data must not reach an OS command.
+  summary: User-controlled input is concatenated into a command string.
+  why: |
+    When external input reaches a command interpreter, an attacker can inject additional instructions
+    that run with the privileges of the calling process.
+  fix: |
+    Use a fixed allow-list of commands and arguments, or call the program through a safe API that
+    separates executable and arguments.
+
+- key: QG-JV-SEC-0003
+  name: Use of weak cryptographic algorithm
+  languages: [java]
+  category: SEC
+  severity: critical
+  cwe: [327]
+  message: This cryptographic algorithm is no longer considered secure.
+  summary: A broken or deprecated algorithm is used for encryption, hashing or signing.
+  why: |
+    Algorithms such as DES, RC4 and MD5 have known practical attacks. Data protected with these
+    primitives can be recovered without brute-forcing the key.
+  fix: |
+    Switch to a current algorithm such as AES-GCM, SHA-256 or Ed25519.
+
+- key: QG-JV-SEC-0004
+  name: Make sure using this dynamic SQL is safe
+  languages: [java]
+  category: SEC
+  severity: critical
+  cwe: [89]
+  message: SQL queries should not include untrusted string concatenation.
+  summary: User input is concatenated into a SQL query string.
+  why: |
+    Concatenating input into a query allows an attacker to alter the query logic and access or
+    modify data beyond authorization.
+  fix: |
+    Use PreparedStatement with bind parameters so the driver separates code from data.
+
+- key: QG-JV-SEC-0005
+  name: Password or other credentials should not be hardcoded
+  languages: [java]
+  category: SEC
+  severity: critical
+  cwe: [798]
+  message: Credentials must be stored outside the source code.
+  summary: A secret is written directly in the source.
+  why: |
+    Anyone with read access to the repository — including forks, CI logs and backup copies —
+    obtains the credential without effort.
+  fix: |
+    Move the value to a secrets manager, environment variable or encrypted configuration file.
+
+- key: QG-JV-SEC-0006
+  name: Make sure the dynamic code executed is safe
+  languages: [java]
+  category: SEC
+  severity: critical
+  cwe: [94]
+  message: Untrusted input must not reach code execution APIs.
+  summary: Externally influenced data is passed to a code-generation or scripting API.
+  why: |
+    When user input becomes executable code, an attacker gains the ability to run arbitrary logic
+    under the process identity.
+  fix: |
+    Avoid executing dynamic code; validate any input against a strict allow-list before use.
+
+- key: QG-JV-SEC-0007
+  name: Make sure this deserialization is safe
+  languages: [java]
+  category: SEC
+  severity: critical
+  cwe: [502]
+  message: Deserialization of untrusted data can trigger remote code execution.
+  summary: Data from an untrusted source is deserialized without integrity verification.
+  why: |
+    Insecure deserialization lets an attacker craft an object graph that executes arbitrary code
+    during reconstruction.
+  fix: |
+    Use a safe format (JSON with typed contracts) or verify a cryptographic signature before
+    deserializing.
+
+- key: QG-JV-SEC-0008
+  name: HTTPS should be used for all network communication
+  languages: [java]
+  category: SEC
+  severity: major
+  cwe: [319]
+  message: Cleartext transmission exposes data to interception.
+  summary: A network call uses HTTP instead of HTTPS.
+  why: |
+    Without transport encryption every intermediate network element can read and modify the traffic.
+  fix: |
+    Switch the URL scheme to HTTPS and enforce certificate validation.
+
+- key: QG-JV-SEC-0009
+  name: Secure and HttpOnly flags should be set on cookies
+  languages: [java]
+  category: SEC
+  severity: major
+  cwe: [614]
+  message: Cookies without security flags are vulnerable to interception and script access.
+  summary: A cookie is set without Secure and/or HttpOnly.
+  why: |
+    Without Secure the cookie is sent over plain HTTP; without HttpOnly JavaScript can read it,
+    enabling session theft via cross-site scripting.
+  fix: |
+    Call setSecure(true) and setHttpOnly(true) on every cookie that carries session or
+    authentication state.
+
+- key: QG-JV-SEC-0010
+  name: XML parsers should not be vulnerable to XXE attacks
+  languages: [java]
+  category: SEC
+  severity: critical
+  cwe: [611]
+  message: An XML parser with external entity resolution enabled is used.
+  summary: The parser processes external entities, allowing file disclosure and SSRF.
+  why: |
+    XXE lets an attacker reference local files or internal services through crafted XML, bypassing
+    network controls entirely.
+  fix: |
+    Disable DTD processing and external entities; use a parser that defaults to secure settings.
+
+- key: QG-JV-SEC-0011
+  name: Only strong TLS protocols should be enabled
+  languages: [java]
+  category: SEC
+  severity: critical
+  cwe: [326]
+  message: An obsolete TLS version or cipher suite is enabled.
+  summary: The configuration allows protocols that have known practical attacks.
+  why: |
+    SSLv3, TLS 1.0, TLS 1.1 and weak ciphers enable interception and decryption of protected
+    traffic.
+  fix: |
+    Restrict the enabled protocols to TLS 1.2+ with strong cipher suites.
+
+- key: QG-JV-SEC-0012
+  name: Sensitive information should not be logged
+  languages: [java]
+  category: SEC
+  severity: major
+  cwe: [532]
+  message: Sensitive data is written to a log.
+  summary: Passwords, tokens or personal data appear in log output.
+  why: |
+    Log files are often aggregated, shipped to central systems and retained for long periods, giving
+    a wide audience access to the data.
+  fix: |
+    Remove sensitive values before logging, or mask them with a fixed-length placeholder.
+
+- key: QG-JV-SEC-0013
+  name: Server-side request forgery should be prevented
+  languages: [java]
+  category: SEC
+  severity: major
+  cwe: [918]
+  message: A user-controlled URL reaches a server-side HTTP call.
+  summary: External input determines the target of an outbound request.
+  why: |
+    SSRF lets an attacker reach internal services, cloud metadata endpoints and APIs that are not
+    exposed to the public internet.
+  fix: |
+    Validate the URL against an allow-list of permitted hosts and schemes.
+
+- key: QG-JV-SEC-0014
+  name: File operations should not use user-controlled paths
+  languages: [java]
+  category: SEC
+  severity: major
+  cwe: [22]
+  message: A file path derived from user input reaches a file-system operation.
+  summary: External input is used to build a path without canonicalization.
+  why: |
+    Directory traversal lets an attacker access files outside the intended directory, reading or
+    overwriting sensitive data.
+  fix: |
+    Canonicalize the path, verify it stays within the expected root, and reject relative sequences.
+
+- key: QG-JV-SEC-0015
+  name: Make sure using this LDAP filter is safe
+  languages: [java]
+  category: SEC
+  severity: major
+  cwe: [90]
+  message: Untrusted input reaches an LDAP query.
+  summary: User data is concatenated into an LDAP filter string.
+  why: |
+    LDAP injection lets an attacker alter the query logic, bypass authentication or extract data
+    beyond authorization.
+  fix: |
+    Encode special characters or use a parameterized LDAP search that separates filter from data.
+
+- key: QG-JV-SEC-0016
+  name: HTTP response headers should not be vulnerable to injection
+  languages: [java]
+  category: SEC
+  severity: major
+  cwe: [79]
+  message: Untrusted input reaches an HTTP response header.
+  summary: User-controlled data is set as a header value without encoding.
+  why: |
+    Header injection enables cross-site scripting via forged headers and cache poisoning.
+  fix: |
+    Validate the value against a strict pattern and reject characters that have special meaning in
+    the header syntax.
+
+- key: QG-JV-SEC-0017
+  name: CORS should not be configured with wildcard origins
+  languages: [java]
+  category: SEC
+  severity: major
+  cwe: [942]
+  message: Access-Control-Allow-Origin is set to wildcard.
+  summary: The CORS policy allows any origin.
+  why: |
+    A wildcard origin lets any website make authenticated requests on behalf of a user, defeating
+    the same-origin protection the browser enforces.
+  fix: |
+    Restrict the allowed origins to the specific trusted domains that require access.

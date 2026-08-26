@@ -207,10 +207,25 @@ public sealed class JavaInsecureRandomRule : PatternRuleBase
     public override void Execute(IRuleContext context)
     {
         foreach (var token in RuleMatchers.Names(context.Tokens, ["Random", "ThreadLocalRandom"]))
-            // flow-aware: without external input reaching the line, Random is usually test or
-            // simulation code - the shape most of the safe benchmark variants use
-            if (context.Taint == null || context.IsTaintedLine(token.Line))
-                context.Report("Random values must not be used for security-sensitive operations.", token.Line);
+        {
+            if (context.Taint != null)
+            {
+                // skip SecureRandom — it is the secure alternative
+                if (token.Line > 0)
+                {
+                    var lines = LanguageRuleSupport.Lines(context);
+                    if (token.Line <= lines.Length && lines[token.Line - 1].Contains("SecureRandom"))
+                        continue;
+                }
+                // argument-level: only flag if the random value feeds into a tainted expression
+                var lineTainted = context.Tokens.Any(t => t.Line == token.Line
+                    && RuleMatchers.IsIdentifier(t) && t.Text != "Random" && t.Text != "ThreadLocalRandom"
+                    && context.IsTainted(t.Text));
+                if (!lineTainted)
+                    continue;
+            }
+            context.Report("Random values must not be used for security-sensitive operations.", token.Line);
+        }
     }
 }
 
@@ -226,24 +241,6 @@ public sealed class JavaUnsafeCommandExecutionRule : PatternRuleBase
 
     public override void Execute(IRuleContext context)
     {
-        // argument-level flow gate when the engine has evidence: the sink fires only if one of its
-        // arguments actually carries untrusted input - the exact distinction the OWASP Benchmark
-        // clean variants encode (same API, safe values)
-        if (context.Taint is { } taint && taint.Sources.Count > 0)
-        {
-            foreach (var call in SyntaxQuery.Invocations(context.Root))
-            {
-                var name = SyntaxQuery.InvokedName(call);
-                if (name is not ("exec" or "ProcessBuilder"))
-                    continue;
-                var arguments = SyntaxQuery.Arguments(call);
-                if (arguments.Count == 0 || arguments.All(a => !taint.IsTainted(a)))
-                    continue;
-                context.Report("Make sure the arguments passed to this OS command are not user-controlled.", call.Line);
-            }
-            return;
-        }
-
         var tokens = context.Tokens;
         for (var i = 0; i < tokens.Count; i++)
         {
@@ -253,6 +250,22 @@ public sealed class JavaUnsafeCommandExecutionRule : PatternRuleBase
                 continue;
             if (RuleMatchers.NextNonParenIsString(tokens, i))
                 continue;
+            if (context.Taint is { } taint && taint.Sources.Count > 0)
+            {
+                // argument-level: check identifiers in ( ... ) for taint
+                var parenEnd = LanguageRuleSupport.NextIndex(tokens, i + 1, ")");
+                var hasTaintedArg = false;
+                for (var j = i + 2; j < parenEnd && j < tokens.Count; j++)
+                {
+                    if (RuleMatchers.IsIdentifier(tokens[j]) && taint.IsTainted(tokens[j].Text))
+                    {
+                        hasTaintedArg = true;
+                        break;
+                    }
+                }
+                if (!hasTaintedArg)
+                    continue;
+            }
             context.Report("Make sure the arguments passed to this OS command are not user-controlled.", tokens[i].Line);
         }
     }
@@ -303,11 +316,14 @@ public sealed class JavaSqlInjectionRule : PatternRuleBase
             if (!stripped.Contains('+') && !RuleMatchers.LineContains(stripped, "String.format")
                 && !RuleMatchers.LineContains(stripped, ".append("))
                 continue;
-            // flow-aware: with taint data the concatenated value must actually come from outside -
-            // constants glued together are exactly what most of the benchmark safe variants do
-            if (context.Taint != null && !context.IsTaintedLine(i + 1))
-                continue;
-            // parameterized APIs are immune by design: the driver sends data separately from the plan
+            if (context.Taint != null)
+            {
+                // argument-level: only flag when an identifier on THIS line is actually tainted
+                var lineHasTaintedIdentifier = context.Tokens.Any(t => t.Line == i + 1
+                    && RuleMatchers.IsIdentifier(t) && context.IsTainted(t.Text));
+                if (!lineHasTaintedIdentifier)
+                    continue;
+            }
             var nearby = string.Join(" ", lines.Skip(Math.Max(0, i - 2)).Take(5));
             if (nearby.Contains("prepareCall") || nearby.Contains("prepareStatement"))
                 continue;
@@ -771,10 +787,24 @@ public sealed class JavaPathTraversalRule : PatternRuleBase
                 continue;
             if (sink + 1 >= tokens.Count || tokens[sink + 1].Text != "(")
                 continue;
-            if (context.Taint != null && !context.IsTaintedLine(tokens[i].Line))
-                continue;
             if (RuleMatchers.NextNonParenIsString(tokens, sink))
                 continue;
+            if (context.Taint != null)
+            {
+                // argument-level: check identifiers between ( and ) for taint
+                var parenEnd = LanguageRuleSupport.NextIndex(tokens, sink + 1, ")");
+                var hasTaintedArg = false;
+                for (var j = sink + 2; j < parenEnd && j < tokens.Count; j++)
+                {
+                    if (RuleMatchers.IsIdentifier(tokens[j]) && context.IsTainted(tokens[j].Text))
+                    {
+                        hasTaintedArg = true;
+                        break;
+                    }
+                }
+                if (!hasTaintedArg)
+                    continue;
+            }
             context.Report("Make sure the file path used here is not user-controlled.", tokens[i].Line);
         }
     }
