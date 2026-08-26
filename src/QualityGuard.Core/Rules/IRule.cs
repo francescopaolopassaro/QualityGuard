@@ -208,15 +208,15 @@ public static class RuleEngine
         // flow-gated security: every security finding must sit on a line where untrusted input
         // is DIRECTLY consumed (getParameter, request.query, etc.). Indirect flows through
         // variables require value-level tracing the line model cannot provide.
+        // flow-gated security: when the taint engine has evidence for this file, security
+        // findings must reference at least one symbol whose current state is still tainted.
         var taint = analysis.Taint;
         if (taint != null && taint.Sources.Count > 0)
         {
-            var sourceLines = new HashSet<int>(taint.Sources.Select(s => s.Line));
             analysis.Issues.RemoveAll(i =>
                 i.Kind == IssueKind.Vulnerability
                 && i.RuleKey.Contains("-SEC-")
-                && i.Line.HasValue
-                && !sourceLines.Contains(i.Line.Value));
+                && !taint.IsTaintedLine(i.Line ?? 0));
         }
     }
 }
