@@ -156,8 +156,12 @@ public sealed class PhpSystemCallsRule : PatternRuleBase
         var lines = PhpRuleSet.LinesOf(context);
         for (var i = 0; i < lines.Length; i++)
         {
-            if (lines[i].Contains('`'))
-                context.Report("Backtick command substitution executes shell commands.", i + 1);
+            if (!lines[i].Contains('`'))
+                continue;
+            var trimmed = lines[i].TrimStart();
+            if (trimmed.StartsWith("//") || trimmed.StartsWith("/*") || trimmed.StartsWith("*"))
+                continue;
+            context.Report("Backtick command substitution executes shell commands.", i + 1);
         }
     }
 }

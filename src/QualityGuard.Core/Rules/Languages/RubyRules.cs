@@ -50,6 +50,18 @@ public static class RubyRuleSet
 
 public sealed class RubyDynamicCommandRule : PatternRuleBase
 {
+    private static bool IsInsideHeredoc(IReadOnlyList<Token> tokens, int backtickIndex)
+    {
+        for (var j = backtickIndex - 1; j >= 0; j--)
+        {
+            if (tokens[j].Kind == TokenKind.Symbol && tokens[j].Text == "<<")
+                return true;
+            if (tokens[j].Line < tokens[backtickIndex].Line - 1)
+                break;
+        }
+        return false;
+    }
+
     public override string Key => "QG-RB-SEC-0001";
     public override string Name => "Shell command built from dynamic input";
     public override Severity Severity => Severity.Critical;
@@ -79,10 +91,16 @@ public sealed class RubyDynamicCommandRule : PatternRuleBase
             if (j < tokens.Count && RuleMatchers.IsString(tokens[j]) && tokens[j].Text.Contains("#{"))
                 context.Report("Shell command strings should not interpolate untrusted values.", tokens[i].Line);
         }
-        foreach (var t in tokens)
+        for (var i = 0; i < tokens.Count; i++)
         {
-            if (t.Kind == TokenKind.Symbol && t.Text == "`")
-                context.Report("Command substitution should not be used for untrusted input.", t.Line);
+            var t = tokens[i];
+            if (t.Kind != TokenKind.Symbol || t.Text != "`")
+                continue;
+            if (IsInsideHeredoc(tokens, i))
+                continue;
+            if (i > 0 && tokens[i - 1].Kind == TokenKind.String)
+                continue;
+            context.Report("Command substitution should not be used for untrusted input.", t.Line);
         }
     }
 }

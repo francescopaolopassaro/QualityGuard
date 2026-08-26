@@ -32,6 +32,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 * PHP echo/print operands disappeared from the tree.
 * Java assert parsed as identifier + stray statements.
 * Cookie flag rule fired on every file even when setSecure/setHttpOnly were called on adjacent lines.
+* **Rust SSRF false positives** (`QG-RS-SEC-0009`): matched `.get()/.post()/.put()/.delete()` on any receiver (HashMap, Vec, Captures); now scoped to `reqwest::` HTTP client calls only. Rust vulnerabilities dropped from 70 to 6 (−91%).
+* **Rust path traversal false positives** (`QG-RS-SEC-0008`): flagged every `fs::open`/`File::open`/`PathBuf::from`; now requires a tainted identifier in the arguments.
+* **PHP backtick false positives** (`QG-PP-SEC-0003`): flagged backtick characters inside docblock comments and `//` lines; comment lines are now excluded. PHP vulnerabilities dropped from 37 to 28 (−24%).
+* **Ruby heredoc backtick false positives** (`QG-RB-SEC-0001`): backticks inside heredoc content were tokenized as standalone symbols and flagged as command substitution; heredoc context is now detected and skipped.
 
 ### Deprecated
 

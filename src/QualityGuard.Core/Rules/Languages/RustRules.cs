@@ -273,7 +273,18 @@ public sealed class RustPathTraversalRule : PatternRuleBase
                 continue;
             if (!RuleMatchers.Contains(tokens[i + 2].Text, ["open", "read", "read_to_string", "write", "from"]))
                 continue;
-            if (RuleMatchers.NextNonParenIsString(tokens, i + 2) && !context.IsTaintedLine(tokens[i].Line))
+            if (RuleMatchers.NextNonParenIsString(tokens, i + 2))
+                continue;
+            bool hasTaintedArg = false;
+            for (var j = i + 3; j < tokens.Count && tokens[j].Text != ")"; j++)
+            {
+                if (tokens[j].Kind == TokenKind.Identifier && context.IsTainted(tokens[j].Text))
+                {
+                    hasTaintedArg = true;
+                    break;
+                }
+            }
+            if (!hasTaintedArg)
                 continue;
             context.Report("Validate file paths passed to file access calls.", tokens[i].Line);
         }
@@ -299,8 +310,6 @@ public sealed class RustSsrfRule : PatternRuleBase
             if (RuleMatchers.IsName(tokens[i], "reqwest") && tokens[i + 1].Text == "::"
                 && RuleMatchers.Contains(tokens[i + 2].Text, ["get", "post", "put", "delete"]))
                 sink = i + 2;
-            else if (tokens[i].Text == "." && RuleMatchers.Contains(tokens[i + 1].Text, ["get", "post", "put", "delete"]))
-                sink = i + 1;
             if (sink < 0)
                 continue;
             if (sink + 1 >= tokens.Count || tokens[sink + 1].Text != "(")
