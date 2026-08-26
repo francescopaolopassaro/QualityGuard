@@ -5,7 +5,7 @@
     proprietary one in the repository root: these packages are NOT open source.
   -->
   <PropertyGroup>
-    <Version>1.0.0</Version>
+    <Version>1.0.1</Version>
     <Authors>Francesco Paolo Passaro</Authors>
     <Company>Francesco Paolo Passaro - Digitalsolutions.it</Company>
     <Copyright>Copyright (c) 2026 Passaro Francesco Paolo</Copyright>
