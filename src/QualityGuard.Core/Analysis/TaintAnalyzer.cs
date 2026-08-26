@@ -83,7 +83,11 @@ public static class TaintEngine
     [
         "getenv", "getParameter", "getParameterValues", "getQueryString", "getRequestURI", "getHeader",
         "getInputStream", "getCookies", "getUserPrincipal", "getReader", "readLine", "input", "raw_input",
-        "argv", "args", "ARGV", "getRemoteUser", "getPathInfo", "getRequestURL", "getPart"
+        "argv", "args", "ARGV", "getRemoteUser", "getPathInfo", "getRequestURL", "getPart",
+        // C# ASP.NET Core
+        "FromRoute",
+        // Go net/http
+        "FormValue"
     ];
 
     private static readonly string[] SourceMembers =
@@ -98,7 +102,18 @@ public static class TaintEngine
         "params.Get", "c.Query", "c.Param", "c.PostForm",
         "Request.Url", "Request.Path", "Request.PathAndQuery", "Request.RawUrl",
         "request.url", "request.path", "request.uri", "request.queryString",
-        "ctx.request.url", "ctx.request.path"
+        "ctx.request.url", "ctx.request.path",
+        // C# ASP.NET Core
+        "HttpContext.Request.Query", "HttpContext.Request.Form", "HttpContext.Request.Headers",
+        "Request.HttpContext.Request",
+        // Python Flask / Django
+        "flask.request.args", "flask.request.form", "flask.request.values",
+        "flask.request.headers", "flask.request.cookies", "request.GET", "request.POST",
+        "request.FILES", "request.COOKIES", "request.META",
+        // JavaScript frameworks
+        "URLSearchParams", "searchParams", "process.env",
+        // Go
+        "r.URL.Query", "r.Header", "r.PostForm"
     ];
 
     private static readonly string[] Superglobals =
@@ -123,7 +138,13 @@ public static class TaintEngine
         // security wrapper classes that route untrusted input through encoding/validation:
         // their presence between source and sink breaks the taint chain
         "ESAPI", "SecurityWrapper", "SecurityUtil", "InputValidator", "DataSanitizer",
-        "OracleHelper", "SqlSafe", "XssFilter", "HtmlSanitizer"
+        "OracleHelper", "SqlSafe", "XssFilter", "HtmlSanitizer",
+        // ASP.NET Core built-in encoders
+        "HtmlEncoder", "UrlEncoder", "JavaScriptEncoder", "WebEncoders",
+        // Python sanitizers
+        "bleach", "clean", "markupsafe", "htmlEscape",
+        // Go sanitizers
+        "HTMLEscapeString", "URLQueryEscape", "JSEscapeString"
     ];
 
     public static TaintResult Analyze(SyntaxTree tree, SemanticModel model, TaintContext? shared = null,
