@@ -44,7 +44,7 @@ public sealed class FunctionFlow
 
     private readonly List<Step> _steps;
 
-    internal FunctionFlow(List<Step> steps) => _steps = steps;
+    public FunctionFlow(List<Step> steps) => _steps = steps;
 
     /// <summary>All steps in source order.</summary>
     public IReadOnlyList<Step> Steps => _steps;
