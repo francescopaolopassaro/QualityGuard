@@ -9,19 +9,39 @@ dotnet run --project src/QualityGuard.Cli -- --path ./src --by-folder
 
 ```
 
-It packs **4079 rules across 27 languages** (including **653 security rules**), executing on real syntax trees with a semantic model, project index, and interprocedural taint analysis. Coverage extends beyond core languages to cloud infrastructure (AWS, Azure, and Google Cloud via Terraform and CloudFormation), Kubernetes manifests, Dockerfiles, Android manifests, Gradle scripts, Java EE and ASP.NET descriptors, WordPress configurations, and .NET frameworks (Entity Framework, Dapper, ASP.NET Core, Blazor, MAUI, WPF, WinUI, and Avalonia).
+It packs **4083 rules across 27 languages** (including **657 security rules**), executing on real syntax trees with a semantic model, project index, and interprocedural taint analysis. Coverage extends beyond core languages to cloud infrastructure (AWS, Azure, and Google Cloud via Terraform and CloudFormation), Kubernetes manifests, Dockerfiles, Android manifests, Gradle scripts, Java EE and ASP.NET descriptors, WordPress configurations, and .NET frameworks (Entity Framework, Dapper, ASP.NET Core, Blazor, MAUI, WPF, WinUI, and Avalonia).
 
 Rules ship in a **default profile** — convention and stylistic checks stay disabled until explicitly requested with `--all-rules`, preventing noisy reports from masking critical defects.
 
 Engine engineering prioritizes precision: rules are vetted on third-party production codebases before inclusion, noisy checks are rewritten on the syntax tree or dropped, and fixed false positives are locked in place with regression tests (§8).
 
-### Security is organized around the OWASP
+### Security is organized around the OWASP Top 10 (2021)
 
-Every security rule carries its OWASP category, so CLI reports and SARIF exports group findings
-by the standard your auditors speak. Injection-style rules run through the data-flow engine: they
-fire only when untrusted input actually reaches the sink, which keeps framework code quiet.
-Detection is scored continuously against the intentionally vulnerable OWASP Benchmark corpus -
-the numbers that guide each release are recall and false-positive rate on those 2,740 cases.
+Every security rule carries its OWASP category and CWE identifier, so CLI reports and SARIF exports
+group findings by the standard your auditors speak. Injection-style rules run through the data-flow
+engine: they fire only when untrusted input actually reaches the sink, which keeps framework code quiet.
+
+Security coverage spans all ten OWASP Top 10 categories with dedicated detection:
+
+| Category | Coverage |
+| --- | --- |
+| A01 Broken Access Control | Path traversal, open redirects, access control gaps |
+| A02 Cryptographic Failures | Weak hashing, predictable randomness, TLS validation |
+| A03 Injection | SQL, command, XPath, eval, code generation — all taint-gated |
+| A04 Insecure Design | Debug mode exposure in production servers |
+| A05 Security Misconfiguration | CORS wildcards, cookie flags, framework debug settings |
+| A06 Vulnerable Components | Hard-coded dependency versions, outdated base types |
+| A07 Auth Failures | Plain-text password comparisons, timing attacks |
+| A08 Integrity Failures | Unsafe deserialization of untrusted formats |
+| A09 Logging Failures | Log injection through untrusted newlines, error detail exposure |
+| A10 SSRF | Server-side request forgery via outbound URL manipulation |
+
+Detection is scored continuously against the intentionally vulnerable **OWASP Benchmark** corpus -
+recall and false-positive rate on those 2,740 Java cases guide every release. The engine also ships a
+**multi-language semantic model**: sources (request parameters, form bodies, environment variables),
+sanitizers (OWASP encoders, framework validators), and sinks are recognized across ASP.NET Core,
+Spring, Flask, Django, Express and Go net/http, so the same injection rule speaks the language of
+every framework it scans.
 
 ---
 
