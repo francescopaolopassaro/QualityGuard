@@ -220,18 +220,11 @@ public static class TaintEngine
 
         var tainted = model.AllSymbols().Where(s => s.IsTainted).ToList();
         var names = new HashSet<string>(tainted.Select(s => s.Name), StringComparer.Ordinal);
+        // flow-sensitive TaintedLines: only mark lines where external input is DIRECTLY consumed.
+        // Propagated taint through variables requires value-level tracking the line model cannot
+        // provide - including every usage line made almost every line "tainted" and defeated the
+        // central security gate, producing false positives on every safe wrapper pattern.
         var lines = new HashSet<int>();
-        foreach (var symbol in tainted)
-        {
-            foreach (var usage in symbol.Usages)
-            {
-                // only mark lines where the value STILL carries taint: if it passed through a
-                // sanitizer between source and here, the chain is broken and the line is clean
-                if (usage.Value != null && !CarriesTaint(usage.Value, context))
-                    continue;
-                lines.Add(usage.Line);
-            }
-        }
         foreach (var source in sources)
             lines.Add(source.Line);
 

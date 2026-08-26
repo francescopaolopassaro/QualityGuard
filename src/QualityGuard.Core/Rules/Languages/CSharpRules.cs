@@ -944,9 +944,7 @@ public sealed class CsOpenRedirectRule : PatternRuleBase
         {
             var line = lines[i];
             if (!CSharpRuleSet.HasAny(line, ["RedirectToAction", "RedirectToRoute", "RedirectToPage", "LocalRedirect"])) continue;
-            // flow-aware when evidence exists: with taint data the target must be external input
-            if (context.Taint != null && !context.IsTaintedLine(i + 1)) continue;
-            if (!(line.Contains('+') || line.Contains('$'))) continue;
+            if (!(line.Contains('+') || line.Contains('$') || context.IsTaintedLine(i + 1))) continue;
             context.Report("Validate the redirect target to prevent open redirects.", i + 1);
         }
     }
