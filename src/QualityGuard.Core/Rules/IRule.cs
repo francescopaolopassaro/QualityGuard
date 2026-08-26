@@ -2154,7 +2154,8 @@ public static class RuleScope
         "QG-XML-SML-0062",
     };
 
-    public static bool IsMainOnly(string key) => MainOnly.Contains(key);
+    public static bool IsMainOnly(string key)
+        => MainOnly.Contains(key) || key.Contains("-SEC-");
 }
 
 

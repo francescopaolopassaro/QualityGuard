@@ -151,9 +151,10 @@ public sealed class RustWeakCryptoRule : PatternRuleBase
         string[] algorithms = ["md5", "sha1", "sha-1", "des", "3des", "desede", "rc4", "aes-ecb", "aes/ecb"];
         for (var i = 0; i < lines.Length; i++)
         {
+            var stripped = LanguageRuleSupport.StripStrings(lines[i]);
             foreach (var algorithm in algorithms)
             {
-                if (!LanguageRuleSupport.ContainsWord(lines[i], algorithm))
+                if (!LanguageRuleSupport.ContainsWord(stripped, algorithm))
                     continue;
                 context.Report($"Replace this weak cryptographic algorithm '{algorithm}' with a strong one.", i + 1);
                 break;
@@ -338,8 +339,15 @@ public sealed class RustUnsafePointerOpsRule : PatternRuleBase
         {
             if (RuleMatchers.LineContains(lines[i], "transmute")
                 || RuleMatchers.LineContains(lines[i], "uninitialized")
-                || RuleMatchers.LineContains(lines[i], "from_raw_parts")
-                || RuleMatchers.LineContains(lines[i], "set_len"))
+                || RuleMatchers.LineContains(lines[i], "from_raw_parts"))
+            {
+                context.Report("Unsafe pointer operation can lead to memory unsafety.", i + 1);
+                continue;
+            }
+            // set_len on Vec<T> inside unsafe is a real pointer op; set_len on File is safe POSIX
+            // ftruncate.  The simple heuristic: flag only bare/qualified set_len, not .set_len().
+            if (RuleMatchers.LineContains(lines[i], "set_len")
+                && !lines[i].Contains(".set_len"))
                 context.Report("Unsafe pointer operation can lead to memory unsafety.", i + 1);
         }
     }

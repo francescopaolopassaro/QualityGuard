@@ -386,12 +386,12 @@ public sealed class PhpInsecureCookieRule : PatternRuleBase
 
     public override void Execute(IRuleContext context)
     {
+        var tokens = context.Tokens;
         var lines = PhpRuleSet.LinesOf(context);
-        for (var i = 0; i < lines.Length; i++)
+        foreach (var t in tokens.Where(t => PhpRuleSet.IsWord(t, "setcookie", true)))
         {
-            if (!PhpRuleSet.HasAny(lines[i], ["setcookie"])) continue;
-            if (PhpRuleSet.HasAny(lines[i], ["httponly", "secure"])) continue;
-            context.Report("Set the Secure and HttpOnly flags on cookies.", i + 1);
+            if (PhpRuleSet.HasAny(lines[t.Line - 1], ["httponly", "secure"])) continue;
+            context.Report("Set the Secure and HttpOnly flags on cookies.", t.Line);
         }
     }
 }
