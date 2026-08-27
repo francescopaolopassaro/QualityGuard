@@ -244,10 +244,21 @@ public sealed class JavaUnsafeCommandExecutionRule : PatternRuleBase
 
     public override void Execute(IRuleContext context)
     {
+        // Build framework-aware command sink set (from java-process.yaml)
+        var fwSinks = context.Frameworks.GetSinks("java")
+            .Where(s => s.Kind == "command")
+            .Select(s => s.Method)
+            .Distinct(StringComparer.OrdinalIgnoreCase)
+            .ToList();
+        var cmdSinks = new[] { "exec", "ProcessBuilder" }
+            .Concat(fwSinks)
+            .Distinct(StringComparer.OrdinalIgnoreCase)
+            .ToList();
+
         var tokens = context.Tokens;
         for (var i = 0; i < tokens.Count; i++)
         {
-            if (!RuleMatchers.IsName(tokens[i], "exec") && !RuleMatchers.IsName(tokens[i], "ProcessBuilder"))
+            if (!cmdSinks.Any(sink => RuleMatchers.IsName(tokens[i], sink)))
                 continue;
             if (i + 1 >= tokens.Count || tokens[i + 1].Text != "(")
                 continue;
@@ -321,13 +332,21 @@ public sealed class JavaSqlInjectionRule : PatternRuleBase
 
     public override void Execute(IRuleContext context)
     {
+        // Build framework-aware sink set (Java JDBC sinks from YAML)
+        var fwSinks = context.Frameworks.GetSinks("java")
+            .Where(s => s.Kind == "sql")
+            .Select(s => s.Method)
+            .Distinct(StringComparer.OrdinalIgnoreCase)
+            .ToList();
+        var allSinks = SqlSinkMethods.Concat(fwSinks).Distinct(StringComparer.OrdinalIgnoreCase).ToList();
+
         var lines = LanguageRuleSupport.Lines(context);
         for (var i = 0; i < lines.Length; i++)
         {
             var stripped = LanguageRuleSupport.StripStrings(lines[i]);
             var hasConcat = stripped.Contains('+') || RuleMatchers.LineContains(stripped, "String.format")
                 || RuleMatchers.LineContains(stripped, ".append(");
-            var hasSink = SqlSinkMethods.Any(m => RuleMatchers.LineContains(lines[i], m + "("));
+            var hasSink = allSinks.Any(m => RuleMatchers.LineContains(lines[i], m + "("));
             if (!hasConcat && !hasSink)
                 continue;
             if (!hasConcat)

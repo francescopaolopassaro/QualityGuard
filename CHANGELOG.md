@@ -18,12 +18,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 * **New rule families**: Kotlin idioms (10 rules), C# contracts (19 rules: SQL/command/header injection, format strings, logging templates, Azure Functions statelessness, cookie security), PHP security shapes (4 rules).
 * **ASVS + CWE retro-tagging**: 425+ security rules tagged with ASVS chapters and CWE identifiers.
 * **OWASP Benchmark scorer**: repeatable script measuring recall, precision, accuracy and false-positive rate on the 2,740-case benchmark corpus.
+* **Semantic analysis framework (YAML-first)**: `FrameworkRegistry` loads YAML definitions describing type mappings, method return types, chain patterns, sinks, sources and sanitizers for 18 frameworks across 12 languages. `TypeResolver` extended to resolve framework return types. `IRuleContext.Frameworks` exposes the registry to all rules. 8 new security rules (`QG-ALL-SEC-0025..0032`) generated from YAML sink definitions: SQL injection, command injection, XSS, path traversal, open redirect, SSRF, file write, weak crypto.
 
 ### Changed
 
-* Rule count grew from 3980 to **4083** across 27 languages.
-* Test suite grew from 645 to **758 tests**, all passing.
-* Security rule count grew from 639 to **657**.
+* Rule count grew from 3980 to **4095** across 27 languages.
+* Test suite grew from 645 to **766 tests**, all passing.
+* Security rule count grew from 639 to **665**.
 * Quality improved on real corpora: PHP guzzle 7.9→5.8/1k (−27%), Ruby rails 4.8→2.2/1k (−54%), Python flask 15.0→14.4/1k (−4%), C# Newtonsoft stable at 21.9/1k.
 
 ### Fixed

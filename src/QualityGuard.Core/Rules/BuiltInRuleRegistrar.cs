@@ -122,6 +122,7 @@ public static class BuiltInRuleRegistrar
         ..Languages.XmlDescriptorRuleSet.All,
         ..Languages.DockerfileRuleSet.All,
         ..Languages.DockerSecurityRuleSet.All,
+        ..Languages.FrameworkSecurityRuleSet.All,
         ..StructuralRuleSet.All,
         ..CorrectnessRuleSet.All,
         ..RegexRuleSet.All,

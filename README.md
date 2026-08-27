@@ -9,7 +9,7 @@ dotnet run --project src/QualityGuard.Cli -- --path ./src --by-folder
 
 ```
 
-It packs **4083 rules across 27 languages** (including **657 security rules**), executing on real syntax trees with a semantic model, project index, and interprocedural taint analysis. Coverage extends beyond core languages to cloud infrastructure (AWS, Azure, and Google Cloud via Terraform and CloudFormation), Kubernetes manifests, Dockerfiles, Android manifests, Gradle scripts, Java EE and ASP.NET descriptors, WordPress configurations, and .NET frameworks (Entity Framework, Dapper, ASP.NET Core, Blazor, MAUI, WPF, WinUI, and Avalonia).
+It packs **4095 rules across 27 languages** (including **665 security rules**), executing on real syntax trees with a semantic model, project index, and interprocedural taint analysis. Coverage extends beyond core languages to cloud infrastructure (AWS, Azure, and Google Cloud via Terraform and CloudFormation), Kubernetes manifests, Dockerfiles, Android manifests, Gradle scripts, Java EE and ASP.NET descriptors, WordPress configurations, and .NET frameworks (Entity Framework, Dapper, ASP.NET Core, Blazor, MAUI, WPF, WinUI, and Avalonia).
 
 Rules ship in a **default profile** — convention and stylistic checks stay disabled until explicitly requested with `--all-rules`, preventing noisy reports from masking critical defects.
 

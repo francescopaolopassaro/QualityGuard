@@ -173,13 +173,28 @@ public sealed class CsSqlInjectionRule : PatternRuleBase
     public override string FixAdvice => "Use parameterized queries to prevent SQL injection.";
     public override string[] Languages => ["cs", "vb"];
 
+    private static readonly string[] SqlSinkMethods =
+    [
+        "ExecuteNonQuery", "ExecuteScalar", "ExecuteReader", "CommandText",
+        "SqlCommand", "FromSqlRaw", "FromSql", "Query", "Execute",
+        "ExecuteQuery", "ExecuteUpdate"
+    ];
+
     public override void Execute(IRuleContext context)
     {
+        // Add framework sinks from cs-aspnet.yaml
+        var fwSinks = context.Frameworks.GetSinks("cs")
+            .Where(s => s.Kind == "sql")
+            .Select(s => s.Method)
+            .Distinct(StringComparer.OrdinalIgnoreCase)
+            .ToList();
+        var allSinks = SqlSinkMethods.Concat(fwSinks).Distinct(StringComparer.OrdinalIgnoreCase).ToList();
+
         var lines = CSharpRuleSet.LinesOf(context);
         for (var i = 0; i < lines.Length; i++)
         {
             var line = lines[i];
-            if (!CSharpRuleSet.HasAny(line, ["ExecuteNonQuery", "ExecuteScalar", "ExecuteReader", "CommandText", "SqlCommand", "FromSqlRaw", "FromSql", ".Query"]))
+            if (!allSinks.Any(sink => line.Contains(sink, StringComparison.OrdinalIgnoreCase)))
                 continue;
             if (!CSharpRuleSet.HasAny(line, ["select", "insert", "update", "delete", "drop"]))
                 continue;
