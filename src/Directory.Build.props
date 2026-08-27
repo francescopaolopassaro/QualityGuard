@@ -16,7 +16,7 @@
     <PackageReadmeFile>README.md</PackageReadmeFile>
     <PackageIcon>icon.png</PackageIcon>
     <PackageTags>quality;code-analysis;static-analysis;quality-gate;ci;mcp</PackageTags>
-    <PackageReleaseNotes>1.0.0: stable release. The engine, the SARIF source, the pipeline CLI and the MCP server ship as NuGet packages; the MCP server consumes the other packages from NuGet and is fully standalone.</PackageReleaseNotes>
+    <PackageReleaseNotes>1.0.1: OWASP Top 10 security catalog, flow-sensitive taint, vendor marking, PHP/Python/Ruby/Java regex rule corrections, FPR reduced to 2.1% on OWASP Benchmark. 4083 rules across 27 languages, 758 tests passing.</PackageReleaseNotes>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <NoWarn>$(NoWarn);CS1591</NoWarn>
     <GeneratePackageOnBuild>false</GeneratePackageOnBuild>

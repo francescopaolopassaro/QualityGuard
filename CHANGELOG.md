@@ -24,7 +24,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 * Rule count grew from 3980 to **4083** across 27 languages.
 * Test suite grew from 645 to **758 tests**, all passing.
 * Security rule count grew from 639 to **657**.
-* Quality improved on real corpora: PHP guzzle 7.9→5.3/1k (−33%), Python flask 15.0→12.8/1k (−15%), C# Newtonsoft stable at 20.4/1k.
+* Quality improved on real corpora: PHP guzzle 7.9→5.8/1k (−27%), Ruby rails 4.8→2.2/1k (−54%), Python flask 15.0→14.4/1k (−4%), C# Newtonsoft stable at 21.9/1k.
 
 ### Fixed
 
@@ -36,6 +36,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 * **Rust path traversal false positives** (`QG-RS-SEC-0008`): flagged every `fs::open`/`File::open`/`PathBuf::from`; now requires a tainted identifier in the arguments.
 * **PHP backtick false positives** (`QG-PP-SEC-0003`): flagged backtick characters inside docblock comments and `//` lines; comment lines are now excluded. PHP vulnerabilities dropped from 37 to 28 (−24%).
 * **Ruby heredoc backtick false positives** (`QG-RB-SEC-0001`): backticks inside heredoc content were tokenized as standalone symbols and flagged as command substitution; heredoc context is now detected and skipped.
+* **PHP regex hex escape false positives** (`QG-PP-BUG-0075`): `RegexPattern.ReadClass()` did not handle `\xNN`/`\uNNNN` escapes inside character classes, so `\x21-\x7E` was read as three separate items causing phantom duplicate dash findings. Rewrote with a shared `ReadAtom()` helper that correctly forms ranges. Also fixed PHP single-quoted strings stripping backslashes — added `PreserveBackslashes` flag to `StringDelimiter` so `'\x00'` stays as `\x00` instead of becoming `x00`. PHP BUG-0075 dropped from 6 to 0 on guzzle.
+* **Ruby self-assignment false positives** (`QG-RB-BUG-0028`): `@var = var` was flagged as assigning a variable to itself, but in Ruby the `@` sigil arrives as a separate sibling AST node — the existing check only looked at the assignment child's tokens and missed it. Added `HasSigilPrefix()` that inspects preceding siblings for `@` or `$`. Ruby BUG-0028 dropped from 18 to 0 on rails.
 
 ### Deprecated
 

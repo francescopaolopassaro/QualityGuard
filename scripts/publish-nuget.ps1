@@ -30,7 +30,7 @@ param(
     [switch]$Push,
     [string]$ApiKey = $env:NUGET_API_KEY,
     [string]$Source = "https://api.nuget.org/v3/index.json",
-    [string]$Version = "1.0.0"
+    [string]$Version = "1.0.1"
 )
 
 $ErrorActionPreference = "Stop"
