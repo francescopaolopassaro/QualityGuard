@@ -33,7 +33,10 @@ public static class JavaRuleSet
         new JavaHeaderInjectionRule(),
         new JavaCorsWildcardRule(),
         new JavaSystemGcRule(),
-        new JavaDirectThreadRunRule()
+        new JavaDirectThreadRunRule(),
+        new JavaPrintfMisuseRule(),
+        new JavaOsCommandPathRule(),
+        new JavaAssertJChainRule()
     ];
 }
 
@@ -307,29 +310,36 @@ public sealed class JavaSqlInjectionRule : PatternRuleBase
     public override string FixAdvice => "Use parameterized queries (PreparedStatement) instead of concatenating input into SQL.";
     public override string[] Languages => ["java"];
 
+    private static readonly string[] SqlSinkMethods =
+    [
+        "executeQuery", "executeUpdate", "execute", "executeBatch",
+        "prepareStatement", "prepareCall",
+        "createQuery", "createNativeQuery", "createNamedQuery",
+        "queryForObject", "queryForList", "queryForMap", "query",
+        "update", "batchUpdate"
+    ];
+
     public override void Execute(IRuleContext context)
     {
         var lines = LanguageRuleSupport.Lines(context);
         for (var i = 0; i < lines.Length; i++)
         {
             var stripped = LanguageRuleSupport.StripStrings(lines[i]);
-            if (!stripped.Contains('+') && !RuleMatchers.LineContains(stripped, "String.format")
-                && !RuleMatchers.LineContains(stripped, ".append("))
+            var hasConcat = stripped.Contains('+') || RuleMatchers.LineContains(stripped, "String.format")
+                || RuleMatchers.LineContains(stripped, ".append(");
+            var hasSink = SqlSinkMethods.Any(m => RuleMatchers.LineContains(lines[i], m + "("));
+            if (!hasConcat && !hasSink)
+                continue;
+            if (!hasConcat)
                 continue;
             if (context.Taint != null)
             {
-                // argument-level: only flag when an identifier on THIS line is actually tainted
                 var lineHasTaintedIdentifier = context.Tokens.Any(t => t.Line == i + 1
                     && RuleMatchers.IsIdentifier(t) && context.IsTainted(t.Text));
                 if (!lineHasTaintedIdentifier)
                     continue;
             }
-            var nearby = string.Join(" ", lines.Skip(Math.Max(0, i - 2)).Take(5));
-            if (nearby.Contains("prepareCall") || nearby.Contains("prepareStatement"))
-                continue;
-            if (context.Tokens.Any(t => t.Line == i + 1 && RuleMatchers.IsString(t)
-                && LanguageRuleSupport.ContainsSqlKeyword(t.Text)))
-                context.Report("Make sure this SQL query is not vulnerable to SQL injection.", i + 1);
+            context.Report("Make sure this SQL query is not vulnerable to SQL injection.", i + 1);
         }
     }
 }
@@ -419,24 +429,53 @@ public sealed class JavaInsecureCookieRule : PatternRuleBase
     public override string FixAdvice => "Set the cookie HttpOnly and Secure properties when it is created.";
     public override string[] Languages => ["java"];
 
+    private static readonly string[] SetterFalseMethods =
+        ["setHttpOnly", "withHttpOnly", "httpOnly", "setSecure", "withSecure", "secure"];
+
+    private static readonly string[] CookieCtors =
+        ["Cookie", "HttpCookie", "NewCookie", "SimpleCookie", "ResponseCookie", "SavedCookie"];
+
     public override void Execute(IRuleContext context)
     {
-        var lines = LanguageRuleSupport.Lines(context);
-        // flags are typically set on adjacent lines after cookie creation: checking only the
-        // addCookie line missed every properly-configured cookie
-        var fileSetsSecure = lines.Any(l => l.Contains("setSecure"));
-        var fileSetsHttpOnly = lines.Any(l => l.Contains("setHttpOnly"));
-        for (var i = 0; i < lines.Length; i++)
+        var tokens = context.Tokens;
+        for (var i = 0; i < tokens.Count; i++)
         {
-            var line = lines[i];
-            if (!RuleMatchers.LineContains(line, "addCookie(") && !RuleMatchers.LineContains(line, "setCookie("))
+            if (tokens[i].Kind != TokenKind.Symbol || tokens[i].Text != ".")
                 continue;
-            if (RuleMatchers.LineContains(line, "HttpOnly") || RuleMatchers.LineContains(line, "Secure"))
+            var methodName = i + 1 < tokens.Count ? tokens[i + 1].Text : "";
+            if (!SetterFalseMethods.Contains(methodName, StringComparer.Ordinal))
                 continue;
-            if (fileSetsSecure && fileSetsHttpOnly)
+            if (i + 2 >= tokens.Count || tokens[i + 2].Text != "(")
                 continue;
-            context.Report("Make sure this cookie is built with the Secure and HttpOnly flags.", i + 1);
+            var argIdx = i + 3;
+            if (argIdx >= tokens.Count)
+                continue;
+            var arg = tokens[argIdx].Text;
+            if (arg != "false" && arg != "FALSE" && arg != "FALSE_CONSTANT")
+                continue;
+            if (IsXsrfReceiver(tokens, i))
+                continue;
+            var isHttpOnly = methodName.Contains("HttpOnly", StringComparison.OrdinalIgnoreCase)
+                          || methodName == "httpOnly";
+            var isSecure = methodName.Contains("Secure", StringComparison.OrdinalIgnoreCase)
+                        || methodName == "secure";
+            if (isHttpOnly)
+                context.Report("Set this cookie's HttpOnly flag to true instead of false.", tokens[i + 1].Line);
+            else if (isSecure)
+                context.Report("Set this cookie's Secure flag to true instead of false.", tokens[i + 1].Line);
         }
+    }
+
+    private static bool IsXsrfReceiver(IReadOnlyList<Token> tokens, int dotIndex)
+    {
+        for (var j = dotIndex - 1; j >= 0 && j >= dotIndex - 30; j--)
+        {
+            if (tokens[j].Kind == TokenKind.String
+                && (tokens[j].Text.Contains("csrf", StringComparison.OrdinalIgnoreCase)
+                 || tokens[j].Text.Contains("xsrf", StringComparison.OrdinalIgnoreCase)))
+                return true;
+        }
+        return false;
     }
 }
 
@@ -940,5 +979,368 @@ public sealed class JavaDirectThreadRunRule : PatternRuleBase
                 && RuleMatchers.IsName(tokens[i + 2], "run"))
                 context.Report("Calling run() directly runs on the current thread; use start() instead.", tokens[i].Line);
         }
+    }
+}
+
+public sealed class JavaPrintfMisuseRule : PatternRuleBase
+{
+    public override string Key => "QG-JV-BUG-0280";
+    public override string Name => "Format strings should use correct argument counts";
+    public override Severity Severity => Severity.Major;
+    public override IssueKind Kind => IssueKind.Bug;
+    public override string RemediationEffort => "15min";
+    public override string FixAdvice => "Ensure the number of format specifiers matches the number of arguments.";
+    public override string[] Languages => ["java"];
+
+    private static readonly string[] LogMethods = ["debug", "error", "info", "trace", "warn", "fatal"];
+    private static readonly string[] PrintfMethods = ["format", "printf"];
+
+    public override void Execute(IRuleContext context)
+    {
+        var tokens = context.Tokens;
+        for (var i = 0; i < tokens.Count; i++)
+        {
+            if (tokens[i].Kind != TokenKind.Identifier)
+                continue;
+            var name = tokens[i].Text;
+
+            // String.format("fmt", args) or String.formatted("fmt")
+            if (name == "String" && i + 2 < tokens.Count && tokens[i + 1].Text == "."
+                && PrintfMethods.Contains(tokens[i + 2].Text, StringComparer.Ordinal)
+                && i + 3 < tokens.Count && tokens[i + 3].Text == "(")
+            {
+                var formatIdx = i + 4;
+                var formatStr = ResolveFormatString(tokens, formatIdx);
+                if (formatStr != null)
+                    CheckFormatString(tokens, formatIdx, formatStr, context);
+            }
+
+            // log.info("fmt", args) / log.debug("fmt", args) — SLF4J and java.util.logging
+            if (LogMethods.Contains(name, StringComparer.Ordinal)
+                && i + 2 < tokens.Count && tokens[i + 1].Text == "."
+                && i + 3 < tokens.Count && tokens[i + 3].Text == "(")
+            {
+                var argIdx = i + 4;
+                var formatStr = ResolveFormatString(tokens, argIdx);
+                if (formatStr != null)
+                {
+                    if (formatStr.Contains("{}"))
+                    {
+                        var placeholders = CountChar(formatStr, '{');
+                        var argCount = CountArguments(tokens, argIdx);
+                        if (argCount > 0 && placeholders != argCount)
+                            ReportFormatMismatch(placeholders, argCount, "placeholders", tokens[i].Line, context);
+                    }
+                    else
+                    {
+                        var specifiers = CountPrintfSpecifiers(formatStr);
+                        if (specifiers > 0)
+                        {
+                            var argCount = CountArguments(tokens, argIdx);
+                            if (argCount > 0)
+                                ReportFormatMismatch(specifiers, argCount, "specifiers", tokens[i].Line, context);
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    private static string? ResolveFormatString(IReadOnlyList<Token> tokens, int idx)
+    {
+        if (idx >= tokens.Count) return null;
+        if (tokens[idx].Kind == TokenKind.String)
+            return StripQuotes(tokens[idx].Text);
+        if (tokens[idx].Kind == TokenKind.Identifier)
+            return ResolveVariable(tokens, idx);
+        return null;
+    }
+
+    private static string? ResolveVariable(IReadOnlyList<Token> tokens, int varIdx)
+    {
+        var name = tokens[varIdx].Text;
+        for (var j = varIdx - 1; j >= 0 && j >= varIdx - 50; j--)
+        {
+            if (tokens[j].Kind != TokenKind.Identifier || tokens[j].Text != name)
+                continue;
+            if (j + 2 < tokens.Count && tokens[j + 1].Text == "=" && tokens[j + 1].Kind == TokenKind.Symbol)
+            {
+                var valIdx = j + 2;
+                if (valIdx < tokens.Count && tokens[valIdx].Kind == TokenKind.String)
+                    return StripQuotes(tokens[valIdx].Text);
+            }
+        }
+        return null;
+    }
+
+    private void CheckFormatString(IReadOnlyList<Token> tokens, int formatIdx, string formatStr, IRuleContext context)
+    {
+        if (formatStr.Contains("{}"))
+        {
+            var placeholders = CountChar(formatStr, '{');
+            var argCount = CountArguments(tokens, formatIdx + 1);
+            if (argCount > 0 && placeholders != argCount)
+                ReportFormatMismatch(placeholders, argCount, "placeholders", tokens[formatIdx].Line, context);
+        }
+        else
+        {
+            var specifiers = CountPrintfSpecifiers(formatStr);
+            var argCount = CountArguments(tokens, formatIdx + 1);
+            if (argCount <= 0) return;
+            if (specifiers == 0 && argCount > 0)
+                context.Report("This format string has no specifiers but " + argCount + " arguments were provided.", tokens[formatIdx].Line);
+            else
+                ReportFormatMismatch(specifiers, argCount, "specifiers", tokens[formatIdx].Line, context);
+        }
+    }
+
+    private static void ReportFormatMismatch(int expected, int actual, string kind, int line, IRuleContext context)
+    {
+        if (actual > expected)
+            context.Report("This format string expects " + expected + " " + kind + " but " + actual + " were provided.", line);
+        else
+            context.Report("This format string expects " + expected + " " + kind + " but only " + actual + " were provided.", line);
+    }
+
+    private static int CountPrintfSpecifiers(string format)
+    {
+        var count = 0;
+        for (var i = 0; i < format.Length; i++)
+        {
+            if (format[i] == '%' && i + 1 < format.Length && format[i + 1] != '%')
+            {
+                count++;
+                i++;
+                while (i < format.Length && char.IsDigit(format[i])) i++;
+                if (i < format.Length && format[i] == '$') i++;
+                while (i < format.Length && "-+# 0".Contains(format[i])) i++;
+                while (i < format.Length && char.IsDigit(format[i])) i++;
+                if (i < format.Length && format[i] == '.') { i++; while (i < format.Length && char.IsDigit(format[i])) i++; }
+                if (i < format.Length) i++;
+            }
+        }
+        return count;
+    }
+
+    private static int CountChar(string s, char c)
+    {
+        var count = 0;
+        for (var i = 0; i < s.Length; i++)
+        {
+            if (s[i] == c && i + 1 < s.Length && s[i + 1] == '}')
+                count++;
+        }
+        return count;
+    }
+
+    private static int CountArguments(IReadOnlyList<Token> tokens, int startIdx)
+    {
+        var depth = 0;
+        var count = 0;
+        var hasArg = false;
+        for (var j = startIdx; j < tokens.Count; j++)
+        {
+            var t = tokens[j].Text;
+            if (t == "(") depth++;
+            else if (t == ")")
+            {
+                if (depth == 0) break;
+                depth--;
+            }
+            else if (t == "," && depth == 0)
+            {
+                if (hasArg) count++;
+                hasArg = false;
+            }
+            else if (depth == 0 && t != " " && t != "\n" && t != "\r")
+                hasArg = true;
+        }
+        if (hasArg) count++;
+        return count;
+    }
+
+    private static string StripQuotes(string text)
+    {
+        if (text.Length >= 2 && text[0] == '"' && text[^1] == '"')
+            return text[1..^1];
+        return text;
+    }
+}
+
+public sealed class JavaOsCommandPathRule : PatternRuleBase
+{
+    public override string Key => "QG-JV-SEC-0092";
+    public override string Name => "OS command paths should be absolute";
+    public override Severity Severity => Severity.Major;
+    public override IssueKind Kind => IssueKind.Vulnerability;
+    public override string RemediationEffort => "20min";
+    public override string FixAdvice => "Use absolute paths for OS commands to prevent PATH manipulation attacks.";
+    public override string[] Languages => ["java"];
+
+    public override void Execute(IRuleContext context)
+    {
+        var tokens = context.Tokens;
+        for (var i = 0; i + 4 < tokens.Count; i++)
+        {
+            // Runtime.getRuntime().exec(...)
+            if (RuleMatchers.IsName(tokens[i], "Runtime") && tokens[i + 1].Text == "."
+                && RuleMatchers.IsName(tokens[i + 2], "getRuntime") && tokens[i + 3].Text == "."
+                && RuleMatchers.IsName(tokens[i + 4], "exec"))
+            {
+                if (i + 5 < tokens.Count && tokens[i + 5].Text == "(")
+                    CheckCommandArg(tokens, i + 6, context);
+            }
+
+            // new ProcessBuilder("cmd") or new ProcessBuilder(Arrays.asList("cmd"))
+            if (tokens[i].Text == "new" && i + 1 < tokens.Count && RuleMatchers.IsName(tokens[i + 1], "ProcessBuilder"))
+            {
+                if (i + 2 < tokens.Count && tokens[i + 2].Text == "(")
+                    CheckCommandArg(tokens, i + 3, context);
+            }
+
+            // ProcessBuilder.command("cmd")
+            if (RuleMatchers.IsName(tokens[i], "ProcessBuilder") && tokens[i + 1].Text == "."
+                && RuleMatchers.IsName(tokens[i + 2], "command") && tokens[i + 3].Text == "(")
+                CheckCommandArg(tokens, i + 4, context);
+        }
+    }
+
+    private static void CheckCommandArg(IReadOnlyList<Token> tokens, int argIdx, IRuleContext context)
+    {
+        while (argIdx < tokens.Count && tokens[argIdx].Text == "(")
+            argIdx++;
+        if (argIdx < tokens.Count && tokens[argIdx].Kind == TokenKind.String)
+        {
+            var cmd = StripQuotes(tokens[argIdx].Text);
+            if (!IsAbsoluteCommand(cmd) && cmd.Length > 0)
+                context.Report("Use an absolute path for this command to prevent PATH manipulation.", tokens[argIdx].Line);
+        }
+    }
+
+    private static bool IsAbsoluteCommand(string cmd)
+    {
+        if (string.IsNullOrEmpty(cmd)) return true;
+        if (cmd.StartsWith('/') || cmd.StartsWith("./") || cmd.StartsWith("../") || cmd.StartsWith("~/"))
+            return true;
+        if (cmd.StartsWith('\\') || cmd.StartsWith(".\\") || cmd.StartsWith("..\\"))
+            return true;
+        if (cmd.Length >= 3 && char.IsLetter(cmd[0]) && cmd[1] == ':' && (cmd[2] == '\\' || cmd[2] == '/'))
+            return true;
+        return false;
+    }
+
+    private static string StripQuotes(string text)
+    {
+        if (text.Length >= 2 && text[0] == '"' && text[^1] == '"')
+            return text[1..^1];
+        return text;
+    }
+}
+
+public sealed class JavaAssertJChainRule : PatternRuleBase
+{
+    public override string Key => "QG-JV-SML-0566";
+    public override string Name => "AssertJ chains should use specific assertions";
+    public override Severity Severity => Severity.Minor;
+    public override IssueKind Kind => IssueKind.CodeSmell;
+    public override string RemediationEffort => "5min";
+    public override string FixAdvice => "Replace with a more specific AssertJ assertion.";
+    public override string[] Languages => ["java"];
+
+    public override void Execute(IRuleContext context)
+    {
+        var tokens = context.Tokens;
+        for (var i = 0; i + 3 < tokens.Count; i++)
+        {
+            if (!RuleMatchers.IsName(tokens[i], "assertThat"))
+                continue;
+            if (tokens[i + 1].Text != "(")
+                continue;
+
+            // find closing paren
+            var depth = 1;
+            var j = i + 2;
+            while (j < tokens.Count && depth > 0)
+            {
+                if (tokens[j].Text == "(") depth++;
+                else if (tokens[j].Text == ")") depth--;
+                j++;
+            }
+            if (depth != 0 || j >= tokens.Count) continue;
+            if (tokens[j].Text != ".") continue;
+
+            var innerStart = i + 2;
+            var innerEnd = j - 1;
+            var methodIdx = j + 1;
+            if (methodIdx >= tokens.Count) continue;
+            var method = tokens[methodIdx].Text;
+
+            // assertThat(expr).isTrue() / assertThat(expr).isFalse()
+            if (method is "isTrue" or "isFalse")
+            {
+                var inner = GetInnerExpression(tokens, innerStart, innerEnd);
+                if (inner != null)
+                    context.Report(DescribeSimplification(inner, method), tokens[i].Line);
+                continue;
+            }
+
+            // assertThat(expr).isEqualTo(null)
+            if (method == "isEqualTo" && methodIdx + 1 < tokens.Count && tokens[methodIdx + 1].Text == "(")
+            {
+                var argIdx = methodIdx + 2;
+                if (argIdx < tokens.Count && tokens[argIdx].Text == "null")
+                    context.Report("Use isNull() instead of isEqualTo(null).", tokens[i].Line);
+            }
+
+            // assertThat(expr).isNotEqualTo(null)
+            if (method == "isNotEqualTo" && methodIdx + 1 < tokens.Count && tokens[methodIdx + 1].Text == "(")
+            {
+                var argIdx = methodIdx + 2;
+                if (argIdx < tokens.Count && tokens[argIdx].Text == "null")
+                    context.Report("Use isNotNull() instead of isNotEqualTo(null).", tokens[i].Line);
+            }
+
+            // assertThat(expr).isEqualTo(true) / isEqualTo(false)
+            if (method == "isEqualTo" && methodIdx + 1 < tokens.Count && tokens[methodIdx + 1].Text == "(")
+            {
+                var argIdx = methodIdx + 2;
+                if (argIdx < tokens.Count && tokens[argIdx].Text is "true" or "false")
+                    context.Report("Use " + (tokens[argIdx].Text == "true" ? "isTrue()" : "isFalse()") + " instead of isEqualTo(" + tokens[argIdx].Text + ").", tokens[i].Line);
+            }
+        }
+    }
+
+    private static string? GetInnerExpression(IReadOnlyList<Token> tokens, int start, int end)
+    {
+        if (start >= end) return null;
+        // look for == or .equals( inside the inner expression
+        for (var k = start; k <= end; k++)
+        {
+            if (tokens[k].Text == "==" && k > start && k < end)
+                return "equality";
+            if (tokens[k].Text == ".equals" && k + 1 <= end && tokens[k + 1].Text == "(")
+                return "equals";
+            if (tokens[k].Text == ".compareTo" && k + 1 <= end && tokens[k + 1].Text == "(")
+                return "compareTo";
+        }
+        return null;
+    }
+
+    private static string DescribeSimplification(string inner, string method)
+    {
+        var isTrue = method == "isTrue";
+        return inner switch
+        {
+            "equality" => isTrue
+                ? "Use isSameAs() or isEqualTo() instead of == comparison with isTrue()."
+                : "Use isNotSameAs() or isNotEqualTo() instead of == comparison with isFalse().",
+            "equals" => isTrue
+                ? "Use isEqualTo() instead of equals() with isTrue()."
+                : "Use isNotEqualTo() instead of equals() with isFalse().",
+            "compareTo" => isTrue
+                ? "Use isZero() or isNotZero() instead of compareTo() with isTrue()."
+                : "Use isZero() or isNotZero() instead of compareTo() with isFalse().",
+            _ => "Replace with a more specific AssertJ assertion."
+        };
     }
 }

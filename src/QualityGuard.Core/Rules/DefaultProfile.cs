@@ -412,7 +412,6 @@ public static class DefaultProfile
         "QG-XML-SML-0042",
         "QG-JV-SEC-0009",
         "QG-JV-SEC-0016",
-        "QG-JV-SEC-0004",
     };
 
     /// <summary>Whether the rule runs when the caller has not asked for every rule.</summary>

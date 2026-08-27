@@ -2126,7 +2126,7 @@
       receiver: [MockitoAnnotations, MockitoJUnit]
 
 - key: QG-JV-SML-0568
-  name: @InjectMocks should be replaced by the recommended alternative
+  name: "InjectMocks should be replaced by the recommended alternative"
   languages: [java]
   category: SML
   severity: minor
