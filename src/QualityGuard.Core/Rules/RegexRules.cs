@@ -461,34 +461,43 @@ public sealed class RegexPattern
 
         while (i < pattern.Length && pattern[i] != ']')
         {
-            if (pattern[i] == '\\' && i + 1 < pattern.Length)
+            // Read one "atom" (escape sequence or single character).
+            var (atom, atomEnd) = ReadAtom(pattern, i);
+            // Check if the next character is '-' forming a range with the following atom.
+            if (atomEnd < pattern.Length && pattern[atomEnd] == '-'
+                && atomEnd + 1 < pattern.Length && pattern[atomEnd + 1] != ']')
             {
-                var escapeLen = 2;
-                var escaped = pattern[i + 1];
-                // \xNN and \uNNNN are hex/unicode escapes that represent a single character;
-                // consuming only \x leaves the digits as separate items, causing false duplicates.
-                if (escaped is 'x' or 'u' or 'U' && i + 3 < pattern.Length
-                    && IsHexDigit(pattern[i + 2]) && IsHexDigit(pattern[i + 3]))
-                    escapeLen = escaped == 'u' || escaped == 'U' ? 6 : 4;
-                else if (escaped is 'x' && i + 2 < pattern.Length && pattern[i + 2] == '{'
-                         && pattern.IndexOf('}', i + 2) is var close && close > 0)
-                    escapeLen = close - i + 1;
-                items.Add(pattern.Substring(i, escapeLen));
-                i += escapeLen;
-                continue;
+                var (right, rightEnd) = ReadAtom(pattern, atomEnd + 1);
+                items.Add(atom + "-" + right);
+                i = rightEnd;
             }
-            if (i + 2 < pattern.Length && pattern[i + 1] == '-' && pattern[i + 2] != ']')
+            else
             {
-                items.Add(pattern.Substring(i, 3));
-                i += 3;
-                continue;
+                items.Add(atom);
+                i = atomEnd;
             }
-            items.Add(pattern[i].ToString());
-            i++;
         }
 
         Classes.Add(new CharacterClass(start, items, negated));
         return i;
+    }
+
+    /// <summary>Reads a single atom (escape sequence or literal character) from a character class.</summary>
+    private static (string Text, int End) ReadAtom(string pattern, int i)
+    {
+        if (pattern[i] == '\\' && i + 1 < pattern.Length)
+        {
+            var escapeLen = 2;
+            var escaped = pattern[i + 1];
+            if (escaped is 'x' or 'u' or 'U' && i + 3 < pattern.Length
+                && IsHexDigit(pattern[i + 2]) && IsHexDigit(pattern[i + 3]))
+                escapeLen = escaped is 'u' or 'U' ? 6 : 4;
+            else if (escaped is 'x' && i + 2 < pattern.Length && pattern[i + 2] == '{'
+                     && pattern.IndexOf('}', i + 2) is var close && close > 0)
+                escapeLen = close - i + 1;
+            return (pattern.Substring(i, escapeLen), i + escapeLen);
+        }
+        return (pattern[i].ToString(), i + 1);
     }
 
     private static bool IsHexDigit(char c) => c is >= '0' and <= '9' or >= 'a' and <= 'f' or >= 'A' and <= 'F';

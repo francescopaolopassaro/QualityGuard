@@ -1514,9 +1514,9 @@ public abstract class SelfAssignmentRule : StructuralRuleBase
             {
                 // In Ruby, Perl and similar languages, '@var = var' assigns a local to an instance
                 // variable — the sigil makes them different names even when the base matches.
-                var leftTokens = assignment.ChildAt(0)?.Tokens;
-                if (leftTokens is { Count: > 0 } && leftTokens[0].Text.Length > 1
-                    && leftTokens[0].Text[0] is '@' or '$')
+                // The '@' arrives as a separate sibling node of the Assignment, so check the
+                // parent's children for a sigil prefix.
+                if (HasSigilPrefix(assignment))
                     continue;
                 context.Report(assignment, $"Assigning '{left}' to itself has no effect; "
                                            + "the intended target or source is probably a different name.");
@@ -1544,6 +1544,26 @@ public abstract class SelfAssignmentRule : StructuralRuleBase
                 return string.Empty;
         }
         return SyntaxQuery.DottedName(node);
+    }
+
+    /// <summary>
+    /// True when the assignment's left-hand side carries a sigil prefix (@ or $) that the parser
+    /// put as a separate sibling node. '@var = var' assigns a local to an instance variable — the
+    /// sigil makes them different names even when the base matches.
+    /// </summary>
+    private static bool HasSigilPrefix(SyntaxNode assignment)
+    {
+        if (assignment.Parent is not { } parent)
+            return false;
+        foreach (var child in parent.Children)
+        {
+            if (child == assignment)
+                break;
+            if (child is { Kind: NodeKind.Unknown } and { Text.Length: 1 }
+                && child.Text[0] is '@' or '$')
+                return true;
+        }
+        return false;
     }
 }
 

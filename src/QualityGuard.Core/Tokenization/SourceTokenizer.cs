@@ -428,9 +428,8 @@ public sealed class SourceTokenizer
                 value = sb.ToString();
                 return i;
             }
-            if (delim.IsRaw && _source[i] == '\\' && i + 1 < _source.Length)
+            if ((delim.IsRaw || delim.PreserveBackslashes) && _source[i] == '\\' && i + 1 < _source.Length)
             {
-                // a raw literal keeps its backslash; it still stops the quote from ending the string
                 sb.Append(_source[i]).Append(_source[i + 1]);
                 i += 2;
                 column += 2;

@@ -117,7 +117,7 @@ public static class BuiltInLanguages
         ["if", "else", "elseif", "for", "foreach", "while", "do", "case", "switch", "catch", "match", "&&", "||",
             "and", "or"],
         "//", "/*", "*/",
-        [new("\"\"\"", "\"\"\""), new("\"", "\""), new("'", "'")],
+        [new("\"\"\"", "\"\"\""), new("\"", "\""), new("'", "'", PreserveBackslashes: true)],
         HashComments: true, NestingBlockComments: false);
 
     public static readonly LanguageInfo Go = new(

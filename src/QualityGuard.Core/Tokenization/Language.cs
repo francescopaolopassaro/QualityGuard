@@ -1,6 +1,6 @@
 namespace QualityGuard.Core.Tokenization;
 
-public sealed record StringDelimiter(string Start, string End)
+public sealed record StringDelimiter(string Start, string End, bool PreserveBackslashes = false)
 {
     /// <summary>
     /// A verbatim literal takes its content as written: no backslash escapes. That is the '@' form,
@@ -23,6 +23,13 @@ public sealed record StringDelimiter(string Start, string End)
     /// which is how patterns are written — as a different pattern than the one in the file.
     /// </summary>
     public bool IsRaw => Prefix.Contains('r') || Prefix.Contains('R');
+
+    /// <summary>
+    /// PHP single-quoted strings only interpret \\ and \'; all other backslash sequences are literal.
+    /// Setting this flag preserves the backslash so that regex patterns like [\x00-\x1F] keep their
+    /// hex escapes intact instead of being stripped to [x00-x1F].
+    /// </summary>
+    public bool PreserveBackslashes { get; init; } = PreserveBackslashes;
 }
 
 public static class LanguageKeys
