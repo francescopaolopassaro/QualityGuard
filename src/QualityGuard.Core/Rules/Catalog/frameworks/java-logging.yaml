@@ -1,0 +1,75 @@
+name: logging
+language: java
+aliases: [slf4j, log4j, java-util-logging]
+description: Java logging frameworks (SLF4J, Log4j2, java.util.logging)
+
+types:
+  - name: Logger
+    abstract: true
+    methods: [trace, debug, info, warn, error, log, atTrace, atDebug, atInfo, atWarn, atError]
+  - name: SLF4JLogger
+    implements: [Logger]
+    methods: [trace, debug, info, warn, error, isTraceEnabled, isDebugEnabled, isInfoEnabled, isWarnEnabled, isErrorEnabled]
+  - name: Log4jLogger
+    implements: [Logger]
+    methods: [trace, debug, info, warn, error, log, printf, atTrace, atDebug, atInfo, atWarn, atError]
+  - name: LogManager
+    methods: [getLogger]
+  - name: LoggerFactory
+    methods: [getLogger]
+
+sinks:
+  - method: debug
+    receiver: SLF4JLogger
+    args: [0]
+    kind: log
+  - method: info
+    receiver: SLF4JLogger
+    args: [0]
+    kind: log
+  - method: warn
+    receiver: SLF4JLogger
+    args: [0]
+    kind: log
+  - method: error
+    receiver: SLF4JLogger
+    args: [0]
+    kind: log
+  - method: trace
+    receiver: SLF4JLogger
+    args: [0]
+    kind: log
+  - method: debug
+    receiver: Log4jLogger
+    args: [0]
+    kind: log
+  - method: info
+    receiver: Log4jLogger
+    args: [0]
+    kind: log
+  - method: warn
+    receiver: Log4jLogger
+    args: [0]
+    kind: log
+  - method: error
+    receiver: Log4jLogger
+    args: [0]
+    kind: log
+  - method: log
+    receiver: Log4jLogger
+    args: [1]
+    kind: log
+  - method: printf
+    receiver: Log4jLogger
+    args: [0]
+    kind: log
+
+sources:
+  - method: getLogger
+    receiver: LoggerFactory
+    args: []
+    kind: logger_name
+  - method: getLogger
+    receiver: LogManager
+    args: []
+    kind: logger_name

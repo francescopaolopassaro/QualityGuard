@@ -1,0 +1,138 @@
+name: std
+language: rs
+aliases: [rust-std, tokio]
+description: Rust standard library and Tokio async runtime
+
+types:
+  - name: Result
+    methods: [is_ok, is_err, unwrap, unwrap_or, unwrap_or_else, unwrap_or_default,
+              expect, map, map_err, and_then, or_else, ok_or, err, and, or]
+  - name: Option
+    methods: [is_some, is_none, unwrap, unwrap_or, unwrap_or_else, unwrap_or_default,
+              expect, map, and_then, or_else, is_some_and, filter, zip, flatten]
+  - name: String
+    methods: [new, from, push, push_str, as_str, len, is_empty, contains,
+              starts_with, ends_with, find, split, replace, trim, to_lowercase,
+              to_uppercase, parse, fmt]
+  - name: Vec
+    methods: [new, with_capacity, push, pop, len, is_empty, contains, iter,
+              iter_mut, drain, clear, sort, sort_by, dedup, splice, extend,
+              retain, swap_remove, remove, insert, resize, truncate]
+  - name: HashMap
+    methods: [new, with_capacity, insert, get, get_mut, contains_key, remove,
+              entry, keys, values, len, is_empty, iter, iter_mut, clear]
+  - name: File
+    methods: [create, open, read_to_string, read_to_end, write, write_all,
+              sync_all, metadata, path, set_len, seek, try_clone]
+  - name: PathBuf
+    methods: [new, from, push, pop, join, with_file_name, with_extension,
+              parent, file_name, extension, is_dir, is_file, exists, metadata,
+              read_link, canonicalize, display, to_str]
+  - name: BufRead
+    methods: [read_line, read_until, fill_buf, lines, split]
+  - name: Read
+    methods: [read, read_to_string, read_to_end, read_exact]
+  - name: Write
+    methods: [write, write_all, write_fmt, flush]
+  - name: Process
+    methods: [new, output, status, spawn, wait, kill]
+  - name: Command
+    methods: [new, arg, args, env, envs, current_dir, stdin, stdout, stderr,
+              output, status, spawn]
+  - name: TcpStream
+    methods: [connect, read, write, peer_addr, local_addr, set_nodelay]
+  - name: UdpSocket
+    methods: [bind, send_to, recv_from, connect, send, recv]
+  - name: Mutex
+    methods: [new, lock, try_lock]
+  - name: RwLock
+    methods: [new, read, write, try_read, try_write]
+  - name: Arc
+    methods: [new, try_unwrap, make_unique, strong_count, weak_count]
+  - name: Box
+    methods: [new, into_raw, from_raw, leak]
+  - name: tokioRuntime
+    methods: [new, block_on, spawn, spawn_blocking, enter]
+  - name: tokioTask
+    methods: [spawn, join, abort]
+  - name: Regex
+    methods: [new, is_match, find, captures, find_iter, replace, replace_all, split]
+
+sinks:
+  - method: exec
+    receiver: Process
+    args: [0]
+    kind: command
+  - method: output
+    receiver: Command
+    kind: command
+  - method: spawn
+    receiver: Command
+    kind: command
+  - method: write
+    receiver: File
+    args: [0]
+    kind: file_write
+  - method: write_all
+    receiver: File
+    args: [0]
+    kind: file_write
+  - method: connect
+    receiver: TcpStream
+    args: [0]
+    kind: network_connection
+  - method: send_to
+    receiver: UdpSocket
+    args: [0]
+    kind: network_send
+  - method: connect
+    receiver: UdpSocket
+    args: [0]
+    kind: network_connection
+  - method: replace
+    receiver: Regex
+    args: [1]
+    kind: regex_replace
+  - method: replace_all
+    receiver: Regex
+    args: [1]
+    kind: regex_replace
+
+sources:
+  - method: read_to_string
+    receiver: File
+    kind: file_read
+  - method: read_to_end
+    receiver: File
+    kind: file_read
+  - method: read_to_string
+    receiver: BufRead
+    kind: file_read
+  - method: read_line
+    receiver: BufRead
+    kind: user_input
+  - method: recv_from
+    receiver: UdpSocket
+    kind: network_receive
+  - method: recv
+    receiver: UdpSocket
+    kind: network_receive
+  - method: args
+    receiver: Process
+    kind: command_line
+  - method: stdin
+    receiver: Process
+    kind: user_input
+  - method: output
+    receiver: Process
+    kind: process_output
+
+sanitizers:
+  - method: escape
+    kind: shell_escape
+  - method: replace
+    receiver: String
+    kind: string_replace
+  - method: contains
+    receiver: String
+    kind: string_check

@@ -1,0 +1,172 @@
+name: flutter
+language: dart
+aliases: [dart-flutter, flutter-io]
+description: Flutter/Dart framework (Flutter widgets, Foundation, HTTP)
+
+types:
+  - name: StatelessWidget
+    methods: [build]
+  - name: StatefulWidget
+    methods: [createState, createState]
+  - name: State
+    methods: [initState, dispose, setState, build, didUpdateWidget]
+  - name: BuildContext
+    methods: [findAncestorWidgetOfExactType, dependOnInheritedWidgetOfExactType,
+              inheritFromWidgetOfExactType, visitChildElements]
+  - name: Scaffold
+    methods: [of, showSnackBar, showBottomSheet, openDrawer, openEndDrawer]
+  - name: Navigator
+    methods: [push, pushNamed, pushReplacement, pushAndRemoveUntil,
+              pop, popUntil, canPop, maybePop, of, pushNamedAndRemoveUntil]
+  - name: Widget
+    methods: [build, toString, toStringShort]
+  - name: Element
+    methods: [mount, unmount, update, performRebuild, visitChildren]
+  - name: WidgetTester
+    methods: [pumpWidget, pump, pumpAndSettle, tap, enterText, drag,
+              longPress, find, ensureVisible, waitUntil]
+  - name: Finder
+    methods: [find, byType, byKey, byWidget, byTooltip, bySemanticsLabel]
+  - name: HTTP
+    methods: [get, post, put, patch, delete, read, readBytes]
+  - name: Response
+    methods: [body, bodyBytes, statusCode, headers, bodyAsStream]
+  - name: Client
+    methods: [get, post, put, patch, delete, read, readBytes, close]
+  - name: SharedPreferences
+    methods: [getInstance, getString, getInt, getBool, getDouble, getStringList,
+              setString, setInt, setBool, setDouble, setStringList, remove, clear, commit]
+  - name: Process
+    methods: [run, start, result, stdout, stderr, exitCode]
+  - name: File
+    methods: [readAsString, readAsBytes, writeAsString, writeAsBytes,
+              exists, delete, copy, rename, length, lastModified, open]
+  - name: Directory
+    methods: [create, list, listSync, exists, delete, rename, path]
+  - name: HttpServer
+    methods: [bind, listen, close]
+  - name: Platform
+    methods: [isAndroid, isIOS, isLinux, isMacOS, isWindows, isWeb,
+              operatingSystem, environment, script]
+  - name: dart:convert
+    methods: [jsonDecode, jsonEncode, utf8, ascii, latin1]
+  - name: dart:io
+    methods: [exit, Platform, File, Directory, Socket, HttpClient]
+
+sinks:
+  - method: run
+    receiver: Process
+    args: [0]
+    kind: command
+  - method: exec
+    receiver: Process
+    args: [0]
+    kind: command
+  - method: get
+    receiver: HTTP
+    args: [0]
+    kind: network_request
+  - method: post
+    receiver: HTTP
+    args: [0]
+    kind: network_request
+  - method: get
+    receiver: Client
+    args: [0]
+    kind: network_request
+  - method: post
+    receiver: Client
+    args: [0]
+    kind: network_request
+  - method: readAsString
+    receiver: File
+    kind: file_read
+  - method: writeAsString
+    receiver: File
+    kind: file_write
+  - method: push
+    receiver: Navigator
+    args: [0]
+    kind: navigation
+  - method: pushNamed
+    receiver: Navigator
+    args: [0]
+    kind: navigation
+  - method: loadHtmlString
+    receiver: WebView
+    args: [0]
+    kind: xss
+  - method: loadRequest
+    receiver: WebView
+    args: [0]
+    kind: xss
+  - method: evaluateJavascript
+    receiver: WebView
+    args: [0]
+    kind: xss
+
+sources:
+  - method: getString
+    receiver: SharedPreferences
+    args: [0]
+    kind: stored_value
+  - method: getInt
+    receiver: SharedPreferences
+    args: [0]
+    kind: stored_value
+  - method: getBool
+    receiver: SharedPreferences
+    args: [0]
+    kind: stored_value
+  - method: getDouble
+    receiver: SharedPreferences
+    args: [0]
+    kind: stored_value
+  - method: getStringList
+    receiver: SharedPreferences
+    args: [0]
+    kind: stored_value
+  - method: readAsString
+    receiver: File
+    kind: file_read
+  - method: readAsBytes
+    receiver: File
+    kind: file_read
+  - method: body
+    receiver: Response
+    kind: network_response
+  - method: stdout
+    receiver: Process
+    kind: process_output
+  - method: stderr
+    receiver: Process
+    kind: process_output
+  - method: arguments
+    receiver: Platform
+    kind: command_line
+  - method: environment
+    receiver: Platform
+    args: [0]
+    kind: env_value
+  - method: jsonDecode
+    receiver: dart:convert
+    args: [0]
+    kind: deserialization
+  - method: text
+    receiver: TextEditingController
+    kind: user_input
+  - method: value
+    receiver: Slider
+    kind: user_input
+
+sanitizers:
+  - method: htmlEscape
+    kind: html_escape
+  - method: Uri.encodeFull
+    kind: url_encode
+  - method: Uri.encodeComponent
+    kind: url_encode
+  - method: base64Encode
+    kind: base64_encode
+  - method: base64Decode
+    kind: base64_decode

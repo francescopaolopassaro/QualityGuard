@@ -1,0 +1,104 @@
+name: jdbc
+language: java
+aliases: [jdbc, java-database]
+description: Java database connectivity (JDBC, PreparedStatement)
+
+types:
+  - name: Connection
+    abstract: true
+    methods: [prepareStatement, prepareCall, createStatement]
+  - name: PreparedStatement
+    abstract: true
+    methods: [executeQuery, executeUpdate, execute, setString, setInt,
+              setLong, setBoolean, setDouble, setFloat, setObject,
+              setBigDecimal, setDate, setTime, setTimestamp, setBytes,
+              setBinaryStream, setCharacterStream, setAsciiStream,
+              setNull, addBatch, clearParameters]
+  - name: Statement
+    abstract: true
+    methods: [executeQuery, executeUpdate, execute, executeBatch]
+  - name: CallableStatement
+    extends: [PreparedStatement]
+    methods: [registerOutParameter, getObject]
+  - name: ResultSet
+    abstract: true
+    methods: [getString, getInt, getLong, getBoolean, getDouble, getFloat,
+              getObject, getDate, getTime, getTimestamp, getBytes,
+              getBinaryStream, getCharacterStream, getAsciiStream,
+              getBigDecimal, next, close, wasNull, getRow, isAfterLast,
+              isBeforeFirst, first, last]
+
+sinks:
+  - method: prepareStatement
+    receiver: Connection
+    args: [0]
+    kind: sql
+  - method: prepareCall
+    receiver: Connection
+    args: [0]
+    kind: sql
+  - method: executeQuery
+    receiver: Statement
+    args: [0]
+    kind: sql
+  - method: executeUpdate
+    receiver: Statement
+    args: [0]
+    kind: sql
+  - method: execute
+    receiver: Statement
+    args: [0]
+    kind: sql
+  - method: executeQuery
+    receiver: PreparedStatement
+    args: []
+    kind: sql
+  - method: executeUpdate
+    receiver: PreparedStatement
+    args: []
+    kind: sql
+  - method: execute
+    receiver: PreparedStatement
+    args: []
+    kind: sql
+
+sanitizers:
+  - method: setString
+    receiver: PreparedStatement
+    kind: prepared_statement
+  - method: setInt
+    receiver: PreparedStatement
+    kind: prepared_statement
+  - method: setLong
+    receiver: PreparedStatement
+    kind: prepared_statement
+  - method: setBoolean
+    receiver: PreparedStatement
+    kind: prepared_statement
+  - method: setDouble
+    receiver: PreparedStatement
+    kind: prepared_statement
+  - method: setFloat
+    receiver: PreparedStatement
+    kind: prepared_statement
+  - method: setObject
+    receiver: PreparedStatement
+    kind: prepared_statement
+  - method: setBigDecimal
+    receiver: PreparedStatement
+    kind: prepared_statement
+  - method: setDate
+    receiver: PreparedStatement
+    kind: prepared_statement
+  - method: setTime
+    receiver: PreparedStatement
+    kind: prepared_statement
+  - method: setTimestamp
+    receiver: PreparedStatement
+    kind: prepared_statement
+  - method: setBytes
+    receiver: PreparedStatement
+    kind: prepared_statement
+  - method: setNull
+    receiver: PreparedStatement
+    kind: prepared_statement

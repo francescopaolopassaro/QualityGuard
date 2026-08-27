@@ -1,4 +1,5 @@
 using QualityGuard.Core.Analysis;
+using QualityGuard.Core.Frameworks;
 using QualityGuard.Core.Syntax;
 
 namespace QualityGuard.Core.Semantics;
@@ -6,18 +7,23 @@ namespace QualityGuard.Core.Semantics;
 /// <summary>
 /// Best-effort type of an expression. It combines what the file knows (declarations, literals, object
 /// creations) with what the project index knows (member and return types of the types declared in the
-/// scanned code). Unknown stays unknown: rules must treat <c>null</c> as "cannot tell" and stay silent
-/// rather than guess.
+/// scanned code) and what the framework registry knows about well-known library APIs. Unknown stays
+/// unknown: rules must treat <c>null</c> as "cannot tell" and stay silent rather than guess.
 /// </summary>
 public sealed class TypeResolver
 {
     private readonly SemanticModel _semantics;
     private readonly ProjectIndex _project;
+    private readonly FrameworkRegistry _frameworks;
+    private readonly string _languageKey;
 
-    public TypeResolver(SemanticModel semantics, ProjectIndex project)
+    public TypeResolver(SemanticModel semantics, ProjectIndex project,
+        FrameworkRegistry? frameworks = null, string languageKey = "")
     {
         _semantics = semantics;
         _project = project;
+        _frameworks = frameworks ?? FrameworkRegistry.Empty;
+        _languageKey = languageKey;
     }
 
     /// <summary>How far the resolver follows one expression into another before giving up.</summary>
@@ -101,6 +107,11 @@ public sealed class TypeResolver
         var name = member.ChildAt(1)?.Text;
         if (owner == null || string.IsNullOrEmpty(name))
             return null;
+
+        // Check framework return types first
+        var fwReturn = _frameworks.ReturnType(_languageKey, Normalize(owner), name);
+        if (fwReturn != null) return fwReturn;
+
         return _project.MemberType(owner, name) is { Length: > 0 } type ? Normalize(type) : null;
     }
 
@@ -111,12 +122,22 @@ public sealed class TypeResolver
         {
             var owner = TypeOf(callee.ChildAt(0), depth + 1);
             var name = callee.ChildAt(1)?.Text;
-            if (owner != null && !string.IsNullOrEmpty(name)
-                && _project.MemberType(owner, name) is { Length: > 0 } type)
-                return Normalize(type);
+            if (owner != null && !string.IsNullOrEmpty(name))
+            {
+                // Check framework return types first (assertThat(...).isEqualTo() → ObjectAssert)
+                var fwReturn = _frameworks.ReturnType(_languageKey, Normalize(owner), name);
+                if (fwReturn != null) return fwReturn;
+
+                if (_project.MemberType(owner, name) is { Length: > 0 } type)
+                    return Normalize(type);
+            }
         }
 
         var simple = SyntaxQuery.InvokedName(invocation);
+        // Check framework chain entry points (assertThat → ObjectAssert)
+        var chain = _frameworks.FindChain(_languageKey, simple);
+        if (chain != null) return chain.Returns;
+
         return _project.ReturnType(simple) is { Length: > 0 } returned ? Normalize(returned) : null;
     }
 
@@ -161,13 +182,33 @@ public sealed class TypeResolver
         => type is { Length: > 0 }
            && (Primitives.Contains(type, StringComparer.Ordinal) || _project.FindType(type) != null);
 
-    /// <summary>True when the type, or one of its ancestors in the scanned code, has that name.</summary>
+    /// <summary>True when the type, or one of its ancestors in the scanned code or framework definitions, has that name.</summary>
     public bool IsOrDerivesFrom(string? type, params string[] names)
     {
         if (type == null)
             return false;
         if (names.Contains(type, StringComparer.Ordinal))
             return true;
+
+        // Check framework type hierarchy
+        var langKey = _languageKey;
+        foreach (var fw in _frameworks.All)
+        {
+            if (!string.Equals(fw.Language, langKey, StringComparison.OrdinalIgnoreCase))
+                continue;
+            var typeInfo = fw.Types.FirstOrDefault(t =>
+                string.Equals(t.Name, type, StringComparison.OrdinalIgnoreCase));
+            if (typeInfo != null)
+            {
+                if (typeInfo.Extends.Any(e => names.Contains(Normalize(e), StringComparer.Ordinal)))
+                    return true;
+                // Recurse up the framework hierarchy
+                if (typeInfo.Extends.Any(e => IsOrDerivesFrom(e, names)))
+                    return true;
+            }
+        }
+
+        // Check project index (scanned code)
         var info = _project.FindType(type);
         var guard = 0;
         while (info != null && guard++ < 10)

@@ -1,0 +1,114 @@
+name: http
+language: go
+aliases: [net-http, gorilla, gin, echo, chi]
+description: Go HTTP frameworks (net/http, gorilla/mux, gin-gonic, echo, chi)
+
+types:
+  - name: Request
+    methods: [FormValue, PostFormValue, Header, Cookie, Cookies,
+              URL, Method, Host, RemoteAddr, RequestURI, Proto,
+              Body, ContentLength, TransferEncoding, Close, Context]
+  - name: ResponseWriter
+    methods: [Write, WriteHeader, Header]
+  - name: Handler
+    methods: [ServeHTTP]
+  - name: ServeMux
+    methods: [Handle, HandleFunc, ServeHTTP]
+  - name: Mux
+    methods: [Handle, HandleFunc, Methods, PathPrefix, Subrouter, Use, Path]
+  - name: Router
+    methods: [GET, POST, PUT, PATCH, DELETE, HEAD, OPTIONS, Any,
+              Group, Use, Static, StaticFS, StaticFile, Run,
+              NoRoute, HandleMethodNotAllowed]
+  - name: Context
+    methods: [Param, Query, DefaultQuery, Bind, ShouldBind, JSON,
+              IndentedJSON, AsciiJSON, PureJSON, XML, YAML, String,
+              Redirect, File, Data, FileAttachment, Stream,
+              Set, Get, MustGet, GetBool, GetInt, GetString,
+              JSONP, ProtoBuf, TolJSON, Cookie, SetCookie]
+  - name: Echo
+    methods: [GET, POST, PUT, PATCH, DELETE, HEAD, OPTIONS, Any,
+              Add, Group, Use, Static, StaticFS, StaticFile, Start,
+              StartTLS, StartServer, Close]
+  - name: ChiMux
+    methods: [Get, Post, Put, Patch, Delete, Head, Options, Connect, Trace,
+              Group, Route, Mount, Use, Handle, HandleFunc, Method,
+              MethodFunc, NotFound, MethodNotAllowed]
+
+sinks:
+  - method: exec
+    args: [0]
+    kind: command
+  - method: Command
+    args: [0]
+    kind: command
+  - method: CommandContext
+    args: [1]
+    kind: command
+  - method: Query
+    kind: sql
+  - method: Exec
+    kind: sql
+  - method: QueryRow
+    kind: sql
+  - method: Write
+    receiver: ResponseWriter
+    args: [0]
+    kind: xss
+  - method: String
+    receiver: Context
+    args: [0]
+    kind: xss
+  - method: JSON
+    receiver: Context
+    args: [0]
+    kind: xss
+  - method: Redirect
+    receiver: Context
+    args: [0]
+    kind: open_redirect
+  - method: Redirect
+    receiver: ResponseWriter
+    args: [0]
+    kind: open_redirect
+  - method: Header
+    receiver: ResponseWriter
+    args: [0]
+    kind: header_injection
+
+sources:
+  - method: FormValue
+    receiver: Request
+    args: [0]
+    kind: user_input
+  - method: PostFormValue
+    receiver: Request
+    args: [0]
+    kind: user_input
+  - method: Header
+    receiver: Request
+    args: [0]
+    kind: user_input
+  - method: Query
+    receiver: Request
+    args: [0]
+    kind: user_input
+  - method: Query
+    receiver: Context
+    args: [0]
+    kind: user_input
+  - method: Param
+    receiver: Context
+    args: [0]
+    kind: user_input
+  - method: DefaultQuery
+    receiver: Context
+    args: [0]
+    kind: user_input
+  - method: Cookie
+    receiver: Request
+    args: [0]
+    kind: user_input
+  - method: Form
+    receiver: Request
+    kind: user_input

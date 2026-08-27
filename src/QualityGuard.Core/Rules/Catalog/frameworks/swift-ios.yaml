@@ -1,0 +1,147 @@
+name: ios
+language: swift
+aliases: [swift-ios, uikit, foundation]
+description: iOS framework (UIKit, Foundation, SwiftUI)
+
+types:
+  - name: UIViewController
+    methods: [viewDidLoad, viewWillAppear, viewDidAppear, viewWillDisappear,
+              performSegue, prepare,.present, dismiss, addChild, removeFromParent,
+              navigationController, tabBarController, presentedViewController]
+  - name: UIView
+    methods: [addSubview, removeFromSuperview, layoutSubviews, draw,
+              layoutIfNeeded, layoutSubviews, point, hitTest, gestureRecognizers,
+              addSubview, bringSubviewToFront, sendSubviewToBack]
+  - name: UILabel
+    extends: [UIView]
+    methods: [setText, setFont, setTextColor, setNumberOfLines]
+  - name: UIButton
+    extends: [UIView]
+    methods: [setTitle, addTarget, setEnabled, setTitle]
+  - name: UITextField
+    extends: [UIView]
+    methods: [setText, text, setPlaceholder, isSecureTextEntry, setDelegate]
+  - name: UITextView
+    extends: [UIView]
+    methods: [setText, text, isEditable, isSelectable, setDelegate]
+  - name: UITableView
+    extends: [UIView]
+    methods: [reloadData, dequeueReusableCell, setDataSource, setDelegate,
+              cellForRow, didSelectRow, numberOfRowsInSection]
+  - name: UICollectionView
+    extends: [UIView]
+    methods: [reloadData, dequeueReusableCell, cellForItem, didSelectItem]
+  - name: URLSession
+    methods: [dataTask, dataTask(with:completionHandler:), dataTask(with:),
+              downloadTask, uploadTask, shared]
+  - name: URLRequest
+    methods: [init, setURL, setHTTPMethod, setHTTPBody, setValue, addValue, allHTTPHeaderFields]
+  - name: Data
+    methods: [init, contentsOf, bytes, count]
+  - name: JSONDecoder
+    methods: [init, decode, keyDecodingStrategy]
+  - name: JSONEncoder
+    methods: [init, encode, keyEncodingStrategy]
+  - name: FileManager
+    methods: [default, contentsOfDirectory, createFile, removeItem,
+              moveItem, copyItem, fileExists, urls, URLForDirectory]
+  - name: UserDefaults
+    methods: [standard, objectForKey, set, synchronize, removeObjectForKey,
+              string(forKey:), integer(forKey:), bool(forKey:), data(forKey:)]
+  - name: NotificationCenter
+    methods: [default, addObserver, post, removeObserver, removeObserver(_:name:object:)]
+  - name: Bundle
+    methods: [main, objectForInfoDictionaryKey, url, path, resourcePath]
+  - name: ProcessInfo
+    methods: [processInfo, environment, arguments, operatingSystemVersion]
+  - name: Keychain
+    methods: [SecItemAdd, SecItemCopyMatching, SecItemUpdate, SecItemDelete]
+  - name: SwiftData
+    methods: [ModelContainer, ModelContext, fetch, insert, delete, save]
+  - name: CoreGraphics
+    methods: [CGRectMake, CGPointMake, CGSizeMake]
+
+sinks:
+  - method: dataTask
+    receiver: URLSession
+    args: [0]
+    kind: network_request
+  - method: data
+    receiver: URLSession
+    args: [0]
+    kind: network_request
+  - method: evaluateJavaScript
+    receiver: WKWebView
+    args: [0]
+    kind: xss
+  - method: loadHTMLString
+    receiver: WKWebView
+    args: [0]
+    kind: xss
+  - method: loadRequest
+    receiver: WKWebView
+    args: [0]
+    kind: xss
+  - method: openURL
+    receiver: UIApplication
+    args: [0]
+    kind: open_redirect
+  - method: writeFile
+    receiver: Data
+    kind: file_write
+  - method: write
+    receiver: FileHandle
+    kind: file_write
+  - method: encode
+    receiver: JSONEncoder
+    kind: serialization
+  - method: SecItemAdd
+    kind: keychain_write
+
+sources:
+  - method: objectForKey
+    receiver: UserDefaults
+    args: [0]
+    kind: stored_value
+  - method: string
+    receiver: UserDefaults
+    args: [0]
+    kind: stored_value
+  - method: integer
+    receiver: UserDefaults
+    args: [0]
+    kind: stored_value
+  - method: bool
+    receiver: UserDefaults
+    args: [0]
+    kind: stored_value
+  - method: objectForInfoDictionaryKey
+    receiver: Bundle
+    args: [0]
+    kind: config_value
+  - method: environment
+    receiver: ProcessInfo
+    kind: env_value
+  - method: arguments
+    receiver: ProcessInfo
+    kind: command_line
+  - method: text
+    receiver: UITextField
+    kind: user_input
+  - method: text
+    receiver: UITextView
+    kind: user_input
+  - method: value
+    receiver: UISearchBar
+    kind: user_input
+
+sanitizers:
+  - method: addingPercentEncoding
+    kind: url_encode
+  - method: data
+    receiver: String
+    kind: encoding
+  - method: sha256
+    kind: hash
+  - method: hmac
+    kind: hmac

@@ -1,0 +1,95 @@
+name: testing
+language: go
+aliases: [go-test, testify]
+description: Go testing framework (testing, testify)
+
+types:
+  - name: T
+    abstract: true
+    methods: [Error, Errorf, Fatal, Fatalf, Log, Logf, Skip, Skipf,
+              Run, Cleanup, TempDir, Setenv, Name, Failed, Skipped,
+              Deadline, SkipNow, LogNow, ErrorNow, FatalNow]
+  - name: B
+    extends: [T]
+    methods: [Run, ReportAllocs, ResetTimer, StartTimer, StopTimer,
+              SetBytes, SetParallel, StartCPUProfile, StopCPUProfile]
+  - name: Testing
+    methods: [Testing, M]
+  - name: Assert
+    methods: [Equal, NotEqual, Nil, NotNil, True, False,
+              Contains, NotContains, Empty, NotEmpty, Len,
+              Zero, NotZero, EqualValues, EqualExportedValues,
+              InDelta, InDeltaSlice, InEpsilon, JSONEq,
+              Regexp, NotRegexp, FileExists, DirExists,
+              Condition, NoError, Error, NoErrorf, Errorf,
+              EqualError, EqualErrors, ErrorAs, ErrorIs,
+              ContainsError, Fail, FailNow, Pass, PassNow,
+              Require, Suite]
+  - name: Require
+    methods: [Equal, NotEqual, Nil, NotNil, True, False,
+              Contains, NotContains, Empty, NotEmpty, Len,
+              Zero, NotZero, NoError, Error, EqualError, Fail, FailNow]
+  - name: Suite
+    methods: [SetupSuite, TearDownSuite, SetupTest, TearDownTest,
+              BeforeTest, AfterTest, SuiteStart, SuiteFinish]
+  - name: Mock
+    methods: [Called, MethodCalled, On, Return, Once, Twice,
+              Times, Maybe, Run, Panic, CalledOnce, CalledTwice]
+  - name: Assertions
+    methods: [Equal, NotEqual, Nil, NotNil, True, False, Contains]
+  - name: requireAssertions
+    extends: [Assertions]
+
+chains:
+  - entry: New
+    returns: Assertions
+    chain_methods:
+      - Equal
+      - NotEqual
+      - Nil
+      - NotNil
+      - True
+      - False
+      - Contains
+      - NoError
+      - Error
+      - Fail
+      - FailNow
+
+method_returns:
+  - receiver: Assertions
+    method: Equal
+    returns_self: true
+  - receiver: Assertions
+    method: NotEqual
+    returns_self: true
+  - receiver: Assertions
+    method: Nil
+    returns_self: true
+  - receiver: Assertions
+    method: NotNil
+    returns_self: true
+  - receiver: Assertions
+    method: True
+    returns_self: true
+  - receiver: Assertions
+    method: False
+    returns_self: true
+  - receiver: Assertions
+    method: Contains
+    returns_self: true
+  - receiver: Assertions
+    method: NoError
+    returns_self: true
+  - receiver: Assertions
+    method: Error
+    returns_self: true
+  - receiver: T
+    method: Run
+    returns_self: true
+  - receiver: Suite
+    method: SetupTest
+    returns_self: true
+  - receiver: Suite
+    method: TearDownTest
+    returns_self: true

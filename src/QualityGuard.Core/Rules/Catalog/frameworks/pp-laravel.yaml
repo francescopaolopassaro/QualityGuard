@@ -1,0 +1,164 @@
+name: laravel
+language: php
+aliases: [laravel, symfony]
+description: PHP web frameworks (Laravel, Symfony)
+
+types:
+  - name: Request
+    methods: [input, all, get, post, query, file, cookie, header, route,
+              method, url, path, fullUrl, query, has, missing, filled]
+  - name: Response
+    methods: [make, json, view, redirect, download, stream, send]
+  - name: LaravelRequest
+    extends: [Request]
+    methods: [validate, rule, when, has, input, all, only, except, merge,
+              query, post, file, cookie, header, route, method, url, path,
+              fullUrl, is, wantsJson, expectsJson, ajax, ip, user-agent]
+  - name: Eloquent
+    methods: [where, orderBy, limit, offset, get, first, find, findOrFail,
+              create, save, delete, update, exists, count, sum, avg, pluck,
+              select, with, has, whereHas, whereIn, whereNotIn, whereBetween]
+  - name: DB
+    methods: [select, insert, update, delete, statement, transaction, table,
+              raw, getSchemaBuilder, getConnection, selectOne, selectRaw,
+              insertGetId, chunk, cursor]
+  - name: IlluminateSupport
+    methods: [collect, Arr, str, data_get, data_set, optional, tap, class_uses_recursive]
+  - name: Validator
+    methods: [make, validate, errors, fails, sometimes, after, afterValidator]
+  - name: Gate
+    methods: [allows, denies, check, any, none, define, policy, authorize, inspect]
+  - name: Auth
+    methods: [user, id, check, guest, login, logout, attempt, register, guard]
+  - name: Storage
+    methods: [disk, put, get, delete, exists, copy, move, url, path, size, lastModified]
+  - name: Cache
+    methods: [get, put, remember, forever, forget, has, pull, increment, decrement, flush]
+  - name: Mail
+    methods: [to, cc, bcc, send, raw, html, attach, subject, queue]
+  - name: Queue
+    methods: [push, later, dispatch, on, connection, chain, allOnQueue, allOnConnection]
+  - name: Log
+    methods: [info, warning, error, debug, critical, alert, emergency, log, channel]
+  - name: Event
+    methods: [dispatch, listen, fire, subscribe, until, push, flush]
+
+sinks:
+  - method: select
+    receiver: DB
+    args: [0]
+    kind: sql
+  - method: statement
+    receiver: DB
+    args: [0]
+    kind: sql
+  - method: selectOne
+    receiver: DB
+    args: [0]
+    kind: sql
+  - method: selectRaw
+    receiver: DB
+    args: [0]
+    kind: sql
+  - method: raw
+    receiver: DB
+    args: [0]
+    kind: sql
+  - method: redirect
+    receiver: Response
+    args: [0]
+    kind: open_redirect
+  - method: view
+    receiver: "*"
+    args: [0]
+    kind: xss
+  - method: json
+    receiver: Response
+    args: [0]
+    kind: xss
+  - method: make
+    receiver: "*"
+    args: [0]
+    kind: xss
+  - method: dispatch
+    receiver: Event
+    args: [0]
+    kind: event_dispatch
+  - method: push
+    receiver: Queue
+    args: [0]
+    kind: queue_push
+  - method: put
+    receiver: Storage
+    args: [0]
+    kind: file_write
+  - method: put
+    receiver: Cache
+    args: [0]
+    kind: cache_write
+
+sources:
+  - method: input
+    receiver: LaravelRequest
+    args: [0]
+    kind: user_input
+  - method: all
+    receiver: LaravelRequest
+    kind: user_input
+  - method: get
+    receiver: LaravelRequest
+    args: [0]
+    kind: user_input
+  - method: post
+    receiver: LaravelRequest
+    args: [0]
+    kind: user_input
+  - method: query
+    receiver: LaravelRequest
+    args: [0]
+    kind: user_input
+  - method: cookie
+    receiver: LaravelRequest
+    args: [0]
+    kind: user_input
+  - method: header
+    receiver: LaravelRequest
+    args: [0]
+    kind: user_input
+  - method: route
+    receiver: LaravelRequest
+    args: [0]
+    kind: user_input
+  - method: file
+    receiver: LaravelRequest
+    args: [0]
+    kind: user_input
+  - method: get
+    receiver: Cache
+    args: [0]
+    kind: stored_value
+  - method: user
+    receiver: Auth
+    kind: authenticated_user
+  - method: get
+    receiver: env
+    args: [0]
+    kind: env_value
+
+sanitizers:
+  - method: e
+    kind: html_escape
+  - method: htmlspecialchars
+    kind: html_escape
+  - method: strip_tags
+    kind: html_strip
+  - method: Purify
+    kind: html_purify
+  - method: Str::slug
+    kind: slug
+  - method: intval
+    kind: type_cast
+  - method: floatval
+    kind: type_cast
+  - method: boolval
+    kind: type_cast

@@ -1,0 +1,103 @@
+name: aspnet
+language: cs
+aliases: [aspnet-core, mvc, webapi, razor]
+description: ASP.NET Core framework (MVC, Web API, Razor, Blazor)
+
+types:
+  - name: Controller
+    abstract: true
+    methods: [View, PartialView, Json, Content, File, Redirect, RedirectToAction,
+              RedirectToRoute, BadRequest, NotFound, Ok, StatusCode, NoContent,
+              Unauthorized, Challenge, Forbid]
+  - name: ControllerBase
+    abstract: true
+    methods: [Json, File, Content, BadRequest, NotFound, Ok, StatusCode, NoContent,
+              Unauthorized, Challenge, Forbid]
+  - name: ControllerBase
+    extends: [ControllerBase]
+  - name: ApiController
+    extends: [ControllerBase]
+  - name: HttpContext
+    methods: [get_Request, get_Response, get_Session, get_User,
+              get_Items, get_Features, get_Connection, get_WebSockets,
+              get_RequestServices, get_CancellationToken]
+  - name: HttpRequest
+    methods: [get_Query, get_Form, get_Headers, get_Cookies, get_Body,
+              get_Method, get_Path, get_Host, get_Scheme, get_IsHttps,
+              get_ContentType, get_ContentLength, ReadFormAsync, ReadAsStringAsync]
+  - name: HttpResponse
+    methods: [get_Headers, get_Cookies, get_Body, get_StatusCode,
+              set_StatusCode, WriteAsync, AddCookie, Redirect]
+  - name: IFormCollection
+    methods: [get_Item, ContainsKey, TryGetValue, Keys, Values]
+  - name: IQueryCollection
+    methods: [get_Item, ContainsKey, TryGetValue, Keys, Values]
+  - name: IHeaderDictionary
+    methods: [get_Item, ContainsKey, TryGetValue, Keys, Values]
+  - name: ICookieCollection
+    methods: [get_Item, ContainsKey, Add, Remove]
+  - name: Session
+    methods: [GetString, SetString,GetInt32, SetInt32, Get, Set, Remove, Clear, TryGetValue, Keys]
+  - name: RazorPage
+    methods: [Page, Partial, ViewComponent, Json, Content, File, Redirect]
+  - name: PageModel
+    methods: [Page, Partial, ViewComponent, Json, Content, File, Redirect,
+              OnGet, OnPost, OnPut, OnDelete]
+  - name: ComponentBase
+    methods: [OnInitialized, OnInitializedAsync, OnParametersSet, OnParametersSetAsync,
+              OnAfterRender, OnAfterRenderAsync, StateHasChanged, InvokeAsync]
+  - name: DI
+    methods: [GetService, GetRequiredService, GetServices, AddScoped, AddSingleton, AddTransient]
+
+sinks:
+  - method: FromQuery
+    kind: query_parameter
+  - method: FromForm
+    kind: form_parameter
+  - method: FromRoute
+    kind: route_parameter
+  - method: FromHeader
+    kind: header_value
+  - method: FromBody
+    kind: body_value
+  - method: Query
+    receiver: HttpRequest
+    args: [0]
+    kind: query_parameter
+  - method: Form
+    receiver: HttpRequest
+    args: [0]
+    kind: form_parameter
+  - method: get_Item
+    receiver: IQueryCollection
+    args: [0]
+    kind: query_parameter
+  - method: get_Item
+    receiver: IFormCollection
+    args: [0]
+    kind: form_parameter
+  - method: GetString
+    receiver: Session
+    args: [0]
+    kind: session_value
+  - method: ReadAsStringAsync
+    receiver: HttpRequest
+    kind: body_value
+
+sources:
+  - method: FromQuery
+    kind: user_input
+  - method: FromForm
+    kind: user_input
+  - method: FromRoute
+    kind: user_input
+  - method: FromHeader
+    kind: user_input
+  - method: FromBody
+    kind: user_input
+  - method: Query
+    receiver: HttpRequest
+    kind: user_input
+  - method: Form
+    receiver: HttpRequest
+    kind: user_input

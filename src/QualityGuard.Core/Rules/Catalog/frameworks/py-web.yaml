@@ -1,0 +1,109 @@
+name: web
+language: py
+aliases: [flask, django, fastapi]
+description: Python web frameworks (Flask, Django, FastAPI)
+
+types:
+  - name: Flask
+    methods: [route, before_request, after_request, errorhandler,
+              send_file, send_from_directory, render_template,
+              redirect, abort, jsonify, make_response, session, g]
+  - name: Request
+    methods: [get_json, get_data, form, args, headers, cookies,
+              files, method, url, path, query_string, remote_addr,
+              endpoint, view_args, is_json, content_type]
+  - name: Response
+    methods: [make_response, jsonify, redirect, abort]
+  - name: DjangoView
+    methods: [get, post, put, patch, delete, head, options, dispatch]
+  - name: HttpRequest
+    methods: [GET, POST, PUT, PATCH, DELETE, META, FILES, COOKIES,
+              session, body, user, is_secure, is_ajax, get_host,
+              path, method, build_absolute_uri]
+  - name: HttpResponse
+    methods: [write, tell, seek, content_type, status_code, cookies]
+  - name: JsonResponse
+    extends: [HttpResponse]
+  - name: FastAPI
+    methods: [get, post, put, patch, delete, head, options, route, Depends]
+  - name: UploadFile
+    methods: [read, write, seek, tell, close, filename, content_type, size]
+
+sinks:
+  - method: execute
+    receiver: "*"
+    args: [0]
+    kind: command
+  - method: system
+    receiver: "*"
+    args: [0]
+    kind: command
+  - method: Popen
+    args: [0]
+    kind: command
+  - method: run
+    args: [0]
+    kind: command
+  - method: cursor
+    kind: sql
+  - method: raw
+    kind: sql
+  - method: extra
+    kind: sql
+  - method: render_template_string
+    args: [0]
+    kind: xss
+  - method: render_template
+    args: [0]
+    kind: xss
+  - method: make_response
+    args: [0]
+    kind: xss
+
+sources:
+  - method: get_json
+    receiver: Request
+    kind: user_input
+  - method: get_data
+    receiver: Request
+    kind: user_input
+  - method: form
+    receiver: Request
+    kind: user_input
+  - method: args
+    receiver: Request
+    kind: user_input
+  - method: headers
+    receiver: Request
+    kind: user_input
+  - method: cookies
+    receiver: Request
+    kind: user_input
+  - method: files
+    receiver: Request
+    kind: user_input
+  - method: GET
+    receiver: HttpRequest
+    kind: user_input
+  - method: POST
+    receiver: HttpRequest
+    kind: user_input
+  - method: body
+    receiver: HttpRequest
+    kind: user_input
+  - method: request
+    kind: user_input
+  - method: Form
+    kind: user_input
+  - method: Query
+    kind: user_input
+  - method: RequestBody
+    kind: user_input
+
+sanitizers:
+  - method: escape
+    kind: html_escape
+  - method: mark_safe
+    kind: safe_markup
+  - method: format_map
+    kind: safe_format

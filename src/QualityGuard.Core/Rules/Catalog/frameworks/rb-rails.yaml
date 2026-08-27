@@ -1,0 +1,149 @@
+name: rails
+language: rb
+aliases: [ruby-on-rails, activerecord, activemodel]
+description: Ruby on Rails framework (ActiveRecord, ActionView, ActionController)
+
+types:
+  - name: ActiveRecord
+    abstract: true
+    methods: [find, find_by, where, order, limit, offset, includes,
+              joins, group, having, select, distinct, count, sum, average,
+              minimum, maximum, create, create!, new, save, save!,
+              update, update!, destroy, destroy!, reload, exists?,
+              attribute_changed?, changes, previous_changes,
+              read_attribute, write_attribute, attributes]
+  - name: ActiveRecordRelation
+    methods: [each, map, to_a, length, count, first, last, take,
+              where, order, limit, offset, joins, includes, group,
+              having, select, distinct, sum, average, minimum, maximum,
+              pluck, ids, to_sql, exists?, blank?, empty?]
+  - name: ActionController
+    abstract: true
+    methods: [render, redirect_to, head, send_data, send_file,
+              before_action, after_action, around_action,
+              params, request, response, session, cookies,
+              render_to_string, rendernothing]
+  - name: ApplicationController
+    extends: [ActionController]
+  - name: ActionView
+    methods: [render, render_to_string, partial, link_to, form_with,
+              form_for, text_field, text_area, select, check_box,
+              radio_button, label, submit_tag, button_tag, image_tag,
+              url_for, redirect_to, content_tag, tag, safe_join,
+              raw, html_safe]
+  - name: ActionMailer
+    methods: [mail, deliver_now, deliver_later]
+  - name: ActionController::Parameters
+    methods: [require, permit, fetch, [], dig, to_h, to_unsafe_h,
+              to_unsafe_h, has_key?, include?, keys, values, each]
+  - name: Migration
+    methods: [create_table, add_column, add_index, remove_column,
+              change_column, rename_column, add_reference, execute]
+  - name: StrongParameters
+    methods: [require, permit]
+
+sinks:
+  - method: where
+    receiver: ActiveRecord
+    kind: sql
+  - method: find_by_sql
+    receiver: ActiveRecord
+    args: [0]
+    kind: sql
+  - method: execute
+    receiver: ActiveRecord
+    args: [0]
+    kind: sql
+  - method: select_all
+    receiver: ActiveRecord
+    args: [0]
+    kind: sql
+  - method: render
+    receiver: ActionController
+    args: [0]
+    kind: xss
+  - method: render_to_string
+    receiver: ActionController
+    args: [0]
+    kind: xss
+  - method: redirect_to
+    receiver: ActionController
+    args: [0]
+    kind: open_redirect
+  - method: send_file
+    receiver: ActionController
+    args: [0]
+    kind: path_traversal
+  - method: render
+    receiver: ActionView
+    args: [0]
+    kind: xss
+  - method: raw
+    receiver: ActionView
+    args: [0]
+    kind: xss
+  - method: html_safe
+    receiver: ActionView
+    kind: xss
+  - method: mail
+    receiver: ActionMailer
+    args: [0]
+    kind: email_injection
+  - method: execute
+    receiver: Migration
+    args: [0]
+    kind: sql
+
+sources:
+  - method: params
+    receiver: ActionController
+    kind: user_input
+  - method: []
+    receiver: ActionController::Parameters
+    args: [0]
+    kind: user_input
+  - method: fetch
+    receiver: ActionController::Parameters
+    args: [0]
+    kind: user_input
+  - method: dig
+    receiver: ActionController::Parameters
+    args: [0]
+    kind: user_input
+  - method: get
+    receiver: Request
+    args: [0]
+    kind: user_input
+  - method: post
+    receiver: Request
+    args: [0]
+    kind: user_input
+  - method: query
+    receiver: Request
+    kind: user_input
+  - method: headers
+    receiver: Request
+    kind: user_input
+  - method: cookies
+    receiver: Request
+    kind: user_input
+  - method: session
+    kind: user_input
+
+sanitizers:
+  - method: sanitize
+    kind: html_escape
+  - method: html_escape
+    kind: html_escape
+  - method: escape_once
+    kind: html_escape
+  - method: permit
+    receiver: ActionController::Parameters
+    kind: strong_parameters
+  - method: require
+    receiver: ActionController::Parameters
+    kind: strong_parameters
+  - method: to_s
+    kind: string_conversion
+  - method: connection.quote
+    kind: sql_quote

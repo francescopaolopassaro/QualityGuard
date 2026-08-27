@@ -1,0 +1,104 @@
+name: express
+language: js
+aliases: [expressjs, node-http]
+description: Node.js web frameworks (Express, Koa, Fastify)
+
+types:
+  - name: Request
+    methods: [get, header, param, query, body, cookies, signedCookies,
+              path, hostname, ip, ips, protocol, secure, xhr, getHeader]
+  - name: Response
+    methods: [send, json, jsonp, status, redirect, render, sendFile,
+              download, type, format, attachment, set, cookie, clearCookie,
+              location, vary, append, header, getHeader, setHeader,
+              removeHeader, write, end]
+  - name: NextFunction
+  - name: Express
+    methods: [get, post, put, patch, delete, all, use, route,
+              param, render, engine, set, enable, disable, configure]
+  - name: Router
+    methods: [get, post, put, patch, delete, all, use, route, param]
+  - name: ExpressMiddleware
+    methods: [use, param, route]
+  - name: HttpServer
+    methods: [listen, close, address, ref, unref]
+  - name: ExpressSession
+    methods: [get, set, destroy, regenerate, save, reload, touch]
+  - name: Multer
+    methods: [single, array, fields, none, any]
+
+sinks:
+  - method: exec
+    args: [0]
+    kind: command
+  - method: execSync
+    args: [0]
+    kind: command
+  - method: spawn
+    args: [1]
+    kind: command
+  - method: execFile
+    args: [1]
+    kind: command
+  - method: query
+    kind: sql
+  - method: raw
+    kind: sql
+  - method: sql
+    kind: sql
+  - method: json
+    receiver: Response
+    args: [0]
+    kind: xss
+  - method: send
+    receiver: Response
+    args: [0]
+    kind: xss
+  - method: render
+    receiver: Response
+    args: [0]
+    kind: xss
+  - method: redirect
+    receiver: Response
+    args: [0]
+    kind: open_redirect
+  - method: set
+    receiver: Response
+    args: [0]
+    kind: header_injection
+
+sources:
+  - method: query
+    receiver: Request
+    kind: user_input
+  - method: body
+    receiver: Request
+    kind: user_input
+  - method: params
+    receiver: Request
+    kind: user_input
+  - method: cookies
+    receiver: Request
+    kind: user_input
+  - method: signedCookies
+    receiver: Request
+    kind: user_input
+  - method: headers
+    receiver: Request
+    kind: user_input
+  - method: get
+    receiver: Request
+    args: [0]
+    kind: user_input
+  - method: param
+    receiver: Request
+    args: [0]
+    kind: user_input
+
+sanitizers:
+  - method: escape
+    kind: html_escape
+  - method: encodeURI
+    kind: uri_encode
+  - method: encodeURIComponent
+    kind: uri_encode

@@ -1,0 +1,227 @@
+name: assertj
+language: java
+aliases: [assertj-core]
+description: Fluent assertion library for Java
+
+types:
+  - name: AbstractAssert
+    abstract: true
+    methods: [isEqualTo, isNotEqualTo, isTrue, isFalse, isNull, isNotNull,
+              contains, doesNotContain, hasToString, matches, extracting,
+              satisfies, isInstanceOf, isEqualToComparingFieldByField]
+  - name: ObjectAssert
+    extends: [AbstractAssert]
+  - name: StringAssert
+    extends: [AbstractAssert]
+    methods: [contains, doesNotContain, startsWith, endsWith, matches,
+              isEqualIgnoringCase, isEqualToIgnoringWhitespace, hasSize,
+              isEmpty, isNotEmpty]
+  - name: ListAssert
+    extends: [AbstractAssert]
+    methods: [hasSize, isEmpty, isNotEmpty, contains, doesNotContain,
+              first, last, extracting]
+  - name: BooleanAssert
+    extends: [AbstractAssert]
+  - name: IntegerAssert
+    extends: [AbstractAssert]
+    methods: [isGreaterThan, isLessThan, isEqualTo, isBetween, isIn]
+  - name: AbstractComparableAssert
+    extends: [AbstractAssert]
+  - name: Assertions
+    methods: [assertThat, assertThatCode, assertThatExceptionOfType,
+              assertThatThrownBy, assertThatNoException]
+
+chains:
+  - entry: assertThat
+    receiver: Assertions
+    returns: ObjectAssert
+    chain_methods:
+      - isEqualTo
+      - isNotEqualTo
+      - isTrue
+      - isFalse
+      - isNull
+      - isNotNull
+      - contains
+      - doesNotContain
+      - hasToString
+      - matches
+      - extracting
+      - satisfies
+      - isInstanceOf
+      - as
+      - describedAs
+      - overridesErrorMessage
+      - withFailMessage
+      - isEqualToComparingFieldByField
+      - isEqualToIgnoringGivenFields
+      - hasFieldOrProperty
+      - hasFieldOrPropertyWithValue
+      - extracting
+      - tuples
+
+  - entry: assertThatCode
+    receiver: Assertions
+    returns: AbstractThrowableAssert
+    chain_methods:
+      - doesNotThrowAnyException
+      - isInstanceOf
+
+  - entry: assertThatExceptionOfType
+    receiver: Assertions
+    returns: ThrowableAssertAlternative
+    chain_methods:
+      - isThrownBy
+      - isThrownBy
+
+  - entry: assertThatThrownBy
+    receiver: Assertions
+    returns: AbstractThrowableAssert
+    chain_methods:
+      - isInstanceOf
+      - hasMessage
+      - hasMessageContaining
+      - hasCauseInstanceOf
+      - hasStackTraceContaining
+
+  - entry: assertThatNoException
+    receiver: Assertions
+    returns: NoException
+    chain_methods: []
+
+method_returns:
+  - receiver: "*"
+    method: assertThat
+    returns: ObjectAssert
+  - receiver: ObjectAssert
+    method: isEqualTo
+    returns_self: true
+  - receiver: ObjectAssert
+    method: isNotEqualTo
+    returns_self: true
+  - receiver: ObjectAssert
+    method: isTrue
+    returns_self: true
+  - receiver: ObjectAssert
+    method: isFalse
+    returns_self: true
+  - receiver: ObjectAssert
+    method: isNull
+    returns_self: true
+  - receiver: ObjectAssert
+    method: isNotNull
+    returns_self: true
+  - receiver: ObjectAssert
+    method: as
+    returns_self: true
+  - receiver: ObjectAssert
+    method: describedAs
+    returns_self: true
+  - receiver: ObjectAssert
+    method: withFailMessage
+    returns_self: true
+  - receiver: ObjectAssert
+    method: overridesErrorMessage
+    returns_self: true
+  - receiver: ObjectAssert
+    method: extracting
+    returns: ObjectAssert
+  - receiver: ObjectAssert
+    method: satisfies
+    returns_self: true
+  - receiver: ObjectAssert
+    method: isInstanceOf
+    returns_self: true
+  - receiver: ObjectAssert
+    method: hasToString
+    returns_self: true
+  - receiver: ObjectAssert
+    method: matches
+    returns_self: true
+  - receiver: StringAssert
+    method: isEqualTo
+    returns_self: true
+  - receiver: StringAssert
+    method: contains
+    returns_self: true
+  - receiver: StringAssert
+    method: doesNotContain
+    returns_self: true
+  - receiver: StringAssert
+    method: startsWith
+    returns_self: true
+  - receiver: StringAssert
+    method: endsWith
+    returns_self: true
+  - receiver: StringAssert
+    method: isEqualIgnoringCase
+    returns_self: true
+  - receiver: StringAssert
+    method: isEqualToIgnoringWhitespace
+    returns_self: true
+  - receiver: StringAssert
+    method: hasSize
+    returns_self: true
+  - receiver: StringAssert
+    method: isEmpty
+    returns_self: true
+  - receiver: StringAssert
+    method: isNotEmpty
+    returns_self: true
+  - receiver: StringAssert
+    method: matches
+    returns_self: true
+  - receiver: IntegerAssert
+    method: isGreaterThan
+    returns_self: true
+  - receiver: IntegerAssert
+    method: isLessThan
+    returns_self: true
+  - receiver: IntegerAssert
+    method: isBetween
+    returns_self: true
+  - receiver: IntegerAssert
+    method: isIn
+    returns_self: true
+  - receiver: ListAssert
+    method: hasSize
+    returns_self: true
+  - receiver: ListAssert
+    method: isEmpty
+    returns_self: true
+  - receiver: ListAssert
+    method: isNotEmpty
+    returns_self: true
+  - receiver: ListAssert
+    method: contains
+    returns_self: true
+  - receiver: ListAssert
+    method: doesNotContain
+    returns_self: true
+  - receiver: ListAssert
+    method: extracting
+    returns: ObjectAssert
+  - receiver: AbstractComparableAssert
+    method: isEqualTo
+    returns_self: true
+  - receiver: AbstractComparableAssert
+    method: isGreaterThan
+    returns_self: true
+  - receiver: AbstractComparableAssert
+    method: isLessThan
+    returns_self: true
+  - receiver: AbstractThrowableAssert
+    method: isInstanceOf
+    returns_self: true
+  - receiver: AbstractThrowableAssert
+    method: hasMessage
+    returns_self: true
+  - receiver: AbstractThrowableAssert
+    method: hasMessageContaining
+    returns_self: true
+  - receiver: AbstractThrowableAssert
+    method: hasCauseInstanceOf
+    returns_self: true
+  - receiver: AbstractThrowableAssert
+    method: hasStackTraceContaining
+    returns_self: true

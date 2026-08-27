@@ -1,0 +1,126 @@
+name: testing
+language: cs
+aliases: [xunit, nunit, mstest, fluentassertions]
+description: C# testing frameworks (xUnit, NUnit, MSTest, FluentAssertions)
+
+types:
+  - name: Assert
+    methods: [True, False, Equal, NotEqual, Null, NotNull, Throws, DoesNotThrow,
+              Same, NotSame, Empty, NotEmpty, Contains, DoesNotContain,
+              InRange, NotInRange, IsType, IsNotType, IsAssignableFrom,
+              IsNotAssignableFrom, Fail, Succeed, Collection, Matches,
+              NotMatches, All, Every, Single, Throw, NotThrow]
+  - name: AssertBase
+    abstract: true
+    methods: [That, True, False, Equal, NotEqual, Null, NotNull]
+  - name: FluentAssertions
+    methods: [Should]
+  - name: ObjectAssertions
+    methods: [Be, NotBe, BeEquivalentTo, NotBeEquivalentTo, BeNull,
+              NotBeNull, BeOfType, NotBeOfType, BeAssignableTo,
+              NotBeAssignableTo, HaveSamePropertiesAs, HaveProperty,
+              HaveCount, BeEmpty, NotBeEmpty, Contain, NotContain,
+              ContainEquivalentOf, BeIn, NotBeIn, AllBeEquivalentTo,
+              Match, NotMatch, BeTrue, BeFalse, BeGreaterThan,
+              BeGreaterThanOrEqualTo, BeLessThan, BeLessThanOrEqualTo,
+              BePositive, BeNegative, BeZero, BeInRange, BeOfType,
+              BeSameAs, NotBeSameAs, BeOneOf, NotBeOneOf, BeIn]
+  - name: StringAssertions
+    methods: [Be, NotBe, BeEmpty, NotBeEmpty, BeNullOrWhiteSpace,
+              Contain, NotContain, StartWith, EndWith, Match,
+              BeEquivalentTo, HaveLength, HaveLineCount, BeOneOf,
+              NotBeOneOf, AllBeEquivalentTo, ContainEquivalentOf]
+  - name: CollectionAssertions
+    methods: [BeEmpty, NotBeEmpty, HaveCount, HaveCountGreaterThan,
+              HaveCountGreaterThanOrEqualTo, HaveCountLessThan,
+              HaveCountLessThanOrEqualTo, Contain, NotContain,
+              ContainEquivalentOf, NotContainEquivalentOf,
+              OnlyContain, OnlyContain, AllBeEquivalentTo,
+              AllBeOfType, AllBeAssignableTo, ContainSingle,
+              ContainItemsOfNullables, BeEquivalentTo,
+              NotBeEquivalentTo, BeIn, NotBeIn, BeSameAs, NotBeSameAs,
+              HaveSameCount, HaveElementAt, HaveElementAtOrDefault,
+              ContainKey, ContainValue, ContainKeyValuePair]
+  - name: StringAssertionExtensions
+    methods: [Should]
+
+chains:
+  - entry: Should
+    returns: ObjectAssertions
+    chain_methods:
+      - Be
+      - NotBe
+      - BeEquivalentTo
+      - BeNull
+      - NotBeNull
+      - BeOfType
+      - NotBeOfType
+      - BeAssignableTo
+      - Contain
+      - NotContain
+      - HaveCount
+      - BeEmpty
+      - NotBeEmpty
+      - Match
+      - BeTrue
+      - BeFalse
+      - BeGreaterThan
+      - BeLessThan
+      - BeOneOf
+      - BeSameAs
+
+method_returns:
+  - receiver: "*"
+    method: Should
+    returns: ObjectAssertions
+  - receiver: ObjectAssertions
+    method: Be
+    returns_self: true
+  - receiver: ObjectAssertions
+    method: NotBe
+    returns_self: true
+  - receiver: ObjectAssertions
+    method: BeEquivalentTo
+    returns_self: true
+  - receiver: ObjectAssertions
+    method: BeNull
+    returns_self: true
+  - receiver: ObjectAssertions
+    method: NotBeNull
+    returns_self: true
+  - receiver: ObjectAssertions
+    method: BeOfType
+    returns_self: true
+  - receiver: ObjectAssertions
+    method: NotBeOfType
+    returns_self: true
+  - receiver: ObjectAssertions
+    method: Contain
+    returns_self: true
+  - receiver: ObjectAssertions
+    method: NotContain
+    returns_self: true
+  - receiver: ObjectAssertions
+    method: HaveCount
+    returns_self: true
+  - receiver: ObjectAssertions
+    method: BeEmpty
+    returns_self: true
+  - receiver: ObjectAssertions
+    method: NotBeEmpty
+    returns_self: true
+  - receiver: ObjectAssertions
+    method: Match
+    returns_self: true
+  - receiver: ObjectAssertions
+    method: BeTrue
+    returns_self: true
+  - receiver: ObjectAssertions
+    method: BeFalse
+    returns_self: true
+  - receiver: ObjectAssertions
+    method: BeSameAs
+    returns_self: true
+  - receiver: ObjectAssertions
+    method: NotBeSameAs
+    returns_self: true

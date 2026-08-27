@@ -1,0 +1,136 @@
+name: android
+language: kt
+aliases: [kotlin-android, androidx]
+description: Android framework (AndroidX, Jetpack Compose)
+
+types:
+  - name: Context
+    methods: [getSystemService, getContentResolver, getSharedPreferences,
+              getPackageManager, startActivity, startService, bindService,
+              sendBroadcast, getString, getDrawable, getAssets, getCacheDir,
+              getFilesDir, getDatabasePath, openOrCreateDatabase]
+  - name: Activity
+    extends: [Context]
+    methods: [setContentView, findViewById, getIntent, setResult, finish,
+              onCreate, onResume, onPause, onDestroy, onStart, onStop,
+              onSaveInstanceState, onRestoreInstanceState]
+  - name: AppCompatActivity
+    extends: [Activity]
+    methods: [setSupportActionBar, supportActionBar, setSupportActionBar]
+  - name: Fragment
+    extends: [Context]
+    methods: [getActivity, getContext, requireContext, getView, getArguments,
+              setArguments, onViewCreated, onAttach, onDetach, onDestroyView]
+  - name: ViewModel
+    methods: [getViewModelScope]
+  - name: LiveData
+    methods: [observe, setValue, postValue, getValue, removeObserver]
+  - name: MutableLiveData
+    extends: [LiveData]
+  - name: Repository
+  methods: []
+  - name: SharedPreferences
+    methods: [getString, getInt, getBoolean, getFloat, getLong, getStringSet,
+              edit, contains, registerOnSharedPreferenceChangeListener]
+  - name: SharedPreferencesEditor
+    methods: [putString, putInt, putBoolean, putFloat, putLong, putStringSet,
+              remove, clear, apply, commit]
+  - name: ContentResolver
+    methods: [query, insert, update, delete, getType, openInputStream,
+              openOutputStream, openFileDescriptor]
+  - name: SQLiteDatabase
+    methods: [rawQuery, execSQL, insert, update, delete, beginTransaction,
+              setTransactionSuccessful, endTransaction, close]
+  - name: Intent
+    methods: [putExtra, getStringExtra, getIntExtra, getBooleanExtra,
+              getSerializableExtra, getParcelableExtra, setAction, setData,
+              setClass, addFlags, setComponent, setPackage]
+  - name: Notification
+    methods: [build]
+  - name: NotificationCompat
+    methods: [Builder]
+  - name: SecurityManager
+    methods: [getInstalledPackages, checkPermission]
+  - name: BiometricPrompt
+    methods: [authenticate, createDialog, createFragmentActivity]
+  - name: KeyStore
+    methods: [getInstance, load, getKey, setKeyEntry, getCertificateChain]
+  - name: WebView
+    methods: [loadUrl, loadData, evaluateJavascript, setJavaScriptEnabled,
+              addJavascriptInterface, setWebViewClient, getSettings]
+
+sinks:
+  - method: execSQL
+    receiver: SQLiteDatabase
+    args: [0]
+    kind: sql
+  - method: rawQuery
+    receiver: SQLiteDatabase
+    args: [0]
+    kind: sql
+  - method: loadUrl
+    receiver: WebView
+    args: [0]
+    kind: xss
+  - method: loadData
+    receiver: WebView
+    args: [0]
+    kind: xss
+  - method: evaluateJavascript
+    receiver: WebView
+    args: [0]
+    kind: xss
+  - method: addJavascriptInterface
+    receiver: WebView
+    kind: xss
+  - method: putExtra
+    receiver: Intent
+    kind: data_leak
+  - method: putString
+    receiver: SharedPreferencesEditor
+    kind: data_leak
+  - method: sendBroadcast
+    receiver: Context
+    args: [0]
+    kind: implicit_intent
+  - method: startActivity
+    receiver: Context
+    args: [0]
+    kind: open_redirect
+  - method: startService
+    receiver: Context
+    args: [0]
+    kind: service_start
+
+sources:
+  - method: getStringExtra
+    receiver: Intent
+    args: [0]
+    kind: user_input
+  - method: getIntExtra
+    receiver: Intent
+    args: [0]
+    kind: user_input
+  - method: getBooleanExtra
+    receiver: Intent
+    args: [0]
+    kind: user_input
+  - method: getString
+    receiver: Context
+    args: [0]
+    kind: user_input
+  - method: getString
+    receiver: SharedPreferences
+    args: [0]
+    kind: stored_value
+  - method: query
+    receiver: ContentResolver
+    kind: user_input
+  - method: getSerializableExtra
+    receiver: Intent
+    args: [0]
+    kind: user_input
+  - method: getParcelableExtra
+    receiver: Intent
+    args: [0]
+    kind: user_input

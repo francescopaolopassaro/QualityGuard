@@ -1,0 +1,34 @@
+name: process
+language: java
+aliases: [runtime, processbuilder]
+description: Java process execution (Runtime.exec, ProcessBuilder)
+
+types:
+  - name: Runtime
+    methods: [exec, getRuntime, addShutdownHook]
+  - name: ProcessBuilder
+    methods: [command, start, redirectErrorStream, inheritIO,
+              redirectInput, redirectOutput, redirectError]
+  - name: Process
+    methods: [waitFor, getInputStream, getOutputStream, getErrorStream,
+              destroy, destroyForcibly, isAlive, pid]
+
+sinks:
+  - method: exec
+    receiver: Runtime
+    args: [0]
+    kind: command
+  - method: exec
+    receiver: Runtime
+    args: [0]
+    kind: command
+  - method: command
+    receiver: ProcessBuilder
+    args: [0]
+    kind: command
+  - method: command
+    receiver: ProcessBuilder
+    kind: command
+  - method: start
+    receiver: ProcessBuilder
+    kind: command

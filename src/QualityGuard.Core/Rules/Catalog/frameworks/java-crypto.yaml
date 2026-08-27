@@ -1,0 +1,63 @@
+name: crypto
+language: java
+aliases: [javax-crypto, java-security]
+description: Java cryptography (JCA/JCE, SSL/TLS)
+
+types:
+  - name: Cipher
+    methods: [getInstance, init, doFinal, update, getAlgorithm]
+  - name: KeyGenerator
+    methods: [getInstance, init, generateKey]
+  - name: SecretKeySpec
+    methods: [constructor]
+  - name: MessageDigest
+    methods: [getInstance, digest, update]
+  - name: SecureRandom
+    methods: [getInstance, nextBytes, nextInt, nextLong, nextDouble]
+  - name: SSLContext
+    methods: [getInstance, init, getDefault, getSocketFactory]
+  - name: TrustManager
+    abstract: true
+  - name: X509TrustManager
+    implements: [TrustManager]
+    methods: [checkClientTrusted, checkServerTrusted, getAcceptedIssuers]
+  - name: HostnameVerifier
+    abstract: true
+    methods: [verify]
+  - name: HttpsURLConnection
+    methods: [setSSLSocketFactory, setHostnameVerifier, getDefaultSSLSocketFactory]
+  - name: KeyStore
+    methods: [getInstance, load, getKey, setKeyEntry, setCertificateEntry]
+
+sinks:
+  - method: getInstance
+    receiver: Cipher
+    args: [0]
+    kind: crypto_algorithm
+  - method: getInstance
+    receiver: MessageDigest
+    args: [0]
+    kind: crypto_algorithm
+  - method: getInstance
+    receiver: KeyGenerator
+    args: [0]
+    kind: crypto_algorithm
+  - method: getInstance
+    receiver: SSLContext
+    args: [0]
+    kind: crypto_algorithm
+  - method: constructor
+    receiver: SecretKeySpec
+    kind: crypto_key
+  - method: init
+    receiver: Cipher
+    args: [0]
+    kind: crypto_key
+
+sanitizers:
+  - method: init
+    receiver: Cipher
+    kind: crypto_init
+  - method: doFinal
+    receiver: Cipher
+    kind: crypto_final

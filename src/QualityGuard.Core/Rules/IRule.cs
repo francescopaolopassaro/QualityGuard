@@ -1,4 +1,5 @@
 ﻿using QualityGuard.Core.Analysis;
+using QualityGuard.Core.Frameworks;
 using QualityGuard.Core.Models;
 using QualityGuard.Core.Semantics;
 using QualityGuard.Core.Syntax;
@@ -59,6 +60,9 @@ public interface IRuleContext
     /// <summary>Best-effort type of an expression; null means the analysis cannot tell.</summary>
     TypeResolver Types { get; }
 
+    /// <summary>Framework definitions for the language being analysed (types, methods, chains, sinks/sources).</summary>
+    FrameworkRegistry Frameworks { get; }
+
     TaintResult? Taint { get; }
 
     /// <summary>
@@ -87,7 +91,7 @@ public interface IRuleContext
     void Report(SyntaxNode node, string message, bool withFlow = false);
 }
 
-internal sealed class RuleContext(SourceFile file, FileAnalysis analysis) : IRuleContext
+internal sealed class RuleContext(SourceFile file, FileAnalysis analysis, FrameworkRegistry frameworks) : IRuleContext
 {
     private readonly FileAnalysis _analysis = analysis;
     private TypeResolver? _types;
@@ -101,7 +105,8 @@ internal sealed class RuleContext(SourceFile file, FileAnalysis analysis) : IRul
     public SyntaxNode Root => _analysis.Tree.Root;
     public SemanticModel Semantics => _analysis.Semantics;
     public ProjectIndex Project => _analysis.Project ?? ProjectIndex.Empty;
-    public TypeResolver Types => _types ??= new TypeResolver(_analysis.Semantics, Project);
+    public TypeResolver Types => _types ??= new TypeResolver(_analysis.Semantics, Project, frameworks, Language.LanguageKey);
+    public FrameworkRegistry Frameworks { get; } = frameworks;
     public TaintResult? Taint => _analysis.Taint;
     public ConfigNode Config => _config ??= ConfigTree.Parse(File.Content, Language.LanguageKey);
 
@@ -177,13 +182,33 @@ public static class RuleRepository
 
 public static class RuleEngine
 {
+    private static FrameworkRegistry? _cachedFrameworks;
+
+    /// <summary>
+    /// Returns the shared framework registry, loading from the catalog directory on first call.
+    /// </summary>
+    public static FrameworkRegistry GetFrameworks()
+    {
+        if (_cachedFrameworks != null) return _cachedFrameworks;
+        var catalogDir = Path.Combine(AppContext.BaseDirectory, "..", "..", "..", "..",
+            "src", "QualityGuard.Core", "Rules", "Catalog");
+        if (!Directory.Exists(catalogDir))
+        {
+            // Fallback: check relative to assembly location
+            catalogDir = Path.Combine(AppContext.BaseDirectory, "Rules", "Catalog");
+        }
+        _cachedFrameworks = FrameworkRegistry.Load(catalogDir);
+        return _cachedFrameworks;
+    }
+
     public static void Run(FileAnalysis analysis, IEnumerable<IRule> rules)
     {
         var file = analysis.File;
         if (file.Language == null)
             return;
 
-        var context = new RuleContext(file, analysis);
+        var frameworks = GetFrameworks();
+        var context = new RuleContext(file, analysis, frameworks);
         foreach (var rule in rules)
         {
             if (rule.Languages.Length > 0 && !rule.Languages.Contains(file.Language.LanguageKey))

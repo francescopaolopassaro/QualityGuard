@@ -1,0 +1,59 @@
+name: testing
+language: py
+aliases: [pytest, unittest]
+description: Python testing frameworks (pytest, unittest)
+
+types:
+  - name: TestCase
+    abstract: true
+    methods: [assertEqual, assertNotEqual, assertTrue, assertFalse,
+              assertIs, assertIsNot, assertIsNone, assertIsNotNone,
+              assertIn, assertNotIn, assertIsInstance, assertNotIsInstance,
+              assertAlmostEqual, assertNotAlmostEqual, assertGreater,
+              assertGreaterEqual, assertLess, assertLessEqual,
+              assertRaises, assertRaisesRegex, assertWarns, assertWarnsRegex,
+              assertLogs, assertRaisesRegex, fail]
+  - name: pytest
+    methods: [raises, warns, mark, fixture, param, approx, importorskip]
+  - name: FixtureRequest
+    methods: [getfixturevalue, param, apply]
+  - name: MonkeyPatch
+    methods: [setattr, delattr, setenv, delenv, syspath_prepend]
+  - name: Capsys
+    methods: [readouterr]
+  - name: Caplog
+    methods: [readout]
+
+chains:
+  - entry: approx
+    returns: ApproxBase
+    chain_methods: [rel_tol, abs_tol]
+
+method_returns:
+  - receiver: "*"
+    method: approx
+    returns: ApproxBase
+  - receiver: TestCase
+    method: assertEqual
+    returns_self: true
+  - receiver: TestCase
+    method: assertNotEqual
+    returns_self: true
+  - receiver: TestCase
+    method: assertTrue
+    returns_self: true
+  - receiver: TestCase
+    method: assertFalse
+    returns_self: true
+  - receiver: TestCase
+    method: assertIn
+    returns_self: true
+  - receiver: TestCase
+    method: assertNotIn
+    returns_self: true
+  - receiver: TestCase
+    method: assertIsInstance
+    returns_self: true
+  - receiver: TestCase
+    method: assertRaises
+    returns_self: true
