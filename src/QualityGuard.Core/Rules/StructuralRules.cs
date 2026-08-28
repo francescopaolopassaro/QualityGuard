@@ -7255,6 +7255,9 @@ public abstract class UnusedPrivateFunctionRule : StructuralRuleBase
             var isPrivate = declaredPrivate || privateByConvention;
             if (!isPrivate || function.Text.Length == 0 || called.Contains(function.Text))
                 continue;
+            // pytest fixtures are called by the framework, not by the test code.
+            if (HasPytestFixtureDecorator(function, context))
+                continue;
             // a member referenced without a call, for instance as a delegate, still counts as used
             var referenced = context.Root.OfKind(NodeKind.Identifier)
                 .Count(i => i.Text == function.Text) > 0;
@@ -7263,6 +7266,50 @@ public abstract class UnusedPrivateFunctionRule : StructuralRuleBase
             context.Report(function, $"Nothing in this file calls '{function.Text}'; "
                                      + "remove it or make the caller explicit.");
         }
+    }
+
+    /// <summary>
+    /// Returns true when the function carries a @pytest.fixture decorator (with or without
+    /// arguments).  Pytest calls fixture functions automatically — they are not "unused".
+    /// Detection: scan source lines above the def for the decorator marker.
+    /// </summary>
+    private static bool HasPytestFixtureDecorator(SyntaxNode function, IRuleContext context)
+    {
+        if (function.Text.Length == 0) return false;
+        // Method 1: check tokens above the function for @pytest patterns
+        if (context.Tokens.Count > 0 && function.Tokens.Count > 0)
+        {
+            var funcFirstLine = function.Tokens[0].Line;
+            for (var t = 0; t < context.Tokens.Count; t++)
+            {
+                var tok = context.Tokens[t];
+                if (tok.Line >= funcFirstLine) break;
+                if (tok.Line >= funcFirstLine - 10 &&
+                    (tok.Text.Contains("@pytest.fixture") || tok.Text.Contains("@pytest.mark.") ||
+                     tok.Text.Contains("autouse")))
+                    return true;
+            }
+        }
+        // Method 2: scan source lines
+        var content = context.File.Content;
+        if (!string.IsNullOrEmpty(content))
+        {
+            var lines = content.Split('\n');
+            var defPattern = "def " + function.Text;
+            for (var i = 0; i < lines.Length; i++)
+            {
+                if (!lines[i].Contains(defPattern)) continue;
+                var start = Math.Max(0, i - 10);
+                for (var j = start; j < i; j++)
+                {
+                    if (lines[j].Contains("@pytest.fixture") || lines[j].Contains("@pytest.mark.") ||
+                        lines[j].Contains("autouse=True"))
+                        return true;
+                }
+                break;
+            }
+        }
+        return false;
     }
 }
 

@@ -716,6 +716,10 @@ public abstract class DiscardedPureResultRule : CorrectnessRuleBase
             // an in-place variant exists in some libraries: only report when there is a receiver to keep
             if (SyntaxQuery.Receiver(call).Length == 0)
                 continue;
+            // os.replace() is a side-effecting filesystem operation (renames a file), not a pure
+            // string method.  The receiver 'os' makes the distinction: skip module-level calls.
+            if (SyntaxQuery.Receiver(call) == "os")
+                continue;
 
             context.Report(call, $"'{name}' returns a new value and changes nothing, so this statement has "
                                  + "no effect. Assign the result, or remove the line.");
