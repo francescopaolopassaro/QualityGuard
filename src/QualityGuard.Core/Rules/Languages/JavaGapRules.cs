@@ -48,6 +48,7 @@ public static class JavaGapRuleSet
         new JavaSimpleTextBlockRule(),
         new JavaEscapeSequenceInTextBlockRule(),
         new JavaAutowiredTooManyRule(),
+        new JavaIncompatibleTransactionalRule(),
     ];
 }
 
@@ -843,6 +844,117 @@ public sealed class JavaAsyncInsideConfigurationRule : JavaGapRuleBase
                                         + "Move the work to a regular bean.");
             }
         }
+    }
+}
+
+public sealed class JavaIncompatibleTransactionalRule : JavaGapRuleBase
+{
+    private const string NotTransactional = "NOT_TRANSACTIONAL";
+    private const string DefaultProp = "REQUIRED";
+
+    private static readonly HashSet<string> Props = new(StringComparer.Ordinal)
+    {
+        "MANDATORY", "NESTED", "NEVER", "NOT_SUPPORTED", "REQUIRED", "REQUIRES_NEW", "SUPPORTS",
+    };
+
+    // For a given caller propagation, which callee propagations it cannot enter.
+    private static readonly Dictionary<string, HashSet<string>> Incompatible = new(StringComparer.Ordinal)
+    {
+        [NotTransactional] = new HashSet<string>(new[] { "MANDATORY", "NESTED", "REQUIRED", "REQUIRES_NEW" }),
+        ["MANDATORY"] = new HashSet<string>(new[] { "NESTED", "NEVER", "NOT_SUPPORTED", "REQUIRES_NEW" }),
+        ["NESTED"] = new HashSet<string>(new[] { "NESTED", "NEVER", "NOT_SUPPORTED", "REQUIRES_NEW" }),
+        ["NEVER"] = new HashSet<string>(new[] { "MANDATORY", "NESTED", "REQUIRED", "REQUIRES_NEW" }),
+        ["NOT_SUPPORTED"] = new HashSet<string>(new[] { "MANDATORY", "NESTED", "REQUIRED", "REQUIRES_NEW" }),
+        ["REQUIRED"] = new HashSet<string>(new[] { "NESTED", "NEVER", "NOT_SUPPORTED", "REQUIRES_NEW" }),
+        ["REQUIRES_NEW"] = new HashSet<string>(new[] { "NESTED", "NEVER", "NOT_SUPPORTED", "REQUIRES_NEW" }),
+        ["SUPPORTS"] = new HashSet<string>(new[] { "MANDATORY", "NESTED", "NEVER", "NOT_SUPPORTED", "REQUIRED", "REQUIRES_NEW" }),
+    };
+
+    public override string Key => "QG-JV-BUG-0329";
+    public override string Name => "Incompatible @Transactional propagation between method calls";
+    public override Severity Severity => Severity.Major;
+    public override IssueKind Kind => IssueKind.Bug;
+    public override string RemediationEffort => "10min";
+    public override string[] Languages => ["java"];
+
+    public override void Execute(IRuleContext context)
+    {
+        foreach (var type in context.Root.OfKind(NodeKind.ClassDeclaration))
+        {
+            var classProp = PropagationOf(type.ChildrenOf(NodeKind.Attribute)) ?? NotTransactional;
+
+            var methods = new Dictionary<string, (string Prop, bool Static, SyntaxNode Node)>();
+            foreach (var method in type.OfKind(NodeKind.FunctionDeclaration))
+            {
+                if (!method.ChildrenOf(NodeKind.Modifier).Any(m => m.Text == "public"))
+                    continue;
+                var prop = PropagationOf(method.ChildrenOf(NodeKind.Attribute)) ?? classProp;
+                var isStatic = method.ChildrenOf(NodeKind.Modifier).Any(m => m.Text == "static");
+                methods[method.Text] = (prop, isStatic, method);
+            }
+            if (methods.Count == 0)
+                continue;
+            if (methods.Values.Select(v => v.Prop).Distinct().Count() <= 1)
+                continue;
+
+            foreach (var (callerProp, _, caller) in methods.Values)
+            {
+                var body = caller.FirstChild(NodeKind.Block);
+                if (body == null)
+                    continue;
+                foreach (var call in body.OfKind(NodeKind.Invocation))
+                {
+                    var calleeName = SyntaxQuery.InvokedName(call);
+                    if (!methods.TryGetValue(calleeName, out var callee) || callee.Static)
+                        continue;
+                    if (!OnThisInstance(call, calleeName))
+                        continue;
+                    if (Incompatible.TryGetValue(callerProp, out var bad) && bad.Contains(callee.Prop))
+                        context.Report(call, $"\"{calleeName}'s\" @Transactional requirement "
+                                             + "is incompatible with the one on this method: "
+                                             + "entering it changes the transaction the caller "
+                                             + "already opened. Align the two propagation values.");
+                }
+            }
+        }
+    }
+
+    /// <summary>Propagation declared on the node, or null when no @Transactional sits on it.</summary>
+    private static string? PropagationOf(IEnumerable<SyntaxNode> attributes)
+    {
+        foreach (var attr in attributes)
+        {
+            var full = attr.Text;
+            var javax = full.Contains("javax.transaction", StringComparison.Ordinal);
+            var transactional = javax || Simple(full).Contains("Transactional", StringComparison.Ordinal);
+            if (!transactional)
+                continue;
+            var argList = attr.FirstChild(NodeKind.ArgumentList);
+            if (argList != null)
+            {
+                foreach (var assignment in argList.ChildrenOf(NodeKind.Assignment))
+                {
+                    var left = Simple(assignment.ChildAt(0)?.Text);
+                    if (left != "propagation" && left != "value")
+                        continue;
+                    var right = assignment.ChildAt(1);
+                    if (right == null)
+                        continue;
+                    var value = Simple(right.Text);
+                    if (Props.Contains(value))
+                        return value;
+                }
+            }
+            return DefaultProp;
+        }
+        return null;
+    }
+
+    /// <summary>True when the call is a bare name or <c>this.name()</c>, never <c>other.name()</c>.</summary>
+    private static bool OnThisInstance(SyntaxNode call, string name)
+    {
+        var receiver = call.ChildAt(0)?.Text ?? "";
+        return receiver == name || receiver == "this." + name;
     }
 }
 

@@ -327,7 +327,21 @@ public sealed class JavaSqlInjectionRule : PatternRuleBase
         "prepareStatement", "prepareCall",
         "createQuery", "createNativeQuery", "createNamedQuery",
         "queryForObject", "queryForList", "queryForMap", "query",
-        "update", "batchUpdate"
+        "update", "batchUpdate",
+        // Spring JDBC
+        "sql", "queryForStream",
+        // Spring JdbcDaoImpl setters
+        "setAuthoritiesByUsernameQuery", "setGroupAuthoritiesByUsernameQuery",
+        "setUsersByUsernameQuery",
+        // Spring JdbcUserDetailsManager setters
+        "setChangePasswordSql", "setCreateAuthoritySql", "setCreateUserSql",
+        "setDeleteGroupAuthoritiesSql", "setDeleteGroupAuthoritySql",
+        "setDeleteGroupMemberSql", "setDeleteGroupMembersSql",
+        "setDeleteGroupSql", "setDeleteUserAuthoritiesSql", "setDeleteUserSql",
+        "setFindAllGroupsSql", "setFindGroupIdSql", "setFindUsersInGroupSql",
+        "setGroupAuthoritiesSql", "setInsertGroupAuthoritySql",
+        "setInsertGroupMemberSql", "setInsertGroupSql",
+        "setRenameGroupSql", "setUpdateUserSql", "setUserExistsSql"
     ];
 
     public override void Execute(IRuleContext context)
@@ -347,17 +361,8 @@ public sealed class JavaSqlInjectionRule : PatternRuleBase
             var hasConcat = stripped.Contains('+') || RuleMatchers.LineContains(stripped, "String.format")
                 || RuleMatchers.LineContains(stripped, ".append(");
             var hasSink = allSinks.Any(m => RuleMatchers.LineContains(lines[i], m + "("));
-            if (!hasConcat && !hasSink)
+            if (!hasConcat || !hasSink)
                 continue;
-            if (!hasConcat)
-                continue;
-            if (context.Taint != null)
-            {
-                var lineHasTaintedIdentifier = context.Tokens.Any(t => t.Line == i + 1
-                    && RuleMatchers.IsIdentifier(t) && context.IsTainted(t.Text));
-                if (!lineHasTaintedIdentifier)
-                    continue;
-            }
             context.Report("Make sure this SQL query is not vulnerable to SQL injection.", i + 1);
         }
     }
@@ -1195,53 +1200,94 @@ public sealed class JavaOsCommandPathRule : PatternRuleBase
     public override string RemediationEffort => "20min";
     public override string FixAdvice => "Use absolute paths for OS commands to prevent PATH manipulation attacks.";
     public override string[] Languages => ["java"];
+    private const string Message = "Make sure the \u201cPATH\u201d variable only contains fixed, unwriteable directories.";
+
+    private static readonly HashSet<string> ExecMethods = new(StringComparer.OrdinalIgnoreCase)
+    {
+        "exec", "command"
+    };
+
+    private static readonly HashSet<string> ListWrappers = new(StringComparer.OrdinalIgnoreCase)
+    {
+        "asList", "singletonList", "of"
+    };
 
     public override void Execute(IRuleContext context)
     {
         var tokens = context.Tokens;
-        for (var i = 0; i + 4 < tokens.Count; i++)
+        for (var i = 0; i < tokens.Count; i++)
         {
-            // Runtime.getRuntime().exec(...)
-            if (RuleMatchers.IsName(tokens[i], "Runtime") && tokens[i + 1].Text == "."
-                && RuleMatchers.IsName(tokens[i + 2], "getRuntime") && tokens[i + 3].Text == "."
-                && RuleMatchers.IsName(tokens[i + 4], "exec"))
-            {
-                if (i + 5 < tokens.Count && tokens[i + 5].Text == "(")
-                    CheckCommandArg(tokens, i + 6, context);
-            }
-
-            // new ProcessBuilder("cmd") or new ProcessBuilder(Arrays.asList("cmd"))
-            if (tokens[i].Text == "new" && i + 1 < tokens.Count && RuleMatchers.IsName(tokens[i + 1], "ProcessBuilder"))
-            {
-                if (i + 2 < tokens.Count && tokens[i + 2].Text == "(")
-                    CheckCommandArg(tokens, i + 3, context);
-            }
-
-            // ProcessBuilder.command("cmd")
-            if (RuleMatchers.IsName(tokens[i], "ProcessBuilder") && tokens[i + 1].Text == "."
-                && RuleMatchers.IsName(tokens[i + 2], "command") && tokens[i + 3].Text == "(")
-                CheckCommandArg(tokens, i + 4, context);
+            if (tokens[i].Text != "exec" && tokens[i].Text != "command" && tokens[i].Text != "ProcessBuilder")
+                continue;
+            // Find the next "(" within a small window (skip dots and other tokens)
+            var j = i + 1;
+            while (j < tokens.Count && j <= i + 4 && tokens[j].Text != "(" && tokens[j].Text != ";" && tokens[j].Text != ",")
+                j++;
+            if (j < tokens.Count && tokens[j].Text == "(")
+                CheckCommandArgs(tokens, j + 1, context);
         }
     }
 
-    private static void CheckCommandArg(IReadOnlyList<Token> tokens, int argIdx, IRuleContext context)
+    private static void CheckCommandArgs(IReadOnlyList<Token> tokens, int argIdx, IRuleContext context)
     {
-        while (argIdx < tokens.Count && tokens[argIdx].Text == "(")
-            argIdx++;
-        if (argIdx < tokens.Count && tokens[argIdx].Kind == TokenKind.String)
+        SkipParens(tokens, ref argIdx);
+        if (argIdx >= tokens.Count) return;
+
+        if (tokens[argIdx].Kind == TokenKind.String)
         {
-            var cmd = StripQuotes(tokens[argIdx].Text);
-            if (!IsAbsoluteCommand(cmd) && cmd.Length > 0)
-                context.Report("Use an absolute path for this command to prevent PATH manipulation.", tokens[argIdx].Line);
+            CheckStringArg(tokens, argIdx, context);
         }
+        else if (tokens[argIdx].Text == "new" && argIdx + 1 < tokens.Count
+            && tokens[argIdx + 1].Text == "String" && argIdx + 2 < tokens.Count && tokens[argIdx + 2].Text == "[")
+        {
+            var braceIdx = FindToken(tokens, argIdx + 3, "{");
+            if (braceIdx >= 0)
+            {
+                var innerIdx = braceIdx + 1;
+                SkipParens(tokens, ref innerIdx);
+                if (innerIdx < tokens.Count && tokens[innerIdx].Kind == TokenKind.String)
+                    CheckStringArg(tokens, innerIdx, context);
+            }
+        }
+        else if (tokens[argIdx].Kind == TokenKind.Identifier && argIdx + 2 < tokens.Count
+            && tokens[argIdx + 1].Text == "." && ListWrappers.Contains(tokens[argIdx + 2].Text)
+            && argIdx + 3 < tokens.Count && tokens[argIdx + 3].Text == "(")
+        {
+            var innerIdx = argIdx + 4;
+            SkipParens(tokens, ref innerIdx);
+            if (innerIdx < tokens.Count && tokens[innerIdx].Kind == TokenKind.String)
+                CheckStringArg(tokens, innerIdx, context);
+        }
+    }
+
+    private static void CheckStringArg(IReadOnlyList<Token> tokens, int idx, IRuleContext context)
+    {
+        var cmd = StripQuotes(tokens[idx].Text);
+        if (cmd.Length > 0 && !IsAbsoluteCommand(cmd))
+            context.Report(Message, tokens[idx].Line);
+    }
+
+    private static void SkipParens(IReadOnlyList<Token> tokens, ref int idx)
+    {
+        while (idx < tokens.Count && tokens[idx].Text == "(")
+            idx++;
+    }
+
+    private static int FindToken(IReadOnlyList<Token> tokens, int start, string text)
+    {
+        for (var i = start; i < tokens.Count; i++)
+            if (tokens[i].Text == text) return i;
+        return -1;
     }
 
     private static bool IsAbsoluteCommand(string cmd)
     {
         if (string.IsNullOrEmpty(cmd)) return true;
-        if (cmd.StartsWith('/') || cmd.StartsWith("./") || cmd.StartsWith("../") || cmd.StartsWith("~/"))
+        if (cmd[0] == '/') return true;
+        if (cmd.StartsWith("./") || cmd.StartsWith("../") || cmd.StartsWith("~/"))
             return true;
-        if (cmd.StartsWith('\\') || cmd.StartsWith(".\\") || cmd.StartsWith("..\\"))
+        if (cmd.StartsWith("\\\\")) return true;
+        if (cmd.StartsWith(".\\") || cmd.StartsWith("..\\"))
             return true;
         if (cmd.Length >= 3 && char.IsLetter(cmd[0]) && cmd[1] == ':' && (cmd[2] == '\\' || cmd[2] == '/'))
             return true;
@@ -1299,8 +1345,16 @@ public sealed class JavaAssertJChainRule : PatternRuleBase
             {
                 var inner = GetInnerExpression(tokens, innerStart, innerEnd);
                 if (inner != null)
+                {
                     context.Report(DescribeSimplification(inner, method), tokens[i].Line);
-                continue;
+                    continue;
+                }
+                var innerMethod = InnerMethod(tokens, innerStart, innerEnd)?.ToMessage(method == "isTrue");
+                if (innerMethod != null)
+                {
+                    context.Report(innerMethod, tokens[i].Line);
+                    continue;
+                }
             }
 
             // assertThat(expr).isEqualTo(null)
@@ -1320,13 +1374,162 @@ public sealed class JavaAssertJChainRule : PatternRuleBase
             }
 
             // assertThat(expr).isEqualTo(true) / isEqualTo(false)
-            if (method == "isEqualTo" && methodIdx + 1 < tokens.Count && tokens[methodIdx + 1].Text == "(")
+            if (method is "isEqualTo" or "isNotEqualTo")
             {
                 var argIdx = methodIdx + 2;
-                if (argIdx < tokens.Count && tokens[argIdx].Text is "true" or "false")
-                    context.Report("Use " + (tokens[argIdx].Text == "true" ? "isTrue()" : "isFalse()") + " instead of isEqualTo(" + tokens[argIdx].Text + ").", tokens[i].Line);
+                if (argIdx < tokens.Count && tokens[argIdx].Text is "true" or "false"
+                    && tokens[argIdx + 1].Text == ")")
+                {
+                    if (method == "isEqualTo")
+                        context.Report($"Use {(tokens[argIdx].Text == "true" ? "isTrue()" : "isFalse()")} instead of isEqualTo({tokens[argIdx].Text}).", tokens[i].Line);
+                    continue;
+                }
+            }
+
+            // Numeric predicate: assertThat(<method>(...)).isEqualTo(n) / isNotEqualTo(n) / isZero() / ...
+            var numeric = NumericSimplification(innerStart, innerEnd, method, methodIdx, tokens);
+            if (numeric != null)
+            {
+                context.Report(numeric, tokens[i].Line);
+                continue;
             }
         }
+    }
+
+    /// <summary>Finds a single method call inside the assertThat(...) argument.</summary>
+    private static TrailingMethod? InnerMethod(IReadOnlyList<Token> tokens, int start, int end)
+    {
+        var depth = 0;
+        for (var k = start; k <= end; k++)
+        {
+            if (tokens[k].Text == "(")
+            {
+                depth++;
+                continue;
+            }
+            if (tokens[k].Text == ")")
+            {
+                depth--;
+                continue;
+            }
+            if (depth != 0 || k == 0)
+                continue;
+            if (tokens[k - 1].Text != ".")
+                continue;
+            switch (tokens[k].Text)
+            {
+                case "contains":
+                case "startsWith":
+                case "endsWith":
+                    return new TrailingMethod(tokens[k].Text);
+            }
+        }
+        return null;
+    }
+
+    /// <summary>Simplifications driven by a numeric argument or by value-returning predicates.</summary>
+    private static string? NumericSimplification(int innerStart, int innerEnd, string method, int methodIdx, IReadOnlyList<Token> tokens)
+    {
+        var innerName = InnerCallName(tokens, innerStart, innerEnd);
+        if (innerName == null)
+            return null;
+
+        var arg = PredicateArgument(methodIdx, tokens);
+
+        switch (innerName)
+        {
+            case "toString" when method == "isEqualTo":
+                return "Use assertThat(actual).hasToString(expectedString) instead.";
+            case "compareTo":
+                return CompareTo(method, arg);
+            case "indexOf":
+                return IndexOf(method, arg);
+        }
+        return null;
+    }
+
+    /// <summary>Reads the single numeric literal argument of a predicate at <paramref name="methodIdx"/>, if any.</summary>
+    private static string PredicateArgument(int methodIdx, IReadOnlyList<Token> tokens)
+    {
+        if (methodIdx + 1 < tokens.Count && tokens[methodIdx + 1].Text == "(")
+        {
+            var a = methodIdx + 2;
+            if (a < tokens.Count && a + 1 < tokens.Count && tokens[a + 1].Text == ")")
+                return tokens[a].Text;
+            if (a + 2 < tokens.Count && tokens[a + 2].Text == ")" && tokens[a].Text == "-")
+                return "-1";
+        }
+        return "";
+    }
+
+    private static string? CompareTo(string method, string arg)
+    {
+        return (method, arg) switch
+        {
+            ("isEqualTo", "0") => "Use isZero() instead.",
+            ("isNotEqualTo", "0") => "Use isNotZero() instead.",
+            ("isZero", _) => "Use assertThat(actual).isEqualByComparingTo(expected) instead.",
+            ("isNotZero", _) => "Use assertThat(actual).isNotEqualByComparingTo(expected) instead.",
+            _ => null,
+        };
+    }
+
+    private static string? IndexOf(string method, string arg)
+    {
+        return (method, arg) switch
+        {
+            ("isEqualTo", "0") => "Use isZero() instead.",
+            ("isNotEqualTo", "0") => "Use isNotZero() instead.",
+            ("isEqualTo", "-1") => "Use assertThat(actual).doesNotContain(expected) instead.",
+            ("isZero", _) => "Use assertThat(actual).startsWith(expected) instead.",
+            ("isNotZero", _) => "Use assertThat(actual).doesNotStartWith(expected) instead.",
+            ("isNegative", _) => "Use assertThat(actual).doesNotContain(expected) instead.",
+            ("isNotNegative", _) => "Use assertThat(actual).contains(expected) instead.",
+            _ => null,
+        };
+    }
+
+    /// <summary>Reads the innermost method name of a call inside assertThat(...).</summary>
+    private static string? InnerCallName(IReadOnlyList<Token> tokens, int start, int end)
+    {
+        var depth = 0;
+        for (var k = start; k <= end; k++)
+        {
+            if (tokens[k].Text == "(")
+            {
+                depth++;
+                continue;
+            }
+            if (tokens[k].Text == ")")
+            {
+                depth--;
+                continue;
+            }
+            if (depth != 0 || k == 0)
+                continue;
+            if (tokens[k - 1].Text != ".")
+                continue;
+            if (tokens[k].Text is "toString" or "compareTo" or "indexOf")
+                return tokens[k].Text;
+        }
+        return null;
+    }
+
+    private sealed record TrailingMethod(string Name)
+    {
+        public string ToMessage(bool isTrue) => Name switch
+        {
+            "contains" => isTrue
+                ? "Use assertThat(actual).contains(expected) instead."
+                : "Use assertThat(actual).doesNotContain(expected) instead.",
+            "startsWith" => isTrue
+                ? "Use assertThat(actual).startsWith(expected) instead."
+                : "Use assertThat(actual).doesNotStartWith(expected) instead.",
+            "endsWith" => isTrue
+                ? "Use assertThat(actual).endsWith(expected) instead."
+                : "Use assertThat(actual).doesNotEndWith(expected) instead.",
+            _ => "",
+        };
     }
 
     private static string? GetInnerExpression(IReadOnlyList<Token> tokens, int start, int end)

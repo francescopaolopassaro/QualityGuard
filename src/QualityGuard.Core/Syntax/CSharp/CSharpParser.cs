@@ -4735,31 +4735,36 @@ public sealed class CSharpParser
 
         // a function expression is a value in JavaScript — a callback, an argument, an assignment —
         // and reading it as a call named "function" scattered its body into the argument list
-        if (IsJs && token.Text == "function")
+        // These keywords open an expression only when they are really the keyword: the parser
+        // compares their text, and a string literal's text is its content without the quotes, so
+        // without the kind check a Kotlin/Rust/JS string holding the word 'if', 'when' or 'function'
+        // was read as a branch and the parser kept parsing the next 'if' forever.
+        var isKeywordToken = token.Kind is TokenKind.Identifier or TokenKind.Keyword;
+        if (isKeywordToken && IsJs && token.Text == "function")
             return ParseJsFunctionExpression(start);
 
         // Kotlin's branches are expressions: 'val label = when (x) { ... }' is ordinary code, and
         // reading it as a call named "when" scattered the branches into an argument list
-        if (IsKotlin && token.Text == "when")
+        if (isKeywordToken && IsKotlin && token.Text == "when")
             return ParseKotlinWhen(start);
-        if (IsKotlin && token.Text == "if")
+        if (isKeywordToken && IsKotlin && token.Text == "if")
             return ParseIf(start);
-        if (IsKotlin && token.Text == "try")
+        if (isKeywordToken && IsKotlin && token.Text == "try")
             return ParseTry(start);
 
         // an object expression — 'val counter = object : Runnable { ... }' — builds an anonymous
         // instance: read as a plain identifier it left the ':' orphan and the body detached from
         // the value that owned it
-        if (IsKotlin && token.Text == "object" && (PeekText() == ":" || PeekText() == "{"))
+        if (isKeywordToken && IsKotlin && token.Text == "object" && (PeekText() == ":" || PeekText() == "{"))
             return ParseKotlinObjectExpression(start);
 
         // Rust branches and matches are expressions too: 'let parity = if n % 2 == 0 { 0 } else { 1 };'
         // is how half of the language decides between two values.
-        if (IsRust && token.Text == "if")
+        if (isKeywordToken && IsRust && token.Text == "if")
             return ParseIf(start);
-        if (IsRust && token.Text == "match")
+        if (isKeywordToken && IsRust && token.Text == "match")
             return ParseRustMatch(start);
-        if (IsRust && token.Text == "loop")
+        if (isKeywordToken && IsRust && token.Text == "loop")
         {
             _index++;
             var loopExpression = Node(NodeKind.Loop, start, "loop");
@@ -4767,18 +4772,18 @@ public sealed class CSharpParser
                 loopExpression.Add(ParseBlock());
             return loopExpression;
         }
-        if (IsRust && token.Text == "unsafe" && PeekText() == "{")
+        if (isKeywordToken && IsRust && token.Text == "unsafe" && PeekText() == "{")
         {
             _index++;
             return ParseBlock();
         }
-        if (IsRust && token.Text == "async")
+        if (isKeywordToken && IsRust && token.Text == "async")
         {
             _index++;
             Accept("move");
             return Is("{") ? ParseBlock() : ParseUnary() ?? Node(NodeKind.Unknown, start, "async");
         }
-        if (IsRust && (token.Text == "|" || token.Text == "||"))
+        if (isKeywordToken && IsRust && (token.Text == "|" || token.Text == "||"))
             return ParseRustClosure(start);
 
         switch (token.Kind)

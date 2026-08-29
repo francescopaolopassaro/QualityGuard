@@ -1,4 +1,6 @@
+using QualityGuard.Core.Analysis;
 using Xunit;
+using Xunit.Abstractions;
 
 namespace QualityGuard.Core.Tests;
 
@@ -10,6 +12,48 @@ public class JavaMeasuredRulesTests
 {
     private static IReadOnlyList<int> Lines(string code, string rule, string file = "Sample.java")
         => Analyze.LinesOf(Analyze.WithRules(file, code, rule), rule);
+
+    private readonly ITestOutputHelper _output;
+    public JavaMeasuredRulesTests(ITestOutputHelper output) => _output = output;
+
+    [Fact]
+    public void OsCommandPath_Detects_ProcessBuilder_And_Command()
+    {
+        var code = """
+            package demo;
+            class A {
+              void f() {
+                ProcessBuilder pb = new ProcessBuilder();
+                pb.command("make");
+                Runtime.getRuntime().exec("make");
+              }
+            }
+            """;
+        var lines = Lines(code, "QG-JV-SEC-0092");
+        Assert.NotEmpty(lines);
+    }
+
+    [Fact]
+    public void OsCommandPath_Still_Detects_Command_After_String_Array_Patterns()
+    {
+        var code = """
+            package demo;
+            class A {
+              void execArray() {
+                Runtime.getRuntime().exec(new String[]{"make"});
+                Runtime.getRuntime().exec(new String[]{"usr/bin/make"});
+              }
+              private void command() {
+                ProcessBuilder builder = new ProcessBuilder();
+                builder.command("make");
+                Runtime.getRuntime().exec("make");
+              }
+            }
+            """;
+        var lines = Lines(code, "QG-JV-SEC-0092");
+        _output.WriteLine("LINES: " + string.Join(",", lines));
+        Assert.NotEmpty(lines);
+    }
 
     [Fact]
     public void An_invisible_character_in_a_literal_is_reported()
@@ -404,4 +448,150 @@ public class JavaMeasuredRulesTests
         Assert.Empty(Lines(right, "QG-JV-BUG-0038"));
     }
 
+    [Fact]
+    public void Incompatible_transactional_propagation_is_reported()
+    {
+        var bad = """
+            package demo;
+            import org.springframework.transaction.annotation.Transactional;
+            class A {
+              SpringIncompatibleTransactionalCheckSample other;
+              @Transactional
+              public void transactional() {
+              }
+              public void plain() {
+                this.transactional(); // call to REQUIRED from NOT_TRANSACTIONAL
+              }
+            }
+            """;
+        Assert.Contains(9, Lines(bad, "QG-JV-BUG-0329"));
+    }
+
+    [Fact]
+    public void Matching_or_foreign_transactional_calls_are_left_alone()
+    {
+        var code = """
+            package demo;
+            import org.springframework.transaction.annotation.Transactional;
+            class A {
+              A other;
+              @Transactional
+              public void transactional() {
+                transactional(); // same REQUIRED -> fine
+              }
+              public void plain() {
+                other.transactional(); // not on this instance
+                String s = String.valueOf(1); // not a class method
+              }
+              @Transactional(propagation = Propagation.REQUIRED)
+              public void required() {
+                transactional(); // REQUIRED -> REQUIRED fine
+              }
+            }
+            """;
+        Assert.Empty(Lines(code, "QG-JV-BUG-0329"));
+    }
+
+    [Fact]
+    public void Incompatible_propagation_is_reported_on_the_call()
+    {
+        var code = """
+            package demo;
+            import org.springframework.transaction.annotation.Propagation;
+            import org.springframework.transaction.annotation.Transactional;
+            class A {
+              @Transactional(propagation = Propagation.NOT_SUPPORTED)
+              public String methodA() {
+                return "";
+              }
+              @Transactional(propagation = Propagation.REQUIRES_NEW)
+              public int methodB() {
+                methodA().length(); // REQUIRES_NEW calls NOT_SUPPORTED
+                return 1;
+              }
+            }
+            """;
+        Assert.Contains(11, Lines(code, "QG-JV-BUG-0329"));
+    }
+
+    [Fact]
+    public void A_class_level_propagation_inherits_into_plain_methods()
+    {
+        var code = """
+            package demo;
+            import org.springframework.transaction.annotation.Propagation;
+            import org.springframework.transaction.annotation.Transactional;
+            @Transactional(propagation = Propagation.NOT_SUPPORTED)
+            class A {
+              public void plain() {
+                transactional();
+              }
+              @Transactional
+              public void transactional() {
+              }
+            }
+            """;
+        Assert.Contains(7, Lines(code, "QG-JV-BUG-0329"));
+    }
+
+    [Fact]
+    public void AssertJ_Contains_StartsWith_EndsWith_Simplifications()
+    {
+        var code = """
+            package demo;
+            class A {
+              void f(String s) {
+                assertThat(s.contains("x")).isTrue();
+                assertThat(s.contains("x")).isFalse();
+                assertThat(s.startsWith("x")).isTrue();
+                assertThat(s.startsWith("x")).isFalse();
+                assertThat(s.endsWith("x")).isTrue();
+                assertThat(s.endsWith("x")).isFalse();
+              }
+            }
+            """;
+        var lines = Lines(code, "QG-JV-SML-0566");
+        Assert.Equal(6, lines.Count);
+    }
+
+    [Fact]
+    public void AssertJ_Index_And_ToString_Simplifications()
+    {
+        var code = """
+            package demo;
+            class A {
+              void f(String s, int n) {
+                assertThat(s.indexOf("x")).isEqualTo(0);
+                assertThat(s.indexOf("x")).isNotEqualTo(0);
+                assertThat(s.indexOf("x")).isEqualTo(-1);
+                assertThat(s.indexOf("x")).isZero();
+                assertThat(s.indexOf("x")).isNotZero();
+                assertThat(s.toString()).isEqualTo(n);
+                assertThat(s.compareTo("x")).isEqualTo(0);
+                assertThat(s.compareTo("x")).isZero();
+              }
+            }
+            """;
+        var lines = Lines(code, "QG-JV-SML-0566");
+        Assert.Equal(8, lines.Count);
+    }
+
+    [Fact]
+    public void AssertJ_Leaves_Positive_Assertions_Alone()
+    {
+        var code = """
+            package demo;
+            class A {
+              void f(String s) {
+                assertThat(s).contains("x");
+                assertThat(s).startsWith("x");
+                assertThat(s).endsWith("x");
+                assertThat(s).isEqualTo("x");
+                assertThat(s).isNotNull();
+              }
+            }
+            """;
+        var lines = Lines(code, "QG-JV-SML-0566");
+        Assert.Empty(lines);
+    }
 }

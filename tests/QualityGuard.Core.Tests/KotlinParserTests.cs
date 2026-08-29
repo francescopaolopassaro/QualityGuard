@@ -177,4 +177,26 @@ public class KotlinParserTests
 
         Assert.Equal(2, root.OfKind(NodeKind.ClassDeclaration).Count());
     }
+
+    [Fact]
+    public void A_string_holding_a_keyword_is_not_a_branch()
+    {
+        // The value 'if' is a string, not Kotlin's if expression: reading every token whose text
+        // matches a keyword as a branch made the parser loop forever on any string literal that held
+        // the word if/when/try/function.
+        var root = Parse("""
+            class Greeting {
+                fun label() {
+                    val message = "if"
+                    val other = foo("when")
+                    if (message.isEmpty()) return
+                }
+            }
+            """);
+
+        Assert.Equal(2, root.OfKind(NodeKind.StringLiteral).Count());
+        Assert.Single(root.OfKind(NodeKind.StringLiteral).Where(s => s.Text == "if"));
+        var ifs = root.OfKind(NodeKind.If).ToList();
+        Assert.Single(ifs);
+    }
 }
