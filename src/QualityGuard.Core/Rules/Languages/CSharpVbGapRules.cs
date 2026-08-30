@@ -51,6 +51,8 @@ public static class CSharpVbGapRuleSet
         new UseUnixEpochRule(),
         new BooleanLiteralUnnecessaryRule(),
         new FindInsteadOfFirstOrDefaultRule(),
+        new UseTrueForAllRule(),
+        new UseIndexingInsteadOfLinqMethodsRule(),
     ];
 }
 
@@ -1807,6 +1809,310 @@ public sealed class FindInsteadOfFirstOrDefaultRule : VbGapRuleBase
         => string.IsNullOrEmpty(t) ? null : t;
 
     private static SyntaxNode? StripParens2(SyntaxNode? node)
+    {
+        while (node is { Kind: NodeKind.Parenthesized } && node.Children.Count > 0)
+            node = node.ChildAt(0) as SyntaxNode;
+        return node;
+    }
+
+    private static bool IsDeclaredType(string name, ProjectIndex project)
+        => project.FindType(name) != null;
+}
+
+public sealed class UseTrueForAllRule : VbGapRuleBase
+{
+    // S6603: on a List<T>, an array or an ImmutableList<T> the "All" extension wraps the element in
+    // a closure where the collection already has a native "TrueForAll" that matches every element
+    // without allocating. The check fires only when the receiver resolves to one of those types (or
+    // a type declared to derive from them) and does not shadow "All" with a method of its own, so a
+    // "All" on any other type stays quiet.
+    public override string Key => "QG-CS-SML-1085";
+    public override string Name => "Use the collection-specific TrueForAll instead of the All extension";
+    public override Severity Severity => Severity.Minor;
+    public override IssueKind Kind => IssueKind.CodeSmell;
+    public override string RemediationEffort => "5min";
+    public override string[] Languages => ["cs"];
+
+    public override void Execute(IRuleContext context)
+    {
+        var initializers = CollectionLinq.CollectInitializers(context.Root);
+        foreach (var call in context.Root.OfKind(NodeKind.Invocation).Cast<SyntaxNode>().ToList())
+        {
+            var callee = call.ChildAt(0) as SyntaxNode;
+            if (callee is not { Kind: NodeKind.MemberSelect } || callee.ChildAt(1)?.Text != "All")
+                continue;
+            var receiver = callee.ChildAt(0) as SyntaxNode;
+            var type = CollectionLinq.ResolveReceiverType(receiver, context, initializers);
+            if (type == null || !CollectionLinq.IsListArrayOrImmutable(type, context))
+                continue;
+            if (CollectionLinq.HidesMember(type, "All", context.Project))
+                continue;
+            context.Report(callee.ChildAt(1)!, "Use the collection-specific \"TrueForAll\" method "
+                + "instead of the \"All\" extension: it matches every element without the closure "
+                + "the extension allocates for the predicate.");
+        }
+    }
+}
+
+public sealed class UseIndexingInsteadOfLinqMethodsRule : VbGapRuleBase
+{
+    // S6608: on anything that is already indexable (an IList/IReadOnlyList, a List<T> or an array)
+    // the Indexer is the native way to reach an element, while "First"/"Last"/"ElementAt" run the
+    // LINQ enumeration. The check fires only when the receiver resolves to an indexable type and the
+    // call takes no predicate (so it really is just "give me the nth element"). A "First(x => …)"
+    // with a predicate, or a "First" on a type we cannot confirm as indexable, stays silent.
+    public override string Key => "QG-CS-SML-1086";
+    public override string Name => "Use the indexer instead of First, Last or ElementAt";
+    public override Severity Severity => Severity.Minor;
+    public override IssueKind Kind => IssueKind.CodeSmell;
+    public override string RemediationEffort => "5min";
+    public override string[] Languages => ["cs"];
+
+    public override void Execute(IRuleContext context)
+    {
+        var initializers = CollectionLinq.CollectInitializers(context.Root);
+        foreach (var call in context.Root.OfKind(NodeKind.Invocation).Cast<SyntaxNode>().ToList())
+        {
+            var callee = call.ChildAt(0) as SyntaxNode;
+            if (callee is not { Kind: NodeKind.MemberSelect })
+                continue;
+            var method = callee.ChildAt(1)?.Text;
+            var args = call.FirstChild(NodeKind.ArgumentList)?.Children.Count ?? 0;
+            if (method == "First" && args != 0) continue;
+            if (method == "Last" && args != 0) continue;
+            if (method == "ElementAt" && args != 1) continue;
+            if (method is not ("First" or "Last" or "ElementAt"))
+                continue;
+
+            var receiver = callee.ChildAt(0) as SyntaxNode;
+            var type = CollectionLinq.ResolveReceiverType(receiver, context, initializers);
+            if (type == null || !CollectionLinq.IsIndexable(type, context))
+                continue;
+
+            var at = method switch
+            {
+                "First" => " at index 0",
+                "Last" => " at index Count-1",
+                _ => "",
+            };
+            context.Report(callee.ChildAt(1)!, $"Use the indexer{at} instead of the \"Enumerable\" "
+                + $"extension method \"{method}\": the collection is already indexable, so walking "
+                + "the whole enumeration to reach one element is wasted work.");
+        }
+    }
+}
+
+// Shared receiver-resolution for the LINQ "use the collection-specific method" family. Walks an
+// invocation chain (fluent calls, ToList/ToArray, ternary/coalesce, method returns and lambda
+// parameters) back to a concrete type name, or returns null when the type cannot be pinned down —
+// a rule that cannot see the receiver stays silent instead of guessing.
+internal static class CollectionLinq
+{
+    public static string? ResolveReceiverType(SyntaxNode? expr, IRuleContext context,
+        IReadOnlyDictionary<string, SyntaxNode>? initializers = null)
+    {
+        expr = Strip(expr);
+        if (expr == null)
+            return null;
+        switch (expr.Kind)
+        {
+            case NodeKind.Identifier:
+                if (expr.Text == "this")
+                {
+                    // 'this' is the enclosing type: a class that derives from List<T> is itself
+                    // the collection it is calling "All" on.
+                    return SyntaxQuery.EnclosingType(expr)?.Text;
+                }
+                var declared = Raw(context.Semantics.Resolve(expr)?.DeclaredType);
+                if (declared != null)
+                    return declared;
+                // 'var x = new T[...]' / 'var x = Some.Type.Member' — the lite semantic model does not
+                // infer these. Fall back to the type of the initializer expression itself.
+                return initializers != null && initializers.TryGetValue(expr.Text, out var init)
+                    ? ResolveInitializerType(init, context, initializers)
+                    : null;
+            case NodeKind.ObjectCreation:
+                return expr.Text;
+            case NodeKind.ArrayCreation:
+                return "T[]";
+            case NodeKind.Cast:
+                // (IList<int>)x — the explicit target is the type the call runs on.
+                return expr.Text;
+            case NodeKind.Conditional:
+                return FirstKnown(ResolveReceiverType(expr.ChildAt(1) as SyntaxNode, context, initializers),
+                                  ResolveReceiverType(expr.ChildAt(2) as SyntaxNode, context, initializers));
+            case NodeKind.Binary when expr.Text == "??":
+                return FirstKnown(ResolveReceiverType(expr.ChildAt(0) as SyntaxNode, context, initializers),
+                                  ResolveReceiverType(expr.ChildAt(1) as SyntaxNode, context, initializers));
+            case NodeKind.Binary when expr.Text == "as":
+                // (x as IReadOnlyList<int>) — the target type is the right operand.
+                return expr.ChildAt(1)?.Text;
+            case NodeKind.MemberSelect:
+                var owner = expr.ChildAt(0) as SyntaxNode;
+                var member = expr.ChildAt(1)?.Text;
+                if (owner == null || member == null)
+                    return null;
+                if (owner is { Kind: NodeKind.Identifier } && IsDeclaredType(owner.Text, context.Project))
+                    return Raw(context.Project.MemberType(owner.Text, member));
+                var ownerType = ResolveReceiverType(owner, context, initializers);
+                return ownerType == null ? null
+                                         : Raw(context.Project.MemberType(TypeResolver.Normalize(ownerType), member));
+            case NodeKind.Invocation:
+                return ResolveInvocation(expr, context, initializers);
+            default:
+                return null;
+        }
+    }
+
+    // The type of a variable-initializer expression, for the 'var' shapes the lite semantic model
+    // leaves untyped. Returns a marker "T[]" for an array creation, so array checks can detect it.
+    public static string? ResolveInitializerType(SyntaxNode? expr, IRuleContext context,
+        IReadOnlyDictionary<string, SyntaxNode>? initializers = null)
+    {
+        expr = Strip(expr);
+        if (expr == null)
+            return null;
+        switch (expr.Kind)
+        {
+            case NodeKind.Identifier:
+                return ResolveReceiverType(expr, context, initializers);
+            case NodeKind.ArrayCreation:
+                return "T[]";
+            case NodeKind.ObjectCreation:
+                return expr.Text;
+            case NodeKind.Invocation:
+                return ResolveInvocation(expr, context, initializers);
+            case NodeKind.MemberSelect:
+                // 'ImmutableList<int>.Empty' is the static entry point of the type itself.
+                var dot = expr.Text?.LastIndexOf('.');
+                if (dot is > 0 && dot + 1 < (expr.Text?.Length ?? 0))
+                {
+                    var member = expr.Text![(dot.Value + 1)..];
+                    var owner = expr.Text![..dot.Value];
+                    if (member == "Empty" && TypeResolver.Normalize(owner) == "ImmutableList")
+                        return "ImmutableList";
+                }
+                return null;
+            case NodeKind.Conditional:
+                return FirstKnown(ResolveInitializerType(expr.ChildAt(1) as SyntaxNode, context, initializers),
+                                  ResolveInitializerType(expr.ChildAt(2) as SyntaxNode, context, initializers));
+            case NodeKind.Binary when expr.Text == "??":
+                return FirstKnown(ResolveInitializerType(expr.ChildAt(0) as SyntaxNode, context, initializers),
+                                  ResolveInitializerType(expr.ChildAt(1) as SyntaxNode, context, initializers));
+            default:
+                return null;
+        }
+    }
+
+    // Builds name -> initializer-value for every 'var x = …' in the file, so an identifier whose type
+    // the lite model could not infer can be resolved through the expression that gave it its value.
+    public static Dictionary<string, SyntaxNode> CollectInitializers(SyntaxNode root)
+    {
+        var map = new Dictionary<string, SyntaxNode>(StringComparer.Ordinal);
+        foreach (var decl in root.OfKind(NodeKind.VariableDeclaration))
+        {
+            var assignment = decl.Children.OfType<SyntaxNode>().FirstOrDefault(c => c.Kind == NodeKind.Assignment && c.Text == "=");
+            var value = assignment?.ChildAt(1);
+            if (value != null && decl.Text.Length > 0)
+                map[decl.Text] = value;
+        }
+        return map;
+    }
+
+    private static string? ResolveInvocation(SyntaxNode inv, IRuleContext context,
+        IReadOnlyDictionary<string, SyntaxNode>? initializers)
+    {
+        var callee = inv.ChildAt(0) as SyntaxNode;
+        if (callee is { Kind: NodeKind.MemberSelect })
+        {
+            var owner = callee.ChildAt(0) as SyntaxNode;
+            var member = callee.ChildAt(1)?.Text;
+            if (member == "ToList")
+                return "List";
+            if (member == "ToArray")
+                return "T[]";
+            if (owner != null && member != null)
+            {
+                if (owner is { Kind: NodeKind.Identifier } && IsDeclaredType(owner.Text, context.Project))
+                    return Raw(context.Project.MemberType(owner.Text, member));
+                var ownerType = ResolveReceiverType(owner, context, initializers);
+                if (ownerType != null)
+                    return Raw(context.Project.MemberType(TypeResolver.Normalize(ownerType), member));
+            }
+            return null;
+        }
+
+        // a bare call lambda() / DoWorkReturn(): resolve from the declared return type or from a
+        // Func<...> parameter typed in the enclosing declaration.
+        var name = SyntaxQuery.InvokedName(inv);
+        if (name != null && context.Project.ReturnType(name) is { } ret)
+            return Raw(ret);
+        var id = callee is { Kind: NodeKind.Identifier } ? callee : (SyntaxNode?)null;
+        var paramType = id != null ? context.Semantics.Resolve(id)?.DeclaredType : null;
+        if (paramType != null && paramType.StartsWith("Func<", StringComparison.Ordinal))
+        {
+            var inner = FuncTypeArgument(paramType);
+            if (inner != null)
+                return Raw(inner);
+        }
+        return null;
+    }
+
+    // The LINQ family "use the collection method" targets List<T>, ImmutableList<T> and arrays.
+    public static bool IsListArrayOrImmutable(string? type, IRuleContext context)
+    {
+        if (type == null)
+            return false;
+        if (IsArray(type))
+            return true;
+        var n = TypeResolver.Normalize(type);
+        if (n is "List" or "ImmutableList")
+            return true;
+        return context.Types.IsOrDerivesFrom(n, "List", "ImmutableList");
+    }
+
+    // The indexer family targets anything whose interface is indexable: IList/IReadOnlyList, plus the
+    // concrete List<T> and arrays. A declared type that implements one of those interfaces counts.
+    public static bool IsIndexable(string? type, IRuleContext context)
+    {
+        if (type == null)
+            return false;
+        if (IsArray(type))
+            return true;
+        var n = TypeResolver.Normalize(type);
+        if (n is "List" or "IList" or "IReadOnlyList")
+            return true;
+        return context.Types.IsOrDerivesFrom(n, "List", "IList", "IReadOnlyList");
+    }
+
+    // A type that declares the method itself must not be told to switch to the collection-specific
+    // one: its "All"/"First" is its own, not the extension.
+    public static bool HidesMember(string type, string member, ProjectIndex project)
+    {
+        var n = TypeResolver.Normalize(type);
+        if (n is "List" or "ImmutableList" or "IList" or "IReadOnlyList" || IsArray(type))
+            return false;
+        return project.FindType(n)?.MemberNames.Contains(member) == true;
+    }
+
+    private static bool IsArray(string? type)
+        => type != null && (type.Contains('[') || type.StartsWith("T[", StringComparison.Ordinal));
+
+    private static string? FuncTypeArgument(string funcType)
+    {
+        var open = funcType.IndexOf('<');
+        if (open < 0 || !funcType.EndsWith(">"))
+            return null;
+        return funcType[(open + 1)..^1];
+    }
+
+    private static string? FirstKnown(string? a, string? b)
+        => a ?? b;
+
+    private static string? Raw(string? t)
+        => string.IsNullOrEmpty(t) ? null : t;
+
+    private static SyntaxNode? Strip(SyntaxNode? node)
     {
         while (node is { Kind: NodeKind.Parenthesized } && node.Children.Count > 0)
             node = node.ChildAt(0) as SyntaxNode;

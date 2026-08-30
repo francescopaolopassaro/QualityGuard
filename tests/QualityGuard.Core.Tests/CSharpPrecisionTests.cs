@@ -413,4 +413,72 @@ public class CSharpPrecisionTests
             """;
         Assert.Empty(Lines(code, "QG-CS-SML-1083"));
     }
+
+    [Fact]
+    public void All_on_a_list_is_reported()
+    {
+        var code = """
+            using System.Collections.Generic;
+            using System.Linq;
+            public class A
+            {
+                public bool F(List<int> data) => data.All(x => x > 0);
+            }
+            """;
+        Assert.NotEmpty(Lines(code, "QG-CS-SML-1085"));
+    }
+
+    [Fact]
+    public void All_on_an_unresolved_receiver_is_not_reported()
+    {
+        var code = """
+            using System.Linq;
+            public class A
+            {
+                public bool F(object data) => data.All(x => x != null);
+            }
+            """;
+        Assert.Empty(Lines(code, "QG-CS-SML-1085"));
+    }
+
+    [Fact]
+    public void First_on_a_list_is_reported()
+    {
+        var code = """
+            using System.Collections.Generic;
+            using System.Linq;
+            public class A
+            {
+                public int F(List<int> data) => data.First();
+            }
+            """;
+        Assert.NotEmpty(Lines(code, "QG-CS-SML-1086"));
+    }
+
+    [Fact]
+    public void First_with_a_predicate_is_not_reported()
+    {
+        var code = """
+            using System.Collections.Generic;
+            using System.Linq;
+            public class A
+            {
+                public int F(List<int> data) => data.First(x => x > 0);
+            }
+            """;
+        Assert.Empty(Lines(code, "QG-CS-SML-1086"));
+    }
+
+    [Fact]
+    public void First_on_an_unresolved_receiver_is_not_reported()
+    {
+        var code = """
+            using System.Linq;
+            public class A
+            {
+                public int F(object data) => data.First();
+            }
+            """;
+        Assert.Empty(Lines(code, "QG-CS-SML-1086"));
+    }
 }

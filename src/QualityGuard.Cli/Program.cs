@@ -45,6 +45,10 @@ var everyRule = args.Any(a => a is "--all-rules" or "--every-rule");
 // A measurement run against a reference's annotated test corpus treats the whole corpus as tests
 // and silences its "main only" rules; this flag lifts that guard so every rule can be measured.
 var includeTestFiles = args.Any(a => a is "--no-test-exclusion" or "--include-tests");
+// A measurement run against an annotated reference corpus has one file that can hold several dozen
+// cases of a single rule; the per-rule readability cap would amputate the recall. This flag reports
+// every finding instead of the first twenty, so the measured number is the rule's real one.
+var fullReporting = args.Any(a => a is "--full-reporting" or "--measure");
 
 if (args.Any(a => a is "--rules"))
 {
@@ -86,7 +90,7 @@ try
     }
 
     var vendorPaths = ExtractAll(args, "--vendor", "--third-party");
-    var analyses = AnalyzeAndScan(scanOptions, verbose, everyRule, vendorPaths, includeTestFiles);
+    var analyses = AnalyzeAndScan(scanOptions, verbose, everyRule, vendorPaths, includeTestFiles, fullReporting);
     var metrics = AggregateMetrics(analyses);
 
     // new_lines is a real count whenever a base is given: git is asked which lines the branch added
@@ -153,7 +157,7 @@ catch (Exception ex)
 }
 
     static List<FileAnalysis> AnalyzeAndScan(ScanOptions options, bool verbose, bool everyRule,
-        IReadOnlyList<string> vendorPaths, bool includeTestFiles)
+        IReadOnlyList<string> vendorPaths, bool includeTestFiles, bool fullReporting)
     {
     var scan = SourceScanner.Scan(options);
     foreach (var missing in scan.MissingPaths)
@@ -200,7 +204,7 @@ catch (Exception ex)
 
     var rules = RuleRepository.GetBuiltInRules(everyRule);
     foreach (var analysis in all.Where(a => !a.File.IsVendor))
-        RuleEngine.Run(analysis, rules, includeTestFiles);
+        RuleEngine.Run(analysis, rules, includeTestFiles, fullReporting);
 
     return all;
 }

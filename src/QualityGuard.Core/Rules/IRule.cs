@@ -222,13 +222,26 @@ public static class RuleEngine
     /// check runner does, instead of treating the whole corpus as tests.
     /// </summary>
     public static void Run(FileAnalysis analysis, IEnumerable<IRule> rules, bool includeTestFiles)
+        => Run(analysis, rules, includeTestFiles, fullReporting: false);
+
+    /// <summary>
+    /// Runs the rules over one analyzed file. <paramref name="includeTestFiles"/> bypasses the
+    /// "main only" guard that keeps test-resource rules off test files; it exists so a measurement
+    /// run against an annotated reference corpus sees every rule, the way the reference's own
+    /// check runner does, instead of treating the whole corpus as tests.
+    /// <paramref name="fullReporting"/> disables the per-rule-per-file readability cap, so a
+    /// measurement against an annotated corpus — where one check may have dozens of cases in a
+    /// single file — reports every finding instead of the first twenty.
+    /// </summary>
+    public static void Run(FileAnalysis analysis, IEnumerable<IRule> rules, bool includeTestFiles,
+        bool fullReporting)
     {
         var file = analysis.File;
         if (file.Language == null)
             return;
 
         var frameworks = GetFrameworks();
-        var context = new RuleContext(file, analysis, frameworks, includeTestFiles);
+        var context = new RuleContext(file, analysis, frameworks, fullReporting);
         foreach (var rule in rules)
         {
             if (rule.Languages.Length > 0 && !rule.Languages.Contains(file.Language.LanguageKey))
