@@ -42,6 +42,9 @@ var scanOptions = new ScanOptions
 // The default profile mirrors what the reference engines enable out of the box; '--all-rules' turns
 // the conventions and the stylistic checks back on for a full sweep.
 var everyRule = args.Any(a => a is "--all-rules" or "--every-rule");
+// A measurement run against a reference's annotated test corpus treats the whole corpus as tests
+// and silences its "main only" rules; this flag lifts that guard so every rule can be measured.
+var includeTestFiles = args.Any(a => a is "--no-test-exclusion" or "--include-tests");
 
 if (args.Any(a => a is "--rules"))
 {
@@ -83,7 +86,7 @@ try
     }
 
     var vendorPaths = ExtractAll(args, "--vendor", "--third-party");
-    var analyses = AnalyzeAndScan(scanOptions, verbose, everyRule, vendorPaths);
+    var analyses = AnalyzeAndScan(scanOptions, verbose, everyRule, vendorPaths, includeTestFiles);
     var metrics = AggregateMetrics(analyses);
 
     // new_lines is a real count whenever a base is given: git is asked which lines the branch added
@@ -150,7 +153,7 @@ catch (Exception ex)
 }
 
     static List<FileAnalysis> AnalyzeAndScan(ScanOptions options, bool verbose, bool everyRule,
-        IReadOnlyList<string> vendorPaths)
+        IReadOnlyList<string> vendorPaths, bool includeTestFiles)
     {
     var scan = SourceScanner.Scan(options);
     foreach (var missing in scan.MissingPaths)
@@ -197,7 +200,7 @@ catch (Exception ex)
 
     var rules = RuleRepository.GetBuiltInRules(everyRule);
     foreach (var analysis in all.Where(a => !a.File.IsVendor))
-        RuleEngine.Run(analysis, rules);
+        RuleEngine.Run(analysis, rules, includeTestFiles);
 
     return all;
 }

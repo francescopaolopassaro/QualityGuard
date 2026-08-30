@@ -189,4 +189,32 @@ public class VisualBasicStructureTests
 
         Assert.Equal(["first", "second"], Functions(tree));
     }
+
+    [Fact]
+    public void Redundant_boolean_literal_via_Not_is_reported()
+    {
+        var code = """
+            Public Class A
+                Sub F(a As Boolean)
+                    Dim z = Not True
+                End Sub
+            End Class
+            """;
+        var lines = Analyze.LinesOf(Analyze.WithRules("A.vb", code, "QG-CS-SML-1082"), "QG-CS-SML-1082");
+        Assert.Contains(3, lines);
+    }
+
+    [Fact]
+    public void A_declaration_initializer_is_not_a_boolean_comparison()
+    {
+        var code = """
+            Public Class A
+                Sub F()
+                    Dim condition = False
+                    Dim exp = True
+                End Sub
+            End Class
+            """;
+        Assert.Empty(Analyze.LinesOf(Analyze.WithRules("A.vb", code, "QG-CS-SML-1082"), "QG-CS-SML-1082"));
+    }
 }

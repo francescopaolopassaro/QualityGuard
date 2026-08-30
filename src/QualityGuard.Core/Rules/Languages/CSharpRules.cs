@@ -175,9 +175,17 @@ public sealed class CsSqlInjectionRule : PatternRuleBase
 
     private static readonly string[] SqlSinkMethods =
     [
-        "ExecuteNonQuery", "ExecuteScalar", "ExecuteReader", "CommandText",
-        "SqlCommand", "FromSqlRaw", "FromSql", "Query", "Execute",
-        "ExecuteQuery", "ExecuteUpdate"
+        "CommandText",
+        // command types: any provider-specific *Command/*DataAdapter/connection is a SQL sink
+        "SqlCommand", "OdbcCommand", "OracleCommand", "SqlCeCommand", "MySqlCommand",
+        "SqliteCommand", "SQLiteCommand", "NpgsqlCommand", "OleDbCommand", "SqlCommand2",
+        "SqlDataAdapter", "OdbcDataAdapter", "OracleDataAdapter", "SqlCeDataAdapter",
+        "MySqlDataAdapter", "SQLiteDataAdapter", "NpgsqlDataAdapter", "OleDbDataAdapter",
+        // EF / Dapper entry points
+        "FromSqlRaw", "FromSql", "ExecuteQuery", "ExecuteUpdate", "Query",
+        "ExecuteNonQuery", "ExecuteScalar", "ExecuteReader",
+        // MySqlHelper.ExecuteDataRow(connection, query): the query is the second argument
+        "ExecuteDataRow"
     ];
 
     public override void Execute(IRuleContext context)
@@ -190,22 +198,174 @@ public sealed class CsSqlInjectionRule : PatternRuleBase
             .ToList();
         var allSinks = SqlSinkMethods.Concat(fwSinks).Distinct(StringComparer.OrdinalIgnoreCase).ToList();
 
-        var lines = CSharpRuleSet.LinesOf(context);
-        for (var i = 0; i < lines.Length; i++)
+        var tokens = context.Tokens;
+        for (var i = 0; i < tokens.Count; i++)
         {
-            var line = lines[i];
-            if (!allSinks.Any(sink => line.Contains(sink, StringComparison.OrdinalIgnoreCase)))
+            if (tokens[i].Kind != TokenKind.Identifier)
                 continue;
-            if (!CSharpRuleSet.HasAny(line, ["select", "insert", "update", "delete", "drop"]))
+            var sink = allSinks.FirstOrDefault(s => string.Equals(tokens[i].Text, s, StringComparison.OrdinalIgnoreCase));
+            if (sink == null)
                 continue;
-            if (!(line.Contains('+') || line.Contains("$\"") || CSharpRuleSet.HasAny(line, ["string.Format", "String.Format"])))
+
+            // 'Query' is only a sink as an invocation (connection.Query(...)). As a plain variable
+            // named `query` it would turn every `query &= literal` into dynamic SQL.
+            if (string.Equals(sink, "Query", StringComparison.OrdinalIgnoreCase)
+                && !IsInvocation(tokens, i))
                 continue;
-            // flow-aware: the concatenated value must actually be external input, or the file must
-            // carry no taint evidence at all
-            if (context.Taint != null && !context.IsTaintedLine(i + 1))
+
+            var line = tokens[i].Line;
+
+            // The SQL statement argument, restricted to where the statement actually lives. A
+            // `*DataAdapter(query, connection)` has the statement in arg 1 and a connection string
+            // in arg 2: concatenating the connection string is not dynamic SQL.
+            var range = SqlStatementRange(tokens, i, sink);
+            if (range == null)
                 continue;
-            context.Report("Use parameterized queries to prevent SQL injection.", i + 1);
+            if (!HasSqlConcatenation(tokens, range.Value.Start, range.Value.End))
+                continue;
+
+            context.Report("Use parameterized queries to prevent SQL injection.", line);
         }
+    }
+
+    // Is the token at i an invocation name (followed by '(' on the same line)?
+    private static bool IsInvocation(IReadOnlyList<Token> tokens, int i)
+    {
+        var line = tokens[i].Line;
+        var j = i + 1;
+        while (j < tokens.Count && tokens[j].Line == line && tokens[j].Text is "." or "?." or "!")
+            j++;
+        return j < tokens.Count && tokens[j].Line == line && tokens[j].Text == "(";
+    }
+
+    // The remaining token range [start, end) that holds the SQL statement for this sink.
+    // Returns null when the sink is not a real query builder on this line (no parentheses).
+    private static (int Start, int End)? SqlStatementRange(IReadOnlyList<Token> tokens, int i, string sink)
+    {
+        var line = tokens[i].Line;
+
+        // Statement-shaped sinks: the command text is the assigned expression on this line.
+        if (sink is "CommandText" or "ExecuteNonQuery" or "ExecuteScalar" or "ExecuteReader"
+            || sink.StartsWith("FromSql", StringComparison.OrdinalIgnoreCase)
+            || sink == "ExecuteQuery" || sink == "ExecuteUpdate")
+        {
+            var end = i;
+            while (end + 1 < tokens.Count && tokens[end + 1].Line == line)
+                end++;
+            return (i, end + 1);
+        }
+
+        // Call/constructor shaped sinks: find the '(' after the method name on this same line, so a
+        // `Dim command As SqlCommand` declaration is not paired with the constructor's parentheses
+        // on the next line.
+        var open = i + 1;
+        while (open < tokens.Count && tokens[open].Line == line && tokens[open].Text != "(")
+            open++;
+        if (open >= tokens.Count || tokens[open].Line != line)
+            return null;
+        var close = MatchingClose(tokens, open);
+        if (close < 0)
+            return null;
+
+        int sqlIndex = sink.EndsWith("Command", StringComparison.OrdinalIgnoreCase)
+                       || sink.EndsWith("DataAdapter", StringComparison.OrdinalIgnoreCase) ? 1
+            : sink == "ExecuteDataRow" ? 2              // MySqlHelper.ExecuteDataRow(connection, query, ...)
+            : 1;                                        // SQLiteCommand.Execute(query, params, connection); FromSqlRaw(query, ...)
+        return NthTopLevelArgument(tokens, open, close, sqlIndex);
+    }
+
+    // Indices of the matching ')' for the '(' at open.
+    private static int MatchingClose(IReadOnlyList<Token> tokens, int open)
+    {
+        var depth = 0;
+        for (var j = open; j < tokens.Count; j++)
+        {
+            if (tokens[j].Text == "(") depth++;
+            else if (tokens[j].Text == ")")
+            {
+                depth--;
+                if (depth == 0) return j;
+            }
+        }
+        return -1;
+    }
+
+    // Token range [start, end) of the n-th top-level argument (1-based) of the paren group, or null.
+    private static (int Start, int End)? NthTopLevelArgument(IReadOnlyList<Token> tokens, int open, int close, int n)
+    {
+        var start = open + 1;
+        var count = 1;
+        for (var j = open + 1; j <= close; j++)
+        {
+            if (tokens[j].Text == "(") { var m = MatchingClose(tokens, j); if (m > j) j = m; continue; }
+            if (tokens[j].Text == ")" || tokens[j].Text == ",")
+            {
+                var end = j;
+                if (count == n)
+                {
+                    // trim separators/space tokens (',') from the end; if empty, the arg is gone
+                    while (end > start && (tokens[end - 1].Text == "," || tokens[end - 1].Text == " "))
+                        end--;
+                    return end > start ? (start, end) : null;
+                }
+                count++;
+                start = j + 1;
+            }
+        }
+        return null;
+    }
+
+    // A query built from a value: concatenation (& is VB, + is C#), string interpolation with a
+    // hole, or a String.Concat/String.Format call, all restricted to [start, end).
+    private static bool HasSqlConcatenation(IReadOnlyList<Token> line, int start, int end)
+    {
+        // interpolated strings: the tokenizer emits '$' as its own symbol and then the string, with
+        // the {hole} kept in the value. A hole is a value fed into the query.
+        for (var i = start; i < end - 1; i++)
+        {
+            if (line[i].Text == "$"
+                && line[i + 1].Kind == TokenKind.String
+                && line[i + 1].Text.Contains('{'))
+                return true;
+        }
+        // binary concatenation: the value on either side of the operator feeds the query
+        for (var i = start; i < end; i++)
+        {
+            var op = line[i].Text;
+            if (op is "+" or "&" or "&=" or "+=")
+            {
+                if (i - 1 >= start && IsNonLiteralValue(line, i - 1)) return true;
+                if (i + 1 < end && IsNonLiteralValue(line, i + 1)) return true;
+            }
+        }
+        // String.Concat / String.Format within the range: any non-literal argument builds the query
+        for (var i = start; i < end; i++)
+        {
+            var op = line[i].Text;
+            if ((op == "Concat" || op == "Format") && i + 1 < end && line[i + 1].Text == "(")
+            {
+                var j = i + 2;
+                while (j < end && line[j].Text != ")")
+                {
+                    if (IsNonLiteralValue(line, j)) return true;
+                    j++;
+                }
+            }
+        }
+        return false;
+    }
+
+    private static bool IsNonLiteralValue(IReadOnlyList<Token> tokens, int i)
+    {
+        if (i < 0 || i >= tokens.Count)
+            return false;
+        var t = tokens[i];
+        if (t.Kind != TokenKind.Identifier)
+            return false;
+        return !t.Text.Equals("True", StringComparison.OrdinalIgnoreCase)
+            && !t.Text.Equals("False", StringComparison.OrdinalIgnoreCase)
+            && !t.Text.Equals("Nothing", StringComparison.OrdinalIgnoreCase)
+            && !t.Text.Equals("null", StringComparison.OrdinalIgnoreCase);
     }
 }
 

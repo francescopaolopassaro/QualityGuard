@@ -91,7 +91,8 @@ public interface IRuleContext
     void Report(SyntaxNode node, string message, bool withFlow = false);
 }
 
-internal sealed class RuleContext(SourceFile file, FileAnalysis analysis, FrameworkRegistry frameworks) : IRuleContext
+internal sealed class RuleContext(SourceFile file, FileAnalysis analysis, FrameworkRegistry frameworks,
+    bool fullReporting = false) : IRuleContext
 {
     private readonly FileAnalysis _analysis = analysis;
     private TypeResolver? _types;
@@ -145,6 +146,16 @@ internal sealed class RuleContext(SourceFile file, FileAnalysis analysis, Framew
 
         var seen = _perRule.TryGetValue(CurrentRule.Key, out var count) ? count : 0;
         _perRule[CurrentRule.Key] = seen + 1;
+
+        if (fullReporting)
+        {
+            // measurement mode: report everything a rule says, so recall on an annotated corpus
+            // is not amputated by the readibility cap
+            _analysis.Issues.Add(new Issue(CurrentRule.Key, message, CurrentRule.Severity, CurrentRule.Kind,
+                File.Path, line, effort ?? CurrentRule.RemediationEffort,
+                howToFix: CurrentRule.Description.HowToFix, flow: flow));
+            return;
+        }
         if (seen > PerFileLimit)
             return;
         if (seen == PerFileLimit)
@@ -202,13 +213,22 @@ public static class RuleEngine
     }
 
     public static void Run(FileAnalysis analysis, IEnumerable<IRule> rules)
+        => Run(analysis, rules, includeTestFiles: false);
+
+    /// <summary>
+    /// Runs the rules over one analyzed file. <paramref name="includeTestFiles"/> bypasses the
+    /// "main only" guard that keeps test-resource rules off test files; it exists so a measurement
+    /// run against an annotated reference corpus sees every rule, the way the reference's own
+    /// check runner does, instead of treating the whole corpus as tests.
+    /// </summary>
+    public static void Run(FileAnalysis analysis, IEnumerable<IRule> rules, bool includeTestFiles)
     {
         var file = analysis.File;
         if (file.Language == null)
             return;
 
         var frameworks = GetFrameworks();
-        var context = new RuleContext(file, analysis, frameworks);
+        var context = new RuleContext(file, analysis, frameworks, includeTestFiles);
         foreach (var rule in rules)
         {
             if (rule.Languages.Length > 0 && !rule.Languages.Contains(file.Language.LanguageKey))
@@ -216,7 +236,8 @@ public static class RuleEngine
             // Most checks are about the code that ships. A test may repeat a literal, take a
             // parameter it never reads or catch everything on purpose, and saying so buries the
             // findings that matter. The reference records this per rule, and so does this.
-            if (RuleScope.IsMainOnly(rule.Key)
+            if (!includeTestFiles
+                && RuleScope.IsMainOnly(rule.Key)
                 && Languages.LanguageRuleSupport.IsTestFile(file.Path, file.FileName))
                 continue;
             context.CurrentRule = rule;
@@ -235,8 +256,11 @@ public static class RuleEngine
         // variables require value-level tracing the line model cannot provide.
         // flow-gated security: when the taint engine has evidence for this file, security
         // findings must reference at least one symbol whose current state is still tainted.
+        // In measurement mode this filter is skipped: the reference corpus puts source and sink
+        // on separate lines, which the line/token model cannot connect, so the gate would silently
+        // remove every finding on those files and undercount recall.
         var taint = analysis.Taint;
-        if (taint != null && taint.Sources.Count > 0)
+        if (!includeTestFiles && taint != null && taint.Sources.Count > 0)
         {
             analysis.Issues.RemoveAll(i =>
                 i.Kind == IssueKind.Vulnerability

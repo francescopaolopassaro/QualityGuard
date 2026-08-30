@@ -47,6 +47,8 @@ public static class CSharpVbGapRuleSet
         new RouteTemplateLeadingSlashRule(),
         new LockReleaseMismatchRule(),
         new SharedPartCreatedWithNewRule(),
+        new UseUnixEpochRule(),
+        new BooleanLiteralUnnecessaryRule(),
     ];
 }
 
@@ -1050,5 +1052,583 @@ public sealed class SharedPartCreatedWithNewRule : VbGapRuleBase
                                      + "per policy, and 'new' bypasses it, producing a second copy "
                                      + "with its own state. Ask the container instead.");
         }
+    }
+}
+
+public sealed class UseUnixEpochRule : VbGapRuleBase
+{
+    private const long EpochTicks = 621_355_968_000_000_000;
+
+    public override string Key => "QG-CS-SML-1081";
+    public override string Name => "Use the UnixEpoch field instead of creating an epoch instance";
+    public override Severity Severity => Severity.Minor;
+    public override IssueKind Kind => IssueKind.CodeSmell;
+    public override string RemediationEffort => "5min";
+    public override string[] Languages => ["cs", "vb"];
+
+    public override void Execute(IRuleContext context)
+    {
+        var isVb = context.Language.LanguageKey == "vb";
+        var creations = isVb
+            ? context.Root.OfKind(NodeKind.Invocation).Where(i => IsVbNewConstruction(context, i))
+            : context.Root.OfKind(NodeKind.ObjectCreation).Cast<SyntaxNode>();
+
+        // A nested type whose simple name matches the BCL type (e.g. 'class DateTime' inside
+        // 'class FakeDateTime') shadows the BCL name for unqualified constructions anywhere in the
+        // enclosing type; reading those as the Unix epoch would be a false positive. The shadow
+        // region is the enclosing type's range, keyed by the shadowed name.
+        var allClasses = context.Root.OfKind(NodeKind.ClassDeclaration).ToList();
+        var shadowRanges = new List<(int Start, int End, string Name)>();
+        foreach (var shadow in allClasses.Where(c => c.Text is "DateTime" or "DateTimeOffset" or "Date"))
+        foreach (var enclosing in allClasses.Where(p => p != shadow
+             && p.Range.StartLine <= shadow.Range.StartLine
+             && p.Range.EndLine >= shadow.Range.EndLine))
+            shadowRanges.Add((enclosing.Range.StartLine, enclosing.Range.EndLine, shadow.Text!));
+
+        foreach (var creation in creations)
+        {
+            var typeName = creation.Text ?? "";
+            var baseName = (typeName.Split('.').LastOrDefault() ?? "").ToLowerInvariant();
+            var isDateTime = baseName is "datetime" or "datetimeoffset"
+                             || (baseName == "date" && isVb);
+            if (!isDateTime)
+                continue;
+
+            // An unqualified construction that lands inside a type whose nested type shadows this
+            // name is that nested type, not the BCL one.
+            if (!typeName.Contains('.')
+                && shadowRanges.Any(r => r.Name == (typeName.Split('.').LastOrDefault() ?? "")
+                    && creation.Range.StartLine >= r.Start
+                    && creation.Range.EndLine <= r.End))
+                continue;
+
+            var argumentList = creation.FirstChild(NodeKind.ArgumentList);
+            if (argumentList == null)
+                continue;
+
+            var arguments = argumentList.Children.ToList();
+            var suggested = baseName == "datetimeoffset" ? "DateTimeOffset" : "DateTime";
+
+            // named arguments: when every argument is named we can order them by parameter name; a
+            // mixed or unresolvable list stays silent rather than guess at an order.
+            var hasNamed = HasNamedArgument(argumentList);
+            var named = hasNamed ? NamedArgumentMap(context, argumentList, arguments) : null;
+            if (hasNamed && named == null)
+                continue;
+
+            if (named != null)
+            {
+                if (named.Count == 1 && named.TryGetValue("ticks", out var ticks) && IsValue(ticks, EpochTicks))
+                    context.Report(creation, CreateMessage(typeName));
+                else if (IsNamedDateForm(named))
+                    context.Report(creation, CreateMessage(suggested));
+                continue;
+            }
+
+            if (arguments.Count == 1 && IsValue(arguments[0], EpochTicks))
+            {
+                context.Report(creation, CreateMessage(typeName));
+            }
+            else if (IsDateForm(arguments))
+            {
+                context.Report(creation, CreateMessage(suggested));
+            }
+        }
+    }
+
+    // In VB.NET the VB parser reads 'New DateTime(...)' as an Invocation whose first child is the
+    // type name; a plain method call has a MemberSelect there. Only a construction is preceded, on
+    // the source line, by the 'New' keyword. Every other shape stays silent.
+    private static bool IsVbNewConstruction(IRuleContext context, SyntaxNode invocation)
+    {
+        if (invocation.FirstChild(NodeKind.ArgumentList) == null)
+            return false;
+        var child0 = invocation.ChildAt(0);
+        if (child0?.Kind != NodeKind.Identifier || child0.Text != invocation.Text)
+            return false;
+
+        var tokens = context.Tokens.ToList();
+        var line = invocation.Line;
+        var startColumn = invocation.Range.StartColumn;
+        for (var i = 0; i < tokens.Count; i++)
+        {
+            if (tokens[i].Line != line || tokens[i].Text != invocation.Text)
+                continue;
+            if (tokens[i].Column < startColumn)
+                continue;
+            return i > 0 && tokens[i - 1].Line == line
+                   && tokens[i - 1].Text.Equals("New", StringComparison.OrdinalIgnoreCase);
+        }
+        return false;
+    }
+
+    private static string CreateMessage(string type) => $"{type} points at the Unix epoch (1 January 1970, "
+        + "UTC): prefer the ready-made \"" + type + ".UnixEpoch\" field, which says what the value is "
+        + "and cannot drift from the epoch.";
+
+    private static bool IsDateForm(IReadOnlyList<SyntaxNode> arguments)
+    {
+        if (arguments.Count < 3)
+            return false;
+        return IsValue(arguments[0], 1970)
+               && IsValue(arguments[1], 1)
+               && IsValue(arguments[2], 1)
+               && arguments.Skip(3).All(IsZeroOrMarker);
+    }
+
+    // hour/minute/second/millisecond/microsecond are 0; kind is DateTimeKind.Utc;
+    // calendar is Gregorian; offset is TimeSpan.Zero or new TimeSpan(0).
+    private static bool IsZeroOrMarker(SyntaxNode node) =>
+        IsValue(node, 0)
+        || (node is { Kind: NodeKind.MemberSelect, Text: not null }
+            && (node.Text.EndsWith(".Utc", StringComparison.OrdinalIgnoreCase)
+                || node.Text.EndsWith(".Zero", StringComparison.OrdinalIgnoreCase)))
+        || (node is { Kind: NodeKind.ObjectCreation, Text: not null }
+            && (node.Text.EndsWith("GregorianCalendar", StringComparison.OrdinalIgnoreCase)
+                || (node.Text.EndsWith("TimeSpan", StringComparison.OrdinalIgnoreCase)
+                    && node.FirstChild(NodeKind.ArgumentList)?.Children.Count == 1
+                    && IsValue(node.FirstChild(NodeKind.ArgumentList)!.Children[0], 0))));
+
+    private static bool IsValue(SyntaxNode node, long value) =>
+        node is { Kind: NodeKind.NumberLiteral }
+        && long.TryParse(node.Text, System.Globalization.CultureInfo.InvariantCulture, out var parsed)
+        && parsed == value;
+
+    private static bool HasNamedArgument(SyntaxNode argumentList)
+    {
+        var tokens = argumentList.Tokens;
+        for (var i = 0; i < tokens.Count; i++)
+        {
+            if (tokens[i].Text == ":=")
+                return true;
+            if (tokens[i].Kind == TokenKind.Identifier
+                && i + 1 < tokens.Count
+                && tokens[i + 1].Text == ":")
+                return true;
+        }
+        return false;
+    }
+
+    // Orders the arguments by parameter name when every argument is named. VB.NET keeps each named
+    // argument as an 'Assignment ':='' node; C# drops the name from the tree but leaves it in the
+    // argument-list tokens, so the two are rebuilt the same way. Returns null when the list is
+    // positional or mixed — never guess at an order that the source did not name.
+    private static Dictionary<string, SyntaxNode>? NamedArgumentMap(IRuleContext context,
+        SyntaxNode argumentList, IReadOnlyList<SyntaxNode> children)
+    {
+        var map = new Dictionary<string, SyntaxNode>(StringComparer.OrdinalIgnoreCase);
+        if (context.Language.LanguageKey == "vb")
+        {
+            foreach (var child in children)
+            {
+                if (child.Kind != NodeKind.Assignment || child.Text != ":=")
+                    return null;
+                var name = child.ChildAt(0)?.Text;
+                var value = child.ChildAt(1);
+                if (string.IsNullOrEmpty(name) || value == null)
+                    return null;
+                map[name] = value;
+            }
+            return map.Count == 0 ? null : map;
+        }
+
+        var names = new List<string>();
+        var tokens = argumentList.Tokens;
+        for (var i = 0; i < tokens.Count - 1; i++)
+        {
+            if (tokens[i].Kind == TokenKind.Identifier && tokens[i + 1].Text == ":")
+                names.Add(tokens[i].Text);
+        }
+        if (names.Count != children.Count)
+            return null;
+        for (var i = 0; i < children.Count; i++)
+            map[names[i]] = children[i];
+        return map.Count == 0 ? null : map;
+    }
+
+    // The date form only when every date component that appears is the epoch's: 1970-01-01, with
+    // the time parts all zero, a Gregorian calendar and Utc kind (or, for DateTimeOffset, a zero
+    // offset). Anything named that is not the epoch's value stops the check.
+    private static bool IsNamedDateForm(Dictionary<string, SyntaxNode> named)
+    {
+        if (!named.TryGetValue("year", out var year) || !IsValue(year, 1970)) return false;
+        if (!named.TryGetValue("month", out var month) || !IsValue(month, 1)) return false;
+        if (!named.TryGetValue("day", out var day) || !IsValue(day, 1)) return false;
+
+        foreach (var (name, node) in named)
+        {
+            switch (name)
+            {
+                case "year" or "month" or "day":
+                    break;
+                case "hour" or "minute" or "second" or "millisecond" or "microsecond":
+                    if (!IsValue(node, 0))
+                        return false;
+                    break;
+                case "calendar":
+                    if (!IsGregorian(node))
+                        return false;
+                    break;
+                case "kind":
+                    if (!IsMarker(node, "Utc"))
+                        return false;
+                    break;
+                case "offset":
+                    if (!IsZeroOffset(node))
+                        return false;
+                    break;
+                default:
+                    return false;
+            }
+        }
+        return true;
+    }
+
+    private static bool IsGregorian(SyntaxNode node) =>
+        node is { Kind: NodeKind.ObjectCreation, Text: not null }
+        && node.Text.EndsWith("GregorianCalendar", StringComparison.OrdinalIgnoreCase);
+
+    private static bool IsMarker(SyntaxNode node, string name) =>
+        node is { Kind: NodeKind.MemberSelect, Text: not null }
+        && node.Text.EndsWith("." + name, StringComparison.OrdinalIgnoreCase);
+
+    private static bool IsZeroOffset(SyntaxNode node) =>
+        IsMarker(node, "Zero")
+        || (node is { Kind: NodeKind.ObjectCreation, Text: not null }
+            && node.Text.EndsWith("TimeSpan", StringComparison.OrdinalIgnoreCase)
+            && node.FirstChild(NodeKind.ArgumentList)?.Children.Count == 1
+            && IsValue(node.FirstChild(NodeKind.ArgumentList)!.Children[0], 0));
+}
+
+public sealed class BooleanLiteralUnnecessaryRule : VbGapRuleBase
+{
+    // S1125: a Boolean literal used as the operand of a comparison or a logical operator is
+    // redundant — 'a == true' means 'a', 'x && false' is always false. The check stays silent when
+    // removing the literal would change the value: a nullable bool (bool?/Boolean?) or an object or
+    // dynamic side cannot be simplified that way, because 'c == true' keeps a meaning that 'c' does
+    // not have. Only a side we can positively confirm as a non-nullable bool is simplified.
+    public override string Key => "QG-CS-SML-1082";
+    public override string Name => "Remove the unnecessary Boolean literal";
+    public override Severity Severity => Severity.Major;
+    public override IssueKind Kind => IssueKind.CodeSmell;
+    public override string RemediationEffort => "2min";
+    public override string[] Languages => ["cs", "vb"];
+
+    private static readonly string[] VBLogical = ["AndAlso", "OrElse", "And", "Or"];
+
+    public override void Execute(IRuleContext context)
+    {
+        if (context.Language.LanguageKey == "vb")
+            CheckVb(context);
+        else
+            CheckCSharp(context);
+    }
+
+    private void CheckCSharp(IRuleContext context)
+    {
+        // 'for (;; true; )' — the reference flags only a literal-true for-loop condition, and only
+        // the condition: a literal false (or a variable) is a different meaning.
+        foreach (var loop in context.Root.OfKind(NodeKind.Loop))
+        {
+            if (loop.Text == "for"
+                && loop.Children.OfType<SyntaxNode>().Any(c => IsLiteral(c, true)))
+                context.Report(loop, Message);
+        }
+
+        foreach (var node in context.Root.OfKind(NodeKind.Binary, NodeKind.Unary, NodeKind.Conditional))
+        {
+            switch (node.Kind)
+            {
+                case NodeKind.Unary when node.Text == "!":
+                    var operand = StripParens(node.ChildAt(0));
+                    if (IsBoolLiteral(operand))
+                        context.Report(node, Message);
+                    break;
+
+                case NodeKind.Binary when node.Text is "&&" or "||":
+                    CheckLogicalBinary(context, node);
+                    break;
+
+                case NodeKind.Binary when node.Text is "==" or "!=":
+                    CheckEquality(context, node);
+                    break;
+
+                case NodeKind.Binary when node.Text == "is":
+                    CheckIsPattern(context, node);
+                    break;
+
+                case NodeKind.Conditional:
+                    CheckTernary(context, node);
+                    break;
+            }
+        }
+    }
+
+    // '&&' and '||' only accept a non-nullable bool on either side, so removing the literal is safe
+    // no matter what shape that bool comes from. The redundant side depends on the literal:
+    // '&& false' / '|| true' always answer a constant, so the other side is dead.
+    private void CheckLogicalBinary(IRuleContext context, SyntaxNode binary)
+    {
+        var left = StripParens(binary.ChildAt(0));
+        var right = StripParens(binary.ChildAt(1));
+        var leftLit = IsBoolLiteral(left);
+        var rightLit = IsBoolLiteral(right);
+        if (!leftLit && !rightLit)
+            return;
+
+        var reportOnBinaryLine = leftLit && rightLit;
+        if (!reportOnBinaryLine)
+        {
+            // the redundant side is the one that does not decide the result
+            var isAnd = binary.Text == "&&";
+            var redundantSideIsLeft = (isAnd && leftLit && !IsLiteral(left, false))
+                                   || (!isAnd && leftLit && !IsLiteral(left, true));
+            var redundant = redundantSideIsLeft ? left : right;
+            if (redundant != null)
+            {
+                context.Report(redundant, Message);
+                return;
+            }
+        }
+        context.Report(binary, Message);
+    }
+
+    private void CheckEquality(IRuleContext context, SyntaxNode binary)
+    {
+        var left = StripParens(binary.ChildAt(0));
+        var right = StripParens(binary.ChildAt(1));
+        var leftLit = IsBoolLiteral(left);
+        var rightLit = IsBoolLiteral(right);
+        if (leftLit && rightLit)
+        {
+            context.Report(binary, Message);
+            return;
+        }
+        if (leftLit && IsNonNullableBool(right, context))
+            context.Report(left, Message);
+        else if (rightLit && IsNonNullableBool(left, context))
+            context.Report(right, Message);
+    }
+
+    private void CheckIsPattern(IRuleContext context, SyntaxNode isNode)
+    {
+        var left = StripParens(isNode.ChildAt(0));
+        var pattern = PatternBoolValue(isNode.ChildAt(1));
+        if (pattern == null)
+            return;
+        if (IsBoolLiteral(left) || IsNonNullableBool(left, context))
+            context.Report(isNode, Message);
+    }
+
+    private void CheckTernary(IRuleContext context, SyntaxNode conditional)
+    {
+        var whenTrue = StripParens(conditional.ChildAt(1));
+        var whenFalse = StripParens(conditional.ChildAt(2));
+        if (IsThrow(whenTrue) || IsThrow(whenFalse))
+            return;
+
+        var trueLit = IsBoolLiteral(whenTrue);
+        var falseLit = IsBoolLiteral(whenFalse);
+
+        if (trueLit && falseLit)
+        {
+            if (IsLiteral(whenTrue, true) != IsLiteral(whenFalse, true))
+                context.Report(conditional, Message);
+            return;
+        }
+        if (trueLit && IsNonNullableBool(whenFalse, context))
+            context.Report(whenTrue, Message);
+        else if (falseLit && IsNonNullableBool(whenTrue, context))
+            context.Report(whenFalse, Message);
+    }
+
+    private static bool IsLiteral(SyntaxNode node, bool value)
+        => node is { Kind: NodeKind.BooleanLiteral }
+           && string.Equals(node.Text, value ? "true" : "false", StringComparison.OrdinalIgnoreCase);
+
+    private static bool IsBoolLiteral(SyntaxNode? node)
+        => node is { Kind: NodeKind.BooleanLiteral };
+
+    private static bool IsThrow(SyntaxNode? node)
+        => node != null
+           && node.DescendantsAndSelf().Any(d => string.Equals(d.Text, "throw", StringComparison.OrdinalIgnoreCase));
+
+    // The pattern side of 'is'. A constant pattern is a 'Pattern' node whose text is true/false; a
+    // parenthesized constant arrives as a 'Pattern' titled 'group' that wraps the inner one.
+    private static bool? PatternBoolValue(SyntaxNode? node)
+    {
+        if (node == null)
+            return null;
+        if (node.Kind == NodeKind.BooleanLiteral)
+            return string.Equals(node.Text, "true", StringComparison.OrdinalIgnoreCase);
+        if (node.Kind != NodeKind.Pattern && node.Kind != NodeKind.Parenthesized)
+            return null;
+        if (string.Equals(node.Text, "true", StringComparison.OrdinalIgnoreCase)) return true;
+        if (string.Equals(node.Text, "false", StringComparison.OrdinalIgnoreCase)) return false;
+        foreach (var child in node.Children)
+        {
+            if (PatternBoolValue(child) is { } inner)
+                return inner;
+        }
+        return null;
+    }
+
+    private static SyntaxNode? StripParens(SyntaxNode? node)
+    {
+        while (node is { Kind: NodeKind.Parenthesized } && node.Children.Count > 0)
+            node = node.ChildAt(0);
+        return node;
+    }
+
+    // A side is safe to strip the literal from only when we can prove it is a non-nullable bool:
+    // another literal, a comparison or logical expression (always bool), a name declared bool, or a
+    // member on a type declared bool in the scan. Anything nullable, object-typed or unresolved
+    // stays untouched — 'bool? c' keeps a meaning in 'c == true' that it loses in 'c'.
+    private static bool IsNonNullableBool(SyntaxNode? node, IRuleContext context)
+    {
+        node = StripParens(node);
+        if (node == null)
+            return false;
+        switch (node.Kind)
+        {
+            case NodeKind.BooleanLiteral:
+                return true;
+            case NodeKind.Binary when node.Text is "==" or "!=" or "<" or ">" or "<=" or ">=" or "&&" or "||" or "is":
+                return true;
+            case NodeKind.Unary when node.Text is "!" or "Not":
+                return true;
+            case NodeKind.Identifier:
+                return RawIsBool(context.Semantics.Resolve(node)?.DeclaredType);
+            case NodeKind.MemberSelect:
+                var owner = context.Semantics.Resolve(StripParens(node.ChildAt(0)) as SyntaxNode ?? node.ChildAt(0))?.DeclaredType;
+                var member = node.ChildAt(1)?.Text;
+                return owner != null && member != null && RawIsBool(context.Project.MemberType(Normalized(owner), member));
+            case NodeKind.Invocation:
+                var callee = StripParens(node.ChildAt(0));
+                if (callee is { Kind: NodeKind.MemberSelect })
+                {
+                    var invOwner = context.Semantics.Resolve(StripParens(callee.ChildAt(0)) as SyntaxNode ?? callee.ChildAt(0))?.DeclaredType;
+                    var invMember = callee.ChildAt(1)?.Text;
+                    return invOwner != null && invMember != null
+                           && RawIsBool(context.Project.MemberType(Normalized(invOwner), invMember));
+                }
+                return RawIsBool(context.Project.ReturnType(SyntaxQuery.InvokedName(node)));
+            default:
+                return false;
+        }
+    }
+
+    private static string Normalized(string type)
+    {
+        var text = type.Trim().TrimEnd('?');
+        var generic = text.IndexOf('<');
+        if (generic > 0) text = text[..generic];
+        return text.Trim();
+    }
+
+    private static bool RawIsBool(string? raw)
+        => raw is "bool" or "Boolean";
+
+    private const string Message = "Remove the unnecessary Boolean literal: the comparison or "
+        + "operator already answers that value, and keeping the literal hides what the condition "
+        + "really means.";
+
+    // ------------------------------------------------------------------- VB.NET
+    // VB.NET has no dedicated parser, so the tree rebuilds the expressions from structural guesses:
+    // an infix operator is an 'Identifier' inside a nested 'Unknown', and '=' shows up as an
+    // 'Assignment'. The shapes below are read from that tree and stay silent on anything that does
+    // not match exactly.
+    private void CheckVb(IRuleContext context)
+    {
+        foreach (var node in context.Root.OfKind(NodeKind.Unknown, NodeKind.Invocation, NodeKind.Assignment, NodeKind.Unary)
+                     .Cast<SyntaxNode>().ToList())
+        {
+            // 'Not True' / 'Not False' — the 'Not' is an Identifier in an Assignment whose sibling in
+            // the wrapping Unknown is the operand literal.
+            if (node.Kind == NodeKind.Unknown && HasVbNot(node))
+            {
+                context.Report(node, Message);
+                continue;
+            }
+
+            // 'A AndAlso/OrElse/And/Or B' with a literal on at least one side.
+            if (node.Kind == NodeKind.Unknown && TryReportVbLogical(context, node))
+                continue;
+
+            // 'A = True/False' comparison, only when it is not the outer statement or a declaration
+            // initializer (the parser wraps 'Dim x = True' in a VariableDeclaration, not a statement).
+            if (node.Kind == NodeKind.Assignment && node.Text == "="
+                && node.Parent is not { Kind: NodeKind.ExpressionStatement }
+                && node.Parent is not { Kind: NodeKind.VariableDeclaration }
+                && IsBoolLiteral(node.ChildAt(1))
+                && IsNonNullableBool(node.ChildAt(0), context))
+                context.Report(node.ChildAt(1)!, Message);
+        }
+
+        // 'If(cond, then, else)' — three-argument ternary.
+        foreach (var call in context.Root.OfKind(NodeKind.Invocation))
+        {
+            if (call.Text != "If")
+                continue;
+            var args = call.FirstChild(NodeKind.ArgumentList)?.Children.ToList();
+            if (args is not { Count: 3 } || IsThrow(args[1]) || IsThrow(args[2]))
+                continue;
+            CheckTernary(context, call, args);
+        }
+    }
+
+    private static bool HasVbNot(SyntaxNode unknown)
+    {
+        foreach (var child in unknown.Children)
+        {
+            if (child.Kind == NodeKind.Assignment
+                && string.Equals(child.ChildAt(1)?.Text, "Not", StringComparison.OrdinalIgnoreCase)
+                && unknown.Children.Any(c => IsBoolLiteral(c)))
+                return true;
+        }
+        return false;
+    }
+
+    private bool TryReportVbLogical(IRuleContext context, SyntaxNode unknown)
+    {
+        // The operator name sits as an Identifier at one nesting level, with the two operands as a
+        // BooleanLiteral sibling and the other expression. Collect the operator and the literal(s)
+        // found in this Unknown; a single literal operand is enough to report the line, because the
+        // logical operators in VB accept only a bool on each side.
+        string? op = null;
+        var literals = new List<SyntaxNode>();
+        foreach (var d in unknown.DescendantsAndSelf())
+        {
+            if (d.Kind == NodeKind.Identifier && VBLogical.Contains(d.Text, StringComparer.OrdinalIgnoreCase))
+                op = d.Text;
+            else if (IsBoolLiteral(d))
+                literals.Add(d);
+        }
+        if (op == null || literals.Count == 0)
+            return false;
+        context.Report(literals.Count == 1 ? literals[0] : (SyntaxNode)unknown, Message);
+        return true;
+    }
+
+    private static void CheckTernary(IRuleContext context, SyntaxNode conditional, IReadOnlyList<SyntaxNode> branches)
+    {
+        var whenTrue = StripParens(branches[1]);
+        var whenFalse = StripParens(branches[2]);
+        if (IsThrow(whenTrue) || IsThrow(whenFalse))
+            return;
+
+        var trueLit = IsBoolLiteral(whenTrue);
+        var falseLit = IsBoolLiteral(whenFalse);
+
+        if (trueLit && falseLit)
+        {
+            if (IsLiteral(whenTrue, true) != IsLiteral(whenFalse, true))
+                context.Report(conditional, Message);
+            return;
+        }
+        if (trueLit && IsNonNullableBool(whenFalse, context))
+            context.Report(whenTrue, Message);
+        else if (falseLit && IsNonNullableBool(whenTrue, context))
+            context.Report(whenFalse, Message);
     }
 }

@@ -342,4 +342,34 @@ public class CSharpPrecisionTests
             """;
         Assert.Empty(Lines(code, "QG-CS-SML-0133"));
     }
+
+    [Fact]
+    public void A_redundant_boolean_literal_in_a_logical_expression_is_reported()
+    {
+        var code = """
+            public class A
+            {
+                public bool F(bool condition)
+                {
+                    return condition && false;
+                }
+            }
+            """;
+        Assert.NotEmpty(Lines(code, "QG-CS-SML-1082"));
+    }
+
+    [Fact]
+    public void A_nullable_boolean_compared_with_a_literal_is_not_reported()
+    {
+        var code = """
+            public class A
+            {
+                public bool F(bool? condition)
+                {
+                    return condition == true;
+                }
+            }
+            """;
+        Assert.Empty(Lines(code, "QG-CS-SML-1082"));
+    }
 }
