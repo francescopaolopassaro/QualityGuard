@@ -221,4 +221,47 @@ public class CSharpParserTests
         Assert.Contains(loop.ChildrenOf(NodeKind.Binary), b => b.Text == "<");
         Assert.Contains(loop.ChildrenOf(NodeKind.Unary), u => u.Text == "++");
     }
+
+    [Fact]
+    public void New_with_generic_type_and_initializer_is_object_creation_not_comparisons()
+    {
+        var root = Parse("""
+            class A
+            {
+                void Go()
+                {
+                    new List<int> { 42 }.First();
+                }
+            }
+            """);
+
+        var creation = Assert.Single(root.OfKind(NodeKind.ObjectCreation));
+        Assert.Equal("List<int>", creation.Text);
+        Assert.Single(creation.ChildrenOf(NodeKind.ObjectInitializer));
+        var call = Assert.Single(root.OfKind(NodeKind.Invocation));
+        Assert.Equal("First", SyntaxQuery.InvokedName(call));
+        Assert.Contains(call.Descendants(), d => ReferenceEquals(d, creation));
+    }
+
+    [Fact]
+    public void New_as_member_modifier_is_not_object_creation()
+    {
+        var root = Parse("""
+            class Base { public int X; }
+            class Derived : Base
+            {
+                new int X;
+                void Go() { new Base { X = 1 }.X.ToString(); }
+            }
+            """);
+
+        var fields = root.OfKind(NodeKind.FieldDeclaration).ToList();
+        Assert.Equal(2, fields.Count);
+        var hidden = Assert.Single(fields, f => f.Text == "X" && f.ChildrenOf(NodeKind.Modifier).Any(m => m.Text == "new"));
+        Assert.Contains(hidden.ChildrenOf(NodeKind.Modifier), m => m.Text == "new");
+        var creation = Assert.Single(root.OfKind(NodeKind.ObjectCreation));
+        Assert.Equal("Base", creation.Text);
+        Assert.Single(creation.ChildrenOf(NodeKind.ObjectInitializer));
+        Assert.Empty(root.OfKind(NodeKind.Binary));
+    }
 }

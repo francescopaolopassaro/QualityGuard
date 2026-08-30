@@ -563,7 +563,7 @@ public sealed class CSharpParser
         return false;
     }
 
-    private List<string> ParseModifiers()
+    private List<string> ParseModifiers(bool statementContext = false)
     {
         var modifiers = new List<string>();
         while (IsAny(ModifierWords))
@@ -575,6 +575,11 @@ public sealed class CSharpParser
             // the keyword that opens the declaration, so 'internal fun Pointer.read()' was read as a
             // call and the whole file below it became one expression.
             if (IsKotlin && Is("fun") && PeekText() != "interface")
+                break;
+            // 'new' is a modifier only on a member declaration (method hiding). Inside a statement
+            // it always opens an object creation, and eating it left 'new List<int> { 42 }' to be
+            // read as 'List < int > …' — every generic-object-creation primary was misparsed.
+            if (statementContext && Is("new"))
                 break;
             modifiers.Add(Take().Text);
         }
@@ -3347,7 +3352,7 @@ public sealed class CSharpParser
             }
         }
 
-        var modifiers = ParseModifiers();
+        var modifiers = ParseModifiers(statementContext: true);
         if (LooksLikeLocalFunction())
         {
             var type = ParseType();
