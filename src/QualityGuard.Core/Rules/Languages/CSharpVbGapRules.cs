@@ -3,6 +3,7 @@ using QualityGuard.Core.Rules;
 using QualityGuard.Core.Semantics;
 using QualityGuard.Core.Syntax;
 using QualityGuard.Core.Tokenization;
+using QualityGuard.Core.Analysis;
 
 namespace QualityGuard.Core.Rules.Languages;
 
@@ -49,6 +50,7 @@ public static class CSharpVbGapRuleSet
         new SharedPartCreatedWithNewRule(),
         new UseUnixEpochRule(),
         new BooleanLiteralUnnecessaryRule(),
+        new FindInsteadOfFirstOrDefaultRule(),
     ];
 }
 
@@ -1632,3 +1634,186 @@ public sealed class BooleanLiteralUnnecessaryRule : VbGapRuleBase
             context.Report(whenFalse, Message);
     }
 }
+
+public sealed class FindInsteadOfFirstOrDefaultRule : VbGapRuleBase
+{
+    // S6602: on a List<T> (or an array) the LINQ "FirstOrDefault" is a poorer fit than the
+    // collection's own "Find": it allocates a closure where the method exists natively. The check
+    // fires only when we can resolve the receiver to a List-like or array type declared in the scan
+    // (or an explicit List/ImmutableList/array), so a firstOrDefault on any other type stays quiet.
+    public override string Key => "QG-CS-SML-1083";
+    public override string Name => "Use the collection's own Find instead of FirstOrDefault";
+    public override Severity Severity => Severity.Minor;
+    public override IssueKind Kind => IssueKind.CodeSmell;
+    public override string RemediationEffort => "5min";
+    public override string[] Languages => ["cs"];
+
+    public override void Execute(IRuleContext context)
+    {
+        foreach (var call in context.Root.OfKind(NodeKind.Invocation).Cast<SyntaxNode>().ToList())
+        {
+            var callee = call.ChildAt(0) as SyntaxNode;
+            if (callee is not { Kind: NodeKind.MemberSelect } || callee.ChildAt(1)?.Text != "FirstOrDefault")
+                continue;
+            var args = call.FirstChild(NodeKind.ArgumentList)?.Children.ToList();
+            if (args is not { Count: 1 })           // 'FirstOrDefault()' (no predicate) is a different thing
+                continue;
+            if (!IsPredicateArg(args[0]))            // only the Func<T,bool> overload is about Find
+                continue;
+            if (InsideLambda(call))                  // an expression tree or delegated callback — type unknown
+                continue;
+
+            var receiver = callee.ChildAt(0) as SyntaxNode;
+            var (type, isArray) = ResolveReceiverType(receiver, context);
+            if (type == null || !IsListLike(type, context))
+                continue;
+            if (HidesFirstOrDefault(type, context.Project))   // a subclass that declares its own FirstOrDefault
+                continue;
+
+            context.Report(callee.ChildAt(1)!, isArray
+                ? "Use the static \"Array.Find\" method instead of the \"FirstOrDefault\" extension."
+                : "Use the collection's own \"Find\" method instead of the \"FirstOrDefault\" extension.");
+        }
+    }
+
+    // A FirstOrDefault nested inside any lambda is either an expression tree (where the fix does not
+    // apply) or a callback whose receiver we cannot resolve here — stay silent instead of guessing.
+    private static bool InsideLambda(SyntaxNode call)
+    {
+        var p = call.Parent;
+        int guard = 0;
+        while (p != null && guard++ < 64)
+        {
+            if (p.Kind == NodeKind.Lambda)
+                return true;
+            p = p.Parent;
+        }
+        return false;
+    }
+
+    // The predicate overload takes a Func<T,bool>: a lambda or a method group. Everything else is the
+    // default-value overload (FirstOrDefault(value)) or another shape, which is not the subject of
+    // this check.
+    private static bool IsPredicateArg(SyntaxNode arg)
+    {
+        arg = StripParens2(arg);
+        if (arg == null)
+            return false;
+        return arg.Kind is NodeKind.Lambda or NodeKind.Identifier or NodeKind.MemberSelect;
+    }
+
+    // A type that declares its own FirstOrDefault method must not be told to use Find instead.
+    private static bool HidesFirstOrDefault(string type, ProjectIndex project)
+    {
+        if (TypeResolver.Normalize(type) is "List" or "ImmutableList")
+            return false;
+        return project.FindType(TypeResolver.Normalize(type))?.MemberNames.Contains("FirstOrDefault") == true;
+    }
+
+    private static bool IsListLike(string? type, IRuleContext context)
+    {
+        if (type == null)
+            return false;
+        var n = TypeResolver.Normalize(type);
+        if (n is "List" or "ImmutableList")
+            return true;
+        if (n.EndsWith("[]") || n.EndsWith("]"))
+            return true;
+        return context.Types.IsOrDerivesFrom(type, "List", "ImmutableList");
+    }
+
+    // Walks the receiver expression back to a concrete type name. Returns null when the type cannot
+    // be pinned down; the (type, isArray) pair lets the caller pick the right message.
+    private static (string? Type, bool IsArray) ResolveReceiverType(SyntaxNode? expr, IRuleContext context)
+    {
+        expr = StripParens2(expr);
+        if (expr == null)
+            return (null, false);
+        switch (expr.Kind)
+        {
+            case NodeKind.Identifier:
+                return (RawType(context.Semantics.Resolve(expr)?.DeclaredType), false);
+            case NodeKind.Conditional:
+                return FirstKnown(ResolveReceiverType(expr.ChildAt(1) as SyntaxNode, context),
+                                  ResolveReceiverType(expr.ChildAt(2) as SyntaxNode, context));
+            case NodeKind.Binary when expr.Text == "??":
+                return FirstKnown(ResolveReceiverType(expr.ChildAt(0) as SyntaxNode, context),
+                                  ResolveReceiverType(expr.ChildAt(1) as SyntaxNode, context));
+            case NodeKind.MemberSelect:
+                var owner = expr.ChildAt(0) as SyntaxNode;
+                var member = expr.ChildAt(1)?.Text;
+                if (owner == null || member == null)
+                    return (null, false);
+                if (owner is { Kind: NodeKind.Identifier } && IsDeclaredType(owner.Text, context.Project))
+                    return (RawType(context.Project.MemberType(owner.Text, member)), false);
+                var ownerType = ResolveReceiverType(owner, context).Type;
+                return ownerType == null ? (null, false)
+                                         : (RawType(context.Project.MemberType(TypeResolver.Normalize(ownerType), member)), false);
+            case NodeKind.Invocation:
+                return ResolveInvocationReceiver(expr, context);
+            default:
+                return (null, false);
+        }
+    }
+
+    private static (string? Type, bool IsArray) ResolveInvocationReceiver(SyntaxNode inv, IRuleContext context)
+    {
+        var callee = inv.ChildAt(0) as SyntaxNode;
+        if (callee is { Kind: NodeKind.MemberSelect })
+        {
+            var owner = callee.ChildAt(0) as SyntaxNode;
+            var member = callee.ChildAt(1)?.Text;
+            if (member == "ToList")
+                return ("List", false);
+            if (owner != null && member != null)
+            {
+                if (owner is { Kind: NodeKind.Identifier } && IsDeclaredType(owner.Text, context.Project))
+                    return (RawType(context.Project.MemberType(owner.Text, member)), false);
+                var ownerType = ResolveReceiverType(owner, context).Type;
+                if (ownerType != null)
+                    return (RawType(context.Project.MemberType(TypeResolver.Normalize(ownerType), member)), false);
+            }
+            return (null, false);
+        }
+
+        // a bare call lambda() / DoWorkReturnGroup(): resolve from the declared return type, or from a
+        // Func<...> parameter.
+        var name = SyntaxQuery.InvokedName(inv);
+        if (name != null && context.Project.ReturnType(name) is { } ret)
+            return (RawType(ret), false);
+        var id = callee is { Kind: NodeKind.Identifier } ? callee : (SyntaxNode?)null;
+        var paramType = id != null ? context.Semantics.Resolve(id)?.DeclaredType : null;
+        if (paramType != null && paramType.StartsWith("Func<", StringComparison.Ordinal))
+        {
+            var inner = FuncTypeArgument(paramType);
+            if (inner != null)
+                return (RawType(inner), false);
+        }
+        return (null, false);
+    }
+
+    private static string? FuncTypeArgument(string funcType)
+    {
+        var open = funcType.IndexOf('<');
+        if (open < 0 || !funcType.EndsWith(">"))
+            return null;
+        return funcType[(open + 1)..^1];
+    }
+
+    private static (string? Type, bool IsArray) FirstKnown((string? Type, bool IsArray) a, (string? Type, bool IsArray) b)
+        => a.Type != null ? a : b;
+
+    private static string? RawType(string? t)
+        => string.IsNullOrEmpty(t) ? null : t;
+
+    private static SyntaxNode? StripParens2(SyntaxNode? node)
+    {
+        while (node is { Kind: NodeKind.Parenthesized } && node.Children.Count > 0)
+            node = node.ChildAt(0) as SyntaxNode;
+        return node;
+    }
+
+    private static bool IsDeclaredType(string name, ProjectIndex project)
+        => project.FindType(name) != null;
+}
+

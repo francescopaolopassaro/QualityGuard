@@ -372,4 +372,45 @@ public class CSharpPrecisionTests
             """;
         Assert.Empty(Lines(code, "QG-CS-SML-1082"));
     }
+
+    [Fact]
+    public void FirstOrDefault_on_a_list_is_reported()
+    {
+        var code = """
+            using System.Collections.Generic;
+            using System.Linq;
+            public class A
+            {
+                public bool F(List<int> data) => data.FirstOrDefault(x => x > 0) != null;
+            }
+            """;
+        Assert.NotEmpty(Lines(code, "QG-CS-SML-1083"));
+    }
+
+    [Fact]
+    public void FirstOrDefault_with_a_default_value_is_not_reported()
+    {
+        var code = """
+            using System.Collections.Generic;
+            using System.Linq;
+            public class A
+            {
+                public int F(List<int> data) => data.FirstOrDefault(default(int));
+            }
+            """;
+        Assert.Empty(Lines(code, "QG-CS-SML-1083"));
+    }
+
+    [Fact]
+    public void FirstOrDefault_on_an_unresolved_receiver_is_not_reported()
+    {
+        var code = """
+            using System.Linq;
+            public class A
+            {
+                public bool F(object data) => data.FirstOrDefault(x => x != null) != null;
+            }
+            """;
+        Assert.Empty(Lines(code, "QG-CS-SML-1083"));
+    }
 }
