@@ -481,4 +481,74 @@ public class CSharpPrecisionTests
             """;
         Assert.Empty(Lines(code, "QG-CS-SML-1086"));
     }
+
+    [Fact]
+    public void First_on_a_lambda_parameter_typed_by_a_Func_is_reported()
+    {
+        var code = """
+            using System;
+            using System.Collections.Generic;
+            using System.Linq;
+            public class A
+            {
+                public void F()
+                {
+                    Func<List<int>, int> func = l => l.First();
+                }
+            }
+            """;
+        Assert.NotEmpty(Lines(code, "QG-CS-SML-1086"));
+    }
+
+    [Fact]
+    public void First_on_the_return_of_a_local_function_is_reported()
+    {
+        var code = """
+            using System.Collections.Generic;
+            using System.Linq;
+            public class A
+            {
+                public void F()
+                {
+                    List<int> DoWork() => null;
+                    DoWork().First();
+                }
+            }
+            """;
+        Assert.NotEmpty(Lines(code, "QG-CS-SML-1086"));
+    }
+
+    [Fact]
+    public void All_on_the_return_of_a_local_function_is_reported()
+    {
+        var code = """
+            using System.Collections.Generic;
+            using System.Linq;
+            public class A
+            {
+                public void F()
+                {
+                    List<int> DoWork() => null;
+                    bool any = DoWork().All(x => x > 0);
+                }
+            }
+            """;
+        Assert.NotEmpty(Lines(code, "QG-CS-SML-1085"));
+    }
+
+    [Fact]
+    public void First_on_a_type_without_a_declared_return_is_not_reported()
+    {
+        var code = """
+            using System.Linq;
+            public class A
+            {
+                public void F()
+                {
+                    DoWork().First();
+                }
+            }
+            """;
+        Assert.Empty(Lines(code, "QG-CS-SML-1086"));
+    }
 }

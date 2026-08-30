@@ -1836,13 +1836,14 @@ public sealed class UseTrueForAllRule : VbGapRuleBase
     public override void Execute(IRuleContext context)
     {
         var initializers = CollectionLinq.CollectInitializers(context.Root);
+        var localReturns = CollectionLinq.CollectLocalFunctionReturns(context.Root);
         foreach (var call in context.Root.OfKind(NodeKind.Invocation).Cast<SyntaxNode>().ToList())
         {
             var callee = call.ChildAt(0) as SyntaxNode;
             if (callee is not { Kind: NodeKind.MemberSelect } || callee.ChildAt(1)?.Text != "All")
                 continue;
             var receiver = callee.ChildAt(0) as SyntaxNode;
-            var type = CollectionLinq.ResolveReceiverType(receiver, context, initializers);
+            var type = CollectionLinq.ResolveReceiverType(receiver, context, initializers, localReturns);
             if (type == null || !CollectionLinq.IsListArrayOrImmutable(type, context))
                 continue;
             if (CollectionLinq.HidesMember(type, "All", context.Project))
@@ -1871,6 +1872,7 @@ public sealed class UseIndexingInsteadOfLinqMethodsRule : VbGapRuleBase
     public override void Execute(IRuleContext context)
     {
         var initializers = CollectionLinq.CollectInitializers(context.Root);
+        var localReturns = CollectionLinq.CollectLocalFunctionReturns(context.Root);
         foreach (var call in context.Root.OfKind(NodeKind.Invocation).Cast<SyntaxNode>().ToList())
         {
             var callee = call.ChildAt(0) as SyntaxNode;
@@ -1885,7 +1887,7 @@ public sealed class UseIndexingInsteadOfLinqMethodsRule : VbGapRuleBase
                 continue;
 
             var receiver = callee.ChildAt(0) as SyntaxNode;
-            var type = CollectionLinq.ResolveReceiverType(receiver, context, initializers);
+            var type = CollectionLinq.ResolveReceiverType(receiver, context, initializers, localReturns);
             if (type == null || !CollectionLinq.IsIndexable(type, context))
                 continue;
 
@@ -1909,7 +1911,8 @@ public sealed class UseIndexingInsteadOfLinqMethodsRule : VbGapRuleBase
 internal static class CollectionLinq
 {
     public static string? ResolveReceiverType(SyntaxNode? expr, IRuleContext context,
-        IReadOnlyDictionary<string, SyntaxNode>? initializers = null)
+        IReadOnlyDictionary<string, SyntaxNode>? initializers = null,
+        IReadOnlyDictionary<string, string>? localReturns = null)
     {
         expr = Strip(expr);
         if (expr == null)
@@ -1928,9 +1931,22 @@ internal static class CollectionLinq
                     return declared;
                 // 'var x = new T[...]' / 'var x = Some.Type.Member' — the lite semantic model does not
                 // infer these. Fall back to the type of the initializer expression itself.
-                return initializers != null && initializers.TryGetValue(expr.Text, out var init)
-                    ? ResolveInitializerType(init, context, initializers)
-                    : null;
+                var initType = initializers != null && initializers.TryGetValue(expr.Text, out var init)
+                                    ? ResolveInitializerType(init, context, initializers, localReturns)
+                                    : null;
+                if (initType != null)
+                    return initType;
+                // A lambda parameter is typed by the first type argument of the Func<...> /
+                // Expression<Func<...>> that owns the lambda it belongs to.
+                var lambda = expr.Ancestor(NodeKind.Lambda);
+                if (lambda != null && LambdaHasSingleParameter(lambda, expr.Text))
+                {
+                    var vd = lambda.Ancestor(NodeKind.VariableDeclaration);
+                    var typeRef = vd?.ChildAt(0)?.Text;
+                    if (typeRef != null && TryLambdaParamType(typeRef) is { } pt)
+                        return pt;
+                }
+                return null;
             case NodeKind.ObjectCreation:
                 return expr.Text;
             case NodeKind.ArrayCreation:
@@ -1939,11 +1955,11 @@ internal static class CollectionLinq
                 // (IList<int>)x — the explicit target is the type the call runs on.
                 return expr.Text;
             case NodeKind.Conditional:
-                return FirstKnown(ResolveReceiverType(expr.ChildAt(1) as SyntaxNode, context, initializers),
-                                  ResolveReceiverType(expr.ChildAt(2) as SyntaxNode, context, initializers));
+                return FirstKnown(ResolveReceiverType(expr.ChildAt(1) as SyntaxNode, context, initializers, localReturns),
+                                  ResolveReceiverType(expr.ChildAt(2) as SyntaxNode, context, initializers, localReturns));
             case NodeKind.Binary when expr.Text == "??":
-                return FirstKnown(ResolveReceiverType(expr.ChildAt(0) as SyntaxNode, context, initializers),
-                                  ResolveReceiverType(expr.ChildAt(1) as SyntaxNode, context, initializers));
+                return FirstKnown(ResolveReceiverType(expr.ChildAt(0) as SyntaxNode, context, initializers, localReturns),
+                                  ResolveReceiverType(expr.ChildAt(1) as SyntaxNode, context, initializers, localReturns));
             case NodeKind.Binary when expr.Text == "as":
                 // (x as IReadOnlyList<int>) — the target type is the right operand.
                 return expr.ChildAt(1)?.Text;
@@ -1954,11 +1970,11 @@ internal static class CollectionLinq
                     return null;
                 if (owner is { Kind: NodeKind.Identifier } && IsDeclaredType(owner.Text, context.Project))
                     return Raw(context.Project.MemberType(owner.Text, member));
-                var ownerType = ResolveReceiverType(owner, context, initializers);
+                var ownerType = ResolveReceiverType(owner, context, initializers, localReturns);
                 return ownerType == null ? null
                                          : Raw(context.Project.MemberType(TypeResolver.Normalize(ownerType), member));
             case NodeKind.Invocation:
-                return ResolveInvocation(expr, context, initializers);
+                return ResolveInvocation(expr, context, initializers, localReturns);
             default:
                 return null;
         }
@@ -1967,7 +1983,8 @@ internal static class CollectionLinq
     // The type of a variable-initializer expression, for the 'var' shapes the lite semantic model
     // leaves untyped. Returns a marker "T[]" for an array creation, so array checks can detect it.
     public static string? ResolveInitializerType(SyntaxNode? expr, IRuleContext context,
-        IReadOnlyDictionary<string, SyntaxNode>? initializers = null)
+        IReadOnlyDictionary<string, SyntaxNode>? initializers = null,
+        IReadOnlyDictionary<string, string>? localReturns = null)
     {
         expr = Strip(expr);
         if (expr == null)
@@ -1975,13 +1992,13 @@ internal static class CollectionLinq
         switch (expr.Kind)
         {
             case NodeKind.Identifier:
-                return ResolveReceiverType(expr, context, initializers);
+                return ResolveReceiverType(expr, context, initializers, localReturns);
             case NodeKind.ArrayCreation:
                 return "T[]";
             case NodeKind.ObjectCreation:
                 return expr.Text;
             case NodeKind.Invocation:
-                return ResolveInvocation(expr, context, initializers);
+                return ResolveInvocation(expr, context, initializers, localReturns);
             case NodeKind.MemberSelect:
                 // 'ImmutableList<int>.Empty' is the static entry point of the type itself.
                 var dot = expr.Text?.LastIndexOf('.');
@@ -1994,11 +2011,11 @@ internal static class CollectionLinq
                 }
                 return null;
             case NodeKind.Conditional:
-                return FirstKnown(ResolveInitializerType(expr.ChildAt(1) as SyntaxNode, context, initializers),
-                                  ResolveInitializerType(expr.ChildAt(2) as SyntaxNode, context, initializers));
+                return FirstKnown(ResolveInitializerType(expr.ChildAt(1) as SyntaxNode, context, initializers, localReturns),
+                                  ResolveInitializerType(expr.ChildAt(2) as SyntaxNode, context, initializers, localReturns));
             case NodeKind.Binary when expr.Text == "??":
-                return FirstKnown(ResolveInitializerType(expr.ChildAt(0) as SyntaxNode, context, initializers),
-                                  ResolveInitializerType(expr.ChildAt(1) as SyntaxNode, context, initializers));
+                return FirstKnown(ResolveInitializerType(expr.ChildAt(0) as SyntaxNode, context, initializers, localReturns),
+                                  ResolveInitializerType(expr.ChildAt(1) as SyntaxNode, context, initializers, localReturns));
             default:
                 return null;
         }
@@ -2019,8 +2036,114 @@ internal static class CollectionLinq
         return map;
     }
 
+    // name -> declared return type for every local function in the file, kept only when the name is
+    // unambiguous. A call "DoWork()" then resolves through the local function it really names, which
+    // the project index (built from method declarations) does not know about.
+    public static Dictionary<string, string> CollectLocalFunctionReturns(SyntaxNode root)
+    {
+        var map = new Dictionary<string, string>(StringComparer.Ordinal);
+        foreach (var fn in root.OfKind(NodeKind.LocalFunction))
+        {
+            var name = fn.Text;
+            var ret = fn.ChildAt(0)?.Text;
+            if (string.IsNullOrEmpty(name) || string.IsNullOrEmpty(ret))
+                continue;
+            // A name declared more than once is ambiguous: resolving the wrong body would invent
+            // a flow that does not exist, so it stays silent.
+            if (!map.TryAdd(name, ret))
+                map[name] = null!;
+        }
+        // Drop the names that turned ambiguous.
+        foreach (var k in map.Where(kv => kv.Value == null).Select(kv => kv.Key).ToList())
+            map.Remove(k);
+        return map;
+    }
+
+    // The .NET "Func<A,R>" and "Expression<Func<A,R>>" shapes a single-argument lambda parameter is
+    // born with: the first delegate type argument is the parameter's type. Returns null unless the
+    // lambda takes exactly one argument, so a multi-parameter lambda is never guessed from position.
+    private static string? TryLambdaParamType(string typeRef)
+    {
+        var t = typeRef.Trim();
+        if (t.StartsWith("Expression<", StringComparison.Ordinal) && t.EndsWith(">"))
+        {
+            var wrapped = TypeArgsOf(t);
+            if (wrapped == null || wrapped.Count != 1)
+                return null;
+            t = wrapped[0];
+        }
+        if (!t.StartsWith("Func<", StringComparison.Ordinal) || !t.EndsWith(">"))
+            return null;
+        var args = TypeArgsOf(t);
+        if (args == null || args.Count != 2)
+            return null;
+        return Raw(args[0]);
+    }
+
+    // Splits "a<b>, c" into the top-level type arguments of "T<...>": walks to the first matching
+    // '>' and splits its content on commas at depth zero. Handles nested generics and ignored.
+    private static List<string>? TypeArgsOf(string generic)
+    {
+        var open = generic.IndexOf('<');
+        if (open < 0)
+            return null;
+        var depth = 0;
+        for (var i = open; i < generic.Length; i++)
+        {
+            var c = generic[i];
+            if (c == '<') depth++;
+            else if (c == '>') depth--;
+            if (depth == 0)
+            {
+                var content = generic[(open + 1)..i];
+                var args = new List<string>();
+                var start = 0;
+                var d = 0;
+                for (var j = 0; j < content.Length; j++)
+                {
+                    var ch = content[j];
+                    if (ch == '<') d++;
+                    else if (ch == '>') d--;
+                    else if (ch == ',' && d == 0)
+                    {
+                        args.Add(content[start..j].Trim());
+                        start = j + 1;
+                    }
+                }
+                args.Add(content[start..].Trim());
+                return args;
+            }
+        }
+        return null;
+    }
+
+    // The declared return type of a single local function named 'name', when the project index does
+    // not already answer for a method with the same name (that ambiguity is left unresolved).
+    private static string? ResolveLocalFunction(string? name, IRuleContext context,
+        IReadOnlyDictionary<string, string>? localReturns)
+    {
+        if (name == null || localReturns == null || !localReturns.TryGetValue(name, out var ret))
+            return null;
+        if (context.Project.ReturnType(name) != null)
+            return null;
+        return Raw(ret);
+    }
+
+    // True when the lambda owns exactly one parameter and it is named 'param'. The lambda-param type
+    // resolution is only sound for a single argument, where "the first Func<...> type argument" and
+    // "the type of this parameter" are the same thing.
+    private static bool LambdaHasSingleParameter(SyntaxNode lambda, string? param)
+    {
+        var paramList = lambda.ChildAt(0) as SyntaxNode;
+        if (paramList == null || lambda.ChildAt(0)?.Kind != NodeKind.ParameterList)
+            return false;
+        var ps = paramList.Children.OfType<SyntaxNode>().Where(c => c.Kind == NodeKind.Parameter).ToList();
+        return ps.Count == 1 && ps[0].Text == param;
+    }
+
     private static string? ResolveInvocation(SyntaxNode inv, IRuleContext context,
-        IReadOnlyDictionary<string, SyntaxNode>? initializers)
+        IReadOnlyDictionary<string, SyntaxNode>? initializers,
+        IReadOnlyDictionary<string, string>? localReturns = null)
     {
         var callee = inv.ChildAt(0) as SyntaxNode;
         if (callee is { Kind: NodeKind.MemberSelect })
@@ -2035,16 +2158,19 @@ internal static class CollectionLinq
             {
                 if (owner is { Kind: NodeKind.Identifier } && IsDeclaredType(owner.Text, context.Project))
                     return Raw(context.Project.MemberType(owner.Text, member));
-                var ownerType = ResolveReceiverType(owner, context, initializers);
+                var ownerType = ResolveReceiverType(owner, context, initializers, localReturns);
                 if (ownerType != null)
                     return Raw(context.Project.MemberType(TypeResolver.Normalize(ownerType), member));
             }
             return null;
         }
 
-        // a bare call lambda() / DoWorkReturn(): resolve from the declared return type or from a
-        // Func<...> parameter typed in the enclosing declaration.
+        // a bare call lambda() / DoWorkReturn(): resolve from a local function of that name (so the
+        // declared return type is read from the tree), from the declared return type of a method, or
+        // from a Func<...> parameter typed in the enclosing declaration.
         var name = SyntaxQuery.InvokedName(inv);
+        if (ResolveLocalFunction(name, context, localReturns) is { } localRet)
+            return localRet;
         if (name != null && context.Project.ReturnType(name) is { } ret)
             return Raw(ret);
         var id = callee is { Kind: NodeKind.Identifier } ? callee : (SyntaxNode?)null;
