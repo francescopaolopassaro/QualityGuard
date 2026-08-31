@@ -1,3 +1,4 @@
+using System.Text.RegularExpressions;
 using QualityGuard.Core.Models;
 using QualityGuard.Core.Syntax;
 using QualityGuard.Core.Tokenization;
@@ -25,7 +26,8 @@ public static class JavaMeasuredRuleSet
         new JavaAbsoluteCommandPathRule(),
         new JavaInvalidDateValueRule(),
         new JavaFormatStringRule(),
-        new JavaStandardCharsetsLiteralRule()
+        new JavaStandardCharsetsLiteralRule(),
+        new JavaAssertionCompareToSelfRule()
     ];
 }
 
@@ -922,4 +924,149 @@ public sealed class JavaStandardCharsetsLiteralRule : JavaMeasuredRuleBase
                           + "lives as a field of a third-party helper. 'StandardCharsets." + constant
                           + "' is the same value with no dependency and no guess of which Charsets "
                           + "class was imported.", at.Range.StartLine);
+}
+
+/// <summary>
+/// An assertion whose expected value is the very object it is asserting on compares the macaroni
+/// against itself: it can never fail, and usually the author meant to compare against a second
+/// object they had already built. Reported only for fluent chains over <c>assertThat</c> where the
+/// asserted value is stable (an identifier, a member or a literal — not a fresh call or creation)
+/// and textually identical to the expected argument. The equals/hashCode test methods that compare
+/// a value to itself on purpose are left alone.
+/// </summary>
+public sealed class JavaAssertionCompareToSelfRule : JavaMeasuredRuleBase
+{
+    public override string Key => "QG-JV-SML-0741";
+    public override string Name => "An assertion should not compare a value to itself";
+
+    private static readonly HashSet<string> Predicates = new(StringComparer.Ordinal)
+    {
+        "isEqualTo", "contains", "containsIgnoringCase", "doesNotContain", "containsSequence",
+        "containsSubsequence", "endsWith", "hasSameClassAs", "hasSameHashCodeAs", "hasSameSizeAs",
+        "isEqualToIgnoringCase", "isSameAs", "startsWith", "containsAll", "containsAnyOf",
+        "containsOnly", "containsOnlyElementsOf", "hasSameElementsAs", "containsAllEntriesOf",
+        "containsExactlyInAnyOrderEntriesOf"
+    };
+
+    // only these read the asserted value and describe it against a sibling that may be the same
+    private static readonly HashSet<string> MessageMethods = new(StringComparer.Ordinal)
+    {
+        "as", "describedAs", "withFailMessage", "overridingErrorMessage"
+    };
+
+    private static readonly HashSet<string> Bases = new(StringComparer.Ordinal)
+    {
+        "assertThat", "assertThatObject"
+    };
+
+    // a unit test whose name is about equals/HashCode/Object methods deliberately confirms that a
+    // value equals itself and must not be flagged
+    private static readonly Regex LegitimateMethod = new(
+        "equal|hash_?code|object_?method|to_?string", RegexOptions.IgnoreCase);
+
+    private static readonly HashSet<string> PrimitiveTypes = new(StringComparer.Ordinal)
+    {
+        "int", "long", "float", "double", "boolean", "char", "byte", "short"
+    };
+
+    private static List<SyntaxNode> CollectChain(SyntaxNode invocation)
+    {
+        var chain = new List<SyntaxNode> { invocation };
+        var current = invocation.ChildAt(0);
+        while (current != null && current.Kind == NodeKind.MemberSelect)
+        {
+            var inner = current.ChildAt(0);
+            if (inner == null || inner.Kind != NodeKind.Invocation)
+                break;
+            chain.Add(inner);
+            current = inner.ChildAt(0);
+        }
+        return chain;
+    }
+
+    // a value is stable when evaluating it again yields the same thing: a name, a member read or a
+    // literal. A fresh call or a new object can differ between the two sides, so it is not.
+    private static bool IsStable(SyntaxNode node)
+        => !node.DescendantsAndSelf().Any(n => n.Kind is NodeKind.Invocation or NodeKind.ObjectCreation);
+
+    // the comparison is on the dotted name: only a name/member/index chain is losslessly captured by
+    // DottedName, so a `company.…` side and a `copied.…` side stay distinct. A bare literal keeps its
+    // node kind as a prefix, so a number 1 and a string "1" are distinct values. A cast anywhere in
+    // the chain makes DottedName drop the cast and the receiver under it, collapsing distinct sides
+    // to the same tail: such an expression cannot be reconstructed reliably and is skipped.
+    private static string Code(SyntaxNode node)
+    {
+        if (node.DescendantsAndSelf().Any(n => n.Kind == NodeKind.Cast))
+            return string.Empty;
+        var dotted = SyntaxQuery.DottedName(node);
+        if (dotted.Length > 0)
+            return dotted;
+        return node.Kind + ":" + node.SourceText();
+    }
+
+    private static bool IsPrimitiveOrNull(SyntaxNode node, IRuleContext context)
+    {
+        if (node.Kind is NodeKind.NullLiteral or NodeKind.NumberLiteral or NodeKind.BooleanLiteral)
+            return true;
+        if (node.Kind != NodeKind.Identifier)
+            return false;
+        var declared = context.Semantics.Resolve(node)?.DeclaredType;
+        return declared != null && PrimitiveTypes.Contains(declared);
+    }
+
+    private static bool IsLegitimateSelfComparison(SyntaxNode actual, string predicate,
+        string? methodName, IRuleContext context)
+    {
+        if (predicate is not ("isEqualTo" or "hasSameHashCodeAs" or "assertEquals"))
+            return false;
+        if (string.IsNullOrEmpty(methodName) || !LegitimateMethod.IsMatch(methodName))
+            return false;
+        return !IsPrimitiveOrNull(actual, context);
+    }
+
+    public override void Execute(IRuleContext context)
+    {
+        if (!HasTree(context))
+            return;
+
+        foreach (var invocation in SyntaxQuery.Invocations(context.Root))
+        {
+            var chain = CollectChain(invocation);
+            var names = chain.Select(SyntaxQuery.InvokedName).ToList();
+            if (names.Count < 2)
+                continue;
+            if (!Predicates.Contains(names[0]))
+                continue;
+            if (!Bases.Contains(names[^1]))
+                continue;
+            // between the assertThat and the predicate only the message/description calls may sit;
+            // a transforming call like extracting ends the chain before the predicate is reached
+            if (names.Skip(1).Take(names.Count - 2).Any(m => !MessageMethods.Contains(m)))
+                continue;
+
+            var predicateArgs = SyntaxQuery.Arguments(invocation);
+            if (predicateArgs.Count != 1)
+                continue;
+
+            var actual = SyntaxQuery.ArgumentAt(chain[^1], 0);
+            var expected = predicateArgs[0];
+            if (actual == null || !IsStable(actual) || !IsStable(expected))
+                continue;
+            var actualCode = Code(actual);
+            var expectedCode = Code(expected);
+            if (string.IsNullOrEmpty(actualCode) || string.IsNullOrEmpty(expectedCode))
+                continue;
+            if (actualCode != expectedCode)
+                continue;
+
+            var methodName = SyntaxQuery.EnclosingFunction(invocation)?.Text;
+            if (IsLegitimateSelfComparison(actual, names[0], methodName, context))
+                continue;
+
+            context.Report("This assertion compares a value to itself, so it can never fail: the "
+                           + "expected side always equals the actual side. Pass a second, distinct "
+                           + "value instead, or drop the assertion if it is only documenting the "
+                           + "equality.", invocation.Range.EndLine);
+        }
+    }
 }
