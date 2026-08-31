@@ -683,14 +683,20 @@ public sealed class JavaMultilineStringConcatenationRule : JavaGapRuleBase
 
 public sealed class JavaHardcodedMathConstantRule : JavaGapRuleBase
 {
-    private static readonly HashSet<string> Constants = new(StringComparer.Ordinal)
-    {
-        "3.14159265358979", "3.141592653589793", "2.71828182845904", "2.718281828459045",
-        "1.41421356237309", "1.4142135623730951"
-    };
+    private const int MinSignificantDigits = 3;
+
+    private sealed record MathConstant(double Value, string Replacement, string Description);
+
+    private static readonly MathConstant[] Constants =
+    [
+        new(Math.PI, "Math.PI", "pi"),
+        new(Math.E, "Math.E", "Euler's number"),
+        new(Math.Sqrt(2), "Math.sqrt(2)", "the square root of 2"),
+        new(Math.Log(2), "Math.log(2)", "the natural logarithm of 2")
+    ];
 
     public override string Key => "QG-JV-SML-0734";
-    public override string Name => "Use Math.PI and Math.E instead of typed-out digits";
+    public override string Name => "A hardcoded number should use the math constant it approximates";
     public override Severity Severity => Severity.Minor;
     public override IssueKind Kind => IssueKind.CodeSmell;
     public override string RemediationEffort => "2min";
@@ -700,11 +706,61 @@ public sealed class JavaHardcodedMathConstantRule : JavaGapRuleBase
     {
         foreach (var literal in context.Root.OfKind(NodeKind.NumberLiteral))
         {
-            if (!Constants.Contains(literal.Text))
+            // the constants are all non-integer, so an integer literal is not an approximation of one
+            if (literal.Text.IndexOf('.') < 0)
                 continue;
-            context.Report(literal, $"The constant behind '{literal.Text}' lives in Math (PI or E): "
-                                   + "the named form carries its precision and its meaning.");
+            var normalized = Normalize(literal.Text);
+            if (normalized == null)
+                continue;
+            if (!double.TryParse(normalized, System.Globalization.NumberStyles.Float,
+                    System.Globalization.CultureInfo.InvariantCulture, out var parsed))
+                continue;
+
+            var absolute = Math.Abs(parsed);
+            if (absolute == 0.0)
+                continue;
+
+            var significant = CountSignificantDigits(normalized);
+            if (significant < MinSignificantDigits)
+                continue;
+
+            // a value must agree with the constant across every digit it spells out, up to half a
+            // unit in the last one: that is the precision the author actually typed
+            var tolerance = 5.0 * Math.Pow(10, -significant);
+            foreach (var constant in Constants)
+            {
+                if (Math.Abs(absolute - constant.Value) / constant.Value >= tolerance)
+                    continue;
+
+                context.Report(literal, $"'{literal.Text}' is a decimal approximation read from "
+                               + $"memory, and it will not stay in step with {constant.Replacement} if "
+                               + $"the constant's exact value is revisited. Name the value of "
+                               + $"{constant.Description} instead of retyping its digits.");
+                break;
+            }
         }
+    }
+
+    /// <summary>
+    /// Makes the literal comparable to the constants: underscores and the type suffix go away, and
+    /// hex and scientific notations are not approximations of a named constant, so they are skipped.
+    /// </summary>
+    private static string? Normalize(string raw)
+    {
+        var value = raw.Replace("_", "");
+        if (value.Length > 0 && "fdFD".IndexOf(value[^1]) >= 0)
+            value = value[..^1];
+        if (value.StartsWith("0x", StringComparison.OrdinalIgnoreCase))
+            return null;
+        if (value.IndexOf('e', StringComparison.OrdinalIgnoreCase) >= 0)
+            return null;
+        return value;
+    }
+
+    private static int CountSignificantDigits(string normalized)
+    {
+        var sig = normalized.Replace("-", "").Replace(".", "").TrimStart('0');
+        return sig.Length == 0 ? 1 : sig.Length;
     }
 }
 

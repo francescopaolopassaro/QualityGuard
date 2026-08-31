@@ -24,7 +24,8 @@ public static class JavaMeasuredRuleSet
         new JavaSystemTimeInstantRule(),
         new JavaAbsoluteCommandPathRule(),
         new JavaInvalidDateValueRule(),
-        new JavaFormatStringRule()
+        new JavaFormatStringRule(),
+        new JavaStandardCharsetsLiteralRule()
     ];
 }
 
@@ -685,4 +686,149 @@ public sealed class JavaFormatStringRule : JavaMeasuredRuleBase
         }
         return (specifiers, positional, null);
     }
+}
+
+public sealed class JavaStandardCharsetsLiteralRule : JavaMeasuredRuleBase
+{
+    /// <summary>Standard charset names, aliases included, with the constant each one is.</summary>
+    private static readonly Dictionary<string, string> Standard = new(StringComparer.OrdinalIgnoreCase)
+    {
+        ["UTF-8"] = "StandardCharsets.UTF_8",
+        ["UTF8"] = "StandardCharsets.UTF_8",
+        ["US-ASCII"] = "StandardCharsets.US_ASCII",
+        ["ASCII"] = "StandardCharsets.US_ASCII",
+        ["ISO-8859-1"] = "StandardCharsets.ISO_8859_1",
+        ["UTF-16"] = "StandardCharsets.UTF_16",
+        ["UTF-16BE"] = "StandardCharsets.UTF_16BE",
+        ["UTF-16LE"] = "StandardCharsets.UTF_16LE"
+    };
+
+    /// <summary>The constant fields of <c>StandardCharsets</c> itself.</summary>
+    private static readonly string[] StandardConsts =
+        ["UTF_8", "US_ASCII", "ISO_8859_1", "UTF_16", "UTF_16BE", "UTF_16LE"];
+
+    /// <summary>Writers, readers and byte views whose charset argument the code spells out.</summary>
+    private static readonly string[] CharsetCtorTypes =
+        ["InputStreamReader", "OutputStreamWriter", "ByteArrayOutputStream"];
+
+    public override string Key => "QG-JV-SML-0737";
+    public override string Name => "A standard charset should be named by its constant everywhere";
+    public override Severity Severity => Severity.Minor;
+    public override string RemediationEffort => "5min";
+
+    public override void Execute(IRuleContext context)
+    {
+        if (!HasTree(context))
+            return;
+
+        foreach (var node in context.Root.Descendants())
+            ReportNode(context, node);
+    }
+
+    private void ReportNode(IRuleContext context, SyntaxNode node)
+    {
+        switch (node.Kind)
+        {
+            case NodeKind.ObjectCreation:
+                ReportCreation(context, node);
+                break;
+            case NodeKind.Invocation:
+                ReportInvocation(context, node);
+                break;
+            case NodeKind.MemberSelect:
+                ReportGuavaConstant(context, node);
+                break;
+        }
+    }
+
+    private void ReportCreation(IRuleContext context, SyntaxNode creation)
+    {
+        var type = CreatedType(creation);
+        var isString = type == "String" && TakesBytes(creation);
+        if (!isString && !CharsetCtorTypes.Contains(type))
+            return;
+        foreach (var arg in SyntaxQuery.Arguments(creation))
+        {
+            if (Resolve(arg) is { } result)
+            {
+                Report(context, arg, result.Name, result.Constant);
+                return;
+            }
+        }
+    }
+
+    private void ReportInvocation(IRuleContext context, SyntaxNode call)
+    {
+        // 'toCharset' takes one argument and it is a charset; 'getBytes' names the charset when it
+        // wants one. 'toString' is left alone because the same name covers data and charset overloads.
+        var name = SyntaxQuery.InvokedName(call);
+        if (name is not ("getBytes" or "toCharset"))
+            return;
+        // 'Charsets.toCharset' is only checked when the receiver is the fully-qualified helper: the
+        // JDK has no static 'toCharset', and a simple name cannot tell guava from a local class.
+        if (name == "toCharset"
+            && !SyntaxQuery.Receiver(call).Contains(".Charsets", StringComparison.Ordinal))
+            return;
+        foreach (var arg in SyntaxQuery.Arguments(call))
+        {
+            if (Resolve(arg) is { } result)
+            {
+                Report(context, arg, result.Name, result.Constant);
+                return;
+            }
+        }
+    }
+
+    private void ReportGuavaConstant(IRuleContext context, SyntaxNode member)
+    {
+        var dotted = SyntaxQuery.DottedName(member);
+        if (!dotted.Contains(".Charsets.", StringComparison.Ordinal)
+            && !dotted.StartsWith("Charsets.", StringComparison.Ordinal))
+            return;
+        var constant = SyntaxQuery.SimpleName(member);
+        if (StandardConsts.Contains(constant) && !IsStandardCharsets(dotted))
+            ReportMember(context, member, constant);
+    }
+
+    /// <summary>
+    /// The constant a node stands for, when it is a standard charset written other than through
+    /// <c>StandardCharsets</c>. A string whose spelling cannot be another charset and a reference to a
+    /// known constant field (guava, commons) are both unambiguous without knowing the receiver type.
+    /// </summary>
+    private (string Name, string Constant)? Resolve(SyntaxNode arg)
+    {
+        if (arg.Kind == NodeKind.StringLiteral && Standard.TryGetValue(arg.Text, out var constant))
+            return (arg.Text, constant);
+        if (arg.Kind == NodeKind.MemberSelect)
+        {
+            var field = SyntaxQuery.SimpleName(arg);
+            var dotted = SyntaxQuery.DottedName(arg);
+            if (StandardConsts.Contains(field) && !IsStandardCharsets(dotted))
+                return (field, "StandardCharsets." + field);
+        }
+        return null;
+    }
+
+    private static bool IsStandardCharsets(string dotted)
+        => dotted == "StandardCharsets" || dotted.StartsWith("StandardCharsets.", StringComparison.Ordinal)
+           || dotted.StartsWith("java.nio.charset.StandardCharsets.", StringComparison.Ordinal);
+
+    private static bool TakesBytes(SyntaxNode creation)
+    {
+        var first = SyntaxQuery.Arguments(creation).FirstOrDefault();
+        var name = first == null ? string.Empty : SyntaxQuery.DottedName(first);
+        return name.Contains("byte", StringComparison.OrdinalIgnoreCase)
+               || name.Contains("Bytes", StringComparison.Ordinal);
+    }
+
+    private void Report(IRuleContext context, SyntaxNode at, string name, string constant)
+        => context.Report($"'{name}' is a standard charset written by name, so a typo in it becomes "
+                          + $"an UnsupportedCharsetException at run time. '{constant}' is the same "
+                          + "value, checked by the compiler, on every machine.", at.Range.StartLine);
+
+    private void ReportMember(IRuleContext context, SyntaxNode at, string constant)
+        => context.Report($"The constant '{SyntaxQuery.DottedName(at)}' is a standard charset and "
+                          + "lives as a field of a third-party helper. 'StandardCharsets." + constant
+                          + "' is the same value with no dependency and no guess of which Charsets "
+                          + "class was imported.", at.Range.StartLine);
 }

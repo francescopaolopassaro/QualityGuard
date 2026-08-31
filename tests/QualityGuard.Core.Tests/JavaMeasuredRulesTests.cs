@@ -594,4 +594,121 @@ public class JavaMeasuredRulesTests
         var lines = Lines(code, "QG-JV-SML-0566");
         Assert.Empty(lines);
     }
+
+    [Theory]
+    [InlineData("t.getBytes(\"UTF-8\");")]
+    [InlineData("new String(bytes, \"UTF-8\");")]
+    [InlineData("new String(bytes, 0, 4, \"UTF-8\");")]
+    [InlineData("new InputStreamReader(in, \"UTF-8\");")]
+    [InlineData("new OutputStreamWriter(out, \"UTF-8\");")]
+    public void StandardCharsets_Literal_Chosen_By_Name_Is_Reported(string statement)
+    {
+        const string template = """
+            package demo;
+            class A {
+              void f(byte[] bytes, String t, java.io.InputStream in, java.io.OutputStream out) {
+                //STATEMENT
+              }
+            }
+            """;
+        var code = template.Replace("//STATEMENT", statement);
+        Assert.NotEmpty(Lines(code, "QG-JV-SML-0737"));
+    }
+
+    [Fact]
+    public void StandardCharsets_Constant_Forms_Are_Reported()
+    {
+        var code = """
+            package demo;
+            class A {
+              void f(byte[] bytes, int offset, int length, java.io.InputStream in, java.io.OutputStream out) {
+                new String(bytes, org.apache.commons.lang.CharEncoding.UTF_8);
+                new String(bytes, offset, length, org.apache.commons.lang.CharEncoding.UTF_8);
+                com.google.common.base.Charsets.UTF_8;
+                org.apache.commons.codec.Charsets.toCharset("UTF-8");
+              }
+            }
+            """;
+        var lines = Lines(code, "QG-JV-SML-0737");
+        Assert.Equal(4, lines.Count);
+    }
+
+    [Fact]
+    public void StandardCharsets_Leaves_The_Standard_And_Data_Alone()
+    {
+        var code = """
+            package demo;
+            class A {
+              void f(byte[] bytes, String t, String name) throws Exception {
+                t.getBytes();
+                new String(bytes);
+                new String(bytes, StandardCharsets.UTF_8);
+                new String(bytes, offset, length, StandardCharsets.UTF_8);
+                Charset.forName("UTF-8");
+                t.getBytes(StandardCharsets.UTF_8);
+                Charsets.toCharset("UTF-8");
+                new Object(data, "UTF-8");
+              }
+            }
+            """;
+        var lines = Lines(code, "QG-JV-SML-0737");
+        Assert.Empty(lines);
+    }
+
+    [Fact]
+    public void HardcodedMathConstant_Reports_Approximations_Of_Pi_And_E()
+    {
+        var code = """
+            package demo;
+            class A {
+              double pi1 = 3.14;
+              double pi2 = 3.14159;
+              double e1 = 2.718;
+              double e2 = 2.71828f;
+              double sqrt2 = 1.41421;
+              double ln2 = 0.693147;
+              double leadingDot = .693;
+            }
+            """;
+        var lines = Lines(code, "QG-JV-SML-0734");
+        Assert.Equal(new[] { 3, 4, 5, 6, 7, 8, 9 }, lines);
+    }
+
+    [Fact]
+    public void HardcodedMathConstant_Leaves_Standards_And_Unrelated_Values_Alone()
+    {
+        var code = """
+            package demo;
+            class A {
+              double pi = Math.PI;
+              double e = Math.E;
+              double sqrt2 = Math.sqrt(2);
+              double ln2 = Math.log(2);
+              double unrelated = 3.0;
+              double small = 0.001;
+              double tooImprecise = 3.1;
+              double outsideTolerance = 3.16;
+              double sci = 3.14e0;
+              double hex = 0x1.0p0;
+            }
+            """;
+        var lines = Lines(code, "QG-JV-SML-0734");
+        Assert.Empty(lines);
+    }
+
+    [Fact]
+    public void HardcodedMathConstant_Reports_Negative_And_Underscored_Forms()
+    {
+        var code = """
+            package demo;
+            class A {
+              double negativePi = -3.14159;
+              long area(double r) { return 3.14159; }
+              double und = 3.14_159;
+              double dsuffix = 3.14159d;
+            }
+            """;
+        var lines = Lines(code, "QG-JV-SML-0734");
+        Assert.All(lines, l => Assert.Contains(l, new[] { 3, 4, 5, 6 }));
+    }
 }
