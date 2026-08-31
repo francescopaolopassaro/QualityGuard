@@ -101,7 +101,9 @@ public sealed class JsIncompleteAssertionRule : JsTsMeasuredRuleBase
     {
         "to", "be", "been", "is", "that", "which", "and", "has", "have", "with", "at", "of", "same",
         "but", "does", "still", "not", "deep", "nested", "own", "ordered", "any", "all", "itself",
-        "also", "another"
+        "also", "another",
+        // Chai: expect(x).not.to.be — resolves/rejects are dangling modifiers
+        "resolves", "rejects"
     };
 
     /// <summary>
@@ -110,13 +112,47 @@ public sealed class JsIncompleteAssertionRule : JsTsMeasuredRuleBase
     /// </summary>
     private static readonly HashSet<string> CallableMatchers = new(StringComparer.Ordinal)
     {
+        // Chai (BDD and assert)
         "fail", "a", "an", "include", "includes", "contain", "contains", "equal", "equals", "eq",
         "eql", "eqls", "above", "gt", "greaterThan", "least", "gte", "below", "lt", "lessThan",
         "most", "lte", "within", "instanceof", "instanceOf", "property", "ownPropertyDescriptor",
         "haveOwnPropertyDescriptor", "lengthOf", "length", "match", "matches", "string", "key",
         "keys", "throw", "throws", "Throw", "respondTo", "respondsTo", "satisfy", "satisfies",
         "closeTo", "approximately", "members", "oneOf", "change", "changes", "increase", "increases",
-        "decrease", "decreases", "by"
+        "decrease", "decreases", "by",
+        // Chai assert (standalone)
+        "assert", "isOk", "isNotOk", "isTrue", "isFalse", "isNull", "isNotNull",
+        "isUndefined", "isDefined", "exists", "notExists", "notEqual", "strictEqual",
+        "notStrictEqual", "deepEqual", "notDeepEqual", "throw", "doesNotThrow",
+        "rejects", "doesNotMatch", "ifError",
+        // Jest / Vitest / Bun
+        "toBe", "toEqual", "toStrictEqual", "toBeGreaterThan", "toBeGreaterThanOrEqual",
+        "toBeLessThan", "toBeLessThanOrEqual", "toBeCloseTo", "toBeUndefined", "toBeDefined",
+        "toBeTruthy", "toBeFalsy", "toBeNull", "toBeNaN", "toBeInstanceOf",
+        "toContain", "toContainEqual", "toHaveLength", "toHaveProperty", "toHaveProperties",
+        "toMatch", "toMatchInlineSnapshot", "toMatchSnapshot",
+        "toThrow", "toThrowError", "toThrowErrorMatchingSnapshot",
+        "toThrowErrorMatchingInlineSnapshot", "toThrowErrorWith",
+        "toHaveBeenCalled", "toHaveBeenCalledTimes", "toHaveBeenCalledWith",
+        "toHaveBeenCalledLastCalledWith", "toHaveBeenCalledNthTimes",
+        "toHaveBeenLastCalledWith", "toHaveBeenNthCalledWith",
+        "toHaveReturned", "toHaveReturnedTimes", "toHaveReturnedWith",
+        "toHaveLastReturnedWith", "toHaveNthReturnedWith",
+        "toSatisfy", "toSatisfyAll",
+        // Playwright
+        "toBeAttached", "toBeChecked", "toBeDisabled", "toBeEditable", "toBeEmpty",
+        "toBeEnabled", "toBeHidden", "toBeVisible", "toHaveAttribute", "toHaveClass",
+        "toHaveCount", "toHaveCSS", "toHaveId", "toHaveJSProperty", "toHaveText",
+        "toHaveTitle", "toHaveURL", "toHaveValues", "toBeEnabled", "toHaveFocus",
+        "toHaveScreenshot", "toHaveTitle", "toHaveURL",
+        // @testing-library/jest-dom
+        "toBeInTheDocument", "toContainHTML", "toHaveAccessibleName",
+        "toHaveAccessibleDescription", "toHaveErrorMessage",
+        // Node.js assert
+        "assert", "strictEqual", "deepStrictEqual", "notStrictEqual", "notDeepStrictEqual",
+        "rejects", "doesNotThrow", "match", "doesNotMatch", "ifError",
+        // Node.js assert (legacy, still common)
+        "equal", "notEqual", "deepEqual", "notDeepEqual",
     };
 
     public override string Key => "QG-JS-BUG-0143";
@@ -162,7 +198,9 @@ public sealed class JsIncompleteAssertionRule : JsTsMeasuredRuleBase
             // 'expect(value);' — the subject is stated and no matcher follows
             if (expression.Kind != NodeKind.Invocation)
                 continue;
-            if (SyntaxQuery.InvokedName(expression) is not ("expect" or "should"))
+            var invokedName = SyntaxQuery.InvokedName(expression);
+            // expect(value), expect.soft(value), expect.poll(fn, arg), should(value), assert(value)
+            if (invokedName is not ("expect" or "should" or "assert"))
                 continue;
             // '.expect(302, done)' at the end of a chain is the matcher, not a subject left bare:
             // that is how supertest writes every assertion, and a whole test suite was reported.
