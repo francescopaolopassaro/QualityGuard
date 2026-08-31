@@ -49,6 +49,7 @@ public static class JavaGapRuleSet
         new JavaEscapeSequenceInTextBlockRule(),
         new JavaAutowiredTooManyRule(),
         new JavaIncompatibleTransactionalRule(),
+        new JavaBooleanOperatorLiteralRule(),
     ];
 }
 
@@ -1212,4 +1213,45 @@ public sealed class JavaAutowiredTooManyRule : JavaGapRuleBase
                                             + "the intended one.");
         }
     }
+}
+
+public sealed class JavaBooleanOperatorLiteralRule : JavaGapRuleBase
+{
+    public override string Key => "QG-JV-SML-0738";
+    public override string Name => "A boolean literal as an operand does not change the result";
+    public override Severity Severity => Severity.Minor;
+    public override IssueKind Kind => IssueKind.CodeSmell;
+    public override string RemediationEffort => "5min";
+    public override string[] Languages => ["java"];
+
+    public override void Execute(IRuleContext context)
+    {
+        foreach (var node in context.Root.OfKind(NodeKind.Binary, NodeKind.Unary))
+        {
+            // Java fixes '&&'/'||' operands to primitive boolean, so a literal there never changes
+            // the result; the same is not true of languages whose && and || return an operand.
+            // A negated literal is a constant either way.
+            var text = node.Text;
+            if (text == "!" && node.ChildAt(0) is { Kind: NodeKind.BooleanLiteral })
+            {
+                ReportNegation(context, node);
+                continue;
+            }
+            if (text is not ("&&" or "||"))
+                continue;
+            if (node.Children.Any(c => c.Kind == NodeKind.BooleanLiteral))
+            {
+                var literal = node.Children.First(c => c.Kind == NodeKind.BooleanLiteral);
+                var other = node.Children.FirstOrDefault(c => c != literal);
+                context.Report(node, $"'{text}' with a literal '{literal.Text}' on one side makes the "
+                                    + "other side do nothing: the result is fixed regardless of it. "
+                                    + "Write the expression with the meaningful operand only.");
+            }
+        }
+    }
+
+    private static void ReportNegation(IRuleContext context, SyntaxNode node)
+        => context.Report(node, $"'!{node.ChildAt(0).Text}' is a constant written as a negation. "
+                                + "Write the value it equals directly, so the reader does not solve "
+                                + "it each time.");
 }

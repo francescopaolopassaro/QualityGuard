@@ -711,4 +711,45 @@ public class JavaMeasuredRulesTests
         var lines = Lines(code, "QG-JV-SML-0734");
         Assert.All(lines, l => Assert.Contains(l, new[] { 3, 4, 5, 6 }));
     }
+
+    [Fact]
+    public void BooleanOperatorLiteral_Reports_And_Or_And_Negation()
+    {
+        var code = """
+            package demo;
+            class A {
+              boolean f(boolean var, boolean exp) {
+                boolean b;
+                b = var || true;
+                b = false && exp;
+                b = true || false;
+                b = !true;
+                b = !false;
+                return b;
+              }
+            }
+            """;
+        var lines = Lines(code, "QG-JV-SML-0738");
+        Assert.Equal(new[] { 5, 6, 7, 8, 9 }, lines);
+    }
+
+    [Fact]
+    public void BooleanOperatorLiteral_Leaves_Meaningful_Expressions_Alone()
+    {
+        var code = """
+            package demo;
+            class A {
+              boolean f(boolean var, boolean exp) {
+                boolean b;
+                b = var || exp;
+                b = var && exp;
+                b = !var;
+                b = var;
+                return b;
+              }
+            }
+            """;
+        var lines = Lines(code, "QG-JV-SML-0738");
+        Assert.Empty(lines);
+    }
 }
