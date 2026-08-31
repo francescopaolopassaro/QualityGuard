@@ -159,6 +159,55 @@ public class JavaMeasuredRulesTests
     }
 
     [Fact]
+    public void ConstantMath_whole_number_forms_are_reported()
+    {
+        var code = """
+            package demo;
+
+            class A {
+              double f(int a, double y) {
+                double v1 = Math.abs((float) 0);          // int cast via float target
+                double v2 = Math.ceil((double) 0L);       // long literal
+                double v3 = Math.floor((float) 0);        // int literal with float cast
+                double v4 = Math.round((float) 0);
+                double v5 = Math.rint((double) -3);       // negative whole
+                double v6 = Math.ceil((double) ' ');      // char literal
+                double v7 = Math.abs((double) 'a');       // char via cast
+                double v8 = Math.acos((0.0));             // pair of parentheses
+                double v9 = Math.cos(0.0d);
+                double v10 = Math.atan2(0.0D, y);         // atan2 with 0.0 first arg
+                return v1 + v2 + v3 + v4 + v5 + v6 + v7 + v8 + v9 + v10;
+              }
+            }
+            """;
+        var expected = new[] { 5, 6, 7, 8, 9, 10, 11, 12, 13, 14 };
+        Assert.Equal(expected, Lines(code, "QG-JV-BUG-0200"));
+    }
+
+    [Fact]
+    public void ConstantMath_does_not_report_variables_floats_or_strings()
+    {
+        var code = """
+            package demo;
+
+            class A {
+              double f(int a, double value) {
+                double v1 = Math.abs(a);                       // variable, type unknown
+                double v2 = Math.ceil((double) 0.0f);          // float literal has a fraction
+                double v3 = Math.ceil((double) 0.0d);
+                double v4 = Math.abs((double) "a");            // string, not a character
+                double v5 = Math.acos(value);                  // variable
+                double v6 = Math.cos(2.0);                     // not the constant 0.0/1.0
+                double v7 = Math.exp(a);                       // variable
+                double v8 = Math.max(a, a + 1);                // different operands
+                return v1 + v2 + v3 + v4 + v5 + v6 + v7 + v8;
+              }
+            }
+            """;
+        Assert.Empty(Lines(code, "QG-JV-BUG-0200"));
+    }
+
+    [Fact]
     public void A_short_key_is_reported()
     {
         var weak = """

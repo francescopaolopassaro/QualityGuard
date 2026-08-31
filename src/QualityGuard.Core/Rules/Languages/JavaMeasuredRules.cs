@@ -201,6 +201,87 @@ public sealed class JavaConstantMathRule : JavaMeasuredRuleBase
         return null;
     }
 
+    // Trig functions whose result is the constant itself when given 0.0 (or, where the value
+    // column allows, 1.0). Only those exact values make the call a no-op.
+    private static readonly Dictionary<string, (bool Zero, bool One)> TrigMath =
+        new()
+        {
+            ["acos"] = (true, true), ["asin"] = (true, true), ["atan"] = (true, true),
+            ["atan2"] = (true, false), ["cbrt"] = (true, true), ["cos"] = (true, false),
+            ["cosh"] = (true, false), ["exp"] = (true, true), ["expm1"] = (true, false),
+            ["log"] = (true, true), ["log10"] = (true, true), ["sin"] = (true, false),
+            ["sinh"] = (true, false), ["sqrt"] = (true, true), ["tan"] = (true, false),
+            ["tanh"] = (true, false), ["toDegrees"] = (true, true), ["toRadians"] = (true, false),
+        };
+
+    private static bool TryDouble(SyntaxNode node, out double value)
+    {
+        value = 0;
+        while (node.Kind == NodeKind.Parenthesized)
+            node = node.ChildAt(0);
+        var literal = NumberLiteral(node);
+        if (literal == null) return false;
+        var text = literal.Text;
+        var lower = text.ToLowerInvariant();
+        if (lower.Contains('x') || lower.Contains('e')) return false;
+        if (lower.EndsWith('f') || lower.EndsWith('d'))
+            text = text[..^1];
+        return double.TryParse(text, System.Globalization.NumberStyles.Float,
+            System.Globalization.CultureInfo.InvariantCulture, out value);
+    }
+
+    /// <summary>True when the argument is known to be a whole number: an integer or character
+    /// literal, unwrapping the cast chain. Floating literals stay "not known whole", so
+    /// 'Math.ceil((double) 0.0f)' is not reported, exactly like the cast of a float.</summary>
+    private static bool IsWholeConstant(SyntaxNode node)
+    {
+        var literal = NumberLiteral(node);
+        if (literal == null) return false;
+        var lower = literal.Text.ToLowerInvariant();
+        if (lower.Contains('.') || lower.Contains('e') || lower.Contains('x'))
+            return false;
+        return true;
+    }
+
+    /// <summary>Whether the literal is written with single quotes — the character form. A char and a
+    /// one-character string both arrive stripped of their quotes, so the delimiter is read from the
+    /// source at the position of the opening token, not from the node text.</summary>
+    private static bool IsCharLiteral(SyntaxNode node, IRuleContext context)
+    {
+        if (node.Kind != NodeKind.StringLiteral || node.Tokens.Count == 0)
+            return false;
+        var start = node.Tokens[0];
+        if (start.Line <= 0 || start.Column <= 0)
+            return false;
+        var content = context.File.Content;
+        var lineStart = 0;
+        for (var i = 1; i < start.Line && lineStart < content.Length; i++)
+        {
+            var nl = content.IndexOf('\n', lineStart);
+            if (nl < 0)
+            {
+                lineStart = content.Length;
+                break;
+            }
+            lineStart = nl + 1;
+        }
+        var at = lineStart + start.Column - 1;
+        return at < content.Length && content[at] == '\'';
+    }
+
+    private static bool IsWholeKnown(SyntaxNode node, IRuleContext context)
+    {
+        while (node.Kind is NodeKind.Cast or NodeKind.Parenthesized)
+        {
+            var inner = node.Children.FirstOrDefault(c => c.Kind != NodeKind.TypeReference);
+            if (inner == null) return false;
+            node = inner;
+        }
+        if (node.Kind == NodeKind.StringLiteral)
+            return IsCharLiteral(node, context);
+        return IsWholeConstant(node);
+    }
+
     public override void Execute(IRuleContext context)
     {
         if (!HasTree(context))
@@ -214,20 +295,30 @@ public sealed class JavaConstantMathRule : JavaMeasuredRuleBase
             var arguments = SyntaxQuery.Arguments(call);
 
             string? answer = null;
+
             if (arguments.Count == 2 && name is "max" or "min")
             {
                 var first = SyntaxQuery.DottedName(arguments[0]);
                 if (first.Length > 0 && first == SyntaxQuery.DottedName(arguments[1]))
                     answer = "the same value it was given twice";
             }
-            else if (arguments.Count == 1 && NumberLiteral(arguments[0]) is { } literal)
+            else if (arguments.Count == 1 && TrigMath.TryGetValue(name, out var allowed) &&
+                     TryDouble(arguments[0], out var trigValue) &&
+                     ((allowed.Zero && trigValue == 0.0) || (allowed.One && trigValue == 1.0)))
             {
-                answer = name switch
-                {
-                    "abs" or "ceil" or "floor" or "round" or "rint" => $"a value fixed at compile time by {literal.Text}",
-                    _ => null
-                };
+                answer = $"the constant {(trigValue == 0.0 ? "0.0" : "1.0")} it was given";
             }
+            else if (name == "atan2" && arguments.Count == 2 &&
+                     TryDouble(arguments[0], out var atan2Value) && atan2Value == 0.0)
+            {
+                answer = "0.0 when the plane of the second argument is not crossed";
+            }
+            else if (arguments.Count == 1 && name is "abs" or "ceil" or "floor" or "round" or "rint"
+                     && IsWholeKnown(arguments[0], context))
+            {
+                answer = $"a value fixed at compile time (a whole number)";
+            }
+
             if (answer == null)
                 continue;
 
