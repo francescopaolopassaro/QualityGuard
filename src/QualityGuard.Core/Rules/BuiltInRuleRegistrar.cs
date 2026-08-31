@@ -112,6 +112,7 @@ public static class BuiltInRuleRegistrar
         ..Languages.HtmlAriaRuleSet.All,
         ..Languages.PythonTypeGapRuleSet.All,
         ..Languages.PythonGapRuleSet3.All,
+        ..Languages.PythonSlotsRuleSet.All,
         ..Languages.PyStyleGapRuleSet.All,
         ..Languages.JsModernApiRuleSet.All,
         ..Languages.ScalaRuleSet.All,
