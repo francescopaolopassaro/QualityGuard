@@ -5,6 +5,12 @@ All notable changes to QualityGuard are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.0.3] - 2026-09-27 — QualityGuard.Mcp only
+
+### Fixed
+
+* **QualityGuard.Mcp 1.0.2 shipped the 1.0.0 engine**: its project consumes the other packages from NuGet and still pinned them at 1.0.0, so none of the 1.0.2 fixes reached the MCP server. 1.0.3 depends on QualityGuard.Core, .Sources.Sarif and .Cli 1.0.2. The other packages are unchanged and stay at 1.0.2.
+
 ## [1.0.2] - 2026-09-27
 
 ### Fixed

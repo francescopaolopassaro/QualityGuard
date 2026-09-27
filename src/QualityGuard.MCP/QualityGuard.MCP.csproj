@@ -21,9 +21,9 @@
     is bumped to 1.0.0 in the same release that carries the libraries to 1.0.0.
   -->
   <ItemGroup>
-    <PackageReference Include="QualityGuard.Core" Version="1.0.0" />
-    <PackageReference Include="QualityGuard.Sources.Sarif" Version="1.0.0" />
-    <PackageReference Include="QualityGuard.Cli" Version="1.0.0" />
+    <PackageReference Include="QualityGuard.Core" Version="1.0.2" />
+    <PackageReference Include="QualityGuard.Sources.Sarif" Version="1.0.2" />
+    <PackageReference Include="QualityGuard.Cli" Version="1.0.2" />
   </ItemGroup>
 
 </Project>
