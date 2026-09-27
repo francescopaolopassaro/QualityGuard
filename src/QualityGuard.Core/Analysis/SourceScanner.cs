@@ -300,7 +300,7 @@ public static class SourceScanner
             }
 
             var banner = head.ToString();
-            return KnownLibraries.Any(library => banner.Contains(library, StringComparison.OrdinalIgnoreCase))
+            return LibraryBanner.Value.IsMatch(banner)
                    || banner.Contains("sourceMappingURL", StringComparison.Ordinal);
         }
         catch (IOException)
@@ -308,6 +308,20 @@ public static class SourceScanner
             return false;
         }
     }
+
+    /// <summary>
+    /// A banner that NAMES a library as the file's identity: the name as a whole word followed by a version
+    /// ("jQuery v3.7.1", "lodash 4.17.21"), or right after an @license tag. A plain mention is not enough:
+    /// "Zero dependencies (no jQuery/Bootstrap)" in a hand-written script used to drop it from the scan, and
+    /// with names like "three", "prototype" or "d3" in the list so did an ordinary comment.
+    /// </summary>
+    private static readonly Lazy<Regex> LibraryBanner = new(() =>
+    {
+        var names = string.Join("|", KnownLibraries.Select(Regex.Escape));
+        return new Regex(
+            $@"(?<![\w./-])(?:{names})(?![\w-])[^|()]{{0,24}}?(?<![\w.])v?\d+\.\d+|@license\W{{0,20}}(?:{names})(?![\w-])",
+            RegexOptions.IgnoreCase | RegexOptions.CultureInvariant | RegexOptions.Compiled);
+    });
 
     /// <summary>Above this many lines a stylesheet or a script was written by a tool.</summary>
     private const int BundleLines = 3000;

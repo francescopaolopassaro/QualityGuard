@@ -5,6 +5,15 @@ All notable changes to QualityGuard are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.0.2] - 2026-09-27
+
+### Fixed
+
+* **Scanner dropped hand-written scripts that mention a library**: the bundle check matched library names as plain substrings in the first lines, so a header such as "Zero dependencies (no jQuery/Bootstrap)" — or any comment with "three", "prototype", "d3", "foundation" — excluded the file from the analysis with no finding and no warning. A banner now counts only when it names the library with a version (`jQuery v3.7.1`, `lodash 4.17.21`) or right after `@license`.
+* **`QG-CSS-SML-0083` reported hex colours as misspelt units** (`#9ca3af` → "'af' is not a standard CSS unit"): the `#` is its own token, so the colour's tail reached the rule as a number. The rule now skips a number glued to `#` and requires a real numeric part before the unit.
+* **HTML ARIA rules compared the element's inner text instead of its tag name**: `QG-HTML-SML-0062` flagged `<button onclick>` and printed "< onsubmit>" with no tag; the tabindex, redundant-role, input and anchor checks were silently inert. They now use the tag name.
+* **`QG-HTML-SML-0062` on `<form onsubmit>`**: submit and reset fire from the form's controls, which the keyboard reaches; form-level events are no longer reported.
+
 ## [1.0.1] - 2026-08-26
 
 ### Added

@@ -49,7 +49,7 @@ public sealed class HtmlLangAttributeGapRule : MarkupRuleBase
     {
         foreach (var element in Document(context).Descendants())
         {
-            if (element.Text is not ("html" or "body")) continue;
+            if (element.Name is not ("html" or "body")) continue;
             if (element.Attribute("lang") != null) return;
             context.Report("Without lang, screen readers guess the pronunciation and translation "
                            + "tools cannot switch. Add lang to <html>.", element.Line);
@@ -70,11 +70,11 @@ public sealed class HtmlTabIndexNonInteractiveGapRule : MarkupRuleBase
     {
         foreach (var element in Document(context).Descendants())
         {
-            if (HtmlAriaHelper.Interactive.Contains(element.Text)) continue;
+            if (HtmlAriaHelper.Interactive.Contains(element.Name)) continue;
             if (element.Attribute("role") != null) continue;
             var value = element.Attribute("tabindex");
             if (value == null || !int.TryParse(value.Trim(), out var idx) || idx <= 0) continue;
-            context.Report("<" + element.Text + " tabindex=\"" + idx + "\"> forces a non-interactive "
+            context.Report("<" + element.Name + " tabindex=\"" + idx + "\"> forces a non-interactive "
                            + "element ahead of interactive ones: screen reader users lose their "
                            + "place. Remove tabindex or use 0.", element.Line);
         }
@@ -99,11 +99,11 @@ public sealed class HtmlRedundantAriaRoleGapRule : MarkupRuleBase
     {
         foreach (var element in Document(context).Descendants())
         {
-            if (!Implicit.Contains(element.Text)) continue;
+            if (!Implicit.Contains(element.Name)) continue;
             var role = element.Attribute("role");
-            if (role == null || !role.Equals(element.Text, StringComparison.OrdinalIgnoreCase))
+            if (role == null || !role.Equals(element.Name, StringComparison.OrdinalIgnoreCase))
                 continue;
-            context.Report("<" + element.Text + " role=\"" + role + "\"> repeats the implicit role. "
+            context.Report("<" + element.Name + " role=\"" + role + "\"> repeats the implicit role. "
                            + "Remove it: assistive technology already knows.");
         }
     }
@@ -149,7 +149,7 @@ public sealed class HtmlAutocompleteValuesGapRule : MarkupRuleBase
     {
         foreach (var element in Document(context).Descendants())
         {
-            if (element.Text != "input") continue;
+            if (element.Name != "input") continue;
             var value = element.Attribute("autocomplete");
             if (value == null || Valid.Contains(value)) continue;
             context.Report("autocomplete=\"" + value + "\" is not a standard token: password managers "
@@ -170,7 +170,7 @@ public sealed class HtmlAnchorAsButtonGapRule : MarkupRuleBase
     {
         foreach (var element in Document(context).Descendants())
         {
-            if (element.Text != "a") continue;
+            if (element.Name != "a") continue;
             if (element.Attribute("href") != null) continue;
             if (element.Attribute("role") != null) continue;
             foreach (var key in element.Attributes.Keys)
@@ -200,7 +200,7 @@ public sealed class HtmlNonInteractiveEventHandlerGapRule : MarkupRuleBase
     {
         foreach (var element in Document(context).Descendants())
         {
-            if (HtmlAriaHelper.Interactive.Contains(element.Text)) continue;
+            if (HtmlAriaHelper.Interactive.Contains(element.Name)) continue;
             if (element.Attribute("role") != null || element.Attribute("tabindex") != null)
                 continue;
             foreach (var attr in element.Attributes.Keys)
@@ -209,7 +209,11 @@ public sealed class HtmlNonInteractiveEventHandlerGapRule : MarkupRuleBase
                 if (attr.EndsWith("focus", StringComparison.Ordinal)
                     || attr.EndsWith("blur", StringComparison.Ordinal))
                     continue;
-                context.Report("<" + element.Text + " " + attr + "> carries an event handler but no "
+                // A form's submit and reset fire from its controls (a submit button, Enter in a field),
+                // which the keyboard reaches: the form itself never has to be focusable.
+                if (element.Name == "form" && attr is "onsubmit" or "onreset" or "oninput" or "onchange")
+                    continue;
+                context.Report("<" + element.Name + " " + attr + "> carries an event handler but no "
                                        + "role or tabindex: keyboard users can never reach it.",
                     element.Line);
                 break;

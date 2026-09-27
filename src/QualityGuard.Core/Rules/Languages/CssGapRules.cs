@@ -229,6 +229,9 @@ public sealed class CssValidUnitRule : CssGapRuleBase
         "dpi", "dpcm", "dppx", "x", "lh", "rlh", "cap", "ic", "Q"
     };
 
+    private static readonly System.Text.RegularExpressions.Regex NumericPart =
+        new(@"^[+-]?(\d+(\.\d*)?|\.\d+)$", System.Text.RegularExpressions.RegexOptions.CultureInvariant);
+
     public override string Key => "QG-CSS-SML-0083";
     public override string Name => "CSS units should be recognised";
     public override Severity Severity => Severity.Major;
@@ -237,8 +240,16 @@ public sealed class CssValidUnitRule : CssGapRuleBase
 
     public override void Execute(IRuleContext context)
     {
-        foreach (var token in context.Tokens.Where(t => t.Kind == TokenKind.Number))
+        var tokens = context.Tokens;
+        for (var index = 0; index < tokens.Count; index++)
         {
+            var token = tokens[index];
+            if (token.Kind != TokenKind.Number) continue;
+            // A hex colour is tokenised as '#' followed by a "number" such as 9ca3af or 12ab: the tail
+            // is part of the colour, not a unit ('af', 'd', 'fd' were reported on #9ca3af, #333a4d, #93c5fd).
+            if (index > 0 && tokens[index - 1] is { Text: "#" } hash
+                && hash.Line == token.Line && hash.Column + 1 == token.Column)
+                continue;
             var text = token.Text;
             var unitStart = text.Length;
             for (var i = text.Length - 1; i >= 0; i--)
@@ -251,6 +262,8 @@ public sealed class CssValidUnitRule : CssGapRuleBase
             if (unit.Length == 0 || Units.Contains(unit)) continue;
             // hex colors are identifiers not numbers; skip anything that looks like one
             if (text.StartsWith("#")) continue;
+            // Only a real number carries a unit: "9ca3" in front of "af" is not one.
+            if (!NumericPart.IsMatch(text[..unitStart])) continue;
             context.Report($"'{unit}' is not a standard CSS unit. Check the spelling.", token.Line);
         }
     }
