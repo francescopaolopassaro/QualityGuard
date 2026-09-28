@@ -380,17 +380,38 @@ public sealed class JsXssSinkRule : PatternRuleBase
     public override Severity Severity => Severity.Critical;
     public override IssueKind Kind => IssueKind.Vulnerability;
     public override string RemediationEffort => "30min";
-    public override string FixAdvice => "Never write untrusted data to HTML sinks; use textContent or a sanitization library.";
+    public override string FixAdvice =>
+        "Escape the parts that come from outside (user input, URL, storage, network) or build the elements with "
+        + "createElement/textContent. Do not switch markup the code builds itself to textContent: the tags would show as text.";
     public override string[] Languages => ["js", "ts"];
 
+    // Every mention of innerHTML used to be reported — reads, `el.innerHTML = ''`, an SVG constant — and the advice
+    // said "use textContent". An agent applied it to `btn.innerHTML = ICONS.logo` and to a panel built from string
+    // literals: the page then showed the SVG source and the raw tags instead of the toolbar. A finding is now a WRITE
+    // to the sink whose value is not made only of constants, and the advice says what not to do.
     public override void Execute(IRuleContext context)
     {
         var tokens = context.Tokens;
         for (var i = 0; i < tokens.Count; i++)
         {
-            if (RuleMatchers.Contains(tokens[i].Text, ["innerHTML", "outerHTML", "insertAdjacentHTML"]))
+            var name = tokens[i].Text;
+            if (name is "innerHTML" or "outerHTML")
             {
-                context.Report($"Writing dynamic content to {tokens[i].Text} can lead to XSS.", tokens[i].Line);
+                int valueStart = AssignmentValueStart(tokens, i + 1);
+                if (valueStart < 0) continue;                                   // a read, not a write
+                var dynamicPart = FirstDynamicToken(tokens, valueStart, stopAtCloseParen: false);
+                if (dynamicPart == null) continue;                              // only literals and CONSTANTS
+                context.Report(Message(name, dynamicPart), tokens[i].Line);
+                continue;
+            }
+            if (name == "insertAdjacentHTML" && i + 1 < tokens.Count && tokens[i + 1].Text == "(")
+            {
+                int comma = i + 2;
+                while (comma < tokens.Count && tokens[comma].Text != "," && tokens[comma].Text != ")") comma++;
+                if (comma >= tokens.Count || tokens[comma].Text != ",") continue;
+                var dynamicPart = FirstDynamicToken(tokens, comma + 1, stopAtCloseParen: true);
+                if (dynamicPart == null) continue;
+                context.Report(Message(name, dynamicPart), tokens[i].Line);
                 continue;
             }
             if (i >= 2 && RuleMatchers.IsName(tokens[i], "write") && tokens[i - 1].Text == "."
@@ -398,6 +419,73 @@ public sealed class JsXssSinkRule : PatternRuleBase
                 context.Report("document.write can be an XSS sink for untrusted content.", tokens[i].Line);
         }
     }
+
+    private static string Message(string sink, string dynamicPart) =>
+        $"{sink} receives markup built with '{dynamicPart}': if any part of it comes from the user, the URL, storage "
+        + "or the network, it can run as script (XSS). Escape those parts, or build the elements with "
+        + "createElement/textContent. Do not change markup the code builds itself to textContent — it would show the tags as text.";
+
+    /// <summary>Index of the first token of the assigned value when the sink is written (`=`, `+=`), else -1.</summary>
+    private static int AssignmentValueStart(IReadOnlyList<Token> tokens, int k)
+    {
+        if (k >= tokens.Count) return -1;
+        var t = tokens[k].Text;
+        if (t == "+=") return k + 1;
+        if (t == "=" && (k + 1 >= tokens.Count || tokens[k + 1].Text != "=")) return k + 1;
+        if (t == "+" && k + 1 < tokens.Count && tokens[k + 1].Text == "=") return k + 2;
+        return -1;
+    }
+
+    /// <summary>
+    /// The first part of the value that is not a constant, or null when it is only string literals (without
+    /// interpolation), numbers, `+`, parentheses and UPPER_CASE constants with their members (ICONS.logo).
+    /// </summary>
+    private static string? FirstDynamicToken(IReadOnlyList<Token> tokens, int start, bool stopAtCloseParen)
+    {
+        int depth = 0;
+        bool constChain = false;                 // inside ICONS.logo: members of a constant are constants
+        for (int k = start; k < tokens.Count && k < start + 400; k++)
+        {
+            var tok = tokens[k];
+            var text = tok.Text;
+            if (depth == 0 && (text == ";" || text == "}" || text == "," || (stopAtCloseParen && text == ")")))
+                return null;
+            // Statement ended by a line break (no semicolon): a new line that does not continue the expression.
+            if (depth == 0 && k > start && tok.Line != tokens[k - 1].Line
+                && tokens[k - 1].Text is not ("+" or "=" or "(" or "?" or ":" or "&&" or "||" or ",")
+                && text is not ("+" or "." or "?" or ":"))
+                return null;
+            switch (tok.Kind)
+            {
+                case TokenKind.Comment:
+                    continue;
+                case TokenKind.String:
+                    if (text.Contains("${")) return text.Length > 40 ? text[..40] + "…" : text;
+                    constChain = false;
+                    continue;
+                case TokenKind.Number:
+                    constChain = false;
+                    continue;
+                case TokenKind.Identifier:
+                    bool member = k > start && tokens[k - 1].Text == ".";
+                    if (member && constChain) continue;
+                    if (!member && IsConstantName(text)) { constChain = true; continue; }
+                    return text;
+                case TokenKind.Symbol:
+                    if (text == "(") { depth++; continue; }
+                    if (text == ")") { depth--; if (depth < 0) return null; continue; }
+                    if (text == ".") continue;
+                    if (text == "+") { constChain = false; continue; }
+                    return text;
+                default:
+                    return text;
+            }
+        }
+        return null;
+    }
+
+    private static bool IsConstantName(string name)
+        => name.Length > 1 && name.All(c => char.IsUpper(c) || char.IsDigit(c) || c == '_') && char.IsLetter(name[0]);
 }
 
 public sealed class JsPostMessageRule : PatternRuleBase

@@ -105,6 +105,33 @@ public class FlowAbleRegressionTests : IDisposable
         Assert.Empty(Analyze.LinesOf(analysis, "QG-HTML-SML-0062"));
     }
 
+    [Theory]
+    [InlineData("btn.innerHTML = ICONS.logo;")]                                   // an SVG constant
+    [InlineData("el.innerHTML = '';")]                                             // clearing
+    [InlineData("el.innerHTML = '<div class=\"a\">' + '</div>';")]                 // literals only
+    [InlineData("var html = el.innerHTML;")]                                       // a read
+    [InlineData("el.innerHTML = ''\nfoo(userInput);")]                             // no semicolon, next statement
+    public void ConstantMarkupOrReads_AreNotXss(string code)
+    {
+        var analysis = Analyze.WithRules("app.js", code + "\n", "QG-JS-SEC-0013");
+
+        Assert.Empty(Analyze.LinesOf(analysis, "QG-JS-SEC-0013"));
+    }
+
+    [Theory]
+    [InlineData("el.innerHTML = '<b>' + name + '</b>';", "name")]
+    [InlineData("el.innerHTML = `<b>${location.hash}</b>`;", "<b>${location.hash}</b>")]
+    [InlineData("el.insertAdjacentHTML('beforeend', data.html);", "data")]
+    [InlineData("panel.innerHTML += t('brand');", "t")]
+    public void DynamicMarkup_IsReported_NamingTheDynamicPart(string code, string part)
+    {
+        var analysis = Analyze.WithRules("app.js", code + "\n", "QG-JS-SEC-0013");
+
+        var issue = Assert.Single(analysis.Issues, i => i.RuleKey == "QG-JS-SEC-0013");
+        Assert.Contains($"'{part}'", issue.Message);
+        Assert.Contains("textContent", issue.Message);   // and what NOT to do with markup the code builds
+    }
+
     [Fact]
     public void ClickHandlerOnDiv_IsReported_WithItsTagName()
     {

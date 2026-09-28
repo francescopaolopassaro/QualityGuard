@@ -5,6 +5,22 @@ All notable changes to QualityGuard are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.0.4] - 2026-09-28
+
+All four packages (QualityGuard.Core, .Sources.Sarif, .Cli, .Mcp) move to 1.0.4 together: 1.0.3 was already
+taken by the Mcp-only release below, and NuGet does not allow republishing a version.
+
+### Fixed
+
+* **`QG-JS-SEC-0013` reported every mention of `innerHTML` and advised `textContent`**: reads
+  (`var html = el.innerHTML`), clearing (`el.innerHTML = ''`) and constant markup (`btn.innerHTML = ICONS.logo`,
+  a panel built only from string literals) were all reported as XSS. An agent following the advice switched them to
+  `textContent`, and the page showed the SVG source and the raw tags instead of the toolbar. The rule now reports a
+  WRITE to `innerHTML`/`outerHTML` (`=`, `+=`) or the markup argument of `insertAdjacentHTML`, only when the value is
+  not made solely of string literals, numbers and UPPER_CASE constants with their members. The message names the
+  dynamic part (`'name'`, `'t'`, an interpolated template) and says to escape the untrusted parts — and not to switch
+  markup the code builds itself to `textContent`. `document.write` is unchanged.
+
 ## [1.0.3] - 2026-09-27 — QualityGuard.Mcp only
 
 ### Fixed
