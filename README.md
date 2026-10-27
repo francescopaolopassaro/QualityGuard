@@ -481,6 +481,61 @@ The image is published on Docker Hub as [`digitalsolutionsdotit/qualityguard`](h
 docker pull digitalsolutionsdotit/qualityguard:1.0.6
 ```
 
+#### Requirements
+
+| Requirement | Detail |
+| --- | --- |
+| Docker | Docker Engine 20.10 or later (Docker Desktop works too). |
+| Container type | Linux containers. Windows containers are not supported. |
+| Architecture | `linux/amd64`. No ARM image is published. |
+| Network | Access to Docker Hub to pull the image (it is public, no login needed). The scan itself uses no network. |
+| Software on the runner | None: the .NET 9 runtime and the CLI are inside the image. |
+| Code to analyse | Mounted on `/src` in the container (`-v "$PWD:/src"`). |
+| Permissions | The mounted folder must be writable when you ask for reports (`--sarif`, `--html`, `--markdown`). |
+
+#### Understanding `docker run`
+
+```bash
+docker run --rm -v "$PWD:/src" digitalsolutionsdotit/qualityguard:1.0.6 --path /src
+```
+
+| Part | What it does |
+| --- | --- |
+| `docker run` | Starts a container from an image. |
+| `--rm` | Deletes the container when it exits, so no stopped container is left behind after each run. |
+| `-v "$PWD:/src"` | Maps the current folder of your machine (`$PWD`) to `/src` inside the container. The container sees your code, and the reports it writes stay on your machine. |
+| `digitalsolutionsdotit/qualityguard:1.0.6` | The image to run, with its version. Docker pulls it from Docker Hub if it is not local. |
+| `--path /src` | Everything **after** the image name is passed to QualityGuard. Here it tells it which folder to analyse: the one you mapped. |
+
+Options before the image name (`--rm`, `-v`) belong to Docker; options after it (`--path`, `--gate`, `--sarif`) belong to QualityGuard.
+
+With more options:
+
+```bash
+docker run --rm -v "$PWD:/src" digitalsolutionsdotit/qualityguard:1.0.6 \
+  --path /src/src \
+  --gate /src/gate.json \
+  --sarif /src/report.sarif.json \
+  --html /src/report.html
+```
+
+* The trailing `\` only continues the command on the next line (use a backtick `` ` `` in PowerShell).
+* Paths after the image name are **inside the container**: `/src/gate.json` is the `gate.json` file of your current folder.
+* `report.sarif.json` and `report.html` appear in your current folder.
+
+Per-shell notes:
+
+* **Linux and macOS:** `$PWD` works as is.
+* **PowerShell:** use `${PWD}`, i.e. `-v "${PWD}:/src"`.
+* **Windows Command Prompt:** use `%cd%`, i.e. `-v "%cd%:/src"`.
+* **Git Bash on Windows:** it may rewrite paths starting with `/`; set `MSYS_NO_PATHCONV=1` first.
+
+The command prints the verdict and the summary, and the exit code tells the pipeline what happened: `0` passed, `1` gate failed, `2` error (for example a path that does not exist). Read it right after the run with `echo $?`.
+
+Reports are written as root by default. To get files owned by your user, add `--user "$(id -u):$(id -g)"` before the image name. In CI, pin the version tag (`:1.0.6`) instead of `latest`.
+
+#### Examples
+
 The image has the CLI as entry point and `/src` as working directory: mount the repository there and pass the usual options.
 
 ```bash
