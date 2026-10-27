@@ -15,6 +15,7 @@ All packages move to 1.0.8 together, and `QualityGuard.Mcp` now depends on the 1
   that only has the .NET 10 SDK. `QualityGuard.Cli` stays a library package on .NET 9.
 * **GitHub Releases binaries**: the `release-binaries` workflow attaches a single-file, self-contained zip for `win-x64`
   (`qualityguard.exe`), `linux-x64` and `osx-arm64` to every published release, for Windows users who do not want to install .NET or Docker.
+* **Docker image `1.0.8`** published on Docker Hub (tags `1.0.8`, `latest`); README examples now use it.
 * **Scoop bucket** [`scoop-qualityguard`](https://github.com/francescopaolopassaro/scoop-qualityguard): on Windows,
   `scoop bucket add qualityguard <url>` then `scoop install qualityguard`, no .NET required.
 * **README**: install scopes (global, local, tool path), registering the MCP server in an agent with the
