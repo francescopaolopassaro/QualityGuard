@@ -7,6 +7,9 @@
     <Nullable>enable</Nullable>
     <AssemblyName>QualityGuard.Mcp</AssemblyName>
     <RootNamespace>QualityGuard.Mcp</RootNamespace>
+    <PackAsTool>true</PackAsTool>
+    <ToolCommandName>qualityguard-mcp</ToolCommandName>
+    <PackageType>McpServer;DotnetTool</PackageType>
     <Description>Model Context Protocol server for QualityGuard: exposes code scans, Quality Gate evaluation and AI-oriented Markdown reports as MCP tools over stdio or HTTP.</Description>
   </PropertyGroup>
 
@@ -21,9 +24,9 @@
     is bumped to 1.0.0 in the same release that carries the libraries to 1.0.0.
   -->
   <ItemGroup>
-    <PackageReference Include="QualityGuard.Core" Version="1.0.6" />
-    <PackageReference Include="QualityGuard.Sources.Sarif" Version="1.0.6" />
-    <PackageReference Include="QualityGuard.Cli" Version="1.0.6" />
+    <PackageReference Include="QualityGuard.Core" Version="1.0.8" />
+    <PackageReference Include="QualityGuard.Sources.Sarif" Version="1.0.8" />
+    <PackageReference Include="QualityGuard.Cli" Version="1.0.8" />
   </ItemGroup>
 
 </Project>

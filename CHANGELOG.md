@@ -5,6 +5,32 @@ All notable changes to QualityGuard are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.0.8] - 2026-10-27
+
+All packages move to 1.0.8 together, and `QualityGuard.Mcp` now depends on the 1.0.8 engine packages.
+
+### Added
+
+* **`QualityGuard.Tool` targets .NET 9 and .NET 10**, so `dnx QualityGuard.Tool --yes -- --path ./src` works on a machine
+  that only has the .NET 10 SDK. `QualityGuard.Cli` stays a library package on .NET 9.
+* **GitHub Releases binaries**: the `release-binaries` workflow attaches a single-file, self-contained zip for `win-x64`
+  (`qualityguard.exe`), `linux-x64` and `osx-arm64` to every published release, for Windows users who do not want to install .NET or Docker.
+* **README**: install scopes (global, local, tool path), registering the MCP server in an agent with the
+  `local`/`project`/`user` scopes, and the GitHub download.
+
+## [1.0.7] - 2026-10-27
+
+All packages move to 1.0.7 together, and `QualityGuard.Mcp` now depends on the 1.0.7 engine packages. The Docker image
+stays at `1.0.6` (no engine change).
+
+### Added
+
+* **`QualityGuard.Mcp` is now a .NET tool** (command `qualityguard-mcp`, package type `McpServer`): install it with
+  `dotnet tool install -g QualityGuard.Mcp`, or run it with no install through `dnx QualityGuard.Mcp --yes`.
+* **README**: the CLI chapter is rewritten for end users (install matrix, first scan, nine usage examples, every option with its alias, exit codes with what to do), and examples use the installed `qualityguard` command.
+* **README**: `dnx` one-shot usage for both the CLI and the MCP server on any OS with the .NET 10 SDK; Docker is now
+  presented as optional.
+
 ## [1.0.6] - 2026-10-27
 
 All packages move to 1.0.6 together, and `QualityGuard.Mcp` now depends on the 1.0.6 engine packages.

@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
   <ItemGroup>
     <ProjectReference Include="..\QualityGuard.Core\QualityGuard.Core.csproj" />
@@ -8,6 +8,8 @@
   <PropertyGroup>
     <OutputType>Exe</OutputType>
     <TargetFramework>net9.0</TargetFramework>
+    <!-- the tool also targets net10.0 so `dnx` (which runs on the .NET 10 SDK) finds a matching runtime -->
+    <TargetFrameworks Condition="'$(AsTool)' == 'true'">net9.0;net10.0</TargetFrameworks>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <Description>Executable entry point of QualityGuard for pipeline jobs: scan, evaluate the Quality Gate and exit with 0 PASSED / 1 FAILED / 2 error.</Description>

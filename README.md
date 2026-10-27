@@ -11,6 +11,15 @@ qualityguard --path ./src --by-folder
 
 No clone, no build: install it as a .NET tool or pull the Docker image (§8).
 
+No install at all (like `npx`), on any OS with the .NET 10 SDK:
+
+```bash
+dnx QualityGuard.Tool --yes -- --path ./src      # CLI, one-shot
+dnx QualityGuard.Mcp --yes                        # MCP server over stdio
+```
+
+The MCP server is also a .NET tool: `dotnet tool install -g QualityGuard.Mcp`, then run `qualityguard-mcp`. Docker is optional.
+
 It packs **4095 rules across 27 languages** (including **665 security rules**), executing on real syntax trees with a semantic model, project index, and interprocedural taint analysis. Coverage extends beyond core languages to cloud infrastructure (AWS, Azure, and Google Cloud via Terraform and CloudFormation), Kubernetes manifests, Dockerfiles, Android manifests, Gradle scripts, Java EE and ASP.NET descriptors, WordPress configurations, and .NET frameworks (Entity Framework, Dapper, ASP.NET Core, Blazor, MAUI, WPF, WinUI, and Avalonia).
 
 Rules ship in a **default profile** — convention and stylistic checks stay disabled until explicitly requested with `--all-rules`, preventing noisy reports from masking critical defects.
@@ -56,7 +65,7 @@ every framework it scans.
 | `QualityGuard.Cli` | Pipeline entry point executable with explicit exit codes. |
 | `QualityGuard.Mcp` | **Model Context Protocol server** (`net10.0`): exposes scans, gate state, and AI-formatted Markdown reports over stdio or Streamable HTTP for local agents (Claude Code, OpenCode, Codex, Copilot). |
 
-All four projects ship as NuGet packages (`1.0.6`). The CLI is also published as the **`QualityGuard.Tool`** package, the ready-to-install `qualityguard` .NET tool (`dotnet tool install -g QualityGuard.Tool`), while `QualityGuard.Cli` stays a plain library package. The MCP server consumes the core packages from NuGet and operates fully standalone.
+All four projects ship as NuGet packages (`1.0.8`). The CLI is also published as the **`QualityGuard.Tool`** package, the ready-to-install `qualityguard` .NET tool (`dotnet tool install -g QualityGuard.Tool`), while `QualityGuard.Cli` stays a plain library package. The MCP server consumes the core packages from NuGet and operates fully standalone.
 
 ---
 
@@ -216,8 +225,8 @@ Security rules scan infrastructure and application settings for un-salted/predic
 Stylistic rules, naming conventions, and metric limits are off by default in `Rules/DefaultProfile.cs` to reduce noise, running only when requested:
 
 ```bash
-dotnet run --project src/QualityGuard.Cli -- --path ./src               # default profile
-dotnet run --project src/QualityGuard.Cli -- --path ./src --all-rules   # includes conventions
+qualityguard --path ./src               # default profile
+qualityguard --path ./src --all-rules   # includes conventions
 
 ```
 
@@ -322,77 +331,170 @@ IaC files parse into key-value block structures to evaluate contextual safety:
 
 ## 6. Scanning files and folders
 
-Pass individual file paths or directories via `--path`. Directory traversal scans recursively down through all subfolders.
+`--path` takes a file or a folder. A folder is scanned **with all its subfolders**, and you can pass several targets, either repeating the flag or separating them with commas.
 
 ```bash
-# Single file
-dotnet run --project src/QualityGuard.Cli -- --path ./src/App/Program.cs
+# One file
+qualityguard --path ./src/App/Program.cs
 
-# Directory path with per-folder summaries
-dotnet run --project src/QualityGuard.Cli -- --path ./src --by-folder
+# A whole folder, with a summary for each directory
+qualityguard --path ./src --by-folder
 
-# Multiple targets, inclusion globs, and exclusions
-dotnet run --project src/QualityGuard.Cli -- \
-  --path ./src,./tests \
-  --include "**/*.cs" \
-  --exclude "**/Generated/**"
-
+# Several folders, only C# files, skipping generated code
+qualityguard --path ./src,./tests --include "**/*.cs" --exclude "**/Generated/**"
 ```
 
-Ignored targets by default:
+What is left out by default, so the report talks about *your* code:
 
-* Build and dependency artifacts: `bin`, `obj`, `build`, `dist`, `out`, `target`, `node_modules`, `vendor`, `venv`, `.git`, `.gradle`, `.terraform`, etc.
+* Build and dependency folders: `bin`, `obj`, `build`, `dist`, `out`, `target`, `node_modules`, `vendor`, `venv`, `.git`, `.gradle`, `.terraform`, and similar.
 * Minified and generated files: `*.min.js`, `*.bundle.js`, `*.designer.cs`, `*.generated.*`, `*.pb.go`, `*.d.ts`.
-* Files exceeding `--max-file-kb` (default: 2048 KB) or containing binary NUL bytes within the initial 512 bytes.
+* Files larger than `--max-file-kb` (2048 KB by default) and binary files.
 
-Pass `--all-files` to force scanning of ignored targets.
+Pass `--all-files` when you really want those scanned too. If a path does not exist the run stops with exit code `2`, so a typo can never turn into a green build.
 
 ---
 
-## 7. CLI
+## 7. Command line (CLI)
+
+This is the everyday way to use QualityGuard: one command that scans your code, applies a Quality Gate and tells you (and your pipeline) whether the build is acceptable.
+
+### Install
 
 ```bash
-# Scan, custom gate evaluation, SARIF output
-dotnet run --project src/QualityGuard.Cli -- \
-  --path ./src --gate ./config/gate.json --sarif ./artifacts/report.sarif.json
-
-# Evaluate Quality Gate over existing SARIF file
-dotnet run --project src/QualityGuard.Cli -- \
-  --sarif-in ./artifacts/input.sarif.json --gate ./config/gate.json
-
-# Calculate new_* ratings based on current findings
-dotnet run --project src/QualityGuard.Cli -- --path ./src --new-code
-
-# Coverage integration against git diff
-dotnet run --project src/QualityGuard.Cli -- \
-  --path ./src --coverage ./artifacts/lcov.info --base origin/main
-
-# Export HTML dashboard and Markdown summaries
-dotnet run --project src/QualityGuard.Cli -- \
-  --path ./src --html ./artifacts/report.html --markdown ./artifacts/report.md
-
+dotnet tool install -g QualityGuard.Tool      # once per machine
+qualityguard --path ./src                     # from now on
 ```
 
-| Option | Function |
+| You have | Do this |
 | --- | --- |
-| `--path <dir|file>` | Target path(s). Accepts comma-separated lists and repeatable flags. |
-| `--include <glob>` | File path inclusion glob patterns. |
-| `--exclude <glob>` | File path exclusion glob patterns. |
-| `--all-files` | Forces scanning of build, dependency, and generated files. |
-| `--max-file-kb <n>` | Maximum file size threshold in KB (default: 2048). |
-| `--by-folder` | Prints per-directory summary of ncloc, bugs, vulnerabilities, and smells. |
-| `--gate <json>` | Specifies a custom Quality Gate configuration JSON file. |
-| `--sarif <out.json>` | Exports scan findings and gate outcomes to SARIF 2.1.0 format. |
-| `--sarif-in <file>` | Reads metrics from an existing SARIF file without re-scanning code. |
-| `--html <out.html>` | Writes a self-contained HTML report with embedded CSS, JS, and dataset. |
-| `--markdown <out.md>` | Generates a Markdown formatted summary report. |
-| `--new-code` | Maps findings directly to `new_*` metric ratings before evaluating gate gates. |
-| `--coverage <file>` | Reads code coverage files (LCOV, Cobertura, JaCoCo). Merges multi-shard inputs. |
-| `--base <ref>` | Specifies base branch, tag, commit, or date (`yyyy-MM-dd`) for delta comparison. |
-| `--fix-hints` | Prints remediation guidance beneath reported issues in CLI output. |
-| `--verbose` | Output detailed file metrics, skipped file reasons, and taint flow chains. |
-| `--rules` | Lists loaded engine rules alongside rule metadata. |
-| `--dump-ast` | Prints raw syntax tree structure for a specified file. |
+| .NET 9 SDK or later | `dotnet tool install -g QualityGuard.Tool` (the tool targets .NET 9 and .NET 10) |
+| .NET 10 SDK, and you do not want to install anything | `dnx QualityGuard.Tool --yes -- --path ./src` |
+| .NET SDK, and you want the version pinned in the repository | a local tool: `dotnet new tool-manifest`, then `dotnet tool install QualityGuard.Tool` (see §8) |
+| No .NET at all | the ready-made `qualityguard.exe` from GitHub Releases (Windows, Linux, macOS), the Docker image, or the self-contained binary (see §8) |
+
+It runs on Windows, Linux and macOS. Update with `dotnet tool update -g QualityGuard.Tool`.
+
+### Install scope
+
+A .NET tool can be installed at three levels. Pick the one that matches who must get the same version.
+
+| Scope | Command | Available to |
+| --- | --- | --- |
+| **Global** (per user) | `dotnet tool install -g QualityGuard.Tool` | Every folder, for your user account. |
+| **Local** (per repository) | `dotnet new tool-manifest` then `dotnet tool install QualityGuard.Tool` | Whoever clones the repository: the version is pinned in `.config/dotnet-tools.json`, and `dotnet tool restore` installs it. Run it as `dotnet qualityguard`. |
+| **Tool path** (per folder) | `dotnet tool install QualityGuard.Tool --tool-path ./tools` | Only that folder, with no change to your user profile. Handy for CI agents and containers. |
+
+Add `--version 1.0.8` to pin a version. For a team, prefer the local scope: everybody and the pipeline run the same QualityGuard.
+
+### Your first scan
+
+```bash
+qualityguard --path ./src
+```
+
+You get the Quality Gate verdict, the issues found (each with file and line), and a `SUMMARY` block with bugs, vulnerabilities, security hotspots, code smells, technical debt and an A–E rating for reliability, security and maintainability. Nothing is written to disk and no network is used: it is read-only.
+
+To see *how to fix* each issue and to include the convention and style rules that are off by default:
+
+```bash
+qualityguard --path ./src --fix-hints --all-rules
+```
+
+### Usage examples
+
+```bash
+# 1. Quick look at a project, broken down by folder
+qualityguard --path ./src --by-folder
+
+# 2. Fail the build when your own gate is not met
+qualityguard --path ./src --gate ./gate.json
+
+# 3. Produce reports to share (SARIF for code scanning, HTML and Markdown for people)
+qualityguard --path ./src --gate ./gate.json   --sarif ./out/report.sarif.json --html ./out/report.html --markdown ./out/report.md
+
+# 4. Judge only what changed against main, with test coverage
+qualityguard --path ./src --new-code --coverage ./out/lcov.info --base origin/main
+
+# 5. Re-check an existing SARIF report with a stricter gate, without scanning again
+qualityguard --sarif-in ./out/report.sarif.json --gate ./gate.strict.json
+
+# 6. Several folders, one language, no generated code
+qualityguard --path ./src,./tests --include "**/*.cs" --exclude "**/Generated/**"
+
+# 7. Mark folders as third-party code, so they are scanned but not blamed on you
+qualityguard --path . --vendor ./ThirdParty
+
+# 8. Understand the syntax tree of a file (useful when reporting a false positive)
+qualityguard --path ./src/App/Program.cs --dump-ast
+
+# 9. See every rule that is loaded
+qualityguard --rules
+```
+
+PowerShell users: write the examples on one line, or continue lines with a backtick `` ` `` instead of `\`.
+
+### Options
+
+| Option | What it does |
+| --- | --- |
+| `--path <dir\|file>` | What to scan. Repeatable, or a comma-separated list. |
+| `--include <glob>` | Scan only files matching the pattern (alias `--only`). |
+| `--exclude <glob>` | Skip files matching the pattern (alias `--ignore`). |
+| `--all-files` | Also scan build, dependency and generated files (alias `--no-default-excludes`). |
+| `--max-file-kb <n>` | Skip files larger than this size in KB (default 2048). |
+| `--by-folder` | Adds a per-directory table: files, lines of code, bugs, vulnerabilities, smells. |
+| `--gate <json>` | Your Quality Gate definition (alias `--config`). Without it, the default gate applies. |
+| `--sarif <file>` | Writes the findings and the gate result as SARIF 2.1.0 (alias `--sarif-out`). |
+| `--sarif-in <file>` | Evaluates the gate on an existing SARIF report instead of scanning. |
+| `--html <file>` | Writes a single self-contained HTML report. |
+| `--markdown <file>` | Writes a Markdown report, ready for a pull request comment (alias `--md`). |
+| `--new-code` | Computes the `new_*` ratings, so the gate looks at recent changes only. |
+| `--base <ref>` | What "new" means: a branch, tag, commit or date (`yyyy-MM-dd`) (alias `--diff-base`). |
+| `--coverage <file>` | Reads coverage (LCOV, Cobertura, JaCoCo) and merges several files. |
+| `--all-rules` | Also runs the convention and style rules, off by default (alias `--every-rule`). |
+| `--fix-hints` | Prints how to fix each issue under it (alias `--how-to-fix`). |
+| `--vendor <path>` | Treats a path as third-party code (alias `--third-party`). |
+| `--verbose` | Per-file metrics, skipped files and the full taint flow of each finding. |
+| `--rules` | Lists the loaded rules with their metadata. |
+| `--dump-ast` | Prints the syntax tree of the given file. |
+
+### Install the MCP server in an AI agent
+
+The MCP server (`QualityGuard.Mcp`) is a .NET tool too. Install it once, then register it with your agent. In Claude Code the registration has three scopes:
+
+| Scope | Command | Who gets it |
+| --- | --- | --- |
+| `local` (default) | `claude mcp add qualityguard -- qualityguard-mcp` | You, in the current project only. |
+| `project` | `claude mcp add --scope project qualityguard -- qualityguard-mcp` | Everybody on the project: it is saved in the `.mcp.json` file you commit. |
+| `user` | `claude mcp add --scope user qualityguard -- qualityguard-mcp` | You, in every project. |
+
+```bash
+dotnet tool install -g QualityGuard.Mcp
+claude mcp add --scope user qualityguard -- qualityguard-mcp
+```
+
+Without installing anything (needs the .NET 10 SDK): `claude mcp add --scope user qualityguard -- dnx QualityGuard.Mcp --yes`.
+
+Other agents (OpenCode, Codex, Copilot) take the same command, `qualityguard-mcp` over stdio, in their own MCP configuration file.
+
+### Exit codes
+
+Your pipeline reads the result from the exit code, so you do not have to parse the output.
+
+| Code | Meaning | What to do |
+| --- | --- | --- |
+| `0` | `PASSED`: the gate is satisfied. | Nothing, the build continues. |
+| `1` | `FAILED`: at least one gate condition is not met. | Read the lines marked `[FAIL]` in the output: they say which condition and by how much. |
+| `2` | `ERROR`: bad option, missing path, unreadable file. | Fix the command; this is not a quality verdict. |
+
+```bash
+qualityguard --path ./src --gate ./gate.json
+case $? in
+  0) echo "Quality gate passed" ;;
+  1) echo "Quality gate failed" ; exit 1 ;;
+  *) echo "QualityGuard could not run" ; exit 2 ;;
+esac
+```
 
 ### Exported reports
 
@@ -411,14 +513,6 @@ Source code coverage exclusions defined directly within codebases are recognized
 | `# :nocov:` ... `# :nocov:` | Ruby |
 | `/** @codeCoverageIgnore */` | PHP |
 | `// LCOV_EXCL_LINE`, `// LCOV_EXCL_START`, `// coverage:ignore-line` | Universal (all supported languages) |
-
-### Exit codes
-
-| Code | Meaning |
-| --- | --- |
-| `0` | `PASSED` — Quality Gate passed all criteria. |
-| `1` | `FAILED` — One or more Quality Gate conditions failed. |
-| `2` | `ERROR` — Runtime failure, invalid flags, or missing target files. |
 
 ### Example CLI output
 
@@ -455,12 +549,12 @@ The CLI is meant to run in a pipeline and decide the build with its exit code (`
 | --- | --- | --- |
 | **.NET tool** (`dotnet tool install`) | .NET 9 SDK or runtime | Runners that already have .NET |
 | **Docker image** | Docker | Any runner, any language stack, reproducible versions |
-| **Self-contained binary** | nothing | Locked-down or minimal runners |
+| **Self-contained binary** (GitHub Releases, `qualityguard.exe`) | nothing | Locked-down or minimal runners |
 
 ### Option 1: .NET tool
 
 ```bash
-dotnet tool install -g QualityGuard.Tool --version 1.0.6
+dotnet tool install -g QualityGuard.Tool --version 1.0.8
 qualityguard --path ./src --gate ./gate.json --sarif ./report.sarif.json
 ```
 
@@ -468,7 +562,7 @@ Install it as a local tool so the version is pinned in the repository:
 
 ```bash
 dotnet new tool-manifest
-dotnet tool install QualityGuard.Tool --version 1.0.6
+dotnet tool install QualityGuard.Tool --version 1.0.8
 dotnet tool restore          # in CI
 dotnet qualityguard --path ./src
 ```
@@ -553,6 +647,18 @@ docker run --rm -v "$PWD:/src" qualityguard --path /src
 
 ### Option 3: self-contained binary
 
+**Ready-made download (no .NET needed):** every GitHub release carries a zip per platform, built by the `release-binaries` workflow: `win-x64`, `linux-x64` and `osx-arm64`. Download it from the [Releases page](https://github.com/francescopaolopassaro/QualityGuard/releases) and unzip: the archive holds a single file, `qualityguard.exe` on Windows and `qualityguard` elsewhere.
+
+On Windows, put the folder on your `PATH` once and use it like any other command:
+
+```powershell
+Expand-Archive qualityguard-v1.0.8-win-x64.zip -DestinationPath C:\Tools\qualityguard
+setx PATH "$env:PATH;C:\Tools\qualityguard"     # then open a new terminal
+qualityguard --path .\src
+```
+
+To build it yourself:
+
 ```bash
 dotnet publish src/QualityGuard.Cli -c Release -r linux-x64 --self-contained -p:PublishSingleFile=true -o dist
 ./dist/QualityGuard.Cli --path ./src
@@ -605,8 +711,8 @@ jobs:
       - uses: actions/cache@v4
         with:
           path: ~/.nuget/packages
-          key: qg-tool-1.0.6
-      - run: dotnet tool install -g QualityGuard.Tool --version 1.0.6
+          key: qg-tool-1.0.8
+      - run: dotnet tool install -g QualityGuard.Tool --version 1.0.8
       - run: qualityguard --path src --sarif report.sarif.json
         continue-on-error: true
       - uses: github/codeql-action/upload-sarif@v3
@@ -629,7 +735,7 @@ steps:
   - task: UseDotNet@2
     inputs: { version: 9.0.x }
   - script: |
-      dotnet tool install -g QualityGuard.Tool --version 1.0.6
+      dotnet tool install -g QualityGuard.Tool --version 1.0.8
       qualityguard --path $(Build.SourcesDirectory)/src --gate gate.json --sarif $(Build.ArtifactStagingDirectory)/report.sarif.json
     displayName: QualityGuard
   - task: PublishBuildArtifacts@1
