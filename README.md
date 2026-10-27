@@ -370,7 +370,7 @@ qualityguard --path ./src                     # from now on
 | .NET 9 SDK or later | `dotnet tool install -g QualityGuard.Tool` (the tool targets .NET 9 and .NET 10) |
 | .NET 10 SDK, and you do not want to install anything | `dnx QualityGuard.Tool --yes -- --path ./src` |
 | .NET SDK, and you want the version pinned in the repository | a local tool: `dotnet new tool-manifest`, then `dotnet tool install QualityGuard.Tool` (see §8) |
-| No .NET at all | the ready-made `qualityguard.exe` from GitHub Releases (Windows, Linux, macOS), the Docker image, or the self-contained binary (see §8) |
+| No .NET at all | on Windows `scoop install qualityguard`; otherwise the ready-made `qualityguard.exe` from GitHub Releases (Windows, Linux, macOS), the Docker image, or the self-contained binary (see §8) |
 
 It runs on Windows, Linux and macOS. Update with `dotnet tool update -g QualityGuard.Tool`.
 
@@ -649,10 +649,18 @@ docker run --rm -v "$PWD:/src" qualityguard --path /src
 
 **Ready-made download (no .NET needed):** every GitHub release carries a zip per platform, built by the `release-binaries` workflow: `win-x64`, `linux-x64` and `osx-arm64`. Download it from the [Releases page](https://github.com/francescopaolopassaro/QualityGuard/releases) and unzip: the archive holds a single file, `qualityguard.exe` on Windows and `qualityguard` elsewhere.
 
-On Windows, put the folder on your `PATH` once and use it like any other command:
+**Windows with Scoop** (installs, puts it on the `PATH` and updates it for you):
 
 ```powershell
-Expand-Archive qualityguard-v1.0.8-win-x64.zip -DestinationPath C:\Tools\qualityguard
+scoop bucket add qualityguard https://github.com/francescopaolopassaro/scoop-qualityguard
+scoop install qualityguard
+scoop update qualityguard      # later, to upgrade
+```
+
+Or by hand: put the folder on your `PATH` once and use it like any other command:
+
+```powershell
+Expand-Archive qualityguard-v.1.0.8-win-x64.zip -DestinationPath C:\Tools\qualityguard
 setx PATH "$env:PATH;C:\Tools\qualityguard"     # then open a new terminal
 qualityguard --path .\src
 ```
