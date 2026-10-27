@@ -5,15 +5,17 @@
 **QualityGuard** is a stateless, in-memory code quality engine written in C# for continuous integration pipelines. It parses source code, computes metrics, runs static analysis rules, evaluates a configurable Quality Gate, and exits with `PASSED` or `FAILED` — no background service, database, or UI required.
 
 ```bash
-dotnet run --project src/QualityGuard.Cli -- --path ./src --by-folder
-
+dotnet tool install -g QualityGuard.Tool
+qualityguard --path ./src --by-folder
 ```
+
+No clone, no build: install it as a .NET tool or pull the Docker image (§8).
 
 It packs **4095 rules across 27 languages** (including **665 security rules**), executing on real syntax trees with a semantic model, project index, and interprocedural taint analysis. Coverage extends beyond core languages to cloud infrastructure (AWS, Azure, and Google Cloud via Terraform and CloudFormation), Kubernetes manifests, Dockerfiles, Android manifests, Gradle scripts, Java EE and ASP.NET descriptors, WordPress configurations, and .NET frameworks (Entity Framework, Dapper, ASP.NET Core, Blazor, MAUI, WPF, WinUI, and Avalonia).
 
 Rules ship in a **default profile** — convention and stylistic checks stay disabled until explicitly requested with `--all-rules`, preventing noisy reports from masking critical defects.
 
-Engine engineering prioritizes precision: rules are vetted on third-party production codebases before inclusion, noisy checks are rewritten on the syntax tree or dropped, and fixed false positives are locked in place with regression tests (§8).
+Engine engineering prioritizes precision: rules are vetted on third-party production codebases before inclusion, noisy checks are rewritten on the syntax tree or dropped, and fixed false positives are locked in place with regression tests (§9).
 
 ### Security is organized around the OWASP
 
@@ -54,7 +56,7 @@ every framework it scans.
 | `QualityGuard.Cli` | Pipeline entry point executable with explicit exit codes. |
 | `QualityGuard.Mcp` | **Model Context Protocol server** (`net10.0`): exposes scans, gate state, and AI-formatted Markdown reports over stdio or Streamable HTTP for local agents (Claude Code, OpenCode, Codex, Copilot). |
 
-All four projects ship as NuGet packages (`1.0.0`) via `scripts/publish-nuget.ps1`, which packs in dependency order and pushes on demand. The MCP server consumes the core packages from NuGet and operates fully standalone.
+All four projects ship as NuGet packages (`1.0.6`). The CLI is also published as the **`QualityGuard.Tool`** package, the ready-to-install `qualityguard` .NET tool (`dotnet tool install -g QualityGuard.Tool`), while `QualityGuard.Cli` stays a plain library package. The MCP server consumes the core packages from NuGet and operates fully standalone.
 
 ---
 
@@ -445,7 +447,238 @@ src/QualityGuard.Core/Semantics                        3     425     1     0    
 
 ---
 
-## 8. Quality bar
+## 8. Using QualityGuard in CI
+
+The CLI is meant to run in a pipeline and decide the build with its exit code (`0` pass, `1` gate failed, `2` error). There are three ways to get it **without compiling the repository on every run**.
+
+| Option | Needs on the runner | Best for |
+| --- | --- | --- |
+| **.NET tool** (`dotnet tool install`) | .NET 9 SDK or runtime | Runners that already have .NET |
+| **Docker image** | Docker | Any runner, any language stack, reproducible versions |
+| **Self-contained binary** | nothing | Locked-down or minimal runners |
+
+### Option 1: .NET tool
+
+```bash
+dotnet tool install -g QualityGuard.Tool --version 1.0.6
+qualityguard --path ./src --gate ./gate.json --sarif ./report.sarif.json
+```
+
+Install it as a local tool so the version is pinned in the repository:
+
+```bash
+dotnet new tool-manifest
+dotnet tool install QualityGuard.Tool --version 1.0.6
+dotnet tool restore          # in CI
+dotnet qualityguard --path ./src
+```
+
+### Option 2: Docker image
+
+The image is published on Docker Hub as [`digitalsolutionsdotit/qualityguard`](https://hub.docker.com/r/digitalsolutionsdotit/qualityguard) (tags `1.0.6` and `latest`):
+
+```bash
+docker pull digitalsolutionsdotit/qualityguard:1.0.6
+```
+
+The image has the CLI as entry point and `/src` as working directory: mount the repository there and pass the usual options.
+
+```bash
+docker run --rm -v "$PWD:/src" digitalsolutionsdotit/qualityguard:1.0.6 --path /src --by-folder
+docker run --rm -v "$PWD:/src" digitalsolutionsdotit/qualityguard:1.0.6 --path /src --gate /src/gate.json --sarif /src/report.sarif.json
+docker run --rm -v "$PWD:/src" digitalsolutionsdotit/qualityguard:1.0.6 --path /src --html /src/report.html --markdown /src/report.md
+```
+
+Build it yourself from the repository root:
+
+```bash
+docker build -t qualityguard .
+docker run --rm -v "$PWD:/src" qualityguard --path /src
+```
+
+### Option 3: self-contained binary
+
+```bash
+dotnet publish src/QualityGuard.Cli -c Release -r linux-x64 --self-contained -p:PublishSingleFile=true -o dist
+./dist/QualityGuard.Cli --path ./src
+```
+
+Attach the result to a release or to a pipeline artifact and download it in the jobs that need it.
+
+### GitHub Actions
+
+Docker image, fails the job when the gate fails and uploads the reports:
+
+```yaml
+name: quality
+on: [pull_request]
+jobs:
+  qualityguard:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Scan
+        run: |
+          docker run --rm -v "$PWD:/src" digitalsolutionsdotit/qualityguard:1.0.6 \
+            --path /src --gate /src/gate.json \
+            --sarif /src/report.sarif.json --markdown /src/report.md
+      - name: Summary
+        if: always()
+        run: cat report.md >> "$GITHUB_STEP_SUMMARY"
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: qualityguard
+          path: |
+            report.sarif.json
+            report.md
+```
+
+.NET tool with the NuGet cache, SARIF uploaded to GitHub code scanning:
+
+```yaml
+jobs:
+  qualityguard:
+    runs-on: ubuntu-latest
+    permissions:
+      security-events: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 9.0.x
+      - uses: actions/cache@v4
+        with:
+          path: ~/.nuget/packages
+          key: qg-tool-1.0.6
+      - run: dotnet tool install -g QualityGuard.Tool --version 1.0.6
+      - run: qualityguard --path src --sarif report.sarif.json
+        continue-on-error: true
+      - uses: github/codeql-action/upload-sarif@v3
+        with:
+          sarif_file: report.sarif.json
+```
+
+Pull requests only: compare against the target branch and merge coverage (`fetch-depth: 0` is required for `--base`):
+
+```yaml
+      - uses: actions/checkout@v4
+        with: { fetch-depth: 0 }
+      - run: qualityguard --path src --new-code --base origin/${{ github.base_ref }} --coverage coverage/lcov.info
+```
+
+### Azure DevOps
+
+```yaml
+steps:
+  - task: UseDotNet@2
+    inputs: { version: 9.0.x }
+  - script: |
+      dotnet tool install -g QualityGuard.Tool --version 1.0.6
+      qualityguard --path $(Build.SourcesDirectory)/src --gate gate.json --sarif $(Build.ArtifactStagingDirectory)/report.sarif.json
+    displayName: QualityGuard
+  - task: PublishBuildArtifacts@1
+    condition: always()
+    inputs: { PathtoPublish: $(Build.ArtifactStagingDirectory), ArtifactName: qualityguard }
+```
+
+With Docker:
+
+```yaml
+  - script: docker run --rm -v "$(Build.SourcesDirectory):/src" digitalsolutionsdotit/qualityguard:1.0.6 --path /src --gate /src/gate.json
+    displayName: QualityGuard
+```
+
+### GitLab CI
+
+```yaml
+qualityguard:
+  stage: test
+  image:
+    name: digitalsolutionsdotit/qualityguard:1.0.6
+    entrypoint: [""]
+  script:
+    - dotnet /opt/qualityguard/QualityGuard.Cli.dll --path . --gate gate.json --sarif report.sarif.json --html report.html
+  artifacts:
+    when: always
+    paths: [report.sarif.json, report.html]
+```
+
+### Jenkins
+
+```groovy
+stage('QualityGuard') {
+  agent { docker { image 'digitalsolutionsdotit/qualityguard:1.0.6'; args '--entrypoint=' } }
+  steps {
+    sh 'dotnet /opt/qualityguard/QualityGuard.Cli.dll --path . --gate gate.json --html report.html'
+    archiveArtifacts artifacts: 'report.html', allowEmptyArchive: true
+  }
+}
+```
+
+### Bitbucket Pipelines, CircleCI, any shell
+
+```yaml
+# bitbucket-pipelines.yml
+pipelines:
+  default:
+    - step:
+        image: digitalsolutionsdotit/qualityguard:1.0.6
+        script:
+          - dotnet /opt/qualityguard/QualityGuard.Cli.dll --path . --gate gate.json
+```
+
+```yaml
+# .circleci/config.yml
+jobs:
+  qualityguard:
+    docker: [{ image: digitalsolutionsdotit/qualityguard:1.0.6 }]
+    steps:
+      - checkout
+      - run: dotnet /opt/qualityguard/QualityGuard.Cli.dll --path . --gate gate.json
+```
+
+### Common recipes
+
+```bash
+# Fail only on the gate you define
+qualityguard --path src --gate gate.json
+
+# Scan several folders, keep the noise down
+qualityguard --path src,tests --include "**/*.cs" --exclude "**/Generated/**"
+
+# Include convention rules and print how to fix each issue
+qualityguard --path src --all-rules --fix-hints
+
+# Security-only pass on infrastructure code
+qualityguard --path infra --include "**/*.tf" --include "**/*.yaml" --include "**/Dockerfile"
+
+# Re-evaluate a stored report with a stricter gate, no re-scan
+qualityguard --sarif-in report.sarif.json --gate gate.strict.json
+
+# Use the exit code explicitly
+qualityguard --path src --gate gate.json; code=$?
+if [ "$code" -eq 1 ]; then echo "Quality gate failed"; elif [ "$code" -eq 2 ]; then echo "Tool error"; fi
+exit $code
+```
+
+A minimal `gate.json` that blocks on the worst ratings:
+
+```json
+{
+  "conditions": [
+    { "metricKey": "new_reliability_rating",     "operator": "GREATER_THAN", "threshold": 1 },
+    { "metricKey": "new_security_rating",        "operator": "GREATER_THAN", "threshold": 1 },
+    { "metricKey": "new_maintainability_rating", "operator": "GREATER_THAN", "threshold": 1 }
+  ]
+}
+```
+
+> The snippets use the public image `digitalsolutionsdotit/qualityguard:1.0.6`. Pin a version tag in CI rather than `latest`.
+
+---
+
+## 9. Quality bar
 
 Rules undergo validation against open-source repositories and internal production codebases. Noisy rules are refactored or removed, and fixed false positives are recorded as unit regression tests (**721 automated tests** currently cover AST drivers, taint flow, and scanner logic).
 
@@ -530,7 +763,7 @@ QualityGuard flags **95% of lines identified by Roslyn rules** (within a 1-line 
 
 ---
 
-## 9. Non-goals
+## 10. Non-goals
 
 * **No database or SQL persistence** — Strictly operates in-memory.
 * **No web UI or hosted dashboard** — Outputs purely via CLI and SARIF files.

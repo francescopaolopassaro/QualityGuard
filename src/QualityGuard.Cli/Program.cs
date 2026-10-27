@@ -160,8 +160,9 @@ catch (Exception ex)
         IReadOnlyList<string> vendorPaths, bool includeTestFiles, bool fullReporting)
     {
     var scan = SourceScanner.Scan(options);
-    foreach (var missing in scan.MissingPaths)
-        Console.Error.WriteLine($"WARNING: {missing} does not exist");
+    // a typo or a wrong mount must not turn into a green build on zero files
+    if (scan.MissingPaths.Count > 0)
+        throw new FileNotFoundException($"path does not exist: {string.Join(", ", scan.MissingPaths)}");
     if (verbose)
     {
         Console.WriteLine($"SCAN {scan.Files.Count} files to analyse "

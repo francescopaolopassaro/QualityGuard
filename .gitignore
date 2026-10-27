@@ -37,3 +37,6 @@ artifacts/
 *.swp
 # local tooling: reads the reference catalogues, so it stays out of the repository
 tools/
+
+# publishing scripts stay local
+scripts/

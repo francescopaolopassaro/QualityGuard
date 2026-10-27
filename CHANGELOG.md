@@ -5,6 +5,26 @@ All notable changes to QualityGuard are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.0.6] - 2026-10-27
+
+All packages move to 1.0.6 together, and `QualityGuard.Mcp` now depends on the 1.0.6 engine packages.
+
+### Added
+
+* **`QualityGuard.Tool` package**: the CLI as a ready-to-install .NET tool, so a pipeline no longer has to build the
+  repository — `dotnet tool install -g QualityGuard.Tool`, then `qualityguard --path ./src`. `QualityGuard.Cli` stays a
+  plain library package because the MCP server references it, and a tool package cannot be referenced.
+* **Docker image** `digitalsolutionsdotit/qualityguard` (tags `1.0.6`, `latest`): the CLI as entry point, the scanned
+  repository mounted on `/src`. A `Dockerfile` and `.dockerignore` build it from the repository root.
+* **README, "Using QualityGuard in CI"**: the three ways to run it without building (tool, image, self-contained
+  binary), with examples for GitHub Actions (including SARIF upload and pull-request-only scans), Azure DevOps,
+  GitLab CI, Jenkins, Bitbucket, CircleCI and plain shell, and a minimal gate file.
+
+### Fixed
+
+* **A wrong `--path` produced a green build**: a typo or a wrong volume mount only printed a warning, scanned zero
+  files and exited `0` (`PASSED`). A path that does not exist now stops the run with exit code `2`.
+
 ## [1.0.4] - 2026-09-28
 
 All four packages (QualityGuard.Core, .Sources.Sarif, .Cli, .Mcp) move to 1.0.4 together: 1.0.3 was already

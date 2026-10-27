@@ -11,7 +11,13 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <Description>Executable entry point of QualityGuard for pipeline jobs: scan, evaluate the Quality Gate and exit with 0 PASSED / 1 FAILED / 2 error.</Description>
+    <!-- library package by default (the MCP server references it); the dotnet tool is packed from this
+         same project with -p:AsTool=true. A dedicated switch is used because global properties such as
+         PackageId would also reach the referenced projects. -->
     <PackAsTool>false</PackAsTool>
+    <PackAsTool Condition="'$(AsTool)' == 'true'">true</PackAsTool>
+    <PackageId Condition="'$(AsTool)' == 'true'">QualityGuard.Tool</PackageId>
+    <ToolCommandName>qualityguard</ToolCommandName>
   </PropertyGroup>
 
 </Project>

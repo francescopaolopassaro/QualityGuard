@@ -1,0 +1,8 @@
+**/bin/
+**/obj/
+.git/
+artifacts/
+tests/
+samples/
+docs/
+imgs/
